@@ -1,0 +1,15 @@
+{
+    "auth": {
+        "bot_token": ""
+    },
+    "bot_settings": {
+        "status": "Hi!",
+        "prefix": {
+            "command_prefix": ".",
+            "mod_prefix": "~"
+        },
+        "moderator_roles": [
+            "Moderator"
+        ]
+    }
+}
