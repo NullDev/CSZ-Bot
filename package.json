@@ -1,0 +1,29 @@
+{
+  "name": "csz-bot",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Offizieller Coding Shitpost Zentrale Bot",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node ./src/app.js",
+    "lint": "eslint ./src",
+    "dev": "npm run lint && npm start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NLDev/CSC-Bot.git"
+  },
+  "author": "NullDev",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/NLDev/CSC-Bot/issues"
+  },
+  "homepage": "https://github.com/NLDev/CSC-Bot#readme",
+  "dependencies": {
+    "discord.js": "^11.5.1"
+  },
+  "devDependencies": {
+    "@types/node": ">=11.0.0",
+    "eslint": "^6.8.0"
+  }
+}
