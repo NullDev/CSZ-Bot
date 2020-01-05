@@ -52,7 +52,8 @@ exports.run = (client, message, args, callback) => {
         commandText +
         "```"
     );
-    callback();
+
+    return callback();
 };
 
 exports.description = "Listet alle mod commands auf";

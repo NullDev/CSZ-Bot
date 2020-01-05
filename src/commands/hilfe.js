@@ -53,7 +53,8 @@ exports.run = (client, message, args, callback) => {
         "``` \n\n" +
         "Bei fragen kannst du dich an @ShadowByte#1337 wenden!"
     );
-    callback();
+
+    return callback();
 };
 
 exports.description = "Listet alle commands auf";

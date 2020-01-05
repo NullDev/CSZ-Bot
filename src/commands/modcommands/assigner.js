@@ -29,7 +29,7 @@ exports.run = (client, message, args, callback) => {
 
     validRoles.forEach(element => message.channel.send(element).then(msg => msg.react("✅")));
 
-    callback();
+    return callback();
 };
 
 exports.description = `Startet den assigner mit gegebenen rollen \nUsage: ${config.bot_settings.prefix.mod_prefix}assigner [rolle 1] [rolle 2] [...]`;

@@ -17,7 +17,7 @@ exports.run = (client, message, args, callback) => {
 
     message.channel.send("Roles: \n\n" + roleNames.join(", "));
 
-    callback();
+    return callback();
 };
 
 exports.description = "Listet alle server rollen auf";
