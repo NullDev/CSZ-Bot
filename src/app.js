@@ -13,6 +13,7 @@ let log = require("./utils/logger");
 
 // Handler
 let messageHandler = require("./handler/messageHandler");
+let reactionHandler = require("./handler/reactionHandler");
 
 let version = conf.getVersion();
 let appname = conf.getName();
@@ -48,6 +49,8 @@ client.on("guildDelete", guild => log.info(`Deleted from guild: ${guild.name} (i
 client.on("message", (message) => messageHandler(message, client));
 
 client.on("error", log.error);
+
+client.on("raw", async event => reactionHandler(event, client));
 
 client.login(config.auth.bot_token).then(() => {
     log.done("Token login was successful!");
