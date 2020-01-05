@@ -9,7 +9,7 @@ Official Coding Shitpost Central Discord Bot
 
 Please ignore this repo. This is just a role assigning bot I made for my stupid [german coding discord server](https://discord.gg/FABdvae)...
 
-German description: 
+German description of the Discord Server: 
 
 > Deutscher Server für diverse programmier- und nerd Themen. <br>
 > Language-Bashing, shitposting und Autismus stehen an der Tagesordnung. <br>
