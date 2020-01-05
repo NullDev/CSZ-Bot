@@ -12,7 +12,7 @@
  */
 exports.run = (client, message, args, callback) => {
     message.react("✉");
-    message.author.send("Invite Link: https://discordapp.com/invite/psp2DN");
+    message.author.send("Invite Link: https://discord.gg/FABdvae");
 
     return callback();
 };
