@@ -9,10 +9,13 @@ let log = require("../../utils/logger");
 let config = require("../../utils/configHandler").getConfig();
 
 /**
- * Creates the role assignment message
+ * Creates an assigner message
  *
  * @param {*} client
  * @param {*} message
+ * @param {*} args
+ * @param {*} callback
+ * @returns {function} callback
  */
 exports.run = (client, message, args, callback) => {
     if (!args.length) return callback("Keine Rollen angegeben.");

@@ -12,12 +12,13 @@ let path = require("path");
 let config = require("../../utils/configHandler").getConfig();
 
 /**
- * Help command
+ * Enlists all mod-commands with descriptions
  *
  * @param {*} client
  * @param {*} message
  * @param {*} args
  * @param {*} callback
+ * @returns {function} callback
  */
 exports.run = (client, message, args, callback) => {
     let commandObj = {};

@@ -9,6 +9,9 @@
  *
  * @param {*} client
  * @param {*} message
+ * @param {*} args
+ * @param {*} callback
+ * @returns {function} callback
  */
 exports.run = (client, message, args, callback) => {
     let roleNames = message.guild.roles

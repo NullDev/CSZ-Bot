@@ -5,10 +5,13 @@
 // ========================= //
 
 /**
- * Invite command
+ * Send the invite link to the person issuing the command
  *
  * @param {*} client
  * @param {*} message
+ * @param {*} args
+ * @param {*} callback
+ * @returns {function} callback
  */
 exports.run = (client, message, args, callback) => {
     message.react("✉");
