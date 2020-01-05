@@ -5,6 +5,7 @@
 // ========================= //
 
 // Utils
+let log = require("../../utils/logger");
 let config = require("../../utils/configHandler").getConfig();
 
 /**
@@ -14,6 +15,22 @@ let config = require("../../utils/configHandler").getConfig();
  * @param {*} message
  */
 exports.run = (client, message, args, callback) => {
+    if (!args.length) return callback("Keine Rollen angegeben.");
+
+    let roleNames = message.guild.roles
+        .filter(element => String(element.name).toLowerCase() !== "@everyone")
+        .map(element => element.name);
+
+    if (!args.some(e => roleNames.includes(e))) return callback("Keine dieser Rollen existiert!");
+
+    message.delete().catch(log.error);
+
+    let validRoles = args.filter(value => roleNames.includes(value));
+
+    message.channel.send("Selbstzuweisung der Rollen.\n> Klicke auf die Reaction um dir eine Rolle zuzuweise / zu entfernen:\n---");
+
+    validRoles.forEach(element => message.channel.send(element).then(msg => msg.react("✅")));
+
     callback();
 };
 
