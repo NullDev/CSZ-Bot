@@ -18,6 +18,9 @@ module.exports = async function(event, client){
     const { d: data } = event;
 
     const message = await client.channels.get(data.channel_id).fetchMessage(data.message_id);
+
+    if (message.author.id !== client.user.id) return;
+
     const member = message.guild.members.get(client.users.get(data.user_id).id);
 
     if (member.id !== client.user.id){
