@@ -9,7 +9,7 @@ let log = require("../../utils/logger");
 let config = require("../../utils/configHandler").getConfig();
 
 /**
- * Invite command
+ * Creates the role assignment message
  *
  * @param {*} client
  * @param {*} message

@@ -10,6 +10,13 @@ let config = require("../utils/configHandler").getConfig();
 // Handler
 let cmdHandler = require("./cmdHandler");
 
+/**
+ * Handles incomming messages
+ *
+ * @param {*} message
+ * @param {*} client
+ * @returns
+ */
 module.exports = function(message, client){
     let nonBiased = message.content
         .replace(config.bot_settings.prefix.command_prefix, "")
@@ -17,7 +24,6 @@ module.exports = function(message, client){
         .replace(/\s/g, "");
 
     if (message.author.bot || nonBiased === "" || message.channel.type === "dm") return;
-
 
     /**
      * cmdHandler Parameters:
@@ -32,6 +38,7 @@ module.exports = function(message, client){
             if (err) message.channel.send(err);
         });
     }
+
     else if (message.content.indexOf(config.bot_settings.prefix.mod_prefix) === 0){
         cmdHandler(message, client, true, (err) => {
             if (err) message.channel.send(err);

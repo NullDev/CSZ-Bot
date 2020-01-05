@@ -12,6 +12,13 @@ const events = {
     MESSAGE_REACTION_REMOVE: "messageReactionRemove"
 };
 
+/**
+ * Handles changes on reactions
+ *
+ * @param {*} event
+ * @param {*} client
+ * @returns
+ */
 module.exports = async function(event, client){
     if (!events.hasOwnProperty(event.t)) return;
 

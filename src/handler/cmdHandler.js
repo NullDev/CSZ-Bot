@@ -10,9 +10,7 @@ let path = require("path");
 
 // Utils
 let log = require("../utils/logger");
-let conf = require("../utils/configHandler");
-
-const config = conf.getConfig();
+let config = require("../utils/configHandler").getConfig();
 
 /**
  * Passes commands to the correct executor

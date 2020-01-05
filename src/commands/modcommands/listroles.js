@@ -5,7 +5,7 @@
 // ========================= //
 
 /**
- * Invite command
+ * Lists all server roles
  *
  * @param {*} client
  * @param {*} message
