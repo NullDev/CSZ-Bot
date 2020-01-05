@@ -38,4 +38,4 @@ exports.run = (client, message, args, callback) => {
     return callback();
 };
 
-exports.description = `Erstellt eine Umfrage.\nUsage: ${config.bot_settings.prefix.command_prefix}poll [Hier die Frage]`;
+exports.description = `Erstellt eine Umfrage (ja/nein).\nUsage: ${config.bot_settings.prefix.command_prefix}vote [Hier die Frage]`;
