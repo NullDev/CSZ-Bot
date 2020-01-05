@@ -11,9 +11,9 @@
  * @param {*} message
  */
 exports.run = (client, message, args, callback) => {
-    let roleNames = [];
-    message.guild.roles.forEach(role => roleNames.push(role.name));
-    roleNames = roleNames.filter(el => el.toLowerCase() !== "@everyone");
+    let roleNames = message.guild.roles
+        .filter(element => String(element.name).toLowerCase() !== "@everyone")
+        .map(element => element.name);
 
     message.channel.send("Roles: \n\n" + roleNames.join(", "));
 
