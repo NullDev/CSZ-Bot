@@ -27,8 +27,6 @@ exports.run = (client, message, args, callback) => {
 
     let validRoles = args.filter(value => roleNames.includes(value));
 
-    message.channel.send("Selbstzuweisung der Rollen.\n> Klicke auf die Reaction um dir eine Rolle zuzuweise / zu entfernen:\n---");
-
     validRoles.forEach(element => message.channel.send(element).then(msg => msg.react("✅")));
 
     callback();
