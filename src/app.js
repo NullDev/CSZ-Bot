@@ -39,7 +39,7 @@ process.on("unhandledRejection", (err, promise) => log.error(`Unhandled rejectio
 client.on("ready", () => {
     log.info("Running...");
     log.info(`Got ${client.users.size} users, in ${client.channels.size} channels of ${client.guilds.size} guilds`);
-    client.user.setActivity(config.bot_settings.bot_status);
+    client.user.setActivity(config.bot_settings.status);
 });
 
 client.on("guildCreate", guild => log.info(`New guild joined: ${guild.name} (id: ${guild.id}) with ${guild.memberCount} members`));
