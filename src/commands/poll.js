@@ -54,12 +54,11 @@ exports.run = (client, message, args, callback) => {
     if (!pollOptions.length) return callback("Bruder da sind keine Antwortmöglichkeiten :c");
     else if (pollOptions.length > 10) return callback("Bitte gib nicht mehr als 10 Antwortmöglichkeiten an!");
 
-    let optionstext = "";
+    let optionstext = `**${pollArray[0]}**\n\n`;
     pollOptions.forEach((e, i) => (optionstext += `${NUMBERS[i]} - ${e}\n`));
 
     let embed = {
         "embed": {
-            "title": pollArray[0],
             "description": optionstext,
             "timestamp": moment.utc().format(),
             "author": {

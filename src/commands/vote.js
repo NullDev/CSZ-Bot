@@ -24,7 +24,7 @@ exports.run = (client, message, args, callback) => {
 
     let embed = {
         "embed": {
-            "title": args.join(" "),
+            "description": `**${args.join(" ")}**`,
             "timestamp": moment.utc().format(),
             "author": {
                 "name": `Umfrage von ${message.author.username}`,
