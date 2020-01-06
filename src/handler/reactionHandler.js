@@ -26,7 +26,7 @@ module.exports = async function(event, client){
 
     const message = await client.channels.get(data.channel_id).fetchMessage(data.message_id);
 
-    if (message.author.id !== client.user.id) return;
+    if (message.author.id !== client.user.id || event.d.emoji.name !== "✅") return;
 
     const member = message.guild.members.get(client.users.get(data.user_id).id);
 
