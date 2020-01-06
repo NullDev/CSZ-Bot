@@ -55,9 +55,7 @@ exports.run = (client, message, args, callback) => {
     else if (pollOptions.length > 10) return callback("Bitte gib nicht mehr als 10 Antwortmöglichkeiten an!");
 
     let optionstext = "";
-    pollOptions.forEach((e, i) => {
-        optionstext += `${NUMBERS[i]} - ${e}\n`;
-    });
+    pollOptions.forEach((e, i) => (optionstext += `${NUMBERS[i]} - ${e}\n`));
 
     let embed = {
         "embed": {
@@ -72,10 +70,8 @@ exports.run = (client, message, args, callback) => {
     };
 
     message.channel.send(embed).then(async msg => {
-        for (let i in pollOptions){
-            await msg.react(EMOJI[i]);
-        }
-    });
+        for (let i in pollOptions) await msg.react(EMOJI[i]);
+    }).then(() => message.delete());
 
     return callback();
 };
