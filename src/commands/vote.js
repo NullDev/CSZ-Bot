@@ -20,7 +20,7 @@ let config = require("../utils/configHandler").getConfig();
  * @returns {function} callback
  */
 exports.run = (client, message, args, callback) => {
-    if (!args.length) message.reply("Bruder da ist keine Frage :c");
+    if (!args.length) return callback("Bruder da ist keine Frage :c");
 
     let embed = {
         "embed": {
