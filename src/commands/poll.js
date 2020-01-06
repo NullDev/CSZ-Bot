@@ -52,6 +52,7 @@ exports.run = (client, message, args, callback) => {
     let pollOptions = pollArray.slice(1);
 
     if (!pollOptions.length) return callback("Bruder da sind keine Antwortmöglichkeiten :c");
+    else if (pollOptions.length < 2) return callback("Bruder du musst schon mehr als eine Antwortmöglichkeit geben 🙄");
     else if (pollOptions.length > 10) return callback("Bitte gib nicht mehr als 10 Antwortmöglichkeiten an!");
 
     let optionstext = `**${pollArray[0]}**\n\n`;
