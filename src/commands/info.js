@@ -4,6 +4,15 @@
 // = Copyright (c) NullDev = //
 // ========================= //
 
+/**
+ * Shows some generic infos
+ *
+ * @param {*} client
+ * @param {*} message
+ * @param {*} args
+ * @param {*} callback
+ * @returns
+ */
 exports.run = (client, message, args, callback) => {
     message.react("✉");
     message.author.send(
