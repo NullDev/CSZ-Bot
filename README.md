@@ -18,3 +18,5 @@ German description of the Discord Server:
 <sub>I'm sorry</sub>
 
 <hr>
+
+<img height=auto width=100% src="https://repository-images.githubusercontent.com/231836048/9d94c400-2f6b-11ea-95d8-f9e72ddf020f">
