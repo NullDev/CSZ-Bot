@@ -47,7 +47,7 @@ module.exports = function(message, client){
         });
     }
 
-    else if (message.member.roles.some(r => (r.name).toLowerCase() === "english fag") && String(message.channel.id) !== (config.ids.english_chat_id || "0")){
+    else if (message.member.roles.some(r => r.name === config.ids.english_role) && String(message.channel.id) !== (config.ids.english_chat_id || "0")){
         translator(message.content, (err, result) => {
             if (err) return log.error(err);
             return message.channel.send(`_Übersetzte Nachricht von ${message.author}:_\n${result}`).then(() => message.delete());

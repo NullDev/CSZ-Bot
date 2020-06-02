@@ -13,6 +13,7 @@
         ]
     },
     "ids": {
-        "english_chat_id": ""
+        "english_chat_id": "",
+        "english_role": ""
     }
 }
