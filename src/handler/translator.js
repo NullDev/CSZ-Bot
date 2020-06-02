@@ -6,6 +6,7 @@
 
 // Dependencies
 let unirest = require("unirest");
+
 /**
  * Translates the sent message
  *
