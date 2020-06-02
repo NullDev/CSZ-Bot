@@ -21,7 +21,8 @@
   "homepage": "https://github.com/NLDev/CSC-Bot#readme",
   "dependencies": {
     "discord.js": "^11.5.1",
-    "moment": "^2.24.0"
+    "moment": "^2.24.0",
+    "unirest": "^0.6.0"
   },
   "devDependencies": {
     "@types/node": "^12.0.0",
