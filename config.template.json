@@ -11,5 +11,8 @@
         "moderator_roles": [
             "Moderator"
         ]
+    },
+    "ids": {
+        "english_chat_id": ""
     }
 }
