@@ -6,6 +6,7 @@
 
 // Dependencies
 let Discord = require("discord.js");
+let cron = require("node-cron");
 
 // Utils
 let conf = require("./utils/configHandler");
@@ -35,10 +36,16 @@ const client = new Discord.Client();
 
 process.on("unhandledRejection", (err, promise) => log.error(`Unhandled rejection (promise: ${promise}, reason: ${err})`));
 
-client.on("ready", () => {
+client.on("ready", _ => {
     log.info("Running...");
     log.info(`Got ${client.users.size} users, in ${client.channels.size} channels of ${client.guilds.size} guilds`);
     client.user.setActivity(config.bot_settings.status);
+
+    cron.schedule("37 13 * * *", () => {
+        client.guilds.get(config.ids.guild_id).channels.get(config.ids.hauptchat_id).send(
+            "Es ist `13:37 meine Kerle.\nBleibt hydriert! :grin: :sweat_drops:`"
+        );
+    });
 });
 
 client.on("guildCreate", guild => log.info(`New guild joined: ${guild.name} (id: ${guild.id}) with ${guild.memberCount} members`));
