@@ -4,6 +4,9 @@
 // = Copyright (c) NullDev = //
 // ========================= //
 
+// Dependencies
+let moment = require("moment");
+
 // Utils
 let config = require("../utils/configHandler").getConfig();
 let log = require("../utils/logger");
@@ -49,8 +52,20 @@ module.exports = function(message, client){
 
     else if (message.member.roles.some(r => r.name === config.ids.english_role) && String(message.channel.id) !== (config.ids.english_chat_id || "0")){
         translator(message.content, (err, result) => {
-            if (err || !!result) return log.error(err);
-            return message.channel.send(`_Übersetzte Nachricht von ${message.author}:_\n${result}`).then(() => message.delete());
+            if (err) return log.error(err);
+
+            let embed = {
+                "embed": {
+                    "description": result,
+                    "timestamp": moment.utc().format(),
+                    "author": {
+                        "name": `${message.author.username} - (übersetzung)`,
+                        "icon_url": message.author.avatarURL
+                    }
+                }
+            };
+
+            return message.channel.send(embed).then(() => message.delete());
         });
     }
 };

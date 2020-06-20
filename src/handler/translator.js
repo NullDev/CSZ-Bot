@@ -28,7 +28,7 @@ let translator = function(message, callback){
     // eslint-disable-next-line consistent-return
     detectLanguage.detect(message, (error, result) => {
         if (error) return log.error(error);
-        if (result[0].language !== "en") return callback();
+        if (result[0].language !== "en") return;
 
         unirest.get(`https://api.mymemory.translated.net/get?q=${message}&de=${config.bot_settings.owner_email}&langpair=en|de`)
             .then((res) => callback(null, res.body.responseData.translatedText))
