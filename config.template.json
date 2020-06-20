@@ -1,9 +1,11 @@
 {
     "auth": {
-        "bot_token": ""
+        "bot_token": "",
+        "language_detection_api_key": ""
     },
     "bot_settings": {
         "status": "Hi!",
+        "owner_email": "",
         "prefix": {
             "command_prefix": ".",
             "mod_prefix": "~"
@@ -13,6 +15,8 @@
         ]
     },
     "ids": {
+        "guild_id": "",
+        "hauptchat_id": "",
         "english_chat_id": "",
         "english_role": ""
     }
