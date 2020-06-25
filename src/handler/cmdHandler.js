@@ -36,9 +36,6 @@ let commandHandler = function(message, client, isModCommand, callback){
     });
 
     if (!commandArr.includes(command.toLowerCase() + ".js")){
-        log.warn(
-            `User "${message.author.tag}" (${message.author}) performed an unknown command: ${cmdPrefix}${command}`
-        );
         return callback();
     }
 
@@ -50,11 +47,9 @@ let commandHandler = function(message, client, isModCommand, callback){
         );
     }
 
-    /*
     log.info(
         `User "${message.author.tag}" (${message.author}) performed ${(isModCommand ? "mod-" : "")}command: ${cmdPrefix}${command}`
     );
-    */
 
     let cmdHandle = require(path.join(commandDir, command));
 
