@@ -24,17 +24,22 @@ let detectLanguage = new DetectLanguage({
  * @param {any} callback
  */
 let translator = function(message, callback){
-    // @ts-ignore
-    // eslint-disable-next-line consistent-return
-    detectLanguage.detect(message, (error, result) => {
-        if (error) return log.error(error);
-        if (!!result[0]) log.error(`Language Detection API returned invalid response: ${result}`);
-        if (result[0].language !== "en") return null;
+    try {
+        // @ts-ignore
+        // eslint-disable-next-line consistent-return
+        detectLanguage.detect(message, (error, result) => {
+            if (error) return log.error(error);
+            if (!!result[0]) return log.error(`Language Detection API returned invalid response: ${JSON.stringify(result)}`);
+            if (result[0].language !== "en") return null;
 
-        unirest.get(`https://api.mymemory.translated.net/get?q=${message}&de=${config.bot_settings.owner_email}&langpair=en|de`)
-            .then((res) => callback(null, res.body.responseData.translatedText))
-            .catch((err) => callback(`TRANSLATION ERROR: ${err}`));
-    });
+            unirest.get(`https://api.mymemory.translated.net/get?q=${message}&de=${config.bot_settings.owner_email}&langpair=en|de`)
+                .then((res) => callback(null, res.body.responseData.translatedText))
+                .catch((err) => callback(`TRANSLATION ERROR: ${err}`));
+        });
+    }
+    catch (err){
+        log.error(`Translation errored with: ${err}`);
+    }
 };
 
 module.exports = translator;
