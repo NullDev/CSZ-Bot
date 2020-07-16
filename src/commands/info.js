@@ -18,8 +18,8 @@ exports.run = (client, message, args, callback) => {
     message.author.send(
         "Programmiert von ShadowByte#1337 für Coding Shitpost Zentrale (<https://discord.gg/FABdvae>)\n\n" +
         "Eckdaten:\n" +
-        "- Programmiersprache: NodeJS\n" +
-        "- NodeJS Version: " + process.version + "\n" +
+        "- Programmiersprache: Node.js\n" +
+        "- Node.js Version: " + process.version + "\n" +
         "- PID: " + process.pid + "\n" +
         "- Uptime (seconds): " + Math.floor(process.uptime()) + "\n" +
         "- Platform: " + process.platform + "\n" +
