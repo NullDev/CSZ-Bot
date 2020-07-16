@@ -33,7 +33,7 @@ exports.run = (client, message, args, callback) => {
     let text = message.content.slice(`${config.bot_settings.prefix.command_prefix}mock `.length);
     let mocked = text.split("").map(transform).join("");
 
-    message.channel.send(mocked + " <:mock:733414761924132926>").then(() => message.delete());
+    message.channel.send(mocked + " <:mock:677504337769005096>").then(() => message.delete());
     return callback();
 };
 
