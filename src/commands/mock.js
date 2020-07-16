@@ -1,0 +1,40 @@
+"use strict";
+
+// ========================= //
+// = Copyright (c) NullDev = //
+// ========================= //
+
+// Utils
+let config = require("../utils/configHandler").getConfig();
+
+/**
+ * Randomly capitalize letters
+ *
+ * @param {String} c
+ * @returns {String} mocked
+ */
+let transform = function(c){
+    if (c === "ß" || c === "ẞ") return c;
+    return Math.random() < 0.5 ? c.toLowerCase() : c.toUpperCase();
+};
+
+/**
+ * Mock a given text
+ *
+ * @param {*} client
+ * @param {*} message
+ * @param {*} args
+ * @param {*} callback
+ * @returns {function} callback
+ */
+exports.run = (client, message, args, callback) => {
+    if (!args.length) return callback(`Bruder du bist zu dumm zum mocken? Mach \`${config.bot_settings.prefix.command_prefix}mock DEIN TEXT HIER\``);
+
+    let text = message.content.slice(`${config.bot_settings.prefix.command_prefix}mock `.length);
+    let mocked = text.split("").map(transform).join("");
+
+    message.channel.send(mocked + " <:mock:733414761924132926>").then(() => message.delete());
+    return callback();
+};
+
+exports.description = `Mockt einen Text.\nBenutzung: ${config.bot_settings.prefix.command_prefix}mock [Hier dein Text]`;
