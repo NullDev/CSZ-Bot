@@ -18,6 +18,8 @@
         "guild_id": "",
         "hauptchat_id": "",
         "english_chat_id": "",
-        "english_role": ""
+        "english_role": "",
+        "default_role": "",
+        "banned_role": ""
     }
 }
