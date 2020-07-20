@@ -33,7 +33,17 @@ exports.run = (client, message, args, callback) => {
     let text = message.content.slice(`${config.bot_settings.prefix.command_prefix}mock `.length);
     let mocked = text.split("").map(transform).join("");
 
-    message.channel.send(mocked + " <:mock:677504337769005096>").then(() => message.delete());
+    let embed = {
+        "embed": {
+            "description": `${mocked} <:mock:677504337769005096>`,
+            "author": {
+                "name": `${message.author.username}`,
+                "icon_url": message.author.avatarURL
+            }
+        }
+    };
+
+    message.channel.send(embed).then(() => message.delete());
     return callback();
 };
 
