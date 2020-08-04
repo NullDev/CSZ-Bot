@@ -5,15 +5,15 @@
 // ========================= //
 
 // Dependencies
-let moment = require("moment");
+// let moment = require("moment");
 
 // Utils
 let config = require("../utils/configHandler").getConfig();
-let log = require("../utils/logger");
+// let log = require("../utils/logger");
 
 // Handler
 let cmdHandler = require("./cmdHandler");
-let translator = require("./translator");
+// let translator = require("./translator");
 
 /**
  * Handles incomming messages

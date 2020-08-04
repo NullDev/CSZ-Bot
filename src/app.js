@@ -36,17 +36,21 @@ const client = new Discord.Client();
 
 process.on("unhandledRejection", (err, promise) => log.error(`Unhandled rejection (promise: ${promise}, reason: ${err})`));
 
+let firstRun = true;
 client.on("ready", () => {
     log.info("Running...");
     log.info(`Got ${client.users.size} users, in ${client.channels.size} channels of ${client.guilds.size} guilds`);
     client.user.setActivity(config.bot_settings.status);
 
-    cron.schedule("37 13 * * *", () => {
-        // @ts-ignore
-        client.guilds.get(config.ids.guild_id).channels.get(config.ids.hauptchat_id).send(
-            "Es ist `13:37` meine Kerle.\nBleibt hydriert! :grin: :sweat_drops:"
-        );
-    });
+    if (firstRun){
+        firstRun = false; // Hacky deadlock ...
+        cron.schedule("37 13 * * *", () => {
+            // @ts-ignore
+            client.guilds.get(config.ids.guild_id).channels.get(config.ids.hauptchat_id).send(
+                "Es ist `13:37` meine Kerle.\nBleibt hydriert! :grin: :sweat_drops:"
+            );
+        });
+    }
 });
 
 client.on("guildCreate", guild => log.info(`New guild joined: ${guild.name} (id: ${guild.id}) with ${guild.memberCount} members`));
