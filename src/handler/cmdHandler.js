@@ -39,7 +39,7 @@ let commandHandler = function(message, client, isModCommand, callback){
         return callback();
     }
 
-    if (isModCommand && !message.member.roles.some(r => config.bot_settings.moderator_roles.includes(r.name))){
+    if (isModCommand && !message.member.roles.cache.some(r => config.bot_settings.moderator_roles.includes(r.name))){
         log.warn(`User "${message.author.tag}" (${message.author}) tried mod command "${cmdPrefix}${command}" and was denied`);
 
         return callback(
