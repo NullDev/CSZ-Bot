@@ -31,8 +31,8 @@ exports.run = (client, message, args, callback) => {
 
     if (!defaultRole || !bannedRole) return callback("Eine der angegebenen Rollen für das bannen existiert nich.");
 
-    mentionedUserObject.removeRole(defaultRole);
-    mentionedUserObject.addRole(bannedRole);
+    mentionedUserObject.roles.remove(defaultRole);
+    mentionedUserObject.roles.add(bannedRole);
 
     message.channel.send(`User ${mentionedUserObject} wurde gebannt!\nGrund: ${reason}`);
 
