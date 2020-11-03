@@ -46,7 +46,7 @@ client.on("ready", () => {
         firstRun = false; // Hacky deadlock ...
         cron.schedule("37 13 * * *", () => {
             // @ts-ignore
-            client.guilds.get(config.ids.guild_id).channels.get(config.ids.hauptchat_id).send(
+            client.guilds.cache.get(config.ids.guild_id).channels.cache.get(config.ids.hauptchat_id).send(
                 "Es ist `13:37` meine Kerle.\nBleibt hydriert! :grin: :sweat_drops:"
             );
         });
