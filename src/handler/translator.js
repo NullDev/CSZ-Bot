@@ -12,6 +12,7 @@ let DetectLanguage = require("detectlanguage");
 let config = require("../utils/configHandler").getConfig();
 let log = require("../utils/logger");
 
+// @ts-ignore
 let detectLanguage = new DetectLanguage({
     key: config.auth.language_detection_api_key,
     ssl: true

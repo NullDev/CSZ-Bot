@@ -23,10 +23,10 @@ exports.run = (client, message, args, callback) => {
 
     let mentionedUserObject = message.guild.member(mentioned);
 
-    if (mentionedUserObject.roles.some(r => r.name === config.ids.default_role)) return callback("Dieser User ist nicht gebannt du kek.");
+    if (mentionedUserObject.roles.cache.some(r => r.name === config.ids.default_role)) return callback("Dieser User ist nicht gebannt du kek.");
 
-    let defaultRole = message.guild.roles.find(role => role.name === config.ids.default_role);
-    let bannedRole = message.guild.roles.find(role => role.name === config.ids.banned_role);
+    let defaultRole = message.guild.roles.cache.find(role => role.name === config.ids.default_role);
+    let bannedRole = message.guild.roles.cache.find(role => role.name === config.ids.banned_role);
 
     if (!defaultRole || !bannedRole) return callback("Eine der angegebenen Rollen für das bannen existiert nich.");
 
