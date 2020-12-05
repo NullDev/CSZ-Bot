@@ -18,7 +18,7 @@ let config = require("../../utils/configHandler").getConfig();
  */
 exports.run = (client, message, args, callback) => {
     let mentioned = message.mentions?.users?.first?.();
-    let reason = args[1] ?? "Kein Grund angegeben.";
+    let reason = args[1];
     
     if (!mentioned) return callback(`Da ist kein username... Mach \`${config.bot_settings.prefix.command_prefix}ban \@username [Banngrund]\``);
 
@@ -34,7 +34,14 @@ exports.run = (client, message, args, callback) => {
     mentionedUserObject.roles.remove(defaultRole);
     mentionedUserObject.roles.add(bannedRole);
 
-    message.channel.send(`User ${mentionedUserObject} wurde gebannt!\nGrund: ${reason}`);
+    message.channel.send(`User ${mentionedUserObject} wurde gebannt!\nGrund: ${reason ?? "Kein Grund angegeben"}`);
+    message.guild.member(mentioned).send(
+`Du wurdest von der Coding Shitpost Zentrale gebannt!
+${!reason ? "Es wurde kein Banngrund angegeben." : "Banngrund: " + reason}
+Falls du Fragen zu dem Bann hast, kannst du dich im <#620734984105492480> Channel ausheulen.
+
+Lg & xD™`
+    );
 
     return callback();
 };

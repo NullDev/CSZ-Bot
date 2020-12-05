@@ -34,6 +34,7 @@ exports.run = (client, message, args, callback) => {
     mentionedUserObject.roles.remove(bannedRole);
 
     message.channel.send(`User ${mentionedUserObject} wurde entbannt!`);
+    message.guild.member(mentioned).send("Glückwunsch! Du wurdest von der Coding Shitpost Zentrale entbannt. Und jetzt benimm dich.");
 
     return callback();
 };
