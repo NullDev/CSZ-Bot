@@ -20,7 +20,7 @@ exports.run = (client, message, args, callback) => {
     let mentioned = message.mentions?.users?.first?.();
     let reason = args[1];
     
-    if (!mentioned) return callback(`Da ist kein username... Mach \`${config.bot_settings.prefix.command_prefix}ban \@username [Banngrund]\``);
+    if (!mentioned) return callback(`Da ist kein username... Mach \`${config.bot_settings.prefix.mod_prefix}ban \@username [Banngrund]\``);
 
     let mentionedUserObject = message.guild.member(mentioned);
 
