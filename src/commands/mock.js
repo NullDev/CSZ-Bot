@@ -38,7 +38,7 @@ exports.run = (client, message, args, callback) => {
             "description": `${mocked} <:mock:677504337769005096>`,
             "author": {
                 "name": `${message.author.username}`,
-                "icon_url": message.author.avatarURL
+                "icon_url": message.author.displayAvatarURL()
             }
         }
     };

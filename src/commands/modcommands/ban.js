@@ -18,23 +18,30 @@ let config = require("../../utils/configHandler").getConfig();
  */
 exports.run = (client, message, args, callback) => {
     let mentioned = message.mentions?.users?.first?.();
-    let reason = args[1] ?? "Kein Grund angegeben.";
+    let reason = args[1];
     
-    if (!mentioned) return callback(`Da ist kein username... Mach \`${config.bot_settings.prefix.command_prefix}ban \@username [Banngrund]\``);
+    if (!mentioned) return callback(`Da ist kein username... Mach \`${config.bot_settings.prefix.mod_prefix}ban \@username [Banngrund]\``);
 
     let mentionedUserObject = message.guild.member(mentioned);
 
-    if (mentionedUserObject.roles.some(r => r.name === config.ids.banned_role)) return callback("Dieser User ist bereits gebannt du kek.");
+    if (mentionedUserObject.roles.cache.some(r => r.name === config.ids.banned_role)) return callback("Dieser User ist bereits gebannt du kek.");
 
-    let defaultRole = message.guild.roles.find(role => role.name === config.ids.default_role);
-    let bannedRole = message.guild.roles.find(role => role.name === config.ids.banned_role);
+    let defaultRole = message.guild.roles.cache.find(role => role.name === config.ids.default_role);
+    let bannedRole = message.guild.roles.cache.find(role => role.name === config.ids.banned_role);
 
     if (!defaultRole || !bannedRole) return callback("Eine der angegebenen Rollen für das bannen existiert nich.");
 
-    mentionedUserObject.removeRole(defaultRole);
-    mentionedUserObject.addRole(bannedRole);
+    mentionedUserObject.roles.remove(defaultRole);
+    mentionedUserObject.roles.add(bannedRole);
 
-    message.channel.send(`User ${mentionedUserObject} wurde gebannt!\nGrund: ${reason}`);
+    message.channel.send(`User ${mentionedUserObject} wurde gebannt!\nGrund: ${reason ?? "Kein Grund angegeben"}`);
+    message.guild.member(mentioned).send(
+`Du wurdest von der Coding Shitpost Zentrale gebannt!
+${!reason ? "Es wurde kein Banngrund angegeben." : "Banngrund: " + reason}
+Falls du Fragen zu dem Bann hast, kannst du dich im <#620734984105492480> Channel ausheulen.
+
+Lg & xD™`
+    );
 
     return callback();
 };

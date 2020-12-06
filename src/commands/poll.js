@@ -64,7 +64,7 @@ exports.run = (client, message, args, callback) => {
             "timestamp": moment.utc().format(),
             "author": {
                 "name": `Umfrage von ${message.author.username}`,
-                "icon_url": message.author.avatarURL
+                "icon_url": message.author.displayAvatarURL()
             }
         }
     };

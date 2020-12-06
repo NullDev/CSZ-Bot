@@ -30,6 +30,8 @@ module.exports = function(message, client){
 
     if (message.author.bot || nonBiased === "" || message.channel.type === "dm") return;
 
+    if (message.mentions.has(client.user.id)) message.channel.send("Was pingst du mich du hurensohn :angry:");
+
     /**
      * cmdHandler Parameters:
      *

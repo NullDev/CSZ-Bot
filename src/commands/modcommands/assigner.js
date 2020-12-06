@@ -20,7 +20,7 @@ let config = require("../../utils/configHandler").getConfig();
 exports.run = (client, message, args, callback) => {
     if (!args.length) return callback("Keine Rollen angegeben.");
 
-    let roleNames = message.guild.roles
+    let roleNames = message.guild.roles.cache
         .filter(element => String(element.name).toLowerCase() !== "@everyone")
         .map(element => element.name);
 
