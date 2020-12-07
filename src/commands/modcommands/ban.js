@@ -46,4 +46,4 @@ Lg & xD™`
     return callback();
 };
 
-exports.description = `Bannt einen User indem er die ${config.ids.banned_role} Rolle zuweist.\nBenutzung: ${config.bot_settings.prefix.command_prefix}ban username [Banngrund]`;
+exports.description = `Bannt einen User indem er die ${config.ids.banned_role} Rolle zuweist.\nBenutzung: ${config.bot_settings.prefix.mod_prefix}ban username [Banngrund]`;

@@ -19,7 +19,7 @@ let config = require("../../utils/configHandler").getConfig();
 exports.run = (client, message, args, callback) => {
     let mentioned = message.mentions?.users?.first?.();
     
-    if (!mentioned) return callback(`Da ist kein username... Mach \`${config.bot_settings.prefix.command_prefix}unban \@username\``);
+    if (!mentioned) return callback(`Da ist kein username... Mach \`${config.bot_settings.prefix.mod_prefix}unban \@username\``);
 
     let mentionedUserObject = message.guild.member(mentioned);
 
@@ -39,4 +39,4 @@ exports.run = (client, message, args, callback) => {
     return callback();
 };
 
-exports.description = `Entbannt einen User indem er die ${config.ids.banned_role} Rolle wegnimmt.\nBenutzung: ${config.bot_settings.prefix.command_prefix}unban username`;
+exports.description = `Entbannt einen User indem er die ${config.ids.banned_role} Rolle wegnimmt.\nBenutzung: ${config.bot_settings.prefix.mod_prefix}unban username`;
