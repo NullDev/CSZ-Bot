@@ -34,8 +34,8 @@ exports.run = (client, message, args, callback) => {
     mentionedUserObject.roles.remove(bannedRole);
 
     if (mentionedUserObject.roles.cache.find(r => r.name === "B&-Gründerväter")){
-        mentionedUserObject.roles.remove("B&-Gründerväter");
-        mentionedUserObject.roles.add("Gründerväter");
+        mentionedUserObject.roles.remove(message.guild.roles.cache.find(role => role.name === "B&-Gründerväter"));
+        mentionedUserObject.roles.add(message.guild.roles.cache.find(role => role.name === "Gründerväter"));
     }
 
     message.channel.send(`User ${mentionedUserObject} wurde entbannt!`);
