@@ -33,6 +33,11 @@ exports.run = (client, message, args, callback) => {
     mentionedUserObject.roles.add(defaultRole);
     mentionedUserObject.roles.remove(bannedRole);
 
+    if (mentionedUserObject.member.roles.cache.find(r => r.name === "B&-Gründerväter")){
+        mentionedUserObject.roles.remove("B&-Gründerväter");
+        mentionedUserObject.roles.add("Gründerväter");
+    }
+
     message.channel.send(`User ${mentionedUserObject} wurde entbannt!`);
     message.guild.member(mentioned).send("Glückwunsch! Du wurdest von der Coding Shitpost Zentrale entbannt. Und jetzt benimm dich.");
 
