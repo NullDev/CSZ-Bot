@@ -38,6 +38,11 @@ exports.run = (client, message, args, callback) => {
         mentionedUserObject.roles.add(message.guild.roles.cache.find(role => role.name === "Gründerväter"));
     }
 
+    if (mentionedUserObject.roles.cache.find(r => r.name === "B&-Trusted")){
+        mentionedUserObject.roles.remove(message.guild.roles.cache.find(role => role.name === "B&-Trusted"));
+        mentionedUserObject.roles.add(message.guild.roles.cache.find(role => role.name === "Trusted"));
+    }
+
     message.channel.send(`User ${mentionedUserObject} wurde entbannt!`);
     message.guild.member(mentioned).send("Glückwunsch! Du wurdest von der Coding Shitpost Zentrale entbannt. Und jetzt benimm dich.");
 

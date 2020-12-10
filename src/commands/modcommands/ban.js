@@ -39,6 +39,11 @@ exports.run = (client, message, args, callback) => {
         mentionedUserObject.roles.add(message.guild.roles.cache.find(role => role.name === "B&-Gründerväter"));
     }
 
+    if (mentionedUserObject.roles.cache.find(r => r.name === "Trusted")){
+        mentionedUserObject.roles.remove(message.guild.roles.cache.find(role => role.name === "Trusted"));
+        mentionedUserObject.roles.add(message.guild.roles.cache.find(role => role.name === "B&-Trusted"));
+    }
+
     message.channel.send(`User ${mentionedUserObject} wurde gebannt!\nGrund: ${reason ?? "Kein Grund angegeben"}`);
     message.guild.member(mentioned).send(
 `Du wurdest von der Coding Shitpost Zentrale gebannt!
