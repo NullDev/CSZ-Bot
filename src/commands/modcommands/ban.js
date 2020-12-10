@@ -18,7 +18,7 @@ let config = require("../../utils/configHandler").getConfig();
  */
 exports.run = (client, message, args, callback) => {
     let mentioned = message.mentions?.users?.first?.();
-    let reason = args[1];
+    let reason = args.slice(1).join(" ");
     
     if (!mentioned) return callback(`Da ist kein username... Mach \`${config.bot_settings.prefix.mod_prefix}ban \@username [Banngrund]\``);
 
