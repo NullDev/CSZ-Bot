@@ -33,7 +33,7 @@ exports.run = (client, message, args, callback) => {
     mentionedUserObject.roles.add(defaultRole);
     mentionedUserObject.roles.remove(bannedRole);
 
-    if (mentionedUserObject.member.roles.cache.find(r => r.name === "B&-Gründerväter")){
+    if (mentionedUserObject.roles.cache.find(r => r.name === "B&-Gründerväter")){
         mentionedUserObject.roles.remove("B&-Gründerväter");
         mentionedUserObject.roles.add("Gründerväter");
     }
