@@ -26,7 +26,7 @@ exports.run = (client, message, args, callback) => {
         "- System CPU usage time: " + process.cpuUsage().system + "\n" +
         "- User CPU usage time: " + process.cpuUsage().user + "\n" +
         "- Architecture: " + process.arch + "\n\n" +
-        "Source Code: <https://github.com/NLDev/CSC-Bot>"
+        "Source Code: <https://github.com/NullDev/CSC-Bot>"
     );
 
     return callback();
