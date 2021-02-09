@@ -35,4 +35,4 @@ exports.run = (client, message, args, callback) => {
     return callback();
 };
 
-exports.description = `Startet den assigner mit gegebenen rollen \nBenutzung: ${config.bot_settings.prefix.mod_prefix}assigner [rolle 1] [rolle 2] [...]`;
+exports.description = `Startet den assigner mit gegebenen Rollen \nBenutzung: ${config.bot_settings.prefix.mod_prefix}assigner [rolle 1] [rolle 2] [...]`;
