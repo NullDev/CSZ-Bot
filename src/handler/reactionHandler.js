@@ -44,16 +44,11 @@ module.exports = async function(event, client){
         const member = message.guild.members.cache.get(client.users.cache.get(data.user_id).id);
         if (member.id === client.user.id) return;
         if (!message.embeds.length > 0) return;
-        if (!(message.embeds[0].author.name.indexOf("Umfrage") > -1)) return;
+        if (message.embeds[0].author.name.indexOf("Umfrage") < 0) return;
         if (message.embeds[0].description.indexOf("Mehrfachauswahl") > -1) return;
         const reactions = message.reactions.cache.filter(reaction => reaction.users.cache.has(member.id) && reaction._emoji.name !== event.d.emoji.name);
-        try {
-            for (const reaction of reactions.values()) {
-                await reaction.users.remove(member.id);
-            }
-        }
-        catch (e) {
-            console.error(e);
+        for (const reaction of reactions.values()) {
+            await reaction.users.remove(member.id).catch(log.error);
         }
     }
 };
