@@ -39,13 +39,14 @@ module.exports = async function(event, client){
         return;
     }
 
+    const voteEmojis = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣", "🔟", "👍", "👎"];
     const numberEmojis = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣", "🔟"];
-    if (numberEmojis.includes(event.d.emoji.name) && event.t === "MESSAGE_REACTION_ADD") {
+    if (voteEmojis.includes(event.d.emoji.name) && event.t === "MESSAGE_REACTION_ADD") {
         const member = message.guild.members.cache.get(client.users.cache.get(data.user_id).id);
         if (member.id === client.user.id) return;
         if (message.embeds.length !== 1) return;
-        if (message.embeds[0].author.name.indexOf("Strawpoll") < 0) return;
-        const reactions = message.reactions.cache.filter(reaction => reaction.users.cache.has(member.id) && reaction._emoji.name !== event.d.emoji.name);
+        if (message.embeds[0].author.name.indexOf("Strawpoll") < 0 && numberEmojis.includes(event.d.emoji.name)) return;
+        const reactions = message.reactions.cache.filter(reaction => reaction.users.cache.has(member.id) && reaction._emoji.name !== event.d.emoji.name && voteEmojis.includes(reaction._emoji.name));
         for (const reaction of reactions.values()) {
             await reaction.users.remove(member.id).catch(log.error);
         }
