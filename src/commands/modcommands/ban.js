@@ -23,6 +23,7 @@ exports.run = (client, message, args, callback) => {
     if (!mentioned) return callback(`Da ist kein username... Mach \`${config.bot_settings.prefix.mod_prefix}ban \@username [Banngrund]\``);
 
     let mentionedUserObject = message.guild.member(mentioned);
+    if (mentionedUserObject.id === "371724846205239326" || mentionedUserObject.id === "663146938811547660") return message.channel.send(`Fick dich bitte.`);
 
     if (mentionedUserObject.roles.cache.some(r => r.name === config.ids.banned_role)) return callback("Dieser User ist bereits gebannt du kek.");
 
