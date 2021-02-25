@@ -34,7 +34,6 @@ log.done("Started.");
 
 const config = conf.getConfig();
 const client = new Discord.Client();
-const bday = new BdayHandler(client);
 
 process.on("unhandledRejection", (err, promise) => log.error(`Unhandled rejection (promise: ${promise}, reason: ${err})`));
 
@@ -44,6 +43,7 @@ client.on("ready", () => {
     log.info(`Got ${client.users.cache.size} users, in ${client.channels.cache.size} channels of ${client.guilds.cache.size} guilds`);
     client.user.setActivity(config.bot_settings.status);
 
+    const bday = new BdayHandler(client);
     if (firstRun){
         firstRun = false; // Hacky deadlock ...
         cron.schedule("37 13 * * *", () => {
