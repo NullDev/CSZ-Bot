@@ -33,7 +33,7 @@ class BdayHandler {
         this.client.guilds.cache.get(this.config.ids.guild_id).members.cache.forEach(member => {
             if (!member.roles.cache.find(t => t.name === this.config.ids.bday_role)) return;
             try {
-                member.removeRole(this.bdayRole);
+                member.roles.remove(this.bdayRole);
             }
             catch (e) {
                 log.error("Konnte rolle nicht entfernen: " + e);
