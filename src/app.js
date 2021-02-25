@@ -15,6 +15,7 @@ let log = require("./utils/logger");
 // Handler
 let messageHandler = require("./handler/messageHandler");
 let reactionHandler = require("./handler/reactionHandler");
+let BdayHandler = require("./handler/bdayHandler");
 
 let version = conf.getVersion();
 let appname = conf.getName();
@@ -33,6 +34,7 @@ log.done("Started.");
 
 const config = conf.getConfig();
 const client = new Discord.Client();
+const bday = new BdayHandler(client);
 
 process.on("unhandledRejection", (err, promise) => log.error(`Unhandled rejection (promise: ${promise}, reason: ${err})`));
 
@@ -50,6 +52,9 @@ client.on("ready", () => {
                 "Es ist `13:37` meine Kerle.\nBleibt hydriert! :grin: :sweat_drops:"
             );
         });
+
+        cron.schedule("1 0 * * *", () => bday.checkBdays());
+        bday.checkBdays();
     }
 });
 

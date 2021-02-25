@@ -35,6 +35,7 @@ exports.run = (client, message, args, callback) => {
     mentionedUserObject.roles.remove(defaultRole);
     mentionedUserObject.roles.add(bannedRole);
 
+    // Ja, ja hardcoded dies das, ICH WEISS
     if (mentionedUserObject.roles.cache.find(r => r.name === "Gründerväter")){
         mentionedUserObject.roles.remove(message.guild.roles.cache.find(role => role.name === "Gründerväter"));
         mentionedUserObject.roles.add(message.guild.roles.cache.find(role => role.name === "B&-Gründerväter"));
