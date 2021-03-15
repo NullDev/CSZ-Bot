@@ -5,15 +5,15 @@
 // ========================= //
 
 // Dependencies
-// let moment = require("moment");
+let moment = require("moment");
 
 // Utils
 let config = require("../utils/configHandler").getConfig();
-// let log = require("../utils/logger");
+let log = require("../utils/logger");
 
 // Handler
 let cmdHandler = require("./cmdHandler");
-// let translator = require("./translator");
+let translator = require("./translator");
 
 /**
  * Handles incomming messages
@@ -52,7 +52,7 @@ module.exports = function(message, client){
         });
     }
 
-    else if (message.member.roles.some(r => r.name === config.ids.english_role) && String(message.channel.id) !== (config.ids.english_chat_id || "0")){
+    else if (message.member.roles.cache.some(r => r.name === config.ids.english_role) && String(message.channel.id) !== (config.ids.english_chat_id || "0")){
         translator(message.content, (err, result) => {
             if (err) return log.error(err);
 
