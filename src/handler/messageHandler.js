@@ -52,7 +52,6 @@ module.exports = function(message, client){
         });
     }
 
-    /*
     else if (message.member.roles.some(r => r.name === config.ids.english_role) && String(message.channel.id) !== (config.ids.english_chat_id || "0")){
         translator(message.content, (err, result) => {
             if (err) return log.error(err);
@@ -71,5 +70,4 @@ module.exports = function(message, client){
             return message.channel.send(embed).then(() => message.delete());
         });
     }
-    */
 };
