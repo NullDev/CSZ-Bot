@@ -13,10 +13,7 @@ let config = require("../utils/configHandler").getConfig();
 let log = require("../utils/logger");
 
 // @ts-ignore
-let detectLanguage = new DetectLanguage({
-    key: config.auth.language_detection_api_key,
-    ssl: true
-});
+let detectLanguage = new DetectLanguage(config.auth.language_detection_api_key);
 
 /**
  * Translates the sent message
@@ -31,6 +28,7 @@ let translator = function(message, callback){
         detectLanguage.detect(message, (error, result) => {
             if (error) return log.error(error);
             if (!!result[0]) return log.error(`Language Detection API returned invalid response: ${JSON.stringify(result)}`);
+            console.log(result);
             if (result[0].language !== "en") return null;
 
             unirest.get(`https://api.mymemory.translated.net/get?q=${message}&de=${config.bot_settings.owner_email}&langpair=en|de`)
