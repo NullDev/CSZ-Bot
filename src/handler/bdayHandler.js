@@ -11,7 +11,17 @@ let path = require("path");
 // Utils
 let log = require("../utils/logger");
 
+/**
+ * Handles Birthdays
+ *
+ * @class BdayHandler
+ */
 class BdayHandler {
+    /**
+     * Creates an instance of BdayHandler.
+     * @param {import("discord.js").Client} client
+     * @memberof BdayHandler
+     */
     constructor(client){
         this.client = client;
         this.path = path.join(__dirname, "..", "..", "database.json");
@@ -22,6 +32,11 @@ class BdayHandler {
         if (!fs.existsSync(this.path)) fs.writeFileSync(this.path, "[]\n");
     }
 
+    /**
+     * Iterate over the list of bdays
+     *
+     * @memberof BdayHandler
+     */
     checkBdays(){
         let date = new Date();
 

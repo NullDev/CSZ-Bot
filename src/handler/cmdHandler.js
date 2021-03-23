@@ -15,11 +15,11 @@ let config = require("../utils/configHandler").getConfig();
 /**
  * Passes commands to the correct executor
  *
- * @param {*} message
- * @param {*} client
- * @param {*} isModCommand
- * @param {*} callback
- * @returns {*} callback
+ * @param {import("discord.js").Message} message
+ * @param {import("discord.js").Client} client
+ * @param {Boolean} isModCommand
+ * @param {Function} callback
+ * @returns {Function} callback
  */
 let commandHandler = function(message, client, isModCommand, callback){
     let cmdPrefix = isModCommand ? config.bot_settings.prefix.mod_prefix : config.bot_settings.prefix.command_prefix;

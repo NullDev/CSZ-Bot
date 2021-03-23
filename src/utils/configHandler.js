@@ -18,7 +18,7 @@ const configPath  = path.resolve("config.json");
  * Check if the config is valid JSON
  *
  * @param {*} obj
- * @returns {boolean} whether it is valid JSON
+ * @returns {Boolean} whether it is valid JSON
  */
 let validJson = function(obj){
     try {
@@ -33,7 +33,7 @@ let validJson = function(obj){
 /**
  * Reads out config data
  *
- * @returns {object} JSON Content
+ * @returns {Object} JSON Content
  */
 let getconfig = function(){
     if (!fs.existsSync(configPath)){

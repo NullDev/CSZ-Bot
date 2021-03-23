@@ -39,11 +39,11 @@ const EMOJI = [
 /**
  * Creates a new poll (multiple answers)
  *
- * @param {*} client
- * @param {*} message
- * @param {*} args
- * @param {*} callback
- * @returns {function} callback
+ * @param {import("discord.js").Client} client
+ * @param {import("discord.js").Message} message
+ * @param {Array} args
+ * @param {Function} callback
+ * @returns {Function} callback
  */
 exports.run = (client, message, args, callback) => {
     if (!args.length) return callback("Bruder da ist keine Umfrage :c");
@@ -69,7 +69,7 @@ exports.run = (client, message, args, callback) => {
         }
     };
 
-    message.channel.send(embed).then(async msg => {
+    message.channel.send(/** @type {Object} embed */ (embed)).then(async msg => {
         for (let i in pollOptions) await msg.react(EMOJI[i]);
     }).then(() => message.delete());
 

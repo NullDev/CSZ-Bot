@@ -17,8 +17,8 @@ const voteEmojis = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️
 /**
  * Handles changes on reactions
  *
- * @param {*} event
- * @param {*} client
+ * @param {any} event
+ * @param {import("discord.js").Client} client
  * @returns
  */
 module.exports = async function(event, client){
@@ -26,6 +26,7 @@ module.exports = async function(event, client){
 
     const { d: data } = event;
 
+    // @ts-ignore
     const message = await client.channels.cache.get(data.channel_id).messages.fetch(data.message_id);
 
     if (message.author.id !== client.user.id) return;

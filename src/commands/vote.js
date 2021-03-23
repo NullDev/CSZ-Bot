@@ -13,11 +13,11 @@ let config = require("../utils/configHandler").getConfig();
 /**
  * Creates a new poll (vote; yes/no)
  *
- * @param {*} client
- * @param {*} message
- * @param {*} args
- * @param {*} callback
- * @returns {function} callback
+ * @param {import("discord.js").Client} client
+ * @param {import("discord.js").Message} message
+ * @param {Array} args
+ * @param {Function} callback
+ * @returns {Function} callback
  */
 exports.run = (client, message, args, callback) => {
     if (!args.length) return callback("Bruder da ist keine Frage :c");
@@ -33,7 +33,10 @@ exports.run = (client, message, args, callback) => {
         }
     };
 
-    message.channel.send(embed).then(msg => msg.react("👍").then(() => msg.react("👎"))).then(() => message.delete());
+    message.channel.send(/** @type {any} embed */ (embed))
+        .then(msg => msg.react("👍")
+            .then(() => msg.react("👎"))
+        ).then(() => message.delete());
 
     return callback();
 };

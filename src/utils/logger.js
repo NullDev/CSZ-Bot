@@ -7,7 +7,7 @@
 /**
  * Formats the current time
  *
- * @returns {string} Time
+ * @returns {String} Time
  */
 let getDate = function(){
     const date = new Date();
@@ -25,7 +25,7 @@ let getDate = function(){
 /**
  * Get the StackTrace of the calee function
  *
- * @returns {string} StackTrace
+ * @returns {String} StackTrace
  */
 let getTrace = function(){
     let err = new Error();
