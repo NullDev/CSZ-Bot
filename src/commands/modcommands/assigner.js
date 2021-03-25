@@ -11,11 +11,11 @@ let config = require("../../utils/configHandler").getConfig();
 /**
  * Creates an assigner message
  *
- * @param {*} client
- * @param {*} message
- * @param {*} args
- * @param {*} callback
- * @returns {function} callback
+ * @param {import("discord.js").Client} client
+ * @param {import("discord.js").Message} message
+ * @param {Array} args
+ * @param {Function} callback
+ * @returns {Function} callback
  */
 exports.run = (client, message, args, callback) => {
     if (!args.length) return callback("Keine Rollen angegeben.");
@@ -35,4 +35,4 @@ exports.run = (client, message, args, callback) => {
     return callback();
 };
 
-exports.description = `Startet den assigner mit gegebenen rollen \nBenutzung: ${config.bot_settings.prefix.mod_prefix}assigner [rolle 1] [rolle 2] [...]`;
+exports.description = `Startet den assigner mit gegebenen Rollen \nBenutzung: ${config.bot_settings.prefix.mod_prefix}assigner [rolle 1] [rolle 2] [...]`;

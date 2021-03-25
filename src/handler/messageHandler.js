@@ -4,22 +4,22 @@
 // = Copyright (c) NullDev = //
 // ========================= //
 
-// Dependencies
-// let moment = require("moment");
+/**
+ * @typedef {import("discord.js").Message} Message
+ * @typedef {import("discord.js").Client} Client
+ */
 
 // Utils
 let config = require("../utils/configHandler").getConfig();
-// let log = require("../utils/logger");
 
 // Handler
 let cmdHandler = require("./cmdHandler");
-// let translator = require("./translator");
 
 /**
  * Handles incomming messages
  *
- * @param {*} message
- * @param {*} client
+ * @param {Message} message
+ * @param {Client} client
  * @returns
  */
 module.exports = function(message, client){
@@ -35,10 +35,10 @@ module.exports = function(message, client){
     /**
      * cmdHandler Parameters:
      *
-     * @param {*} message
-     * @param {*} client
-     * @param {*} isModCommand
-     * @param {*} callback
+     * @param {Message} message
+     * @param {Client} client
+     * @param {Boolean} isModCommand
+     * @param {Function} callback
      */
     if (message.content.indexOf(config.bot_settings.prefix.command_prefix) === 0){
         cmdHandler(message, client, false, (err) => {
@@ -51,25 +51,4 @@ module.exports = function(message, client){
             if (err) message.channel.send(err);
         });
     }
-
-    /*
-    else if (message.member.roles.some(r => r.name === config.ids.english_role) && String(message.channel.id) !== (config.ids.english_chat_id || "0")){
-        translator(message.content, (err, result) => {
-            if (err) return log.error(err);
-
-            let embed = {
-                "embed": {
-                    "description": result,
-                    "timestamp": moment.utc().format(),
-                    "author": {
-                        "name": `${message.author.username} - (übersetzung)`,
-                        "icon_url": message.author.avatarURL
-                    }
-                }
-            };
-
-            return message.channel.send(embed).then(() => message.delete());
-        });
-    }
-    */
 };

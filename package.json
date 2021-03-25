@@ -26,8 +26,8 @@
     "unirest": "^0.6.0"
   },
   "devDependencies": {
-    "@types/node": "^14.14.10",
-    "eslint": "^7.15.0"
+    "@types/node": "^14.14.35",
+    "eslint": "^7.22.0"
   },
   "engines": {
     "node": ">=14.3.0"

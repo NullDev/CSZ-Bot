@@ -20,6 +20,7 @@
         "english_chat_id": "",
         "english_role": "",
         "default_role": "",
-        "banned_role": ""
+        "banned_role": "",
+        "bday_role": ""
     }
 }

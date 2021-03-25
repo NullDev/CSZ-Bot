@@ -10,19 +10,20 @@ let config = require("../../utils/configHandler").getConfig();
 /**
  * Ban a given user
  *
- * @param {*} client
- * @param {*} message
- * @param {*} args
- * @param {*} callback
- * @returns {function} callback
+ * @param {import("discord.js").Client} client
+ * @param {import("discord.js").Message} message
+ * @param {Array} args
+ * @param {Function} callback
+ * @returns {Function} callback
  */
 exports.run = (client, message, args, callback) => {
     let mentioned = message.mentions?.users?.first?.();
     let reason = args.slice(1).join(" ");
-    
+
     if (!mentioned) return callback(`Da ist kein username... Mach \`${config.bot_settings.prefix.mod_prefix}ban \@username [Banngrund]\``);
 
     let mentionedUserObject = message.guild.member(mentioned);
+    if (mentionedUserObject.id === "371724846205239326" || mentionedUserObject.id === client.user.id) return callback("Fick dich bitte.");
 
     if (mentionedUserObject.roles.cache.some(r => r.name === config.ids.banned_role)) return callback("Dieser User ist bereits gebannt du kek.");
 
@@ -34,6 +35,7 @@ exports.run = (client, message, args, callback) => {
     mentionedUserObject.roles.remove(defaultRole);
     mentionedUserObject.roles.add(bannedRole);
 
+    // Ja, ja hardcoded dies das, ICH WEISS
     if (mentionedUserObject.roles.cache.find(r => r.name === "Gründerväter")){
         mentionedUserObject.roles.remove(message.guild.roles.cache.find(role => role.name === "Gründerväter"));
         mentionedUserObject.roles.add(message.guild.roles.cache.find(role => role.name === "B&-Gründerväter"));
@@ -45,8 +47,7 @@ exports.run = (client, message, args, callback) => {
     }
 
     message.channel.send(`User ${mentionedUserObject} wurde gebannt!\nGrund: ${reason ?? "Kein Grund angegeben"}`);
-    message.guild.member(mentioned).send(
-`Du wurdest von der Coding Shitpost Zentrale gebannt!
+    message.guild.member(mentioned).send(`Du wurdest von der Coding Shitpost Zentrale gebannt!
 ${!reason ? "Es wurde kein Banngrund angegeben." : "Banngrund: " + reason}
 Falls du Fragen zu dem Bann hast, kannst du dich im <#620734984105492480> Channel ausheulen.
 

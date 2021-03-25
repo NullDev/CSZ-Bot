@@ -15,6 +15,7 @@ let log = require("./utils/logger");
 // Handler
 let messageHandler = require("./handler/messageHandler");
 let reactionHandler = require("./handler/reactionHandler");
+let BdayHandler = require("./handler/bdayHandler");
 
 let version = conf.getVersion();
 let appname = conf.getName();
@@ -42,6 +43,7 @@ client.on("ready", () => {
     log.info(`Got ${client.users.cache.size} users, in ${client.channels.cache.size} channels of ${client.guilds.cache.size} guilds`);
     client.user.setActivity(config.bot_settings.status);
 
+    const bday = new BdayHandler(client);
     if (firstRun){
         firstRun = false; // Hacky deadlock ...
         cron.schedule("37 13 * * *", () => {
@@ -50,6 +52,9 @@ client.on("ready", () => {
                 "Es ist `13:37` meine Kerle.\nBleibt hydriert! :grin: :sweat_drops:"
             );
         });
+
+        cron.schedule("1 0 * * *", () => bday.checkBdays());
+        bday.checkBdays();
     }
 });
 

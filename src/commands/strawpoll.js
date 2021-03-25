@@ -63,7 +63,7 @@ exports.run = (client, message, args, callback) => {
             "description": optionstext,
             "timestamp": moment.utc().format(),
             "author": {
-                "name": `Umfrage von ${message.author.username}`,
+                "name": `Strawpoll von ${message.author.username}`,
                 "icon_url": message.author.displayAvatarURL()
             }
         }
@@ -76,4 +76,4 @@ exports.run = (client, message, args, callback) => {
     return callback();
 };
 
-exports.description = `Erstellt eine Umfrage mit mehreren Antwortmöglichkeiten (Mehrfachauswahl) (maximal 10).\nUsage: ${config.bot_settings.prefix.command_prefix}poll [Hier die Frage] ; [Antwort 1] ; [Antwort 2] ; [...]`;
+exports.description = `Erstellt eine Umfrage mit mehreren Antwortmöglichkeiten (Einzelauswahl) (maximal 10).\nUsage: ${config.bot_settings.prefix.command_prefix}strawpoll [Hier die Frage] ; [Antwort 1] ; [Antwort 2] ; [...]`;
