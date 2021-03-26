@@ -24,7 +24,6 @@ exports.run = (client, message, args, callback) => {
 
     let mentionedUserObject = message.guild.member(mentioned);
     if (mentionedUserObject.id === "371724846205239326" || mentionedUserObject.id === client.user.id) return callback("Fick dich bitte.");
-
     if (mentionedUserObject.roles.cache.some(r => r.name === config.ids.banned_role)) return callback("Dieser User ist bereits gebannt du kek.");
 
     let defaultRole = message.guild.roles.cache.find(role => role.name === config.ids.default_role);

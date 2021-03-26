@@ -12,6 +12,14 @@ let path = require("path");
 let log = require("../utils/logger");
 let config = require("../utils/configHandler").getConfig();
 
+let banUserWhenNoMod = function(message, client, commandDir) {
+    let cmdHandle = require(path.join(commandDir, "ban"));
+    console.log("@" + message.author.username,);
+    cmdHandle.run(client, message, ["@" + message.author.username, "Hurensohn"], function(err) {
+        // sowwy no error handling for you UwU
+    });
+}
+
 /**
  * Passes commands to the correct executor
  *
@@ -42,9 +50,15 @@ let commandHandler = function(message, client, isModCommand, callback){
     if (isModCommand && !message.member.roles.cache.some(r => config.bot_settings.moderator_roles.includes(r.name))){
         log.warn(`User "${message.author.tag}" (${message.author}) tried mod command "${cmdPrefix}${command}" and was denied`);
 
-        return callback(
+        banUserWhenNoMod(message, client, commandDir, command);
+
+        return;
+
+        /*
+ callback(
             `Tut mir leid, ${message.author}. Du hast nicht genügend Rechte um dieses Command zu verwenden =(`
         );
+        */
     }
 
     log.info(

@@ -44,9 +44,7 @@ module.exports = function(message, client){
         cmdHandler(message, client, false, (err) => {
             if (err) message.channel.send(err);
         });
-    }
-
-    else if (message.content.indexOf(config.bot_settings.prefix.mod_prefix) === 0){
+    } else if (message.content.indexOf(config.bot_settings.prefix.mod_prefix) === 0){
         cmdHandler(message, client, true, (err) => {
             if (err) message.channel.send(err);
         });
