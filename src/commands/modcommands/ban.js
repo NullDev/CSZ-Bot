@@ -25,25 +25,24 @@ exports.run = (client, message, args, callback) => {
     let mentionedUserObject = message.guild.member(mentioned);
     if (mentionedUserObject.id === "371724846205239326" || mentionedUserObject.id === client.user.id) return callback("Fick dich bitte.");
 
-    if (mentionedUserObject.roles.cache.some(r => r.name === config.ids.banned_role)) return callback("Dieser User ist bereits gebannt du kek.");
+    if (mentionedUserObject.roles.cache.some(r => r.id === config.ids.banned_role_id)) return callback("Dieser User ist bereits gebannt du kek.");
 
-    let defaultRole = message.guild.roles.cache.find(role => role.name === config.ids.default_role);
-    let bannedRole = message.guild.roles.cache.find(role => role.name === config.ids.banned_role);
+    let defaultRole = message.guild.roles.cache.find(role => role.id === config.ids.default_role_id);
+    let bannedRole = message.guild.roles.cache.find(role => role.id === config.ids.banned_role_id);
 
     if (!defaultRole || !bannedRole) return callback("Eine der angegebenen Rollen für das bannen existiert nich.");
 
     mentionedUserObject.roles.remove(defaultRole);
     mentionedUserObject.roles.add(bannedRole);
 
-    // Ja, ja hardcoded dies das, ICH WEISS
-    if (mentionedUserObject.roles.cache.find(r => r.name === "Gründerväter")){
-        mentionedUserObject.roles.remove(message.guild.roles.cache.find(role => role.name === "Gründerväter"));
-        mentionedUserObject.roles.add(message.guild.roles.cache.find(role => role.name === "B&-Gründerväter"));
+    if (mentionedUserObject.roles.cache.find(r => r.id === config.ids.gruendervaeter_role_id)){
+        mentionedUserObject.roles.remove(message.guild.roles.cache.find(role => role.id === config.ids.gruendervaeter_role_id));
+        mentionedUserObject.roles.add(message.guild.roles.cache.find(role => role.id === config.ids.gruendervaeter_banned_role_id));
     }
 
-    if (mentionedUserObject.roles.cache.find(r => r.name === "Trusted")){
-        mentionedUserObject.roles.remove(message.guild.roles.cache.find(role => role.name === "Trusted"));
-        mentionedUserObject.roles.add(message.guild.roles.cache.find(role => role.name === "B&-Trusted"));
+    if (mentionedUserObject.roles.cache.find(r => r.id === config.ids.trusted_role_id)){
+        mentionedUserObject.roles.remove(message.guild.roles.cache.find(role => role.id === config.ids.trusted_role_id));
+        mentionedUserObject.roles.add(message.guild.roles.cache.find(role => role.id === config.ids.trusted_banned_role_id));
     }
 
     message.channel.send(`User ${mentionedUserObject} wurde gebannt!\nGrund: ${reason ?? "Kein Grund angegeben"}`);
@@ -57,4 +56,4 @@ Lg & xD™`
     return callback();
 };
 
-exports.description = `Bannt einen User indem er die ${config.ids.banned_role} Rolle zuweist.\nBenutzung: ${config.bot_settings.prefix.mod_prefix}ban username [Banngrund]`;
+exports.description = `Bannt einen User indem er ihn von allen Channels ausschließt.\nBenutzung: ${config.bot_settings.prefix.mod_prefix}ban username [Banngrund]`;

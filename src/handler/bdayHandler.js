@@ -26,7 +26,7 @@ class BdayHandler {
         this.client = client;
         this.path = path.join(__dirname, "..", "..", "database.json");
         this.config = require("../utils/configHandler").getConfig();
-        this.bdayRole = client.guilds.cache.get(this.config.ids.guild_id).roles.cache.find(role => role.name === this.config.ids.bday_role);
+        this.bdayRole = client.guilds.cache.get(this.config.ids.guild_id).roles.cache.find(role => role.id === this.config.ids.bday_role_id);
 
         // Make sure file exists
         if (!fs.existsSync(this.path)) fs.writeFileSync(this.path, "[]\n");
@@ -46,7 +46,7 @@ class BdayHandler {
         });
 
         this.client.guilds.cache.get(this.config.ids.guild_id).members.cache.forEach(member => {
-            if (!member.roles.cache.find(t => t.name === this.config.ids.bday_role)) return;
+            if (!member.roles.cache.find(t => t.id === this.config.ids.bday_role_id)) return;
             try {
                 member.roles.remove(this.bdayRole);
             }
