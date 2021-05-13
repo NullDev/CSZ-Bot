@@ -36,20 +36,20 @@ $ `npm install`<br><br>
 6. Die frisch kopierte Config-Datei ausfüllen: <br>
     - Um einen Bot zum Testen anzulegen, einfach den Instruktionen im [Discord Developer Portal](https://discord.com/developers/applications) folgen.
         - Die Applikation muss als "Bot" gesetzt werden. 
-        - Es müssen beide Gateway Intents eingeschalten werden.
+        - Es müssen beide [Gateway Intents](https://discordjs.guide/popular-topics/intents.html#gateway-intents) eingeschalten werden.
         - Den Bot Token (NICHT die Application-ID oder den Public-Key) [in die Config](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L3) kopieren.
     - Um ID's kopieren zu können, den "Developer Mode" in den Discord Einstellungen aktivieren. Mit Rechts-Klick kann man dann die ID's kopieren:
         - Die ID [des Servers](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L16)
         - Die ID für [den Hauptchat](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L17)
     - Es müssen folgende Rollen am Server angelegt werden:
-        - Moderator-Rolle ([Name der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L12))
-        - Default Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L18))
-        - Banned-Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L19))
-        - Geburtstags-Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L20))
-        - Gründerväter-Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L22))
-        - Trusted-Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L24))
-        - Gründerväter-Gebannt-Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L23))
-        - Trusted-Gebannt-Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L25)) <br><br>
+        - Moderator-Rolle ([Name der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L12)) - CSZ Default: Moderader
+        - Default Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L18)) - CSZ Default: Nerd
+        - Banned-Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L19)) - CSZ Default: B&
+        - Geburtstags-Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L20)) - CSZ Default: Geburtstagskind
+        - Gründerväter-Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L22)) - CSZ Default: Gründerväter
+        - Trusted-Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L24)) - CSZ Default: Trusted
+        - Gründerväter-Gebannt-Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L23)) - CSZ Default: B&-Gründerväter
+        - Trusted-Gebannt-Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L25)) - CSZ Default: B&-Trusted<br><br>
 8. Das Script starten <br>
 $ `npm start` <br><br>
 
