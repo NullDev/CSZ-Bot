@@ -1,7 +1,7 @@
 # CSC-Bot
 
 <p align="center">
-<img height="150" width="auto" src="https://cdn.discordapp.com/icons/618781839338897443/a_f0e7d038cf3e8512fa5eecfbc127460d.gif" /><br>
+<img height="150" width="auto" src="https://cdn.discordapp.com/icons/618781839338897443/a_82f94d024985d290862ef86ada2f2ef1.gif?size=128" /><br>
 Official Coding Shitpost Central Discord Bot
 </p>
 
@@ -18,5 +18,39 @@ German description of the Discord Server:
 <sub>I'm sorry</sub>
 
 <hr>
+
+## :wrench: Installation
+
+0. Terminal aufmachen und dorthin navigieren, wo man es downloaden möchte <br><br>
+1. Sichergehen, dass NodeJS installiert ist. Teste mit: <br>
+$ `node -v` <br>
+Wenn es eine Versionsnummer zurückgibt, ist NodeJS installiert.
+ **Wenn nicht**, NodeJS <a href="https://nodejs.org/en/download/package-manager/">hier</a> downloaden. <br><br>
+2. Repository clonen und hinein navigieren. Wenn Git installiert ist: <br>
+$ `git clone https://github.com/NullDev/CSC-Bot.git && cd $_` <br>
+Wenn nicht, <a href="https://github.com/NullDev/CSC-Bot/archive/master.zip">hier</a> herunterladen und die ZIP extrahieren. <br>
+Dann in den Ordner navigieren.<br><br>
+3. Dependencies installieren: <br>
+$ `npm install`<br><br>
+4. Das Config-Template [config.template.json](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json) kopieren und als `config.json` einfügen. <br><br>
+6. Die frisch kopierte Config-Datei ausfüllen: <br>
+    - Um einen Bot zum Testen anzulegen, einfach den Instruktionen im [Discord Developer Portal](https://discord.com/developers/applications) folgen.
+        - Die Applikation muss als "Bot" gesetzt werden. 
+        - Es müssen beide Gateway Intents eingeschalten werden.
+        - Den Bot Token (NICHT die Application-ID oder den Public-Key) [in die Config](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L3) kopieren.
+    - Um ID's kopieren zu können, den "Developer Mode" in den Discord Einstellungen aktivieren. Mit Rechts-Klick kann man dann die ID's kopieren:
+        - Die ID [des Servers](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L16)
+        - Die ID für [den Hauptchat](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L17)
+    - Es müssen folgende Rollen am Server angelegt werden:
+        - Moderator-Rolle ([Name der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L12))
+        - Default Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L18))
+        - Banned-Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L19))
+        - Geburtstags-Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L20))
+        - Gründerväter-Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L22))
+        - Trusted-Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L24))
+        - Gründerväter-Gebannt-Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L23))
+        - Trusted-Gebannt-Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L25)) <br><br>
+8. Das Script starten <br>
+$ `npm start` <br><br>
 
 <img height=auto width=100% src="https://repository-images.githubusercontent.com/231836048/9d94c400-2f6b-11ea-95d8-f9e72ddf020f">
