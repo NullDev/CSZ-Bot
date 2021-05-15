@@ -37,7 +37,7 @@ const EMOJI = [
 ];
 
 /**
- * Creates a new poll (multiple answers)
+ * Creates a new strawpoll (multiple answers with only one selection)
  *
  * @param {import("discord.js").Client} client
  * @param {import("discord.js").Message} message
