@@ -50,9 +50,11 @@ exports.run = (client, message, args, callback) => {
     let options = parseOptions(args, {
         boolean: [
             'sendchannel',
+            'extendable',
         ],
         alias: {
             'sendchannel': 's',
+            'extendable': 'e',
         }
     });
 
@@ -67,19 +69,30 @@ exports.run = (client, message, args, callback) => {
     else if (pollOptions.length < 2) return callback("Bruder du musst schon mehr als eine Antwortmöglichkeit geben 🙄");
     else if (pollOptions.length > 10) return callback("Bitte gib nicht mehr als 10 Antwortmöglichkeiten an!");
 
-    let optionstext = `**${pollArray[0]}**\n\n`;
+    let optionstext = "";
     pollOptions.forEach((e, i) => (optionstext += `${NUMBERS[i]} - ${e}\n`));
 
     let embed = {
         "embed": {
+            "title": pollArray[0],
             "description": optionstext,
             "timestamp": moment.utc().format(),
             "author": {
                 "name": `Umfrage von ${message.author.username}`,
                 "icon_url": message.author.displayAvatarURL()
-            }
+            },
         }
     };
+
+    let extendable = options.extendable && pollOptions.length < 10;
+
+    if (extendable) {
+        embed["embed"]["footer"] = {
+            "text": "Umfrage ist erweiterbar mit .extend als Reply",
+        };
+
+        embed["embed"]["color"] = 'GREEN';
+    }
 
     let channel = options.sendchannel ? client.guilds.cache.get(config.ids.guild_id).channels.cache.get(config.ids.votes_channel_id) : message.channel;
 
@@ -90,4 +103,10 @@ exports.run = (client, message, args, callback) => {
     return callback();
 };
 
-exports.description = `Erstellt eine Umfrage mit mehreren Antwortmöglichkeiten (Mehrfachauswahl) (maximal 10).\nUsage: ${config.bot_settings.prefix.command_prefix}poll [Hier die Frage] ; [Antwort 1] ; [Antwort 2] ; [...]`;
+exports.description = `Erstellt eine Umfrage mit mehreren Antwortmöglichkeiten (Mehrfachauswahl) (maximal 10).
+Usage: ${config.bot_settings.prefix.command_prefix}poll [Optionen?] [Hier die Frage] ; [Antwort 1] ; [Antwort 2] ; [...]
+Optionen:
+\t-s, --sendchannel
+\t\t\tSendet die Umfrage in den Umfragenchannel, um den Slowmode zu umgehen
+\t-e, --extendable
+\t\t\tErlaubt die Erweiterung der Antwortmöglichkeiten durch jeden User mit .extend als Reply`;

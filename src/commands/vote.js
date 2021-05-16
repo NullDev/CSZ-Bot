@@ -36,12 +36,12 @@ exports.run = (client, message, args, callback) => {
 
     let embed = {
         "embed": {
-            "description": `**${args.join(" ")}**`,
+            "title": `**${args.join(" ")}**`,
             "timestamp": moment.utc().format(),
             "author": {
                 "name": `Umfrage von ${message.author.username}`,
                 "icon_url": message.author.displayAvatarURL()
-            }
+            },
         }
     };
 
@@ -55,4 +55,8 @@ exports.run = (client, message, args, callback) => {
     return callback();
 };
 
-exports.description = `Erstellt eine Umfrage (ja/nein).\nUsage: ${config.bot_settings.prefix.command_prefix}vote [Hier die Frage]`;
+exports.description = `Erstellt eine Umfrage (ja/nein).
+Usage: ${config.bot_settings.prefix.command_prefix}vote [Optionen?] [Hier die Frage]
+Optionen:
+\t-s, --sendchannel
+\t\t\tSendet die Umfrage in den Umfragenchannel, um den Slowmode zu umgehen`;
