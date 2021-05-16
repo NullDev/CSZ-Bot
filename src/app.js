@@ -60,6 +60,7 @@ client.on("ready", () => {
         bday.checkBdays();
     }
 
+    ban.loadBans();
     ban.startCron(client);
 });
 

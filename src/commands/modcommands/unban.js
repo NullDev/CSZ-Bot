@@ -60,6 +60,8 @@ exports.unban = (user) => {
 
     if (user.id in ban.bans) {
         delete ban.bans[user.id];
+
+        ban.saveBans();
     }
 
     return true;

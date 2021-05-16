@@ -54,9 +54,18 @@ exports.bans = {
     */
 };
 
+exports.saveBans = () => {
+    // tbd
+};
+
+exports.loadBans = () => {
+    // tbd
+};
+
 exports.startCron = (client) => {
     cron.schedule("* * * * *", () => {
         let userIds = Object.keys(exports.bans);
+        let modified = false;
 
         for (let userId of userIds) {
             let unbanAt = exports.bans[userId];
@@ -70,7 +79,12 @@ exports.startCron = (client) => {
                 }
 
                 delete exports.bans[userId];
+                modified = true;
             }
+        }
+
+        if (modified) {
+            exports.saveBans();
         }
     });
 };
@@ -111,6 +125,8 @@ exports.ban = (user, duration) => {
     }
 
     exports.bans[user.id] = unbanAt;
+
+    exports.saveBans();
 
     return true;
 };
