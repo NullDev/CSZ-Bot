@@ -30,7 +30,11 @@ module.exports = function(message, client){
 
     if (message.author.bot || nonBiased === "" || message.channel.type === "dm") return;
 
-    if (message.mentions.has(client.user.id)) message.channel.send("Was pingst du mich du hurensohn :angry:");
+    let isNormalCommand = message.content.startsWith(config.bot_settings.prefix.command_prefix);
+    let isModCommand = message.content.startsWith(config.bot_settings.prefix.mod_prefix);
+    let isCommand = isNormalCommand || isModCommand;
+
+    if (message.mentions.has(client.user.id) && !isCommand) message.channel.send("Was pingst du mich du hurensohn :angry:");
 
     /**
      * cmdHandler Parameters:
@@ -40,13 +44,13 @@ module.exports = function(message, client){
      * @param {Boolean} isModCommand
      * @param {Function} callback
      */
-    if (message.content.indexOf(config.bot_settings.prefix.command_prefix) === 0){
+    if (isNormalCommand) {
         cmdHandler(message, client, false, (err) => {
             if (err) message.channel.send(err);
         });
     }
 
-    else if (message.content.indexOf(config.bot_settings.prefix.mod_prefix) === 0){
+    else if (isModCommand) {
         cmdHandler(message, client, true, (err) => {
             if (err) message.channel.send(err);
         });
