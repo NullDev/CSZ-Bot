@@ -1,8 +1,8 @@
 "use strict";
 
-// ========================= //
-// = Copyright (c) NullDev = //
-// ========================= //
+// =========================================== //
+// = Copyright (c) NullDev & diewellenlaenge = //
+// =========================================== //
 
 // Dependencies
 let moment = require("moment");
