@@ -22,6 +22,8 @@
         "gruendervaeter_role_id": "",
         "gruendervaeter_banned_role_id": "",
         "trusted_role_id": "",
-        "trusted_banned_role_id": ""
+        "trusted_banned_role_id": "",
+
+        "banned_channel_id": ""
     }
 }
