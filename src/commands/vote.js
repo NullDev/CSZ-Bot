@@ -6,6 +6,7 @@
 
 // Dependencies
 let moment = require("moment");
+let parseOptions = require("minimist");
 
 // Utils
 let config = require("../utils/configHandler").getConfig();
@@ -20,6 +21,17 @@ let config = require("../utils/configHandler").getConfig();
  * @returns {Function} callback
  */
 exports.run = (client, message, args, callback) => {
+    let options = parseOptions(args, {
+        boolean: [
+            'sendchannel',
+        ],
+        alias: {
+            'sendchannel': 's',
+        }
+    });
+
+    args = options._;
+
     if (!args.length) return callback("Bruder da ist keine Frage :c");
 
     let embed = {
@@ -33,7 +45,9 @@ exports.run = (client, message, args, callback) => {
         }
     };
 
-    message.channel.send(/** @type {any} embed */ (embed))
+    let channel = options.sendchannel ? client.guilds.cache.get(config.ids.guild_id).channels.cache.get(config.ids.votes_channel_id) : message.channel;
+
+    channel.send(/** @type {any} embed */(embed))
         .then(msg => msg.react("👍")
             .then(() => msg.react("👎"))
         ).then(() => message.delete());

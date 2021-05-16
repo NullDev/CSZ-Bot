@@ -6,6 +6,7 @@
 
 // Dependencies
 let moment = require("moment");
+let parseOptions = require("minimist");
 
 // Utils
 let config = require("../utils/configHandler").getConfig();
@@ -46,6 +47,17 @@ const EMOJI = [
  * @returns {Function} callback
  */
 exports.run = (client, message, args, callback) => {
+    let options = parseOptions(args, {
+        boolean: [
+            'sendchannel',
+        ],
+        alias: {
+            'sendchannel': 's',
+        }
+    });
+
+    args = options._;
+
     if (!args.length) return callback("Bruder da ist keine Umfrage :c");
 
     let pollArray = args.join(" ").split(";").map(e => e.trim()).filter(e => e.replace(/\s/g, "") !== "");
@@ -69,7 +81,9 @@ exports.run = (client, message, args, callback) => {
         }
     };
 
-    message.channel.send(/** @type {Object} embed */ (embed)).then(async msg => {
+    let channel = options.sendchannel ? client.guilds.cache.get(config.ids.guild_id).channels.cache.get(config.ids.votes_channel_id) : message.channel;
+
+    channel.send(/** @type {Object} embed */(embed)).then(async msg => {
         for (let i in pollOptions) await msg.react(EMOJI[i]);
     }).then(() => message.delete());
 
