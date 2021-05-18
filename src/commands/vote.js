@@ -22,11 +22,11 @@ let config = require("../utils/configHandler").getConfig();
  */
 exports.run = (client, message, args, callback) => {
     let options = parseOptions(args, {
-        boolean: [
-            'sendchannel',
+        "boolean": [
+            "sendchannel"
         ],
         alias: {
-            'sendchannel': 's',
+            sendchannel: "s"
         }
     });
 
@@ -35,13 +35,13 @@ exports.run = (client, message, args, callback) => {
     if (!args.length) return callback("Bruder da ist keine Frage :c");
 
     let embed = {
-        "embed": {
-            "title": `**${args.join(" ")}**`,
-            "timestamp": moment.utc().format(),
-            "author": {
-                "name": `Umfrage von ${message.author.username}`,
-                "icon_url": message.author.displayAvatarURL()
-            },
+        embed: {
+            title: `**${args.join(" ")}**`,
+            timestamp: moment.utc().format(),
+            author: {
+                name: `Umfrage von ${message.author.username}`,
+                icon_url: message.author.displayAvatarURL()
+            }
         }
     };
 
