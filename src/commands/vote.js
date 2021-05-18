@@ -49,9 +49,10 @@ exports.run = (client, message, args, callback) => {
 
     /** @type {import("discord.js").TextChannel} */
     (channel).send(/** @type {any} embed */(embed))
-        .then(msg => msg.react("👍")
-            .then(() => msg.react("👎"))
-        ).then(() => message.delete());
+        .then(msg => {
+            message.delete()
+            msg.react("👍").then(() => msg.react("👎"))
+        });
 
     return callback();
 };

@@ -74,36 +74,42 @@ exports.run = (client, message, args, callback) => {
     let optionstext = "";
     pollOptions.forEach((e, i) => (optionstext += `${NUMBERS[i]} - ${e}\n`));
 
-    let name = options.straw ? "Strawpoll" : "Umfrage";
-
     let embed = {
         embed: {
             title: pollArray[0],
             description: optionstext,
             timestamp: moment.utc().format(),
             author: {
-                name: `${name} von ${message.author.username}`,
+                name: `${options.straw ? "Strawpoll" : "Umfrage"} von ${message.author.username}`,
                 icon_url: message.author.displayAvatarURL()
             }
         }
     };
 
+    let footer = [];
     let extendable = options.extendable && pollOptions.length < 10;
 
     if (extendable) {
-        embed.embed.footer = {
-            text: "Umfrage ist erweiterbar mit .extend als Reply"
-        };
-
+        footer.push("Erweiterbar mit .extend als Reply");
         embed.embed.color = "GREEN";
+    }
+
+    if (!options.straw) footer.push("Mehrfachauswahl");
+
+    if (footer.length) {
+        embed.embed.footer = {
+            text: footer.join(" • ")
+        }
     }
 
     let channel = options.channel ? client.guilds.cache.get(config.ids.guild_id).channels.cache.get(config.ids.votes_channel_id) : message.channel;
 
     /** @type {import("discord.js").TextChannel} */
-    (channel).send(/** @type {Object} embed */(embed)).then(async msg => {
-        for (let i in pollOptions) await msg.react(EMOJI[i]);
-    }).then(() => message.delete());
+    (channel).send(/** @type {Object} embed */(embed))
+        .then(async msg => {
+            message.delete()
+            for (let i in pollOptions) await msg.react(EMOJI[i]);
+        });
 
     return callback();
 };
