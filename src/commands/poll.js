@@ -87,11 +87,11 @@ exports.run = (client, message, args, callback) => {
     let extendable = options.extendable && pollOptions.length < 10;
 
     if (extendable) {
-        embed["embed"]["footer"] = {
+        embed.embed.footer = {
             text: "Umfrage ist erweiterbar mit .extend als Reply"
         };
 
-        embed["embed"]["color"] = "GREEN";
+        embed.embed.color = "GREEN";
     }
 
     let channel = options.sendchannel ? client.guilds.cache.get(config.ids.guild_id).channels.cache.get(config.ids.votes_channel_id) : message.channel;
