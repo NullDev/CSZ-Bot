@@ -41,7 +41,7 @@ const EMOJI = [
  * @param {import("discord.js").Message} message
  * @param {Array} args
  * @param {Function} callback
- * @returns {Function} callback
+ * @returns {Promise<Function>} callback
  */
 exports.run = async(client, message, args, callback) => {
     if (!message.reference) return callback("Bruder schon mal was von der Replyfunktion gehört?");
