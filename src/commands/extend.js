@@ -83,7 +83,6 @@ exports.run = async(client, message, args, callback) => {
     if (!additionalPollOptions.length) return callback("Bruder da sind keine Antwortmöglichkeiten :c");
     if (oldPollOptions.length + additionalPollOptions.length > 10) return callback(`Bruder die Umfrage hat schon ${oldPollOptions.length} Antwortmöglichkeiten und du wolltest noch ${additionalPollOptions.length} hinzufügen, dumm oder sowas?`);
 
-    let pollOptions = oldPollOptions.concat(additionalPollOptions);
     let originalAuthor = replyMessage.embeds[0].author.name.split(" ")[2];
     let authorNote = originalAuthor !== message.author.username ? ` (von ${message.author.username})` : "";
 
