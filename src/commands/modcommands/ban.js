@@ -9,6 +9,7 @@ let cron = require("node-cron");
 let moment = require("moment");
 
 // Utils
+let log = require("../../utils/logger");
 let config = require("../../utils/configHandler").getConfig();
 
 // Other commands
@@ -94,7 +95,7 @@ exports.ban = (user, duration) => {
     let bannedRole = user.guild.roles.cache.find(role => role.id === config.ids.banned_role_id);
 
     if (!defaultRole || !bannedRole) {
-        log.error(`Ban: default role and/or banned role is missing`);
+        log.error("Ban: default role and/or banned role is missing");
         return false;
     }
 
@@ -111,15 +112,17 @@ exports.ban = (user, duration) => {
         user.roles.add(user.guild.roles.cache.find(role => role.id === config.ids.trusted_banned_role_id));
     }
 
-    if (typeof duration === 'number' && isFinite(duration)) {
-        duration = moment.duration(duration, 'h');
+    let momentDuration = duration;
+
+    if (typeof duration === "number" && isFinite(duration)) {
+        momentDuration = moment.duration(duration, "h");
     }
 
     let unbanAt = 0; // never
 
-    if (moment.isDuration(duration) && duration.isValid) {
+    if (moment.isDuration(momentDuration) && momentDuration.isValid) {
         let unbanAtMoment = moment();
-        unbanAtMoment.add(duration);
+        unbanAtMoment.add(momentDuration);
 
         unbanAt = unbanAtMoment.valueOf();
     }

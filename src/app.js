@@ -18,7 +18,7 @@ let reactionHandler = require("./handler/reactionHandler");
 let BdayHandler = require("./handler/bdayHandler");
 
 // Other commands
-let ban = require('./commands/modcommands/ban');
+let ban = require("./commands/modcommands/ban");
 
 let version = conf.getVersion();
 let appname = conf.getName();

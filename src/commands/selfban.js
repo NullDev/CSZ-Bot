@@ -24,7 +24,7 @@ let ban = require("./modcommands/ban");
  */
 exports.run = (client, message, args, callback) => {
     let durationArg = args.length > 0 ? args[0] : "8";
-    let duration = moment.duration(durationArg, 'hours');
+    let duration = moment.duration(durationArg, "hours");
 
     if (!duration.isValid()) return callback("Bitte eine gültige Dauer in Stunden angeben (Kommazahlen erlaubt).");
 

@@ -5,6 +5,7 @@
 // ========================= //
 
 // Utils
+let log = require("../../utils/logger");
 let config = require("../../utils/configHandler").getConfig();
 
 // Other commands
@@ -41,7 +42,7 @@ exports.unban = (user) => {
     let bannedRole = user.guild.roles.cache.find(role => role.id === config.ids.banned_role_id);
 
     if (!defaultRole || !bannedRole) {
-        log.error(`Unban: default role and/or banned role is missing`);
+        log.error("Unban: default role and/or banned role is missing");
         return false;
     }
 
