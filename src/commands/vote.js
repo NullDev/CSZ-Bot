@@ -30,6 +30,7 @@ exports.run = (client, message, args, callback) => {
         }
     });
 
+    // eslint-disable-next-line no-param-reassign
     args = options._;
 
     if (!args.length) return callback("Bruder da ist keine Frage :c");
@@ -47,7 +48,8 @@ exports.run = (client, message, args, callback) => {
 
     let channel = options.sendchannel ? client.guilds.cache.get(config.ids.guild_id).channels.cache.get(config.ids.votes_channel_id) : message.channel;
 
-    channel.send(/** @type {any} embed */(embed))
+    /** @type {import("discord.js").TextChannel} */
+    (channel).send(/** @type {any} embed */(embed))
         .then(msg => msg.react("👍")
             .then(() => msg.react("👎"))
         ).then(() => message.delete());
