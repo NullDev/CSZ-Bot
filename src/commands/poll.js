@@ -96,7 +96,8 @@ exports.run = (client, message, args, callback) => {
 
     let channel = options.sendchannel ? client.guilds.cache.get(config.ids.guild_id).channels.cache.get(config.ids.votes_channel_id) : message.channel;
 
-    channel.send(/** @type {Object} embed */(embed)).then(async msg => {
+    /** @type {import("discord.js").TextChannel} */
+    (channel).send(/** @type {Object} embed */(embed)).then(async msg => {
         for (let i in pollOptions) await msg.react(EMOJI[i]);
     }).then(() => message.delete());
 
