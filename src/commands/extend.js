@@ -43,7 +43,7 @@ const EMOJI = [
  * @param {Function} callback
  * @returns {Function} callback
  */
-exports.run = async (client, message, args, callback) => {
+exports.run = async(client, message, args, callback) => {
     if (!message.reference) return callback("Bruder schon mal was von der Replyfunktion gehört?");
     if (message.reference.guildID !== config.ids.guild_id || !message.reference.channelID) return callback("Bruder bleib mal hier auf'm Server.");
 
@@ -55,7 +55,8 @@ exports.run = async (client, message, args, callback) => {
 
     try {
         replyMessage = await channel.messages.fetch(message.reference.messageID);
-    } catch (err) {
+    }
+    catch (err) {
         log.error(err);
         return callback("Bruder irgendwas stimmt nicht mit deinem Reply ¯\_(ツ)_/¯");
     }
@@ -87,16 +88,16 @@ exports.run = async (client, message, args, callback) => {
     let authorNote = originalAuthor !== message.author.username ? ` (von ${message.author.username})` : "";
 
     let embed = replyMessage.embeds[0];
-    embed["description"] += "\n";
-    additionalPollOptions.forEach((e, i) => (embed["description"] += `${NUMBERS[oldPollOptions.length + i]} - ${e}${authorNote}\n`));
+    embed.description += "\n";
+    additionalPollOptions.forEach((e, i) => (embed.description += `${NUMBERS[oldPollOptions.length + i]} - ${e}${authorNote}\n`));
 
     if (oldPollOptions.length + additionalPollOptions.length === 10) {
-        embed["color"] = null;
-        delete embed["footer"];
+        embed.color = null;
+        delete embed.footer;
     }
 
     replyMessage.edit(undefined, embed).then(async msg => {
-        for (let i in additionalPollOptions) await msg.react(EMOJI[oldPollOptions.length + parseInt(i)]);
+        for (let i in additionalPollOptions) await msg.react(EMOJI[oldPollOptions.length + Number(i)]);
     }).then(() => message.delete());
 
     return callback();
