@@ -23,10 +23,10 @@ let config = require("../utils/configHandler").getConfig();
 exports.run = (client, message, args, callback) => {
     let options = parseOptions(args, {
         "boolean": [
-            "sendchannel"
+            "channel"
         ],
         alias: {
-            sendchannel: "s"
+            channel: "c"
         }
     });
 
@@ -45,7 +45,7 @@ exports.run = (client, message, args, callback) => {
         }
     };
 
-    let channel = options.sendchannel ? client.guilds.cache.get(config.ids.guild_id).channels.cache.get(config.ids.votes_channel_id) : message.channel;
+    let channel = options.channel ? client.guilds.cache.get(config.ids.guild_id).channels.cache.get(config.ids.votes_channel_id) : message.channel;
 
     /** @type {import("discord.js").TextChannel} */
     (channel).send(/** @type {any} embed */(embed))
@@ -59,5 +59,5 @@ exports.run = (client, message, args, callback) => {
 exports.description = `Erstellt eine Umfrage (ja/nein).
 Usage: ${config.bot_settings.prefix.command_prefix}vote [Optionen?] [Hier die Frage]
 Optionen:
-\t-s, --sendchannel
+\t-c, --channel
 \t\t\tSendet die Umfrage in den Umfragenchannel, um den Slowmode zu umgehen`;

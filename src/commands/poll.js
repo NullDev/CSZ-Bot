@@ -38,7 +38,7 @@ const EMOJI = [
 ];
 
 /**
- * Creates a new poll (multiple answers)
+ * Creates a new poll (multiple answers) or strawpoll (single selection)
  *
  * @param {import("discord.js").Client} client
  * @param {import("discord.js").Message} message
@@ -49,12 +49,14 @@ const EMOJI = [
 exports.run = (client, message, args, callback) => {
     let options = parseOptions(args, {
         "boolean": [
-            "sendchannel",
-            "extendable"
+            "channel",
+            "extendable",
+            "straw"
         ],
         alias: {
-            sendchannel: "s",
-            extendable: "e"
+            channel: "c",
+            extendable: "e",
+            straw: "s"
         }
     });
 
@@ -72,13 +74,15 @@ exports.run = (client, message, args, callback) => {
     let optionstext = "";
     pollOptions.forEach((e, i) => (optionstext += `${NUMBERS[i]} - ${e}\n`));
 
+    let name = options.straw ? "Strawpoll" : "Umfrage";
+
     let embed = {
         embed: {
             title: pollArray[0],
             description: optionstext,
             timestamp: moment.utc().format(),
             author: {
-                name: `Umfrage von ${message.author.username}`,
+                name: `${name} von ${message.author.username}`,
                 icon_url: message.author.displayAvatarURL()
             }
         }
@@ -94,7 +98,7 @@ exports.run = (client, message, args, callback) => {
         embed.embed.color = "GREEN";
     }
 
-    let channel = options.sendchannel ? client.guilds.cache.get(config.ids.guild_id).channels.cache.get(config.ids.votes_channel_id) : message.channel;
+    let channel = options.channel ? client.guilds.cache.get(config.ids.guild_id).channels.cache.get(config.ids.votes_channel_id) : message.channel;
 
     /** @type {import("discord.js").TextChannel} */
     (channel).send(/** @type {Object} embed */(embed)).then(async msg => {
@@ -104,10 +108,12 @@ exports.run = (client, message, args, callback) => {
     return callback();
 };
 
-exports.description = `Erstellt eine Umfrage mit mehreren Antwortmöglichkeiten (Mehrfachauswahl) (maximal 10).
+exports.description = `Erstellt eine Umfrage mit mehreren Antwortmöglichkeiten (standardmäßig mit Mehrfachauswahl) (maximal 10).
 Usage: ${config.bot_settings.prefix.command_prefix}poll [Optionen?] [Hier die Frage] ; [Antwort 1] ; [Antwort 2] ; [...]
 Optionen:
-\t-s, --sendchannel
+\t-c, --channel
 \t\t\tSendet die Umfrage in den Umfragenchannel, um den Slowmode zu umgehen
 \t-e, --extendable
-\t\t\tErlaubt die Erweiterung der Antwortmöglichkeiten durch jeden User mit .extend als Reply`;
+\t\t\tErlaubt die Erweiterung der Antwortmöglichkeiten durch jeden User mit .extend als Reply
+\t-s, --straw
+\t\t\tStatt mehrerer Antworten kann nur eine Antwort gewählt werden`;
