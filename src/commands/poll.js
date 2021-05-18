@@ -99,7 +99,7 @@ exports.run = (client, message, args, callback) => {
     if (footer.length) {
         embed.embed.footer = {
             text: footer.join(" • ")
-        }
+        };
     }
 
     let channel = options.channel ? client.guilds.cache.get(config.ids.guild_id).channels.cache.get(config.ids.votes_channel_id) : message.channel;

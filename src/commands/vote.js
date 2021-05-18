@@ -51,7 +51,7 @@ exports.run = (client, message, args, callback) => {
     (channel).send(/** @type {any} embed */(embed))
         .then(msg => {
             message.delete()
-            msg.react("👍").then(() => msg.react("👎"))
+            msg.react("👍").then(() => msg.react("👎"));
         });
 
     return callback();
