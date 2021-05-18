@@ -48,13 +48,13 @@ const EMOJI = [
  */
 exports.run = (client, message, args, callback) => {
     let options = parseOptions(args, {
-        boolean: [
-            'sendchannel',
-            'extendable',
+        "boolean": [
+            "sendchannel",
+            "extendable"
         ],
         alias: {
-            'sendchannel': 's',
-            'extendable': 'e',
+            sendchannel: "s",
+            extendable: "e"
         }
     });
 
@@ -73,14 +73,14 @@ exports.run = (client, message, args, callback) => {
     pollOptions.forEach((e, i) => (optionstext += `${NUMBERS[i]} - ${e}\n`));
 
     let embed = {
-        "embed": {
-            "title": pollArray[0],
-            "description": optionstext,
-            "timestamp": moment.utc().format(),
-            "author": {
-                "name": `Umfrage von ${message.author.username}`,
-                "icon_url": message.author.displayAvatarURL()
-            },
+        embed: {
+            title: pollArray[0],
+            description: optionstext,
+            timestamp: moment.utc().format(),
+            author: {
+                name: `Umfrage von ${message.author.username}`,
+                icon_url: message.author.displayAvatarURL()
+            }
         }
     };
 
@@ -88,10 +88,10 @@ exports.run = (client, message, args, callback) => {
 
     if (extendable) {
         embed["embed"]["footer"] = {
-            "text": "Umfrage ist erweiterbar mit .extend als Reply",
+            text: "Umfrage ist erweiterbar mit .extend als Reply"
         };
 
-        embed["embed"]["color"] = 'GREEN';
+        embed["embed"]["color"] = "GREEN";
     }
 
     let channel = options.sendchannel ? client.guilds.cache.get(config.ids.guild_id).channels.cache.get(config.ids.votes_channel_id) : message.channel;
