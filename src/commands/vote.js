@@ -30,14 +30,13 @@ exports.run = (client, message, args, callback) => {
         }
     });
 
-    // eslint-disable-next-line no-param-reassign
-    args = options._;
+    let parsedArgs = options._;
 
-    if (!args.length) return callback("Bruder da ist keine Frage :c");
+    if (!parsedArgs.length) return callback("Bruder da ist keine Frage :c");
 
     let embed = {
         embed: {
-            title: `**${args.join(" ")}**`,
+            title: `**${parsedArgs.join(" ")}**`,
             timestamp: moment.utc().format(),
             author: {
                 name: `Umfrage von ${message.author.username}`,

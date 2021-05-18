@@ -58,12 +58,11 @@ exports.run = (client, message, args, callback) => {
         }
     });
 
-    // eslint-disable-next-line no-param-reassign
-    args = options._;
+    let parsedArgs = options._;
 
-    if (!args.length) return callback("Bruder da ist keine Umfrage :c");
+    if (!parsedArgs.length) return callback("Bruder da ist keine Umfrage :c");
 
-    let pollArray = args.join(" ").split(";").map(e => e.trim()).filter(e => e.replace(/\s/g, "") !== "");
+    let pollArray = parsedArgs.join(" ").split(";").map(e => e.trim()).filter(e => e.replace(/\s/g, "") !== "");
     let pollOptions = pollArray.slice(1);
 
     if (!pollOptions.length) return callback("Bruder da sind keine Antwortmöglichkeiten :c");
