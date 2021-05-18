@@ -4,9 +4,6 @@
 // = Copyright (c) NullDev & diewellenlaenge = //
 // =========================================== //
 
-// Dependencies
-let moment = require("moment");
-
 // Utils
 let log = require("../utils/logger");
 let config = require("../utils/configHandler").getConfig();
