@@ -58,6 +58,7 @@ exports.run = (client, message, args, callback) => {
         }
     });
 
+    // eslint-disable-next-line no-param-reassign
     args = options._;
 
     if (!args.length) return callback("Bruder da ist keine Umfrage :c");
