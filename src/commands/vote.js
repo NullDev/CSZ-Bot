@@ -23,12 +23,12 @@ exports.run = (client, message, args, callback) => {
     if (!args.length) return callback("Bruder da ist keine Frage :c");
 
     let embed = {
-        "embed": {
-            "description": `**${args.join(" ")}**`,
-            "timestamp": moment.utc().format(),
-            "author": {
-                "name": `Umfrage von ${message.author.username}`,
-                "icon_url": message.author.displayAvatarURL()
+        embed: {
+            description: `**${args.join(" ")}**`,
+            timestamp: moment.utc().format(),
+            author: {
+                name: `Umfrage von ${message.author.username}`,
+                icon_url: message.author.displayAvatarURL()
             }
         }
     };

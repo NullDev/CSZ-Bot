@@ -59,12 +59,12 @@ exports.run = (client, message, args, callback) => {
     pollOptions.forEach((e, i) => (optionstext += `${NUMBERS[i]} - ${e}\n`));
 
     let embed = {
-        "embed": {
-            "description": optionstext,
-            "timestamp": moment.utc().format(),
-            "author": {
-                "name": `Umfrage von ${message.author.username}`,
-                "icon_url": message.author.displayAvatarURL()
+        embed: {
+            description: optionstext,
+            timestamp: moment.utc().format(),
+            author: {
+                name: `Umfrage von ${message.author.username}`,
+                icon_url: message.author.displayAvatarURL()
             }
         }
     };

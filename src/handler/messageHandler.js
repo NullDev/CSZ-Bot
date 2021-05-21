@@ -22,36 +22,34 @@ let cmdHandler = require("./cmdHandler");
  * @param {Client} client
  * @returns
  */
-module.exports = function(message, client){
+module.exports = function(message, client) {
     let nonBiased = message.content
         .replace(config.bot_settings.prefix.command_prefix, "")
         .replace(config.bot_settings.prefix.mod_prefix, "")
-        .replace(/\s/g, "");
+        .trim();
 
-    if (message.author.bot || nonBiased === "" || message.channel.type === "dm") return;
+    if (message.author.bot || nonBiased === "" || message.channel.type === "dm") {return;}
 
-    let isNormalCommand = message.content.startsWith(config.bot_settings.prefix.command_prefix);
-    let isModCommand = message.content.startsWith(config.bot_settings.prefix.mod_prefix);
+    let isNormalCommand = message.content.startsWith(
+        config.bot_settings.prefix.command_prefix
+    );
+    let isModCommand = message.content.startsWith(
+        config.bot_settings.prefix.mod_prefix
+    );
     let isCommand = isNormalCommand || isModCommand;
 
-    if (message.mentions.has(client.user.id) && !isCommand) message.channel.send("Was pingst du mich du hurensohn :angry:");
+    if (message.mentions.has(client.user.id) && !isCommand) {message.channel.send("Was pingst du mich, du Hurensohn? :angry:");}
 
-    /**
-     * cmdHandler Parameters:
-     *
-     * @param {Message} message
-     * @param {Client} client
-     * @param {Boolean} isModCommand
-     * @param {Function} callback
-     */
-    if (isNormalCommand) {
-        cmdHandler(message, client, false, (err) => {
-            if (err) message.channel.send(err);
-        });
-    }
-
-    else if (isModCommand) {
-        cmdHandler(message, client, true, (err) => {
+    if (isCommand) {
+        /**
+        * cmdHandler Parameters:
+        *
+        * @param {Message} message
+        * @param {Client} client
+        * @param {Boolean} isModCommand
+        * @param {Function} callback
+        */
+        cmdHandler(message, client, isModCommand, (err) => {
             if (err) message.channel.send(err);
         });
     }

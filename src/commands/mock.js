@@ -34,11 +34,11 @@ exports.run = (client, message, args, callback) => {
     let mocked = text.split("").map(transform).join("");
 
     let embed = {
-        "embed": {
-            "description": `${mocked} <:mock:677504337769005096>`,
-            "author": {
-                "name": `${message.author.username}`,
-                "icon_url": message.author.displayAvatarURL()
+        embed: {
+            description: `${mocked} <:mock:677504337769005096>`,
+            author: {
+                name: `${message.author.username}`,
+                icon_url: message.author.displayAvatarURL()
             }
         }
     };
