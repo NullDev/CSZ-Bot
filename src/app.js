@@ -17,6 +17,9 @@ let messageHandler = require("./handler/messageHandler");
 let reactionHandler = require("./handler/reactionHandler");
 let BdayHandler = require("./handler/bdayHandler");
 
+// Other commands
+let ban = require("./commands/modcommands/ban");
+
 let version = conf.getVersion();
 let appname = conf.getName();
 let devname = conf.getAuthor();
@@ -56,6 +59,9 @@ client.on("ready", () => {
         cron.schedule("1 0 * * *", () => bday.checkBdays());
         bday.checkBdays();
     }
+
+    ban.loadBans();
+    ban.startCron(client);
 });
 
 client.on("guildCreate", guild => log.info(`New guild joined: ${guild.name} (id: ${guild.id}) with ${guild.memberCount} members`));
