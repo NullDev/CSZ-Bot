@@ -4,6 +4,10 @@
 // = Copyright (c) NullDev & diewellenlaenge = //
 // =========================================== //
 
+/**
+ * @typedef {import("discord.js").TextChannel} TC
+ */
+
 // Utils
 let log = require("../utils/logger");
 let config = require("../utils/configHandler").getConfig();
@@ -54,7 +58,7 @@ exports.run = async(client, message, args, callback) => {
     let replyMessage = null;
 
     try {
-        replyMessage = await channel.messages.fetch(message.reference.messageID);
+        replyMessage = await /** @type {TC} */ (channel).messages.fetch(message.reference.messageID);
     }
     catch (err) {
         log.error(err);
