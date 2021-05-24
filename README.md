@@ -41,6 +41,7 @@ $ `npm install`<br><br>
     - Um ID's kopieren zu können, den "Developer Mode" in den Discord Einstellungen aktivieren. Mit Rechts-Klick kann man dann die ID's kopieren:
         - Die ID [des Servers](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L16)
         - Die ID für [den Hauptchat](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L17)
+        - Die ID für [dev Umfrage-Channel](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L27)
     - Es müssen folgende Rollen am Server angelegt werden:
         - Moderator-Rolle ([Name der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L12)) - CSZ Default: Moderader
         - Default Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L18)) - CSZ Default: Nerd
