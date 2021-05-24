@@ -35,7 +35,7 @@ let validJson = function(obj){
  *
  * @returns {Object} JSON Content
  */
-let getconfig = function(){
+let getConfig = function(){
     if (!fs.existsSync(configPath)){
         log.error("Config does not exist! Make sure you copy config.template.json and paste it as 'config.json'. Then configure it.");
         process.exit(1);
@@ -73,9 +73,9 @@ let getDescription = function(){
 };
 
 module.exports = {
-    getConfig: getconfig,
-    getVersion: getVersion,
-    getName: getName,
-    getAuthor: getAuthor,
-    getDescription: getDescription
+    getConfig,
+    getVersion,
+    getName,
+    getAuthor,
+    getDescription
 };
