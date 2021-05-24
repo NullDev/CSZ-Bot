@@ -107,7 +107,7 @@ exports.run = (client, message, args, callback) => {
     /** @type {import("discord.js").TextChannel} */
     (channel).send(/** @type {Object} embed */(embed))
         .then(async msg => {
-            message.delete()
+            message.delete();
             for (let i in pollOptions) await msg.react(EMOJI[i]);
         });
 

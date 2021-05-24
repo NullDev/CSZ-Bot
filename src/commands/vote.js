@@ -50,7 +50,7 @@ exports.run = (client, message, args, callback) => {
     /** @type {import("discord.js").TextChannel} */
     (channel).send(/** @type {any} embed */(embed))
         .then(msg => {
-            message.delete()
+            message.delete();
             msg.react("👍").then(() => msg.react("👎"));
         });
 
