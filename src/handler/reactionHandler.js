@@ -22,7 +22,7 @@ const voteEmojis = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️
  * @returns
  */
 module.exports = async function(event, client){
-    if (!events.hasOwnProperty(event.t)) return;
+    if (!Object.prototype.hasOwnProperty.call(events, event.t)) return;
 
     const { d: data } = event;
 

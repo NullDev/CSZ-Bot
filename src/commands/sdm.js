@@ -79,14 +79,14 @@ exports.run = (client, message, args, callback) => {
             description: `**${question}**`,
             timestamp: moment.utc().format(),
             thumbnail: {
-                url: `attachment://${image}`,
+                url: `attachment://${image}`
             },
             author: {
                 name: `Secure Decision für ${message.author.username}`,
-                icon_url: message.author.displayAvatarURL(),
-            },
+                icon_url: message.author.displayAvatarURL()
+            }
         },
-        files: [`./assets/${image}`],
+        files: [`./assets/${image}`]
     };
 
     message.channel
