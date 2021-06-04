@@ -27,6 +27,7 @@ exports.run = (client, message, args, callback) => {
     let duration = moment.duration(durationArg, "hours");
 
     if (!duration.isValid()) return callback("Bitte eine gültige Dauer in Stunden angeben (Kommazahlen erlaubt).");
+    if (!Number.isInteger(durationArg)) return callback("Gib ne Zahl ein du Lellek.");
 
     let self = message.member;
     if (self.id === "371724846205239326") return callback("Aus Segurity lieber nicht dich bannen.");
@@ -36,8 +37,11 @@ exports.run = (client, message, args, callback) => {
     if (!ban.ban(self, duration)) return callback("Eine der angegebenen Rollen für das bannen existiert nich.");
 
     let durationHumanized = duration.locale("de").humanize();
-
-    if (duration.asMinutes() === 0) {
+    let durationAsMinutes = Number(duration.asMinutes());
+    
+    if (durationAsMinutes < 0) return callback("Ach komm, für wie dumm hälst du mich?");
+    
+    if (durationAsMinutes === 0) {
         durationHumanized = "manuell durch Moderader";
     }
 
