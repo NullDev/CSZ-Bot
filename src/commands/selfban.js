@@ -36,8 +36,12 @@ exports.run = (client, message, args, callback) => {
     if (!ban.ban(self, duration)) return callback("Eine der angegebenen Rollen für das bannen existiert nich.");
 
     let durationHumanized = duration.locale("de").humanize();
-
-    if (duration.asMinutes() === 0) {
+    let durationAsMinutes = Number(duration.asMinutes());
+    
+    if(!durationAsMinutes.isInteger()) return callback("Gib ne Zahl ein du Lellek.");
+    if(durationAsMinutes < 0) return callback("Ach komm, für wie dumm hälst du mich?");
+    
+    if (durationAsMinutes === 0) {
         durationHumanized = "manuell durch Moderader";
     }
 
