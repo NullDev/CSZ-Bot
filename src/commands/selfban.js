@@ -25,9 +25,10 @@ let ban = require("./modcommands/ban");
 exports.run = (client, message, args, callback) => {
     let durationArg = Number(args.length > 0 ? args[0] : "8");
     let duration = moment.duration(durationArg, "hours");
+    let durationAsMinutes = Number(duration.asMinutes());
 
     if (!duration.isValid()) return callback("Bitte eine gültige Dauer in Stunden angeben (Kommazahlen erlaubt).");
-    
+
     if (!Number.isInteger(durationArg)) return callback("Gib ne Zahl ein du Lellek.");
     if (durationAsMinutes < 0) return callback("Ach komm, für wie dumm hälst du mich?");
 
@@ -39,11 +40,7 @@ exports.run = (client, message, args, callback) => {
     if (!ban.ban(self, duration)) return callback("Eine der angegebenen Rollen für das bannen existiert nich.");
 
     let durationHumanized = duration.locale("de").humanize();
-    let durationAsMinutes = Number(duration.asMinutes());
-    
-    if (durationAsMinutes === 0) {
-        durationHumanized = "manuell durch Moderader";
-    }
+    if (durationAsMinutes === 0) durationHumanized = "manuell durch Moderader";
 
     message.channel.send(`User ${self} hat sich selber gebannt!\nEntbannen in: ${durationHumanized}`);
     message.guild.member(self).send(`Du hast dich selber von der Coding Shitpost Zentrale gebannt!
