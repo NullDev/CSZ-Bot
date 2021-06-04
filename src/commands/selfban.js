@@ -39,7 +39,7 @@ exports.run = (client, message, args, callback) => {
     let durationHumanized = duration.locale("de").humanize();
     let durationAsMinutes = Number(duration.asMinutes());
     
-    if(durationAsMinutes < 0) return callback("Ach komm, für wie dumm hälst du mich?");
+    if (durationAsMinutes < 0) return callback("Ach komm, für wie dumm hälst du mich?");
     
     if (durationAsMinutes === 0) {
         durationHumanized = "manuell durch Moderader";
