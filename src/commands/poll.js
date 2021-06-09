@@ -100,6 +100,9 @@ exports.run = (client, message, args, callback) => {
         if(isNaN(delayTime) || delayTime <= 0) {
             return callback("Bruder keine ungültigen Zeiten angeben 🙄");
         }
+        else if(delayTime > 60 * 1000 * 24 * 7) {
+            return callback("Bruder du kannst maximal 7 Tage auf ein Ergebnis warten 🙄");
+        }
         // Haha oida ist das cancer
         optionstext += `\nAbstimmen möglich bis ${new Date(finishTime.valueOf() + 60000).toLocaleTimeString("de").split(":").splice(0, 2).join(":")}`;
     }
