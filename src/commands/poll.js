@@ -66,7 +66,9 @@ exports.run = (client, message, args, callback) => {
         "boolean": [
             "channel",
             "extendable",
-            "straw",
+            "straw"
+        ],
+        string: [
             "delayed"
         ],
         alias: {
@@ -78,6 +80,7 @@ exports.run = (client, message, args, callback) => {
     });
 
     let parsedArgs = options._;
+    let delayTime = parseInt(options.delayed, 10);
 
     if (!parsedArgs.length) return callback("Bruder da ist keine Umfrage :c");
 
@@ -92,8 +95,11 @@ exports.run = (client, message, args, callback) => {
     let optionstext = "";
     pollOptions.forEach((e, i) => (optionstext += `${NUMBERS[i]} - ${e}\n`));
 
-    let finishTime = new Date(new Date().valueOf() + (3600 * 1000));
+    let finishTime = new Date(new Date().valueOf() + (delayTime * 60 * 1000));
     if(options.delayed) {
+        if(isNaN(delayTime) || delayTime <= 0) {
+            return callback("Bruder keine ungültigen Zeiten angeben 🙄");
+        }
         // Haha oida ist das cancer
         optionstext += `\nAbstimmen möglich bis ${new Date(finishTime.valueOf() + 60000).toLocaleTimeString("de").split(":").splice(0, 2).join(":")}`;
     }
@@ -212,5 +218,5 @@ Optionen:
 \t\t\tErlaubt die Erweiterung der Antwortmöglichkeiten durch jeden User mit .extend als Reply
 \t-s, --straw
 \t\t\tStatt mehrerer Antworten kann nur eine Antwort gewählt werden
-\t-d, --delayed
-\t\t\tErgebnisse der Umfrage wird erst nach einer Stunde angezeigt`;
+\t-d <T>, --delayed <T>
+\t\t\tErgebnisse der Umfrage wird erst nach <T> Minuten angezeigt`;
