@@ -7,6 +7,7 @@
 // Dependencies
 let moment = require("moment");
 let parseOptions = require("minimist");
+let cron = require("node-cron");
 
 // Utils
 let config = require("../utils/configHandler").getConfig();
@@ -38,6 +39,20 @@ const EMOJI = [
 ];
 
 /**
+ * @typedef {Object} DelayedPoll
+ * @property {String} pollId
+ * @property {Date} createdAt
+ * @property {Date} finishesAt
+ * @property {string[][]} reactions
+ * @property {string[]} reactionMap
+ */
+
+/**
+ * @type {DelayedPoll[]}
+ */
+exports.delayedPolls = [];
+
+/**
  * Creates a new poll (multiple answers) or strawpoll (single selection)
  *
  * @param {import("discord.js").Client} client
@@ -51,12 +66,14 @@ exports.run = (client, message, args, callback) => {
         "boolean": [
             "channel",
             "extendable",
-            "straw"
+            "straw",
+            "delayed"
         ],
         alias: {
             channel: "c",
             extendable: "e",
-            straw: "s"
+            straw: "s",
+            delayed: "d"
         }
     });
 
@@ -71,8 +88,15 @@ exports.run = (client, message, args, callback) => {
     else if (pollOptions.length < 2) return callback("Bruder du musst schon mehr als eine Antwortmöglichkeit geben 🙄");
     else if (pollOptions.length > 10) return callback("Bitte gib nicht mehr als 10 Antwortmöglichkeiten an!");
 
+
     let optionstext = "";
     pollOptions.forEach((e, i) => (optionstext += `${NUMBERS[i]} - ${e}\n`));
+
+    let finishTime = new Date(new Date().valueOf() + (3600 * 1000));
+    if(options.delayed) {
+        // Haha oida ist das cancer
+        optionstext += `\nAbstimmen möglich bis ${new Date(finishTime.valueOf() + 60000).toLocaleTimeString("de").split(":").splice(0, 2).join(":")}`;
+    }
 
     let embed = {
         embed: {
@@ -94,6 +118,10 @@ exports.run = (client, message, args, callback) => {
         embed.embed.color = "GREEN";
     }
 
+    if(options.delayed) {
+        footer.push("Verzögert");
+    }
+
     if (!options.straw) footer.push("Mehrfachauswahl");
 
     if (footer.length) {
@@ -103,15 +131,76 @@ exports.run = (client, message, args, callback) => {
     }
 
     let channel = options.channel ? client.guilds.cache.get(config.ids.guild_id).channels.cache.get(config.ids.votes_channel_id) : message.channel;
+    if(!options.delayed && !channel) {
+        // TODO: Handle this case. Delayed polls are only possible inside the polls channel right now
+    }
 
     /** @type {import("discord.js").TextChannel} */
     (channel).send(/** @type {Object} embed */(embed))
         .then(async msg => {
             message.delete();
             for (let i in pollOptions) await msg.react(EMOJI[i]);
+
+            if(options.delayed) {
+                const reactionMap = [];
+                /** @type {string[][]} */
+                const reactions = [];
+                pollOptions.forEach((option, index) => {
+                    reactionMap[index] = option;
+                    reactions[index] = [];
+                });
+
+                exports.delayedPolls.push({
+                    pollId: msg.id,
+                    createdAt: new Date(),
+                    finishesAt: finishTime,
+                    reactions,
+                    reactionMap
+                });
+            }
         });
 
     return callback();
+};
+
+/**
+ * Initialized crons for delayed polls
+ * @param {import("discord.js").Client} client
+ */
+exports.startCron = (client) => {
+    cron.schedule("* * * * *", async() => {
+        const currentDate = new Date();
+        const pollsToFinish = exports.delayedPolls.filter(delayedPoll => currentDate >= delayedPoll.finishesAt);
+        /** @type {import("discord.js").TextChannel} */
+        const channel = client.guilds.cache.get(config.ids.guild_id).channels.cache.get(config.ids.votes_channel_id);
+
+        for(let i = 0; i < pollsToFinish.length; i++) {
+            const delayedPoll = pollsToFinish[i];
+            const message = channel.messages.cache.get(delayedPoll.pollId) || (await channel.messages.fetch(delayedPoll.pollId));
+
+            let toSend = {
+                embed: {
+                    title: `Zusammenfassung: ${message.embeds[0].title}`,
+                    description: `${delayedPoll.reactions.map((x, index) => `${NUMBERS[index]} ${delayedPoll.reactionMap[index]} (${x.length}):
+${x.map(uid => client.users.cache.get(uid).username).join("\n")}\n\n`).join("")}
+`,
+                    timestamp: moment.utc().format(),
+                    author: {
+                        name: `${message.embeds[0].author.name}`,
+                        icon_url: message.embeds[0].author.iconURL
+                    },
+                    footer: {
+                        text: `Gesamtabstimmungen: ${delayedPoll.reactions.map(x => x.length).reduce((a, b) => a + b)}`
+                    }
+                }
+            };
+
+            await channel.send(toSend);
+            await Promise.all(message.reactions.cache.map(reaction => reaction.remove()));
+            await message.react("✅");
+            exports.delayedPolls.splice(exports.delayedPolls.indexOf(delayedPoll), 1);
+        }
+    });
 };
 
 exports.description = `Erstellt eine Umfrage mit mehreren Antwortmöglichkeiten (standardmäßig mit Mehrfachauswahl) (maximal 10).
@@ -122,4 +211,6 @@ Optionen:
 \t-e, --extendable
 \t\t\tErlaubt die Erweiterung der Antwortmöglichkeiten durch jeden User mit .extend als Reply
 \t-s, --straw
-\t\t\tStatt mehrerer Antworten kann nur eine Antwort gewählt werden`;
+\t\t\tStatt mehrerer Antworten kann nur eine Antwort gewählt werden
+\t-d, --delayed
+\t\t\tErgebnisse der Umfrage wird erst nach einer Stunde angezeigt`;
