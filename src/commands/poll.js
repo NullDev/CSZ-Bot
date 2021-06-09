@@ -123,12 +123,17 @@ exports.run = (client, message, args, callback) => {
     let extendable = options.extendable && pollOptions.length < 10;
 
     if (extendable) {
+        if(options.delayed) {
+            return callback("Bruder du kannst -e nicht mit -d kombinieren. 🙄");
+        }
+
         footer.push("Erweiterbar mit .extend als Reply");
         embed.embed.color = "GREEN";
     }
 
     if(options.delayed) {
         footer.push("Verzögert");
+        embed.embed.color = "#a10083";
     }
 
     if (!options.straw) footer.push("Mehrfachauswahl");
@@ -222,4 +227,4 @@ Optionen:
 \t-s, --straw
 \t\t\tStatt mehrerer Antworten kann nur eine Antwort gewählt werden
 \t-d <T>, --delayed <T>
-\t\t\tErgebnisse der Umfrage wird erst nach <T> Minuten angezeigt`;
+\t\t\tErgebnisse der Umfrage wird erst nach <T> Minuten angezeigt. (Noch) inkompatibel mit -e`;
