@@ -4,6 +4,9 @@
 // = Copyright (c) NullDev = //
 // ========================= //
 
+// Models
+let FadingMessage = require("../storage/model/FadingMessage");
+
 // Utils
 let log = require("../utils/logger");
 let poll = require("../commands/poll");
@@ -82,9 +85,16 @@ module.exports = async function(event, client) {
         else if(isUmfrage) {
             if(isDelayedPoll) {
                 const delayedPollReactions = delayedPoll.reactions[voteEmojis.indexOf(event.d.emoji.name)];
-                if(!delayedPollReactions.some(x => x === member.id)) {
+                let hasVoted = delayedPollReactions.some(x => x === member.id);
+                if(!hasVoted) {
                     delayedPollReactions.push(member.id);
                 }
+                else {
+                    delayedPollReactions.splice(delayedPollReactions.indexOf(member.id), 1);
+                }
+
+                let msg = await message.channel.send(hasVoted ? "🗑 Deine Reaktion wurde gelöscht." : "💾 Deine Reaktion wurde gespeichert.");
+                await FadingMessage.newFadingMessage(msg, 2500);
             }
         }
 
