@@ -80,7 +80,7 @@ exports.run = (client, message, args, callback) => {
     });
 
     let parsedArgs = options._;
-    let delayTime = parseInt(options.delayed, 10);
+    let delayTime = Number(options.delayed);
 
     if (!parsedArgs.length) return callback("Bruder da ist keine Umfrage :c");
 
