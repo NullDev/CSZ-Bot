@@ -19,6 +19,7 @@ let BdayHandler = require("./handler/bdayHandler");
 
 // Other commands
 let ban = require("./commands/modcommands/ban");
+let poll = require("./commands/poll");
 
 let version = conf.getVersion();
 let appname = conf.getName();
@@ -62,6 +63,8 @@ client.on("ready", () => {
 
     ban.loadBans();
     ban.startCron(client);
+
+    poll.startCron(client);
 });
 
 client.on("guildCreate", guild => log.info(`New guild joined: ${guild.name} (id: ${guild.id}) with ${guild.memberCount} members`));
