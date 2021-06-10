@@ -17,7 +17,7 @@ exports.run = (client, message, args, callback) => {
     message.react("✉");
     message.author.send(
         "Programmiert von ShadowByte#1337 für die Coding Shitpost Zentrale (<https://discord.gg/FABdvae>)\n" +
-        "Contributions von Hans Lambda#8572 und diewellenlaenge#5705\n\n" +
+        "Contributions von Hans Lambda#8572, diewellenlaenge#5705, PoTTii#2582 und CreepSore#1337\n\n" +
         "Eckdaten:\n" +
         "- Programmiersprache: NodeJS\n" +
         "- NodeJS Version: " + process.version + "\n" +
