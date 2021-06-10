@@ -22,7 +22,6 @@ let storage = require("./storage/storage");
 // Other commands
 let ban = require("./commands/modcommands/ban");
 let poll = require("./commands/poll");
-const FadingMessage = require("./storage/model/FadingMessage");
 
 let version = conf.getVersion();
 let appname = conf.getName();
