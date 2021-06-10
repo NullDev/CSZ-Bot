@@ -132,7 +132,7 @@ exports.run = (client, message, args, callback) => {
     }
 
     if(options.delayed) {
-        footer.push("Verzögert");
+        footer.push("⏳");
         embed.embed.color = "#a10083";
     }
 
@@ -145,8 +145,8 @@ exports.run = (client, message, args, callback) => {
     }
 
     let channel = options.channel ? client.guilds.cache.get(config.ids.guild_id).channels.cache.get(config.ids.votes_channel_id) : message.channel;
-    if(!options.delayed && !channel) {
-        // TODO: Handle this case. Delayed polls are only possible inside the polls channel right now
+    if(options.channel && options.delayed) {
+        return callback("Du kannst keine verzögerte Abstimmung außerhalb des Umfragenchannels machen!");
     }
 
     /** @type {import("discord.js").TextChannel} */
@@ -190,7 +190,7 @@ exports.startCron = (client) => {
 
         for(let i = 0; i < pollsToFinish.length; i++) {
             const delayedPoll = pollsToFinish[i];
-            const message = channel.messages.cache.get(delayedPoll.pollId) || (await channel.messages.fetch(delayedPoll.pollId));
+            const message = await channel.messages.fetch(delayedPoll.pollId);
 
             let toSend = {
                 embed: {
