@@ -8,6 +8,8 @@
 let moment = require("moment");
 let parseOptions = require("minimist");
 let cron = require("node-cron");
+const AdditionalMessageData = require("../storage/model/AdditionalMessageData");
+const logger = require("../utils/logger");
 
 // Utils
 let config = require("../utils/configHandler").getConfig();
@@ -144,8 +146,9 @@ exports.run = (client, message, args, callback) => {
         };
     }
 
-    let channel = options.channel ? client.guilds.cache.get(config.ids.guild_id).channels.cache.get(config.ids.votes_channel_id) : message.channel;
-    if(options.channel && options.delayed) {
+    let voteChannel = client.guilds.cache.get(config.ids.guild_id).channels.cache.get(config.ids.votes_channel_id);
+    let channel = options.channel ? voteChannel : message.channel;
+    if(options.delayed && channel !== voteChannel) {
         return callback("Du kannst keine verzögerte Abstimmung außerhalb des Umfragenchannels machen!");
     }
 
@@ -164,17 +167,39 @@ exports.run = (client, message, args, callback) => {
                     reactions[index] = [];
                 });
 
-                exports.delayedPolls.push({
+                let delayedPollData = {
                     pollId: msg.id,
-                    createdAt: new Date(),
-                    finishesAt: finishTime,
+                    createdAt: new Date().valueOf(),
+                    finishesAt: finishTime.valueOf(),
                     reactions,
                     reactionMap
-                });
+                };
+
+                let additionalData = await AdditionalMessageData.fromMessage(msg);
+                let newCustomData = additionalData.customData;
+                newCustomData.delayedPollData = delayedPollData;
+                additionalData.customData = newCustomData;
+                await additionalData.save();
+
+                exports.delayedPolls.push(delayedPollData);
             }
         });
 
     return callback();
+};
+
+exports.importPolls = async() => {
+    let additionalDatas = await AdditionalMessageData.findAll();
+    let count = 0;
+    additionalDatas.forEach(additionalData => {
+        if(!additionalData.customData.delayedPollData) {
+            return;
+        }
+
+        exports.delayedPolls.push(additionalData.customData.delayedPollData);
+        count++;
+    });
+    logger.info(`Loaded ${count} polls from database`);
 };
 
 /**
@@ -192,11 +217,19 @@ exports.startCron = (client) => {
             const delayedPoll = pollsToFinish[i];
             const message = await channel.messages.fetch(delayedPoll.pollId);
 
+            let users = {};
+            await Promise.all(delayedPoll.reactions
+                .flat()
+                .filter((x, uidi) => delayedPoll.reactions.indexOf(x) !== uidi)
+                .map(async uidToResolve => {
+                    users[uidToResolve] = await client.users.fetch(uidToResolve);
+                }));
+
             let toSend = {
                 embed: {
                     title: `Zusammenfassung: ${message.embeds[0].title}`,
                     description: `${delayedPoll.reactions.map((x, index) => `${NUMBERS[index]} ${delayedPoll.reactionMap[index]} (${x.length}):
-${x.map(uid => client.users.cache.get(uid).username).join("\n")}\n\n`).join("")}
+${x.map(uid => users[uid]).join("\n")}\n\n`).join("")}
 `,
                     timestamp: moment.utc().format(),
                     author: {
@@ -213,6 +246,12 @@ ${x.map(uid => client.users.cache.get(uid).username).join("\n")}\n\n`).join("")}
             await Promise.all(message.reactions.cache.map(reaction => reaction.remove()));
             await message.react("✅");
             exports.delayedPolls.splice(exports.delayedPolls.indexOf(delayedPoll), 1);
+
+            let messageData = await AdditionalMessageData.fromMessage(message);
+            let {customData} = messageData;
+            delete customData.delayedPollData;
+            messageData.customData = customData;
+            await messageData.save();
         }
     });
 };

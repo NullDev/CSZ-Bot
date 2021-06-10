@@ -6,6 +6,7 @@
 
 // Models
 let FadingMessage = require("../storage/model/FadingMessage");
+let AdditionalMessageData = require("../storage/model/AdditionalMessageData");
 
 // Utils
 let log = require("../utils/logger");
@@ -47,7 +48,7 @@ module.exports = async function(event, client) {
     }
 
     if (voteEmojis.includes(event.d.emoji.name) && event.t === "MESSAGE_REACTION_ADD") {
-        const member = message.guild.members.cache.get(client.users.cache.get(data.user_id).id);
+        const member = await message.guild.members.fetch((await client.users.fetch(data.user_id)).id);
         const fromThisBot = member.id === client.user.id;
         const isStrawpoll = message.embeds.length === 1 &&
             message.embeds[0].author.name.indexOf("Strawpoll") >= 0 && voteEmojis.slice(0, 10).includes(event.d.emoji.name);
@@ -106,5 +107,11 @@ module.exports = async function(event, client) {
             );
             for (let reaction of allUserReactions.values()) await reaction.users.remove(member.id).catch(log.error);
         }
+
+        let additionalData = await AdditionalMessageData.fromMessage(message);
+        let newCustomData = additionalData.customData;
+        newCustomData.delayedPollData = delayedPoll;
+        additionalData.customData = newCustomData;
+        await additionalData.save();
     }
 };

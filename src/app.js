@@ -41,7 +41,7 @@ log.done("Started.");
 const config = conf.getConfig();
 const client = new Discord.Client();
 
-process.on("unhandledRejection", (err, promise) => log.error(`Unhandled rejection (promise: ${promise}, reason: ${err})`));
+process.on("unhandledRejection", (err, promise) => log.error(`Unhandled rejection (promise: ${promise}, reason: ${err.stack})`));
 
 let firstRun = true;
 client.on("ready", async() => {
@@ -67,6 +67,7 @@ client.on("ready", async() => {
     ban.loadBans();
     ban.startCron(client);
 
+    await poll.importPolls();
     poll.startCron(client);
 
     fadingMessageHandler.startLoop(client);
