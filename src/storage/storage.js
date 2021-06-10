@@ -4,6 +4,7 @@ let path = require("path");
 
 // Dependencies
 let {Sequelize} = require("sequelize");
+const AdditionalMessageData = require("./model/AdditionalMessageData");
 
 // Models
 let FadingMessage = require("./model/FadingMessage");
@@ -16,6 +17,7 @@ exports.initialize = async function() {
     });
 
     FadingMessage.initialize(sequelize);
+    AdditionalMessageData.initialize(sequelize);
 
     await sequelize.sync();
 };
