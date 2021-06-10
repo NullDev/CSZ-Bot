@@ -21,7 +21,7 @@ const voteEmojis = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️
 /**
  * Handles changes on reactions
  *
- * @param {any} event
+ * @param {import("discord.js").} event
  * @param {import("discord.js").Client} client
  * @returns
  */
