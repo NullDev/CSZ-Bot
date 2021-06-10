@@ -71,7 +71,7 @@ exports.startCron = (client) => {
         for (let userId of userIds) {
             let unbanAt = exports.bans[userId];
 
-            if (unbanAt < Date.now()) {
+            if (unbanAt !== 0 && unbanAt < Date.now()) {
                 let user = client.guilds.cache.get(config.ids.guild_id).members.cache.get(userId);
 
                 if (user) {
