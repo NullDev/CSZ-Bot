@@ -16,10 +16,13 @@ let log = require("./utils/logger");
 let messageHandler = require("./handler/messageHandler");
 let reactionHandler = require("./handler/reactionHandler");
 let BdayHandler = require("./handler/bdayHandler");
+let fadingMessageHandler = require("./handler/fadingMessageHandler");
+let storage = require("./storage/storage");
 
 // Other commands
 let ban = require("./commands/modcommands/ban");
 let poll = require("./commands/poll");
+const FadingMessage = require("./storage/model/FadingMessage");
 
 let version = conf.getVersion();
 let appname = conf.getName();
@@ -42,13 +45,14 @@ const client = new Discord.Client();
 process.on("unhandledRejection", (err, promise) => log.error(`Unhandled rejection (promise: ${promise}, reason: ${err})`));
 
 let firstRun = true;
-client.on("ready", () => {
+client.on("ready", async() => {
     log.info("Running...");
     log.info(`Got ${client.users.cache.size} users, in ${client.channels.cache.size} channels of ${client.guilds.cache.size} guilds`);
     client.user.setActivity(config.bot_settings.status);
 
     const bday = new BdayHandler(client);
     if (firstRun){
+        await storage.initialize();
         firstRun = false; // Hacky deadlock ...
         cron.schedule("37 13 * * *", () => {
             // @ts-ignore
@@ -65,6 +69,8 @@ client.on("ready", () => {
     ban.startCron(client);
 
     poll.startCron(client);
+
+    fadingMessageHandler.startLoop(client);
 });
 
 client.on("guildCreate", guild => log.info(`New guild joined: ${guild.name} (id: ${guild.id}) with ${guild.memberCount} members`));
