@@ -10,7 +10,8 @@
         },
         "moderator_roles": [
             "Moderator"
-        ]
+        ],
+        "woisping_limit": 7200
     },
     "ids": {
         "guild_id": "",
@@ -18,6 +19,7 @@
         "default_role_id": "",
         "banned_role_id": "",
         "bday_role_id": "",
+        "woisgang_role_id": "",
 
         "gruendervaeter_role_id": "",
         "gruendervaeter_banned_role_id": "",
