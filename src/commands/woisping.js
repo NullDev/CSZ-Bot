@@ -25,7 +25,7 @@ let lastPing = 0;
  * @param {Function} callback
  * @returns {Promise<Function>} callback
  */
-exports.run = async(client, message, args, callback) => {
+exports.run = (client, message, args, callback) => {
     if (!message.member.roles.cache.has(config.ids.woisgang_role_id)){
         log.warn(`User "${message.author.tag}" (${message.author}) tried command "${config.bot_settings.prefix.command_prefix}woisping" and was denied`);
 
