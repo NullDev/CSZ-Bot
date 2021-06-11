@@ -11,6 +11,8 @@ let AdditionalMessageData = require("../storage/model/AdditionalMessageData");
 // Utils
 let log = require("../utils/logger");
 let poll = require("../commands/poll");
+const { config } = require("process");
+const woisping = require("../commands/woisping");
 
 const events = {
     MESSAGE_REACTION_ADD: "messageReactionAdd",
@@ -50,16 +52,20 @@ module.exports = async function(event, client) {
     if (voteEmojis.includes(event.d.emoji.name) && event.t === "MESSAGE_REACTION_ADD") {
         const member = await message.guild.members.fetch((await client.users.fetch(data.user_id)).id);
         const fromThisBot = member.id === client.user.id;
+
+        if(fromThisBot) {
+            return;
+        }
+
+        if (await woisping.reactionHandler(event, client, message)) {
+            return;
+        }
+
         const isStrawpoll = message.embeds.length === 1 &&
             message.embeds[0].author.name.indexOf("Strawpoll") >= 0 && voteEmojis.slice(0, 10).includes(event.d.emoji.name);
 
         const isUmfrage = message.embeds.length === 1 &&
             message.embeds[0].author.name.indexOf("Umfrage") >= 0 && voteEmojis.slice(0, 10).includes(event.d.emoji.name);
-
-
-        if(fromThisBot) {
-            return;
-        }
 
         const delayedPoll = poll.delayedPolls.find(x => x.pollId === message.id);
         const isDelayedPoll = Boolean(delayedPoll);

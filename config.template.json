@@ -11,7 +11,8 @@
         "moderator_roles": [
             "Moderator"
         ],
-        "woisping_limit": 7200
+        "woisping_limit": 7200,
+        "woisping_threshold": 2
     },
     "ids": {
         "guild_id": "",
