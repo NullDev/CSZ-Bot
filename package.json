@@ -5,6 +5,7 @@
   "description": "Offizieller Coding Shitpost Zentrale Bot",
   "main": "src/app.js",
   "scripts": {
+    "prepare": "husky install",
     "start": "node ./src/app.js",
     "lint": "eslint ./src",
     "dev": "npm run lint && npm start"
@@ -34,7 +35,8 @@
     "@babel/core": "^7.14.2",
     "@babel/eslint-parser": "^7.14.2",
     "@types/node": "^15.3.0",
-    "eslint": "^7.26.0"
+    "eslint": "^7.26.0",
+    "husky": "^6.0.0"
   },
   "engines": {
     "node": ">=14.3.0"
