@@ -4,10 +4,6 @@
 // = Copyright (c) diewellenlaenge = //
 // ================================= //
 
-/**
- * @typedef {import("discord.js").TextChannel} TC
- */
-
 // Utils
 let log = require("../utils/logger");
 let config = require("../utils/configHandler").getConfig();
