@@ -32,7 +32,7 @@ exports.run = (client, message, args, callback) => {
 
     let woisgangRole = message.guild.roles.cache.get(config.ids.woisgang_role_id);
 
-    if (woisgangRole === undefined) {
+    if (!woisgangRole) {
         return callback("Iwas is totally falsch.");
     }
 
