@@ -99,7 +99,7 @@ exports.reactionHandler = async(event, client, message) => {
     const now = Date.now();
     const couldPing = lastPing + config.bot_settings.woisping_limit * 1000 <= now;
 
-    if (isMod || (amount >= config.bot_settings.woisping_treshold && couldPing)) {
+    if (isMod || (amount >= config.bot_settings.woisping_threshold && couldPing)) {
         const reason = message.content.substr(pendingMessagePrefix.length + 1);
 
         const {channel} = message;
@@ -116,4 +116,4 @@ exports.reactionHandler = async(event, client, message) => {
     return true;
 };
 
-exports.description = `Mitglieder der @Woisgang-Rolle können einen Ping an diese Gruppe absenden. Es müssen mindestens ${config.bot_settings.woisping_treshold} Woisgang-Mitglieder per Reaction zustimmen.\nUsage: ${config.bot_settings.prefix.command_prefix}woisping Text`;
+exports.description = `Mitglieder der @Woisgang-Rolle können einen Ping an diese Gruppe absenden. Es müssen mindestens ${config.bot_settings.woisping_threshold} Woisgang-Mitglieder per Reaction zustimmen.\nUsage: ${config.bot_settings.prefix.command_prefix}woisping Text`;

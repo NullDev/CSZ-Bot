@@ -12,7 +12,7 @@
             "Moderator"
         ],
         "woisping_limit": 7200,
-        "woisping_treshold": 2
+        "woisping_threshold": 2
     },
     "ids": {
         "guild_id": "",
