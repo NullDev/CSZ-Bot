@@ -110,3 +110,6 @@ dist
 .tern-port
 
 storage.db
+
+# Visual Studio Code
+.vscode/
