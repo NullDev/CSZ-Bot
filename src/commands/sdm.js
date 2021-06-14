@@ -72,12 +72,14 @@ exports.run = (client, message, args, callback) => {
     let question = args.join(" ").replace(/\s\s+/g, " ");
     if (!question.endsWith("?")) question += "?";
 
-    const image = !!secureDecisionMaker(question) ? "yes.png" : "no.png";
+    const decision = !!secureDecisionMaker(question);
+    const image = decision ? "yes.png" : "no.png";
 
     let embed = {
         embed: {
             description: `**${question}**`,
             timestamp: moment.utc().format(),
+            color: decision ? 0x2ecc71 : 0xe74c3c,
             thumbnail: {
                 url: `attachment://${image}`
             },
