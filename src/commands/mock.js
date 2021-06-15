@@ -19,20 +19,19 @@ let transform = function(c){
 };
 
 /**
- * Mock a given text
+ * Mocks text
  *
- * @param {import("discord.js").Client} client
- * @param {import("discord.js").Message} message
- * @param {Array} args
- * @param {Function} callback
- * @returns {Function} callback
+ * @param {string} str
+ * @returns {string} mocked
  */
-exports.run = (client, message, args, callback) => {
-    if (!args.length) return callback(`Bruder du bist zu dumm zum mocken? Mach \`${config.bot_settings.prefix.command_prefix}mock DEIN TEXT HIER\``);
+const mock = (str) => str.split("").map(transform).join("");
 
-    let text = message.content.slice(`${config.bot_settings.prefix.command_prefix}mock `.length);
-    let mocked = text.split("").map(transform).join("");
-
+/**
+ * Sends mocked embed
+ * @param {import("discord.js").Message} message
+ * @param {string} mocked
+ */
+const sendMock = (message, mocked) => {
     let embed = {
         embed: {
             description: `${mocked} <:mock:677504337769005096>`,
@@ -44,7 +43,36 @@ exports.run = (client, message, args, callback) => {
     };
 
     message.channel.send(embed).then(() => message.delete());
+};
+
+/**
+ * Mock a given text
+ *
+ * @param {import("discord.js").Client} client
+ * @param {import("discord.js").Message} message
+ * @param {Array} args
+ * @param {Function} callback
+ * @returns {Function} callback
+ */
+exports.run = (client, message, args, callback) => {
+    // TODO: Check for message type 19 when it is available in discord.js
+    const referencedMessage = message.reference.messageID;
+    if (!args.length && !referencedMessage) return callback(`Bruder du bist zu dumm zum mocken? Mach \`${config.bot_settings.prefix.command_prefix}mock DEIN TEXT HIER\` oder antworte auf eine Nachricht`);
+
+    if(referencedMessage && !args.length) {
+        message.channel.messages.fetch(referencedMessage)
+            .then(msg => {
+                const mocked = mock(msg.content);
+                // TODO: inline reply when it is available in discord.js
+                sendMock(message, mocked);
+            });
+    }
+    else {
+        let text = message.content.slice(`${config.bot_settings.prefix.command_prefix}mock `.length);
+        let mocked = mock(text);
+        sendMock(message, mocked);
+    }
     return callback();
 };
 
-exports.description = `Mockt einen Text.\nBenutzung: ${config.bot_settings.prefix.command_prefix}mock [Hier dein Text]`;
+exports.description = `Mockt einen Text.\nBenutzung: ${config.bot_settings.prefix.command_prefix}mock [Hier dein Text] oder nur ${config.bot_settings.prefix.command_prefix}mock in einer reply`;
