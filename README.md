@@ -1,5 +1,7 @@
 # CSC-Bot
 
+[![ESLint Codestyle](https://github.com/NullDev/CSC-Bot/actions/workflows/eslint.yml/badge.svg)](https://github.com/NullDev/CSC-Bot/actions/workflows/eslint.yml)
+
 <p align="center">
 <img height="150" width="auto" src="https://cdn.discordapp.com/icons/618781839338897443/a_82f94d024985d290862ef86ada2f2ef1.gif?size=128" /><br>
 Official Coding Shitpost Central Discord Bot
