@@ -68,9 +68,8 @@ exports.run = (client, message, args, callback) => {
             });
     }
     else {
-        let text = message.content.slice(`${config.bot_settings.prefix.command_prefix}mock `.length);
-        let mocked = mock(text);
-        sendMock(message, mocked);
+        const text = message.content.slice(`${config.bot_settings.prefix.command_prefix}mock `.length);
+        sendMock(message, mock(text));
     }
     return callback();
 };
