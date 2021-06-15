@@ -60,12 +60,9 @@ exports.run = (client, message, args, callback) => {
     if (!args.length && !referencedMessage) return callback(`Bruder du bist zu dumm zum mocken? Mach \`${config.bot_settings.prefix.command_prefix}mock DEIN TEXT HIER\` oder antworte auf eine Nachricht`);
 
     if(referencedMessage && !args.length) {
+        // TODO: inline reply when it is available in discord.js
         message.channel.messages.fetch(referencedMessage)
-            .then(msg => {
-                const mocked = mock(msg.content);
-                // TODO: inline reply when it is available in discord.js
-                sendMock(message, mocked);
-            });
+            .then(msg => sendMock(message, mock(msg.content)));
     }
     else {
         const text = message.content.slice(`${config.bot_settings.prefix.command_prefix}mock `.length);
