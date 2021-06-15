@@ -11,7 +11,6 @@ let AdditionalMessageData = require("../storage/model/AdditionalMessageData");
 // Utils
 let log = require("../utils/logger");
 let poll = require("../commands/poll");
-const { config } = require("process");
 const woisping = require("../commands/woisping");
 
 const events = {
