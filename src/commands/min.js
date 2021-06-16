@@ -22,7 +22,7 @@ exports.run = (client, message, args, callback) => {
         || args[0] <= 0
         || args[0] > Number.MAX_SAFE_INTEGER
         || !Number.isInteger(Number(args[0]))
-    ) return callback("Das ist kein gültiger positiver 64Bit Integer...");
+    ) return callback("Das ist kein gültiger positiver 53Bit Integer...");
 
     message.channel.send("Moralisch vertretbares Alter: " + ((Number(args[0]) / 2) + 7));
 
