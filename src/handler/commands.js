@@ -26,5 +26,5 @@ function loadCommands(srcDir) {
 
 module.exports = {
     modCommands: loadCommands("./src/commands/modcommands"),
-    plebCommands: loadCommands("./src/commands"),
+    plebCommands: loadCommands("./src/commands")
 };
