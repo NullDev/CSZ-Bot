@@ -7,6 +7,7 @@
 // Utils
 let log = require("../utils/logger");
 let config = require("../utils/configHandler").getConfig();
+let access = require("../utils/access");
 let { modCommands, plebCommands } = require("./commands");
 
 /**
@@ -26,11 +27,11 @@ let commandHandler = function(message, client, isModCommand, callback){
     let commandTable = isModCommand ? modCommands : plebCommands;
 
     let cmdHandle = commandTable.get(command);
-    if (!cmdHandle){
+    if (!cmdHandle) {
         return callback();
     }
 
-    if (isModCommand && !message.member.roles.cache.some(r => config.bot_settings.moderator_roles.includes(r.name))){
+    if (isModCommand && !access.isModeratorMessage(message)) {
         log.warn(`User "${message.author.tag}" (${message.author}) tried mod command "${cmdPrefix}${command}" and was denied`);
 
         return callback(
@@ -48,9 +49,8 @@ let commandHandler = function(message, client, isModCommand, callback){
             if (err) callback(err);
         });
     }
-
     // Exception returned by the command handler
-    catch (err){
+    catch (err) {
         callback(
             "Sorry, irgendwas ist schief gegangen! =("
         );

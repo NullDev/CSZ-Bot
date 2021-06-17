@@ -7,6 +7,7 @@
 // Utils
 let log = require("../utils/logger");
 let config = require("../utils/configHandler").getConfig();
+let access = require("../utils/access");
 
 const pendingMessagePrefix = "*(Pending-Woisgang-Ping, bitte zustimmen)*";
 
@@ -24,7 +25,7 @@ let lastPing = 0;
  * @returns {Promise<Function>} callback
  */
 exports.run = async(client, message, args, callback) => {
-    const isMod = message.member.roles.cache.some(r => config.bot_settings.moderator_roles.includes(r.name));
+    const isMod = access.isModeratorMessage(message);
 
     if (!isMod && !message.member.roles.cache.has(config.ids.woisgang_role_id)){
         log.warn(`User "${message.author.tag}" (${message.author}) tried command "${config.bot_settings.prefix.command_prefix}woisping" and was denied`);
@@ -87,7 +88,7 @@ exports.reactionHandler = async(event, client, message) => {
         return true;
     }
 
-    const isMod = user.roles.cache.some(r => config.bot_settings.moderator_roles.includes(r.name));
+    const isMod = access.isModeratorUser(user);
 
     if (!isMod && !user.roles.cache.has(config.ids.woisgang_role_id)){
         reaction.users.remove(data.user_id);
