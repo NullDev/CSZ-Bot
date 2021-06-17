@@ -16,7 +16,7 @@ let config = require("../utils/configHandler").getConfig();
 let cmdHandler = require("./cmdHandler");
 
 /**
- * Handles incomming messages
+ * Handles incoming messages
  *
  * @param {Message} message
  * @param {Client} client
