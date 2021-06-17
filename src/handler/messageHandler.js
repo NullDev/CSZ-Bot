@@ -203,7 +203,7 @@ const isCooledDown = function() {
 };
 
 /**
- * Handles incomming messages
+ * Handles incoming messages
  *
  * @param {Message} message
  * @param {Client} client
