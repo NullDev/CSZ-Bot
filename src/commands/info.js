@@ -45,7 +45,7 @@ exports.run = async(client, message, args, callback) => {
         - Architecture: ${process.arch}
         
         Source Code: <https://github.com/NullDev/CSC-Bot>
-    `.replace(/  +/g, "")); //Remove leading indents
+    `.replace(/  +/g, "")); // Remove leading indents
 
     return callback();
 };
