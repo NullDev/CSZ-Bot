@@ -53,22 +53,22 @@ let getTrace = function(){
 };
 
 module.exports = {
-    error: function(input){
+    error(input){
         console.log(
             " \x1b[41m\x1b[315m x \x1b[0m\x1b[31m [ERROR] " + getDate() + " - " + input + "\n" +
             "     StackTrace: " + getTrace() + "\x1b[0m"
         );
     },
 
-    warn: function(input){
+    warn(input){
         console.log(" \x1b[43m\x1b[30m ! \x1b[0m\x1b[33m [WARN]  " + getDate() + " - " + input + "\x1b[0m");
     },
 
-    info: function(input){
+    info(input){
         console.log(" \x1b[44m\x1b[30m i \x1b[0m\x1b[36m [INFO]  " + getDate() + " - " + input + "\x1b[0m");
     },
 
-    done: function(input){
+    done(input){
         console.log(" \x1b[42m\x1b[30m ✓ \x1b[0m\x1b[32m [DONE]  " + getDate() + " - " + input + "\x1b[0m");
     }
 };

@@ -27,11 +27,12 @@ exports.run = (client, message, args, callback) => {
     // Add :envelope: reaction to authors message
     message.react("✉");
     message.author.send(
-        "Hallo, " + message.author + "!\n\n" +
+        "Hallo, " + message.author.username + "!\n\n" +
         "Hier ist eine Liste mit commands:\n\n```CSS\n" +
         commandText +
         "``` \n\n" +
-        "Bei Fragen kannst du dich an @ShadowByte#1337 wenden!"
+        "Bei Fragen kannst du dich an @ShadowByte#1337 wenden!",
+        { split: true }
     );
 
     return callback();

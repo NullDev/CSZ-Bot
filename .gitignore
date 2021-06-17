@@ -108,3 +108,8 @@ dist
 
 # TernJS port file
 .tern-port
+
+storage.db
+
+# Visual Studio Code
+.vscode/

@@ -19,7 +19,7 @@ const randomSeed = "AQa0B7HK4vvrBOlaKKplMsKorGhN4gJvOCBWxw531P8uwpeIU3d39ODZ02fb
  * @param {string} s
  * @returns {number} index
  */
-let iocCalculator = function(s){
+const iocCalculator = function(s){
     let bigrams = new Map();
     let text = s.replace(/\s+/g, "");
     [...text].forEach(c => (bigrams.has(c) ? bigrams.set(c, bigrams.get(c) + 1) : bigrams.set(c, 1)));
@@ -37,7 +37,7 @@ let iocCalculator = function(s){
  * @param {number} seed
  * @returns {number} random floored number >= min and <= max
  */
-let rng = function(min, max, seed){
+const rng = function(min, max, seed){
     let sido = (seed * 9301 + 49297) % 233280;
     let rnd = sido / 233280;
     let disp = Math.abs(Math.sin(sido));
@@ -53,9 +53,10 @@ const ioc = iocCalculator(randomSeed);
  * Highly complex, secure and optimized decision maker algorithm
  *
  * @param {string} question
+ * @param {number} max
  * @returns {number} decision
  */
-let secureDecisionMaker = question => (rng(0, 1, (Date.now() * ioc) / iocCalculator(question)));
+const secureDecisionMaker = (question, max = 1) => (rng(0, max, (Date.now() * ioc) / iocCalculator(question)));
 
 /**
  * Creates a new secure decision (sdm; yes/no)
@@ -70,24 +71,44 @@ exports.run = (client, message, args, callback) => {
     if (!args.length) return callback("Bruder da ist keine Frage :c");
 
     let question = args.join(" ").replace(/\s\s+/g, " ");
-    if (!question.endsWith("?")) question += "?";
+    const options = question.split(/,|;|\s+oder\s+/gi).map(s => s.trim()).filter(s => !!s);
 
-    const image = !!secureDecisionMaker(question) ? "yes.png" : "no.png";
+    if(options.length > 1) {
+        question = options.reduce((p, c, i, a) => (`${p}${i === a.length - 1 ? " oder " : ", "}${c}`));
+    }
+    if (!question.endsWith("?")) question += "?";
 
     let embed = {
         embed: {
-            description: `**${question}**`,
+            title: question,
             timestamp: moment.utc().format(),
-            thumbnail: {
-                url: `attachment://${image}`,
-            },
             author: {
                 name: `Secure Decision für ${message.author.username}`,
-                icon_url: message.author.displayAvatarURL(),
-            },
-        },
-        files: [`./assets/${image}`],
+                icon_url: message.author.displayAvatarURL()
+            }
+        }
     };
+    if(options.length === 1) {
+        const decision = secureDecisionMaker(question);
+        let file;
+        if(!!decision) {
+            embed.embed.color = 0x2ecc71;
+            file = "yes.png";
+        }
+        else {
+            embed.embed.color = 0xe74c3c;
+            file = "no.png";
+        }
+        embed.embed.thumbnail = {
+            url: `attachment://${file}`
+        };
+        embed.files = [`./assets/${file}`];
+    }
+    else {
+        const decision = secureDecisionMaker(question, options.length - 1);
+        embed.embed.color = 0x9b59b6;
+        embed.embed.description = `Mashallah, ich rate dir zu **${options[decision]}**!`;
+    }
 
     message.channel
         .send(/** @type {any} embed */ (embed))
@@ -96,4 +117,4 @@ exports.run = (client, message, args, callback) => {
     return callback();
 };
 
-exports.description = `Macht eine Secure Decision (ja/nein) mithilfe eines komplexen, hochoptimierten, Blockchain Algorithmus.\nUsage: ${config.bot_settings.prefix.command_prefix}sdm [Hier die Frage]`;
+exports.description = `Macht eine Secure Decision mithilfe eines komplexen, hochoptimierten, Blockchain Algorithmus.\nUsage:\n**ja/nein Frage**\n ${config.bot_settings.prefix.command_prefix}sdm [Hier die Frage]\n\n**Secure Auswahl**\n\n${config.bot_settings.prefix.command_prefix}sdm [Auswahl 1]; [Auswahl 2]`;

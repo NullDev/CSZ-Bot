@@ -1,26 +1,33 @@
 {
     "auth": {
-        "bot_token": "",
-        "language_detection_api_key": ""
+        "bot_token": ""
     },
     "bot_settings": {
         "status": "Hi!",
-        "owner_email": "",
         "prefix": {
             "command_prefix": ".",
             "mod_prefix": "~"
         },
         "moderator_roles": [
             "Moderator"
-        ]
+        ],
+        "woisping_limit": 7200,
+        "woisping_threshold": 2
     },
     "ids": {
         "guild_id": "",
         "hauptchat_id": "",
-        "english_chat_id": "",
-        "english_role": "",
-        "default_role": "",
-        "banned_role": "",
-        "bday_role": ""
+        "default_role_id": "",
+        "banned_role_id": "",
+        "bday_role_id": "",
+        "woisgang_role_id": "",
+
+        "gruendervaeter_role_id": "",
+        "gruendervaeter_banned_role_id": "",
+        "trusted_role_id": "",
+        "trusted_banned_role_id": "",
+
+        "banned_channel_id": "",
+        "votes_channel_id": ""
     }
 }
