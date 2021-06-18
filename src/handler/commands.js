@@ -18,7 +18,7 @@ function loadCommands(srcDir) {
         }
 
         log.info(`Loading "${fullCommandFile}"`);
-        res.set(commandFile.toLowerCase(), require(fullCommandFile));
+        res.set(path.parse(commandFile).name, require(fullCommandFile));
     }
 
     return res;
