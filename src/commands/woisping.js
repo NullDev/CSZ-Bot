@@ -118,3 +118,11 @@ exports.reactionHandler = async(event, client, message) => {
 };
 
 exports.description = `Mitglieder der @Woisgang-Rolle können einen Ping an diese Gruppe absenden. Es müssen mindestens ${config.bot_settings.woisping_threshold} Woisgang-Mitglieder per Reaction zustimmen.\nUsage: ${config.bot_settings.prefix.command_prefix}woisping Text`;
+
+/**
+ * @type {import("discord.js").ApplicationCommandData[]}
+ */
+exports.applicationCommands = [{
+    name: "woisping",
+    description: "Mitglieder der @Woisgang-Rolle können einen Ping an diese Gruppe absenden."
+}];

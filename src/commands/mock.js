@@ -79,3 +79,21 @@ exports.run = (client, message, args, callback) => {
 };
 
 exports.description = `Mockt einen Text.\nBenutzung: ${config.bot_settings.prefix.command_prefix}mock [Hier dein Text] oder nur ${config.bot_settings.prefix.command_prefix}mock in einer reply`;
+
+/**
+ * @type {import("discord.js").ApplicationCommandData[]}
+ */
+exports.applicationCommands = [
+    {
+        name: "mock",
+        description: "Mockt einen Text",
+        options: [
+            {
+                name: "text",
+                description: "Der zu mockende Text, obviously",
+                type: "STRING",
+                required: true
+            }
+        ]
+    }
+];

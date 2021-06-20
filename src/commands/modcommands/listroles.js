@@ -24,3 +24,15 @@ exports.run = (client, message, args, callback) => {
 };
 
 exports.description = "Listet alle server rollen auf";
+
+
+/**
+ * @type {import("discord.js").ApplicationCommandData}
+ */
+exports.applicationCommands = [
+    {
+        name: "listroles",
+        description: "Listet alle Serverrollen auf",
+        defaultPermission: false
+    }
+];

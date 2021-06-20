@@ -21,3 +21,11 @@ exports.run = (client, message, args, callback) => {
 };
 
 exports.description = "Sendet einen Invite link für den Server";
+
+/**
+ * @type {import("discord.js").ApplicationCommandData[]}
+ */
+exports.applicationCommands = [{
+    name: "invite",
+    description: "Sendet einen Invite link für den Server"
+}];

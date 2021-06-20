@@ -51,3 +51,14 @@ exports.run = async(client, message, args, callback) => {
 };
 
 exports.description = "Listet Informationen über diesen Bot";
+
+/**
+ * @type {import("discord.js").ApplicationCommandData[]}
+ */
+exports.applicationCommands = [
+    {
+        name: "info",
+        description: exports.description
+    }
+];
+

@@ -30,3 +30,21 @@ exports.run = (client, message, args, callback) => {
 };
 
 exports.description = `Gibt dir die Moralisch vertretbare Altersgrenze für den Geschlechtsakt basierend auf deinem Alter zurück. \nUsage: ${config.bot_settings.prefix.command_prefix}min [dein Alter]`;
+
+/**
+ * @type {import("discord.js").ApplicationCommandData[]}
+ */
+exports.applicationCommands = [
+    {
+        name: "min",
+        description: "Gibt dir die Moralisch vertretbare Altersgrenze für den Geschlechtsakt basierend auf deinem Alter",
+        options: [
+            {
+                name: "alter",
+                description: "Dein Alter in Jahren",
+                type: "INTEGER",
+                required: true
+            }
+        ]
+    }
+];

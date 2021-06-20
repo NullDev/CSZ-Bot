@@ -39,3 +39,12 @@ exports.run = (client, message, args, callback) => {
 };
 
 exports.description = "Listet alle Commands auf";
+
+/**
+ * @type {import("discord.js").ApplicationCommandData[]}
+ */
+exports.applicationCommands = [{
+    name: "hilfe",
+    description: "Shitpost Bot Hilfe"
+}];
+

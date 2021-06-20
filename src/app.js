@@ -20,6 +20,8 @@ let reactionHandler = require("./handler/reactionHandler");
 let BdayHandler = require("./handler/bdayHandler");
 let fadingMessageHandler = require("./handler/fadingMessageHandler");
 let storage = require("./storage/storage");
+let command = require("./handler/commands");
+let interactionHandler = require("./handler/interactionHandler");
 
 // Other commands
 let ban = require("./commands/modcommands/ban");
@@ -41,7 +43,7 @@ console.log(
 log.done("Started.");
 
 const config = conf.getConfig();
-const client = new Discord.Client();
+const client = new Discord.Client({ intents: Discord.Intents.ALL });
 
 // @ts-ignore
 process.on("unhandledRejection", (err, promise) => log.error(`Unhandled rejection (promise: ${promise}, reason: ${err.stack})`));
@@ -51,6 +53,7 @@ client.on("ready", async() => {
     log.info("Running...");
     log.info(`Got ${client.users.cache.size} users, in ${client.channels.cache.size} channels of ${client.guilds.cache.size} guilds`);
     client.user.setActivity(config.bot_settings.status);
+    command.createApplicationCommands(client);
 
     const bday = new BdayHandler(client);
     if (firstRun){
@@ -95,6 +98,8 @@ client.on("message", (message) => messageHandler(message, client));
 client.on("error", log.error);
 
 client.on("raw", async event => reactionHandler(event, client));
+
+client.on("interaction", interaction => interactionHandler(interaction));
 
 client.login(config.auth.bot_token).then(() => {
     log.done("Token login was successful!");

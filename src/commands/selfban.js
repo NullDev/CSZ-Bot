@@ -54,3 +54,26 @@ Haddi & xD™`
 };
 
 exports.description = `Bannt den ausführenden User indem er ihn von allen Channels ausschließt.\nBenutzung: ${config.bot_settings.prefix.command_prefix}selfban [Dauer in Stunden = 8; 0 = manuelle Entbannung durch Moderader nötig]`;
+
+/**
+ * @type {import("discord.js").ApplicationCommandData[]}
+ */
+exports.applicationCommands = [
+    {
+        name: "selfban",
+        description: "Bannt den ausführenden User indem er ihn von allen Channels ausschließt",
+        options: [
+            {
+                name: "dauer",
+                description: "Dauer in Stunden = 8; 0 = manuelle Entbannung durch Moderader nötig",
+                type: "INTEGER",
+                choices: [
+                    {
+                        name: "arbeitstag",
+                        value: 8
+                    }
+                ]
+            }
+        ]
+    }
+];

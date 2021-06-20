@@ -118,3 +118,19 @@ exports.run = (client, message, args, callback) => {
 };
 
 exports.description = `Macht eine Secure Decision mithilfe eines komplexen, hochoptimierten, Blockchain Algorithmus.\nUsage:\n**ja/nein Frage**\n ${config.bot_settings.prefix.command_prefix}sdm [Hier die Frage]\n\n**Secure Auswahl**\n\n${config.bot_settings.prefix.command_prefix}sdm [Auswahl 1]; [Auswahl 2]`;
+
+/**
+ * @type {import("discord.js").ApplicationCommandData[]}
+ */
+exports.applicationCommands = [{
+    name: "sdm",
+    description: "Macht eine Secure Decision mithilfe eines komplexen, hochoptimierten, Blockchain Algorithmus.",
+    options: [
+        {
+            name: "question",
+            type: "STRING",
+            description: "Fragestellung",
+            required: true
+        }
+    ]
+}];
