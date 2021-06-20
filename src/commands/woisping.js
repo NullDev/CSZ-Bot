@@ -76,22 +76,22 @@ async function handler(interaction, callback) {
  * @param {import("discord.js").MessageComponentInteraction} interaction
  * @param {Function} callback
  */
-exports.handleYes = async(interaction, callback) => {
+function handleYes(interaction, callback) {
     console.log("Ja zur Woisgang");
     interaction.reply({ content: "Jaman, das ist die richtige Einstellung 🥳", ephemeral: true});
     return callback();
-};
+}
 
 /**
  *
  * @param {import("discord.js").MessageComponentInteraction} interaction
  * @param {Function} callback
  */
-exports.handleNo = async(interaction, callback) => {
+function handleNo(interaction, callback) {
     console.log("Nein zur Woisgang");
     interaction.reply({ content: "Ok, dann halt nicht 😔", ephemeral: true});
     return callback();
-};
+}
 
 /**
  * Handles changes on reactions specific to this command
@@ -179,8 +179,8 @@ exports.applicationCommands = {
             }
         ],
         buttonHandler: {
-            woisgang_yes: this.handleYes,
-            woisgang_no: this.handleNo
+            woisgang_yes: handleYes,
+            woisgang_no: handleNo
         }
     }
 };
