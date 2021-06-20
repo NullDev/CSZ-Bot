@@ -1,3 +1,4 @@
+// @ts-check
 "use strict";
 
 // Utils
@@ -9,21 +10,20 @@ let commands = require("./commands");
 /**
  * Handles interaction
  *
- * @param {import("discord.js").CommandInteraction} interaction
+ * @param {import("discord.js").Interaction} interaction
  * @returns
  */
 module.exports = function(interaction) {
+    const toBeDoneCallback = (err) => {
+        if (err) console.log(err);
+    };
+
     if(interaction.isCommand()) {
-        /** @type {import("discord.js").ButtonInteraction} */
+        /** @type {import("discord.js").CommandInteraction} */
         const commandInteraction = interaction;
         log.info(`Recieved Interaction ${commandInteraction.commandName} from ${commandInteraction.user.username}`);
 
         const command = commands.allCommands.get(commandInteraction.commandName);
-        console.log(commandInteraction);
-
-        const toBeDoneCallback = (err) => {
-            if (err) message.channel.send(err);
-        };
 
         if (command?.handler) {
             try {
@@ -41,19 +41,25 @@ module.exports = function(interaction) {
             }
         }
     }
-    else if(interaction.isMessageComponent()) {
-        /** @type {import("discord.js").MessageComponentInteraction} */
-        const msgInteraction = interaction;
+    else if(interaction.isButton()) {
+        /** @type {import("discord.js").ButtonInteraction} */
+        const buttonInteraction = interaction;
+        const { message } = buttonInteraction;
 
-        log.info(`Recieved Message Component Interaction ${msgInteraction.customID}`);
+        if(message.interaction) {
+            log.info(`Recieved Button Interaction ${buttonInteraction.customID}`);
 
-        if(msgInteraction.message?.interaction.commandName) {
-            const command = commands.allCommands.get(msgInteraction.message.interaction.commandName);
-            if(command && command.buttonHandler) {
-                const handler = command.buttonHandler[msgInteraction.customID];
+            // can be of type Message or APIMessage
+            let commandName = "name" in message.interaction ? message.interaction.name : message.interaction.commandName;
+
+            const command = commands.allCommands.get(commandName);
+
+            if(command?.buttonHandler) {
+                const handler = command.buttonHandler[buttonInteraction.customID];
+
                 if(handler) {
                     try {
-                        handler(msgInteraction, function(err){
+                        handler(buttonInteraction, function(err){
                             // Non-Exception Error returned by the command (e.g.: Missing Argument)
                             if (err) toBeDoneCallback(err);
                         });
@@ -68,6 +74,5 @@ module.exports = function(interaction) {
                 }
             }
         }
-        console.log(interaction);
     }
 };
