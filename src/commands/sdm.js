@@ -1,6 +1,6 @@
 "use strict";
 
-const { MessageEmbed } = require("discord.js");
+const { MessageEmbed, Util } = require("discord.js");
 // Dependencies
 let moment = require("moment");
 
@@ -65,7 +65,7 @@ const secureDecisionMaker = (question, max = 1) => (rng(0, max, (Date.now() * io
  */
 async function handler(interaction, callback) {
     if(interaction.options.has("frage")) {
-        let question = interaction.options.get("frage").options.get("question").value;
+        let question = Util.cleanContent(interaction.options.get("frage").options.get("question").value, interaction.channel);
 
         if (!question.endsWith("?")) question += "?";
 
@@ -90,7 +90,7 @@ async function handler(interaction, callback) {
         return callback();
     }
     else if(interaction.options.has("auswahl")) {
-        const options = [...interaction.options.get("auswahl").options.values()].map(o => o.value);
+        const options = [...interaction.options.get("auswahl").options.values()].map(o => Util.cleanContent(o.value, interaction.channel));
         const question = options.reduce((acc, val, idx, arr) => (`${acc}${idx === arr.length - 1 ? " oder " : ", "}${val}`));
         const decision = secureDecisionMaker(question, options.length - 1);
 
