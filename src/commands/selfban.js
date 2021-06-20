@@ -22,7 +22,7 @@ let ban = require("./modcommands/ban");
  * @param {Function} callback
  * @returns {Function} callback
  */
-exports.run = (client, message, args, callback) => {
+async function handler(client, message, args, callback) {
     let durationArg = Number(args.length > 0 ? args[0] : "8");
     let duration = moment.duration(durationArg, "hours");
     let durationAsMinutes = Number(duration.asMinutes());
@@ -51,29 +51,31 @@ Haddi & xD™`
     );
 
     return callback();
-};
+}
 
 exports.description = `Bannt den ausführenden User indem er ihn von allen Channels ausschließt.\nBenutzung: ${config.bot_settings.prefix.command_prefix}selfban [Dauer in Stunden = 8; 0 = manuelle Entbannung durch Moderader nötig]`;
 
 /**
- * @type {import("discord.js").ApplicationCommandData[]}
+ * @type {Record<string, import("../handler/commands.js").CommandDefinition>}
  */
-exports.applicationCommands = [
-    {
-        name: "selfban",
-        description: "Bannt den ausführenden User indem er ihn von allen Channels ausschließt",
-        options: [
-            {
-                name: "dauer",
-                description: "Dauer in Stunden = 8; 0 = manuelle Entbannung durch Moderader nötig",
-                type: "INTEGER",
-                choices: [
-                    {
-                        name: "arbeitstag",
-                        value: 8
-                    }
-                ]
-            }
-        ]
+exports.applicationCommands = {
+    selfban: {
+        handler,
+        data: {
+            description: "Bannt den ausführenden User indem er ihn von allen Channels ausschließt",
+            options: [
+                {
+                    name: "dauer",
+                    description: "Dauer in Stunden = 8; 0 = manuelle Entbannung durch Moderader nötig",
+                    type: "INTEGER",
+                    choices: [
+                        {
+                            name: "arbeitstag",
+                            value: 8
+                        }
+                    ]
+                }
+            ]
+        }
     }
-];
+};

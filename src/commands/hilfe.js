@@ -9,24 +9,19 @@ let config = require("../utils/configHandler").getConfig();
 let { plebCommands } = require("../handler/commands");
 
 /**
- * Enlists all user-commands with descriptions
- *
- * @param {import("discord.js").Client} client
- * @param {import("discord.js").Message} message
- * @param {Array} args
+ * @param {import("discord.js").CommandInteraction} interaction
  * @param {Function} callback
- * @returns {Function} callback
  */
-exports.run = (client, message, args, callback) => {
+async function handler(interaction, callback) {
     const prefix = config.bot_settings.prefix.command_prefix;
     let commandText = "";
-    plebCommands.forEach((handler, commandName) => {
-        commandText += `${prefix}${commandName}:\n${handler.description}\n\n`;
+    console.log(plebCommands);
+    plebCommands.forEach((handler1, commandName) => {
+        commandText += `${prefix}${commandName}:\n${handler1.description}\n\n`;
     });
 
-    // Add :envelope: reaction to authors message
-    message.react("✉");
-    message.author.send(
+    interaction.reply({content: "Bruder, kriegst PN", ephemeral: true});
+    interaction.user.send(
         "Hallo, " + message.author.username + "!\n\n" +
         "Hier ist eine Liste mit commands:\n\n```CSS\n" +
         commandText +
@@ -36,15 +31,18 @@ exports.run = (client, message, args, callback) => {
     );
 
     return callback();
-};
+}
 
 exports.description = "Listet alle Commands auf";
 
 /**
- * @type {import("discord.js").ApplicationCommandData[]}
+ * @type {Record<string, import("../handler/commands.js").CommandDefinition>}
  */
-exports.applicationCommands = [{
-    name: "hilfe",
-    description: "Shitpost Bot Hilfe"
-}];
-
+exports.applicationCommands = {
+    hilfe: {
+        handler,
+        data: {
+            description: "Shitpost Bot Hilfe"
+        }
+    }
+};

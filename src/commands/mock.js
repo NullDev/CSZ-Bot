@@ -1,5 +1,7 @@
 "use strict";
 
+const { MessageEmbed } = require("discord.js");
+
 // ========================= //
 // = Copyright (c) NullDev = //
 // ========================= //
@@ -27,73 +29,51 @@ let transform = function(c){
 const mock = (str) => str.split("").map(transform).join("");
 
 /**
- * Sends mocked embed
- * @param {import("discord.js").Message} message
+ *
+ * @param {import("discord.js").User} author
  * @param {string} mocked
+ * @returns {import("discord.js").MessageEmbed}
  */
-const sendMock = (message, mocked) => {
-    let embed = {
-        embed: {
-            description: `${mocked} <:mock:677504337769005096>`,
-            author: {
-                name: `${message.author.username}`,
-                icon_url: message.author.displayAvatarURL()
-            }
-        }
-    };
-
-    message.channel.send(embed).then(() => message.delete());
+const createMockEmbed = (author, mocked) => {
+    return new MessageEmbed()
+        .setDescription(`${mocked} <:mock:677504337769005096>`)
+        .setAuthor(`${author.username}`, author.displayAvatarURL())
+        .setColor(0xa84300);
 };
 
 /**
- * Mock a given text
- *
- * @param {import("discord.js").Client} client
- * @param {import("discord.js").Message} message
- * @param {Array} args
+ * @param {import("discord.js").CommandInteraction} interaction
  * @param {Function} callback
- * @returns {Function} callback
  */
-exports.run = (client, message, args, callback) => {
-    // TODO: Check for message type 19 when it is available in discord.js
-    const referencedMessage = message.reference?.messageID;
-    if (!args.length && !referencedMessage) return callback(`Bruder du bist zu dumm zum mocken? Mach \`${config.bot_settings.prefix.command_prefix}mock DEIN TEXT HIER\` oder antworte auf eine Nachricht`);
+async function slashCommandHandler(interaction, callback) {
+    const text = interaction.options.get("text");
+    const content = createMockEmbed(interaction.user, mock(text.value));
 
-    if(referencedMessage && !args.length) {
-        // TODO: inline reply when it is available in discord.js
-        message.channel.messages.fetch(referencedMessage)
-            .then(msg => {
-                if(!!msg.content) {
-                    sendMock(message, mock(msg.content));
-                }
-                else {
-                    message.channel.send("Brudi da ist nix, was ich mocken kann");
-                }
-            });
-    }
-    else {
-        const text = message.content.slice(`${config.bot_settings.prefix.command_prefix}mock `.length);
-        sendMock(message, mock(text));
-    }
+    console.log({ embeds: [content]});
+
+    await interaction.reply({ embeds: [content]});
+
     return callback();
-};
+}
 
 exports.description = `Mockt einen Text.\nBenutzung: ${config.bot_settings.prefix.command_prefix}mock [Hier dein Text] oder nur ${config.bot_settings.prefix.command_prefix}mock in einer reply`;
 
 /**
- * @type {import("discord.js").ApplicationCommandData[]}
+ * @type {Record<string, import("../handler/commands.js").CommandDefinition>}
  */
-exports.applicationCommands = [
-    {
-        name: "mock",
-        description: "Mockt einen Text",
-        options: [
-            {
-                name: "text",
-                description: "Der zu mockende Text, obviously",
-                type: "STRING",
-                required: true
-            }
-        ]
+exports.applicationCommands = {
+    mock: {
+        handler: slashCommandHandler,
+        data: {
+            description: "Mockt einen Text",
+            options: [
+                {
+                    name: "text",
+                    description: "DeR zU MoCkEnDe TeXt",
+                    type: "STRING",
+                    required: true
+                }
+            ]
+        }
     }
-];
+};

@@ -18,17 +18,11 @@ let getContributors = function(){
 };
 
 /**
- * Shows some generic infos
- *
- * @param {import("discord.js").Client} client
- * @param {import("discord.js").Message} message
- * @param {Array} args
+ * @param {import("discord.js").CommandInteraction} interaction
  * @param {Function} callback
- * @returns {Promise<Function>} callback
  */
-exports.run = async(client, message, args, callback) => {
-    message.react("✉");
-    message.author.send(`
+async function handler(interaction, callback) {
+    const content = `
         Programmiert von ShadowByte#1337 für die Coding Shitpost Zentrale (<https://discord.gg/FABdvae>)
         
         Contributions von:
@@ -45,20 +39,23 @@ exports.run = async(client, message, args, callback) => {
         - Architecture: ${process.arch}
         
         Source Code: <https://github.com/NullDev/CSC-Bot>
-    `.replace(/  +/g, "")); // Remove leading indents
+    `.replace(/  +/g, "");
+
+    await interaction.reply({ content, ephemeral: true });
 
     return callback();
-};
+}
 
 exports.description = "Listet Informationen über diesen Bot";
 
 /**
- * @type {import("discord.js").ApplicationCommandData[]}
+ * @type {Record<string, import("../handler/commands.js").CommandDefinition>}
  */
-exports.applicationCommands = [
-    {
-        name: "info",
-        description: exports.description
+exports.applicationCommands = {
+    info: {
+        handler,
+        data: {
+            description: exports.description
+        }
     }
-];
-
+};

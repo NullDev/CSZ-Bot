@@ -49,7 +49,6 @@ module.exports = function(message, client){
             if (err) message.channel.send(err);
         });
     }
-
     else if (isModCommand) {
         cmdHandler(message, client, true, (err) => {
             if (err) message.channel.send(err);

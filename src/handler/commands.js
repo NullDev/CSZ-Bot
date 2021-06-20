@@ -1,3 +1,4 @@
+// @ts-check
 "use strict";
 
 // Core Modules
@@ -8,29 +9,44 @@ let log = require("../utils/logger");
 // Utils
 const config = require("../utils/configHandler").getConfig();
 
-function loadCommands(srcDir) {
-    const commandRoot = path.resolve(srcDir);
+/**
+ * @typedef {{
+ *     handler: Function,
+ *     data: import("discord.js").ApplicationCommandData,
+ *     permissions?: import("discord.js").ApplicationCommandPermissionData[],
+ *     buttonHandler?: Record<string, Function>
+ * }} CommandDefinition
+ */
+
+/**
+ * @return {Map<string, CommandDefinition>}
+ */
+function loadModules(srcDir, isModModule = false) {
+    const moduleRoot = path.resolve(srcDir);
 
     const res = new Map();
 
-    for(const commandFile of fs.readdirSync(commandRoot)) {
-        const fullCommandFile = path.join(commandRoot, commandFile);
+    for(const moduleFile of fs.readdirSync(moduleRoot)) {
+        const fullmoduleFile = path.join(moduleRoot, moduleFile);
 
-        if (fs.statSync(fullCommandFile).isDirectory() || path.extname(fullCommandFile).toLowerCase() !== ".js") {
+        if (fs.statSync(fullmoduleFile).isDirectory() || path.extname(fullmoduleFile).toLowerCase() !== ".js") {
             continue;
         }
 
-        log.info(`Loading "${fullCommandFile}"`);
+        log.info(`Loading "${fullmoduleFile}"`);
 
-        const cmd = require(fullCommandFile);
+        const mod = require(fullmoduleFile);
+        mod.isModModule = isModModule;
 
-        if(cmd.applicationCommands) {
-            cmd.applicationCommands.forEach(slashCmd => {
-                res.set(slashCmd.name, cmd);
-            });
+        if(mod.applicationCommands) {
+            for (const [name, info] of Object.entries(mod.applicationCommands)) {
+                info.isModCommand = isModModule;
+                res.set(name, info);
+            }
         }
         else {
-            res.set(path.parse(commandFile).name, cmd);
+            console.log(`You lazy fagtard should convert ${path.parse(moduleFile).name} to application commands`);
+            // res.set(path.parse(moduleFile).name, mod);
         }
     }
 
@@ -41,18 +57,41 @@ function loadCommands(srcDir) {
  *
  * @param {import("discord.js").Client} client
  */
-function createApplicationCommands(client) {
-    this.plebCommands.forEach(cmd => {
-        if(cmd.applicationCommands) {
-            cmd.applicationCommands.forEach(slashCmd => {
-                client.application.commands.create(slashCmd, config.ids.guild_id);
-            });
-        }
-    });
+async function createApplicationCommands(client) {
+    for (const [name, info] of this.allCommands) {
+        // we are lazy and don't want to specify the command name twice in the module itself
+        info.data.name = name;
+        info.data.defaultPermission = !info.isModCommand;
+
+        client.application.commands.create(info.data, config.ids.guild_id)
+            .then(cmdObject => {
+                log.info(`Successfully created application ${info.isModCommand ? "mod " : ""}command ${cmdObject.name} with ID ${cmdObject.id}`);
+
+                if(info.permissions && info.permissions.length > 0) {
+                    cmdObject.setPermissions(info.permissions, config.ids.guild_id);
+                }
+
+                if (info.isModCommand) {
+                    cmdObject.setPermissions([
+                        {
+                            id: config.ids.moderator_role_id,
+                            type: "ROLE",
+                            permission: true
+                        }
+                    ], config.ids.guild_id);
+                }
+            })
+            .catch(err => log.error(err));
+    }
 }
 
+const modCommands = loadModules("./src/commands/modcommands", true);
+const plebCommands = loadModules("./src/commands", false);
+const allCommands = new Map([...plebCommands, ...modCommands]);
+
 module.exports = {
-    modCommands: loadCommands("./src/commands/modcommands"),
-    plebCommands: loadCommands("./src/commands"),
+    modCommands,
+    plebCommands,
+    allCommands,
     createApplicationCommands
 };

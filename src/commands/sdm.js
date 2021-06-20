@@ -1,5 +1,6 @@
 "use strict";
 
+const { MessageEmbed } = require("discord.js");
 // Dependencies
 let moment = require("moment");
 
@@ -59,78 +60,134 @@ const ioc = iocCalculator(randomSeed);
 const secureDecisionMaker = (question, max = 1) => (rng(0, max, (Date.now() * ioc) / iocCalculator(question)));
 
 /**
- * Creates a new secure decision (sdm; yes/no)
- *
- * @param {import("discord.js").Client} client
- * @param {import("discord.js").Message} message
- * @param {array} args
+ * @param {import("discord.js").CommandInteraction} interaction
  * @param {Function} callback
- * @returns {Function} callback
  */
-exports.run = (client, message, args, callback) => {
-    if (!args.length) return callback("Bruder da ist keine Frage :c");
+async function handler(interaction, callback) {
+    if(interaction.options.has("frage")) {
+        let question = interaction.options.get("frage").options.get("question").value;
 
-    let question = args.join(" ").replace(/\s\s+/g, " ");
-    const options = question.split(/,|;|\s+oder\s+/gi).map(s => s.trim()).filter(s => !!s);
+        if (!question.endsWith("?")) question += "?";
 
-    if(options.length > 1) {
-        question = options.reduce((p, c, i, a) => (`${p}${i === a.length - 1 ? " oder " : ", "}${c}`));
-    }
-    if (!question.endsWith("?")) question += "?";
-
-    let embed = {
-        embed: {
-            title: question,
-            timestamp: moment.utc().format(),
-            author: {
-                name: `Secure Decision für ${message.author.username}`,
-                icon_url: message.author.displayAvatarURL()
-            }
-        }
-    };
-    if(options.length === 1) {
         const decision = secureDecisionMaker(question);
-        let file;
+
+        let response = new MessageEmbed()
+            .setTitle(question)
+            .setTimestamp(moment.utc().format())
+            .setAuthor(`Secure Decision für ${interaction.user.username}`, interaction.user.displayAvatarURL());
+
         if(!!decision) {
-            embed.embed.color = 0x2ecc71;
-            file = "yes.png";
+            response = response.setColor(0x2ecc71)
+                .setThumbnail("https://raw.githubusercontent.com/NullDev/CSC-Bot/master/assets/yes.png");
         }
         else {
-            embed.embed.color = 0xe74c3c;
-            file = "no.png";
+            response = response.setColor(0xe74c3c)
+                .setThumbnail("https://raw.githubusercontent.com/NullDev/CSC-Bot/master/assets/no.png");
         }
-        embed.embed.thumbnail = {
-            url: `attachment://${file}`
-        };
-        embed.files = [`./assets/${file}`];
+
+        interaction.reply({ embeds: [response]});
+
+        return callback();
     }
-    else {
+    else if(interaction.options.has("auswahl")) {
+        const options = [...interaction.options.get("auswahl").options.values()].map(o => o.value);
+        const question = options.reduce((acc, val, idx, arr) => (`${acc}${idx === arr.length - 1 ? " oder " : ", "}${val}`));
         const decision = secureDecisionMaker(question, options.length - 1);
-        embed.embed.color = 0x9b59b6;
-        embed.embed.description = `Mashallah, ich rate dir zu **${options[decision]}**!`;
+
+        let response = new MessageEmbed()
+            .setTitle(question)
+            .setTimestamp(moment.utc().format())
+            .setColor(0x9b59b6)
+            .setDescription(`Bruder, probier's doch einfach mit ${options[decision]}`)
+            .setAuthor(`Secure Decision für ${interaction.user.username}`, interaction.user.displayAvatarURL());
+
+        interaction.reply({ embeds: [response]});
+
+        return callback();
     }
 
-    message.channel
-        .send(/** @type {any} embed */ (embed))
-        .then(() => message.delete());
-
-    return callback();
-};
+    return callback("Bruder hier ist was schief gegangen, was das?");
+}
 
 exports.description = `Macht eine Secure Decision mithilfe eines komplexen, hochoptimierten, Blockchain Algorithmus.\nUsage:\n**ja/nein Frage**\n ${config.bot_settings.prefix.command_prefix}sdm [Hier die Frage]\n\n**Secure Auswahl**\n\n${config.bot_settings.prefix.command_prefix}sdm [Auswahl 1]; [Auswahl 2]`;
 
 /**
- * @type {import("discord.js").ApplicationCommandData[]}
+ * @type {Record<string, import("../handler/commands.js").CommandDefinition>}
  */
-exports.applicationCommands = [{
-    name: "sdm",
-    description: "Macht eine Secure Decision mithilfe eines komplexen, hochoptimierten, Blockchain Algorithmus.",
-    options: [
-        {
-            name: "question",
-            type: "STRING",
-            description: "Fragestellung",
-            required: true
+exports.applicationCommands = {
+    sdm: {
+        handler,
+        data: {
+            description: "Macht eine Secure Decision mithilfe eines komplexen, hochoptimierten, Blockchain Algorithmus.",
+            options: [
+                {
+                    name: "frage",
+                    type: "SUB_COMMAND",
+                    description: "Erstellt eine Secure Decision aufgrund einer Fragestellung",
+                    options: [
+                        {
+                            name: "question",
+                            type: "STRING",
+                            description: "Fragestellung",
+                            required: true
+                        }
+                    ]
+                },
+                {
+                    name: "auswahl",
+                    type: "SUB_COMMAND",
+                    description: "Erstellt eine Secure Decision anhand einer Auswahl",
+                    options: [
+                        {
+                            name: "s1",
+                            type: "STRING",
+                            description: "Auswahlelement 1",
+                            required: true
+                        },
+                        {
+                            name: "s2",
+                            type: "STRING",
+                            description: "Auswahlelement 2",
+                            required: true
+                        },
+                        {
+                            name: "s3",
+                            type: "STRING",
+                            description: "Auswahlelement 3"
+                        },
+                        {
+                            name: "s4",
+                            type: "STRING",
+                            description: "Auswahlelement 4"
+                        },
+                        {
+                            name: "s5",
+                            type: "STRING",
+                            description: "Auswahlelement 35"
+                        },
+                        {
+                            name: "s6",
+                            type: "STRING",
+                            description: "Auswahlelement 6"
+                        },
+                        {
+                            name: "s7",
+                            type: "STRING",
+                            description: "Auswahlelement 7"
+                        },
+                        {
+                            name: "s8",
+                            type: "STRING",
+                            description: "Auswahlelement 8"
+                        },
+                        {
+                            name: "s9",
+                            type: "STRING",
+                            description: "Auswahlelement 9"
+                        }
+                    ]
+                }
+            ]
         }
-    ]
-}];
+    }
+};

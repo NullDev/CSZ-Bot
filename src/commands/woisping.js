@@ -5,7 +5,6 @@
 // ================================= //
 
 // Utils
-let log = require("../utils/logger");
 let config = require("../utils/configHandler").getConfig();
 let access = require("../utils/access");
 
@@ -16,45 +15,81 @@ let lastPing = 0;
 
 
 /**
- * Allows usage of @Woisgang mention for people having that role assigned
- *
- * @param {import("discord.js").Client} client
- * @param {import("discord.js").Message} message
- * @param {Array} args
+ * @param {import("discord.js").CommandInteraction} interaction
  * @param {Function} callback
- * @returns {Promise<Function>} callback
  */
-exports.run = async(client, message, args, callback) => {
-    const isMod = access.isModeratorMessage(message);
-
-    if (!isMod && !message.member.roles.cache.has(config.ids.woisgang_role_id)){
-        log.warn(`User "${message.author.tag}" (${message.author}) tried command "${config.bot_settings.prefix.command_prefix}woisping" and was denied`);
-
-        return callback(
-            `Tut mir leid, ${message.author}. Du hast nicht genügend Rechte um dieses Command zu verwenden =(`
-        );
-    }
-
+async function handler(interaction, callback) {
+    console.log(interaction.user);
+    const isMod = access.isModeratorUser(interaction.member);
     const now = Date.now();
 
     if (!isMod && lastPing + config.bot_settings.woisping_limit * 1000 > now) {
-        return callback("Piss dich und spam nicht.");
+        interaction.reply("Piss dich und spam nicht.");
+        return callback();
     }
 
-    const reason = `${args.join(" ")} (von ${message.member})`;
-
-    if (isMod) {
+    const reason = interaction.options.get("grund").value;
+    if(isMod) {
         lastPing = now;
-        message.channel.send(`<@&${config.ids.woisgang_role_id}> ${reason}`);
+        interaction.reply({ content: `Was läuft, was läuft, was läuft <@&${config.ids.woisgang_role_id}>? Lass mal: ${reason}`});
     }
     else {
-        const msg = await message.channel.send(`${pendingMessagePrefix} ${reason}`);
-        msg.react("👍");
+        interaction.reply({
+            content: `Was läuft, was läuft, was läuft soll die Woisgang jetzt ${reason}?`,
+            components: [
+                {
+                    type: 1,
+                    components: [
+                        {
+                            type: 2,
+                            label: "Ja, alter!",
+                            customID: "woisgang_yes",
+                            style: 3,
+                            emoji: {
+                                id: null,
+                                name: "👍"
+                            }
+                        },
+                        {
+                            type: 2,
+                            label: "Nee du...",
+                            customID: "woisgang_no",
+                            style: 4,
+                            emoji: {
+                                id: null,
+                                name: "👎"
+                            }
+                        }
+                    ]
+                }
+            ]
+        });
 
         // we don't set lastPing here to allow multiple concurrent requests
         // let the most liked reason win...
     }
+    return callback();
+}
 
+/**
+ *
+ * @param {import("discord.js").MessageComponentInteraction} interaction
+ * @param {Function} callback
+ */
+exports.handleYes = async(interaction, callback) => {
+    console.log("Ja zur Woisgang");
+    interaction.reply({ content: "Jaman, das ist die richtige Einstellung 🥳", ephemeral: true});
+    return callback();
+};
+
+/**
+ *
+ * @param {import("discord.js").MessageComponentInteraction} interaction
+ * @param {Function} callback
+ */
+exports.handleNo = async(interaction, callback) => {
+    console.log("Nein zur Woisgang");
+    interaction.reply({ content: "Ok, dann halt nicht 😔", ephemeral: true});
     return callback();
 };
 
@@ -120,9 +155,32 @@ exports.reactionHandler = async(event, client, message) => {
 exports.description = `Mitglieder der @Woisgang-Rolle können einen Ping an diese Gruppe absenden. Es müssen mindestens ${config.bot_settings.woisping_threshold} Woisgang-Mitglieder per Reaction zustimmen.\nUsage: ${config.bot_settings.prefix.command_prefix}woisping Text`;
 
 /**
- * @type {import("discord.js").ApplicationCommandData[]}
+ * @type {Record<string, CommandDefinition>}
  */
-exports.applicationCommands = [{
-    name: "woisping",
-    description: "Mitglieder der @Woisgang-Rolle können einen Ping an diese Gruppe absenden."
-}];
+exports.applicationCommands = {
+    woisping: {
+        handler,
+        data: {
+            description: "Mitglieder der @Woisgang-Rolle können einen Ping an diese Gruppe absenden.",
+            options: [
+                {
+                    name: "grund",
+                    type: "STRING",
+                    description: "Warum willst du die Woisgang abfucken?",
+                    required: true
+                }
+            ]
+        },
+        permissions: [
+            {
+                id: config.ids.woisgang_role_id,
+                type: "ROLE",
+                permission: true
+            }
+        ],
+        buttonHandler: {
+            woisgang_yes: this.handleYes,
+            woisgang_no: this.handleNo
+        }
+    }
+};
