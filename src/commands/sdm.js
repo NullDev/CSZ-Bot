@@ -1,5 +1,6 @@
 "use strict";
 
+const { Util } = require("discord.js");
 // Dependencies
 let moment = require("moment");
 
@@ -80,7 +81,7 @@ exports.run = (client, message, args, callback) => {
 
     let embed = {
         embed: {
-            title: question,
+            title: Util.cleanContent(question, message.channel),
             timestamp: moment.utc().format(),
             author: {
                 name: `Secure Decision für ${message.author.username}`,
