@@ -99,7 +99,7 @@ client.on("guildMemberAdd", async member => {
 
             const hauptchat = member.guild.channels.cache.get(config.ids.hauptchat_id);
             if(hauptchat) {
-                hauptchat.send(`Haha, schau mal einer guck wer wieder hergekommen ist! <@${member.id}> hast es aber nicht lange ohne uns ausgehalten.`);
+                hauptchat.send(`Haha, schau mal einer guck wer wieder hergekommen ist! <@${member.id}> hast es aber nicht lange ohne uns ausgehalten. ${numRagequits > 1 ? "Und das schon zum " + numRagequits + ". mal" : ""}`);
             }
             else {
                 log.error("Hauptchat nicht gefunden");
