@@ -5,7 +5,9 @@ FROM node:16-alpine as dependencies
     RUN apk add --no-cache --repository http://dl-3.alpinelinux.org/alpine/edge/testing vips-dev fftw-dev
 
     COPY package*.json /app/
-    RUN npm ci --only=production
+    RUN npm ci
+
+    RUN npm run compile
 
 FROM node:16-alpine
     WORKDIR /app

@@ -6,7 +6,8 @@
   "main": "src/app.js",
   "scripts": {
     "prepare": "husky install",
-    "start": "node ./src/app.js",
+    "start": "node ./built/app.js",
+    "compile": "tsc",
     "lint": "eslint ./src",
     "live": "nodemon ./src/app.js",
     "dev": "npm run lint && npm start"
