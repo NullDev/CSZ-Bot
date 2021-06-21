@@ -81,7 +81,7 @@ exports.run = (client, message, args, callback) => {
 
     let embed = {
         embed: {
-            title: Util.cleanContent(question, message.channel),
+            title: Util.cleanContent(question, message),
             timestamp: moment.utc().format(),
             author: {
                 name: `Secure Decision für ${message.author.username}`,
