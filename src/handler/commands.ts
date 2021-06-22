@@ -6,26 +6,10 @@ import * as log from "../utils/logger";
 // Utils
 const config = require("../utils/configHandler").getConfig();
 
-import { Client, ApplicationCommandData, ApplicationCommandPermissionData, CommandInteraction, ButtonInteraction } from "discord.js";
+import { Client } from "discord.js";
+import { ApplicationCommandDefinition, CommandName, CSZModule } from "../types";
 
-export type CommandName = string;
-export type Callback = (err?: any) => void;
-
-export interface CSZApplicationCommand {
-    handler: (interaction: CommandInteraction, callback: Callback) => void;
-    buttonHandler: Record<string, (interaction: ButtonInteraction, callback: Callback) => Promise<void>>,
-    data: ApplicationCommandData,
-    help?: string,
-    permissions?: ApplicationCommandPermissionData[],
-    isModCommand?: boolean,
-}
-
-export interface CSZModule {
-    applicationCommands?: CSZApplicationCommand[],
-    isModModule?: boolean;
-}
-
-export async function loadModules(srcDir: string, isModModule = false): Promise<Map<CommandName, CSZApplicationCommand>> {
+export async function loadModules(srcDir: string, isModModule = false): Promise<Map<CommandName, ApplicationCommandDefinition>> {
     const moduleRoot = path.resolve(srcDir);
 
     const res = new Map();
@@ -58,7 +42,7 @@ export async function loadModules(srcDir: string, isModModule = false): Promise<
     return res;
 }
 
-export function createApplicationCommands(client: Client, commands: Map<CommandName, CSZApplicationCommand>) {
+export function createApplicationCommands(client: Client, commands: Map<CommandName, ApplicationCommandDefinition>) {
     for (const [name, info] of commands) {
         // we are lazy and don't want to specify the command name twice in the module itself
         info.data.name = name;

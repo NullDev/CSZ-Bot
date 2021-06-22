@@ -2,9 +2,9 @@
 import * as log from "../utils/logger";
 
 import { Interaction } from "discord.js";
-import { CommandName, CSZApplicationCommand } from "./commands";
+import { CommandName, ApplicationCommandDefinition } from "../types";
 
-export default async function(interaction: Interaction, allCommands: Map<CommandName, CSZApplicationCommand>) {
+export default async function(interaction: Interaction, allCommands: Map<CommandName, ApplicationCommandDefinition>) {
     const toBeDoneCallback = (err: any) => {
         if (err) console.log(err);
     };
