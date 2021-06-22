@@ -27,10 +27,11 @@ exports.description = `Gibt dir die Moralisch vertretbare Altersgrenze für den 
 /**
  * @type {Record<string, import("../handler/commands.js").CommandDefinition>}
  */
-exports.applicationCommands = {
-    min: {
+exports.applicationCommands = [
+    {
         handler,
         data: {
+            name: "min",
             description: "Gibt dir die Moralisch vertretbare Altersgrenze für den Geschlechtsakt basierend auf deinem Alter",
             options: [
                 {
@@ -42,4 +43,4 @@ exports.applicationCommands = {
             ]
         }
     }
-};
+];

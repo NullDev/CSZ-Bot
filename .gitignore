@@ -112,6 +112,7 @@ dist
 storage.db
 
 # Visual Studio Code
-.vscode/
+.vscode/settings.json
 
+# TypeScript
 built/

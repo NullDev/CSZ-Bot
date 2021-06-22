@@ -29,11 +29,12 @@ exports.description = "Listet alle server rollen auf";
 /**
  * @type {Record<string, import("../handler/commands.js").CommandDefinition>}
  */
-exports.applicationCommands = {
-    listroles: {
+exports.applicationCommands = [
+    {
         handler,
         data: {
+            name: "listroles",
             description: "Listet alle Serverrollen auf"
         }
     }
-};
+];

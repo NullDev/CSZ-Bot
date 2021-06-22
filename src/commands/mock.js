@@ -61,10 +61,11 @@ exports.description = `Mockt einen Text.\nBenutzung: ${config.bot_settings.prefi
 /**
  * @type {Record<string, import("../handler/commands.js").CommandDefinition>}
  */
-exports.applicationCommands = {
-    mock: {
+exports.applicationCommands = [
+    {
         handler: slashCommandHandler,
         data: {
+            name: "mock",
             description: "Mockt einen Text",
             options: [
                 {
@@ -76,4 +77,4 @@ exports.applicationCommands = {
             ]
         }
     }
-};
+];

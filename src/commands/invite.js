@@ -20,12 +20,13 @@ exports.description = "Sendet einen Invite link für den Server";
 /**
  * @type {Record<string, import("../handler/commands.js").CommandDefinition>}
  */
-exports.applicationCommands = {
-    invite: {
+exports.applicationCommands = [
+    {
         handler,
         data: {
+            name: "invite",
             description: "Sendet einen Invite link für den Server"
         }
     }
-};
+];
 

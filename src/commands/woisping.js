@@ -154,10 +154,11 @@ exports.description = `Mitglieder der @Woisgang-Rolle können einen Ping an dies
 /**
  * @type {Record<string, CommandDefinition>}
  */
-exports.applicationCommands = {
-    woisping: {
+exports.applicationCommands = [
+    {
         handler,
         data: {
+            name: "woisping",
             description: "Mitglieder der @Woisgang-Rolle können einen Ping an diese Gruppe absenden.",
             options: [
                 {
@@ -180,4 +181,4 @@ exports.applicationCommands = {
             woisgang_no: handleNo
         }
     }
-};
+];

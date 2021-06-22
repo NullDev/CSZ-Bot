@@ -1,27 +1,33 @@
-// @ts-check
 "use strict";
 
 // Core Modules
-let fs = require("fs");
-let path = require("path");
-let log = require("../utils/logger");
+import * as fs from "fs";
+import * as path from "path";
+import * as log from "../utils/logger";
 
 // Utils
 const config = require("../utils/configHandler").getConfig();
 
-/**
- * @typedef {{
- *     handler: Function,
- *     data: import("discord.js").ApplicationCommandData,
- *     permissions?: import("discord.js").ApplicationCommandPermissionData[],
- *     buttonHandler?: Record<string, Function>
- * }} CommandDefinition
- */
+import { Client, ApplicationCommandData, ApplicationCommandPermissionData, CommandInteraction, ButtonInteraction } from "discord.js";
 
-/**
- * @return {Map<string, CommandDefinition>}
- */
-function loadModules(srcDir, isModModule = false) {
+export type CommandName = string;
+export type Callback = (err?: any) => void;
+
+export interface CSZApplicationCommand {
+    handler: (interaction: CommandInteraction, callback: Callback) => void;
+    buttonHandler: Record<string, (interaction: ButtonInteraction, callback: Callback) => Promise<void>>,
+    data: ApplicationCommandData,
+    help?: string,
+    permissions?: ApplicationCommandPermissionData[],
+    isModCommand?: boolean,
+}
+
+export interface CSZModule {
+    applicationCommands?: CSZApplicationCommand[],
+    isModModule?: boolean;
+}
+
+export async function loadModules(srcDir: string, isModModule = false): Promise<Map<CommandName, CSZApplicationCommand>> {
     const moduleRoot = path.resolve(srcDir);
 
     const res = new Map();
@@ -35,13 +41,14 @@ function loadModules(srcDir, isModModule = false) {
 
         log.info(`Loading "${fullmoduleFile}"`);
 
-        const mod = require(fullmoduleFile);
+        //const mod = require(fullmoduleFile);
+        const mod: CSZModule = await import(fullmoduleFile);
         mod.isModModule = isModModule;
 
         if(mod.applicationCommands) {
-            for (const [name, info] of Object.entries(mod.applicationCommands)) {
-                info.isModCommand = isModModule;
-                res.set(name, info);
+            for (const applicationCommand of mod.applicationCommands) {
+                applicationCommand.isModCommand = isModModule;
+                res.set(applicationCommand.data.name, applicationCommand);
             }
         }
         else {
@@ -53,16 +60,12 @@ function loadModules(srcDir, isModModule = false) {
     return res;
 }
 
-/**
- *
- * @param {import("discord.js").Client} client
- */
-async function createApplicationCommands(client) {
-    for (const [name, info] of this.allCommands) {
+export function createApplicationCommands(client: Client, commands: Map<CommandName, CSZApplicationCommand>) {
+    for (const [name, info] of commands) {
         // we are lazy and don't want to specify the command name twice in the module itself
         info.data.name = name;
 
-        const permissions = info.permissions?.length > 0 ? info.permissions : [];
+        const permissions = info.permissions || [];
 
         // always allow moderators to use commands, even if restricted in use for a specific role/user
         if(permissions.length > 0 || info.isModCommand) {
@@ -77,7 +80,7 @@ async function createApplicationCommands(client) {
         // so if there are specific permissions, we have to disable it for everyone except those permitted
         info.data.defaultPermission = (permissions.length === 0);
 
-        client.application.commands.create(info.data, config.ids.guild_id)
+        client.application?.commands.create(info.data, config.ids.guild_id)
             .then(cmdObject => {
                 log.info(`Successfully created application ${info.isModCommand ? "mod " : ""}command ${cmdObject.name} with ID ${cmdObject.id}`);
 
@@ -88,14 +91,3 @@ async function createApplicationCommands(client) {
             .catch(err => log.error(err));
     }
 }
-
-const modCommands = loadModules("./src/commands/modcommands", true);
-const plebCommands = loadModules("./src/commands", false);
-const allCommands = new Map([...plebCommands, ...modCommands]);
-
-module.exports = {
-    modCommands,
-    plebCommands,
-    allCommands,
-    createApplicationCommands
-};

@@ -109,13 +109,11 @@ async function handler(interaction, callback) {
 
 exports.description = "Erstellt ne Umfrage";
 
-/**
- * @type {Record<string, import("../handler/commands.js").CommandDefinition>}
- */
-exports.applicationCommands = {
-    vote: {
+exports.applicationCommands = [
+    {
         handler,
         data: {
+            name: "vote",
             description: "Erstellt eine Umfrage",
             options: [
                 {
@@ -147,4 +145,4 @@ exports.applicationCommands = {
             vote_no: handleNo
         }
     }
-};
+];

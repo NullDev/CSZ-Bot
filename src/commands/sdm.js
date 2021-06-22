@@ -114,10 +114,11 @@ exports.description = `Macht eine Secure Decision mithilfe eines komplexen, hoch
 /**
  * @type {Record<string, import("../handler/commands.js").CommandDefinition>}
  */
-exports.applicationCommands = {
-    sdm: {
+exports.applicationCommands = [
+    {
         handler,
         data: {
+            name: "sdm",
             description: "Macht eine Secure Decision mithilfe eines komplexen, hochoptimierten, Blockchain Algorithmus.",
             options: [
                 {
@@ -190,4 +191,4 @@ exports.applicationCommands = {
             ]
         }
     }
-};
+];

@@ -5,9 +5,8 @@
   "description": "Offizieller Coding Shitpost Zentrale Bot",
   "main": "src/app.js",
   "scripts": {
-    "prepare": "husky install",
     "start": "node ./built/app.js",
-    "compile": "tsc",
+    "compile": "tsc --sourceMap false",
     "lint": "eslint ./src",
     "live": "nodemon ./src/app.js",
     "dev": "npm run lint && npm start"
@@ -38,8 +37,8 @@
     "@babel/eslint-parser": "^7.14.2",
     "@types/node": "^15.3.0",
     "eslint": "^7.26.0",
-    "husky": "^6.0.0",
-    "nodemon": "^2.0.7"
+    "nodemon": "^2.0.7",
+    "typescript": "^4.3.4"
   },
   "engines": {
     "node": ">=14.3.0"

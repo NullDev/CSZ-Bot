@@ -1,33 +1,22 @@
-// @ts-check
-"use strict";
-
 // Utils
-let log = require("../utils/logger");
+import * as log from "../utils/logger";
 
-let commands = require("./commands");
+import { Interaction } from "discord.js";
+import { CommandName, CSZApplicationCommand } from "./commands";
 
-
-/**
- * Handles interaction
- *
- * @param {import("discord.js").Interaction} interaction
- * @returns
- */
-module.exports = function(interaction) {
-    const toBeDoneCallback = (err) => {
+export default async function(interaction: Interaction, allCommands: Map<CommandName, CSZApplicationCommand>) {
+    const toBeDoneCallback = (err: any) => {
         if (err) console.log(err);
     };
 
     if(interaction.isCommand()) {
-        /** @type {import("discord.js").CommandInteraction} */
-        const commandInteraction = interaction;
-        log.info(`Recieved Interaction ${commandInteraction.commandName} from ${commandInteraction.user.username}`);
+        log.info(`Recieved Interaction ${interaction.commandName} from ${interaction.user.username}`);
 
-        const command = commands.allCommands.get(commandInteraction.commandName);
+        const command = allCommands.get(interaction.commandName);
 
         if (command?.handler) {
             try {
-                command.handler(commandInteraction, function(err){
+                command.handler(interaction, (err?: any) => {
                     // Non-Exception Error returned by the command (e.g.: Missing Argument)
                     if (err) toBeDoneCallback(err);
                 });
@@ -42,24 +31,22 @@ module.exports = function(interaction) {
         }
     }
     else if(interaction.isButton()) {
-        /** @type {import("discord.js").ButtonInteraction} */
-        const buttonInteraction = interaction;
-        const { message } = buttonInteraction;
+        const { message } = interaction;
 
         if(message.interaction) {
-            log.info(`Recieved Button Interaction ${buttonInteraction.customID}`);
+            log.info(`Recieved Button Interaction ${interaction.customID}`);
 
             // can be of type Message or APIMessage
             let commandName = "name" in message.interaction ? message.interaction.name : message.interaction.commandName;
 
-            const command = commands.allCommands.get(commandName);
+            const command = allCommands.get(commandName);
 
             if(command?.buttonHandler) {
-                const handler = command.buttonHandler[buttonInteraction.customID];
+                const handler = command.buttonHandler[interaction.customID];
 
                 if(handler) {
                     try {
-                        handler(buttonInteraction, function(err){
+                        handler(interaction, (err: any) => {
                             // Non-Exception Error returned by the command (e.g.: Missing Argument)
                             if (err) toBeDoneCallback(err);
                         });

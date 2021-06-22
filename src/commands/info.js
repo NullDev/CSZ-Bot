@@ -24,10 +24,10 @@ let getContributors = function(){
 async function handler(interaction, callback) {
     const content = `
         Programmiert von ShadowByte#1337 für die Coding Shitpost Zentrale (<https://discord.gg/FABdvae>)
-        
+
         Contributions von:
-        ${(await getContributors())} 
-        
+        ${(await getContributors())}
+
         Eckdaten:
         - Programmiersprache: NodeJS
         - NodeJS Version: ${process.version}
@@ -37,7 +37,7 @@ async function handler(interaction, callback) {
         - System CPU usage time: ${process.cpuUsage().system}
         - User CPU usage time: ${process.cpuUsage().user}
         - Architecture: ${process.arch}
-        
+
         Source Code: <https://github.com/NullDev/CSC-Bot>
     `.replace(/  +/g, "");
 
@@ -51,11 +51,12 @@ exports.description = "Listet Informationen über diesen Bot";
 /**
  * @type {Record<string, import("../handler/commands.js").CommandDefinition>}
  */
-exports.applicationCommands = {
-    info: {
+exports.applicationCommands = [
+    {
         handler,
         data: {
+            name: "info",
             description: exports.description
         }
     }
-};
+];

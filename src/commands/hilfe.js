@@ -38,11 +38,12 @@ exports.description = "Listet alle Commands auf";
 /**
  * @type {Record<string, import("../handler/commands.js").CommandDefinition>}
  */
-exports.applicationCommands = {
-    hilfe: {
+exports.applicationCommands = [
+    {
         handler,
         data: {
+            name: "hilfe",
             description: "Shitpost Bot Hilfe"
         }
     }
-};
+];
