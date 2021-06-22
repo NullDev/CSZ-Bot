@@ -107,7 +107,7 @@ client.on("error", log.error);
 
 client.on("raw", async event => reactionHandler(event, client));
 
-client.on("interaction", interaction => interactionHandler(interaction, allCommands));
+client.on("interaction", async interaction => await interactionHandler(interaction, allCommands));
 
 client.login(config.auth.bot_token).then(() => {
     log.done("Token login was successful!");
