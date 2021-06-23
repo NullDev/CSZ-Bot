@@ -2,12 +2,14 @@
 import * as log from "../utils/logger";
 
 import { Interaction } from "discord.js";
-import { CommandName, ApplicationCommandDefinition } from "../types";
+import { CommandName, ApplicationCommandDefinition, assertVerifiedInteraction } from "../types";
 
 export default async function(interaction: Interaction, allCommands: Map<CommandName, ApplicationCommandDefinition>) {
     const toBeDoneCallback = (err: any) => {
         if (err) console.log(err);
     };
+
+    assertVerifiedInteraction(interaction);
 
     if(interaction.isCommand()) {
         log.info(`Recieved Interaction ${interaction.commandName} from ${interaction.user.username}`);
