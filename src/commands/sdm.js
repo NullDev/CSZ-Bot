@@ -1,6 +1,6 @@
 "use strict";
 
-const { MessageEmbed, Util } = require("discord.js");
+const { Util } = require("discord.js");
 // Dependencies
 let moment = require("moment");
 
@@ -60,14 +60,19 @@ const ioc = iocCalculator(randomSeed);
 const secureDecisionMaker = (question, max = 1) => (rng(0, max, (Date.now() * ioc) / iocCalculator(question)));
 
 /**
- * @param {import("discord.js").CommandInteraction} interaction
+ * Creates a new secure decision (sdm; yes/no)
+ *
+ * @param {import("discord.js").Client} client
+ * @param {import("discord.js").Message} message
+ * @param {array} args
  * @param {Function} callback
+ * @returns {Function} callback
  */
-async function handler(interaction, callback) {
-    if(interaction.options.has("frage")) {
-        let question = Util.cleanContent(interaction.options.get("frage").options.get("question").value, interaction.channel);
+exports.run = (client, message, args, callback) => {
+    if (!args.length) return callback("Bruder da ist keine Frage :c");
 
-        if (!question.endsWith("?")) question += "?";
+    let question = args.join(" ").replace(/\s\s+/g, " ");
+    const options = question.split(/,|;|\s+oder\s+/gi).map(s => s.trim()).filter(s => !!s);
 
     if(options.length > 1) {
         question = options.reduce((p, c, i, a) => (`${p}${i === a.length - 1 ? " oder " : ", "}${c}`));
@@ -86,44 +91,32 @@ async function handler(interaction, callback) {
     };
     if(options.length === 1) {
         const decision = secureDecisionMaker(question);
-
-        let response = new MessageEmbed()
-            .setTitle(question)
-            .setTimestamp(moment.utc().format())
-            .setAuthor(`Secure Decision für ${interaction.user.username}`, interaction.user.displayAvatarURL());
-
+        let file;
         if(!!decision) {
-            response = response.setColor(0x2ecc71)
-                .setThumbnail("https://raw.githubusercontent.com/NullDev/CSC-Bot/master/assets/yes.png");
+            embed.embed.color = 0x2ecc71;
+            file = "yes.png";
         }
         else {
-            response = response.setColor(0xe74c3c)
-                .setThumbnail("https://raw.githubusercontent.com/NullDev/CSC-Bot/master/assets/no.png");
+            embed.embed.color = 0xe74c3c;
+            file = "no.png";
         }
-
-        interaction.reply({ embeds: [response]});
-
-        return callback();
+        embed.embed.thumbnail = {
+            url: `attachment://${file}`
+        };
+        embed.files = [`./assets/${file}`];
     }
-    else if(interaction.options.has("auswahl")) {
-        const options = [...interaction.options.get("auswahl").options.values()].map(o => Util.cleanContent(o.value, interaction.channel));
-        const question = options.reduce((acc, val, idx, arr) => (`${acc}${idx === arr.length - 1 ? " oder " : ", "}${val}`));
+    else {
         const decision = secureDecisionMaker(question, options.length - 1);
-
-        let response = new MessageEmbed()
-            .setTitle(question)
-            .setTimestamp(moment.utc().format())
-            .setColor(0x9b59b6)
-            .setDescription(`Bruder, probier's doch einfach mit ${options[decision]}`)
-            .setAuthor(`Secure Decision für ${interaction.user.username}`, interaction.user.displayAvatarURL());
-
-        interaction.reply({ embeds: [response]});
-
-        return callback();
+        embed.embed.color = 0x9b59b6;
+        embed.embed.description = `Mashallah, ich rate dir zu **${options[decision]}**!`;
     }
 
-    return callback("Bruder hier ist was schief gegangen, was das?");
-}
+    message.channel
+        .send(/** @type {any} embed */ (embed))
+        .then(() => message.delete());
+
+    return callback();
+};
 
 exports.description = `Macht eine Secure Decision mithilfe eines komplexen, hochoptimierten, Blockchain Algorithmus.\nUsage:\n**ja/nein Frage**\n ${config.bot_settings.prefix.command_prefix}sdm [Hier die Frage]\n\n**Secure Auswahl**\n\n${config.bot_settings.prefix.command_prefix}sdm [Auswahl 1]; [Auswahl 2]`;
 
