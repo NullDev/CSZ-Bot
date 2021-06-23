@@ -2,66 +2,60 @@
 import * as log from "../utils/logger";
 
 import { Interaction } from "discord.js";
-import { CommandName, ApplicationCommandDefinition, assertVerifiedInteraction } from "../types";
+import { CommandName, ApplicationCommandDefinition, assertVerifiedCommandInteraction, assertVerifiedButtonInteraction } from "../types";
 
-export default async function(interaction: Interaction, allCommands: Map<CommandName, ApplicationCommandDefinition>) {
-    const toBeDoneCallback = (err: any) => {
-        if (err) console.log(err);
-    };
+export async function handler(interaction: Interaction, allCommands: Map<CommandName, ApplicationCommandDefinition>) {
+    if (interaction.isCommand()) {
+        assertVerifiedCommandInteraction(interaction);
 
-    assertVerifiedInteraction(interaction);
-
-    if(interaction.isCommand()) {
         log.info(`Recieved Interaction ${interaction.commandName} from ${interaction.user.username}`);
-
+        console.log(allCommands);
         const command = allCommands.get(interaction.commandName);
 
-        if (command?.handler) {
-            try {
-                command.handler(interaction, (err?: any) => {
-                    // Non-Exception Error returned by the command (e.g.: Missing Argument)
-                    if (err) toBeDoneCallback(err);
-                });
-            }
-            // Exception returned by the command handler
-            catch (err) {
-                toBeDoneCallback(
-                    "Sorry, irgendwas ist schief gegangen! =("
-                );
-                log.error(err);
+        // should never happen
+        if (!command?.handler) {
+            log.error(`Dafuck, missing handler but command ${command} is registered`);
+            return;
+        }
+
+        try {
+            const result = await command.handler(interaction);
+
+            if (result instanceof Object) {
+                interaction.reply(result);
             }
         }
+        // Exception returned by the interaction handler
+        catch (err) {
+            interaction.reply("Sorry, irgendwas ist schief gegangen! =(");
+            log.error(err);
+        }
     }
-    else if(interaction.isButton()) {
-        const { message } = interaction;
+    else if (interaction.isButton()) {
+        assertVerifiedButtonInteraction(interaction);
 
-        if(message.interaction) {
-            log.info(`Recieved Button Interaction ${interaction.customID}`);
+        log.info(`Recieved Button Interaction ${interaction.customID}`);
 
-            // can be of type Message or APIMessage
-            let commandName = "name" in message.interaction ? message.interaction.name : message.interaction.commandName;
+        const command = allCommands.get(interaction.message.interaction.commandName);
+        const handler = command?.buttonHandler[interaction.customID];
 
-            const command = allCommands.get(commandName);
+        // should never happen
+        if (!command || !command.buttonHandler || !handler) {
+            log.error(`Dafuck, missing handler but button id ${interaction.customID} is registered for command ${command}`);
+            return;
+        }
 
-            if(command?.buttonHandler) {
-                const handler = command.buttonHandler[interaction.customID];
+        try {
+            const result = await handler(interaction);
 
-                if(handler) {
-                    try {
-                        handler(interaction, (err: any) => {
-                            // Non-Exception Error returned by the command (e.g.: Missing Argument)
-                            if (err) toBeDoneCallback(err);
-                        });
-                    }
-                    // Exception returned by the command handler
-                    catch (err) {
-                        toBeDoneCallback(
-                            "Sorry, irgendwas ist schief gegangen! =("
-                        );
-                        log.error(err);
-                    }
-                }
+            if (result instanceof Object) {
+                interaction.reply(result);
             }
+        }
+        // Exception returned by the interaction handler
+        catch (err) {
+            interaction.reply("Sorry, irgendwas ist schief gegangen! =(");
+            log.error(err);
         }
     }
 };

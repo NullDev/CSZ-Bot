@@ -68,7 +68,7 @@ const secureDecisionMaker = (question, max = 1) => (rng(0, max, (Date.now() * io
  * @param {Function} callback
  * @returns {Function} callback
  */
-exports.run = (client, message, args, callback) => {
+async function handler(client, message, args, callback) {
     if (!args.length) return callback("Bruder da ist keine Frage :c");
 
     let question = args.join(" ").replace(/\s\s+/g, " ");

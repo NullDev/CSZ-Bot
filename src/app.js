@@ -57,8 +57,8 @@ client.on("ready", async() => {
     log.info(`Got ${client.users.cache.size} users, in ${client.channels.cache.size} channels of ${client.guilds.cache.size} guilds`);
     client.user.setActivity(config.bot_settings.status);
 
-    const modCommands = await command.loadModules("./src/commands/modcommands", true);
-    const plebCommands = await command.loadModules("./src/commands", false);
+    const modCommands = await command.loadModules("./built/commands/modcommands", true);
+    const plebCommands = await command.loadModules("./built/commands", false);
 
     allCommands = new Map([...plebCommands, ...modCommands]);
     command.createApplicationCommands(client, allCommands);
@@ -107,7 +107,7 @@ client.on("error", log.error);
 
 client.on("raw", async event => reactionHandler(event, client));
 
-client.on("interaction", async interaction => await interactionHandler(interaction, allCommands));
+client.on("interaction", async interaction => await interactionHandler.handler(interaction, allCommands));
 
 client.login(config.auth.bot_token).then(() => {
     log.done("Token login was successful!");
