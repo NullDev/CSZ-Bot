@@ -69,6 +69,22 @@ async function handler(interaction, callback) {
 
         if (!question.endsWith("?")) question += "?";
 
+    if(options.length > 1) {
+        question = options.reduce((p, c, i, a) => (`${p}${i === a.length - 1 ? " oder " : ", "}${c}`));
+    }
+    if (!question.endsWith("?")) question += "?";
+
+    let embed = {
+        embed: {
+            title: Util.cleanContent(question, message),
+            timestamp: moment.utc().format(),
+            author: {
+                name: `Secure Decision für ${message.author.username}`,
+                icon_url: message.author.displayAvatarURL()
+            }
+        }
+    };
+    if(options.length === 1) {
         const decision = secureDecisionMaker(question);
 
         let response = new MessageEmbed()
