@@ -14,9 +14,7 @@ let config = require("../utils/configHandler").getConfig();
 let ban = require("./modcommands/ban");
 
 async function handler(interaction: VerifiedCommandInteraction): Promise<Result> {
-    console.log(interaction.options);
     let durationArg = interaction.options.get("dauer")?.value || 8;
-    console.log(durationArg);
     let duration = moment.duration(durationArg, "hours");
     let durationAsMinutes = Number(duration.asMinutes());
 
