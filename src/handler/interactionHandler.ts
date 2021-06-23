@@ -37,10 +37,17 @@ export async function handler(interaction: Interaction, allCommands: Map<Command
         log.info(`Recieved Button Interaction ${interaction.customID}`);
 
         const command = allCommands.get(interaction.message.interaction.commandName);
-        const handler = command?.buttonHandler[interaction.customID];
 
         // should never happen
-        if (!command || !command.buttonHandler || !handler) {
+        if (!command || !command.buttonHandler) {
+            log.error(`Dafuck, missing handler but button id ${interaction.customID} is registered for command ${command}`);
+            return;
+        }
+
+        const handler = command.buttonHandler[interaction.customID];
+
+        // should never happen
+        if (!handler) {
             log.error(`Dafuck, missing handler but button id ${interaction.customID} is registered for command ${command}`);
             return;
         }

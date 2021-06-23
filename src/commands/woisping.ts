@@ -1,4 +1,4 @@
-import { Result, VerifiedButtonInteraction, VerifiedCommandInteraction } from "../types";
+import { ApplicationCommandDefinition, Result, VerifiedButtonInteraction, VerifiedCommandInteraction } from "../types";
 const { WoispingVoteData, WoispingReasonData } = require("../storage/model/WoispingData");
 import { isModeratorUser, isWoisgangUser } from "../utils/access";
 
@@ -117,12 +117,7 @@ async function handleNo(interaction: VerifiedButtonInteraction): Promise<Result>
     }
 }
 
-exports.description = `Mitglieder der @Woisgang-Rolle können einen Ping an diese Gruppe absenden. Es müssen mindestens ${config.bot_settings.woisping_threshold} Woisgang-Mitglieder per Reaction zustimmen.\nUsage: ${config.bot_settings.prefix.command_prefix}woisping Text`;
-
-/**
- * @type {Record<string, CommandDefinition>}
- */
-exports.applicationCommands = [
+export const applicationCommands: ApplicationCommandDefinition[] = [
     {
         handler,
         buttonHandler: {
@@ -147,6 +142,7 @@ exports.applicationCommands = [
                 type: "ROLE",
                 permission: true
             }
-        ]
+        ],
+        help: `Es müssen mindestens ${config.bot_settings.woisping_threshold} Woisgang-Mitglieder per Vote zustimmen.`
     }
 ];

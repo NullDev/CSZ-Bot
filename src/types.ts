@@ -8,7 +8,7 @@ export type Handler = CommandHandler | ButtonHandler;
 
 export interface ApplicationCommandDefinition {
     handler: CommandHandler;
-    buttonHandler: Record<string, ButtonHandler>,
+    buttonHandler?: Record<string, ButtonHandler>,
     data: ApplicationCommandData,
     help?: string,
     permissions?: ApplicationCommandPermissionData[],
