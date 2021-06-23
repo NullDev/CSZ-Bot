@@ -57,8 +57,6 @@ const ioc = iocCalculator(randomSeed);
 const secureDecisionMaker = (question: string, max = 1) => (rng(0, max, (Date.now() * ioc) / iocCalculator(question)));
 
 async function handler(interaction: VerifiedCommandInteraction): Promise<Result> {
-    console.log(interaction);
-
     const {options, member} = interaction;
     const {user} = member;
 
