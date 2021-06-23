@@ -99,20 +99,20 @@ async function handleButtonInteraction(interaction: VerifiedButtonInteraction, v
         return false;
     }
 
+    //TODO: check if vote was already set for this user
     await WoispingVoteData.setVote(interaction.message.interaction.id, interaction.member.id, vote);
     return true;
 }
 
 async function handleYes(interaction: VerifiedButtonInteraction): Promise<Result> {
     if (await handleButtonInteraction(interaction, true)) {
+        await interaction.reply({ content: "Jaman, das ist die richtige Einstellung 🥳", ephemeral: true });
         await tryPing(interaction);
-        return { content: "Jaman, das ist die richtige Einstellung 🥳", ephemeral: true };
     }
 }
 
 async function handleNo(interaction: VerifiedButtonInteraction): Promise<Result> {
     if (await handleButtonInteraction(interaction, false)) {
-        await tryPing(interaction);
         return { content: "Ok, dann halt nicht 😔", ephemeral: true};
     }
 }
