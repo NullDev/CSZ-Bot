@@ -11,6 +11,10 @@ let AdditionalMessageData = require("../storage/model/AdditionalMessageData");
 // Utils
 let log = require("../utils/logger");
 let poll = require("../commands/poll");
+let conf = require("../utils/configHandler");
+let yaml = require("yaml");
+let fs = require("fs");
+
 const woisping = require("../commands/woisping");
 
 const events = {
@@ -19,6 +23,10 @@ const events = {
 };
 
 const voteEmojis = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣", "🔟", "👍", "👎"];
+
+const config = conf.getConfig();
+const supportFile = fs.readFileSync("./res/supportAnswers.yaml", "utf-8");
+const supportMessages = yaml.parse(supportFile);
 
 /**
  * Handles changes on reactions
@@ -46,6 +54,17 @@ module.exports = async function(event, client) {
             else if (event.t === "MESSAGE_REACTION_REMOVE") member.roles.remove(role.id).catch(log.error);
         }
         return;
+    }
+
+    if(event.t === "MESSAGE_REACTION_ADD" && data.emoji.name === "🎫" && data.channel_id === config.ids.support_channel_id) {
+        const reactions = message.reactions.cache.filter(r => r.emoji.name === "🎫");
+        for (let reaction of reactions.values()) await reaction.users.remove(data.user_id).catch(log.error);
+
+        const content = supportMessages[Math.floor(Math.random() * supportMessages.length)];
+        const helpfulSupportMessage = await message.channel.send(`<@${data.user_id}> ${content}`);
+
+        // Delete message after some time. Calculation assumption is that the reader reads 120 words per minute
+        FadingMessage.newFadingMessage(helpfulSupportMessage, Math.trunc((content.split(/\s/g).length / 120) * 60000));
     }
 
     if (voteEmojis.includes(event.d.emoji.name) && event.t === "MESSAGE_REACTION_ADD") {

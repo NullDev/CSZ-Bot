@@ -83,6 +83,28 @@ client.on("ready", async() => {
     await poll.importPolls();
     poll.startCron(client);
 
+    /** @type {import("discord.js").TextChannel} */
+    const supportChannel = await client.channels.fetch(config.ids.support_channel_id);
+    // Check if channel is empty to create support message
+    console.log(supportChannel.lastMessageID);
+    if(supportChannel && !(supportChannel.lastMessageID)) {
+        supportChannel.send({
+            embed: {
+                title: "CSZ Support",
+                color: 0x1f8b4c,
+                description: "Hallo mein Name ist Ranjid, wenn du ein Problem hast, dann zieh hier unten an meinem Ding ein Ticket, ich werde dir schnellstmöglichst mit deinem Anliegen helfen.",
+                author: {
+                    name: "Ranjid Rajesh Motlokoguruparan",
+                    icon_url: "attachment://ranjid.jpg"
+                },
+                thumbnail: {
+                    url: "attachment://ranjid.jpg"
+                }
+            },
+            files: ["./assets/ranjid.jpg"]
+        }).then(message => message.react("🎫"));
+    }
+
     fadingMessageHandler.startLoop(client);
 });
 

@@ -1,0 +1,72 @@
+- >-
+    Hallo,
+      
+    vielen Dank für Ihren Beitrag in der Microsoft Community. Wir bedauern die entstandenen Unannehmlichkeiten und sind Ihnen dankbar, dass Sie das Problem selbst beheben konnten.
+    Ich schlage vor, dass Sie einen DISM-Scan durchführen, indem Sie die folgenden Schritte befolgen und überprüfen, ob das Problem behoben ist.
+    Windows-Beschädigungsfehler können verhindern, dass Windows-Updates und Service Packs installiert werden. Zum Beispiel kann ein Update nicht installiert werden, wenn eine Systemdatei beschädigt ist. Der DISM-Scan oder das Systemupdate-Bereitschaftstool kann Ihnen helfen, einige Windows-Beschädigungsfehler zu beheben. 
+     
+    Schritt 1: Öffnen Sie ein Administrator-Eingabefenster, indem Sie
+        Drücken Sie die Tasten Windows-Logo + X auf der Tastatur und wählen Sie die Option Eingabeaufforderung (Admin).
+        Klicken Sie auf Ja und fahren Sie fort. Geben Sie das Administratorkennwort ein, wenn Sie dazu aufgefordert werden.
+        Prüfen Sie, ob oben im Fenster die Option Administrator: Eingabeaufforderung am oberen Rand des Eingabeaufforderungsfensters steht.
+
+    Schritt 2: Geben Sie die folgenden Befehle in die CMD-Eingabeaufforderung ein:
+        `Dism.exe /online /cleanup-image /scanhealth`
+        Dism.exe /online /Abbild bereinigen /Gesundheit wiederherstellen".
+
+    Nach Abschluss des DISM-Scans empfehle ich Ihnen, einen SFC-Scan auf dem Computer durchzuführen und zu prüfen, ob das Problem behoben ist.
+
+    Schreiben Sie uns den Status des Problems im selben Beitrag, um weitere Unterstützung zu erhalten. Ihre Antwort ist für uns sehr wichtig, um sicherzustellen, dass wir Ihnen entsprechend helfen können.
+
+    Vielen Dank!
+- >-
+    Wir schlagen vor, dass Sie die folgenden Schritte ausführen:
+
+    Wählen Sie Start, und geben Sie CMD ein.
+    Klicken Sie mit der rechten Maustaste auf Eingabeaufforderung; wählen Sie dann Als Administrator ausführen.
+    Wenn Sie dazu aufgefordert werden, geben Sie einen Benutzernamen und ein Kennwort ein, das Ihnen Administratorrechte für den Computer gewährt.
+    Geben Sie "sc config trustedinstaller start= auto" ein und drücken Sie dann die Eingabetaste. Sie sollten eine ERFOLG-Meldung erhalten.
+    Geben Sie als Nächstes `net start trustedinstaller;` ein und drücken Sie die Eingabetaste. Sie sollten eine Meldung erhalten, dass der Dienst gestartet wurde.
+    Versuchen Sie den Befehl `sfc /scannow` erneut.
+
+    Ihre Antwort ist für uns sehr wichtig, damit wir Ihnen entsprechend helfen können
+- >-
+    Wir danken Ihnen, dass Sie die Schritte zur Fehlerbehebung ausprobiert haben.
+
+    Dieses Problem kann aufgrund eines Konflikts mit einer Drittanbieteranwendung auftreten.
+
+    Da das Problem weiterhin besteht, empfehle ich Ihnen, Ihr System im abgesicherten Modus zu starten und zu prüfen, ob das Problem weiterhin besteht. Wenn das Problem auch im abgesicherten Modus nicht auftritt, führen Sie einen Neustart durch und prüfen Sie, ob dies hilft.
+
+    Führen Sie die folgenden Schritte aus:
+
+    Schritt 1: Um Ihr System im abgesicherten Modus zu starten, führen Sie die folgenden Schritte aus:
+        Drücken und halten Sie die Umschalttaste und starten Sie Ihren Computer neu.
+        Wählen Sie Problembehandlung.
+        Wählen Sie Fortgeschrittene Option.
+        Wählen Sie Starteinstellungen.
+        Folgen Sie den Anweisungen auf dem Bildschirm.
+
+    Schritt 2: Führen Sie einen Neustart durch.
+        Ein sauberer Start wird durchgeführt, um Windows mit einem minimalen Satz von Treibern und Startprogrammen zu starten. Dies hilft, Softwarekonflikte zu vermeiden, die bei der Installation eines Programms auftreten.
+
+        https://support.microsoft.com/en-us/kb/929135
+
+    Hinweis: Die für Windows 8/8.1 genannten Schritte funktionieren auch unter Windows 10.
+
+    Haftungsausschluss: Bitte lesen Sie den Abschnitt: So setzen Sie den Computer zurück, um nach der Fehlerbehebung mit sauberem Start wie gewohnt zu starten des Kb-Artikels, um den Computer nach der Fehlerbehebung im normalen Startmodus zu starten.
+
+    Ich hoffe, es hilft Ihnen, antworten Sie uns mit dem Status Ihres Problems. Wir werden Ihnen gerne helfen.
+- >-
+    Hello Sir, your computer has virus
+- >-
+    Dir kann man nicht mehr helfen
+- >-
+    Man kann keinen Zufall programmieren. Egal welche Funktion man wählt, die Berechnung wird immer etwas Vorbestimmtes ergeben. Es handelt sich also um Pseudo-Zufallszahlen.
+
+    Um eine wirkliche Zufallszahl zu erzeugen, muß man ein unabhängiges physikalisches Ereignis benutzen. So könnte man zum Beispiel die Prozessortemperatur oder eine Webcam etc. abfragen. Wenn man das LSBit in ein Schieberegister einträgt, bekommt man eine Zufallszahl.
+- >-
+    Haben Sie beretis probiert das Gerät ein- und wieder auszuschalten?
+- >-
+    Fragen Sie bei Apple nach!
+- >-
+    https://www.youtube.com/watch?v=dQw4w9WgXcQ

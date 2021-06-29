@@ -28,6 +28,7 @@
         "trusted_banned_role_id": "",
 
         "banned_channel_id": "",
-        "votes_channel_id": ""
+        "votes_channel_id": "",
+        "support_channel_id": ""
     }
 }
