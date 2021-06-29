@@ -64,7 +64,11 @@ module.exports = async function(event, client) {
         const helpfulSupportMessage = await message.channel.send(`<@${data.user_id}> ${content}`);
 
         // Delete message after some time. Calculation assumption is that the reader reads 120 words per minute
-        FadingMessage.newFadingMessage(helpfulSupportMessage, Math.trunc((content.split(/\s/g).length / 120) * 60000));
+        let time = Math.trunc((content.split(/\s/g).length / 120) * 60000);
+        if(time < 10000) {
+            time = 10000;
+        }
+        FadingMessage.newFadingMessage(helpfulSupportMessage, time);
     }
 
     if (voteEmojis.includes(event.d.emoji.name) && event.t === "MESSAGE_REACTION_ADD") {
