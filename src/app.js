@@ -63,7 +63,7 @@ client.on("ready", async() => {
             (csz.channels.cache.get(config.ids.hauptchat_id)).send("Es ist `13:37` meine Kerle.\nBleibt hydriert! :grin: :sweat_drops:");
 
             // Auto-Prune members
-            csz.members.prune({ days: 7, reason: "auto prune" })
+            csz.members.prune({ days: 2, reason: "auto prune" })
                 .then(count => {
                     log.info(`Auto-prune: ${count} members pruned.`);
                     if (count >= 1){
