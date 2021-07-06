@@ -120,7 +120,7 @@ exports.ban = (user, duration) => {
 
     let unbanAt = 0; // never
 
-    if (moment.isDuration(momentDuration) && momentDuration.isValid) {
+    if (momentDuration.asMilliseconds() > 0 && moment.isDuration(momentDuration) && momentDuration.isValid) {
         let unbanAtMoment = moment();
         unbanAtMoment.add(momentDuration);
 
