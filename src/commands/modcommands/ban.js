@@ -112,11 +112,15 @@ exports.ban = (user, duration) => {
         user.roles.add(user.guild.roles.cache.find(role => role.id === config.ids.trusted_banned_role_id));
     }
 
+    // console.log({ duration });
+
     let momentDuration = duration;
 
     if (typeof duration === "number" && isFinite(duration)) {
         momentDuration = moment.duration(duration, "h");
     }
+
+    console.log(momentDuration.asMilliseconds() === 0);
 
     let unbanAt = 0; // never
 
