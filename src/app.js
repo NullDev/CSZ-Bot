@@ -92,6 +92,8 @@ client.on("guildDelete", guild => log.info(`Deleted from guild: ${guild.name} (i
 
 client.on("message", (message) => messageHandler(message, client));
 
+client.on("messageUpdate", (_, newMessage) => messageHandler(newMessage, client));
+
 client.on("error", log.error);
 
 client.on("raw", async event => reactionHandler(event, client));
