@@ -37,7 +37,7 @@ const inlineReply = function(messageRef, content, client) {
 /**
  * @param {import("discord.js").Message} messageRef message
  * @param {import("discord.js").Client} client client
- * @returns {import("discord.js").Message[]}
+ * @returns {import("discord.js").Collection<string, Message>}
  */
 const getInlineReplies = function(messageRef, client) {
     return messageRef.channel.messages.cache.filter(m => m.author.id === client.user.id && m.reference?.messageID === messageRef.id);
