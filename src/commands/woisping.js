@@ -4,6 +4,8 @@
 // = Copyright (c) diewellenlaenge = //
 // ================================= //
 
+let { Util } = require("discord.js");
+
 // Utils
 let log = require("../utils/logger");
 let config = require("../utils/configHandler").getConfig();
@@ -40,7 +42,7 @@ exports.run = async(client, message, args, callback) => {
         return callback("Piss dich und spam nicht.");
     }
 
-    const reason = `${args.join(" ")} (von ${message.member})`;
+    const reason = `${Util.cleanContent(args.join(" "), message)} (von ${message.member})`;
 
     if (isMod) {
         lastPing = now;
