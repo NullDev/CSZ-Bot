@@ -66,7 +66,7 @@ module.exports = function(message, client){
     let isModCommand = message.content.startsWith(config.bot_settings.prefix.mod_prefix);
     let isCommand = isNormalCommand || isModCommand;
 
-    if (message.mentions.has(client.user.id) && !isCommand) message.channel.send("Was pingst du mich du hurensohn :angry:");
+    if (message.mentions.has(client.user.id) && !isCommand) inlineReply(message, "Was pingst du mich du Hurensohn :angry:", client);
 
     /**
      * cmdHandler Parameters:
