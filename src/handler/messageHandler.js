@@ -58,7 +58,7 @@ module.exports = function(message, client){
 
     if (message.author.bot || nonBiased === "" || message.channel.type === "dm") return;
 
-    if (message.author.id === "348086189229735946" && (/(^(<:.+:\d+>|\s*)$)|^(\p{Emoji}|\s*)+$/gu).test(message.content.trim().replace(/[\W_]+/g, ""))) {
+    if (message.author.id === "348086189229735946" && (/(^(<:.+:\d+>|\s*)$)|^(\p{Emoji}|\s*)+$/gu).test(message.content.trim()/*.replace(/[\W_]+/g, "")*/)) {
         message.delete();
     }
 
