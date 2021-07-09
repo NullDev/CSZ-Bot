@@ -210,12 +210,12 @@ exports.startCron = (client) => {
     cron.schedule("* * * * *", async() => {
         const currentDate = new Date();
         const pollsToFinish = exports.delayedPolls.filter(delayedPoll => currentDate >= delayedPoll.finishesAt);
-        /** @type {import("discord.js").TextChannel} */
+        /** @type {import("discord.js").GuildChannel} */
         const channel = client.guilds.cache.get(config.ids.guild_id).channels.cache.get(config.ids.votes_channel_id);
 
         for(let i = 0; i < pollsToFinish.length; i++) {
             const delayedPoll = pollsToFinish[i];
-            const message = await channel.messages.fetch(delayedPoll.pollId);
+            const message = await /** @type {import("discord.js").TextChannel} */ (channel).messages.fetch(delayedPoll.pollId);
 
             let users = {};
             await Promise.all(delayedPoll.reactions

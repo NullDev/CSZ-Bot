@@ -22,6 +22,7 @@ let cmdHandler = require("./cmdHandler");
  * @param {import("discord.js").Client} client client
  */
 const inlineReply = function(messageRef, content, client) {
+    // @ts-ignore
     client.api.channels[messageRef.channel.id].messages.post({
         data: {
             content,
