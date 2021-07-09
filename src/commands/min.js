@@ -24,7 +24,7 @@ exports.run = (client, message, args, callback) => {
         || !Number.isInteger(Number(args[0]))
     ) return callback("Das ist kein gültiger positiver 64Bit Integer...");
 
-    message.channel.send("Moralisch vertretbares Alter: " + ((Number(args[0]) / 2) + 7));
+    message.channel.send("Moralisch vertretbares Alter: " + (Number(args[0]) === 69 ? "heh" : (Number(args[0]) / 2) + 7));
 
     return callback();
 };
