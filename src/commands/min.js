@@ -38,7 +38,7 @@ exports.run = (client, message, args, callback) => {
             break;
         }
         default: {
-            message.channel.send("Moralisch vertretbares Alter: " + (Number(args[0]) / 2) + 7);
+            message.channel.send("Moralisch vertretbares Alter: " + ((Number(args[0]) / 2) + 7));
             break;
         }
     }
