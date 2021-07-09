@@ -25,6 +25,7 @@ exports.run = (client, message, args, callback) => {
     ) return callback("Das ist kein gültiger positiver 64Bit Integer...");
 
     message.channel.send("Moralisch vertretbares Alter: " + (Number(args[0]) === 69 ? "heh" : (Number(args[0]) / 2) + 7));
+    message.channel.send((Number(args[0]) === 187 ? "https://www.youtube.com/watch?v=_Xf8LgT26Vk" : (Number(args[0]) / 2) + 7));
 
     return callback();
 };
