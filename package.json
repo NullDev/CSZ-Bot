@@ -23,6 +23,7 @@
   "homepage": "https://github.com/NullDev/CSC-Bot#readme",
   "dependencies": {
     "discord.js": "^12.4.1",
+    "jimp": "^0.16.1",
     "minimist": "^1.2.5",
     "moment": "^2.29.1",
     "node-cron": "^2.0.3",
