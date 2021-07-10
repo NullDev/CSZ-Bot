@@ -26,6 +26,7 @@ let fs = require("fs");
  * @param {import("discord.js").Client} client client
  */
 const inlineReply = function(messageRef, content, client) {
+    // @ts-ignore
     client.api.channels[messageRef.channel.id].messages.post({
         data: {
             content,
@@ -41,7 +42,7 @@ const inlineReply = function(messageRef, content, client) {
 /**
  * @param {import("discord.js").Message} messageRef message
  * @param {import("discord.js").Client} client client
- * @returns {import("discord.js").Message[]}
+ * @returns {import("discord.js").Collection<string, Message>}
  */
 const getInlineReplies = function(messageRef, client) {
     return messageRef.channel.messages.cache.filter(m => m.author.id === client.user.id && m.reference?.messageID === messageRef.id);
@@ -85,7 +86,7 @@ module.exports = function(message, client){
 
     if (message.author.bot || nonBiased === "" || message.channel.type === "dm") return;
 
-    if (message.author.id === "348086189229735946" && (/(^(<:.+:\d+>|\s*)$)|^(\p{Emoji}|\s*)+$/gu).test(message.content.trim())) {
+    if (message.author.id === "348086189229735946" && (/^[\W\s_]*(<:.+:\d+>|\p{Emoji})[\W\s_]*$/gu).test(message.content.trim()/* .replace(/[\W_]+/g, "") */)) {
         message.delete();
     }
 
@@ -111,7 +112,7 @@ module.exports = function(message, client){
     let isModCommand = message.content.startsWith(config.bot_settings.prefix.mod_prefix);
     let isCommand = isNormalCommand || isModCommand;
 
-    if (message.mentions.has(client.user.id) && !isCommand) message.channel.send("Was pingst du mich du hurensohn :angry:");
+    if (message.mentions.has(client.user.id) && !isCommand) inlineReply(message, "Was pingst du mich du Hurensohn :angry:", client);
 
     /**
      * cmdHandler Parameters:
