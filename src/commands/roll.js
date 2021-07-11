@@ -19,7 +19,7 @@ let moment = require("moment");
  * @returns {number} A pseudo randomly generated number
  */
 const pseudoRng = function(min, max) {
-    return Math.floor(Math.random() * (max - min) + min);
+    return Math.floor(Math.random() * max + min);
 };
 
 /**
