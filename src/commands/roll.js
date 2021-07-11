@@ -93,13 +93,13 @@ exports.run = (_client, message, args, callback) => {
 
     // god i hate myself
     // there must be a better way of handling this
-    if(undefined === parsed) {
+    if(!parsed) {
         parsed = "0d0";
     }
 
     let [amount, sides] = parsed.split("d");
 
-    let error = errorHandling(parseInt(amount, 10), parseInt(sides, 10));
+    let error = errorHandling(Number(amount), Number(sides));
 
     if(error) {
         return callback(error);
