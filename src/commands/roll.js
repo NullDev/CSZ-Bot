@@ -19,7 +19,7 @@ let moment = require("moment");
  * @returns {number} A pseudo randomly generated number
  */
 const pseudoRng = function(min, max) {
-    return Math.floor(Math.random() * (max - min) + min);
+    return Math.floor(Math.random() * max + min);
 };
 
 /**
@@ -31,6 +31,10 @@ const pseudoRng = function(min, max) {
  * @returns {string} the error string
  */
 const errorHandling = function(amount, sides) {
+    if(!Number.isInteger(amount) || !Number.isInteger(sides)) {
+        return "Bruder nimm ma bitte nur natürliche Zahlen (>0).";
+    }
+
     if(amount <= 0 || sides <= 0 || Number.isNaN(amount) || Number.isNaN(sides)) {
         return "Du brauchst schon nen valides Argument...";
     }
