@@ -18,4 +18,4 @@ jobs:
         username: ${{ secrets.SSH_USERNAME }}
         key: ${{ secrets.SSH_KEY }}
         port: ${{ secrets.SSH_PORT }}
-        script: ${{ secrets.DEPLOY_SCRIPT_PATH }}
+        script: /home/csc/deploy.sh
