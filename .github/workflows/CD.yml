@@ -10,7 +10,7 @@ jobs:
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
-    steps:
+    steps:      
     - name: Deploy CSC Bot
       uses: appleboy/ssh-action@1a8b3784eaa665f677fa114edd5683bb6a6bfaa8
       with:
@@ -18,4 +18,4 @@ jobs:
         username: ${{ secrets.SSH_USERNAME }}
         key: ${{ secrets.SSH_KEY }}
         port: ${{ secrets.SSH_PORT }}
-        script: cd ${{ secrets.REPO_DIR }}; git pull && npm ci && pm2 restart ${{ secrets.PM_ID }}
+        script: ${{ secrets.DEPLOY_SCRIPT_PATH }}
