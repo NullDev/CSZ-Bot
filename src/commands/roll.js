@@ -135,4 +135,4 @@ exports.run = (_client, message, args, callback) => {
 exports.description =
 `Wirft x beliebig viele Würfel mit y vielen Seiten.
 Usage: ${config.bot_settings.prefix.command_prefix}roll xdy
-Wo \`x = Die Anzahl der Würfel (<11)\` und \`y = Die Menge der Seiten der Würfel(<101)\``;
+Mit x als die Anzahl der Würfel (<11) und y als die Menge der Seiten der Würfel (<=100)`;
