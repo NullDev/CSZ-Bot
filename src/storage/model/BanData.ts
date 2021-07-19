@@ -1,5 +1,5 @@
 import { Snowflake } from "discord.js";
-import { Model, DataTypes, Sequelize } from "sequelize/types";
+import { Model, DataTypes, Sequelize } from "sequelize";
 
 interface BanAttributes {
 	userId: string;
@@ -19,7 +19,7 @@ export class BanData extends Model<BanAttributes> implements BanAttributes {
         return await BanData.findAll();
     }
 
-    static async removeBan(userId: Snowflake | string): Promise<void> {
+    static async removeBan(userId: Snowflake): Promise<void> {
 		await BanData.destroy({
 			where: {
 				userId
