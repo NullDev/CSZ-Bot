@@ -24,6 +24,7 @@ let storage = require("./storage/storage");
 // Other commands
 let ban = require("./commands/modcommands/ban");
 let poll = require("./commands/poll");
+const GuildRagequit = require("./storage/model/GuildRagequit");
 
 let version = conf.getVersion();
 let appname = conf.getName();
@@ -91,6 +92,30 @@ client.on("ready", async() => {
 client.on("guildCreate", guild => log.info(`New guild joined: ${guild.name} (id: ${guild.id}) with ${guild.memberCount} members`));
 
 client.on("guildDelete", guild => log.info(`Deleted from guild: ${guild.name} (id: ${guild.id}).`));
+
+client.on("guildMemberAdd", async member => {
+    const numRagequits = await GuildRagequit.getNumRagequits(member.guild.id, member.id);
+    if(numRagequits > 0 && !member.roles.cache.has(config.ids.shame_role_id)) {
+        if(member.guild.roles.cache.has(config.ids.shame_role_id)) {
+            member.roles.add(member.guild.roles.cache.get(config.ids.shame_role_id));
+
+            const hauptchat = member.guild.channels.cache.get(config.ids.hauptchat_id);
+            if(hauptchat) {
+                hauptchat.send(`Haha, schau mal einer guck wer wieder hergekommen ist! <@${member.id}> hast es aber nicht lange ohne uns ausgehalten. ${numRagequits > 1 ? "Und das schon zum " + numRagequits + ". mal" : ""}`);
+            }
+            else {
+                log.error("Hauptchat nicht gefunden");
+            }
+        }
+        else {
+            log.error("No Shame role found");
+        }
+    }
+});
+
+client.on("guildMemberRemove", (member) => {
+    GuildRagequit.incrementRagequit(member.guild.id, member.id);
+});
 
 client.on("message", (message) => messageHandler(message, client));
 
