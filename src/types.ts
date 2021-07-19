@@ -1,13 +1,22 @@
-import { ApplicationCommandData, ApplicationCommandPermissionData, ButtonInteraction, CommandInteraction, GuildMember, GuildMemberRoleManager, Interaction, Message, MessageInteraction } from "discord.js";
+import { ApplicationCommandData, ApplicationCommandPermissionData, ButtonInteraction, CommandInteraction, GuildMember, GuildMemberRoleManager, Interaction, Message, MessageInteraction, User } from "discord.js";
 
 export type CommandName = string;
 export type Result = any | void;
 export type CommandHandler = (interaction: VerifiedCommandInteraction) => Promise<Result>;
 export type ButtonHandler = (interaction: VerifiedButtonInteraction) => Promise<Result>;
 export type Handler = CommandHandler | ButtonHandler;
+export type ReplyHandler = (replyInteraction: ReplyInteraction) => Promise<Result>;
+
+export interface ReplyInteraction {
+	user: User;
+	msg: Message;
+	referencedMsg: Message;
+	args: string[];
+}
 
 export interface ApplicationCommandDefinition {
     handler: CommandHandler;
+	replyHandler?: ReplyHandler,
     buttonHandler?: Record<string, ButtonHandler>,
     data: ApplicationCommandData,
     help?: string,
