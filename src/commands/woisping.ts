@@ -87,7 +87,7 @@ async function tryPing(interaction: VerifiedButtonInteraction) {
             const {channel} = message;
             const reason = (await WoispingReasonData.getReason(interactionId)) || "Wois";
 
-            await channel.send(`Meine sehr verehrten Damen und Herren der heiligen <@&${config.ids.woisgang_role_id}>. Das Kollektiv hat entschieden, dass es Zeit ist für **${reason}**.`);
+            await channel.send(`Meine sehr verehrten ~~Damen und ~~Herren der heiligen <@&${config.ids.woisgang_role_id}>. Das Kollektiv hat entschieden, dass es Zeit ist für **${reason}**.`);
             await message.delete();
         }
     }
