@@ -61,6 +61,13 @@ export const applicationCommands: ApplicationCommandDefinition[] = [
                     type: "INTEGER"
                 }
             ]
-        }
+        },
+        permissions: [
+            {
+                id: config.ids.default_role_id,
+                type: "ROLE",
+                permission: true
+            }
+        ],
     }
 ];
