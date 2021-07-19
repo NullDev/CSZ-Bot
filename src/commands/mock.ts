@@ -1,4 +1,4 @@
-import { Message, MessageEmbed, User } from "discord.js";
+import { MessageEmbed, User } from "discord.js";
 import { VerifiedCommandInteraction, Result, ApplicationCommandDefinition, ReplyInteraction } from "../types";
 
 // ========================= //
@@ -36,7 +36,6 @@ async function handler(interaction: VerifiedCommandInteraction): Promise<Result>
     return mockify(interaction.user, mock(text));
 }
 
-// client, message, args, callback
 async function replyHandler(replyInteraction: ReplyInteraction): Promise<Result> {
     const text = replyInteraction.referencedMsg.content;
     return mockify(replyInteraction.user, mock(text));
