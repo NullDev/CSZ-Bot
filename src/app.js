@@ -71,9 +71,11 @@ client.on("ready", async() => {
                         (csz.channels.cache.get(config.ids.hauptchat_id)).send(`Hab grad ${count} jockel weg-gepruned :joy:`);
                     }
                 }).catch(e => log.error(e));
+        }, {
+            timezone: "Europe/Vienna"
         });
 
-        cron.schedule("1 0 * * *", () => bday.checkBdays());
+        cron.schedule("1 0 * * *", () => bday.checkBdays(), { timezone: "Europe/Vienna" });
         bday.checkBdays();
     }
 
