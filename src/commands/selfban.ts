@@ -10,7 +10,7 @@ let config = require("../utils/configHandler").getConfig();
 
 async function handler(interaction: VerifiedCommandInteraction): Promise<Result> {
     const { member } = interaction;
-	const duration = interaction.options.get("duration")?.value as number || 0;
+	const duration = interaction.options.get("dauer")?.value as number || 0;
 
     // shouldn't happen as forbidden by interaction permission
     if (isBanned(member)) {

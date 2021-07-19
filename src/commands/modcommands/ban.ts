@@ -18,12 +18,16 @@ let config = require("../../utils/configHandler").getConfig();
 
 async function banHandler(interaction: VerifiedCommandInteraction): Promise<Result> {
 	const member = interaction.options.get("user")?.member as GuildMember;
-	const reason = interaction.options.get("reason")?.value as string | undefined;
-	const duration = interaction.options.get("duration")?.value as number || 0;
+	const reason = interaction.options.get("grund")?.value as string | undefined;
+	const duration = interaction.options.get("dauer")?.value as number || 0;
 
-    if (isModeratorUser(interaction.user) || member.user.id === interaction.user.id) {
+	console.log(member);
+	console.log(reason);
+	console.log(duration);
+
+    /*if (isModeratorUser(member) || member.user.id === interaction.user.id) {
 		return { content: "Fick dich bitte.", ephemeral: true };
-	}
+	}*/
 
 	const oldUnbanAt = await BanData.getUnbanAt(member.id);
 
@@ -205,12 +209,12 @@ export const applicationCommands: ApplicationCommandDefinition[] = [
                     required: true
                 },
 				{
-					name: "reason",
+					name: "grund",
 					type: "STRING",
 					description: "ohgodwhy"
 				},
 				{
-					name: "duration",
+					name: "dauer",
 					type: "INTEGER",
                     description: "Banndauer (default = unendlich)"
 				}
