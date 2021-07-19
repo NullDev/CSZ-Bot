@@ -89,7 +89,7 @@ client.on("ready", async() => {
     }
 
     ban.loadBans();
-    ban.startCron(client);
+    ban.startCron(client.guilds.get(config.ids.guild_id));
 
     await poll.importPolls();
     poll.startCron(client);
