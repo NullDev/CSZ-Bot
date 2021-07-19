@@ -1,4 +1,4 @@
-import { ApplicationCommandData, ApplicationCommandPermissionData, ButtonInteraction, CommandInteraction, GuildMember, GuildMemberRoleManager, Interaction, Message, MessageInteraction, User } from "discord.js";
+import { ApplicationCommandData, ApplicationCommandPermissionData, ButtonInteraction, CommandInteraction, Guild, GuildMember, GuildMemberRoleManager, Interaction, Message, MessageInteraction, User } from "discord.js";
 
 export type CommandName = string;
 export type Result = any | void;
@@ -41,7 +41,8 @@ export interface CSZModule {
 type VerifiedInteraction = {
     member: GuildMember & {
         roles: GuildMemberRoleManager
-    }
+    },
+    guild: Guild
 };
 
 export type VerifiedButtonInteraction = VerifiedInteraction & ButtonInteraction & {
@@ -61,7 +62,8 @@ export function assertVerifiedInteraction<T extends Interaction>(interaction: T)
 
 export function isVerifiedInteraction<T extends Interaction>(interaction: T): interaction is T & VerifiedInteraction {
     return interaction.member?.roles instanceof GuildMemberRoleManager
-		&& interaction.member instanceof GuildMember;
+		&& interaction.member instanceof GuildMember
+		&& interaction.guild instanceof Guild;
 }
 
 export function assertVerifiedCommandInteraction(interaction: CommandInteraction): asserts interaction is VerifiedCommandInteraction {
