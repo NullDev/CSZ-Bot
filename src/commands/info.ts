@@ -1,8 +1,8 @@
-"use strict";
-
 // ========================= //
 // = Copyright (c) NullDev = //
 // ========================= //
+
+import { Result, ApplicationCommandDefinition } from "../types";
 
 let fetch = require("node-fetch").default;
 
@@ -14,14 +14,10 @@ let fetch = require("node-fetch").default;
 let getContributors = function(){
     return new Promise(async resolve => resolve((await (await fetch("https://api.github.com/repos/NullDev/CSC-Bot/contributors", {
         headers: { Accept: "application/vnd.github.v3+json" }
-    })).json()).filter(e => e.type === "User").map(e => `<${e.html_url}> (Contributions: ${e.contributions})`).join("\n")));
+    })).json()).filter((e: any) => e.type === "User").map((e: any) => `<${e.html_url}> (Contributions: ${e.contributions})`).join("\n")));
 };
 
-/**
- * @param {import("discord.js").CommandInteraction} interaction
- * @param {Function} callback
- */
-async function handler(interaction, callback) {
+async function handler(): Promise<Result> {
     const content = `
         Programmiert von ShadowByte#1337 für die Coding Shitpost Zentrale (<https://discord.gg/FABdvae>)
 
@@ -41,22 +37,15 @@ async function handler(interaction, callback) {
         Source Code: <https://github.com/NullDev/CSC-Bot>
     `.replace(/  +/g, "");
 
-    await interaction.reply({ content, ephemeral: true });
-
-    return callback();
+    return { content, ephemeral: true };
 }
 
-exports.description = "Listet Informationen über diesen Bot";
-
-/**
- * @type {Record<string, import("../handler/commands.js").CommandDefinition>}
- */
-exports.applicationCommands = [
+export const applicationCommands: ApplicationCommandDefinition[] = [
     {
         handler,
         data: {
             name: "info",
-            description: exports.description
+            description: "Listet Informationen über diesen Bot"
         }
     }
 ];
