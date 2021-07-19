@@ -3,6 +3,7 @@
 import { Guild, GuildMember, Snowflake } from "discord.js";
 import { BanData } from "../../storage/model/BanData";
 import { VerifiedCommandInteraction, Result, ApplicationCommandDefinition } from "../../types";
+import { isModeratorUser } from "../../utils/access";
 
 // ========================= //
 // = Copyright (c) NullDev = //
@@ -20,7 +21,7 @@ async function banHandler(interaction: VerifiedCommandInteraction): Promise<Resu
 	const reason = interaction.options.get("reason")?.value as string | undefined;
 	const duration = interaction.options.get("duration")?.value as number || 0;
 
-    if (member.id === "371724846205239326" || member.user.id === interaction.user.id) {
+    if (isModeratorUser(interaction.user) || member.user.id === interaction.user.id) {
 		return { content: "Fick dich bitte.", ephemeral: true };
 	}
 
@@ -31,20 +32,23 @@ async function banHandler(interaction: VerifiedCommandInteraction): Promise<Resu
 	}
 
 	const unbanAt = getUnbanAt(duration);
+	const banFunction = getBanFunction(member, unbanAt);
 
-    if (!ban(member, unbanAt)) {
+    if (!banFunction) {
 		return { content: "Eine der angegebenen Rollen für das bannen existiert nich.", ephemeral: true };
 	}
 
-    member.send(`Du wurdest von der Coding Shitpost Zentrale gebannt!
+    await member.send(`Du wurdest von der Coding Shitpost Zentrale gebannt!
 ${!reason ? "Es wurde kein Banngrund angegeben." : "Banngrund: " + reason}
 Falls du Fragen zu dem Bann hast, kannst du dich im <#${config.ids.banned_channel_id}> Channel ausheulen.
 
 Lg & xD™`
     );
 
-    return { content: `User ${member} wurde gebannt!\nGrund: ${reason ?? "Kein Grund angegeben"}` };
-};
+    await interaction.reply({ content: `User ${member} wurde gebannt!\nGrund: ${reason ?? "Kein Grund angegeben"}` });
+
+	await banFunction();
+}
 
 async function unbanHandler(interaction: VerifiedCommandInteraction): Promise<Result> {
 	const member = interaction.options.get("user")?.member as GuildMember;
@@ -53,14 +57,18 @@ async function unbanHandler(interaction: VerifiedCommandInteraction): Promise<Re
 		return { content: "Dieser User ist nicht gebannt du kek.", ephemeral: true };
 	}
 
-    if (!unban(member)) {
+	const unbanFunction = getUnbanFunction(member);
+
+    if (!unbanFunction) {
 		return { content: "Eine der angegebenen Rollen für das bannen existiert nich.", ephemeral: true };
 	}
 
-    member.send("Glückwunsch! Du wurdest von der Coding Shitpost Zentrale entbannt. Und jetzt benimm dich.");
+	await unbanFunction();
+
+    await member.send("Glückwunsch! Du wurdest von der Coding Shitpost Zentrale entbannt. Und jetzt benimm dich.");
 
     return { content: `User ${member} wurde entbannt!` };
-};
+}
 
 export function startCron(guild: Guild) {
     cron.schedule("* * * * *", async () => {
@@ -71,17 +79,22 @@ export function startCron(guild: Guild) {
 				const member = guild.members.cache.get(banData.userId as Snowflake);
 
 				if (member) {
-					unban(member);
-					member.send("Glückwunsch! Dein Bann in der Coding Shitpost Zentrale ist beendet.");
+					const unbanFunction = getUnbanFunction(member);
+
+					if (unbanFunction) {
+						await unbanFunction();
+
+						await member.send("Glückwunsch! Dein Bann in der Coding Shitpost Zentrale ist beendet.");
+					}
 				}
 
 				BanData.removeBan(banData.userId as Snowflake);
 			}
 		}
     });
-};
+}
 
-function isBanned(member: GuildMember): boolean {
+export function isBanned(member: GuildMember): boolean {
 	return member.roles.cache.some(r => r.id === config.ids.banned_role_id);
 }
 
@@ -93,61 +106,77 @@ function getRoleAssigner(member: GuildMember, roleId: Snowflake, bannedRoleId: S
 		return undefined;
 	}
 
-	const hasRole = member.roles.cache.find(r => r.id === roleId);
-	const hasBannedRole = member.roles.cache.find(r => r.id === bannedRoleId);
+	const hasRole = member.roles.cache.some(r => r.id === roleId);
+	const hasBannedRole = member.roles.cache.some(r => r.id === bannedRoleId);
 
-	if (!hasRole || !hasBannedRole) {
+	if ((hasRole && !banned) || (hasBannedRole && banned)) {
 		return undefined;
 	}
 
-	return async function() {
-		await member.roles.add(banned ? bannedRole : role);
-		await member.roles.remove(banned ? role : bannedRole);
+	if (hasRole || hasBannedRole) {
+		return async function() {
+			await member.roles.add(banned ? bannedRole : role);
+			await member.roles.remove(banned ? role : bannedRole);
+		};
 	}
+
+	return async function () { };
 }
 
 // this function is transactional (only performs ban if all required roles are found)
-async function setRoles(member: GuildMember, banned: boolean): Promise<boolean> {
+function getRoleAssigners(member: GuildMember, banned: boolean): (() => Promise<void>)[] | undefined {
 	const defaultAssigner = getRoleAssigner(member, config.ids.default_role_id, config.ids.banned_role_id, banned);
 	const trustedAssigner = getRoleAssigner(member, config.ids.trusted_role_id, config.ids.trusted_banned_role_id, banned);
 	const gruendervaeterAssigner = getRoleAssigner(member, config.ids.gruendervaeter_role_id, config.ids.gruendervaeter_banned_role_id, banned);
 
 	if (!defaultAssigner || !trustedAssigner || !gruendervaeterAssigner) {
-        log.error("Ban: (some) roles are missing");
-		return false;
+        log.error("Ban: (some) roles are missing and/or wrongly assigned");
+		return undefined;
 	}
 
-	await defaultAssigner();
-	await trustedAssigner();
-	await gruendervaeterAssigner();
-
-	return true;
+	return [
+		defaultAssigner,
+		trustedAssigner,
+		gruendervaeterAssigner
+	];
 }
 
-export async function ban(member: GuildMember, unbanAt: number): Promise<boolean> {
-	if (!await setRoles(member, true)) {
-		return false;
+export function getBanFunction(member: GuildMember, unbanAt: number): (() => Promise<void>) | undefined {
+	const roleAssigners = getRoleAssigners(member, true);
+
+	if (!roleAssigners) {
+		return undefined;
 	}
 
-	await BanData.setBan(member.id, unbanAt);
+	return async function() {
+		for (const roleAssigner of roleAssigners) {
+			await roleAssigner();
+		}
 
-    return true;
+		await BanData.setBan(member.id, unbanAt);
+	}
 }
 
-export async function unban(member: GuildMember): Promise<boolean> {
-	if (!await setRoles(member, false)) {
-		return false;
+export function getUnbanFunction(member: GuildMember): (() => Promise<void>) | undefined {
+	const roleAssigners = getRoleAssigners(member, false);
+
+	if (!roleAssigners) {
+		return undefined;
 	}
 
-	await BanData.removeBan(member.id);
+	return async function() {
+		for (const roleAssigner of roleAssigners) {
+			await roleAssigner();
+		}
 
-    return true;
+		await BanData.removeBan(member.id);
+	}
 }
 
 export function getUnbanAt(duration?: number): number {
 	let unbanAt = duration ?? 0; // 0 = never
 
-    if (!isFinite(unbanAt)) {
+    if (!Number.isInteger(duration) || !isFinite(unbanAt)) {
 		unbanAt = 0; // DO NOT HACK ME U FUCKR
     }
 
@@ -159,7 +188,7 @@ export function getUnbanAt(duration?: number): number {
 		unbanAt *= -1 * 2; // xd
 	}
 
-	return Date.now() + unbanAt * 1000;
+	return Date.now() + (unbanAt * 1000/*ms*/ * 3600/*s*/);
 }
 
 export const applicationCommands: ApplicationCommandDefinition[] = [

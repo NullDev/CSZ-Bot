@@ -1,48 +1,41 @@
 import { VerifiedCommandInteraction, Result, ApplicationCommandDefinition } from "../types";
+import { isBanned, getUnbanAt, getBanFunction } from "./modcommands/ban";
 
 // =========================================== //
 // = Copyright (c) NullDev & diewellenlaenge = //
 // =========================================== //
 
-// Dependencies
-let moment = require("moment");
-
 // Utils
 let config = require("../utils/configHandler").getConfig();
 
-// Other commands
-let ban = require("./modcommands/ban");
-
 async function handler(interaction: VerifiedCommandInteraction): Promise<Result> {
-    let durationArg = interaction.options.get("dauer")?.value as number || 8;
-    let duration = moment.duration(durationArg, "hours");
-    let durationAsMinutes = Number(duration.asMinutes());
+    const { member } = interaction;
+	const duration = interaction.options.get("duration")?.value as number || 0;
 
-    if (!duration.isValid()) return { content: "Bitte eine gültige Dauer in Stunden angeben (Kommazahlen erlaubt).", ephemeral: true };
+    // shouldn't happen as forbidden by interaction permission
+    if (isBanned(member)) {
+		return { content: "Du bist bereits gebannt du kek.", ephemeral: true };
+	}
 
-    if (!Number.isInteger(durationArg)) return { content: "Gib ne Zahl ein du Lellek.", ephemeral: true };
-    if (durationAsMinutes < 0) return { content: "Ach komm, für wie dumm hälst du mich?", ephemeral: true };
+	const unbanAt = getUnbanAt(duration);
+    const banFunction = getBanFunction(member, unbanAt);
 
-    let self = interaction.member;
-    if (self.id === "371724846205239326") return { content: "Aus Segurity lieber nicht dich bannen.", ephemeral: true };
+    if (!banFunction) {
+		return { content: "Eine der angegebenen Rollen für das bannen existiert nich.", ephemeral: true };
+	}
 
-    if (self.roles.cache.some(r => r.id === config.ids.banned_role_id)) return { content: "Du bist bereits gebannt du kek.", ephemeral: true };
+    const endText = (unbanAt === 0) ? "manuell durch Moderader" : `${(unbanAt - Date.now()) / 1000/*s*/ / 3600/*s*/} Stunden`;
 
-    let durationHumanized = duration.locale("de").humanize();
-    if (durationAsMinutes === 0) durationHumanized = "manuell durch Moderader";
-
-    await interaction.reply({ content: `Dein selfban han geklabbt\nEntbannen in: ${durationHumanized}`, ephemeral: true });
-
-    if (!ban.ban(self, duration)) return { content: "Eine der angegebenen Rollen für das bannen existiert nich.", ephemeral: true };
-
-    await interaction.member.send(`Du hast dich selber von der Coding Shitpost Zentrale gebannt!
-Du wirst entbannt in: ${durationHumanized}
+    await member.send(`Du hast dich selber von der Coding Shitpost Zentrale gebannt!
+Du wirst entbannt in: ${endText}
 Falls du doch vorzeitig entbannt entbannt werden möchtest, kannst du dich im <#${config.ids.banned_channel_id}> Channel melden.
 
 Haddi & xD™`
     );
 
-    return `User ${self} hat sich selber gebannt!\nEntbannen in: ${durationHumanized}`;
+    interaction.reply({ content: `User ${member} hat sich selber gebannt!\nEntbannen in: ${endText}` });
+
+    await banFunction();
 }
 
 export const applicationCommands: ApplicationCommandDefinition[] = [
