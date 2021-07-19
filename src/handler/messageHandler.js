@@ -12,6 +12,9 @@
 // Utils
 let config = require("../utils/configHandler").getConfig();
 
+// Discord
+const { Util } = require("discord.js");
+
 // Handler
 let cmdHandler = require("./cmdHandler");
 
