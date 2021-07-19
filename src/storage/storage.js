@@ -10,6 +10,7 @@ let {VoteData} = require("./model/VoteData");
 
 // Models
 let FadingMessage = require("./model/FadingMessage");
+const { BanData } = require("./model/BanData");
 
 exports.initialize = async function() {
     let sequelize = new Sequelize({
@@ -23,6 +24,7 @@ exports.initialize = async function() {
     WoispingVoteData.initialize(sequelize);
     WoispingReasonData.initialize(sequelize);
     VoteData.initialize(sequelize);
+    BanData.initialize(sequelize);
 
     await sequelize.sync();
 };
