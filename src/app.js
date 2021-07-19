@@ -88,11 +88,10 @@ client.on("ready", async() => {
         bday.checkBdays();
     }
 
-    ban.loadBans();
-    ban.startCron(client.guilds.get(config.ids.guild_id));
+    ban.startCron(client.guilds.cache.get(config.ids.guild_id));
 
-    await poll.importPolls();
-    poll.startCron(client);
+    //await poll.importPolls();
+    //poll.startCron(client);
 
     fadingMessageHandler.startLoop(client);
 });
