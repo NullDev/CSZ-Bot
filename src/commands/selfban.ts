@@ -45,9 +45,6 @@ Haddi & xD™`
     return `User ${self} hat sich selber gebannt!\nEntbannen in: ${durationHumanized}`;
 }
 
-// TODO: permissions so setzen, dass nur nicht-gebannte user das Kommando nutzen können
-// dann können eintausend Checks da oben entfallen
-// und permission für Moderaders entziehen?
 export const applicationCommands: ApplicationCommandDefinition[] = [
     {
         handler,
@@ -67,6 +64,11 @@ export const applicationCommands: ApplicationCommandDefinition[] = [
                 id: config.ids.default_role_id,
                 type: "ROLE",
                 permission: true
+            },
+            {
+                id: config.ids.moderator_role_id,
+                type: "ROLE",
+                permission: false
             }
         ],
     }
