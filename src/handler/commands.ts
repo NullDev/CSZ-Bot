@@ -14,7 +14,7 @@ export async function loadModules(srcDir: string, isModModule = false): Promise<
 
     const res = new Map();
 
-    for (const moduleFile of fs.readdirSync(moduleRoot)) {
+    for(const moduleFile of fs.readdirSync(moduleRoot)) {
         const fullmoduleFile = path.join(moduleRoot, moduleFile);
 
         if (fs.statSync(fullmoduleFile).isDirectory() || path.extname(fullmoduleFile).toLowerCase() !== ".js") {
@@ -27,7 +27,7 @@ export async function loadModules(srcDir: string, isModModule = false): Promise<
         const mod: CSZModule = await import(fullmoduleFile);
         mod.isModModule = isModModule;
 
-        for (mod.applicationCommands) {
+        if(mod.applicationCommands) {
             for (const applicationCommand of mod.applicationCommands) {
                 applicationCommand.isModCommand = isModModule;
                 res.set(applicationCommand.data.name, applicationCommand);
@@ -50,7 +50,7 @@ export function createApplicationCommands(client: Client, commands: Map<CommandN
         const permissions = info.permissions || [];
 
         // always allow moderators to use commands, even if restricted in use for a specific role/user
-        for (permissions.length > 0 || info.isModCommand) {
+        if(permissions.length > 0 || info.isModCommand) {
             permissions.push({
                 id: config.ids.moderator_role_id,
                 type: "ROLE",
