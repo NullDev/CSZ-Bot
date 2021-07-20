@@ -15,18 +15,15 @@ async function handler(interaction: VerifiedCommandInteraction): Promise<Result>
     ) return { content: "Das ist kein gültiger positiver 64Bit Integer...", ephemeral: true };
 
     switch(age) {
-        case 69: {
+        case 69:
             return { content: "heh" };
-        }
-        case 187: {
+        case 187:
             return { content: "https://www.youtube.com/watch?v=_Xf8LgT26Vk" };
-        }
-        case 420: {
+        case 420:
             return { content: "https://www.youtube.com/watch?v=U1ei5rwO7ZI&t=116s" };
-        }
+        default:
+            return { content: `Moralisch vertretbares Alter: ${((age / 2) + 7)}` };
     }
-
-    return { content: `Moralisch vertretbares Alter: ${((age / 2) + 7)}` };
 }
 
 export const applicationCommands: ApplicationCommandDefinition[] = [
