@@ -1,5 +1,3 @@
-"use strict";
-
 import { Guild, GuildMember, Snowflake } from "discord.js";
 import { BanData } from "../../storage/model/BanData";
 import { VerifiedCommandInteraction, Result, ApplicationCommandDefinition } from "../../types";
@@ -35,8 +33,8 @@ async function banHandler(interaction: VerifiedCommandInteraction): Promise<Resu
 		return { content: "Dieser User ist bereits gebannt du kek.", ephemeral: true };
 	}
 
-	const unbanAt = getUnbanAt(duration);
-	const banFunction = getBanFunction(member, unbanAt);
+	const info = getInfo(duration);
+	const banFunction = getBanFunction(member, info.unbanAt);
 
     if (!banFunction) {
 		return { content: "Eine der angegebenen Rollen für das bannen existiert nich.", ephemeral: true };
@@ -177,22 +175,30 @@ export function getUnbanFunction(member: GuildMember): (() => Promise<void>) | u
 	}
 }
 
-export function getUnbanAt(duration?: number): number {
-	let unbanAt = duration ?? 0; // 0 = never
+export function getInfo(duration?: number): { unbanAt: number, duration: number, endText: string } {
+	duration = duration ?? 0;
+	let unbanAt = duration; // 0 = never
 
-    if (!Number.isInteger(duration) || !isFinite(unbanAt)) {
+    if (!Number.isInteger(unbanAt) || !isFinite(unbanAt)) {
 		unbanAt = 0; // DO NOT HACK ME U FUCKR
+		duration = 0;
     }
-
-	if (unbanAt === 0) {
-		return unbanAt;
-	}
 
 	if (unbanAt < 0) {
 		unbanAt *= -1 * 2; // xd
 	}
 
-	return Date.now() + (unbanAt * 1000/*ms*/ * 3600/*s*/);
+	if (unbanAt > 0) {
+		unbanAt = Date.now() + (unbanAt * 1000/*ms*/ * 3600/*s*/);
+	}
+
+	const endText = (unbanAt === 0) ? "manuell durch Moderader" : `${duration?.toPrecision(2)} Stunden`;
+
+	return {
+		unbanAt,
+		duration,
+		endText
+	};
 }
 
 export const applicationCommands: ApplicationCommandDefinition[] = [

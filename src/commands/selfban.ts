@@ -1,5 +1,5 @@
 import { VerifiedCommandInteraction, Result, ApplicationCommandDefinition } from "../types";
-import { isBanned, getUnbanAt, getBanFunction } from "./modcommands/ban";
+import { isBanned, getInfo, getBanFunction } from "./modcommands/ban";
 
 // =========================================== //
 // = Copyright (c) NullDev & diewellenlaenge = //
@@ -17,23 +17,21 @@ async function handler(interaction: VerifiedCommandInteraction): Promise<Result>
 		return { content: "Du bist bereits gebannt du kek.", ephemeral: true };
 	}
 
-	const unbanAt = getUnbanAt(duration);
-    const banFunction = getBanFunction(member, unbanAt);
+	const info = getInfo(duration);
+    const banFunction = getBanFunction(member, info.unbanAt);
 
     if (!banFunction) {
 		return { content: "Eine der angegebenen Rollen für das bannen existiert nich.", ephemeral: true };
 	}
 
-    const endText = (unbanAt === 0) ? "manuell durch Moderader" : `${(unbanAt - Date.now()) / 1000/*s*/ / 3600/*s*/} Stunden`;
-
     await member.send(`Du hast dich selber von der Coding Shitpost Zentrale gebannt!
-Du wirst entbannt in: ${endText}
+Du wirst entbannt in: ${info.endText}
 Falls du doch vorzeitig entbannt entbannt werden möchtest, kannst du dich im <#${config.ids.banned_channel_id}> Channel melden.
 
 Haddi & xD™`
     );
 
-    interaction.reply({ content: `User ${member} hat sich selber gebannt!\nEntbannen in: ${endText}` });
+    interaction.reply({ content: `User ${member} hat sich selber gebannt!\nEntbannen in: ${info.endText}` });
 
     await banFunction();
 }
