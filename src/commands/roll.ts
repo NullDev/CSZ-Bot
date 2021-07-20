@@ -77,7 +77,7 @@ async function handler(interaction: VerifiedCommandInteraction): Promise<Result>
     const error = errorHandling(amount, sides);
 
     if (error) {
-        return { content: error };
+        return { content: error, ephemeral: true };
     }
 
     const embed: MessageEmbedOptions = {

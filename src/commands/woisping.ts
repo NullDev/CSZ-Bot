@@ -18,7 +18,7 @@ async function handler(interaction: VerifiedCommandInteraction): Promise<Result>
     const now = Date.now();
 
     if (!isMod && lastPing + config.bot_settings.woisping_limit * 1000 > now) {
-        return "Piss dich und spam nicht.";
+        return { content: "Piss dich und spam nicht." };
     }
 
     const reason = Util.cleanContent(interaction.options.get("grund")?.value as string, interaction.channel as Channel);
@@ -33,7 +33,7 @@ async function handler(interaction: VerifiedCommandInteraction): Promise<Result>
 
     if (isMod) {
         lastPing = now;
-        return `Was läuft, was läuft, was läuft <@&${config.ids.woisgang_role_id}>? Lass mal: **${reason}**`;
+        return { content: `Was läuft, was läuft, was läuft <@&${config.ids.woisgang_role_id}>? Lass mal: **${reason}**` };
     }
     else {
         WoispingReasonData.setReason(interaction.id, reason);
