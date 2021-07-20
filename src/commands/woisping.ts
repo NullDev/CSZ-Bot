@@ -1,6 +1,7 @@
 import { ApplicationCommandDefinition, Result, VerifiedButtonInteraction, VerifiedCommandInteraction } from "../types";
 const { WoispingVoteData, WoispingReasonData } = require("../storage/model/WoispingData");
 import { isModeratorUser, isWoisgangUser } from "../utils/access";
+import { Util, Channel } from "discord.js";
 
 // ================================= //
 // = Copyright (c) diewellenlaenge = //
@@ -20,7 +21,7 @@ async function handler(interaction: VerifiedCommandInteraction): Promise<Result>
         return "Piss dich und spam nicht.";
     }
 
-    const reason = interaction.options.get("grund")?.value as string;
+    const reason = Util.cleanContent(interaction.options.get("grund")?.value as string, interaction.channel as Channel);
 
     if (!reason) {
         return { content: "Bruder, lass mal 'nen Grund rüberwachsen!", ephemeral: true };

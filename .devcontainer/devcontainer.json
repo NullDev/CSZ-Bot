@@ -1,0 +1,9 @@
+{
+    "image": "mcr.microsoft.com/vscode/devcontainers/typescript-node:0-16",
+    "extensions": [
+        "editorconfig.editorconfig",
+        "streetsidesoftware.code-spell-checker-german",
+        "streetsidesoftware.code-spell-checker",
+        "dbaeumer.vscode-eslint"
+    ]
+}

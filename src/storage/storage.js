@@ -11,6 +11,7 @@ let {VoteData} = require("./model/VoteData");
 // Models
 let FadingMessage = require("./model/FadingMessage");
 const { BanData } = require("./model/BanData");
+const GuildRagequit = require("./model/GuildRagequit");
 
 exports.initialize = async function() {
     let sequelize = new Sequelize({
@@ -25,6 +26,7 @@ exports.initialize = async function() {
     WoispingReasonData.initialize(sequelize);
     VoteData.initialize(sequelize);
     BanData.initialize(sequelize);
+    GuildRagequit.initialize(sequelize);
 
     await sequelize.sync();
 };

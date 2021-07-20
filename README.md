@@ -23,6 +23,8 @@ German description of the Discord Server:
 
 ## :wrench: Installation
 
+<sub>NodeJS Version: >=14.3.0</sub>
+
 0. Terminal aufmachen und dorthin navigieren, wo man es downloaden möchte <br><br>
 1. Sichergehen, dass NodeJS installiert ist. Teste mit: <br>
 $ `node -v` <br>
@@ -33,7 +35,7 @@ $ `git clone https://github.com/NullDev/CSC-Bot.git && cd $_` <br>
 Wenn nicht, <a href="https://github.com/NullDev/CSC-Bot/archive/master.zip">hier</a> herunterladen und die ZIP extrahieren. <br>
 Dann in den Ordner navigieren.<br><br>
 3. Dependencies installieren: <br>
-$ `npm install`<br><br>
+$ `npm ci`<br><br>
 4. Das Config-Template [config.template.json](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json) kopieren und als `config.json` einfügen. <br><br>
 6. Die frisch kopierte Config-Datei ausfüllen: <br>
     - Um einen Bot zum Testen anzulegen, einfach den Instruktionen im [Discord Developer Portal](https://discord.com/developers/applications) folgen.

@@ -26,6 +26,7 @@ let interactionHandler = require("./handler/interactionHandler");
 // Other commands
 let ban = require("./commands/modcommands/ban");
 let poll = require("./commands/poll");
+const GuildRagequit = require("./storage/model/GuildRagequit");
 
 let version = conf.getVersion();
 let appname = conf.getName();
@@ -74,7 +75,7 @@ client.on("ready", async() => {
             (csz.channels.cache.get(config.ids.hauptchat_id)).send("Es ist `13:37` meine Kerle.\nBleibt hydriert! :grin: :sweat_drops:");
 
             // Auto-Prune members
-            csz.members.prune({ days: 7, reason: "auto prune" })
+            csz.members.prune({ days: 2, reason: "auto prune" })
                 .then(count => {
                     log.info(`Auto-prune: ${count} members pruned.`);
                     if (count >= 1){
@@ -82,9 +83,11 @@ client.on("ready", async() => {
                         (csz.channels.cache.get(config.ids.hauptchat_id)).send(`Hab grad ${count} jockel weg-gepruned :joy:`);
                     }
                 }).catch(e => log.error(e));
+        }, {
+            timezone: "Europe/Vienna"
         });
 
-        cron.schedule("1 0 * * *", () => bday.checkBdays());
+        cron.schedule("1 0 * * *", () => bday.checkBdays(), { timezone: "Europe/Vienna" });
         bday.checkBdays();
     }
 
@@ -100,7 +103,33 @@ client.on("guildCreate", guild => log.info(`New guild joined: ${guild.name} (id:
 
 client.on("guildDelete", guild => log.info(`Deleted from guild: ${guild.name} (id: ${guild.id}).`));
 
+client.on("guildMemberAdd", async member => {
+    const numRagequits = await GuildRagequit.getNumRagequits(member.guild.id, member.id);
+    if(numRagequits > 0 && !member.roles.cache.has(config.ids.shame_role_id)) {
+        if(member.guild.roles.cache.has(config.ids.shame_role_id)) {
+            member.roles.add(member.guild.roles.cache.get(config.ids.shame_role_id));
+
+            const hauptchat = member.guild.channels.cache.get(config.ids.hauptchat_id);
+            if(hauptchat) {
+                hauptchat.send(`Haha, schau mal einer guck wer wieder hergekommen ist! <@${member.id}> hast es aber nicht lange ohne uns ausgehalten. ${numRagequits > 1 ? "Und das schon zum " + numRagequits + ". mal" : ""}`);
+            }
+            else {
+                log.error("Hauptchat nicht gefunden");
+            }
+        }
+        else {
+            log.error("No Shame role found");
+        }
+    }
+});
+
+client.on("guildMemberRemove", (member) => {
+    GuildRagequit.incrementRagequit(member.guild.id, member.id);
+});
+
 client.on("message", (message) => messageHandler(message, client));
+
+client.on("messageUpdate", (_, newMessage) => messageHandler(/** @type {import("discord.js").Message} */ (newMessage), client));
 
 client.on("error", log.error);
 
