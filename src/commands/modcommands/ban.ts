@@ -116,10 +116,10 @@ function getRoleAssigner(member: GuildMember, roleId: Snowflake, bannedRoleId: S
 	}
 
 	if (hasRole || hasBannedRole) {
-		return async function () {
-			await member.roles.add(banned ? bannedRole : role);
-			await member.roles.remove(banned ? role : bannedRole);
-		};
+		return () => Promise.all([
+			member.roles.add(banned ? bannedRole : role),
+			member.roles.remove(banned ? role : bannedRole),
+		]) as unknown as Promise<void>;
 	}
 
 	return async function () { };
@@ -150,13 +150,10 @@ export function getBanFunction(member: GuildMember, unbanAt: number): (() => Pro
 		return undefined;
 	}
 
-	return async function () {
-		for (const roleAssigner of roleAssigners) {
-			await roleAssigner();
-		}
-
-		await BanData.setBan(member.id, unbanAt);
-	}
+	return () => Promise.all([
+		...roleAssigners.map(assigner => assigner()),
+		BanData.setBan(member.id, unbanAt),
+	]) as unknown as Promise<void>;
 }
 
 export function getUnbanFunction(member: GuildMember): (() => Promise<void>) | undefined {
@@ -166,13 +163,10 @@ export function getUnbanFunction(member: GuildMember): (() => Promise<void>) | u
 		return undefined;
 	}
 
-	return async function () {
-		for (const roleAssigner of roleAssigners) {
-			await roleAssigner();
-		}
-
-		await BanData.removeBan(member.id);
-	}
+	return () => Promise.all([
+		...roleAssigners.map(assigner => assigner()),
+		BanData.removeBan(member.id),
+	]) as unknown as Promise<void>;
 }
 
 export function getInfo(duration?: number): { unbanAt: number, duration: number, endText: string } {
