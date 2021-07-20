@@ -1,7 +1,7 @@
 /* eslint-disable new-cap */
 "use strict";
 // Dependencies
-let {Model, DataTypes} = require("sequelize");
+let { Model, DataTypes } = require("sequelize");
 let uuid = require("uuid");
 
 class VoteData extends Model {
@@ -18,7 +18,7 @@ class VoteData extends Model {
             where: {
                 interactionId
             }
-        })).map(model => ({userId: model.userId, vote: model.vote}));
+        })).map(model => ({ userId: model.userId, vote: model.vote }));
     }
     /**
      *
@@ -33,7 +33,7 @@ class VoteData extends Model {
                 userId
             }
         });
-        if(data) {
+        if (data) {
             data.vote = vote;
             data.save();
         }

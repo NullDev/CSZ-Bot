@@ -1,7 +1,7 @@
 /* eslint-disable new-cap */
 "use strict";
 // Dependencies
-let {Model, DataTypes} = require("sequelize");
+let { Model, DataTypes } = require("sequelize");
 let uuid = require("uuid");
 
 class GuildRagequit extends Model {
@@ -35,7 +35,7 @@ class GuildRagequit extends Model {
             }
         });
 
-        if(!data) {
+        if (!data) {
             data = await GuildRagequit.create({
                 guildId,
                 userId,

@@ -1,7 +1,7 @@
 /* eslint-disable new-cap */
 "use strict";
 // Dependencies
-let {Model, DataTypes} = require("sequelize");
+let { Model, DataTypes } = require("sequelize");
 let uuid = require("uuid");
 const logger = require("../../utils/logger");
 
@@ -16,7 +16,7 @@ class AdditionalMessageData extends Model {
                 .channels.cache.get(this.channelId)
                 .messages.cache.get(message.id);
         }
-        catch(err) {
+        catch (err) {
             logger.error(`Failed to fetch message from additional data [${JSON.stringify(this)}]: ${err.message}`);
         }
         return null;
@@ -33,9 +33,9 @@ class AdditionalMessageData extends Model {
             messageId: message.id
         };
 
-        let data = await AdditionalMessageData.findOne({where: objectData});
+        let data = await AdditionalMessageData.findOne({ where: objectData });
 
-        if(!data) {
+        if (!data) {
             data = await AdditionalMessageData.create(objectData);
         }
 

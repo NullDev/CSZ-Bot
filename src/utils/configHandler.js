@@ -12,7 +12,7 @@ let path = require("path");
 let log = require("./logger");
 
 const packagefile = require(path.resolve("package.json"));
-const configPath  = path.resolve("config.json");
+const configPath = path.resolve("config.json");
 
 /**
  * Check if the config is valid JSON
@@ -20,11 +20,11 @@ const configPath  = path.resolve("config.json");
  * @param {*} obj
  * @returns {Boolean} whether it is valid JSON
  */
-let validJson = function(obj){
+let validJson = function (obj) {
     try {
         JSON.parse(obj);
     }
-    catch (e){
+    catch (e) {
         return false;
     }
     return true;
@@ -35,8 +35,8 @@ let validJson = function(obj){
  *
  * @returns {Object} JSON Content
  */
-let getConfig = function(){
-    if (!fs.existsSync(configPath)){
+let getConfig = function () {
+    if (!fs.existsSync(configPath)) {
         log.error("Config does not exist! Make sure you copy config.template.json and paste it as 'config.json'. Then configure it.");
         process.exit(1);
     }
@@ -45,7 +45,7 @@ let getConfig = function(){
     try {
         jsondata = String(fs.readFileSync(configPath));
     }
-    catch (e){
+    catch (e) {
         log.error(`Cannot read config file: ${e}`);
         process.exit(1);
     }
@@ -56,19 +56,19 @@ let getConfig = function(){
     return process.exit(1);
 };
 
-let getVersion = function(){
+let getVersion = function () {
     return packagefile.version;
 };
 
-let getName = function(){
+let getName = function () {
     return packagefile.name;
 };
 
-let getAuthor = function(){
+let getAuthor = function () {
     return packagefile.author;
 };
 
-let getDescription = function(){
+let getDescription = function () {
     return packagefile.description;
 };
 

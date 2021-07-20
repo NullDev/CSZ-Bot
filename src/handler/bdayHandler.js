@@ -22,7 +22,7 @@ class BdayHandler {
      * @param {import("discord.js").Client} client
      * @memberof BdayHandler
      */
-    constructor(client){
+    constructor(client) {
         this.client = client;
         this.path = path.join(__dirname, "..", "..", "database.json");
         this.config = require("../utils/configHandler").getConfig();
@@ -37,7 +37,7 @@ class BdayHandler {
      *
      * @memberof BdayHandler
      */
-    checkBdays(){
+    checkBdays() {
         let date = new Date();
 
         let today = date.toLocaleString("de-DE", {

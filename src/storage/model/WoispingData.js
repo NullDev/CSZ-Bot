@@ -1,7 +1,7 @@
 /* eslint-disable new-cap */
 "use strict";
 // Dependencies
-let {Model, DataTypes} = require("sequelize");
+let { Model, DataTypes } = require("sequelize");
 let uuid = require("uuid");
 
 class WoispingReasonData extends Model {
@@ -28,7 +28,7 @@ class WoispingReasonData extends Model {
                 interactionId
             }
         });
-        if(data) {
+        if (data) {
             return data.reason;
         }
         return null;
@@ -91,7 +91,7 @@ class WoispingVoteData extends Model {
             }
         });
 
-        if(!data) {
+        if (!data) {
             data = await WoispingVoteData.create({
                 interactionId,
                 userId,

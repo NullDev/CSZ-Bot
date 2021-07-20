@@ -28,7 +28,7 @@ async function handler(interaction: VerifiedCommandInteraction): Promise<Result>
     }
 
     if (reason.length > 256) {
-        return { content: "Bruder, gib mal nen kürzeren Grund an, so groß ist die Aufmerksamkeitsspanne eines CSZlers nicht.", ephemeral: true};
+        return { content: "Bruder, gib mal nen kürzeren Grund an, so groß ist die Aufmerksamkeitsspanne eines CSZlers nicht.", ephemeral: true };
     }
 
     if (isMod) {
@@ -84,8 +84,8 @@ async function tryPing(interaction: VerifiedButtonInteraction) {
         if (numVotes >= config.bot_settings.woisping_threshold) {
             lastPing = now;
 
-            const {message} = interaction;
-            const {channel} = message;
+            const { message } = interaction;
+            const { channel } = message;
             const reason = (await WoispingReasonData.getReason(interactionId)) || "Wois";
 
             await channel.send(`Meine sehr verehrten ~~Damen und ~~Herren der heiligen <@&${config.ids.woisgang_role_id}>. Das Kollektiv hat entschieden, dass es Zeit ist für **${reason}**.`);
@@ -114,7 +114,7 @@ async function handleYes(interaction: VerifiedButtonInteraction): Promise<Result
 
 async function handleNo(interaction: VerifiedButtonInteraction): Promise<Result> {
     if (await handleButtonInteraction(interaction, false)) {
-        return { content: "Ok, dann halt nicht 😔", ephemeral: true};
+        return { content: "Ok, dann halt nicht 😔", ephemeral: true };
     }
 }
 

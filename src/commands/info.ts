@@ -11,7 +11,7 @@ let fetch = require("node-fetch").default;
  *
  * @return {Promise<String>}
  */
-let getContributors = function(){
+let getContributors = function () {
     return new Promise(async resolve => resolve((await (await fetch("https://api.github.com/repos/NullDev/CSC-Bot/contributors", {
         headers: { Accept: "application/vnd.github.v3+json" }
     })).json()).filter((e: any) => e.type === "User").map((e: any) => `<${e.html_url}> (Contributions: ${e.contributions})`).join("\n")));

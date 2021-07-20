@@ -27,7 +27,7 @@ const voteEmojis = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️
  * @param {import("discord.js").Client} client
  * @returns
  */
-module.exports = async function(event, client) {
+module.exports = async function (event, client) {
     if (!Object.prototype.hasOwnProperty.call(events, event.t)) return;
 
     const { d: data } = event;

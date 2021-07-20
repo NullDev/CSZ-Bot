@@ -44,7 +44,7 @@ console.log(
 log.done("Started.");
 
 const config = conf.getConfig();
-const client = new Discord.Client({ intents: [Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.GUILD_MEMBERS, Discord.Intents.FLAGS.GUILD_INTEGRATIONS, Discord.Intents.FLAGS.GUILD_MESSAGES,  Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS,  Discord.Intents.FLAGS.DIRECT_MESSAGES] });
+const client = new Discord.Client({ intents: [Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.GUILD_MEMBERS, Discord.Intents.FLAGS.GUILD_INTEGRATIONS, Discord.Intents.FLAGS.GUILD_MESSAGES, Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS, Discord.Intents.FLAGS.DIRECT_MESSAGES] });
 
 // @ts-ignore
 process.on("unhandledRejection", (err, promise) => log.error(`Unhandled rejection (promise: ${promise}, reason: ${err.stack})`));
@@ -53,7 +53,7 @@ let firstRun = true;
 
 let allCommands = new Map();
 
-client.on("ready", async() => {
+client.on("ready", async () => {
     log.info("Running...");
     log.info(`Got ${client.users.cache.size} users, in ${client.channels.cache.size} channels of ${client.guilds.cache.size} guilds`);
     client.user.setActivity(config.bot_settings.status);
@@ -65,7 +65,7 @@ client.on("ready", async() => {
     command.createApplicationCommands(client, allCommands);
 
     const bday = new BdayHandler(client);
-    if (firstRun){
+    if (firstRun) {
         await storage.initialize();
         firstRun = false; // Hacky deadlock ...
         let csz = client.guilds.cache.get(config.ids.guild_id);
@@ -78,7 +78,7 @@ client.on("ready", async() => {
             csz.members.prune({ days: 2, reason: "auto prune" })
                 .then(count => {
                     log.info(`Auto-prune: ${count} members pruned.`);
-                    if (count >= 1){
+                    if (count >= 1) {
                         /** @type {TC} */
                         (csz.channels.cache.get(config.ids.hauptchat_id)).send(`Hab grad ${count} jockel weg-gepruned :joy:`);
                     }
@@ -105,12 +105,12 @@ client.on("guildDelete", guild => log.info(`Deleted from guild: ${guild.name} (i
 
 client.on("guildMemberAdd", async member => {
     const numRagequits = await GuildRagequit.getNumRagequits(member.guild.id, member.id);
-    if(numRagequits > 0 && !member.roles.cache.has(config.ids.shame_role_id)) {
-        if(member.guild.roles.cache.has(config.ids.shame_role_id)) {
+    if (numRagequits > 0 && !member.roles.cache.has(config.ids.shame_role_id)) {
+        if (member.guild.roles.cache.has(config.ids.shame_role_id)) {
             member.roles.add(member.guild.roles.cache.get(config.ids.shame_role_id));
 
             const hauptchat = member.guild.channels.cache.get(config.ids.hauptchat_id);
-            if(hauptchat) {
+            if (hauptchat) {
                 hauptchat.send(`Haha, schau mal einer guck wer wieder hergekommen ist! <@${member.id}> hast es aber nicht lange ohne uns ausgehalten. ${numRagequits > 1 ? "Und das schon zum " + numRagequits + ". mal" : ""}`);
             }
             else {
@@ -129,7 +129,7 @@ client.on("guildMemberRemove", (member) => {
 
 client.on("messageCreate", async message => await messageHandler(message, client, allCommands));
 
-client.on("messageUpdate", (_, newMessage) => messageHandler(/** @type {import("discord.js").Message} */ (newMessage), client));
+client.on("messageUpdate", (_, newMessage) => messageHandler(/** @type {import("discord.js").Message} */(newMessage), client));
 
 client.on("error", log.error);
 

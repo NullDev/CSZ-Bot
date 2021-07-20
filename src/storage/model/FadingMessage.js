@@ -1,7 +1,7 @@
 /* eslint-disable new-cap */
 "use strict";
 // Dependencies
-let {Model, DataTypes} = require("sequelize");
+let { Model, DataTypes } = require("sequelize");
 let uuid = require("uuid");
 
 class FadingMessage extends Model {

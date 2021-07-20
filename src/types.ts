@@ -10,19 +10,19 @@ export type ReplyHandler = (replyInteraction: ReplyInteraction) => Promise<Resul
 
 export interface TextInteraction {
     client: Client;
-	member: GuildMember;
-	msg: Message;
-	args: string[];
+    member: GuildMember;
+    msg: Message;
+    args: string[];
 }
 
 export interface ReplyInteraction extends TextInteraction {
-	referencedMsg: Message;
+    referencedMsg: Message;
 }
 
 export interface ApplicationCommandDefinition {
     handler: CommandHandler;
-	textHandler?: TextHandler,
-	replyHandler?: ReplyHandler,
+    textHandler?: TextHandler,
+    replyHandler?: ReplyHandler,
     buttonHandler?: Record<string, ButtonHandler>,
     data: ApplicationCommandData,
     help?: string,
@@ -52,31 +52,29 @@ type VerifiedInteraction = {
 };
 
 export type VerifiedButtonInteraction = VerifiedInteraction & ButtonInteraction & {
-	message: Message & {
-		interaction: MessageInteraction
-	}
+    message: Message & {
+        interaction: MessageInteraction
+    }
 };
 
 export type VerifiedCommandInteraction = VerifiedInteraction & CommandInteraction;
 
 export function assertVerifiedInteraction<T extends Interaction>(interaction: T): asserts interaction is T & VerifiedInteraction {
-    if (!isVerifiedInteraction(interaction))
-    {
-		throw new Error("lul");
-	}
+    if (!isVerifiedInteraction(interaction)) {
+        throw new Error("lul");
+    }
 }
 
 export function isVerifiedInteraction<T extends Interaction>(interaction: T): interaction is T & VerifiedInteraction {
     return interaction.member?.roles instanceof GuildMemberRoleManager
-		&& interaction.member instanceof GuildMember
-		&& interaction.guild instanceof Guild;
+        && interaction.member instanceof GuildMember
+        && interaction.guild instanceof Guild;
 }
 
 export function assertVerifiedCommandInteraction(interaction: CommandInteraction): asserts interaction is VerifiedCommandInteraction {
-    if (!isVerifiedCommandInteraction(interaction))
-	{
+    if (!isVerifiedCommandInteraction(interaction)) {
         throw new Error("lul");
-	}
+    }
 }
 
 export function isVerifiedCommandInteraction(interaction: CommandInteraction): interaction is VerifiedCommandInteraction {
@@ -84,16 +82,15 @@ export function isVerifiedCommandInteraction(interaction: CommandInteraction): i
 }
 
 export function assertVerifiedButtonInteraction(interaction: ButtonInteraction): asserts interaction is VerifiedButtonInteraction {
-    if (!isVerifiedButtonInteraction(interaction))
-    {
-		throw new Error("lul");
-	}
+    if (!isVerifiedButtonInteraction(interaction)) {
+        throw new Error("lul");
+    }
 }
 
 export function isVerifiedButtonInteraction(interaction: ButtonInteraction): interaction is VerifiedButtonInteraction {
     return isVerifiedInteraction(interaction)
-		&& interaction.message instanceof Message
-		&& interaction.message.interaction !== null;
+        && interaction.message instanceof Message
+        && interaction.message.interaction !== null;
 }
 
 export class CSZError extends Error {

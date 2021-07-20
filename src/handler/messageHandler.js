@@ -28,7 +28,7 @@ let fs = require("fs");
  * @param {import("discord.js").APIMessage | string} content content
  * @param {import("discord.js").Client} client client
  */
-const inlineReply = function(messageRef, content, client) {
+const inlineReply = function (messageRef, content, client) {
     // @ts-ignore
     client.api.channels[messageRef.channel.id].messages.post({
         data: {
@@ -47,7 +47,7 @@ const inlineReply = function(messageRef, content, client) {
  * @param {import("discord.js").Client} client client
  * @returns {import("discord.js").Collection<string, Message>}
  */
-const getInlineReplies = function(messageRef, client) {
+const getInlineReplies = function (messageRef, client) {
     return messageRef.channel.messages.cache.filter(m => m.author.id === client.user.id && m.reference?.messageID === messageRef.id);
 };
 
@@ -55,7 +55,7 @@ const getInlineReplies = function(messageRef, client) {
  * @param {string} text
  * @returns {Promise<string>}
  */
-const createWhereMeme = function(text) {
+const createWhereMeme = function (text) {
     /** @type {import("jimp").Jimp} */
     let image = null;
     return Jimp.read({
@@ -81,7 +81,7 @@ const createWhereMeme = function(text) {
  * @param {Client} client
  * @returns
  */
-module.exports = async function(message, client, commands){
+module.exports = async function (message, client, commands) {
     let nonBiased = message.content
         .replace(config.bot_settings.prefix.command_prefix, "")
         .replace(config.bot_settings.prefix.mod_prefix, "")
@@ -102,7 +102,7 @@ module.exports = async function(message, client, commands){
                         name: path.basename(where)
                     }]
                 }).finally(() => fs.unlink(where, (err) => {
-                    if(err) {
+                    if (err) {
                         console.error(err);
                     }
                     return;

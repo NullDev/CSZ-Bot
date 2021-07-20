@@ -23,31 +23,31 @@ async function banHandler(interaction: VerifiedCommandInteraction): Promise<Resu
 	console.log(reason);
 	console.log(duration);
 
-    if (isModeratorUser(member) || member.user.id === interaction.user.id) {
+	if (isModeratorUser(member) || member.user.id === interaction.user.id) {
 		return { content: "Fick dich bitte.", ephemeral: true };
 	}
 
 	const oldUnbanAt = await BanData.getUnbanAt(member.id);
 
-    if (isBanned(member) && !oldUnbanAt) {
+	if (isBanned(member) && !oldUnbanAt) {
 		return { content: "Dieser User ist bereits gebannt du kek.", ephemeral: true };
 	}
 
 	const info = getInfo(duration);
 	const banFunction = getBanFunction(member, info.unbanAt);
 
-    if (!banFunction) {
+	if (!banFunction) {
 		return { content: "Eine der angegebenen Rollen für das bannen existiert nich.", ephemeral: true };
 	}
 
-    await member.send(`Du wurdest von der Coding Shitpost Zentrale gebannt!
+	await member.send(`Du wurdest von der Coding Shitpost Zentrale gebannt!
 ${!reason ? "Es wurde kein Banngrund angegeben." : "Banngrund: " + reason}
 Falls du Fragen zu dem Bann hast, kannst du dich im <#${config.ids.banned_channel_id}> Channel ausheulen.
 
 Lg & xD™`
-    );
+	);
 
-    await interaction.reply({ content: `User ${member} wurde gebannt!\nGrund: ${reason ?? "Kein Grund angegeben"}` });
+	await interaction.reply({ content: `User ${member} wurde gebannt!\nGrund: ${reason ?? "Kein Grund angegeben"}` });
 
 	await banFunction();
 }
@@ -55,25 +55,25 @@ Lg & xD™`
 async function unbanHandler(interaction: VerifiedCommandInteraction): Promise<Result> {
 	const member = interaction.options.get("user")?.member as GuildMember;
 
-    if (!isBanned(member)) {
+	if (!isBanned(member)) {
 		return { content: "Dieser User ist nicht gebannt du kek.", ephemeral: true };
 	}
 
 	const unbanFunction = getUnbanFunction(member);
 
-    if (!unbanFunction) {
+	if (!unbanFunction) {
 		return { content: "Eine der angegebenen Rollen für das bannen existiert nich.", ephemeral: true };
 	}
 
 	await unbanFunction();
 
-    await member.send("Glückwunsch! Du wurdest von der Coding Shitpost Zentrale entbannt. Und jetzt benimm dich.");
+	await member.send("Glückwunsch! Du wurdest von der Coding Shitpost Zentrale entbannt. Und jetzt benimm dich.");
 
-    return { content: `User ${member} wurde entbannt!` };
+	return { content: `User ${member} wurde entbannt!` };
 }
 
 export function startCron(guild: Guild) {
-    cron.schedule("* * * * *", async () => {
+	cron.schedule("* * * * *", async () => {
 		const bans = await BanData.findAll();
 
 		for (let banData of bans) {
@@ -93,7 +93,7 @@ export function startCron(guild: Guild) {
 				BanData.removeBan(banData.userId as Snowflake);
 			}
 		}
-    });
+	});
 }
 
 export function isBanned(member: GuildMember): boolean {
@@ -102,7 +102,7 @@ export function isBanned(member: GuildMember): boolean {
 
 function getRoleAssigner(member: GuildMember, roleId: Snowflake, bannedRoleId: Snowflake, banned: boolean): (() => Promise<void>) | undefined {
 	const role = member.guild.roles.cache.find(role => role.id === roleId);
-    const bannedRole = member.guild.roles.cache.find(role => role.id === bannedRoleId);
+	const bannedRole = member.guild.roles.cache.find(role => role.id === bannedRoleId);
 
 	if (!role || !bannedRole) {
 		return undefined;
@@ -116,7 +116,7 @@ function getRoleAssigner(member: GuildMember, roleId: Snowflake, bannedRoleId: S
 	}
 
 	if (hasRole || hasBannedRole) {
-		return async function() {
+		return async function () {
 			await member.roles.add(banned ? bannedRole : role);
 			await member.roles.remove(banned ? role : bannedRole);
 		};
@@ -132,7 +132,7 @@ function getRoleAssigners(member: GuildMember, banned: boolean): (() => Promise<
 	const gruendervaeterAssigner = getRoleAssigner(member, config.ids.gruendervaeter_role_id, config.ids.gruendervaeter_banned_role_id, banned);
 
 	if (!defaultAssigner || !trustedAssigner || !gruendervaeterAssigner) {
-        log.error("Ban: (some) roles are missing and/or wrongly assigned");
+		log.error("Ban: (some) roles are missing and/or wrongly assigned");
 		return undefined;
 	}
 
@@ -150,7 +150,7 @@ export function getBanFunction(member: GuildMember, unbanAt: number): (() => Pro
 		return undefined;
 	}
 
-	return async function() {
+	return async function () {
 		for (const roleAssigner of roleAssigners) {
 			await roleAssigner();
 		}
@@ -166,7 +166,7 @@ export function getUnbanFunction(member: GuildMember): (() => Promise<void>) | u
 		return undefined;
 	}
 
-	return async function() {
+	return async function () {
 		for (const roleAssigner of roleAssigners) {
 			await roleAssigner();
 		}
@@ -179,10 +179,10 @@ export function getInfo(duration?: number): { unbanAt: number, duration: number,
 	duration = duration ?? 0;
 	let unbanAt = duration; // 0 = never
 
-    if (!Number.isInteger(unbanAt) || !isFinite(unbanAt)) {
+	if (!Number.isInteger(unbanAt) || !isFinite(unbanAt)) {
 		unbanAt = 0; // DO NOT HACK ME U FUCKR
 		duration = 0;
-    }
+	}
 
 	if (unbanAt < 0) {
 		unbanAt *= -1 * 2; // xd
@@ -202,18 +202,18 @@ export function getInfo(duration?: number): { unbanAt: number, duration: number,
 }
 
 export const applicationCommands: ApplicationCommandDefinition[] = [
-    {
-        handler: banHandler,
-        data: {
-            name: "ban",
-            description: "Bannt einen User indem er ihn von allen Channels ausschließt",
+	{
+		handler: banHandler,
+		data: {
+			name: "ban",
+			description: "Bannt einen User indem er ihn von allen Channels ausschließt",
 			options: [
-                {
-                    name: "user",
-                    type: "USER",
-                    description: "Wer gebannert werden soll",
-                    required: true
-                },
+				{
+					name: "user",
+					type: "USER",
+					description: "Wer gebannert werden soll",
+					required: true
+				},
 				{
 					name: "grund",
 					type: "STRING",
@@ -222,24 +222,24 @@ export const applicationCommands: ApplicationCommandDefinition[] = [
 				{
 					name: "dauer",
 					type: "INTEGER",
-                    description: "Banndauer (default = unendlich)"
+					description: "Banndauer (default = unendlich)"
 				}
-            ]
-        }
-    },
-    {
-        handler: unbanHandler,
-        data: {
-            name: "unban",
-            description: "Entbannt einen User womit er alle Channel wieder sehen kann",
+			]
+		}
+	},
+	{
+		handler: unbanHandler,
+		data: {
+			name: "unban",
+			description: "Entbannt einen User womit er alle Channel wieder sehen kann",
 			options: [
-                {
-                    name: "user",
-                    type: "USER",
-                    description: "Wer rehabilitiert werden soll",
-                    required: true
-                }
-            ]
-        }
-    }
+				{
+					name: "user",
+					type: "USER",
+					description: "Wer rehabilitiert werden soll",
+					required: true
+				}
+			]
+		}
+	}
 ];

@@ -68,7 +68,7 @@ export function createApplicationCommands(client: Client, commands: Map<CommandN
                 log.info(`Successfully created application ${info.isModCommand ? "mod " : ""}command ${cmdObject.name} with ID ${cmdObject.id}`);
 
                 if (permissions.length > 0) {
-                    cmdObject.permissions.set({  permissions });
+                    cmdObject.permissions.set({ permissions });
                 }
             })
             .catch(err => log.error(err));
@@ -131,7 +131,7 @@ export async function messageHandler(message: Message, client: Client, isModComm
 
             let replyInteraction: ReplyInteraction = {
                 ...textInteraction,
-                 referencedMsg: referencedMessage
+                referencedMsg: referencedMessage
             };
 
             return await command.replyHandler(replyInteraction);

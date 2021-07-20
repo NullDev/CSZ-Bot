@@ -10,11 +10,11 @@ let isLooping = false;
 /**
  * @param {import("discord.js").Client} client
  */
-const fadingMessageDeleteLoop = async function(client) {
+const fadingMessageDeleteLoop = async function (client) {
     let fadingMessages = await FadingMessage.findAll();
-    for(let fadingMessage of fadingMessages) {
+    for (let fadingMessage of fadingMessages) {
         let currentTime = new Date();
-        if(currentTime < fadingMessage.endTime) {
+        if (currentTime < fadingMessage.endTime) {
             continue;
         }
 
@@ -25,7 +25,7 @@ const fadingMessageDeleteLoop = async function(client) {
 
             await message.delete();
         }
-        catch(error) {
+        catch (error) {
             log.warn(`Failed to handle FadingMessage [${fadingMessage.id}] properly: ${error.stack}`);
         }
         finally {
@@ -34,14 +34,14 @@ const fadingMessageDeleteLoop = async function(client) {
     }
 };
 
-const loopWrapper = async function(client) {
+const loopWrapper = async function (client) {
     isLooping = true;
     await fadingMessageDeleteLoop(client);
     isLooping = false;
 };
 
-exports.startLoop = function(client) {
+exports.startLoop = function (client) {
     setInterval(() => {
-        if(!isLooping) loopWrapper(client);
+        if (!isLooping) loopWrapper(client);
     }, 1000);
 };

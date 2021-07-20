@@ -10,19 +10,19 @@ let config = require("../utils/configHandler").getConfig();
 
 async function handler(interaction: VerifiedCommandInteraction): Promise<Result> {
     const { member } = interaction;
-	const duration = interaction.options.get("dauer")?.value as number || 0;
+    const duration = interaction.options.get("dauer")?.value as number || 0;
 
     // shouldn't happen as forbidden by interaction permission
     if (isBanned(member)) {
-		return { content: "Du bist bereits gebannt du kek.", ephemeral: true };
-	}
+        return { content: "Du bist bereits gebannt du kek.", ephemeral: true };
+    }
 
-	const info = getInfo(duration);
+    const info = getInfo(duration);
     const banFunction = getBanFunction(member, info.unbanAt);
 
     if (!banFunction) {
-		return { content: "Eine der angegebenen Rollen für das bannen existiert nich.", ephemeral: true };
-	}
+        return { content: "Eine der angegebenen Rollen für das bannen existiert nich.", ephemeral: true };
+    }
 
     await member.send(`Du hast dich selber von der Coding Shitpost Zentrale gebannt!
 Du wirst entbannt in: ${info.endText}

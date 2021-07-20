@@ -17,7 +17,7 @@ const randomSeed = "AQa0B7HK4vvrBOlaKKplMsKorGhN4gJvOCBWxw531P8uwpeIU3d39ODZ02fb
  * @param {string} s
  * @returns {number} index
  */
-const iocCalculator = function(s: string){
+const iocCalculator = function (s: string) {
     let bigrams = new Map();
     let text = s.replace(/\s+/g, "");
     [...text].forEach(c => (bigrams.has(c) ? bigrams.set(c, bigrams.get(c) + 1) : bigrams.set(c, 1)));
@@ -35,7 +35,7 @@ const iocCalculator = function(s: string){
  * @param {number} seed
  * @returns {number} random floored number >= min and <= max
  */
-const rng = function(min: number, max: number, seed: number){
+const rng = function (min: number, max: number, seed: number) {
     let sido = (seed * 9301 + 49297) % 233280;
     let rnd = sido / 233280;
     let disp = Math.abs(Math.sin(sido));
@@ -57,8 +57,8 @@ const ioc = iocCalculator(randomSeed);
 const secureDecisionMaker = (question: string, max = 1) => (rng(0, max, (Date.now() * ioc) / iocCalculator(question)));
 
 async function handler(interaction: VerifiedCommandInteraction): Promise<Result> {
-    const {options, member} = interaction;
-    const {user} = member;
+    const { options, member } = interaction;
+    const { user } = member;
 
     const embed: MessageEmbedOptions = {
         timestamp: moment.utc().format(),
@@ -69,7 +69,7 @@ async function handler(interaction: VerifiedCommandInteraction): Promise<Result>
     };
 
     const reply: InteractionReplyOptions = {
-        embeds: [ embed ]
+        embeds: [embed]
     };
 
     let question = "";

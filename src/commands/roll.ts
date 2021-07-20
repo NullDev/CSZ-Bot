@@ -95,7 +95,7 @@ async function handler(interaction: VerifiedCommandInteraction): Promise<Result>
     embed.description = constructResultStr(diceResult(amount as number, sides as number)); // TODO: fix!
 
     const reply: InteractionReplyOptions = {
-        embeds: [ embed ]
+        embeds: [embed]
     };
 
     return reply;
