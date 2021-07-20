@@ -10,7 +10,7 @@ let AdditionalMessageData = require("../storage/model/AdditionalMessageData");
 
 // Utils
 let log = require("../utils/logger");
-let poll = require("../commands/poll");
+//let poll = require("../commands/poll");
 const woisping = require("../commands/woisping");
 
 const events = {
@@ -48,7 +48,7 @@ module.exports = async function(event, client) {
         return;
     }
 
-    if (voteEmojis.includes(event.d.emoji.name) && event.t === "MESSAGE_REACTION_ADD") {
+    /*if (voteEmojis.includes(event.d.emoji.name) && event.t === "MESSAGE_REACTION_ADD") {
         const member = await message.guild.members.fetch((await client.users.fetch(data.user_id)).id);
         const fromThisBot = member.id === client.user.id;
 
@@ -118,5 +118,5 @@ module.exports = async function(event, client) {
         newCustomData.delayedPollData = delayedPoll;
         additionalData.customData = newCustomData;
         await additionalData.save();
-    }
+    }*/
 };

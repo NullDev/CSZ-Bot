@@ -25,7 +25,7 @@ let interactionHandler = require("./handler/interactionHandler");
 
 // Other commands
 let ban = require("./commands/modcommands/ban");
-let poll = require("./commands/poll");
+//let poll = require("./commands/poll");
 const GuildRagequit = require("./storage/model/GuildRagequit");
 
 let version = conf.getVersion();
