@@ -25,7 +25,7 @@ let interactionHandler = require("./handler/interactionHandler");
 
 // Other commands
 let ban = require("./commands/modcommands/ban");
-//let poll = require("./commands/poll");
+// let poll = require("./commands/poll");
 const GuildRagequit = require("./storage/model/GuildRagequit");
 
 let version = conf.getVersion();
@@ -44,7 +44,7 @@ console.log(
 log.done("Started.");
 
 const config = conf.getConfig();
-const client = new Discord.Client({ intents: Discord.Intents.ALL });
+const client = new Discord.Client({ intents: [Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.GUILD_MEMBERS, Discord.Intents.FLAGS.GUILD_INTEGRATIONS, Discord.Intents.FLAGS.GUILD_MESSAGES,  Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS,  Discord.Intents.FLAGS.DIRECT_MESSAGES] });
 
 // @ts-ignore
 process.on("unhandledRejection", (err, promise) => log.error(`Unhandled rejection (promise: ${promise}, reason: ${err.stack})`));
@@ -93,8 +93,8 @@ client.on("ready", async() => {
 
     ban.startCron(client.guilds.cache.get(config.ids.guild_id));
 
-    //await poll.importPolls();
-    //poll.startCron(client);
+    // await poll.importPolls();
+    // poll.startCron(client);
 
     fadingMessageHandler.startLoop(client);
 });
