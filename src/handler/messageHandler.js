@@ -93,7 +93,7 @@ module.exports = function(message, client){
         message.delete();
     }
 
-    if ((/^wo(\s+\S+){1,3}\S$/gi).test(message.content.trim())) {
+    if ((/^wo(\s+\S+){1,3}\S[^?]$/gi).test(message.content.trim())) {
         createWhereMeme(Util.cleanContent(message.content.trim().toLowerCase().replace(/ß/g, "ss").toUpperCase(), message))
             .then(where => {
                 message.channel.send({
