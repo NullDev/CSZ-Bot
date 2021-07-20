@@ -95,7 +95,7 @@ export class CSZError extends Error {
 }
 
 // export function assertVerifiedInteraction(interaction: Interaction): asserts interaction is VerifiedInteraction {
-//     if(!isVerifiedInteraction(interaction))
+//     for (!isVerifiedInteraction(interaction))
 //         throw new Error("lul");
 // }
 
