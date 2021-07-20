@@ -127,7 +127,7 @@ client.on("guildMemberRemove", (member) => {
     GuildRagequit.incrementRagequit(member.guild.id, member.id);
 });
 
-client.on("message", (message) => messageHandler(message, client));
+client.on("messageCreate", (message) => messageHandler(message, client));
 
 client.on("messageUpdate", (_, newMessage) => messageHandler(/** @type {import("discord.js").Message} */ (newMessage), client));
 
@@ -135,7 +135,7 @@ client.on("error", log.error);
 
 client.on("raw", async event => reactionHandler(event, client));
 
-client.on("interaction", async interaction => await interactionHandler.handler(interaction, allCommands));
+client.on("interactionCreate", async interaction => await interactionHandler.handler(interaction, allCommands));
 
 client.login(config.auth.bot_token).then(() => {
     log.done("Token login was successful!");
