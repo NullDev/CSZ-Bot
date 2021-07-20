@@ -1,4 +1,4 @@
-import { InteractionReplyOptions, MessageEmbedOptions, Util } from "discord.js";
+import { Channel, InteractionReplyOptions, MessageEmbedOptions, Util } from "discord.js";
 import { VerifiedCommandInteraction, Result, ApplicationCommandDefinition } from "../types";
 
 // Dependencies
@@ -73,9 +73,10 @@ async function handler(interaction: VerifiedCommandInteraction): Promise<Result>
     };
 
     let question = "";
+    const subcommand = options.getSubCommand();
 
-    if (options.has("frage")) {
-        question = options.get("frage")?.options?.get("question")?.value as string;
+    if (subcommand === "frage") {
+        question = "MAKEITCOMPILE";//options.getSubCommand("frage")?.options?.get("question")?.value as string;
         const decision = secureDecisionMaker(question);
         let file;
         if(!!decision) {
@@ -91,7 +92,7 @@ async function handler(interaction: VerifiedCommandInteraction): Promise<Result>
         };
         reply.files = [`./assets/${file}`];
     }
-    else if (options.has("auswahl")) {
+    else if (subcommand === "auswahl") {
         const answers = options.get("auswahl")?.options?.map(a => a.value as string).filter(a => !!a);
 
         if (!answers) {
@@ -107,7 +108,7 @@ async function handler(interaction: VerifiedCommandInteraction): Promise<Result>
 
     if (!question.endsWith("?")) question += "?";
 
-    embed.title = Util.cleanContent(question, interaction.channel);
+    embed.title = Util.cleanContent(question, interaction.channel as Channel);
 
     return reply;
 };

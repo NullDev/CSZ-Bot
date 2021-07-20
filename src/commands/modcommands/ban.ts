@@ -25,9 +25,9 @@ async function banHandler(interaction: VerifiedCommandInteraction): Promise<Resu
 	console.log(reason);
 	console.log(duration);
 
-    /*if (isModeratorUser(member) || member.user.id === interaction.user.id) {
+    if (isModeratorUser(member) || member.user.id === interaction.user.id) {
 		return { content: "Fick dich bitte.", ephemeral: true };
-	}*/
+	}
 
 	const oldUnbanAt = await BanData.getUnbanAt(member.id);
 

@@ -34,21 +34,21 @@ export async function handler(interaction: Interaction, allCommands: Map<Command
     else if (interaction.isButton()) {
         assertVerifiedButtonInteraction(interaction);
 
-        log.info(`Recieved Button Interaction ${interaction.customID}`);
+        log.info(`Recieved Button Interaction ${interaction.customId}`);
 
         const command = allCommands.get(interaction.message.interaction.commandName);
 
         // should never happen
         if (!command || !command.buttonHandler) {
-            log.error(`Dafuck, missing handler but button id ${interaction.customID} is registered for command ${command}`);
+            log.error(`Dafuck, missing handler but button id ${interaction.customId} is registered for command ${command}`);
             return;
         }
 
-        const handler = command.buttonHandler[interaction.customID];
+        const handler = command.buttonHandler[interaction.customId];
 
         // should never happen
         if (!handler) {
-            log.error(`Dafuck, missing handler but button id ${interaction.customID} is registered for command ${command}`);
+            log.error(`Dafuck, missing handler but button id ${interaction.customId} is registered for command ${command}`);
             return;
         }
 

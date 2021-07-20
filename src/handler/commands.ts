@@ -67,7 +67,7 @@ export function createApplicationCommands(client: Client, commands: Map<CommandN
                 log.info(`Successfully created application ${info.isModCommand ? "mod " : ""}command ${cmdObject.name} with ID ${cmdObject.id}`);
 
                 if (permissions.length > 0) {
-                    cmdObject.setPermissions(permissions, config.ids.guild_id);
+                    cmdObject.permissions.set({  permissions });
                 }
             })
             .catch(err => log.error(err));

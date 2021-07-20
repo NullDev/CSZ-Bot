@@ -16,13 +16,14 @@ async function handler(interaction: VerifiedCommandInteraction): Promise<Result>
         commandText += `${prefix}${commandName}:\n${handler1.description}\n\n`;
     });*/
 
+    // TODO: discord.js changed the split behvior, there is no simple split property anymore
+    // see https://discord.js.org/#/docs/main/master/class/Util?scrollTo=s-splitMessage
     interaction.user.send({
         content: "Hallo, " + interaction.member.user.username + "!\n\n" +
             "Hier ist eine Liste mit allen Commands:\n\n```CSS\n" +
             commandText +
             "``` \n\n" +
-            "Bei Fragen kannst du dich an @ShadowByte#1337 wenden!",
-        split: true
+            "Bei Fragen kannst du dich an @ShadowByte#1337 wenden!"
     });
 
     return { content: "Bruder, siehe PN", ephemeral: true };
