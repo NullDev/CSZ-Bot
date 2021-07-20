@@ -79,7 +79,7 @@ async function handler(interaction: VerifiedCommandInteraction): Promise<Result>
         question = "MAKEITCOMPILE";//options.getSubCommand("frage")?.options?.get("question")?.value as string;
         const decision = secureDecisionMaker(question);
         let file;
-        if(!!decision) {
+        if (!!decision) {
             embed.color = 0x2ecc71;
             file = "yes.png";
         }
