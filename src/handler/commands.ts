@@ -6,8 +6,9 @@ import * as log from "../utils/logger";
 // Utils
 const config = require("../utils/configHandler").getConfig();
 
-import { Client } from "discord.js";
-import { ApplicationCommandDefinition, CommandName, CSZModule } from "../types";
+import { Client, Message, TextChannel } from "discord.js";
+import { ApplicationCommandDefinition, CommandName, CSZModule, ReplyInteraction, Result, TextInteraction } from "../types";
+import { isModeratorMessage } from "../utils/access";
 
 export async function loadModules(srcDir: string, isModModule = false): Promise<Map<CommandName, ApplicationCommandDefinition>> {
     const moduleRoot = path.resolve(srcDir);
@@ -71,5 +72,80 @@ export function createApplicationCommands(client: Client, commands: Map<CommandN
                 }
             })
             .catch(err => log.error(err));
+    }
+}
+
+export async function messageHandler(message: Message, client: Client, isModCommand: boolean, allCommands: Map<CommandName, ApplicationCommandDefinition>): Promise<Result> {
+    if (!message.member) {
+        return { content: "Internöl erroa" };
+    }
+
+    const cmdPrefix = isModCommand ? config.bot_settings.prefix.mod_prefix : config.bot_settings.prefix.command_prefix;
+    const args = message.content.slice(cmdPrefix.length).trim().split(/\s+/g);
+    const commandName = args.shift();
+
+    if (!commandName) {
+        return;
+    }
+
+    const command = allCommands.get(commandName.toLocaleLowerCase());
+
+    // should never happen
+    if (!command) {
+        return;
+    }
+
+    if ((isModCommand && !command.isModCommand) || (!isModCommand && command.isModCommand) || (isModCommand && !isModeratorMessage(message))) {
+        return { content: `Tut mir leid, ${message.author}. Du hast nicht genügend Rechte um dieses Command zu verwenden =(` };
+    }
+
+    let textInteraction: TextInteraction = {
+        client,
+        member: message.member,
+        msg: message,
+        args
+    };
+
+    let referencedMessage: Message | null = null;
+
+    console.log(message);
+
+    if (message.reference?.messageId && message.reference.guildId === config.ids.guild_id && message.reference.channelId) {
+        const channel = client.guilds.cache.get(config.ids.guild_id)?.channels.cache.get(message.reference.channelId);
+
+        if (channel) {
+            try {
+                referencedMessage = await (channel as TextChannel).messages.fetch(message.reference.messageId);
+            }
+            catch (err) {
+                log.error(err);
+            }
+        }
+    }
+
+    try {
+        if (referencedMessage) {
+            if (!command.replyHandler) {
+                return;
+            }
+
+            let replyInteraction: ReplyInteraction = {
+                ...textInteraction,
+                 referencedMsg: referencedMessage
+            };
+
+            return await command.replyHandler(replyInteraction);
+        } else {
+            if (!command.textHandler) {
+                return;
+            }
+
+            return await command.textHandler(textInteraction);
+        }
+    }
+    // Exception returned by the interaction handler
+    catch (err) {
+        log.error(err);
+        return "Sorry, irgendwas ist schief gegangen! =(";
     }
 }

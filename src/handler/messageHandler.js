@@ -16,7 +16,7 @@ let config = require("../utils/configHandler").getConfig();
 const { Util } = require("discord.js");
 
 // Handler
-let cmdHandler = require("./cmdHandler");
+let commandMessageHandler = require("./commands").messageHandler;
 
 let Jimp = require("jimp");
 let path = require("path");
@@ -32,7 +32,7 @@ const inlineReply = function(messageRef, content, client) {
     // @ts-ignore
     client.api.channels[messageRef.channel.id].messages.post({
         data: {
-            content,
+            ...content,
             message_reference: {
                 message_id: messageRef.id,
                 channel_id: messageRef.channel.id,
@@ -81,7 +81,7 @@ const createWhereMeme = function(text) {
  * @param {Client} client
  * @returns
  */
-module.exports = function(message, client){
+module.exports = async function(message, client, commands){
     let nonBiased = message.content
         .replace(config.bot_settings.prefix.command_prefix, "")
         .replace(config.bot_settings.prefix.mod_prefix, "")
@@ -125,18 +125,12 @@ module.exports = function(message, client){
      * @param {Boolean} isModCommand
      * @param {Function} callback
      */
-    if (isNormalCommand) {
-        cmdHandler(message, client, false, (err) => {
-            // Get all inline replies to the message and delte them. Ignore errors, since cached is used and previously deleted messages are contained aswell
-            getInlineReplies(message, client).forEach(msg => msg.delete().catch(() => { return; }));
-            if (err) inlineReply(message, err, client);
-        });
-    }
-    else if (isModCommand) {
-        cmdHandler(message, client, true, (err) => {
-            // Get all inline replies to the message and delte them. Ignore errors, since cached is used and previously deleted messages are contained aswell
-            getInlineReplies(message, client).forEach(msg => msg.delete().catch(() => { return; }));
-            if (err) inlineReply(message, err, client);
-        });
+    const result = await commandMessageHandler(message, client, isModCommand, commands);
+
+    // Get all inline replies to the message and delte them. Ignore errors, since cached is used and previously deleted messages are contained aswell
+    getInlineReplies(message, client).forEach(async msg => await msg.delete().catch(() => { return; }));
+
+    if (result instanceof Object) {
+        inlineReply(message, result, client);
     }
 };

@@ -127,7 +127,7 @@ client.on("guildMemberRemove", (member) => {
     GuildRagequit.incrementRagequit(member.guild.id, member.id);
 });
 
-client.on("messageCreate", (message) => messageHandler(message, client));
+client.on("messageCreate", async message => await messageHandler(message, client, allCommands));
 
 client.on("messageUpdate", (_, newMessage) => messageHandler(/** @type {import("discord.js").Message} */ (newMessage), client));
 

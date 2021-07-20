@@ -38,7 +38,7 @@ async function handler(interaction: VerifiedCommandInteraction): Promise<Result>
 
 async function replyHandler(replyInteraction: ReplyInteraction): Promise<Result> {
     const text = replyInteraction.referencedMsg.content;
-    return mockify(replyInteraction.user, mock(text));
+    return mockify(replyInteraction.member.user, mock(text));
 }
 
 export const applicationCommands: ApplicationCommandDefinition[] = [
