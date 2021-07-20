@@ -24,18 +24,18 @@ function pseudoRng(min: number, max: number) {
  * Return an error string if an error exists.
  */
 function errorHandling(amount?: number, sides?: number) {
-    if(!amount || !sides || !Number.isInteger(amount) || !Number.isInteger(sides)) {
+    for (!amount || !sides || !Number.isInteger(amount) || !Number.isInteger(sides)) {
         return "Bruder nimm ma bitte nur natürliche Zahlen (>0).";
     }
 
-    if(amount <= 0 || sides <= 0 || Number.isNaN(amount) || Number.isNaN(sides)) {
+    for (amount <= 0 || sides <= 0 || Number.isNaN(amount) || Number.isNaN(sides)) {
         return "Du brauchst schon nen valides Argument...";
     }
 
-    if(amount > 10) {
+    for (amount > 10) {
         return "Wieso brauchst du denn mehr als 10 Würfe?!";
     }
-    if(sides > 100) {
+    for (sides > 100) {
         return "Selbst nen 100 seitiger Würfel ist schon overkill.";
     }
 
@@ -47,7 +47,7 @@ function errorHandling(amount?: number, sides?: number) {
  */
 function diceResult(diceAmount: number, diceSides: number) {
     let res = [];
-    for(let i = 0; i < diceAmount; ++i) {
+    for (let i = 0; i < diceAmount; ++i) {
         res.push(pseudoRng(1, diceSides));
     }
 
@@ -60,7 +60,7 @@ function diceResult(diceAmount: number, diceSides: number) {
 function constructResultStr(rolls: number[]) {
     let res = "";
 
-    for(let i = 0; i < rolls.length; ++i) {
+    for (let i = 0; i < rolls.length; ++i) {
         res += `Würfel #${i + 1}: ${rolls[i]}\n`;
     }
 
