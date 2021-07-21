@@ -138,13 +138,13 @@ const specialCommands = [
 /**
  * @returns {boolean}
  */
-const isCooldown = function() {
+const isCooledDown = function() {
     const now = Date.now();
     const diff = now - lastSpecialCommand;
     const fixedCooldown = 120000;
     // After 2 minutes command is cooled down
     if(diff >= fixedCooldown) {
-        return false;
+        return true;
     }
     // Otherwise a random function should evaluate the cooldown. The longer the last command was, the higher the chance
     // diff is < fixedCooldown
@@ -166,7 +166,7 @@ module.exports = function(message, client){
 
     if (message.author.bot || nonBiased === "" || message.channel.type === "dm") return;
 
-    if(!isCooldown()) {
+    if(isCooledDown()) {
         const commandCandidates = specialCommands.filter(p => p.pattern.test(message.content));
         if(commandCandidates.length > 0) {
             commandCandidates.forEach(c => {
