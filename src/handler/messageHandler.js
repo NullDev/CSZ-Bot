@@ -92,7 +92,7 @@ module.exports = function(message, client){
     if(message.content.toLowerCase().includes("ich bin ")) {
         const idx = message.content.toLowerCase().lastIndexOf("ich bin ");
         if(idx < (message.content.length - 1)) {
-            const whoIs = message.content.substring(idx + 8);
+            const whoIs = Util.cleanContent(message.content.substring(idx + 8), message);
             if(whoIs.trim().length > 0) {
                 inlineReply(message, `Hallo ${whoIs}, ich bin Shitpost Bot.`, client);
             }
