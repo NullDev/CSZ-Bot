@@ -89,10 +89,6 @@ module.exports = function(message, client){
 
     if (message.author.bot || nonBiased === "" || message.channel.type === "dm") return;
 
-    if (["348086189229735946", "867316840028176384"].includes(message.author.id) && (/^[\W\s_]*(<:.+:\d+>|\p{Emoji})[\W\s_]*$/gu).test(message.content.trim()/* .replace(/[\W_]+/g, "") */)) {
-        message.delete();
-    }
-
     if ((/^wo(\s+\S+){1,3}\S[^?]$/gi).test(message.content.trim())) {
         createWhereMeme(Util.cleanContent(message.content.trim().toLowerCase().replace(/ß/g, "ss").toUpperCase(), message))
             .then(where => {
