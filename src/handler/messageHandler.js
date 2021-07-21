@@ -22,6 +22,8 @@ let Jimp = require("jimp");
 let path = require("path");
 let fs = require("fs");
 
+let lastSpecialCommand = 0;
+
 /**
  * Performs inline reply to a message
  * @param {import("discord.js").Message} messageRef message to which should be replied
@@ -75,6 +77,65 @@ const createWhereMeme = function(text) {
 };
 
 /**
+ *
+ * @param {import("discord.js").Message} message
+ */
+const dadJoke = function(message) {
+    const idx = message.content.toLowerCase().lastIndexOf("ich bin ");
+    if(idx < (message.content.length - 1)) {
+        const whoIs = Util.removeMentions(Util.cleanContent(message.content.substring(idx + 8), message));
+        if(whoIs.trim().length > 0) {
+            inlineReply(message, `Hallo ${whoIs}, ich bin Shitpost Bot.`, client);
+        }
+    }
+};
+
+/**
+ *
+ * @param {import("discord.js").Message} message
+ */
+const nixos = function(message) {
+    message.react(message.guild.emojis.cache.find(e => e.name === "nixos"));
+};
+
+/**
+ *
+ * @param {import("discord.js").Message} message
+ */
+const whereMeme = function(message) {
+    createWhereMeme(Util.cleanContent(message.content.trim().toLowerCase().replace(/ß/g, "ss").toUpperCase(), message))
+        .then(where => {
+            message.channel.send({
+                files: [{
+                    attachment: where,
+                    name: path.basename(where)
+                }]
+            }).finally(() => fs.unlink(where, (err) => {
+                if(err) {
+                    console.error(err);
+                }
+                return;
+            }));
+        })
+        .catch(err => console.error(err));
+};
+
+const specialCommands = [
+    {
+        pattern: /(^|\s+)nix($|\s+)/gi,
+        handler: nixos
+    },
+    {
+        pattern: /^wo(\s+\S+){1,3}\S[^?]$/gi,
+        handler: whereMeme
+    },
+    {
+        pattern: /^ich bin\s+$/gi,
+        handler: dadJoke
+    }
+];
+
+/**
  * Handles incomming messages
  *
  * @param {Message} message
@@ -89,37 +150,12 @@ module.exports = function(message, client){
 
     if (message.author.bot || nonBiased === "" || message.channel.type === "dm") return;
 
-
-    if(message.content.toLowerCase().includes("ich bin ")) {
-        const idx = message.content.toLowerCase().lastIndexOf("ich bin ");
-        if(idx < (message.content.length - 1)) {
-            const whoIs = Util.removeMentions(Util.cleanContent(message.content.substring(idx + 8), message));
-            if(whoIs.trim().length > 0) {
-                inlineReply(message, `Hallo ${whoIs}, ich bin Shitpost Bot.`, client);
-            }
+    if(Date.now() - lastSpecialCommand > 120000) {
+        const commandCandidates = specialCommands.filter(p => p.pattern.test(message.content));
+        if(commandCandidates.length > 0) {
+            commandCandidates.forEach(c => c.handler());
+            lastSpecialCommand = Date.now();
         }
-    }
-
-    if((/(^|\s+)nix($|\s+)/gi).test(message.content.trim())) {
-        message.react(message.guild.emojis.cache.find(e => e.name === "nixos"));
-    }
-
-    if ((/^wo(\s+\S+){1,3}\S[^?]$/gi).test(message.content.trim())) {
-        createWhereMeme(Util.cleanContent(message.content.trim().toLowerCase().replace(/ß/g, "ss").toUpperCase(), message))
-            .then(where => {
-                message.channel.send({
-                    files: [{
-                        attachment: where,
-                        name: path.basename(where)
-                    }]
-                }).finally(() => fs.unlink(where, (err) => {
-                    if(err) {
-                        console.error(err);
-                    }
-                    return;
-                }));
-            })
-            .catch(err => console.error(err));
     }
 
     let isNormalCommand = message.content.startsWith(config.bot_settings.prefix.command_prefix);
