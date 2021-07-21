@@ -100,6 +100,10 @@ module.exports = function(message, client){
         }
     }
 
+    if((/(^|\s+)nix($|\s+)/gi).test(message.content.trim())) {
+        message.react(message.guild.emojis.cache.find(e => e.name === "nixos"));
+    }
+
     if ((/^wo(\s+\S+){1,3}\S[^?]$/gi).test(message.content.trim())) {
         createWhereMeme(Util.cleanContent(message.content.trim().toLowerCase().replace(/ß/g, "ss").toUpperCase(), message))
             .then(where => {
