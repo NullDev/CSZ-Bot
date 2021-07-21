@@ -153,7 +153,7 @@ module.exports = function(message, client){
     if(Date.now() - lastSpecialCommand > 120000) {
         const commandCandidates = specialCommands.filter(p => p.pattern.test(message.content));
         if(commandCandidates.length > 0) {
-            commandCandidates.forEach(c => c.handler());
+            commandCandidates.forEach(c => c.handler(message));
             lastSpecialCommand = Date.now();
         }
     }
