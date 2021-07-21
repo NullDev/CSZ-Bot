@@ -130,10 +130,24 @@ const specialCommands = [
         handler: whereMeme
     },
     {
-        pattern: /^ich bin\s+$/gi,
+        pattern: /^ich bin\s+(.){3,}/gi,
         handler: dadJoke
     }
 ];
+
+/**
+ * @returns {boolean}
+ */
+const isCooldown = function() {
+    const now = Date.now();
+    const diff = now - lastSpecialCommand;
+    // After 2 minutes command is cooled down
+    if(diff > 120000) {
+        return false;
+    }
+    // Otherwise a random function should evaluate the cooldown. The longer the last command was, the higher the chance
+    return Math.random() < (now / lastSpecialCommand) - 1;
+};
 
 /**
  * Handles incomming messages
@@ -150,7 +164,7 @@ module.exports = function(message, client){
 
     if (message.author.bot || nonBiased === "" || message.channel.type === "dm") return;
 
-    if(Date.now() - lastSpecialCommand > 120000) {
+    if(!isCooldown()) {
         const commandCandidates = specialCommands.filter(p => p.pattern.test(message.content));
         if(commandCandidates.length > 0) {
             commandCandidates.forEach(c => c.handler(message));
