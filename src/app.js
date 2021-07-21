@@ -42,7 +42,9 @@ console.log(
 log.done("Started.");
 
 const config = conf.getConfig();
-const client = new Discord.Client();
+const client = new Discord.Client({
+    disableMentions: "everyone"
+});
 
 // @ts-ignore
 process.on("unhandledRejection", (err, promise) => log.error(`Unhandled rejection (promise: ${promise}, reason: ${err.stack})`));
