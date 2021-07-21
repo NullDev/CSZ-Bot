@@ -141,12 +141,14 @@ const specialCommands = [
 const isCooldown = function() {
     const now = Date.now();
     const diff = now - lastSpecialCommand;
+    const fixedCooldown = 120000;
     // After 2 minutes command is cooled down
-    if(diff > 120000) {
+    if(diff >= fixedCooldown) {
         return false;
     }
     // Otherwise a random function should evaluate the cooldown. The longer the last command was, the higher the chance
-    return Math.random() < (now / lastSpecialCommand) - 1;
+    // diff is < fixedCooldown
+    return Math.random() < (diff / fixedCooldown);
 };
 
 /**
@@ -167,8 +169,10 @@ module.exports = function(message, client){
     if(!isCooldown()) {
         const commandCandidates = specialCommands.filter(p => p.pattern.test(message.content));
         if(commandCandidates.length > 0) {
-            commandCandidates.forEach(c => c.handler(message));
-            lastSpecialCommand = Date.now();
+            commandCandidates.forEach(c => {
+                c.handler(message);
+                lastSpecialCommand = Date.now();
+            });
         }
     }
 
