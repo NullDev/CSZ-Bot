@@ -93,6 +93,16 @@ module.exports = async function (message, client, commands) {
         message.delete();
     }
 
+    if(message.content.toLowerCase().includes("ich bin ")) {
+        const idx = message.content.toLowerCase().lastIndexOf("ich bin ");
+        if(idx < (message.content.length - 1)) {
+            const whoIs = message.content.substring(idx);
+            if(whoIs.trim().length > 0) {
+                inlineReply(message, `Hallo ${whoIs}, ich bin Shitpost Bot.`, client);
+            }
+        }
+    }
+
     if ((/^wo(\s+\S+){1,3}\S[^?]$/gi).test(message.content.trim())) {
         createWhereMeme(Util.cleanContent(message.content.trim().toLowerCase().replace(/ß/g, "ss").toUpperCase(), message))
             .then(where => {
