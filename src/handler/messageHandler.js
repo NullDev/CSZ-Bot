@@ -85,7 +85,7 @@ const dadJoke = function(message) {
     if(idx < (message.content.length - 1)) {
         const whoIs = Util.removeMentions(Util.cleanContent(message.content.substring(idx + 8), message));
         if(whoIs.trim().length > 0) {
-            inlineReply(message, `Hallo ${whoIs}, ich bin Shitpost Bot.`, client);
+            inlineReply(message, `Hallo ${whoIs}, ich bin Shitpost Bot.`, message.client);
         }
     }
 };
