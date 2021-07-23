@@ -22,6 +22,8 @@ let Jimp = require("jimp");
 let path = require("path");
 let fs = require("fs");
 
+let lastSpecialCommand = 0;
+
 /**
  * Performs inline reply to a message
  * @param {import("discord.js").Message} messageRef message to which should be replied
@@ -75,7 +77,82 @@ const createWhereMeme = function (text) {
 };
 
 /**
- * Handles incoming messages
+ *
+ * @param {import("discord.js").Message} message
+ */
+const dadJoke = function(message) {
+    const idx = message.content.toLowerCase().lastIndexOf("ich bin ");
+    if(idx < (message.content.length - 1)) {
+        const whoIs = Util.removeMentions(Util.cleanContent(message.content.substring(idx + 8), message));
+        if(whoIs.trim().length > 0) {
+            inlineReply(message, `Hallo ${whoIs}, ich bin Shitpost Bot.`, message.client);
+        }
+    }
+};
+
+/**
+ *
+ * @param {import("discord.js").Message} message
+ */
+const nixos = function(message) {
+    message.react(message.guild.emojis.cache.find(e => e.name === "nixos"));
+};
+
+/**
+ *
+ * @param {import("discord.js").Message} message
+ */
+const whereMeme = function(message) {
+    createWhereMeme(Util.cleanContent(message.content.trim().toLowerCase().replace(/ß/g, "ss").toUpperCase(), message))
+        .then(where => {
+            message.channel.send({
+                files: [{
+                    attachment: where,
+                    name: path.basename(where)
+                }]
+            }).finally(() => fs.unlink(where, (err) => {
+                if(err) {
+                    console.error(err);
+                }
+                return;
+            }));
+        })
+        .catch(err => console.error(err));
+};
+
+const specialCommands = [
+    {
+        pattern: /(^|\s+)nix($|\s+)/gi,
+        handler: nixos
+    },
+    {
+        pattern: /^wo(\s+\S+){1,3}\S[^?]$/gi,
+        handler: whereMeme
+    },
+    {
+        pattern: /^ich bin\s+(.){3,}/gi,
+        handler: dadJoke
+    }
+];
+
+/**
+ * @returns {boolean}
+ */
+const isCooledDown = function() {
+    const now = Date.now();
+    const diff = now - lastSpecialCommand;
+    const fixedCooldown = 120000;
+    // After 2 minutes command is cooled down
+    if(diff >= fixedCooldown) {
+        return true;
+    }
+    // Otherwise a random function should evaluate the cooldown. The longer the last command was, the higher the chance
+    // diff is < fixedCooldown
+    return Math.random() < (diff / fixedCooldown);
+};
+
+/**
+ * Handles incomming messages
  *
  * @param {Message} message
  * @param {Client} client
@@ -89,36 +166,14 @@ module.exports = async function (message, client, commands) {
 
     if (message.author.bot || nonBiased === "" || message.channel.type === "dm") return;
 
-    if (message.author.id === "348086189229735946" && (/^[\W\s_]*(<:.+:\d+>|\p{Emoji})[\W\s_]*$/gu).test(message.content.trim()/* .replace(/[\W_]+/g, "") */)) {
-        message.delete();
-    }
-
-    if(message.content.toLowerCase().includes("ich bin ")) {
-        const idx = message.content.toLowerCase().lastIndexOf("ich bin ");
-        if(idx < (message.content.length - 1)) {
-            const whoIs = message.content.substring(idx);
-            if(whoIs.trim().length > 0) {
-                inlineReply(message, `Hallo ${whoIs}, ich bin Shitpost Bot.`, client);
-            }
+    if(isCooledDown()) {
+        const commandCandidates = specialCommands.filter(p => p.pattern.test(message.content));
+        if(commandCandidates.length > 0) {
+            commandCandidates.forEach(c => {
+                c.handler(message);
+                lastSpecialCommand = Date.now();
+            });
         }
-    }
-
-    if ((/^wo(\s+\S+){1,3}\S[^?]$/gi).test(message.content.trim())) {
-        createWhereMeme(Util.cleanContent(message.content.trim().toLowerCase().replace(/ß/g, "ss").toUpperCase(), message))
-            .then(where => {
-                message.channel.send({
-                    files: [{
-                        attachment: where,
-                        name: path.basename(where)
-                    }]
-                }).finally(() => fs.unlink(where, (err) => {
-                    if (err) {
-                        console.error(err);
-                    }
-                    return;
-                }));
-            })
-            .catch(err => console.error(err));
     }
 
     let isNormalCommand = message.content.startsWith(config.bot_settings.prefix.command_prefix);
