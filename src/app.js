@@ -74,7 +74,7 @@ function scheduleTimezoneFixedCronjob(cronString) {
                 }
             }).catch(e => log.error(e));
 
-        const tomorrow = Date.now() + 60/*s*/ * 1000/*ms*/ * 60/*m*/ * 24/*h*/;
+        const tomorrow = Date.now() + 60/* s*/ * 1000/* ms*/ * 60/* m*/ * 24/* h*/;
         const newCronString = timezone.getCronjobStringForHydrate(tomorrow);
         scheduleTimezoneFixedCronjob(newCronString);
     }, {
