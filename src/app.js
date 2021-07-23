@@ -61,7 +61,7 @@ client.on("ready", async() => {
         firstRun = false; // Hacky deadlock ...
         let csz = client.guilds.cache.get(config.ids.guild_id);
 
-        cron.schedule("37 13 * * *", () => {
+        cron.schedule("37 12 * * *", () => {
             /** @type {TC} */
             (csz.channels.cache.get(config.ids.hauptchat_id)).send("Es ist `13:37` meine Kerle.\nBleibt hydriert! :grin: :sweat_drops:");
 
