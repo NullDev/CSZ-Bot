@@ -183,7 +183,8 @@ module.exports = function(message, client){
     if (message.mentions.has(client.user.id) && !isCommand) {
         // Trusted users should be familiar with the bot, they should know how to use it
         // Maybe, we don't want to flame them, since that can make the chat pretty noisy
-        const shouldFlameUser = config.bot_settings.flame_trusted_user_on_bot_ping || !message.member.roles.cache.has(config.ids.trusted_role_id);
+        // Unless you are a Marcel
+        const shouldFlameUser = config.bot_settings.flame_trusted_user_on_bot_ping || !message.member.roles.cache.has(config.ids.trusted_role_id) || message.member.id === "209413133020823552";
         if (shouldFlameUser) {
             inlineReply(message, "Was pingst du mich du Hurensohn :angry:", client);
         }
