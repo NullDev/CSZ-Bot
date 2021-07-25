@@ -11,6 +11,7 @@
 
 // Utils
 let config = require("../utils/configHandler").getConfig();
+let log = require("../utils/logger");
 
 // Discord
 const { Util } = require("discord.js");
@@ -122,14 +123,17 @@ const whereMeme = function(message) {
 
 const specialCommands = [
     {
+        name: "nix",
         pattern: /(^|\s+)nix($|\s+)/gi,
         handler: nixos
     },
     {
+        name: "wo",
         pattern: /^wo(\s+\S+){1,3}\S[^?]$/gi,
         handler: whereMeme
     },
     {
+        name: "dadJoke",
         pattern: /^ich bin\s+(.){3,}/gi,
         handler: dadJoke
     }
@@ -170,6 +174,9 @@ module.exports = function(message, client){
         const commandCandidates = specialCommands.filter(p => p.pattern.test(message.content));
         if(commandCandidates.length > 0) {
             commandCandidates.forEach(c => {
+                log.info(
+                    `User "${message.author.tag}" (${message.author}) performed special command: ${c.name}`
+                );
                 c.handler(message);
                 lastSpecialCommand = Date.now();
             });
