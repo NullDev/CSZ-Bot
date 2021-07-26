@@ -84,11 +84,14 @@ const createWhereMeme = function(text) {
  */
 const dadJoke = function(message) {
     const idx = message.content.toLowerCase().lastIndexOf("ich bin ");
-    if(idx < (message.content.length - 1) && message.content.split(/\s+/).length < 12) {
-        const indexOfTerminator = message.content.search(/(?:(?![,\s])\W)/);
-        const whoIs = Util.removeMentions(Util.cleanContent(message.content.substring(idx + 8, indexOfTerminator !== -1 ? indexOfTerminator : message.content.length), message));
-        if(whoIs.trim().length > 0) {
-            inlineReply(message, `Hallo ${whoIs}, ich bin Shitpost Bot.`, message.client);
+    if(idx < (message.content.length - 1)) {
+        const indexOfTerminator = message.content.search(/(?:(?![,\süäö])\W)/gi);
+        const trimmedMessage = message.content.substring(idx + 8, indexOfTerminator !== -1 ? indexOfTerminator : message.content.length);
+        if(trimmedMessage.split(/\s+/).length < 12) {
+            const whoIs = Util.removeMentions(Util.cleanContent(trimmedMessage, message));
+            if(whoIs.trim().length > 0) {
+                inlineReply(message, `Hallo ${whoIs}, ich bin Shitpost Bot.`, message.client);
+            }
         }
     }
 };
