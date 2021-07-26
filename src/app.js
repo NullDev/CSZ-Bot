@@ -17,6 +17,7 @@ let timezone = require("./utils/timezone");
 
 // Handler
 let messageHandler = require("./handler/messageHandler");
+let messageDeleteHandler = require("./handler/messageDeleteHandler");
 let reactionHandler = require("./handler/reactionHandler");
 let BdayHandler = require("./handler/bdayHandler");
 let fadingMessageHandler = require("./handler/fadingMessageHandler");
@@ -138,6 +139,8 @@ client.on("guildMemberRemove", (member) => {
 });
 
 client.on("message", (message) => messageHandler(message, client));
+
+client.on("messageDelete", (message) => messageDeleteHandler(message, client));
 
 client.on("messageUpdate", (_, newMessage) => messageHandler(/** @type {import("discord.js").Message} */ (newMessage), client));
 

@@ -56,6 +56,7 @@ const getInlineReplies = function(messageRef, client) {
 
 /**
  * @param {string} text
+ * @param {import("discord.js").Client} client client
  * @returns {Promise<string>}
  */
 const createWhereMeme = function(text) {
@@ -102,6 +103,7 @@ const nixos = function(message) {
 /**
  *
  * @param {import("discord.js").Message} message
+ * @param {import("discord.js").Client} client client
  */
 const whereMeme = function(message) {
     createWhereMeme(Util.cleanContent(message.content.trim().toLowerCase().replace(/ß/g, "ss").toUpperCase(), message))
@@ -177,7 +179,7 @@ module.exports = function(message, client){
                 log.info(
                     `User "${message.author.tag}" (${message.author}) performed special command: ${c.name}`
                 );
-                c.handler(message);
+                c.handler(message, client);
                 lastSpecialCommand = Date.now();
             });
         }
@@ -221,3 +223,5 @@ module.exports = function(message, client){
         });
     }
 };
+
+module.exports.specialCommands = specialCommands;
