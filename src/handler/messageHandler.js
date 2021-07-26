@@ -197,7 +197,9 @@ module.exports = function(message, client){
 
     if (message.author.bot || nonBiased === "" || message.channel.type === "dm") return;
 
-    if(isCooledDown()) {
+    const isMod = message.member.roles.cache.some(r => config.bot_settings.moderator_roles.includes(r.name));
+
+    if(isMod || isCooledDown()) {
         const commandCandidates = specialCommands.filter(p => p.pattern.test(message.content));
         if(commandCandidates.length > 0) {
             commandCandidates.forEach(c => {
