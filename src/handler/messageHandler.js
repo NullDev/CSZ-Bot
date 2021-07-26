@@ -22,7 +22,6 @@ let cmdHandler = require("./cmdHandler");
 let Jimp = require("jimp");
 let path = require("path");
 let fs = require("fs");
-let sw = require("stopword");
 
 let lastSpecialCommand = 0;
 
@@ -88,30 +87,11 @@ const dadJoke = function(message) {
     if(idx < (message.content.length - 1)) {
         const indexOfTerminator = message.content.search(/(?:(?![,])[\p{P}\p{S}\p{C}])/gu);
         const trimmedWords = message.content.substring(idx + 8, indexOfTerminator !== -1 ? indexOfTerminator : message.content.length).split(/\s+/);
-        const messageWithoutStopwords = sw.removeStopwords(trimmedWords, sw.de);
-        if(messageWithoutStopwords.length < 12) {
-            let messageUntilStopwordOccured = [];
-            let firstFoundIndex;
-            for(let i = 0; i < trimmedWords.length; i++) {
-                if(messageUntilStopwordOccured.length === 0) {
-                    firstFoundIndex = messageWithoutStopwords.indexOf(trimmedWords[i]);
-                    if(firstFoundIndex > -1) {
-                        messageUntilStopwordOccured.push(trimmedWords[i]);
-                    }
-                }
-                else if(trimmedWords[i] === messageWithoutStopwords[firstFoundIndex + 1]) {
-                    messageUntilStopwordOccured.push(trimmedWords[i]);
-                    firstFoundIndex++;
-                }
-                else {
-                    break;
-                }
-            }
-            if(messageUntilStopwordOccured.length > 0 ) {
-                const whoIs = Util.removeMentions(Util.cleanContent(messageUntilStopwordOccured.join(" "), message));
-                if(whoIs.trim().length > 0) {
-                    inlineReply(message, `Hallo ${whoIs}, ich bin Shitpost Bot.`, message.client);
-                }
+
+        if(trimmedWords.length > 0 ) {
+            const whoIs = Util.removeMentions(Util.cleanContent(trimmedWords.join(" "), message));
+            if(whoIs.trim().length > 0) {
+                inlineReply(message, `Hallo ${whoIs}, ich bin Shitpost Bot.`, message.client);
             }
         }
     }
