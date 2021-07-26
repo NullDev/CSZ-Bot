@@ -85,7 +85,7 @@ const createWhereMeme = function(text) {
 const dadJoke = function(message) {
     const idx = message.content.toLowerCase().lastIndexOf("ich bin ");
     if(idx < (message.content.length - 1)) {
-        const indexOfTerminator = message.content.search(/(?:(?![,\süäö])\W)/gi);
+        const indexOfTerminator = message.content.search(/(?:(?![,])\p{P})/gu);
         const trimmedMessage = message.content.substring(idx + 8, indexOfTerminator !== -1 ? indexOfTerminator : message.content.length);
         if(trimmedMessage.split(/\s+/).length < 12) {
             const whoIs = Util.removeMentions(Util.cleanContent(trimmedMessage, message));
