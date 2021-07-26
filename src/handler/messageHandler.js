@@ -86,7 +86,7 @@ const createWhereMeme = function(text) {
 const dadJoke = function(message) {
     const idx = message.content.toLowerCase().lastIndexOf("ich bin ");
     if(idx < (message.content.length - 1)) {
-        const indexOfTerminator = message.content.search(/(?:(?![,])\p{P})/gu);
+        const indexOfTerminator = message.content.search(/(?:(?![,])[\p{P}\p{S}\p{C}])/gu);
         const trimmedWords = message.content.substring(idx + 8, indexOfTerminator !== -1 ? indexOfTerminator : message.content.length).split(/\s+/);
         const messageWithoutStopwords = sw.removeStopwords(trimmedWords, sw.de);
         if(messageWithoutStopwords.length < 12) {
