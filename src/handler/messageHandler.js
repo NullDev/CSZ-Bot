@@ -86,12 +86,12 @@ const dadJoke = function(message) {
     const idx = message.content.toLowerCase().lastIndexOf("ich bin ");
     if(idx < (message.content.length - 1)) {
         const indexOfTerminator = message.content.search(/(?:(?![,])[\p{P}\p{S}\p{C}])/gu);
-        const trimmedWords = message.content.substring(idx + 8, indexOfTerminator !== -1 ? indexOfTerminator : message.content.length).split(/\s+/);
+        const trimmedWords = message.content.substring(idx + 8, indexOfTerminator !== -1 ? indexOfTerminator : message.content.length).split(/\s+/).map(w => w.trim());
 
         const randomUwe = Math.random() < 0.01;
 
         if(trimmedWords.length > 0 && trimmedWords.length <= 10 && !randomUwe) {
-            const whoIs = Util.removeMentions(Util.cleanContent(trimmedWords.map(w => w.trim()).join(" "), message));
+            const whoIs = Util.removeMentions(Util.cleanContent(trimmedWords.join(" "), message));
             if(whoIs.trim().length > 0) {
                 inlineReply(message, `Hallo ${whoIs}, ich bin Shitpost Bot.`, message.client);
             }
