@@ -91,7 +91,7 @@ const dadJoke = function(message) {
         const randomUwe = Math.random() < 0.01;
 
         if(trimmedWords.length > 0 && trimmedWords.length <= 10 && !randomUwe) {
-            const whoIs = Util.removeMentions(Util.cleanContent(trimmedWords.join(" "), message));
+            const whoIs = Util.removeMentions(Util.cleanContent(trimmedWords.map(w => w.trim()).join(" "), message));
             if(whoIs.trim().length > 0) {
                 inlineReply(message, `Hallo ${whoIs}, ich bin Shitpost Bot.`, message.client);
             }
