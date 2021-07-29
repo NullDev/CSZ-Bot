@@ -13,9 +13,11 @@ let cron = require("node-cron");
 // Utils
 let conf = require("./utils/configHandler");
 let log = require("./utils/logger");
+let timezone = require("./utils/timezone");
 
 // Handler
 let messageHandler = require("./handler/messageHandler");
+let messageDeleteHandler = require("./handler/messageDeleteHandler");
 let reactionHandler = require("./handler/reactionHandler");
 let BdayHandler = require("./handler/bdayHandler");
 let fadingMessageHandler = require("./handler/fadingMessageHandler");
@@ -49,6 +51,38 @@ const client = new Discord.Client({ intents: [Discord.Intents.FLAGS.GUILDS, Disc
 // @ts-ignore
 process.on("unhandledRejection", (err, promise) => log.error(`Unhandled rejection (promise: ${promise}, reason: ${err.stack})`));
 
+let timezoneFixedCronjobTask = null;
+
+function scheduleTimezoneFixedCronjob(cronString) {
+    if (timezoneFixedCronjobTask) {
+        timezoneFixedCronjobTask.destroy();
+        timezoneFixedCronjobTask = null;
+    }
+
+    timezoneFixedCronjobTask = cron.schedule(cronString, () => {
+        let csz = client.guilds.cache.get(config.ids.guild_id);
+
+        /** @type {TC} */
+        (csz.channels.cache.get(config.ids.hauptchat_id)).send("Es ist `13:37` meine Kerle.\nBleibt hydriert! :grin: :sweat_drops:");
+
+        // Auto-Prune members
+        csz.members.prune({ days: 2, reason: "auto prune" })
+            .then(count => {
+                log.info(`Auto-prune: ${count} members pruned.`);
+                if (count >= 1) {
+                    /** @type {TC} */
+                    (csz.channels.cache.get(config.ids.hauptchat_id)).send(`Hab grad ${count} jockel weg-gepruned :joy:`);
+                }
+            }).catch(e => log.error(e));
+
+        const tomorrow = Date.now() + 60/* s*/ * 1000/* ms*/ * 60/* m*/ * 24/* h*/;
+        const newCronString = timezone.getCronjobStringForHydrate(tomorrow);
+        scheduleTimezoneFixedCronjob(newCronString);
+    }, {
+        timezone: "Europe/Vienna"
+    });
+}
+
 let firstRun = true;
 
 let allCommands = new Map();
@@ -68,24 +102,9 @@ client.on("ready", async () => {
     if (firstRun) {
         await storage.initialize();
         firstRun = false; // Hacky deadlock ...
-        let csz = client.guilds.cache.get(config.ids.guild_id);
 
-        cron.schedule("37 12 * * *", () => {
-            /** @type {TC} */
-            (csz.channels.cache.get(config.ids.hauptchat_id)).send("Es ist `13:37` meine Kerle.\nBleibt hydriert! :grin: :sweat_drops:");
-
-            // Auto-Prune members
-            csz.members.prune({ days: 2, reason: "auto prune" })
-                .then(count => {
-                    log.info(`Auto-prune: ${count} members pruned.`);
-                    if (count >= 1) {
-                        /** @type {TC} */
-                        (csz.channels.cache.get(config.ids.hauptchat_id)).send(`Hab grad ${count} jockel weg-gepruned :joy:`);
-                    }
-                }).catch(e => log.error(e));
-        }, {
-            timezone: "Europe/Vienna"
-        });
+        const newCronString = timezone.getCronjobStringForHydrate(Date.now());
+        scheduleTimezoneFixedCronjob(newCronString);
 
         cron.schedule("1 0 * * *", () => bday.checkBdays(), { timezone: "Europe/Vienna" });
         bday.checkBdays();
@@ -129,7 +148,9 @@ client.on("guildMemberRemove", (member) => {
 
 client.on("messageCreate", async message => await messageHandler(message, client, allCommands));
 
-client.on("messageUpdate", (_, newMessage) => messageHandler(/** @type {import("discord.js").Message} */(newMessage), client));
+client.on("messageDelete", (message) => messageDeleteHandler(message, client));
+
+client.on("messageUpdate", (_, newMessage) => messageHandler(/** @type {import("discord.js").Message} */ (newMessage), client));
 
 client.on("error", log.error);
 
