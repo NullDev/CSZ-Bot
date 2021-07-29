@@ -53,7 +53,7 @@ let firstRun = true;
 
 let allCommands = new Map();
 
-client.on("ready", async () => {
+client.on("ready", async() => {
     log.info("Running...");
     log.info(`Got ${client.users.cache.size} users, in ${client.channels.cache.size} channels of ${client.guilds.cache.size} guilds`);
     client.user.setActivity(config.bot_settings.status);
@@ -129,7 +129,7 @@ client.on("guildMemberRemove", (member) => {
 
 client.on("messageCreate", async message => await messageHandler(message, client, allCommands));
 
-client.on("messageUpdate", (_, newMessage) => messageHandler(/** @type {import("discord.js").Message} */(newMessage), client));
+client.on("messageUpdate", (_, newMessage) => messageHandler(/** @type {import("discord.js").Message} */(newMessage), client, allCommands));
 
 client.on("error", log.error);
 
