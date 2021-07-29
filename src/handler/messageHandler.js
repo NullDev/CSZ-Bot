@@ -11,6 +11,7 @@
 
 // Utils
 let config = require("../utils/configHandler").getConfig();
+let log = require("../utils/logger");
 
 // Discord
 const { Util } = require("discord.js");
@@ -55,6 +56,7 @@ const getInlineReplies = function(messageRef, client) {
 
 /**
  * @param {string} text
+ * @param {import("discord.js").Client} client client
  * @returns {Promise<string>}
  */
 const createWhereMeme = function(text) {
@@ -83,9 +85,19 @@ const createWhereMeme = function(text) {
 const dadJoke = function(message) {
     const idx = message.content.toLowerCase().lastIndexOf("ich bin ");
     if(idx < (message.content.length - 1)) {
-        const whoIs = Util.removeMentions(Util.cleanContent(message.content.substring(idx + 8), message));
-        if(whoIs.trim().length > 0) {
-            inlineReply(message, `Hallo ${whoIs}, ich bin Shitpost Bot.`, message.client);
+        const indexOfTerminator = message.content.search(/(?:(?![,])[\p{P}\p{S}\p{C}])/gu);
+        const trimmedWords = message.content.substring(idx + 8, indexOfTerminator !== -1 ? indexOfTerminator : message.content.length).split(/\s+/).map(w => w.trim());
+
+        const randomUwe = Math.random() < 0.01;
+
+        if(trimmedWords.length > 0 && trimmedWords.length <= 10 && !randomUwe) {
+            const whoIs = Util.removeMentions(Util.cleanContent(trimmedWords.join(" "), message));
+            if(whoIs.trim().length > 0) {
+                inlineReply(message, `Hallo ${whoIs}, ich bin Shitpost Bot.`, message.client);
+            }
+        }
+        else if(randomUwe) {
+            inlineReply(message, "Und ich bin der Uwe, ich bin auch dabei", message.client);
         }
     }
 };
@@ -101,6 +113,7 @@ const nixos = function(message) {
 /**
  *
  * @param {import("discord.js").Message} message
+ * @param {import("discord.js").Client} client client
  */
 const whereMeme = function(message) {
     createWhereMeme(Util.cleanContent(message.content.trim().toLowerCase().replace(/ß/g, "ss").toUpperCase(), message))
@@ -122,14 +135,17 @@ const whereMeme = function(message) {
 
 const specialCommands = [
     {
+        name: "nix",
         pattern: /(^|\s+)nix($|\s+)/gi,
         handler: nixos
     },
     {
+        name: "wo",
         pattern: /^wo(\s+\S+){1,3}\S[^?]$/gi,
         handler: whereMeme
     },
     {
+        name: "dadJoke",
         pattern: /^ich bin\s+(.){3,}/gi,
         handler: dadJoke
     }
@@ -166,11 +182,16 @@ module.exports = async function(message, client, commands) {
 
     if (message.author.bot || nonBiased === "" || message.channel.type === "dm") return;
 
-    if(isCooledDown()) {
+    const isMod = message.member.roles.cache.some(r => config.bot_settings.moderator_roles.includes(r.name));
+
+    if(isMod || isCooledDown()) {
         const commandCandidates = specialCommands.filter(p => p.pattern.test(message.content));
         if(commandCandidates.length > 0) {
             commandCandidates.forEach(c => {
-                c.handler(message);
+                log.info(
+                    `User "${message.author.tag}" (${message.author}) performed special command: ${c.name}`
+                );
+                c.handler(message, client);
                 lastSpecialCommand = Date.now();
             });
         }
@@ -180,7 +201,15 @@ module.exports = async function(message, client, commands) {
     let isModCommand = message.content.startsWith(config.bot_settings.prefix.mod_prefix);
     let isCommand = isNormalCommand || isModCommand;
 
-    if (message.mentions.has(client.user.id) && !isCommand) inlineReply(message, "Was pingst du mich du Hurensohn :angry:", client);
+    if (message.mentions.has(client.user.id) && !isCommand) {
+        // Trusted users should be familiar with the bot, they should know how to use it
+        // Maybe, we don't want to flame them, since that can make the chat pretty noisy
+        // Unless you are a Marcel
+        const shouldFlameUser = config.bot_settings.flame_trusted_user_on_bot_ping || !message.member.roles.cache.has(config.ids.trusted_role_id) || message.member.id === "209413133020823552";
+        if (shouldFlameUser) {
+            inlineReply(message, "Was pingst du mich du Hurensohn :angry:", client);
+        }
+    }
 
     /**
      * cmdHandler Parameters:
@@ -199,3 +228,5 @@ module.exports = async function(message, client, commands) {
         inlineReply(message, result, client);
     }
 };
+
+module.exports.specialCommands = specialCommands;
