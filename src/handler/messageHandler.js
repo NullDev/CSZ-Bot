@@ -191,7 +191,7 @@ module.exports = function(message, client){
         const commandCandidates = specialCommands.filter(p => p.pattern.test(message.content));
         if(commandCandidates.length > 0) {
             commandCandidates
-                .filter(c => c.randomness < Math.random())
+                .filter(c => Math.random() <= c.randomness)
                 .forEach(c => {
                     log.info(
                         `User "${message.author.tag}" (${message.author}) performed special command: ${c.name}`
