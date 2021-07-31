@@ -137,17 +137,20 @@ const specialCommands = [
     {
         name: "nix",
         pattern: /(^|\s+)nix($|\s+)/gi,
-        handler: nixos
+        handler: nixos,
+        randomness: 0.4
     },
     {
         name: "wo",
         pattern: /^wo(\s+\S+){1,3}\S[^?]$/gi,
-        handler: whereMeme
+        handler: whereMeme,
+        randomness: 1
     },
     {
         name: "dadJoke",
         pattern: /^ich bin\s+(.){3,}/gi,
-        handler: dadJoke
+        handler: dadJoke,
+        randomness: 0.1
     }
 ];
 
@@ -187,13 +190,15 @@ module.exports = function(message, client){
     if(isMod || isCooledDown()) {
         const commandCandidates = specialCommands.filter(p => p.pattern.test(message.content));
         if(commandCandidates.length > 0) {
-            commandCandidates.forEach(c => {
-                log.info(
-                    `User "${message.author.tag}" (${message.author}) performed special command: ${c.name}`
-                );
-                c.handler(message, client);
-                lastSpecialCommand = Date.now();
-            });
+            commandCandidates
+                .filter(c => c.randomness < Math.random())
+                .forEach(c => {
+                    log.info(
+                        `User "${message.author.tag}" (${message.author}) performed special command: ${c.name}`
+                    );
+                    c.handler(message, client);
+                    lastSpecialCommand = Date.now();
+                });
         }
     }
 
