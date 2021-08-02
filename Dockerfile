@@ -14,10 +14,8 @@ FROM node:16-alpine
     ARG TZ='Europe/Berlin'
     ENV TZ ${TZ}
     
-    RUN apk --update add \
-		tzdata \
-	    && cp /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
-	    && apk del tzdata
+    RUN apk add --no-cache tzdata
+    RUN cp /usr/share/zoneinfo/$TZ /etc/localtime
     
     COPY --from=dependencies /app/node_modules /app/node_modules
     COPY . /app/
