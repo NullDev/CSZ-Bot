@@ -10,7 +10,15 @@ FROM node:16-alpine as dependencies
 FROM node:16-alpine
     WORKDIR /app
     EXPOSE 3000
-
+    
+    ARG TZ='Europe/Berlin'
+    ENV TZ ${TZ}
+    
+    RUN apk --update add \
+		tzdata \
+	    && cp /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
+	    && apk del tzdata
+    
     COPY --from=dependencies /app/node_modules /app/node_modules
     COPY . /app/
 
