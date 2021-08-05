@@ -23,6 +23,8 @@ German description of the Discord Server:
 
 ## :wrench: Installation
 
+<sub>NodeJS Version: >=14.3.0</sub>
+
 0. Terminal aufmachen und dorthin navigieren, wo man es downloaden möchte <br><br>
 1. Sichergehen, dass NodeJS installiert ist. Teste mit: <br>
 $ `node -v` <br>
@@ -33,7 +35,7 @@ $ `git clone https://github.com/NullDev/CSC-Bot.git && cd $_` <br>
 Wenn nicht, <a href="https://github.com/NullDev/CSC-Bot/archive/master.zip">hier</a> herunterladen und die ZIP extrahieren. <br>
 Dann in den Ordner navigieren.<br><br>
 3. Dependencies installieren: <br>
-$ `npm install`<br><br>
+$ `npm ci`<br><br>
 4. Das Config-Template [config.template.json](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json) kopieren und als `config.json` einfügen. <br><br>
 6. Die frisch kopierte Config-Datei ausfüllen: <br>
     - Um einen Bot zum Testen anzulegen, einfach den Instruktionen im [Discord Developer Portal](https://discord.com/developers/applications) folgen.
@@ -41,19 +43,20 @@ $ `npm install`<br><br>
         - Es müssen beide [Gateway Intents](https://discordjs.guide/popular-topics/intents.html#gateway-intents) eingeschalten werden.
         - Den Bot Token (NICHT die Application-ID oder den Public-Key) [in die Config](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L3) kopieren.
     - Um ID's kopieren zu können, den "Developer Mode" in den Discord Einstellungen aktivieren. Mit Rechts-Klick kann man dann die ID's kopieren:
-        - Die ID [des Servers](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L16)
-        - Die ID für [den Hauptchat](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L17)
-        - Die ID für [den Banned-Channel](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L27)
-        - Die ID für [den Umfrage-Channel](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L28)
+        - Die ID [des Servers](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L18)
+        - Die ID für [den Hauptchat](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L19)
+        - Die ID für [den Banned-Channel](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L31)
+        - Die ID für [den Umfrage-Channel](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L32)
     - Es müssen folgende Rollen am Server angelegt werden:
         - Moderator-Rolle ([Name der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L12)) - CSZ Default: Moderader
-        - Default Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L18)) - CSZ Default: Nerd
-        - Banned-Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L19)) - CSZ Default: B&
-        - Geburtstags-Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L20)) - CSZ Default: Geburtstagskind
-        - Gründerväter-Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L22)) - CSZ Default: Gründerväter
-        - Trusted-Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L24)) - CSZ Default: Trusted
-        - Gründerväter-Gebannt-Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L23)) - CSZ Default: B&-Gründerväter
-        - Trusted-Gebannt-Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L25)) - CSZ Default: B&-Trusted<br><br>
+        - Default Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L21)) - CSZ Default: Nerd
+        - Banned-Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L21)) - CSZ Default: B&
+        - Geburtstags-Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L22)) - CSZ Default: Geburtstagskind
+        - Gründerväter-Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L25)) - CSZ Default: Gründerväter
+        - Trusted-Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L27)) - CSZ Default: Trusted
+        - Rejoiner / Shame-Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L29)) - CSZ Default: Rejoiner
+        - Gründerväter-Gebannt-Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L26)) - CSZ Default: B&-Gründerväter
+        - Trusted-Gebannt-Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L28)) - CSZ Default: B&-Trusted<br><br>
 8. Das Script starten <br>
 $ `npm start` <br><br>
 

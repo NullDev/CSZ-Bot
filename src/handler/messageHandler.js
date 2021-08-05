@@ -11,6 +11,10 @@
 
 // Utils
 let config = require("../utils/configHandler").getConfig();
+let log = require("../utils/logger");
+
+// Discord
+const { Util } = require("discord.js");
 
 // Handler
 let cmdHandler = require("./cmdHandler");
@@ -18,6 +22,8 @@ let cmdHandler = require("./cmdHandler");
 let Jimp = require("jimp");
 let path = require("path");
 let fs = require("fs");
+
+let lastSpecialCommand = 0;
 
 /**
  * Performs inline reply to a message
@@ -50,6 +56,7 @@ const getInlineReplies = function(messageRef, client) {
 
 /**
  * @param {string} text
+ * @param {import("discord.js").Client} client client
  * @returns {Promise<string>}
  */
 const createWhereMeme = function(text) {
@@ -72,6 +79,98 @@ const createWhereMeme = function(text) {
 };
 
 /**
+ *
+ * @param {import("discord.js").Message} message
+ */
+const dadJoke = function(message) {
+    const idx = message.content.toLowerCase().lastIndexOf("ich bin ");
+    if(idx < (message.content.length - 1)) {
+        const indexOfTerminator = message.content.search(/(?:(?![,])[\p{P}\p{S}\p{C}])/gu);
+        const trimmedWords = message.content.substring(idx + 8, indexOfTerminator !== -1 ? indexOfTerminator : message.content.length).split(/\s+/).map(w => w.trim());
+
+        const randomUwe = Math.random() < 0.01;
+
+        if(trimmedWords.length > 0 && trimmedWords.length <= 10 && !randomUwe) {
+            const whoIs = Util.removeMentions(Util.cleanContent(trimmedWords.join(" "), message));
+            if(whoIs.trim().length > 0) {
+                inlineReply(message, `Hallo ${whoIs}, ich bin Shitpost Bot.`, message.client);
+            }
+        }
+        else if(randomUwe) {
+            inlineReply(message, "Und ich bin der Uwe, ich bin auch dabei", message.client);
+        }
+    }
+};
+
+/**
+ *
+ * @param {import("discord.js").Message} message
+ */
+const nixos = function(message) {
+    message.react(message.guild.emojis.cache.find(e => e.name === "nixos"));
+};
+
+/**
+ *
+ * @param {import("discord.js").Message} message
+ * @param {import("discord.js").Client} client client
+ */
+const whereMeme = function(message) {
+    createWhereMeme(Util.cleanContent(message.content.trim().toLowerCase().replace(/ß/g, "ss").toUpperCase(), message))
+        .then(where => {
+            message.channel.send({
+                files: [{
+                    attachment: where,
+                    name: path.basename(where)
+                }]
+            }).finally(() => fs.unlink(where, (err) => {
+                if(err) {
+                    console.error(err);
+                }
+                return;
+            }));
+        })
+        .catch(err => console.error(err));
+};
+
+const specialCommands = [
+    {
+        name: "nix",
+        pattern: /(^|\s+)nix($|\s+)/gi,
+        handler: nixos,
+        randomness: 0.4
+    },
+    {
+        name: "wo",
+        pattern: /^wo(\s+\S+){1,3}\S[^?]$/gi,
+        handler: whereMeme,
+        randomness: 1
+    },
+    {
+        name: "dadJoke",
+        pattern: /^ich bin\s+(.){3,}/gi,
+        handler: dadJoke,
+        randomness: 0.1
+    }
+];
+
+/**
+ * @returns {boolean}
+ */
+const isCooledDown = function() {
+    const now = Date.now();
+    const diff = now - lastSpecialCommand;
+    const fixedCooldown = 120000;
+    // After 2 minutes command is cooled down
+    if(diff >= fixedCooldown) {
+        return true;
+    }
+    // Otherwise a random function should evaluate the cooldown. The longer the last command was, the higher the chance
+    // diff is < fixedCooldown
+    return Math.random() < (diff / fixedCooldown);
+};
+
+/**
  * Handles incomming messages
  *
  * @param {Message} message
@@ -86,33 +185,36 @@ module.exports = function(message, client){
 
     if (message.author.bot || nonBiased === "" || message.channel.type === "dm") return;
 
-    if (message.author.id === "348086189229735946" && (/^[\W\s_]*(<:.+:\d+>|\p{Emoji})[\W\s_]*$/gu).test(message.content.trim()/* .replace(/[\W_]+/g, "") */)) {
-        message.delete();
-    }
+    const isMod = message.member.roles.cache.some(r => config.bot_settings.moderator_roles.includes(r.name));
 
-    if ((/^wo(\s+\S+){1,3}\S$/gi).test(message.content.trim())) {
-        createWhereMeme(message.content.trim().replace(/\W+$/g, "").toUpperCase())
-            .then(where => {
-                message.channel.send({
-                    files: [{
-                        attachment: where,
-                        name: path.basename(where)
-                    }]
-                }).finally(() => fs.unlink(where, (err) => {
-                    if(err) {
-                        console.error(err);
-                    }
-                    return;
-                }));
-            })
-            .catch(err => console.error(err));
+    if(isMod || isCooledDown()) {
+        const commandCandidates = specialCommands.filter(p => p.pattern.test(message.content));
+        if(commandCandidates.length > 0) {
+            commandCandidates
+                .filter(c => Math.random() <= c.randomness)
+                .forEach(c => {
+                    log.info(
+                        `User "${message.author.tag}" (${message.author}) performed special command: ${c.name}`
+                    );
+                    c.handler(message, client);
+                    lastSpecialCommand = Date.now();
+                });
+        }
     }
 
     let isNormalCommand = message.content.startsWith(config.bot_settings.prefix.command_prefix);
     let isModCommand = message.content.startsWith(config.bot_settings.prefix.mod_prefix);
     let isCommand = isNormalCommand || isModCommand;
 
-    if (message.mentions.has(client.user.id) && !isCommand) inlineReply(message, "Was pingst du mich du Hurensohn :angry:", client);
+    if (message.mentions.has(client.user.id) && !isCommand) {
+        // Trusted users should be familiar with the bot, they should know how to use it
+        // Maybe, we don't want to flame them, since that can make the chat pretty noisy
+        // Unless you are a Marcel
+        const shouldFlameUser = config.bot_settings.flame_trusted_user_on_bot_ping || !message.member.roles.cache.has(config.ids.trusted_role_id) || message.member.id === "209413133020823552";
+        if (shouldFlameUser) {
+            inlineReply(message, "Was pingst du mich du Hurensohn :angry:", client);
+        }
+    }
 
     /**
      * cmdHandler Parameters:
@@ -138,3 +240,5 @@ module.exports = function(message, client){
         });
     }
 };
+
+module.exports.specialCommands = specialCommands;

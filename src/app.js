@@ -13,9 +13,11 @@ let cron = require("node-cron");
 // Utils
 let conf = require("./utils/configHandler");
 let log = require("./utils/logger");
+let timezone = require("./utils/timezone");
 
 // Handler
 let messageHandler = require("./handler/messageHandler");
+let messageDeleteHandler = require("./handler/messageDeleteHandler");
 let reactionHandler = require("./handler/reactionHandler");
 let BdayHandler = require("./handler/bdayHandler");
 let fadingMessageHandler = require("./handler/fadingMessageHandler");
@@ -24,6 +26,7 @@ let storage = require("./storage/storage");
 // Other commands
 let ban = require("./commands/modcommands/ban");
 let poll = require("./commands/poll");
+const GuildRagequit = require("./storage/model/GuildRagequit");
 
 let version = conf.getVersion();
 let appname = conf.getName();
@@ -41,10 +44,44 @@ console.log(
 log.done("Started.");
 
 const config = conf.getConfig();
-const client = new Discord.Client();
+const client = new Discord.Client({
+    disableMentions: "everyone"
+});
 
 // @ts-ignore
 process.on("unhandledRejection", (err, promise) => log.error(`Unhandled rejection (promise: ${promise}, reason: ${err.stack})`));
+
+let timezoneFixedCronjobTask = null;
+
+function scheduleTimezoneFixedCronjob(cronString) {
+    if (timezoneFixedCronjobTask) {
+        timezoneFixedCronjobTask.destroy();
+        timezoneFixedCronjobTask = null;
+    }
+
+    timezoneFixedCronjobTask = cron.schedule(cronString, () => {
+        let csz = client.guilds.cache.get(config.ids.guild_id);
+
+        /** @type {TC} */
+        (csz.channels.cache.get(config.ids.hauptchat_id)).send("Es ist `13:37` meine Kerle.\nBleibt hydriert! :grin: :sweat_drops:");
+
+        // Auto-Prune members
+        csz.members.prune({ days: 2, reason: "auto prune" })
+            .then(count => {
+                log.info(`Auto-prune: ${count} members pruned.`);
+                if (count >= 1) {
+                    /** @type {TC} */
+                    (csz.channels.cache.get(config.ids.hauptchat_id)).send(`Hab grad ${count} jockel weg-gepruned :joy:`);
+                }
+            }).catch(e => log.error(e));
+
+        const tomorrow = Date.now() + 60/* s*/ * 1000/* ms*/ * 60/* m*/ * 24/* h*/;
+        const newCronString = timezone.getCronjobStringForHydrate(tomorrow);
+        scheduleTimezoneFixedCronjob(newCronString);
+    }, {
+        timezone: "Europe/Vienna"
+    });
+}
 
 let firstRun = true;
 client.on("ready", async() => {
@@ -56,24 +93,11 @@ client.on("ready", async() => {
     if (firstRun){
         await storage.initialize();
         firstRun = false; // Hacky deadlock ...
-        let csz = client.guilds.cache.get(config.ids.guild_id);
 
-        cron.schedule("37 13 * * *", () => {
-            /** @type {TC} */
-            (csz.channels.cache.get(config.ids.hauptchat_id)).send("Es ist `13:37` meine Kerle.\nBleibt hydriert! :grin: :sweat_drops:");
+        const newCronString = timezone.getCronjobStringForHydrate(Date.now());
+        scheduleTimezoneFixedCronjob(newCronString);
 
-            // Auto-Prune members
-            csz.members.prune({ days: 2, reason: "auto prune" })
-                .then(count => {
-                    log.info(`Auto-prune: ${count} members pruned.`);
-                    if (count >= 1){
-                        /** @type {TC} */
-                        (csz.channels.cache.get(config.ids.hauptchat_id)).send(`Hab grad ${count} jockel weg-gepruned :joy:`);
-                    }
-                }).catch(e => log.error(e));
-        });
-
-        cron.schedule("1 0 * * *", () => bday.checkBdays());
+        cron.schedule("1 0 * * *", () => bday.checkBdays(), { timezone: "Europe/Vienna" });
         bday.checkBdays();
     }
 
@@ -90,7 +114,33 @@ client.on("guildCreate", guild => log.info(`New guild joined: ${guild.name} (id:
 
 client.on("guildDelete", guild => log.info(`Deleted from guild: ${guild.name} (id: ${guild.id}).`));
 
+client.on("guildMemberAdd", async member => {
+    const numRagequits = await GuildRagequit.getNumRagequits(member.guild.id, member.id);
+    if(numRagequits > 0 && !member.roles.cache.has(config.ids.shame_role_id)) {
+        if(member.guild.roles.cache.has(config.ids.shame_role_id)) {
+            member.roles.add(member.guild.roles.cache.get(config.ids.shame_role_id));
+
+            const hauptchat = member.guild.channels.cache.get(config.ids.hauptchat_id);
+            if(hauptchat) {
+                hauptchat.send(`Haha, schau mal einer guck wer wieder hergekommen ist! <@${member.id}> hast es aber nicht lange ohne uns ausgehalten. ${numRagequits > 1 ? "Und das schon zum " + numRagequits + ". mal" : ""}`);
+            }
+            else {
+                log.error("Hauptchat nicht gefunden");
+            }
+        }
+        else {
+            log.error("No Shame role found");
+        }
+    }
+});
+
+client.on("guildMemberRemove", (member) => {
+    GuildRagequit.incrementRagequit(member.guild.id, member.id);
+});
+
 client.on("message", (message) => messageHandler(message, client));
+
+client.on("messageDelete", (message) => messageDeleteHandler(message, client));
 
 client.on("messageUpdate", (_, newMessage) => messageHandler(/** @type {import("discord.js").Message} */ (newMessage), client));
 

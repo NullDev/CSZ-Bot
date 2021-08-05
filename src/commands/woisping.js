@@ -42,7 +42,7 @@ exports.run = async(client, message, args, callback) => {
         return callback("Piss dich und spam nicht.");
     }
 
-    const reason = `${Util.cleanContent(args.join(" "), message)} (von ${message.member})`;
+    const reason = `${Util.removeMentions(Util.cleanContent(args.join(" "), message))} (von ${message.member})`;
 
     if (isMod) {
         lastPing = now;

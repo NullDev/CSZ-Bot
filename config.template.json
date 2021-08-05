@@ -12,7 +12,8 @@
             "Moderator"
         ],
         "woisping_limit": 7200,
-        "woisping_threshold": 2
+        "woisping_threshold": 2,
+        "flame_trusted_user_on_bot_ping": false
     },
     "ids": {
         "guild_id": "",
@@ -26,6 +27,7 @@
         "gruendervaeter_banned_role_id": "",
         "trusted_role_id": "",
         "trusted_banned_role_id": "",
+        "shame_role_id": "",
 
         "banned_channel_id": "",
         "votes_channel_id": ""
