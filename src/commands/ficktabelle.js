@@ -4,9 +4,6 @@
 // = Copyright (c) NullDev = //
 // ========================= //
 
-// Utils
-let config = require("../utils/configHandler").getConfig();
-
 /**
  * Sends FUCKTABLE
  * @param {import("discord.js").Client} client
@@ -20,4 +17,4 @@ exports.run = (client, message, args, callback) => {
     return callback();
 };
 
-exports.description = `Sendet die Ficktabelle`;
+exports.description = "Sendet die Ficktabelle";
