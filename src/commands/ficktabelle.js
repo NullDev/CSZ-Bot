@@ -20,4 +20,4 @@ exports.run = (client, message, args, callback) => {
     return callback();
 };
 
-exports.description = `Sendet die Ficktabelle.\nBenutzung: ${config.bot_settings.prefix.command_prefix}`;
+exports.description = `Sendet die Ficktabelle`;
