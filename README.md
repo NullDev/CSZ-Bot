@@ -11,7 +11,7 @@ Official Coding Shitpost Central Discord Bot
 
 Please ignore this repo. This is just a management bot I made for my stupid [german coding discord server](https://discord.gg/FABdvae)...
 
-German description of the Discord Server: 
+German description of the Discord Server:
 
 > Deutscher Server für diverse programmier- und nerd Themen. <br>
 > Language-Bashing, shitposting und Autismus stehen an der Tagesordnung. <br>
@@ -35,11 +35,11 @@ $ `git clone https://github.com/NullDev/CSC-Bot.git && cd $_` <br>
 Wenn nicht, <a href="https://github.com/NullDev/CSC-Bot/archive/master.zip">hier</a> herunterladen und die ZIP extrahieren. <br>
 Dann in den Ordner navigieren.<br><br>
 3. Dependencies installieren: <br>
-$ `npm ci`<br><br>
+$ `npm install`<br><br>
 4. Das Config-Template [config.template.json](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json) kopieren und als `config.json` einfügen. <br><br>
 6. Die frisch kopierte Config-Datei ausfüllen: <br>
     - Um einen Bot zum Testen anzulegen, einfach den Instruktionen im [Discord Developer Portal](https://discord.com/developers/applications) folgen.
-        - Die Applikation muss als "Bot" gesetzt werden. 
+        - Die Applikation muss als "Bot" gesetzt werden.
         - Es müssen beide [Gateway Intents](https://discordjs.guide/popular-topics/intents.html#gateway-intents) eingeschalten werden.
         - Den Bot Token (NICHT die Application-ID oder den Public-Key) [in die Config](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L3) kopieren.
     - Um ID's kopieren zu können, den "Developer Mode" in den Discord Einstellungen aktivieren. Mit Rechts-Klick kann man dann die ID's kopieren:
