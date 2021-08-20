@@ -56,6 +56,9 @@ exports.run = (_client, message, args, callback) => {
                     author: {
                         name: `${message.author.username} ${emoji}`,
                         icon_url: message.author.displayAvatarURL()
+                    },
+                    footer: {
+                        text: "👍: Hab ich schon, 👎: Hab ich noch nie"
                     }
                 }
             };
