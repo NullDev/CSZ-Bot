@@ -7,6 +7,7 @@
 // Discord
 const fetch = require("node-fetch").default;
 const moment = require("moment");
+const { Util } = require("discord.js");
 
 const NEVER_EVER_RANDOM_PROMPT_API_URL = "https://thepartyapp.xyz/api/games/neverever/getRandomPrompt";
 const QUESTION_LEVEL_EMOJI_MAP = {
@@ -49,7 +50,7 @@ exports.run = (_client, message, args, callback) => {
             const emoji = QUESTION_LEVEL_EMOJI_MAP[prompt.level];
             const envelope = {
                 embed: {
-                    title: `Ich hab noch nie ${prompt.prompt}`,
+                    title: `Ich hab noch nie ${Util.cleanContent(prompt.prompt, message)}`,
                     timestamp: moment.utc().format(),
                     color: 0x2ecc71,
                     author: {
