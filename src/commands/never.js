@@ -43,7 +43,8 @@ async function getPrompt(userPrompt) {
  * @returns {Function} callback
  */
 exports.run = (_client, message, args, callback) => {
-    getPrompt(args[0])
+    const userInput = (args || []).join(" ");
+    getPrompt(userInput)
         .then(prompt => {
             const emoji = QUESTION_LEVEL_EMOJI_MAP[prompt.level];
             const envelope = {
