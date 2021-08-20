@@ -11,8 +11,9 @@ const moment = require("moment");
 const NEVER_EVER_RANDOM_PROMPT_API_URL = "https://thepartyapp.xyz/api/games/neverever/getRandomPrompt";
 const QUESTION_LEVEL_EMOJI_MAP = {
     undefined: "👀",
+    0: "👶",
     1: "🍆",
-    2: "👶"
+    2: "🍆"
 };
 
 async function getPrompt(userPrompt) {
@@ -42,16 +43,17 @@ async function getPrompt(userPrompt) {
  * @returns {Function} callback
  */
 exports.run = (_client, message, args, callback) => {
-    getPrompt(args[0])
+    const userInput = (args || []).join(" ");
+    getPrompt(userInput)
         .then(prompt => {
             const emoji = QUESTION_LEVEL_EMOJI_MAP[prompt.level];
             const envelope = {
                 embed: {
-                    title: `${emoji} ${prompt.prompt}`,
+                    title: `Ich hab noch nie ${prompt.prompt}`,
                     timestamp: moment.utc().format(),
                     color: 0x2ecc71,
                     author: {
-                        name: `${message.author.username} hat noch nie...`,
+                        name: `${message.author.username} ${emoji}`,
                         icon_url: message.author.displayAvatarURL()
                     }
                 }
