@@ -55,10 +55,9 @@ exports.run = (client, message, args, callback) => {
              commandText = "```CSS";
          }
     }
-
-
-
-
+    if (commandText.length>7){
+        message.author.send(commandText+"```");
+    }
     return callback();
 };
 
