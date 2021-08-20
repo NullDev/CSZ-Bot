@@ -58,7 +58,7 @@ exports.run = (_client, message, args, callback) => {
                         icon_url: message.author.displayAvatarURL()
                     },
                     footer: {
-                        text: "👍: Hab ich schon, 👎: Hab ich noch nie"
+                        text: "🍻: Hab ich schon, 🚱: Hab ich noch nie"
                     }
                 }
             };
@@ -68,8 +68,8 @@ exports.run = (_client, message, args, callback) => {
                 .then(sentMessage => {
                     return Promise.all([
                         message.delete(),
-                        sentMessage.react("👍"),
-                        sentMessage.react("👎")
+                        sentMessage.react("🍻"),
+                        sentMessage.react("🚱")
                     ]);
                 });
         })
