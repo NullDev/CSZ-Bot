@@ -42,15 +42,15 @@ exports.run = (client, message, args, callback) => {
     message.react("✉");
     message.author.send(
         "Hallo, " + message.author.username + "!\n\n" +
-        "Hier ist eine Liste mit commands:\n\n`"+
-        "Bei fragen kannst du dich an @ShadowByte#1337 wenden!");
+        "Hier ist eine Liste mit Commands:\n\n`"+
+        "Bei Fragen kannst du dich an @ShadowByte#1337 wenden!");
     let commandText = "```CSS";
     for (let i in commandObj){
         commandText += i;
         commandText += ":\n";
         commandText += commandObj[i];
         commandText += "\n\n";
-         if(Math.random()<0.1){
+         if(commandObj.indexOf(i)%10){
              message.author.send(commandText+"```");
              commandText = "```CSS";
          }
