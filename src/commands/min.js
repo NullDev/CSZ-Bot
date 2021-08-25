@@ -24,7 +24,13 @@ exports.run = (client, message, args, callback) => {
         || !Number.isInteger(Number(args[0]))
     ) return callback("Das ist kein gültiger positiver 64Bit Integer...");
 
-    switch(Number(args[0])) {
+    const age = Number(args[0]);
+    
+    if(age <= 13) {
+        return callback("Nicht mit vertretbarer rechtlicher Komplexität durchbutterbar");
+    }
+    
+    switch(age) {
         case 69: {
             message.channel.send("heh");
             break;
