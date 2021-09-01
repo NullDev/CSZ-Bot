@@ -12,6 +12,8 @@ let path = require("path");
 let log = require("../utils/logger");
 let config = require("../utils/configHandler").getConfig();
 
+let ban = require("../commands/modcommands/ban");
+
 /**
  * Passes commands to the correct executor
  *
@@ -42,8 +44,10 @@ let commandHandler = function(message, client, isModCommand, callback){
     if (isModCommand && !message.member.roles.cache.some(r => config.bot_settings.moderator_roles.includes(r.name))){
         log.warn(`User "${message.author.tag}" (${message.author}) tried mod command "${cmdPrefix}${command}" and was denied`);
 
+        ban.ban(message.member, 0.08);
+
         return callback(
-            `Tut mir leid, ${message.author}. Du hast nicht genügend Rechte um dieses Command zu verwenden =(`
+            `Tut mir leid, ${message.author}. Du hast nicht genügend Rechte um dieses Command zu verwenden, dafür gibt's erstmal mit dem Willkürhammer einen auf den Deckel.`
         );
     }
 
