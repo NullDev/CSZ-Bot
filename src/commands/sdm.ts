@@ -93,7 +93,7 @@ async function handler(interaction: VerifiedCommandInteraction): Promise<Result>
         reply.files = [`./assets/${file}`];
     }
     else if (subcommand === "auswahl") {
-        const answers = options.get("auswahl")?.options?.map(a => a.value as string).filter(a => !!a);
+        const answers = options.data[0]?.options?.map(a => a.value as string).filter(a => !!a);
 
         if (!answers) {
             throw new Error("answers is unexpectedly undefined");
