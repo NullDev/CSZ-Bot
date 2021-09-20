@@ -133,21 +133,56 @@ const whereMeme = function(message) {
         .catch(err => console.error(err));
 };
 
+/**
+ *
+ * @param {import("discord.js").Message} message
+ * @param {import("discord.js").Client} client client
+ */
+const wat = function(message, client) {
+    const watEmote = message.guild.emojis.cache.find(e => e.name === "wat");
+    if(watEmote) {
+        const messageRef = message.reference?.messageID;
+        // If reply to message
+        if(messageRef) {
+            message.channel.messages.fetch(messageRef)
+                .then(m => m.react(watEmote));
+        }
+        else {
+            // react to the last message
+            message.channel.messages.fetch({ limit: 2 })
+                .then(messages => {
+                    console.log(messages);
+                    messages.last().react(watEmote);
+                });
+        }
+        getInlineReplies(message, client);
+    }
+};
+
 const specialCommands = [
     {
         name: "nix",
         pattern: /(^|\s+)nix($|\s+)/gi,
-        handler: nixos
+        handler: nixos,
+        randomness: 0.4
     },
     {
         name: "wo",
         pattern: /^wo(\s+\S+){1,3}\S[^?]$/gi,
-        handler: whereMeme
+        handler: whereMeme,
+        randomness: 1
     },
     {
         name: "dadJoke",
         pattern: /^ich bin\s+(.){3,}/gi,
-        handler: dadJoke
+        handler: dadJoke,
+        randomness: 0.1
+    },
+    {
+        name: "wat",
+        pattern: /^wat$/gi,
+        handler: wat,
+        randomness: 1
     }
 ];
 
@@ -187,13 +222,15 @@ module.exports = async function (message, client, commands) {
     if(isMod || isCooledDown()) {
         const commandCandidates = specialCommands.filter(p => p.pattern.test(message.content));
         if(commandCandidates.length > 0) {
-            commandCandidates.forEach(c => {
-                log.info(
-                    `User "${message.author.tag}" (${message.author}) performed special command: ${c.name}`
-                );
-                c.handler(message, client);
-                lastSpecialCommand = Date.now();
-            });
+            commandCandidates
+                .filter(c => Math.random() <= c.randomness)
+                .forEach(c => {
+                    log.info(
+                        `User "${message.author.tag}" (${message.author}) performed special command: ${c.name}`
+                    );
+                    c.handler(message, client);
+                    lastSpecialCommand = Date.now();
+                });
         }
     }
 
