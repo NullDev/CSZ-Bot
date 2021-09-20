@@ -1,7 +1,7 @@
 import { ApplicationCommandDefinition, Result, VerifiedButtonInteraction, VerifiedCommandInteraction } from "../types";
 const { WoispingVoteData, WoispingReasonData } = require("../storage/model/WoispingData");
 import { isModeratorUser, isWoisgangUser } from "../utils/access";
-import { Util, Channel } from "discord.js";
+import { Util, TextBasedChannels } from "discord.js";
 
 // ================================= //
 // = Copyright (c) diewellenlaenge = //
@@ -21,7 +21,7 @@ async function handler(interaction: VerifiedCommandInteraction): Promise<Result>
         return { content: "Piss dich und spam nicht." };
     }
 
-    const reason = Util.cleanContent(interaction.options.get("grund")?.value as string, interaction.channel as Channel);
+    const reason = Util.cleanContent(interaction.options.get("grund")?.value as string, interaction.channel as TextBasedChannels);
 
     if (!reason) {
         return { content: "Bruder, lass mal 'nen Grund rüberwachsen!", ephemeral: true };
@@ -47,7 +47,7 @@ async function handler(interaction: VerifiedCommandInteraction): Promise<Result>
                         {
                             type: 2,
                             label: "Ja, alter!",
-                            customID: "woisgang_yes",
+                            customId: "woisgang_yes",
                             style: 3,
                             emoji: {
                                 id: null,
@@ -57,7 +57,7 @@ async function handler(interaction: VerifiedCommandInteraction): Promise<Result>
                         {
                             type: 2,
                             label: "Nee du...",
-                            customID: "woisgang_no",
+                            customId: "woisgang_no",
                             style: 4,
                             emoji: {
                                 id: null,

@@ -1,4 +1,4 @@
-import { Channel, InteractionReplyOptions, MessageEmbedOptions, Util } from "discord.js";
+import { InteractionReplyOptions, MessageEmbedOptions, TextBasedChannels, Util } from "discord.js";
 import { VerifiedCommandInteraction, Result, ApplicationCommandDefinition } from "../types";
 
 // Dependencies
@@ -73,7 +73,7 @@ async function handler(interaction: VerifiedCommandInteraction): Promise<Result>
     };
 
     let question = "";
-    const subcommand = options.getSubCommand();
+    const subcommand = options.getSubcommand();
 
     if (subcommand === "frage") {
         question = "MAKEITCOMPILE";//options.getSubCommand("frage")?.options?.get("question")?.value as string;
@@ -108,7 +108,7 @@ async function handler(interaction: VerifiedCommandInteraction): Promise<Result>
 
     if (!question.endsWith("?")) question += "?";
 
-    embed.title = Util.cleanContent(question, interaction.channel as Channel);
+    embed.title = Util.cleanContent(question, interaction.channel as TextBasedChannels);
 
     return reply;
 };
