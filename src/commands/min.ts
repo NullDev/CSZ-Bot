@@ -14,6 +14,10 @@ async function handler(interaction: VerifiedCommandInteraction): Promise<Result>
         || !Number.isInteger(Number(age))
     ) return { content: "Das ist kein gültiger positiver 64Bit Integer...", ephemeral: true };
 
+    if (age <= 13) {
+        return { content: "Nicht mit vertretbarer rechtlicher Komplexität durchbutterbar" };
+    }
+
     switch (age) {
         case 69:
             return { content: "heh" };

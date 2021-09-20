@@ -96,7 +96,8 @@ export async function messageHandler(message: Message, client: Client, isModComm
     }
 
     if ((isModCommand && !command.isModCommand) || (!isModCommand && command.isModCommand) || (isModCommand && !isModeratorMessage(message))) {
-        return { content: `Tut mir leid, ${message.author}. Du hast nicht genügend Rechte um dieses Command zu verwenden =(` };
+        // TODO: ban.ban(message.member, 0.08);
+        return { content: `Tut mir leid, ${message.author}. Du hast nicht genügend Rechte um dieses Command zu verwenden, dafür gibt's erstmal mit dem Willkürhammer einen auf den Deckel.` };
     }
 
     let textInteraction: TextInteraction = {
