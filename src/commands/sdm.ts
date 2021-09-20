@@ -76,7 +76,7 @@ async function handler(interaction: VerifiedCommandInteraction): Promise<Result>
     const subcommand = options.getSubcommand();
 
     if (subcommand === "frage") {
-        question = "MAKEITCOMPILE";//options.getSubCommand("frage")?.options?.get("question")?.value as string;
+        question = options.get("question")?.value as string;
         const decision = secureDecisionMaker(question);
         let file;
         if (!!decision) {
