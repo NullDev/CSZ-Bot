@@ -5,7 +5,7 @@
 import { Result, ApplicationCommandDefinition } from "../types";
 
 async function handler(): Promise<Result> {
-    return { content: "Los alter, hol alle ran: https://discord.gg/FABdvae", ephemeral: true };
+    return { content: "Los alter, hol alle ran: https://discord.gg/csz", ephemeral: true };
 }
 
 export const applicationCommands: ApplicationCommandDefinition[] = [
