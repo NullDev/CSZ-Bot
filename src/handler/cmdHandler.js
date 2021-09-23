@@ -44,6 +44,9 @@ let commandHandler = function(message, client, isModCommand, callback){
     if (isModCommand && !message.member.roles.cache.some(r => config.bot_settings.moderator_roles.includes(r.name))){
         log.warn(`User "${message.author.tag}" (${message.author}) tried mod command "${cmdPrefix}${command}" and was denied`);
 
+        if (message.member.roles.cache.some(r => r.id === config.ids.banned_role_id)) {
+            return callback("Da haste aber Schwein gehabt");
+        }
         ban.ban(message.member, 0.08);
 
         return callback(
