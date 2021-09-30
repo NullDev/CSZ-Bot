@@ -3,12 +3,11 @@
   "private": true,
   "version": "0.1.0",
   "description": "Offizieller Coding Shitpost Zentrale Bot",
-  "main": "src/app.js",
+  "main": "built/app.js",
   "scripts": {
     "start": "node ./built/app.js",
     "compile": "tsc --sourceMap false",
     "lint": "eslint ./src",
-    "live": "nodemon ./src/app.js",
     "dev": "npm run lint && npm start"
   },
   "repository": {
@@ -43,5 +42,9 @@
   },
   "engines": {
     "node": ">=14.3.0"
+  },
+  "nodemonConfig": {
+    "ignore": ["src/*"],
+    "delay": 2500
   }
 }

@@ -12,14 +12,15 @@ FROM node:16-alpine as dependencies
 FROM node:16-alpine
     WORKDIR /app
     EXPOSE 3000
-    
+
     ARG TZ='Europe/Berlin'
     ENV TZ ${TZ}
-    
+
     RUN apk add --no-cache tzdata
     RUN cp /usr/share/zoneinfo/$TZ /etc/localtime
-    
+
     COPY --from=dependencies /app/node_modules /app/node_modules
     COPY . /app/
+    RUN npm run compile
 
-    CMD ["node", "src/app.js"]
+    CMD ["node", "built/app.js"]
