@@ -29,7 +29,9 @@ let commandHandler = function(message, client, isModCommand, callback){
     let command = args.shift().toLowerCase();
 
     let commandArr = [];
-    let commandDir = isModCommand ? path.resolve("./src/commands/modcommands") : path.resolve("./src/commands");
+    let commandDir = isModCommand
+        ? path.join(__dirname, "..", "commands", "modcommands")
+        : path.join(__dirname, "..", "commands");
 
     fs.readdirSync(commandDir).forEach(file => {
         let cmdPath = path.resolve(commandDir, file);
