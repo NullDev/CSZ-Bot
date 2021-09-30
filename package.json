@@ -6,7 +6,7 @@
   "main": "src/app.js",
   "scripts": {
     "start": "node ./built/app.js",
-    "compile": "tsc",
+    "compile": "tsc --sourceMap false",
     "lint": "eslint ./src",
     "live": "nodemon ./src/app.js",
     "dev": "npm run lint && npm start"
