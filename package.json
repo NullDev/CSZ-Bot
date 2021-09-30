@@ -5,7 +5,8 @@
   "description": "Offizieller Coding Shitpost Zentrale Bot",
   "main": "built/app.js",
   "scripts": {
-    "start": "node ./built/app.js",
+    "start": "nodemon ./built/app.js",
+    "watch": "tsc --watch",
     "compile": "tsc --sourceMap false",
     "lint": "eslint ./src",
     "dev": "npm run lint && npm start"
@@ -42,5 +43,9 @@
   },
   "engines": {
     "node": ">=14.3.0"
+  },
+  "nodemonConfig": {
+    "ignore": ["src/*"],
+    "delay": 2500
   }
 }
