@@ -48,7 +48,7 @@ let getTrace = function(){
         cleanArr += element.replace(/(    at )/gi, "") + "\n";
     }
 
-    // Remove last occourency of a new line character in order to continue logging seamlessly
+    // Remove last occurrence of a new line character in order to continue logging seamlessly
     return cleanArr.substring(0, cleanArr.lastIndexOf("\n")) + cleanArr.substring(cleanArr.lastIndexOf("\n") + 1);
 };
 

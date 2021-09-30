@@ -5,19 +5,21 @@ FROM node:16-alpine as dependencies
     RUN apk add --no-cache --repository http://dl-3.alpinelinux.org/alpine/edge/testing vips-dev fftw-dev
 
     COPY package*.json /app/
-    RUN npm ci --only=production
+    RUN npm ci
+
 
 FROM node:16-alpine
     WORKDIR /app
     EXPOSE 3000
-    
+
     ARG TZ='Europe/Berlin'
     ENV TZ ${TZ}
-    
+
     RUN apk add --no-cache tzdata
     RUN cp /usr/share/zoneinfo/$TZ /etc/localtime
-    
+
     COPY --from=dependencies /app/node_modules /app/node_modules
     COPY . /app/
+    RUN npm run compile
 
     CMD ["node", "src/app.js"]
