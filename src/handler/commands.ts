@@ -97,6 +97,10 @@ export async function messageHandler(message: Message, client: Client, isModComm
 
     if ((isModCommand && !command.isModCommand) || (!isModCommand && command.isModCommand) || (isModCommand && !isModeratorMessage(message))) {
         // TODO: ban.ban(message.member, 0.08);
+        if (message.member.roles.cache.some(r => r.id === config.ids.banned_role_id)) {
+            return { content: "Da haste aber Schwein gehabt" };
+        }
+
         return { content: `Tut mir leid, ${message.author}. Du hast nicht genügend Rechte um dieses Command zu verwenden, dafür gibt's erstmal mit dem Willkürhammer einen auf den Deckel.` };
     }
 
