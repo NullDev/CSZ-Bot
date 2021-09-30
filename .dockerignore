@@ -1,5 +1,11 @@
+Dockerfile
 node_modules
-.github
-.git
-.gitignore
+.devcontainer
+.git*
+.*ignore
+.nvmrc
 .eslintrc
+.editorconfig
+*.js
+*.md
+docker-compose.yml

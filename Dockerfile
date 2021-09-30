@@ -1,25 +1,25 @@
-FROM node:16-alpine as dependencies
+FROM node:16-alpine as build
     WORKDIR /app
-
-    RUN apk add --no-cache bash lcms2-dev libpng-dev gcc g++ make automake autoconf
-    RUN apk add --no-cache --repository http://dl-3.alpinelinux.org/alpine/edge/testing vips-dev fftw-dev
 
     COPY package*.json /app/
     RUN npm ci
 
+    COPY . /app/
+    RUN npm run compile
 
 FROM node:16-alpine
     WORKDIR /app
+    ENV NODE_ENV=production
     EXPOSE 3000
 
-    ARG TZ='Europe/Berlin'
-    ENV TZ ${TZ}
-
+    ENV TZ 'Europe/Berlin'
     RUN apk add --no-cache tzdata
-    RUN cp /usr/share/zoneinfo/$TZ /etc/localtime
+    RUN cp /usr/share/zoneinfo/${TZ} /etc/localtime
 
-    COPY --from=dependencies /app/node_modules /app/node_modules
-    COPY . /app/
-    RUN npm run compile
+    COPY package*.json /app/
+    RUN npm ci
+
+    COPY --from=build /app/assets /app/assets
+    COPY --from=build /app/built /app/built
 
     CMD ["node", "built/app.js"]
