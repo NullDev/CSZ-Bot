@@ -47,7 +47,7 @@ const getCommandMessageChunksMatchingLimit = (commands) => {
  */
 exports.run = (client, message, args, callback) => {
     let commandObj = {};
-    let commandDir = path.resolve("./src/commands");
+    let commandDir = __dirname;
 
     fs.readdirSync(commandDir).forEach(file => {
         let cmdPath = path.resolve(commandDir, file);
