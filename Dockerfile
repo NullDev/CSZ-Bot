@@ -22,4 +22,4 @@ FROM node:16-alpine
     COPY . /app/
     RUN npm run compile
 
-    CMD ["node", "src/app.js"]
+    CMD ["node", "built/app.js"]
