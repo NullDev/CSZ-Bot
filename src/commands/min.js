@@ -1,10 +1,9 @@
-"use strict";
-
 // ========================= //
 // = Copyright (c) NullDev = //
 // ========================= //
 
-let config = require("../utils/configHandler").getConfig();
+import { getConfig } from "../utils/configHandler";
+const config = getConfig();
 
 /**
  * Calculate a minimum moral age
@@ -15,7 +14,7 @@ let config = require("../utils/configHandler").getConfig();
  * @param {Function} callback
  * @returns {Function} callback
  */
-exports.run = (client, message, args, callback) => {
+export const run = (client, message, args, callback) => {
     if (!args.length) return callback("Wie wärs wenn du auch ein Alter angibst?");
     if (
         isNaN(args[0])
@@ -52,4 +51,4 @@ exports.run = (client, message, args, callback) => {
     return callback();
 };
 
-exports.description = `Gibt dir die Moralisch vertretbare Altersgrenze für den Geschlechtsakt basierend auf deinem Alter zurück. \nUsage: ${config.bot_settings.prefix.command_prefix}min [dein Alter]`;
+export const description = `Gibt dir die Moralisch vertretbare Altersgrenze für den Geschlechtsakt basierend auf deinem Alter zurück. \nUsage: ${config.bot_settings.prefix.command_prefix}min [dein Alter]`;
