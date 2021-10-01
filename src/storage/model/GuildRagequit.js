@@ -1,10 +1,7 @@
-/* eslint-disable new-cap */
-"use strict";
-// Dependencies
-let {Model, DataTypes} = require("sequelize");
-let uuid = require("uuid");
+import { Model, DataTypes } from "sequelize";
+import uuid from "uuid";
 
-class GuildRagequit extends Model {
+export default class GuildRagequit extends Model {
     /**
      *
      * @param {BigInt} guildId
@@ -79,5 +76,3 @@ class GuildRagequit extends Model {
         });
     }
 }
-
-module.exports = GuildRagequit;
