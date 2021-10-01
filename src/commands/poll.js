@@ -3,7 +3,7 @@
 // ========================= //
 
 import moment from "moment";
-import * as parseOptions from "minimist";
+import parseOptions from "minimist";
 import * as cron from "node-cron";
 
 import * as log from "../utils/logger";
