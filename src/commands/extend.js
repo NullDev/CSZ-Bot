@@ -11,55 +11,7 @@
 // Utils
 let log = require("../utils/logger");
 let config = require("../utils/configHandler").getConfig();
-
-const LETTERS = [
-    ":regional_indicator_a:",
-    ":regional_indicator_b:",
-    ":regional_indicator_c:",
-    ":regional_indicator_d:",
-    ":regional_indicator_e:",
-    ":regional_indicator_f:",
-    ":regional_indicator_g:",
-    ":regional_indicator_h:",
-    ":regional_indicator_i:",
-    ":regional_indicator_j:",
-    ":regional_indicator_k:",
-    ":regional_indicator_l:",
-    ":regional_indicator_m:",
-    ":regional_indicator_n:",
-    ":regional_indicator_o:",
-    ":regional_indicator_p:",
-    ":regional_indicator_q:",
-    ":regional_indicator_r:",
-    ":regional_indicator_s:",
-    ":regional_indicator_t:"
-];
-
-const EMOJI = [
-    "🇦",
-    "🇧",
-    "🇨",
-    "🇩",
-    "🇪",
-    "🇫",
-    "🇬",
-    "🇭",
-    "🇮",
-    "🇯",
-    "🇰",
-    "🇱",
-    "🇲",
-    "🇳",
-    "🇴",
-    "🇵",
-    "🇶",
-    "🇷",
-    "🇸",
-    "🇹"
-];
-
-const LIMIT = LETTERS.length;
-const TEXT_LIMIT = 4096;
+const poll = require("./poll");
 
 /**
  * Extends an existing poll or strawpoll
@@ -95,13 +47,13 @@ exports.run = async(client, message, args, callback) => {
 
     let oldPollOptions = replyMessage.embeds[0].description.split("\n");
 
-    if (oldPollOptions.length === LIMIT) return callback("Bruder die Umfrage ist leider schon voll (⚆ ͜ʖ⚆)");
+    if (oldPollOptions.length === poll.OPTION_LIMIT) return callback("Bruder die Umfrage ist leider schon voll (⚆ ͜ʖ⚆)");
 
     let oldPollOptionsLength = replyMessage.embeds[0].description.length;
-    if (oldPollOptionsLength > TEXT_LIMIT) return callback("Bruder die Umfrage ist leider schon voll (⚆ ͜ʖ⚆)");
+    if (oldPollOptionsLength > poll.TEXT_LIMIT) return callback("Bruder die Umfrage ist leider schon voll (⚆ ͜ʖ⚆)");
 
     for (let i = 0; i < oldPollOptions.length; ++i) {
-        if (!oldPollOptions[i].startsWith(LETTERS[i])) {
+        if (!oldPollOptions[i].startsWith(poll.LETTERS[i])) {
             return callback("Bruder das ist keine Umfrage ಠ╭╮ಠ");
         }
     }
@@ -110,28 +62,28 @@ exports.run = async(client, message, args, callback) => {
 
     let additionalPollOptions = args.join(" ").split(";").map(e => e.trim()).filter(e => e.replace(/\s/g, "") !== "");
     let additionalPollOptionsLength = 0;
-    for (let additionalPollOption in additionalPollOptions) {
+    for (let additionalPollOption of additionalPollOptions) {
         additionalPollOptionsLength += additionalPollOption.length;
     }
 
     if (!additionalPollOptions.length) return callback("Bruder da sind keine Antwortmöglichkeiten :c");
-    if(oldPollOptionsLength + additionalPollOptionsLength > TEXT_LIMIT) return callback("Bruder die Umfrage ist zu lang");
-    if(oldPollOptions.length + additionalPollOptions.length > LIMIT) return callback(`Bruder die Umfrage hat bereits ${LIMIT} Antwortmöglichkeiten!`);
+    if(oldPollOptionsLength + additionalPollOptionsLength > poll.TEXT_LIMIT) return callback("Bruder die Umfrage ist zu lang");
+    if(oldPollOptions.length + additionalPollOptions.length > poll.OPTION_LIMIT) return callback(`Bruder mit deinen Antwortmöglichkeiten wird das Limit von ${poll.OPTION_LIMIT} überschritten!`);
 
     let originalAuthor = replyMessage.embeds[0].author.name.split(" ")[2];
     let authorNote = originalAuthor !== message.author.username ? ` (von ${message.author.username})` : "";
 
     let embed = replyMessage.embeds[0];
     embed.description += "\n";
-    additionalPollOptions.forEach((e, i) => (embed.description += `${LETTERS[oldPollOptions.length + i]} - ${e}${authorNote}\n`));
+    additionalPollOptions.forEach((e, i) => (embed.description += `${poll.LETTERS[oldPollOptions.length + i]} - ${e}${authorNote}\n`));
 
-    if (oldPollOptions.length + additionalPollOptions.length === LIMIT) {
+    if (oldPollOptions.length + additionalPollOptions.length === poll.OPTION_LIMIT) {
         embed.color = null;
         delete embed.footer;
     }
 
     replyMessage.edit(undefined, embed).then(async msg => {
-        for (let i in additionalPollOptions) await msg.react(EMOJI[oldPollOptions.length + Number(i)]);
+        for (let i in additionalPollOptions) await msg.react(poll.EMOJI[oldPollOptions.length + Number(i)]);
     }).then(() => message.delete());
 
     return callback();
