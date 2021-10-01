@@ -127,11 +127,10 @@ exports.run = async(client, message, args, callback) => {
 
     let oldPollOptions = replyMessage.embeds[0].description.split("\n");
 
-    if (oldPollOptions > LIMIT) return callback("Bruder die Umfrage ist leider schon voll (⚆ ͜ʖ⚆)");
+    if (oldPollOptions === LIMIT) return callback("Bruder die Umfrage ist leider schon voll (⚆ ͜ʖ⚆)");
 
     let oldPollOptionsLength = replyMessage.embeds[0].description.length;
-    if (oldPollOptionsLength > TEXT_LIMIT
-    ) return callback("Bruder die Umfrage ist leider schon voll (⚆ ͜ʖ⚆)");
+    if (oldPollOptionsLength > TEXT_LIMIT) return callback("Bruder die Umfrage ist leider schon voll (⚆ ͜ʖ⚆)");
 
     for (let i = 0; i < oldPollOptions.length; ++i) {
         if (!oldPollOptions[i].startsWith(NUMBERS[i])) {
