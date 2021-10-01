@@ -143,7 +143,7 @@ export const run = (client, message, args, callback) => {
             title: pollArray[0],
             description: optionstext,
             timestamp: moment.utc().format(),
-            color: '#FFA07A',
+            color: "#FFA07A",
             author: {
                 name: `${options.straw ? "Strawpoll" : "Umfrage"} von ${message.author.username}`,
                 icon_url: message.author.displayAvatarURL()

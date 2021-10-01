@@ -5,14 +5,14 @@
 import moment from "moment";
 import fetch from "node-fetch";
 import { getConfig } from "../utils/configHandler";
-import { getAverageColor } from 'fast-average-color-node';
+import { getAverageColor } from "fast-average-color-node";
 
 const config = getConfig();
 
 const INSPIRATION_GENERATEAPI_URL = "https://inspirobot.me/api?generate=true";
 
 /**
- * 
+ *
  * @returns {Promise<string>}
  */
 function getInspiration() {
@@ -38,16 +38,16 @@ export const run = (_client, message, args, callback) => {
                     return {
                         response,
                         color: color.hex
-                    }
+                    };
                 })
-                .catch(_err => {
+                .catch(() => {
                     return {
                         response,
-                        color: '0x2ecc71'
-                    }
+                        color: "0x2ecc71"
+                    };
                 });
         })
-        .then(async (response) => {
+        .then((response) => {
             const envelope = {
                 embed: {
                     image: {
@@ -65,7 +65,7 @@ export const run = (_client, message, args, callback) => {
                 }
             };
 
-            return await message.channel
+            return message.channel
                 .send(envelope)
                 .then(() => message.delete());
         })
