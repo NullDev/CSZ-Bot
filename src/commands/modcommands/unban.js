@@ -1,26 +1,24 @@
-"use strict";
-
 // ========================= //
 // = Copyright (c) NullDev = //
 // ========================= //
 
-// Utils
-let log = require("../../utils/logger");
-let config = require("../../utils/configHandler").getConfig();
+import * as log from "../../utils/logger";
+import { getConfig } from "../../utils/configHandler";
 
-// Other commands
-let ban = require("./ban");
+import * as ban from "./ban";
+
+const config = getConfig();
 
 /**
  * Unbans a given user
  *
  * @param {import("discord.js").Client} client
  * @param {import("discord.js").Message} message
- * @param {Array} args
+ * @param {Array<any>} args
  * @param {Function} callback
  * @returns {Function} callback
  */
-exports.run = (client, message, args, callback) => {
+export const run = (client, message, args, callback) => {
     let mentioned = message.mentions?.users?.first?.();
 
     if (!mentioned) return callback(`Da ist kein username... Mach \`${config.bot_settings.prefix.mod_prefix}unban \@username\``);
@@ -29,7 +27,7 @@ exports.run = (client, message, args, callback) => {
 
     if (mentionedUserObject.roles.cache.some(r => r.id === config.ids.default_role_id)) return callback("Dieser User ist nicht gebannt du kek.");
 
-    if (!exports.unban(mentionedUserObject)) return callback("Eine der angegebenen Rollen für das bannen existiert nich.");
+    if (!unban(mentionedUserObject)) return callback("Eine der angegebenen Rollen für das bannen existiert nich.");
 
     message.channel.send(`User ${mentionedUserObject} wurde entbannt!`);
     message.guild.member(mentioned).send("Glückwunsch! Du wurdest von der Coding Shitpost Zentrale entbannt. Und jetzt benimm dich.");
@@ -37,7 +35,7 @@ exports.run = (client, message, args, callback) => {
     return callback();
 };
 
-exports.unban = (user) => {
+export const unban = (user) => {
     let defaultRole = user.guild.roles.cache.find(role => role.id === config.ids.default_role_id);
     let bannedRole = user.guild.roles.cache.find(role => role.id === config.ids.banned_role_id);
 
@@ -68,4 +66,4 @@ exports.unban = (user) => {
     return true;
 };
 
-exports.description = `Entbannt einen User womit er alle Channel wieder sehen kann.\nBenutzung: ${config.bot_settings.prefix.mod_prefix}unban username`;
+export const description = `Entbannt einen User womit er alle Channel wieder sehen kann.\nBenutzung: ${config.bot_settings.prefix.mod_prefix}unban username`;
