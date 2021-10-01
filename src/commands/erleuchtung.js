@@ -41,7 +41,7 @@ exports.run = (_client, message, args, callback) => {
                         icon_url: message.author.displayAvatarURL()
                     },
                     footer: {
-                        text: `🙏 Glaub an dich 🙏`
+                        text: "🙏 Glaub an dich 🙏"
                     }
                 }
             };
