@@ -19,22 +19,22 @@ const config = getConfig();
  * @param {Array<unknown>} args
  * @returns {Promise<string | void>}
  */
-export const run = (client, message, args) => {
+export const run = async (client, message, args) => {
     let durationArg = Number(args.length > 0 ? args[0] : "8");
     let duration = moment.duration(durationArg, "hours");
     let durationAsMinutes = Number(duration.asMinutes());
 
-    if (!duration.isValid()) return callback("Bitte eine gültige Dauer in Stunden angeben (Kommazahlen erlaubt).");
+    if (!duration.isValid()) return "Bitte eine gültige Dauer in Stunden angeben (Kommazahlen erlaubt).";
 
-    if (!Number.isInteger(durationArg)) return callback("Gib ne Zahl ein du Lellek.");
-    if (durationAsMinutes < 0) return callback("Ach komm, für wie dumm hälst du mich?");
+    if (!Number.isInteger(durationArg)) return "Gib ne Zahl ein du Lellek.";
+    if (durationAsMinutes < 0) return "Ach komm, für wie dumm hälst du mich?";
 
     let self = message.member;
-    if (self.id === "371724846205239326") return callback("Aus Segurity lieber nicht dich bannen.");
+    if (self.id === "371724846205239326") return "Aus Segurity lieber nicht dich bannen.";
 
-    if (self.roles.cache.some(r => r.id === config.ids.banned_role_id)) return callback("Du bist bereits gebannt du kek.");
+    if (self.roles.cache.some(r => r.id === config.ids.banned_role_id)) return "Du bist bereits gebannt du kek.";
 
-    if (!ban.ban(self, duration)) return callback("Eine der angegebenen Rollen für das bannen existiert nich.");
+    if (!ban.ban(self, duration)) return "Eine der angegebenen Rollen für das bannen existiert nich.";
 
     let durationHumanized = duration.locale("de").humanize();
     if (durationAsMinutes === 0) durationHumanized = "manuell durch Moderader";
@@ -46,8 +46,6 @@ Falls du doch vorzeitig entbannt entbannt werden möchtest, kannst du dich im <#
 
 Haddi & xD™`
     );
-
-    return callback();
 };
 
 export const description = `Bannt den ausführenden User indem er ihn von allen Channels ausschließt.\nBenutzung: ${config.bot_settings.prefix.command_prefix}selfban [Dauer in Stunden = 8; 0 = manuelle Entbannung durch Moderader nötig]`;
