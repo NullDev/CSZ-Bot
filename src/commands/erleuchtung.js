@@ -23,34 +23,31 @@ async function getInspiration() {
  * @param {import("discord.js").Client} _client
  * @param {import("discord.js").Message} message
  * @param {Array} args
- * @param {Function} callback
- * @returns {Function} callback
+ * @returns {Promise<string | void>}
  */
-export const run = (_client, message, args, callback) => {
-    getInspiration()
-        .then(response => {
-            const envelope = {
-                embed: {
-                    image: {
-                        url: response
-                    },
-                    timestamp: moment.utc().format(),
-                    author: {
-                        name: `${message.author.username} wurde erleuchtet`,
-                        icon_url: message.author.displayAvatarURL()
-                    },
-                    footer: {
-                        text: "🙏 Glaub an dich 🙏"
-                    }
+export const run = async (_client, message, args) => {
+    try {
+        const response = await getInspiration()
+        const envelope = {
+            embed: {
+                image: {
+                    url: response
+                },
+                timestamp: moment.utc().format(),
+                author: {
+                    name: `${message.author.username} wurde erleuchtet`,
+                    icon_url: message.author.displayAvatarURL()
+                },
+                footer: {
+                    text: "🙏 Glaub an dich 🙏"
                 }
-            };
-
-            return message.channel
-                .send(envelope)
-                .then(() => message.delete());
-        })
-        .then(() => callback())
-        .catch(callback);
+            }
+        };
+        await message.channel.send(envelope);
+        await message.delete();
+    } catch (err) {
+        return err;
+    }
 };
 
 export const description = `Gönnt dir eine zufällige Erleuchtung.\nBenutzung: ${config.bot_settings.prefix.command_prefix}erleuchtung`;
