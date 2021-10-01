@@ -11,7 +11,7 @@
 // Utils
 let log = require("../utils/logger");
 let config = require("../utils/configHandler").getConfig();
-import {LETTERS, EMOJI, OPTION_LIMIT, TEXT_LIMIT} from "./poll";
+const poll = require("./poll");
 
 /**
  * Extends an existing poll or strawpoll
@@ -47,13 +47,13 @@ exports.run = async(client, message, args, callback) => {
 
     let oldPollOptions = replyMessage.embeds[0].description.split("\n");
 
-    if (oldPollOptions.length === OPTION_LIMIT) return callback("Bruder die Umfrage ist leider schon voll (⚆ ͜ʖ⚆)");
+    if (oldPollOptions.length === poll.OPTION_LIMIT) return callback("Bruder die Umfrage ist leider schon voll (⚆ ͜ʖ⚆)");
 
     let oldPollOptionsLength = replyMessage.embeds[0].description.length;
-    if (oldPollOptionsLength > TEXT_LIMIT) return callback("Bruder die Umfrage ist leider schon voll (⚆ ͜ʖ⚆)");
+    if (oldPollOptionsLength > poll.TEXT_LIMIT) return callback("Bruder die Umfrage ist leider schon voll (⚆ ͜ʖ⚆)");
 
     for (let i = 0; i < oldPollOptions.length; ++i) {
-        if (!oldPollOptions[i].startsWith(LETTERS[i])) {
+        if (!oldPollOptions[i].startsWith(poll.LETTERS[i])) {
             return callback("Bruder das ist keine Umfrage ಠ╭╮ಠ");
         }
     }
@@ -67,23 +67,23 @@ exports.run = async(client, message, args, callback) => {
     }
 
     if (!additionalPollOptions.length) return callback("Bruder da sind keine Antwortmöglichkeiten :c");
-    if(oldPollOptionsLength + additionalPollOptionsLength > TEXT_LIMIT) return callback("Bruder die Umfrage ist zu lang");
-    if(oldPollOptions.length + additionalPollOptions.length > OPTION_LIMIT) return callback(`Bruder mit deinen Antwortmöglichkeiten wird das Limit von ${OPTION_LIMIT} überschritten!`);
+    if(oldPollOptionsLength + additionalPollOptionsLength > poll.TEXT_LIMIT) return callback("Bruder die Umfrage ist zu lang");
+    if(oldPollOptions.length + additionalPollOptions.length > poll.OPTION_LIMIT) return callback(`Bruder mit deinen Antwortmöglichkeiten wird das Limit von ${poll.OPTION_LIMIT} überschritten!`);
 
     let originalAuthor = replyMessage.embeds[0].author.name.split(" ")[2];
     let authorNote = originalAuthor !== message.author.username ? ` (von ${message.author.username})` : "";
 
     let embed = replyMessage.embeds[0];
     embed.description += "\n";
-    additionalPollOptions.forEach((e, i) => (embed.description += `${LETTERS[oldPollOptions.length + i]} - ${e}${authorNote}\n`));
+    additionalPollOptions.forEach((e, i) => (embed.description += `${poll.LETTERS[oldPollOptions.length + i]} - ${e}${authorNote}\n`));
 
-    if (oldPollOptions.length + additionalPollOptions.length === OPTION_LIMIT) {
+    if (oldPollOptions.length + additionalPollOptions.length === poll.OPTION_LIMIT) {
         embed.color = null;
         delete embed.footer;
     }
 
     replyMessage.edit(undefined, embed).then(async msg => {
-        for (let i in additionalPollOptions) await msg.react(EMOJI[oldPollOptions.length + Number(i)]);
+        for (let i in additionalPollOptions) await msg.react(poll.EMOJI[oldPollOptions.length + Number(i)]);
     }).then(() => message.delete());
 
     return callback();
