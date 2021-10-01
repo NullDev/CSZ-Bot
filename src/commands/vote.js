@@ -36,6 +36,7 @@ export const run = (client, message, args, callback) => {
         embed: {
             title: `**${parsedArgs.join(" ")}**`,
             timestamp: moment.utc().format(),
+            color: 0x9400D3,
             author: {
                 name: `Umfrage von ${message.author.username}`,
                 icon_url: message.author.displayAvatarURL()
