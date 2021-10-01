@@ -144,14 +144,14 @@ exports.run = (client, message, args, callback) => {
     let pollArray = parsedArgs.join(" ").split(";").map(e => e.trim()).filter(e => e.replace(/\s/g, "") !== "");
     let pollOptions = pollArray.slice(1);
     let pollOptionsTextLength = 0;
-    pollOptions.forEach(pollOption => pollOptionsTextLength += pollOption.length);
+    for (let pollOption in pollOptions) {
+        pollOptionsTextLength += pollOption.length;
+    }
 
     if (!pollOptions.length) return callback("Bruder da sind keine Antwortmöglichkeiten :c");
     else if (pollOptions.length < 2) return callback("Bruder du musst schon mehr als eine Antwortmöglichkeit geben 🙄");
     else if (pollOptions.length > OPTION_LIMIT) return callback(`Bitte gib nicht mehr als ${OPTION_LIMIT} Antwortmöglichkeiten an!`);
     else if (pollOptionsTextLength > TEXT_LIMIT) return callback("Bruder deine Umfrage ist zu lang!");
-    
-
 
     let optionstext = "";
     pollOptions.forEach((e, i) => (optionstext += `${NUMBERS[i]} - ${e}\n`));

@@ -142,7 +142,9 @@ exports.run = async(client, message, args, callback) => {
 
     let additionalPollOptions = args.join(" ").split(";").map(e => e.trim()).filter(e => e.replace(/\s/g, "") !== "");
     let additionalPollOptionsLength = 0;
-    additionalPollOptions.forEach(additionalPollOption => additionalPollOptionsLength += additionalPollOption.length);
+    for (let additionalPollOption in additionalPollOptions) {
+        additionalPollOptionsLength += additionalPollOption.length;
+    }
 
     if (!additionalPollOptions.length) return callback("Bruder da sind keine Antwortmöglichkeiten :c");
     if(oldPollOptionsLength + additionalPollOptionsLength > TEXT_LIMIT) return callback("Bruder die Umfrage ist zu lang");
