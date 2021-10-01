@@ -42,7 +42,7 @@ const getCommandMessageChunksMatchingLimit = (commands) => {
  * @param {Function} callback
  * @returns {Function} callback
  */
-export const run = async (client, message, args, callback) => {
+export const run = async(client, message, args, callback) => {
     let commandObj = {};
     const commandDir = __dirname;
 

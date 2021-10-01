@@ -115,4 +115,4 @@ export default async function(event, client) {
         additionalData.customData = newCustomData;
         await additionalData.save();
     }
-};
+}

@@ -18,4 +18,4 @@ export async function initialize() {
     GuildRagequit.initialize(sequelize);
 
     await sequelize.sync();
-};
+}

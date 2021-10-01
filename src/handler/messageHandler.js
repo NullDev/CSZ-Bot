@@ -267,4 +267,4 @@ export default function(message, client){
             if (err) inlineReply(message, err, client);
         });
     }
-};
+}

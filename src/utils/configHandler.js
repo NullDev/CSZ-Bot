@@ -16,7 +16,7 @@ const configPath = path.resolve("config.json");
  * @param {*} obj
  * @returns {Boolean} whether it is valid JSON
  */
-let isValidJson = function (obj) {
+let isValidJson = function(obj) {
     try {
         JSON.parse(obj);
     }
@@ -31,7 +31,7 @@ let isValidJson = function (obj) {
  *
  * @returns {Object} JSON Content
  */
-export const getConfig = function () {
+export const getConfig = function() {
     if (!fs.existsSync(configPath)) {
         log.error("Config does not exist! Make sure you copy config.template.json and paste it as 'config.json'. Then configure it.");
         process.exit(1);
@@ -52,19 +52,19 @@ export const getConfig = function () {
     return process.exit(1);
 };
 
-export const getVersion = function () {
+export const getVersion = function() {
     return packagefile.version;
 };
 
-export const getName = function () {
+export const getName = function() {
     return packagefile.name;
 };
 
-export const getAuthor = function () {
+export const getAuthor = function() {
     return packagefile.author;
 };
 
-export const getDescription = function () {
+export const getDescription = function() {
     return packagefile.description;
 };
 

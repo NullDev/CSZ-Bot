@@ -3,7 +3,7 @@
 // ========================= //
 
 import * as cron from "node-cron";
-import moment from "moment"
+import moment from "moment";
 
 import * as log from "../../utils/logger";
 import { getConfig } from "../../utils/configHandler";
@@ -21,7 +21,7 @@ const config = getConfig();
  * @param {Function} callback
  * @returns {Function} callback
  */
- export const run = (client, message, args, callback) => {
+export const run = (client, message, args, callback) => {
     let mentioned = message.mentions?.users?.first?.();
     let reason = args.slice(1).join(" ");
 

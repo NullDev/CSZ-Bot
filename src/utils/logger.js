@@ -7,7 +7,7 @@
  *
  * @returns {String} Time
  */
-let getDate = function () {
+let getDate = function() {
     const date = new Date();
     let hourData = date.getHours();
     let minData = date.getMinutes();
@@ -25,7 +25,7 @@ let getDate = function () {
  *
  * @returns {String} StackTrace
  */
-let getTrace = function () {
+let getTrace = function() {
     let err = new Error();
 
     // Parse the whole stacktrace

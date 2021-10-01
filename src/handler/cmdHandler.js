@@ -20,7 +20,7 @@ const config = getConfig();
  * @param {Function} callback
  * @returns {Function} callback
  */
-export default async function (message, client, isModCommand, callback) {
+export default async function(message, client, isModCommand, callback) {
     let cmdPrefix = isModCommand
         ? config.bot_settings.prefix.mod_prefix
         : config.bot_settings.prefix.command_prefix;
@@ -33,7 +33,7 @@ export default async function (message, client, isModCommand, callback) {
         ? path.join(__dirname, "..", "commands", "modcommands")
         : path.join(__dirname, "..", "commands");
 
-    const files = await fs.readdir(commandDir)
+    const files = await fs.readdir(commandDir);
     for (const file of files) {
         let cmdPath = path.resolve(commandDir, file);
         let stats = await fs.stat(cmdPath);
@@ -69,7 +69,7 @@ export default async function (message, client, isModCommand, callback) {
     console.assert(!!usedCommand, "usedCommand must be non-falsy");
 
     try {
-        usedCommand.run(client, message, args, function (err) {
+        usedCommand.run(client, message, args, function(err) {
             // Non-Exception Error returned by the command (e.g.: Missing Argument)
             if (err) callback(err);
         });
@@ -84,4 +84,4 @@ export default async function (message, client, isModCommand, callback) {
     }
 
     return callback();
-};
+}

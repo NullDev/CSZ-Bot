@@ -6,7 +6,7 @@ import { promises as fs } from "fs";
 import * as path from "path";
 
 import { getConfig } from "../../utils/configHandler";
-const config = getConfig()
+const config = getConfig();
 
 /**
  * Enlists all mod-commands with descriptions
@@ -17,7 +17,7 @@ const config = getConfig()
  * @param {Function} callback
  * @returns {Function} callback
  */
-export const run = async (client, message, args, callback) => {
+export const run = async(client, message, args, callback) => {
     let commandObj = {};
     let commandDir = __dirname;
 

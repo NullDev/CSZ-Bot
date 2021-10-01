@@ -27,4 +27,4 @@ export default function(message, client) {
             deleteInlineRepliesFromBot(message, client);
         }
     }
-};
+}
