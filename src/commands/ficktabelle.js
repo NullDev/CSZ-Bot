@@ -17,7 +17,6 @@ const FICKTABELLE_URL = "https://cdn.discordapp.com/attachments/6207219217675059
  * @returns {Function} callback
  */
 exports.run = (_client, message, args, callback) => {
-
     let titles = [
         "informiert sich übers fuggern",
         "bereitet seinen Willie vor",
