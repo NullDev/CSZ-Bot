@@ -12,25 +12,25 @@ const config = getConfig();
  * @param {import("discord.js").Client} client
  * @param {import("discord.js").Message} message
  * @param {Array<unknown>} args
- * @param {Function} callback
- * @returns {Function} callback
+ * @returns {Promise<string | void>}
  */
-export const run = (client, message, args, callback) => {
-    if (!args.length) return callback("Keine Rollen angegeben.");
+export const run = async(client, message, args) => {
+    if (!args.length) return "Keine Rollen angegeben.";
 
     let roleNames = message.guild.roles.cache
         .filter(element => String(element.name).toLowerCase() !== "@everyone")
         .map(element => element.name);
 
-    if (!args.some(e => roleNames.includes(e))) return callback("Keine dieser Rollen existiert!");
+    if (!args.some(e => roleNames.includes(e))) return "Keine dieser Rollen existiert!";
 
-    message.delete().catch(log.error);
+    await message.delete().catch(log.error);
 
     let validRoles = args.filter(value => roleNames.includes(value));
 
-    validRoles.forEach(element => message.channel.send(element).then(msg => msg.react("✅")));
-
-    return callback();
+    for(const validRole of validRoles) {
+        const roleMessage = await message.channel.send(validRole);
+        await roleMessage.react("✅");
+    }
 };
 
 export const description = `Startet den assigner mit gegebenen Rollen \nBenutzung: ${config.bot_settings.prefix.mod_prefix}assigner [rolle 1] [rolle 2] [...]`;
