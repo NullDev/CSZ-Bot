@@ -37,43 +37,38 @@ async function getPrompt(userPrompt) {
  * @param {import("discord.js").Client} _client
  * @param {import("discord.js").Message} message
  * @param {Array<unknown>} args
- * @param {Function} callback
- * @returns {Function} callback
+ * @returns {Promise<string | void>}
  */
-export const run = (_client, message, args, callback) => {
+export const run = async (_client, message, args) => {
     const userInput = (args || []).join(" ");
-    getPrompt(userInput)
-        .then(prompt => {
-            const emoji = QUESTION_LEVEL_EMOJI_MAP[prompt.level];
-            const envelope = {
-                embed: {
-                    title: `Ich hab noch nie ${Util.cleanContent(prompt.prompt, message)}`,
-                    timestamp: moment.utc().format(),
-                    color: 0x2ecc71,
-                    author: {
-                        name: `${message.author.username} ${emoji}`,
-                        icon_url: message.author.displayAvatarURL()
-                    },
-                    footer: {
-                        text: "🍻: Hab ich schon, 🚱: Hab ich noch nie"
-                    }
-                }
-            };
+    try {
+        const prompt = await getPrompt(userInput)
 
-            return message.channel
-                .send(envelope)
-                .then(sentMessage => {
-                    return Promise.all([
-                        message.delete(),
-                        sentMessage.react("🍻"),
-                        sentMessage.react("🚱")
-                    ]);
-                });
-        })
-        .then(() => callback())
-        .catch(error => {
-            callback(error);
-        });
+        const emoji = QUESTION_LEVEL_EMOJI_MAP[prompt.level];
+        const envelope = {
+            embed: {
+                title: `Ich hab noch nie ${Util.cleanContent(prompt.prompt, message)}`,
+                timestamp: moment.utc().format(),
+                color: 0x2ecc71,
+                author: {
+                    name: `${message.author.username} ${emoji}`,
+                    icon_url: message.author.displayAvatarURL()
+                },
+                footer: {
+                    text: "🍻: Hab ich schon, 🚱: Hab ich noch nie"
+                }
+            }
+        };
+
+        const sentMessage = await message.channel.send(envelope);
+        await Promise.all([
+            message.delete(),
+            sentMessage.react("🍻"),
+            sentMessage.react("🚱")
+        ]);
+    } catch (err) {
+        return err;
+    }
 };
 
 export const description = "Stellt eine \"ich hab noch nie\" Frage";
