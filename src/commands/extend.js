@@ -145,8 +145,7 @@ exports.run = async(client, message, args, callback) => {
     additionalPollOptions.forEach(additionalPollOption => additionalPollOptionsLength += additionalPollOption.length);
 
     if (!additionalPollOptions.length) return callback("Bruder da sind keine Antwortmöglichkeiten :c");
-    if(oldPollOptionsLength + additionalPollOptionsLength > TEXT_LIMIT
-    ) return callback("Bruder die Umfrage ist zu lang");
+    if(oldPollOptionsLength + additionalPollOptionsLength > TEXT_LIMIT) return callback("Bruder die Umfrage ist zu lang");
     if(oldPollOptions.length + additionalPollOptions.length > LIMIT) return callback(`Bruder die Umfrage hat bereits ${LIMIT} Antwortmöglichkeiten!`);
 
     let originalAuthor = replyMessage.embeds[0].author.name.split(" ")[2];
