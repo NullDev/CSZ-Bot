@@ -64,7 +64,7 @@ exports.run = (client, message, args, callback) => {
     let pollArray = parsedArgs.join(" ").split(";").map(e => e.trim()).filter(e => e.replace(/\s/g, "") !== "");
     let pollOptions = pollArray.slice(1);
     let pollOptionsTextLength = 0;
-    for (let pollOption in pollOptions) {
+    for (let pollOption of pollOptions) {
         pollOptionsTextLength += pollOption.length;
     }
 

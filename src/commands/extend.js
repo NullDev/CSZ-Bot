@@ -62,7 +62,7 @@ exports.run = async(client, message, args, callback) => {
 
     let additionalPollOptions = args.join(" ").split(";").map(e => e.trim()).filter(e => e.replace(/\s/g, "") !== "");
     let additionalPollOptionsLength = 0;
-    for (let additionalPollOption in additionalPollOptions) {
+    for (let additionalPollOption of additionalPollOptions) {
         additionalPollOptionsLength += additionalPollOption.length;
     }
 
