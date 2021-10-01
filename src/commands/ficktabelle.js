@@ -1,20 +1,54 @@
 "use strict";
 
-// ========================= //
-// = Copyright (c) NullDev = //
-// ========================= //
+// ================================ //
+// = Copyright (c) Ehrenvio der G = //
+// ================================ //
+
+// Utils
+let config = require("../utils/configHandler").getConfig();
+const moment = require("moment");
+const FICKTABELLE_URL = "https://cdn.discordapp.com/attachments/620721921767505942/636149543154614272/20160901-164533-Kovrtep-id1487186.png";
 
 /**
  * Sends FUCKTABLE
- * @param {import("discord.js").Client} client
+ * @param {import("discord.js").Client} _client
  * @param {import("discord.js").Message} message
  * @param {Function} callback
  * @returns {Function} callback
  */
-exports.run = (client, message, args, callback) => {
-    // Sends PNG
-    message.channel.send("https://cdn.discordapp.com/attachments/620721921767505942/636149543154614272/20160901-164533-Kovrtep-id1487186.png");
+exports.run = (_client, message, args, callback) => {
+    let titles = [
+        "informiert sich übers fuggern",
+        "bereitet seinen Willie vor",
+        "wird eine Straftat begehen 👮",
+        "sollte nicht vergessen, den Lümmel zu waschen!"
+    ];
+
+    let warnings = [
+        "Vergiss nicht, BKA is watching you! 👮",
+        "Rot ist Tabu 🚫",
+        "Minimum n Gummi drum 🚫👶"
+    ];
+
+    const envelope = {
+        embed: {
+            image: {
+                url: FICKTABELLE_URL
+            },
+            timestamp: moment.utc().format(),
+            author: {
+                name: `${message.author.username} ${titles[Math.max(0, Math.floor(Math.random() * titles.length))]}`,
+                icon_url: message.author.displayAvatarURL()
+            },
+            footer: {
+                text: warnings[Math.max(0, Math.floor(Math.random() * warnings.length))]
+            }
+        }
+    };
+
+    message.channel.send(envelope)
+        .then(() => message.delete());
     return callback();
 };
 
-exports.description = "Sendet die Ficktabelle";
+exports.description = `Sendet die Ficktabelle.\nBenutzung: ${config.bot_settings.prefix.command_prefix}ficktabelle`;

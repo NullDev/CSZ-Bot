@@ -14,31 +14,54 @@ const logger = require("../utils/logger");
 // Utils
 let config = require("../utils/configHandler").getConfig();
 
-const NUMBERS = [
-    ":one:",
-    ":two:",
-    ":three:",
-    ":four:",
-    ":five:",
-    ":six:",
-    ":seven:",
-    ":eight:",
-    ":nine:",
-    ":keycap_ten:"
+const LETTERS = [
+    ":regional_indicator_a:",
+    ":regional_indicator_b:",
+    ":regional_indicator_c:",
+    ":regional_indicator_d:",
+    ":regional_indicator_e:",
+    ":regional_indicator_f:",
+    ":regional_indicator_g:",
+    ":regional_indicator_h:",
+    ":regional_indicator_i:",
+    ":regional_indicator_j:",
+    ":regional_indicator_k:",
+    ":regional_indicator_l:",
+    ":regional_indicator_m:",
+    ":regional_indicator_n:",
+    ":regional_indicator_o:",
+    ":regional_indicator_p:",
+    ":regional_indicator_q:",
+    ":regional_indicator_r:",
+    ":regional_indicator_s:",
+    ":regional_indicator_t:"
 ];
 
 const EMOJI = [
-    "1️⃣",
-    "2️⃣",
-    "3️⃣",
-    "4️⃣",
-    "5️⃣",
-    "6️⃣",
-    "7️⃣",
-    "8️⃣",
-    "9️⃣",
-    "🔟"
+    "🇦",
+    "🇧",
+    "🇨",
+    "🇩",
+    "🇪",
+    "🇫",
+    "🇬",
+    "🇭",
+    "🇮",
+    "🇯",
+    "🇰",
+    "🇱",
+    "🇲",
+    "🇳",
+    "🇴",
+    "🇵",
+    "🇶",
+    "🇷",
+    "🇸",
+    "🇹"
 ];
+
+const OPTION_LIMIT = LETTERS.length;
+const TEXT_LIMIT = 4096;
 
 /**
  * @typedef {Object} DelayedPoll
@@ -88,14 +111,20 @@ exports.run = (client, message, args, callback) => {
 
     let pollArray = parsedArgs.join(" ").split(";").map(e => e.trim()).filter(e => e.replace(/\s/g, "") !== "");
     let pollOptions = pollArray.slice(1);
+    let pollOptionsTextLength = 0;
+    let isExtenable = options.extendable;
+    for (let pollOption in pollOptions) {
+        pollOptionsTextLength += pollOption.length;
+    }
+
 
     if (!pollOptions.length) return callback("Bruder da sind keine Antwortmöglichkeiten :c");
-    else if (pollOptions.length < 2) return callback("Bruder du musst schon mehr als eine Antwortmöglichkeit geben 🙄");
-    else if (pollOptions.length > 10) return callback("Bitte gib nicht mehr als 10 Antwortmöglichkeiten an!");
-
+    else if (pollOptions.length < 2 && !isExtenable) return callback("Bruder du musst schon mehr als eine Antwortmöglichkeit geben 🙄");
+    else if (pollOptions.length > OPTION_LIMIT) return callback(`Bitte gib nicht mehr als ${OPTION_LIMIT} Antwortmöglichkeiten an!`);
+    else if (pollOptionsTextLength > TEXT_LIMIT) return callback("Bruder deine Umfrage ist zu lang!");
 
     let optionstext = "";
-    pollOptions.forEach((e, i) => (optionstext += `${NUMBERS[i]} - ${e}\n`));
+    pollOptions.forEach((e, i) => (optionstext += `${LETTERS[i]} - ${e}\n`));
 
     let finishTime = new Date(new Date().valueOf() + (delayTime * 60 * 1000));
     if(options.delayed) {
@@ -122,7 +151,7 @@ exports.run = (client, message, args, callback) => {
     };
 
     let footer = [];
-    let extendable = options.extendable && pollOptions.length < 10;
+    let extendable = options.extendable && pollOptions.length < OPTION_LIMIT && pollOptionsTextLength < TEXT_LIMIT;
 
     if (extendable) {
         if(options.delayed) {
@@ -228,7 +257,7 @@ exports.startCron = (client) => {
             let toSend = {
                 embed: {
                     title: `Zusammenfassung: ${message.embeds[0].title}`,
-                    description: `${delayedPoll.reactions.map((x, index) => `${NUMBERS[index]} ${delayedPoll.reactionMap[index]} (${x.length}):
+                    description: `${delayedPoll.reactions.map((x, index) => `${LETTERS[index]} ${delayedPoll.reactionMap[index]} (${x.length}):
 ${x.map(uid => users[uid]).join("\n")}\n\n`).join("")}
 `,
                     timestamp: moment.utc().format(),
@@ -256,7 +285,7 @@ ${x.map(uid => users[uid]).join("\n")}\n\n`).join("")}
     });
 };
 
-exports.description = `Erstellt eine Umfrage mit mehreren Antwortmöglichkeiten (standardmäßig mit Mehrfachauswahl) (maximal 10).
+exports.description = `Erstellt eine Umfrage mit mehreren Antwortmöglichkeiten (standardmäßig mit Mehrfachauswahl) (maximal ${OPTION_LIMIT}).
 Usage: ${config.bot_settings.prefix.command_prefix}poll [Optionen?] [Hier die Frage] ; [Antwort 1] ; [Antwort 2] ; [...]
 Optionen:
 \t-c, --channel
