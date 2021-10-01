@@ -1,30 +1,27 @@
-"use strict";
-
 // ========================= //
 // = Copyright (c) NullDev = //
 // ========================= //
 
-// Dependencies
-let cron = require("node-cron");
-let moment = require("moment");
+import * as cron from "node-cron";
+import moment from "moment"
 
-// Utils
-let log = require("../../utils/logger");
-let config = require("../../utils/configHandler").getConfig();
+import * as log from "../../utils/logger";
+import { getConfig } from "../../utils/configHandler";
 
-// Other commands
-let unban = require("./unban");
+import * as unban from "./unban";
+
+const config = getConfig();
 
 /**
  * Ban a given user
  *
  * @param {import("discord.js").Client} client
  * @param {import("discord.js").Message} message
- * @param {Array} args
+ * @param {Array<any>} args
  * @param {Function} callback
  * @returns {Function} callback
  */
-exports.run = (client, message, args, callback) => {
+ export const run = (client, message, args, callback) => {
     let mentioned = message.mentions?.users?.first?.();
     let reason = args.slice(1).join(" ");
 
@@ -49,27 +46,30 @@ Lg & xD™`
     return callback();
 };
 
-exports.bans = {
+/**
+ * @type {Record<String, number>}
+ */
+export const bans = {
     /*
     user_id: unban_at as unix timestamp
     */
 };
 
-exports.saveBans = () => {
+export const saveBans = () => {
     // tbd
 };
 
-exports.loadBans = () => {
+export const loadBans = () => {
     // tbd
 };
 
-exports.startCron = (client) => {
+export const startCron = (client) => {
     cron.schedule("* * * * *", () => {
-        let userIds = Object.keys(exports.bans);
+        let userIds = Object.keys(bans);
         let modified = false;
 
         for (let userId of userIds) {
-            let unbanAt = exports.bans[userId];
+            let unbanAt = bans[userId];
 
             if (unbanAt !== 0 && unbanAt < Date.now()) {
                 let user = client.guilds.cache.get(config.ids.guild_id).members.cache.get(userId);
@@ -79,18 +79,18 @@ exports.startCron = (client) => {
                     user.send("Glückwunsch! Dein selbst auferlegter Bann in der Coding Shitpost Zentrale ist beendet.");
                 }
 
-                delete exports.bans[userId];
+                delete bans[userId];
                 modified = true;
             }
         }
 
         if (modified) {
-            exports.saveBans();
+            saveBans();
         }
     });
 };
 
-exports.ban = (user, duration) => {
+export const ban = (user, duration) => {
     let defaultRole = user.guild.roles.cache.find(role => role.id === config.ids.default_role_id);
     let bannedRole = user.guild.roles.cache.find(role => role.id === config.ids.banned_role_id);
 
@@ -134,4 +134,4 @@ exports.ban = (user, duration) => {
     return true;
 };
 
-exports.description = `Bannt einen User indem er ihn von allen Channels ausschließt.\nBenutzung: ${config.bot_settings.prefix.mod_prefix}ban username [Banngrund]`;
+export const description = `Bannt einen User indem er ihn von allen Channels ausschließt.\nBenutzung: ${config.bot_settings.prefix.mod_prefix}ban username [Banngrund]`;
