@@ -4,16 +4,19 @@
 
 import fetch from "node-fetch";
 
+const fetchContributions = () => {
+    return fetch("https://api.github.com/repos/NullDev/CSC-Bot/contributors", {
+        headers: { Accept: "application/vnd.github.v3+json" }
+    }).then(res => res.json());
+}
+
 /**
  * Get all contributors from GitHub
  *
  * @return {Promise<String>}
  */
-let getContributors = async function() {
-    const contributors = await fetch("https://api.github.com/repos/NullDev/CSC-Bot/contributors", {
-        headers: { Accept: "application/vnd.github.v3+json" }
-    }).then(res => res.json());
-
+let getContributors = async() => {
+    const contributors = await fetchContributions();
     return contributors
         .filter(e => e.type === "User")
         .map(e => `<${e.html_url}> (Contributions: ${e.contributions})`)
@@ -26,16 +29,17 @@ let getContributors = async function() {
  * @param {import("discord.js").Client} client
  * @param {import("discord.js").Message} message
  * @param {Array<unknown>} args
- * @param {Function} callback
- * @returns {Promise<Function>} callback
+ * @returns {Promise<string | void>}
  */
-export const run = async(client, message, args, callback) => {
-    message.react("✉");
-    message.author.send(`
+export const run = async(client, message, args) => {
+    const contribs = await getContributors();
+
+    await message.react("✉");
+    await message.author.send(`
         Programmiert von ShadowByte#1337 für die Coding Shitpost Zentrale (<https://discord.gg/FABdvae>)
 
         Contributions von:
-        ${(await getContributors())}
+        ${(contribs)}
 
         Eckdaten:
         - Programmiersprache: NodeJS
@@ -49,8 +53,6 @@ export const run = async(client, message, args, callback) => {
 
         Source Code: <https://github.com/NullDev/CSC-Bot>
     `.replace(/  +/g, "")); // Remove leading indents
-
-    return callback();
 };
 
 export const description = "Listet Informationen über diesen Bot";
