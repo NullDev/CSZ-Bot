@@ -15,7 +15,7 @@ let parseOptions = require("minimist");
  * @param {Function} callback
  * @returns {Function} callback
  */
-exports.run = (client, message, args, callback) => {
+exports.run = (client: any, message: any, args: any, callback: any) => {
     // parse options
     let options = parseOptions(args, {
         "boolean": [
@@ -28,20 +28,20 @@ exports.run = (client, message, args, callback) => {
 
     if (args.length === 0 || (args.length === 1 && options.english)){
         // insult collections, feel free to expand
-        let germanInsults = [
+        let germanInsults: string[] = [
             "du Sohn einer ranzigen Hafendirne!",
             "möge dich der Blitz beim scheißen treffen!",
             "du verdammter Troglodyt!",
             "sonst muss ich heute Nacht noch deine Mama besuchen!"
         ];
-        let englishInsults = [
+        let englishInsults: string[] = [
             "you fucking imbecile!",
             "retard!",
             "you troglodyte!"
         ];
         // by default, just pick the first or a fixed insult
-        let choice = 0;
-        let insult = "Idiot!";
+        let choice: number = 0;
+        let insult: string = "Idiot!";
 
         if (!options.english){
             // insult user, then explain meta questions
