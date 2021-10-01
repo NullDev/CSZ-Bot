@@ -9,27 +9,32 @@ const buildSearchQuery = function(msg) {
     return GOOGLE_URL + encodeURIComponent(msg);
 };
 
-exports.run = async(client, message, callback) => {
+exports.run = async(client, message, args, callback) => {
     const messageRef = message.reference?.messageID;
     const text = message.content.slice(`${config.bot_settings.prefix.command_prefix}lmgtfy `.length);
-    let reply;
-    if (!text.length && !messageRef) {
+    let reply = "";
+    if (!args.length && !messageRef) {
         return callback(`Bruder du bist zu dumm zum lesen? Mach \`${config.bot_settings.prefix.command_prefix}lmgtfy DEINE SUCHE HIER\` oder antworte auf eine Nachricht`);
     }
     // If reply to message
     if (messageRef) {
-        const quotedMessage = await client.channels.cache.get(channel).messages.fetch(messageRef);
+        const quotedMessage = await message.channel.messages.fetch(messageRef);
         reply = `Hey, ${quotedMessage.author}, `;
-        if(!text.length) {
+        if(!text) {
             reply += `du hättest auch googeln können: ${buildSearchQuery(quotedMessage.content)}, danke dir ${message.author}`;
         }
     }
 
     if (text) {
-        reply += `${message.author} hat es geschafft zu googeln! ${buildSearchQuery()}`;
+        if (reply) {
+            reply += `${message.author} hat es geschafft zu googeln! ${buildSearchQuery(text)}`;
+        }
+        else {
+            reply = `${message.author} hat es geschafft zu googeln! ${buildSearchQuery(text)}`;
+        }
     }
-    message.channel.reply(reply).then(() => message.delete());
-    return callback();
+    message.channel.send(reply).then(() => message.delete());
+    return callback;
 };
 
 exports.description = `Googelt nach etwas.\nBenutzung: ${config.bot_settings.prefix.command_prefix}lmgtfy [Hier deine Suche] mit oder ohne reply oder nur ${config.bot_settings.prefix.command_prefix}lmgtfy in einer reply`;
