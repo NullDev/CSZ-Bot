@@ -22,10 +22,10 @@ exports.run = async(client, message, args, callback) => {
 
     let newInvite = await Stempel.insertStempel(inviter.id, invited.id, date);
     if(newInvite === "true") {
-       return callback(`Der Bruder ${inviter.username} hat den neuen Bruder ${invited.username} eingeladen und du hast dies so eben bestätigt!`);
-    } 
+        return callback(`Der Bruder ${inviter.username} hat den neuen Bruder ${invited.username} eingeladen und du hast dies so eben bestätigt!`);
+    }
     else if(newInvite === "false") {
-       return callback(`Der Bruder ${invited.username} wurde bereits gestempelt!`);
+        return callback(`Der Bruder ${invited.username} wurde bereits gestempelt!`);
     }
 
     return callback();

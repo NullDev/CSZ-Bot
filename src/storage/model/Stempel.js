@@ -48,13 +48,13 @@ class Stempel extends Model {
             },
             invited: {
                 type: DataTypes.STRING(32),
-                allowNull: false,
+                allowNull: false
             },
             date: {
                 type: DataTypes.STRING,
                 allowNull: false
             }
-        }, 
+        },
         {
             sequelize,
             modelName: "Stempel"
