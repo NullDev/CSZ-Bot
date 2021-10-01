@@ -1,4 +1,4 @@
-import messageHandler from "./messageHandler";
+import * as messageHandler from "./messageHandler";
 import { getConfig } from "../utils/configHandler";
 
 const config = getConfig();
