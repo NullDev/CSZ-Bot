@@ -77,7 +77,7 @@ export const run = async(client, message, args, callback) => {
     additionalPollOptions.forEach((e, i) => (embed.description += `${poll.LETTERS[oldPollOptions.length + i]} - ${e}${authorNote}\n`));
 
     if (oldPollOptions.length + additionalPollOptions.length === poll.OPTION_LIMIT) {
-        embed.color = null;
+        embed.color = 0xCD5C5C;
         delete embed.footer;
     }
 
