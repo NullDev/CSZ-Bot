@@ -37,7 +37,7 @@ export const run = (client, message, args, callback) => {
     const momentDuration = moment.duration(durationInMinutes, "minutes");
 
     if (durationInHours < 1 || !momentDuration.isValid()) {
-        return callback("Bitte eine gültige Dauer Δₜ in Stunden angeben; Δₜ ∈ ℕ⁺");
+        return callback("Bitte eine gültige Dauer Δₜ in Stunden angeben; Δₜ ∈ [1, ∞) ∩ ℝ");
     }
 
     const invokingUser = message.member;
