@@ -1,18 +1,16 @@
-"use strict";
-
 // ========================= //
 // = Copyright (c) NullDev = //
 // ========================= //
 
-// Dependencies
-let moment = require("moment");
-let parseOptions = require("minimist");
-let cron = require("node-cron");
-const AdditionalMessageData = require("../storage/model/AdditionalMessageData");
-const logger = require("../utils/logger");
+import moment from "moment";
+import * as parseOptions from "minimist";
+import * as cron from "node-cron";
 
-// Utils
-let config = require("../utils/configHandler").getConfig();
+import * as log from "../utils/logger";
+import AdditionalMessageData from "../storage/model/AdditionalMessageData";
+import { getConfig } from "../utils/configHandler";
+
+const config = getConfig();
 
 const NUMBERS = [
     ":one:",
@@ -52,7 +50,7 @@ const EMOJI = [
 /**
  * @type {DelayedPoll[]}
  */
-exports.delayedPolls = [];
+export const delayedPolls = [];
 
 /**
  * Creates a new poll (multiple answers) or strawpoll (single selection)
@@ -63,7 +61,7 @@ exports.delayedPolls = [];
  * @param {Function} callback
  * @returns {Function} callback
  */
-exports.run = (client, message, args, callback) => {
+export const run = (client, message, args, callback) => {
     let options = parseOptions(args, {
         "boolean": [
             "channel",
@@ -181,14 +179,14 @@ exports.run = (client, message, args, callback) => {
                 additionalData.customData = newCustomData;
                 await additionalData.save();
 
-                exports.delayedPolls.push(delayedPollData);
+                delayedPolls.push(delayedPollData);
             }
         });
 
     return callback();
 };
 
-exports.importPolls = async() => {
+export const importPolls = async() => {
     let additionalDatas = await AdditionalMessageData.findAll();
     let count = 0;
     additionalDatas.forEach(additionalData => {
@@ -196,20 +194,20 @@ exports.importPolls = async() => {
             return;
         }
 
-        exports.delayedPolls.push(additionalData.customData.delayedPollData);
+        delayedPolls.push(additionalData.customData.delayedPollData);
         count++;
     });
-    logger.info(`Loaded ${count} polls from database`);
+    log.info(`Loaded ${count} polls from database`);
 };
 
 /**
  * Initialized crons for delayed polls
  * @param {import("discord.js").Client} client
  */
-exports.startCron = (client) => {
+export const startCron = (client) => {
     cron.schedule("* * * * *", async() => {
         const currentDate = new Date();
-        const pollsToFinish = exports.delayedPolls.filter(delayedPoll => currentDate >= delayedPoll.finishesAt);
+        const pollsToFinish = delayedPolls.filter(delayedPoll => currentDate >= delayedPoll.finishesAt);
         /** @type {import("discord.js").GuildChannel} */
         const channel = client.guilds.cache.get(config.ids.guild_id).channels.cache.get(config.ids.votes_channel_id);
 
@@ -245,7 +243,7 @@ ${x.map(uid => users[uid]).join("\n")}\n\n`).join("")}
             await channel.send(toSend);
             await Promise.all(message.reactions.cache.map(reaction => reaction.remove()));
             await message.react("✅");
-            exports.delayedPolls.splice(exports.delayedPolls.indexOf(delayedPoll), 1);
+            delayedPolls.splice(delayedPolls.indexOf(delayedPoll), 1);
 
             let messageData = await AdditionalMessageData.fromMessage(message);
             let {customData} = messageData;
@@ -256,7 +254,7 @@ ${x.map(uid => users[uid]).join("\n")}\n\n`).join("")}
     });
 };
 
-exports.description = `Erstellt eine Umfrage mit mehreren Antwortmöglichkeiten (standardmäßig mit Mehrfachauswahl) (maximal 10).
+export const description = `Erstellt eine Umfrage mit mehreren Antwortmöglichkeiten (standardmäßig mit Mehrfachauswahl) (maximal 10).
 Usage: ${config.bot_settings.prefix.command_prefix}poll [Optionen?] [Hier die Frage] ; [Antwort 1] ; [Antwort 2] ; [...]
 Optionen:
 \t-c, --channel
