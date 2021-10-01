@@ -12,7 +12,7 @@ import { getConfig } from "../utils/configHandler";
 
 const config = getConfig();
 
-const LETTERS = [
+export const LETTERS = [
     ":regional_indicator_a:",
     ":regional_indicator_b:",
     ":regional_indicator_c:",
@@ -35,7 +35,7 @@ const LETTERS = [
     ":regional_indicator_t:"
 ];
 
-const EMOJI = [
+export const EMOJI = [
     "🇦",
     "🇧",
     "🇨",
@@ -58,8 +58,9 @@ const EMOJI = [
     "🇹"
 ];
 
-const OPTION_LIMIT = LETTERS.length;
-const TEXT_LIMIT = 4096;
+export const TEXT_LIMIT = 4096;
+export const OPTION_LIMIT = LETTERS.length;
+
 
 /**
  * @typedef {Object} DelayedPoll
@@ -110,8 +111,9 @@ export const run = (client, message, args, callback) => {
     let pollArray = parsedArgs.join(" ").split(";").map(e => e.trim()).filter(e => e.replace(/\s/g, "") !== "");
     let pollOptions = pollArray.slice(1);
     let pollOptionsTextLength = 0;
+
     let isExtenable = options.extendable;
-    for (let pollOption in pollOptions) {
+    for (let pollOption of pollOptions) {
         pollOptionsTextLength += pollOption.length;
     }
 
@@ -294,3 +296,4 @@ Optionen:
 \t\t\tStatt mehrerer Antworten kann nur eine Antwort gewählt werden
 \t-d <T>, --delayed <T>
 \t\t\tErgebnisse der Umfrage wird erst nach <T> Minuten angezeigt. (Noch) inkompatibel mit -e`;
+
