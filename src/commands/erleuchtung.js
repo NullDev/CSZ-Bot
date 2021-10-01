@@ -5,7 +5,6 @@
 import moment from "moment";
 import fetch from "node-fetch";
 import { getConfig } from "../utils/configHandler";
-import { getAverageColor } from "fast-average-color-node";
 
 const config = getConfig();
 
@@ -33,27 +32,12 @@ function getInspiration() {
 export const run = (_client, message, args, callback) => {
     getInspiration()
         .then((response) => {
-            return getAverageColor(response)
-                .then(color => {
-                    return {
-                        response,
-                        color: color.hex
-                    };
-                })
-                .catch(() => {
-                    return {
-                        response,
-                        color: "0x2ecc71"
-                    };
-                });
-        })
-        .then((response) => {
             const envelope = {
                 embed: {
                     image: {
-                        url: response.response
+                        url: response
                     },
-                    color: response.color,
+                    color: 0x26c723,
                     timestamp: moment.utc().format(),
                     author: {
                         name: `${message.author.username} wurde erleuchtet`,
