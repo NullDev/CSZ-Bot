@@ -1,4 +1,3 @@
-
 // ================================ //
 // = Copyright (c) Ehrenvio der G = //
 // ================================ //
@@ -14,10 +13,9 @@ const FICKTABELLE_URL = "https://cdn.discordapp.com/attachments/6207219217675059
  * Sends FUCKTABLE
  * @param {import("discord.js").Client} _client
  * @param {import("discord.js").Message} message
- * @param {Function} callback
- * @returns {Function} callback
+ * @returns {Promise<string | void>}
  */
-export const run = (_client, message, args, callback) => {
+export const run = async (_client, message, args) => {
     let titles = [
         "informiert sich übers fuggern",
         "bereitet seinen Willie vor",
@@ -47,9 +45,8 @@ export const run = (_client, message, args, callback) => {
         }
     };
 
-    message.channel.send(envelope)
-        .then(() => message.delete());
-    return callback();
+    await message.channel.send(envelope);
+    await message.delete();
 };
 
 export const description = `Sendet die Ficktabelle.\nBenutzung: ${config.bot_settings.prefix.command_prefix}ficktabelle`;
