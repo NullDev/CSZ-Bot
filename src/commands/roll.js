@@ -11,7 +11,8 @@ const config = getConfig();
 
 /**
  * Creates a pseudo randomly generated number
- *
+ * @param {number} min
+ * @param {number} max
  * @returns {number} A pseudo randomly generated number
  */
 const pseudoRng = function(min, max) {
@@ -85,10 +86,9 @@ const constructResultStr = function(rolls) {
  * @param {import("discord.js").Client} _client
  * @param {import("discord.js").Message} message
  * @param {Array<unknown>} args
- * @param {Function} callback
- * @returns {Function} callback
+ * @returns {Promise<string | void>}
  */
-export const run = (_client, message, args, callback) => {
+export const run = async(_client, message, args) => {
     let parsed = args[0]?.toLowerCase();
 
     // god i hate myself
@@ -102,7 +102,7 @@ export const run = (_client, message, args, callback) => {
     let error = errorHandling(Number(amount), Number(sides));
 
     if(error) {
-        return callback(error);
+        return error;
     }
 
     let e = {
@@ -121,11 +121,8 @@ export const run = (_client, message, args, callback) => {
     e.embed.color = pseudoRng(0, maxHexCol);
     e.embed.description = constructResultStr(diceResult(amount, sides));
 
-    message.channel
-        .send(e)
-        .then(() => message.delete());
-
-    return callback();
+    await message.channel.send(e);
+    await message.delete();
 };
 
 export const description =
