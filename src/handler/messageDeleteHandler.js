@@ -1,9 +1,7 @@
+import messageHandler from "./messageHandler";
+import { getConfig } from "../utils/configHandler";
 
-"use strict";
-
-// Utils
-let config = require("../utils/configHandler").getConfig();
-let messageHandler = require("./messageHandler");
+const config = getConfig();
 
 /**
  * @param {import("discord.js").Message} messageRef message
@@ -20,7 +18,7 @@ const deleteInlineRepliesFromBot = function(messageRef, client) {
  * @param {import("discord.js").Message} message message
  * @param {import("discord.js").Client} client client
  */
-module.exports = function(message, client) {
+export default function(message, client) {
     if(message.author.id !== client.user.id) {
         const isNormalCommand = message.content.startsWith(config.bot_settings.prefix.command_prefix) || message.content.startsWith(config.bot_settings.prefix.mod_prefix);
         const isSpecialCommand = messageHandler.specialCommands.reduce((acc, curr) => acc || message.content.search(curr.pattern) !== -1, false);
