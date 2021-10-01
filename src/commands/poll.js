@@ -14,7 +14,7 @@ const logger = require("../utils/logger");
 // Utils
 let config = require("../utils/configHandler").getConfig();
 
-const NUMBERS = [
+const LETTERS = [
     ":regional_indicator_a:",
     ":regional_indicator_b:",
     ":regional_indicator_c:",
@@ -60,7 +60,7 @@ const EMOJI = [
     "🇹"
 ];
 
-const OPTION_LIMIT = NUMBERS.length;
+const OPTION_LIMIT = LETTERS.length;
 const TEXT_LIMIT = 4096;
 
 /**
@@ -122,7 +122,7 @@ exports.run = (client, message, args, callback) => {
     else if (pollOptionsTextLength > TEXT_LIMIT) return callback("Bruder deine Umfrage ist zu lang!");
 
     let optionstext = "";
-    pollOptions.forEach((e, i) => (optionstext += `${NUMBERS[i]} - ${e}\n`));
+    pollOptions.forEach((e, i) => (optionstext += `${LETTERS[i]} - ${e}\n`));
 
     let finishTime = new Date(new Date().valueOf() + (delayTime * 60 * 1000));
     if(options.delayed) {
@@ -255,7 +255,7 @@ exports.startCron = (client) => {
             let toSend = {
                 embed: {
                     title: `Zusammenfassung: ${message.embeds[0].title}`,
-                    description: `${delayedPoll.reactions.map((x, index) => `${NUMBERS[index]} ${delayedPoll.reactionMap[index]} (${x.length}):
+                    description: `${delayedPoll.reactions.map((x, index) => `${LETTERS[index]} ${delayedPoll.reactionMap[index]} (${x.length}):
 ${x.map(uid => users[uid]).join("\n")}\n\n`).join("")}
 `,
                     timestamp: moment.utc().format(),

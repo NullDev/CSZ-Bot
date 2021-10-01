@@ -12,7 +12,7 @@
 let log = require("../utils/logger");
 let config = require("../utils/configHandler").getConfig();
 
-const NUMBERS = [
+const LETTERS = [
     ":regional_indicator_a:",
     ":regional_indicator_b:",
     ":regional_indicator_c:",
@@ -58,7 +58,7 @@ const EMOJI = [
     "🇹"
 ];
 
-const LIMIT = NUMBERS.length;
+const LIMIT = LETTERS.length;
 const TEXT_LIMIT = 4096;
 
 /**
@@ -101,7 +101,7 @@ exports.run = async(client, message, args, callback) => {
     if (oldPollOptionsLength > TEXT_LIMIT) return callback("Bruder die Umfrage ist leider schon voll (⚆ ͜ʖ⚆)");
 
     for (let i = 0; i < oldPollOptions.length; ++i) {
-        if (!oldPollOptions[i].startsWith(NUMBERS[i])) {
+        if (!oldPollOptions[i].startsWith(LETTERS[i])) {
             return callback("Bruder das ist keine Umfrage ಠ╭╮ಠ");
         }
     }
@@ -123,7 +123,7 @@ exports.run = async(client, message, args, callback) => {
 
     let embed = replyMessage.embeds[0];
     embed.description += "\n";
-    additionalPollOptions.forEach((e, i) => (embed.description += `${NUMBERS[oldPollOptions.length + i]} - ${e}${authorNote}\n`));
+    additionalPollOptions.forEach((e, i) => (embed.description += `${LETTERS[oldPollOptions.length + i]} - ${e}${authorNote}\n`));
 
     if (oldPollOptions.length + additionalPollOptions.length === LIMIT) {
         embed.color = null;
