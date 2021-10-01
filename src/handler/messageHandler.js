@@ -133,6 +133,32 @@ const whereMeme = function(message) {
         .catch(err => console.error(err));
 };
 
+/**
+ *
+ * @param {import("discord.js").Message} message
+ * @param {import("discord.js").Client} client client
+ */
+const wat = function(message, client) {
+    const watEmote = message.guild.emojis.cache.find(e => e.name === "wat");
+    if(watEmote) {
+        const messageRef = message.reference?.messageID;
+        // If reply to message
+        if(messageRef) {
+            message.channel.messages.fetch(messageRef)
+                .then(m => m.react(watEmote));
+        }
+        else {
+            // react to the last message
+            message.channel.messages.fetch({ limit: 2 })
+                .then(messages => {
+                    console.log(messages);
+                    messages.last().react(watEmote);
+                });
+        }
+        getInlineReplies(message, client);
+    }
+};
+
 const specialCommands = [
     {
         name: "nix",
@@ -151,6 +177,12 @@ const specialCommands = [
         pattern: /^ich bin\s+(.){3,}/gi,
         handler: dadJoke,
         randomness: 0.1
+    },
+    {
+        name: "wat",
+        pattern: /^wat$/gi,
+        handler: wat,
+        randomness: 1
     }
 ];
 
@@ -171,7 +203,7 @@ const isCooledDown = function() {
 };
 
 /**
- * Handles incomming messages
+ * Handles incoming messages
  *
  * @param {Message} message
  * @param {Client} client

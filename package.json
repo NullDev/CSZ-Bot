@@ -3,11 +3,12 @@
   "private": true,
   "version": "0.1.0",
   "description": "Offizieller Coding Shitpost Zentrale Bot",
-  "main": "src/app.js",
+  "main": "built/app.js",
   "scripts": {
-    "start": "node ./src/app.js",
+    "start": "nodemon ./built/app.js",
+    "watch": "tsc --watch",
+    "compile": "tsc --sourceMap false",
     "lint": "eslint ./src",
-    "live": "nodemon ./src/app.js",
     "dev": "npm run lint && npm start"
   },
   "repository": {
@@ -37,9 +38,14 @@
     "@babel/eslint-parser": "^7.14.7",
     "@types/node": "^16.3.3",
     "eslint": "^7.30.0",
-    "nodemon": "^2.0.12"
+    "nodemon": "^2.0.12",
+    "typescript": "^4.4.3"
   },
   "engines": {
     "node": ">=14.3.0"
+  },
+  "nodemonConfig": {
+    "ignore": ["src/*"],
+    "delay": 2500
   }
 }

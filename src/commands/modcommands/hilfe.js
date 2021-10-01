@@ -22,7 +22,7 @@ let config = require("../../utils/configHandler").getConfig();
  */
 exports.run = (client, message, args, callback) => {
     let commandObj = {};
-    let commandDir = path.resolve("./src/commands/modcommands");
+    let commandDir = __dirname;
 
     fs.readdirSync(commandDir).forEach(file => {
         let cmdPath = path.resolve(commandDir, file);
