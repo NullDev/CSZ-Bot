@@ -35,7 +35,6 @@ const NUMBERS = [
     ":regional_indicator_h:",
     ":regional_indicator_i:",
     ":regional_indicator_j:",
-    /*
     ":regional_indicator_k:",
     ":regional_indicator_l:",
     ":regional_indicator_m:",
@@ -52,7 +51,6 @@ const NUMBERS = [
     ":regional_indicator_x:",
     ":regional_indicator_y:",
     ":regional_indicator_z:"
-    */
 ];
 
 const EMOJI = [
@@ -75,7 +73,6 @@ const EMOJI = [
     "🇬",
     "🇭",
     "🇮",
-    /*
     "🇯",
     "🇰",
     "🇱",
@@ -93,7 +90,6 @@ const EMOJI = [
     "🇽",
     "🇾",
     "🇿"
-    */
 ];
 
 const OPTION_LIMIT = NUMBERS.length;
