@@ -1,6 +1,4 @@
-"use strict";
-
-let { Model, DataTypes, json } = require("sequelize");
+let { Model, DataTypes } = require("sequelize");
 let uuid = require("uuid");
 
 class Stempel extends Model {
@@ -15,14 +13,14 @@ class Stempel extends Model {
         let newItem = "";
         await Stempel.findOrCreate({
             where: {
-                invited: invited
+                invited
             },
             defaults: {
                 inviter,
                 invited,
                 date
             }
-        }).then((item, created) => {
+        }).then((item) => {
             newItem = item.toString().split(",")[1];
         });
 
@@ -32,7 +30,7 @@ class Stempel extends Model {
     static async getStempelByInviter(inviter) {
         return await Stempel.findAll({
             where: {
-                inviter: inviter
+                inviter
             }
         });
     }
@@ -56,7 +54,8 @@ class Stempel extends Model {
                 type: DataTypes.STRING,
                 allowNull: false
             }
-        }, {
+        }, 
+        {
             sequelize,
             modelName: "Stempel"
         });
