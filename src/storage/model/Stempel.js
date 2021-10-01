@@ -1,3 +1,5 @@
+/* eslint new-cap: 0 */
+
 let { Model, DataTypes } = require("sequelize");
 let uuid = require("uuid");
 
