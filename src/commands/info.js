@@ -11,10 +11,15 @@ let fetch = require("node-fetch").default;
  *
  * @return {Promise<String>}
  */
-let getContributors = function(){
-    return new Promise(async resolve => resolve((await (await fetch("https://api.github.com/repos/NullDev/CSC-Bot/contributors", {
+let getContributors = async function() {
+    const contributors = await fetch("https://api.github.com/repos/NullDev/CSC-Bot/contributors", {
         headers: { Accept: "application/vnd.github.v3+json" }
-    })).json()).filter(e => e.type === "User").map(e => `<${e.html_url}> (Contributions: ${e.contributions})`).join("\n")));
+    }).then(res => res.json());
+
+    return contributors
+        .filter(e => e.type === "User")
+        .map(e => `<${e.html_url}> (Contributions: ${e.contributions})`)
+        .join("\n");
 };
 
 /**
