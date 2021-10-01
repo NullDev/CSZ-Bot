@@ -39,7 +39,7 @@ export const getConfig = function () {
 
     let jsondata = "";
     try {
-        jsondata = String(fs.readFileSync(configPath));
+        jsondata = fs.readFileSync(configPath, "utf8");
     }
     catch (e) {
         log.error(`Cannot read config file: ${e}`);
