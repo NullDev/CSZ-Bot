@@ -1,12 +1,10 @@
-"use strict";
-
 // ========================= //
 // = Copyright (c) NullDev = //
 // ========================= //
 
-// Utils
-let log = require("../../utils/logger");
-let config = require("../../utils/configHandler").getConfig();
+import * as log from "../../utils/logger";
+import { getConfig } from "../../utils/configHandler";
+const config = getConfig();
 
 /**
  * Creates an assigner message
@@ -17,7 +15,7 @@ let config = require("../../utils/configHandler").getConfig();
  * @param {Function} callback
  * @returns {Function} callback
  */
-exports.run = (client, message, args, callback) => {
+export const run = (client, message, args, callback) => {
     if (!args.length) return callback("Keine Rollen angegeben.");
 
     let roleNames = message.guild.roles.cache
@@ -35,4 +33,4 @@ exports.run = (client, message, args, callback) => {
     return callback();
 };
 
-exports.description = `Startet den assigner mit gegebenen Rollen \nBenutzung: ${config.bot_settings.prefix.mod_prefix}assigner [rolle 1] [rolle 2] [...]`;
+export const description = `Startet den assigner mit gegebenen Rollen \nBenutzung: ${config.bot_settings.prefix.mod_prefix}assigner [rolle 1] [rolle 2] [...]`;

@@ -1,12 +1,13 @@
-"use strict";
 
 // ================================ //
 // = Copyright (c) Ehrenvio der G = //
 // ================================ //
 
-// Utils
-let config = require("../utils/configHandler").getConfig();
-const moment = require("moment");
+
+import moment from "moment";
+import { getConfig } from "../utils/configHandler";
+const config = getConfig();
+
 const FICKTABELLE_URL = "https://cdn.discordapp.com/attachments/620721921767505942/636149543154614272/20160901-164533-Kovrtep-id1487186.png";
 
 /**
@@ -16,7 +17,7 @@ const FICKTABELLE_URL = "https://cdn.discordapp.com/attachments/6207219217675059
  * @param {Function} callback
  * @returns {Function} callback
  */
-exports.run = (_client, message, args, callback) => {
+export const run = (_client, message, args, callback) => {
     let titles = [
         "informiert sich übers fuggern",
         "bereitet seinen Willie vor",
@@ -51,4 +52,4 @@ exports.run = (_client, message, args, callback) => {
     return callback();
 };
 
-exports.description = `Sendet die Ficktabelle.\nBenutzung: ${config.bot_settings.prefix.command_prefix}ficktabelle`;
+export const description = `Sendet die Ficktabelle.\nBenutzung: ${config.bot_settings.prefix.command_prefix}ficktabelle`;

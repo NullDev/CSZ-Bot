@@ -1,13 +1,12 @@
-"use strict";
-
 // ================================ //
 // = Copyright (c) Ehrenvio der G = //
 // ================================ //
 
-// Utils
-let config = require("../utils/configHandler").getConfig();
-const fetch = require("node-fetch").default;
-const moment = require("moment");
+import moment from "moment";
+import fetch from "node-fetch";
+import { getConfig } from "../utils/configHandler";
+
+const config = getConfig();
 
 const INSPIRATION_GENERATEAPI_URL = "https://inspirobot.me/api?generate=true";
 
@@ -27,7 +26,7 @@ async function getInspiration() {
  * @param {Function} callback
  * @returns {Function} callback
  */
-exports.run = (_client, message, args, callback) => {
+export const run = (_client, message, args, callback) => {
     getInspiration()
         .then(response => {
             const envelope = {
@@ -54,4 +53,4 @@ exports.run = (_client, message, args, callback) => {
         .catch(callback);
 };
 
-exports.description = `Gönnt dir eine zufällige Erleuchtung.\nBenutzung: ${config.bot_settings.prefix.command_prefix}erleuchtung`;
+export const description = `Gönnt dir eine zufällige Erleuchtung.\nBenutzung: ${config.bot_settings.prefix.command_prefix}erleuchtung`;
