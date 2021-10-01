@@ -16,11 +16,10 @@ const config = getConfig();
  *
  * @param {import("discord.js").Client} client
  * @param {import("discord.js").Message} message
- * @param {Array} args
- * @param {Function} callback
- * @returns {Function} callback
+ * @param {Array<unknown>} args
+ * @returns {Promise<string | void>}
  */
-export const run = (client, message, args, callback) => {
+export const run = (client, message, args) => {
     let durationArg = Number(args.length > 0 ? args[0] : "8");
     let duration = moment.duration(durationArg, "hours");
     let durationAsMinutes = Number(duration.asMinutes());

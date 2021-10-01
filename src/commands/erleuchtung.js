@@ -22,7 +22,7 @@ async function getInspiration() {
  *
  * @param {import("discord.js").Client} _client
  * @param {import("discord.js").Message} message
- * @param {Array} args
+ * @param {Array<unknown>} args
  * @returns {Promise<string | void>}
  */
 export const run = async (_client, message, args) => {

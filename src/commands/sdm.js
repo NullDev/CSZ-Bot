@@ -61,7 +61,7 @@ const secureDecisionMaker = (question, max = 1) => (rng(0, max, (Date.now() * io
  *
  * @param {import("discord.js").Client} client
  * @param {import("discord.js").Message} message
- * @param {array} args
+ * @param {Array<unknown>} args
  * @param {Function} callback
  * @returns {Function} callback
  */

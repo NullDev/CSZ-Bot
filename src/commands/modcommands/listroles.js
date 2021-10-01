@@ -7,7 +7,7 @@
  *
  * @param {import("discord.js").Client} client
  * @param {import("discord.js").Message} message
- * @param {Array} args
+ * @param {Array<unknown>} args
  * @param {Function} callback
  * @returns {Function} callback
  */

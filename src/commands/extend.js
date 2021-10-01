@@ -17,7 +17,7 @@ const config = getConfig();
  *
  * @param {import("discord.js").Client} client
  * @param {import("discord.js").Message} message
- * @param {Array} args
+ * @param {Array<unknown>} args
  * @returns {Promise<string | void>}
  */
 export const run = async(client, message, args) => {
