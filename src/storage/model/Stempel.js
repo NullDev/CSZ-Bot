@@ -1,4 +1,5 @@
-/* eslint new-cap: 0 */
+/* Disabled due to sequelize's DataTypes */
+/* eslint-disable new-cap */
 
 let { Model, DataTypes } = require("sequelize");
 let uuid = require("uuid");
