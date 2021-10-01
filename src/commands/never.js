@@ -1,13 +1,10 @@
-"use strict";
-
 // ==================================================== //
 // = Copyright (c) ist mir egal wer hauptsache code   = //
 // ==================================================== //
 
-// Discord
-const fetch = require("node-fetch").default;
-const moment = require("moment");
-const { Util } = require("discord.js");
+import fetch from "node-fetch";
+import moment from "moment";
+import { Util } from "discord.js";
 
 const NEVER_EVER_RANDOM_PROMPT_API_URL = "https://thepartyapp.xyz/api/games/neverever/getRandomPrompt";
 const QUESTION_LEVEL_EMOJI_MAP = {
@@ -43,7 +40,7 @@ async function getPrompt(userPrompt) {
  * @param {Function} callback
  * @returns {Function} callback
  */
-exports.run = (_client, message, args, callback) => {
+export const run = (_client, message, args, callback) => {
     const userInput = (args || []).join(" ");
     getPrompt(userInput)
         .then(prompt => {
@@ -79,4 +76,4 @@ exports.run = (_client, message, args, callback) => {
         });
 };
 
-exports.description = "Stellt eine \"ich hab noch nie\" Frage";
+export const description = "Stellt eine \"ich hab noch nie\" Frage";

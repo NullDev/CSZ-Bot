@@ -1,9 +1,5 @@
-"use strict";
-// Models
-let FadingMessage = require("../storage/model/FadingMessage");
-
-// Utils
-let log = require("../utils/logger");
+import * as log from "../utils/logger";
+import FadingMessage from "../storage/model/FadingMessage";
 
 let isLooping = false;
 
@@ -40,8 +36,10 @@ const loopWrapper = async function(client) {
     isLooping = false;
 };
 
-exports.startLoop = function(client) {
+export const startLoop = function(client) {
     setInterval(() => {
-        if(!isLooping) loopWrapper(client);
+        if(!isLooping) {
+            loopWrapper(client);
+        }
     }, 1000);
 };

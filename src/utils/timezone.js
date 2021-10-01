@@ -1,5 +1,3 @@
-"use strict";
-
 // fixes https://github.com/NullDev/CSC-Bot/issues/60
 // even better now with summer and winter time support!
 // this is the best fix possible. I did research the whole day
@@ -75,12 +73,9 @@ function calculateOffsetForDate(timestamp) {
     return 0;
 }
 
-function getCronjobStringForHydrate(timestamp) {
+export function getCronjobStringForHydrate(timestamp) {
     const hour = 13 + calculateOffsetForDate(timestamp);
 
     return `37 ${hour} * * *`;
 }
 
-module.exports = {
-    getCronjobStringForHydrate
-};

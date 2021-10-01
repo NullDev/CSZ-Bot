@@ -1,17 +1,16 @@
-"use strict";
-
-// ==================================================== //
+// =========================================== //
 // = Copyright (c) NullDev & diewellenlaenge & nimbl0 = //
-// ==================================================== //
+// =========================================== //
 
 /**
  * @typedef {import("discord.js").TextChannel} TC
  */
 
-// Utils
-let log = require("../utils/logger");
-let config = require("../utils/configHandler").getConfig();
-const poll = require("./poll");
+import * as log from "../utils/logger";
+import { getConfig } from "../utils/configHandler";
+import * as poll from "./poll";
+
+const config = getConfig();
 
 /**
  * Extends an existing poll or strawpoll
@@ -22,7 +21,7 @@ const poll = require("./poll");
  * @param {Function} callback
  * @returns {Promise<Function>} callback
  */
-exports.run = async(client, message, args, callback) => {
+export const run = async(client, message, args, callback) => {
     if (!message.reference) return callback("Bruder schon mal was von der Replyfunktion gehört?");
     if (message.reference.guildID !== config.ids.guild_id || !message.reference.channelID) return callback("Bruder bleib mal hier auf'm Server.");
 
@@ -89,4 +88,4 @@ exports.run = async(client, message, args, callback) => {
     return callback();
 };
 
-exports.description = `Nutzbar als Reply auf eine mit --extendable erstellte Umfrage, um eine/mehrere Antwortmöglichkeit/en hinzuzüfgen. Die Anzahl der bestehenden und neuen Antwortmöglichkeiten darf 10 nicht übersteigen.\nUsage: ${config.bot_settings.prefix.command_prefix}extend [Antwort 1] ; [...]`;
+export const description = `Nutzbar als Reply auf eine mit --extendable erstellte Umfrage, um eine/mehrere Antwortmöglichkeit/en hinzuzüfgen. Die Anzahl der bestehenden und neuen Antwortmöglichkeiten darf 10 nicht übersteigen.\nUsage: ${config.bot_settings.prefix.command_prefix}extend [Antwort 1] ; [...]`;
