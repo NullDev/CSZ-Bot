@@ -68,22 +68,22 @@ exports.run = async(client, message, args, callback) => {
 
     if (!additionalPollOptions.length) return callback("Bruder da sind keine Antwortmöglichkeiten :c");
     if(oldPollOptionsLength + additionalPollOptionsLength > TEXT_LIMIT) return callback("Bruder die Umfrage ist zu lang");
-    if(oldPollOptions.length + additionalPollOptions.length > OPTION_LIMIT) return callback(`Bruder mit deinen Antwortmöglichkeiten wird das Limit von ${pollUtils.getOptionLimit()} überschritten!`);
+    if(oldPollOptions.length + additionalPollOptions.length > OPTION_LIMIT) return callback(`Bruder mit deinen Antwortmöglichkeiten wird das Limit von ${OPTION_LIMIT} überschritten!`);
 
     let originalAuthor = replyMessage.embeds[0].author.name.split(" ")[2];
     let authorNote = originalAuthor !== message.author.username ? ` (von ${message.author.username})` : "";
 
     let embed = replyMessage.embeds[0];
     embed.description += "\n";
-    additionalPollOptions.forEach((e, i) => (embed.description += `${pollUtils.getLetters()[oldPollOptions.length + i]} - ${e}${authorNote}\n`));
+    additionalPollOptions.forEach((e, i) => (embed.description += `${LETTERS[oldPollOptions.length + i]} - ${e}${authorNote}\n`));
 
-    if (oldPollOptions.length + additionalPollOptions.length === pollUtils.getOptionLimit()) {
+    if (oldPollOptions.length + additionalPollOptions.length === OPTION_LIMIT) {
         embed.color = null;
         delete embed.footer;
     }
 
     replyMessage.edit(undefined, embed).then(async msg => {
-        for (let i in additionalPollOptions) await msg.react(pollUtils.getEmojis()[oldPollOptions.length + Number(i)]);
+        for (let i in additionalPollOptions) await msg.react(EMOJI[oldPollOptions.length + Number(i)]);
     }).then(() => message.delete());
 
     return callback();
