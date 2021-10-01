@@ -114,7 +114,7 @@ exports.run = (client, message, args, callback) => {
     let pollOptions = pollArray.slice(1);
     let pollOptionsTextLength = 0;
 
-    let isExtendable = options.extendable;
+    let isExtenable = options.extendable;
     for (let pollOption of pollOptions) {
         pollOptionsTextLength += pollOption.length;
     }
