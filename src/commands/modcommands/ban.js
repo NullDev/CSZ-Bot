@@ -31,9 +31,9 @@ const config = getConfig();
     if (mentionedUserObject.id === "371724846205239326" || mentionedUserObject.id === client.user.id) return callback("Fick dich bitte.");
 
     if (mentionedUserObject.roles.cache.some(r => r.id === config.ids.banned_role_id)
-        && (!(mentionedUserObject.id in exports.bans) || exports.bans[mentionedUserObject.id] === 0)) return callback("Dieser User ist bereits gebannt du kek.");
+        && (!(mentionedUserObject.id in bans) || bans[mentionedUserObject.id] === 0)) return callback("Dieser User ist bereits gebannt du kek.");
 
-    if (!exports.ban(mentionedUserObject)) return callback("Eine der angegebenen Rollen für das bannen existiert nich.");
+    if (!ban(mentionedUserObject)) return callback("Eine der angegebenen Rollen für das bannen existiert nich.");
 
     message.channel.send(`User ${mentionedUserObject} wurde gebannt!\nGrund: ${reason ?? "Kein Grund angegeben"}`);
     message.guild.member(mentioned).send(`Du wurdest von der Coding Shitpost Zentrale gebannt!
@@ -127,9 +127,9 @@ export const ban = (user, duration) => {
         unbanAt = unbanAtMoment.valueOf();
     }
 
-    exports.bans[user.id] = unbanAt;
+    bans[user.id] = unbanAt;
 
-    exports.saveBans();
+    saveBans();
 
     return true;
 };
