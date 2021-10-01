@@ -5,16 +5,20 @@
 import moment from "moment";
 import fetch from "node-fetch";
 import { getConfig } from "../utils/configHandler";
+import { getAverageColor } from 'fast-average-color-node';
 
 const config = getConfig();
 
 const INSPIRATION_GENERATEAPI_URL = "https://inspirobot.me/api?generate=true";
 
-async function getInspiration() {
-    const promptResponse = await fetch(INSPIRATION_GENERATEAPI_URL, {
+/**
+ * 
+ * @returns {Promise<string>}
+ */
+function getInspiration() {
+    return fetch(INSPIRATION_GENERATEAPI_URL, {
         method: "GET"
-    });
-    return await promptResponse.text();
+    }).then(response => response.text());
 }
 
 /**
@@ -28,12 +32,28 @@ async function getInspiration() {
  */
 export const run = (_client, message, args, callback) => {
     getInspiration()
-        .then(response => {
+        .then((response) => {
+            return getAverageColor(response)
+                .then(color => {
+                    return {
+                        response,
+                        color: color.hex
+                    }
+                })
+                .catch(_err => {
+                    return {
+                        response,
+                        color: '0x2ecc71'
+                    }
+                });
+        })
+        .then(async (response) => {
             const envelope = {
                 embed: {
                     image: {
-                        url: response
+                        url: response.response
                     },
+                    color: response.color,
                     timestamp: moment.utc().format(),
                     author: {
                         name: `${message.author.username} wurde erleuchtet`,
@@ -45,7 +65,7 @@ export const run = (_client, message, args, callback) => {
                 }
             };
 
-            return message.channel
+            return await message.channel
                 .send(envelope)
                 .then(() => message.delete());
         })
