@@ -1,17 +1,13 @@
-"use strict";
-
 // ========================= //
 // = Copyright (c) NullDev = //
 // ========================= //
 
-// Models
-let FadingMessage = require("../storage/model/FadingMessage");
-let AdditionalMessageData = require("../storage/model/AdditionalMessageData");
+import FadingMessage from "../storage/model/FadingMessage";
+import AdditionalMessageData from "../storage/model/AdditionalMessageData";
 
-// Utils
-let log = require("../utils/logger");
-let poll = require("../commands/poll");
-const woisping = require("../commands/woisping");
+import * as log from "../utils/logger";
+import * as poll from "../commands/poll";
+import * as woisping from "../commands/woisping";
 
 const events = {
     MESSAGE_REACTION_ADD: "messageReactionAdd",
@@ -27,7 +23,7 @@ const voteEmojis = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️
  * @param {import("discord.js").Client} client
  * @returns
  */
-module.exports = async function(event, client) {
+export default async function(event, client) {
     if (!Object.prototype.hasOwnProperty.call(events, event.t)) return;
 
     const { d: data } = event;
