@@ -205,7 +205,7 @@ const isCooledDown = function() {
  * @param {Client} client
  * @returns
  */
-export default function(message, client){
+export default async function(message, client) {
     let nonBiased = message.content
         .replace(config.bot_settings.prefix.command_prefix, "")
         .replace(config.bot_settings.prefix.mod_prefix, "")
@@ -232,7 +232,7 @@ export default function(message, client){
 
     let isNormalCommand = message.content.startsWith(config.bot_settings.prefix.command_prefix);
     let isModCommand = message.content.startsWith(config.bot_settings.prefix.mod_prefix);
-    let isCommand = isNormalCommand || isModCommand;
+    const isCommand = isNormalCommand || isModCommand;
 
     if (message.mentions.has(client.user.id) && !isCommand) {
         // Trusted users should be familiar with the bot, they should know how to use it
@@ -250,21 +250,13 @@ export default function(message, client){
      * @param {Message} message
      * @param {Client} client
      * @param {Boolean} isModCommand
-     * @param {Function} callback
      */
-    if (isNormalCommand) {
-        cmdHandler(message, client, false, (err) => {
-            // Get all inline replies to the message and delte them. Ignore errors, since cached is used and previously deleted messages are contained aswell
-            getInlineReplies(message, client).forEach(msg => msg.delete().catch(() => { return; }));
-            if (err) inlineReply(message, err, client);
-        });
-    }
+    if (isCommand) {
+        const response = await cmdHandler(message, client, isModCommand);
 
-    else if (isModCommand) {
-        cmdHandler(message, client, true, (err) => {
-            // Get all inline replies to the message and delte them. Ignore errors, since cached is used and previously deleted messages are contained aswell
-            getInlineReplies(message, client).forEach(msg => msg.delete().catch(() => { return; }));
-            if (err) inlineReply(message, err, client);
-        });
+        // Get all inline replies to the message and delte them. Ignore errors, since cached is used and previously deleted messages are contained as well
+        getInlineReplies(message, client).forEach(msg => msg.delete().catch(() => { return; }));
+
+        if (response) inlineReply(message, response, client);
     }
 }
