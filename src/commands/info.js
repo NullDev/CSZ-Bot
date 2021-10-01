@@ -1,10 +1,8 @@
-"use strict";
-
 // ========================= //
 // = Copyright (c) NullDev = //
 // ========================= //
 
-let fetch = require("node-fetch").default;
+import fetch from "node-fetch";
 
 /**
  * Get all contributors from GitHub
@@ -31,14 +29,14 @@ let getContributors = async function() {
  * @param {Function} callback
  * @returns {Promise<Function>} callback
  */
-exports.run = async(client, message, args, callback) => {
+export const run = async(client, message, args, callback) => {
     message.react("✉");
     message.author.send(`
         Programmiert von ShadowByte#1337 für die Coding Shitpost Zentrale (<https://discord.gg/FABdvae>)
-        
+
         Contributions von:
-        ${(await getContributors())} 
-        
+        ${(await getContributors())}
+
         Eckdaten:
         - Programmiersprache: NodeJS
         - NodeJS Version: ${process.version}
@@ -48,11 +46,11 @@ exports.run = async(client, message, args, callback) => {
         - System CPU usage time: ${process.cpuUsage().system}
         - User CPU usage time: ${process.cpuUsage().user}
         - Architecture: ${process.arch}
-        
+
         Source Code: <https://github.com/NullDev/CSC-Bot>
     `.replace(/  +/g, "")); // Remove leading indents
 
     return callback();
 };
 
-exports.description = "Listet Informationen über diesen Bot";
+export const description = "Listet Informationen über diesen Bot";
