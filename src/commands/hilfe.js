@@ -18,11 +18,11 @@ const getCommandMessageChunksMatchingLimit = (commands) => {
     let idx = 0;
 
     commands.forEach(value => {
-        if(chunk[idx] && chunk[idx].length + (value[0].length + value[1].length + 10) > 2000) {
+        if (chunk[idx] && chunk[idx].length + (value[0].length + value[1].length + 10) > 2000) {
             chunk[idx] += "```";
             ++idx;
         }
-        if(!chunk[idx]) {
+        if (!chunk[idx]) {
             chunk[idx] = "```css\n";
         }
         chunk[idx] += `${value[0]}: ${value[1]}\n\n`;
@@ -41,7 +41,7 @@ const getCommandMessageChunksMatchingLimit = (commands) => {
  * @param {Array<unknown>} args
  * @returns {Promise<string | void>}
  */
-export const run = async(client, message, args) => {
+export const run = async (client, message, args) => {
     let commandObj = {};
     const commandDir = __dirname;
 
@@ -54,7 +54,7 @@ export const run = async(client, message, args) => {
         let cmdPath = path.resolve(commandDir, file);
         let stats = await fs.stat(cmdPath);
 
-        if (!stats.isDirectory()){
+        if (!stats.isDirectory()) {
             // Prefix + Command name
             let commandStr = config.bot_settings.prefix.command_prefix + file.toLowerCase().replace(/\.js/gi, "");
 
@@ -66,15 +66,19 @@ export const run = async(client, message, args) => {
         }
     }
 
-    // Add :envelope: reaction to authors message
-    message.react("✉");
-    message.author.send(
+    await message.author.send(
         "Hallo, " + message.author.username + "!\n\n" +
         "Hier ist eine Liste mit Commands:\n\n" +
-        "Bei Fragen kannst du dich an @ShadowByte#1337 (<@!371724846205239326>) wenden!");
+        "Bei Fragen kannst du dich an @ShadowByte#1337 (<@!371724846205239326>) wenden!"
+    );
 
-    getCommandMessageChunksMatchingLimit(Object.entries(commandObj))
-        .forEach(chunk => message.author.send(chunk));
+    const chunks = getCommandMessageChunksMatchingLimit(Object.entries(commandObj));
+    for (const chunk of chunks) {
+        await message.author.send(chunk);
+    }
+
+    // Add :envelope: reaction to authors message
+    await message.react("✉"); // Send this last, so we only display a confirmation when everything actually worked
 };
 
 export const description = "Listet alle commands auf";
