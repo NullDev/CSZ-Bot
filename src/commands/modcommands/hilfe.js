@@ -23,6 +23,10 @@ export const run = async(client, message, args, callback) => {
 
     const files = await fs.readdir(commandDir);
     for (const file of files) {
+        if (!file.endsWith(".js")) {
+            continue; // Skip source maps etc
+        }
+
         let cmdPath = path.resolve(commandDir, file);
         let stats = await fs.stat(cmdPath);
 
