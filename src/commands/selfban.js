@@ -19,7 +19,7 @@ const config = getConfig();
  * @param {Array<unknown>} args
  * @returns {Promise<string | void>}
  */
-export const run = async (client, message, args) => {
+export const run = async(client, message, args) => {
     let durationArg = Number(args.length > 0 ? args[0] : "8");
     let duration = moment.duration(durationArg, "hours");
     let durationAsMinutes = Number(duration.asMinutes());

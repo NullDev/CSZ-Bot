@@ -15,7 +15,7 @@ const FICKTABELLE_URL = "https://cdn.discordapp.com/attachments/6207219217675059
  * @param {import("discord.js").Message} message
  * @returns {Promise<string | void>}
  */
-export const run = async (_client, message, args) => {
+export const run = async(_client, message, args) => {
     let titles = [
         "informiert sich übers fuggern",
         "bereitet seinen Willie vor",

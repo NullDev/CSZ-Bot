@@ -84,7 +84,7 @@ export const delayedPolls = [];
  * @param {Array<unknown>} args
  * @returns {Promise<string | void>}
  */
-export const run = async (client, message, args) => {
+export const run = async(client, message, args) => {
     let options = parseOptions(args, {
         "boolean": [
             "channel",
@@ -213,7 +213,7 @@ export const run = async (client, message, args) => {
     }
 };
 
-export const importPolls = async () => {
+export const importPolls = async() => {
     let additionalDatas = await AdditionalMessageData.findAll();
     let count = 0;
     additionalDatas.forEach(additionalData => {
@@ -232,7 +232,7 @@ export const importPolls = async () => {
  * @param {import("discord.js").Client} client
  */
 export const startCron = (client) => {
-    cron.schedule("* * * * *", async () => {
+    cron.schedule("* * * * *", async() => {
         const currentDate = new Date();
         const pollsToFinish = delayedPolls.filter(delayedPoll => currentDate >= delayedPoll.finishesAt);
         /** @type {import("discord.js").GuildChannel} */

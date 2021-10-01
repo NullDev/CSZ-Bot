@@ -25,9 +25,9 @@ async function getInspiration() {
  * @param {Array<unknown>} args
  * @returns {Promise<string | void>}
  */
-export const run = async (_client, message, args) => {
+export const run = async(_client, message, args) => {
     try {
-        const response = await getInspiration()
+        const response = await getInspiration();
         const envelope = {
             embed: {
                 image: {
@@ -45,7 +45,8 @@ export const run = async (_client, message, args) => {
         };
         await message.channel.send(envelope);
         await message.delete();
-    } catch (err) {
+    }
+    catch (err) {
         return err;
     }
 };

@@ -47,10 +47,10 @@ export const run = async(client, message, args) => {
         ? client.guilds.cache.get(config.ids.guild_id).channels.cache.get(config.ids.votes_channel_id)
         : message.channel;
 
-    const messageWithVoteContent = await channel.send(/** @type {any} embed */(embed))
+    const messageWithVoteContent = await channel.send(/** @type {any} embed */(embed));
     await Promise.all([
         messageWithVoteContent.react("👍"),
-        messageWithVoteContent.react("👎"),
+        messageWithVoteContent.react("👎")
     ]);
     await message.delete();
 };

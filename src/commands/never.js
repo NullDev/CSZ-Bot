@@ -39,10 +39,10 @@ async function getPrompt(userPrompt) {
  * @param {Array<unknown>} args
  * @returns {Promise<string | void>}
  */
-export const run = async (_client, message, args) => {
+export const run = async(_client, message, args) => {
     const userInput = (args || []).join(" ");
     try {
-        const prompt = await getPrompt(userInput)
+        const prompt = await getPrompt(userInput);
 
         const emoji = QUESTION_LEVEL_EMOJI_MAP[prompt.level];
         const envelope = {
@@ -66,7 +66,8 @@ export const run = async (_client, message, args) => {
             sentMessage.react("🍻"),
             sentMessage.react("🚱")
         ]);
-    } catch (err) {
+    }
+    catch (err) {
         return err;
     }
 };

@@ -59,7 +59,6 @@ export const run = async(client, message, args) => {
     if (!args.length && !referencedMessage) return `Bruder du bist zu dumm zum mocken? Mach \`${config.bot_settings.prefix.command_prefix}mock DEIN TEXT HIER\` oder antworte auf eine Nachricht`;
 
     if(referencedMessage && !args.length) {
-
         // TODO: inline reply when it is available in discord.js
         const msg = await message.channel.messages.fetch(referencedMessage);
         if(!!msg.content) {
@@ -68,8 +67,8 @@ export const run = async(client, message, args) => {
         else {
             await message.channel.send("Brudi da ist nix, was ich mocken kann");
         }
-
-    } else {
+    }
+    else {
         const text = message.content.slice(`${config.bot_settings.prefix.command_prefix}mock `.length);
         sendMock(message, mock(text));
     }

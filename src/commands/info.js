@@ -8,7 +8,7 @@ const fetchContributions = () => {
     return fetch("https://api.github.com/repos/NullDev/CSC-Bot/contributors", {
         headers: { Accept: "application/vnd.github.v3+json" }
     }).then(res => res.json());
-}
+};
 
 /**
  * Get all contributors from GitHub

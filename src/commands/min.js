@@ -43,6 +43,6 @@ const getResponse = (age) => {
         case 420: return "https://www.youtube.com/watch?v=U1ei5rwO7ZI&t=116s";
         default: return "Moralisch vertretbares Alter: " + ((age / 2) + 7);
     }
-}
+};
 
 export const description = `Gibt dir die Moralisch vertretbare Altersgrenze für den Geschlechtsakt basierend auf deinem Alter zurück. \nUsage: ${config.bot_settings.prefix.command_prefix}min [dein Alter]`;
