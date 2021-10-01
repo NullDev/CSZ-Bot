@@ -11,7 +11,7 @@
 // Utils
 let log = require("../utils/logger");
 let config = require("../utils/configHandler").getConfig();
-let pollUtils = require("../utils/pollUtils");
+import {LETTERS, EMOJI, OPTION_LIMIT, TEXT_LIMIT} from "./poll";
 
 /**
  * Extends an existing poll or strawpoll
@@ -47,13 +47,13 @@ exports.run = async(client, message, args, callback) => {
 
     let oldPollOptions = replyMessage.embeds[0].description.split("\n");
 
-    if (oldPollOptions.length === pollUtils.getOptionLimit()) return callback("Bruder die Umfrage ist leider schon voll (⚆ ͜ʖ⚆)");
+    if (oldPollOptions.length === OPTION_LIMIT) return callback("Bruder die Umfrage ist leider schon voll (⚆ ͜ʖ⚆)");
 
     let oldPollOptionsLength = replyMessage.embeds[0].description.length;
-    if (oldPollOptionsLength > pollUtils.getTextLimit()) return callback("Bruder die Umfrage ist leider schon voll (⚆ ͜ʖ⚆)");
+    if (oldPollOptionsLength > TEXT_LIMIT) return callback("Bruder die Umfrage ist leider schon voll (⚆ ͜ʖ⚆)");
 
     for (let i = 0; i < oldPollOptions.length; ++i) {
-        if (!oldPollOptions[i].startsWith(pollUtils.getLetters()[i])) {
+        if (!oldPollOptions[i].startsWith(LETTERS[i])) {
             return callback("Bruder das ist keine Umfrage ಠ╭╮ಠ");
         }
     }
@@ -67,8 +67,8 @@ exports.run = async(client, message, args, callback) => {
     }
 
     if (!additionalPollOptions.length) return callback("Bruder da sind keine Antwortmöglichkeiten :c");
-    if(oldPollOptionsLength + additionalPollOptionsLength > pollUtils.getTextLimit()) return callback("Bruder die Umfrage ist zu lang");
-    if(oldPollOptions.length + additionalPollOptions.length > pollUtils.getOptionLimit()) return callback(`Bruder mit deinen Antwortmöglichkeiten wird das Limit von ${pollUtils.getOptionLimit()} überschritten!`);
+    if(oldPollOptionsLength + additionalPollOptionsLength > TEXT_LIMIT) return callback("Bruder die Umfrage ist zu lang");
+    if(oldPollOptions.length + additionalPollOptions.length > OPTION_LIMIT) return callback(`Bruder mit deinen Antwortmöglichkeiten wird das Limit von ${pollUtils.getOptionLimit()} überschritten!`);
 
     let originalAuthor = replyMessage.embeds[0].author.name.split(" ")[2];
     let authorNote = originalAuthor !== message.author.username ? ` (von ${message.author.username})` : "";
