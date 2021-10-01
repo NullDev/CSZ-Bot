@@ -1,8 +1,8 @@
 "use strict";
 
-// ================================= //
+// ================================ //
 // = Copyright (c) Ehrenvio der G = //
-// =============================== //
+// ================================ //
 
 // Utils
 let config = require("../utils/configHandler").getConfig();
@@ -10,7 +10,6 @@ const fetch = require("node-fetch").default;
 const moment = require("moment");
 
 const INSPIRATION_GENERATEAPI_URL = "https://inspirobot.me/api?generate=true";
-
 
 async function getInspiration() {
     const promptResponse = await fetch(INSPIRATION_GENERATEAPI_URL, {
@@ -49,16 +48,10 @@ exports.run = (_client, message, args, callback) => {
 
             return message.channel
                 .send(envelope)
-                .then(sentMessage => {
-                    return Promise.all([
-                        message.delete()
-                    ]);
-                });
+                .then(() => message.delete());
         })
         .then(() => callback())
-        .catch(error => {
-            callback(error);
-        });
+        .catch(callback);
 };
 
 exports.description = `Gönnt dir eine zufällige Erleuchtung.\nBenutzung: ${config.bot_settings.prefix.command_prefix}erleuchtung`;
