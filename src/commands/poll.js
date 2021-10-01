@@ -287,7 +287,7 @@ ${x.map(uid => users[uid]).join("\n")}\n\n`).join("")}
     });
 };
 
-exports.description = `Erstellt eine Umfrage mit mehreren Antwortmöglichkeiten (standardmäßig mit Mehrfachauswahl) (maximal ${pollUtils.getOptionLimit()}).
+exports.description = `Erstellt eine Umfrage mit mehreren Antwortmöglichkeiten (standardmäßig mit Mehrfachauswahl) (maximal ${OPTION_LIMIT}).
 Usage: ${config.bot_settings.prefix.command_prefix}poll [Optionen?] [Hier die Frage] ; [Antwort 1] ; [Antwort 2] ; [...]
 Optionen:
 \t-c, --channel
