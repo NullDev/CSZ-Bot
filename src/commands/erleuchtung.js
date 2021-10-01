@@ -10,11 +10,14 @@ const config = getConfig();
 
 const INSPIRATION_GENERATEAPI_URL = "https://inspirobot.me/api?generate=true";
 
-async function getInspiration() {
-    const promptResponse = await fetch(INSPIRATION_GENERATEAPI_URL, {
+/**
+ *
+ * @returns {Promise<string>}
+ */
+function getInspiration() {
+    return fetch(INSPIRATION_GENERATEAPI_URL, {
         method: "GET"
-    });
-    return await promptResponse.text();
+    }).then(response => response.text());
 }
 
 /**
@@ -33,6 +36,7 @@ export const run = async(_client, message, args) => {
                 image: {
                     url: response
                 },
+                color: 0x26c723,
                 timestamp: moment.utc().format(),
                 author: {
                     name: `${message.author.username} wurde erleuchtet`,

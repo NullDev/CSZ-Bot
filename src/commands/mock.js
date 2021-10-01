@@ -34,6 +34,7 @@ const sendMock = async(message, mocked) => {
     const embed = {
         embed: {
             description: `${mocked} <:mock:677504337769005096>`,
+            color: 0xFFC000,
             author: {
                 name: `${message.author.username}`,
                 icon_url: message.author.displayAvatarURL()

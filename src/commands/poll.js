@@ -142,6 +142,7 @@ export const run = async(client, message, args) => {
             title: pollArray[0],
             description: optionstext,
             timestamp: moment.utc().format(),
+            color: "#FFA07A",
             author: {
                 name: `${options.straw ? "Strawpoll" : "Umfrage"} von ${message.author.username}`,
                 icon_url: message.author.displayAvatarURL()
@@ -166,7 +167,14 @@ export const run = async(client, message, args) => {
         embed.embed.color = "#a10083";
     }
 
-    if (!options.straw) footer.push("Mehrfachauswahl");
+    if (!options.straw) {
+        footer.push("Mehrfachauswahl");
+    }
+
+    if(options.straw) {
+        footer.push("Einzelauswahl");
+        embed.embed.color = "#FF4500";
+    }
 
     if (footer.length) {
         embed.embed.footer = {
