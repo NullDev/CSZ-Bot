@@ -1,17 +1,15 @@
-"use strict";
-
 // =========================================== //
 // = Copyright (c) NullDev & diewellenlaenge = //
 // =========================================== //
 
 // Dependencies
-let moment = require("moment");
+import moment from "moment";
 
-// Utils
-let config = require("../utils/configHandler").getConfig();
+import { getConfig } from "../utils/configHandler";
 
-// Other commands
-let ban = require("./modcommands/ban");
+import * as ban from"./modcommands/ban";
+
+const config = getConfig();
 
 /**
  * Ban a given user
@@ -22,7 +20,7 @@ let ban = require("./modcommands/ban");
  * @param {Function} callback
  * @returns {Function} callback
  */
-exports.run = (client, message, args, callback) => {
+export const run = (client, message, args, callback) => {
     let durationArg = Number(args.length > 0 ? args[0] : "8");
     let duration = moment.duration(durationArg, "hours");
     let durationAsMinutes = Number(duration.asMinutes());
@@ -53,4 +51,4 @@ Haddi & xD™`
     return callback();
 };
 
-exports.description = `Bannt den ausführenden User indem er ihn von allen Channels ausschließt.\nBenutzung: ${config.bot_settings.prefix.command_prefix}selfban [Dauer in Stunden = 8; 0 = manuelle Entbannung durch Moderader nötig]`;
+export const description = `Bannt den ausführenden User indem er ihn von allen Channels ausschließt.\nBenutzung: ${config.bot_settings.prefix.command_prefix}selfban [Dauer in Stunden = 8; 0 = manuelle Entbannung durch Moderader nötig]`;

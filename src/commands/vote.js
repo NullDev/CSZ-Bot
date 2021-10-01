@@ -1,15 +1,13 @@
-"use strict";
-
 // ========================= //
 // = Copyright (c) NullDev = //
 // ========================= //
 
 // Dependencies
-let moment = require("moment");
-let parseOptions = require("minimist");
+import moment from "moment";
+import parseOptions from "minimist";
 
-// Utils
-let config = require("../utils/configHandler").getConfig();
+import { getConfig } from "../utils/configHandler";
+const config = getConfig();
 
 /**
  * Creates a new poll (vote; yes/no)
@@ -20,7 +18,7 @@ let config = require("../utils/configHandler").getConfig();
  * @param {Function} callback
  * @returns {Function} callback
  */
-exports.run = (client, message, args, callback) => {
+export const run = (client, message, args, callback) => {
     let options = parseOptions(args, {
         "boolean": [
             "channel"
@@ -57,7 +55,7 @@ exports.run = (client, message, args, callback) => {
     return callback();
 };
 
-exports.description = `Erstellt eine Umfrage (ja/nein).
+export const description = `Erstellt eine Umfrage (ja/nein).
 Usage: ${config.bot_settings.prefix.command_prefix}vote [Optionen?] [Hier die Frage]
 Optionen:
 \t-c, --channel

@@ -1,17 +1,13 @@
-"use strict";
-
 // ========================== //
 // = Copyright (c) s0LA1337 = //
 // ========================== //
 
-// Discord
-const { Util } = require("discord.js");
+import moment from "moment";
+import { Util } from "discord.js";
 
-// Utils
-let config = require("../utils/configHandler").getConfig();
+import { getConfig } from "../utils/configHandler";
+const config = getConfig();
 
-// Dependencies
-let moment = require("moment");
 
 /**
  * Creates a pseudo randomly generated number
@@ -92,7 +88,7 @@ const constructResultStr = function(rolls) {
  * @param {Function} callback
  * @returns {Function} callback
  */
-exports.run = (_client, message, args, callback) => {
+export const run = (_client, message, args, callback) => {
     let parsed = args[0]?.toLowerCase();
 
     // god i hate myself
@@ -132,7 +128,7 @@ exports.run = (_client, message, args, callback) => {
     return callback();
 };
 
-exports.description =
+export const description =
 `Wirft x beliebig viele Würfel mit y vielen Seiten.
 Usage: ${config.bot_settings.prefix.command_prefix}roll xdy
 Mit x als die Anzahl der Würfel (<11) und y als die Menge der Seiten der Würfel (<=100)`;

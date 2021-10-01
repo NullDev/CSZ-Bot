@@ -1,14 +1,12 @@
-"use strict";
-
 // ================================= //
 // = Copyright (c) diewellenlaenge = //
 // ================================= //
 
-let { Util } = require("discord.js");
+import { Util } from "discord.js";
 
-// Utils
-let log = require("../utils/logger");
-let config = require("../utils/configHandler").getConfig();
+import * as log from "../utils/logger";
+import { getConfig } from "../utils/configHandler";
+const config = getConfig();
 
 const pendingMessagePrefix = "*(Pending-Woisgang-Ping, bitte zustimmen)*";
 
@@ -25,7 +23,7 @@ let lastPing = 0;
  * @param {Function} callback
  * @returns {Promise<Function>} callback
  */
-exports.run = async(client, message, args, callback) => {
+export const run = async(client, message, args, callback) => {
     const isMod = message.member.roles.cache.some(r => config.bot_settings.moderator_roles.includes(r.name));
 
     if (!isMod && !message.member.roles.cache.has(config.ids.woisgang_role_id)){
@@ -67,7 +65,7 @@ exports.run = async(client, message, args, callback) => {
  * @param {import("discord.js").Message} message
  * @returns
  */
-exports.reactionHandler = async(event, client, message) => {
+export const reactionHandler = async(event, client, message) => {
     if (message.embeds.length !== 0
 		|| !message.content.startsWith(pendingMessagePrefix)
 		|| event.d.emoji.name !== "👍") {
@@ -118,4 +116,4 @@ exports.reactionHandler = async(event, client, message) => {
     return true;
 };
 
-exports.description = `Mitglieder der @Woisgang-Rolle können einen Ping an diese Gruppe absenden. Es müssen mindestens ${config.bot_settings.woisping_threshold} Woisgang-Mitglieder per Reaction zustimmen.\nUsage: ${config.bot_settings.prefix.command_prefix}woisping Text`;
+export const description = `Mitglieder der @Woisgang-Rolle können einen Ping an diese Gruppe absenden. Es müssen mindestens ${config.bot_settings.woisping_threshold} Woisgang-Mitglieder per Reaction zustimmen.\nUsage: ${config.bot_settings.prefix.command_prefix}woisping Text`;

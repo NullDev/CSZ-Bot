@@ -1,5 +1,3 @@
-"use strict";
-
 // ========================= //
 // = Copyright (c) NullDev = //
 // ========================= //
@@ -13,11 +11,11 @@
  * @param {Function} callback
  * @returns {Function} callback
  */
-exports.run = (client, message, args, callback) => {
+export const run = (client, message, args, callback) => {
     message.react("✉");
     message.author.send("Invite Link: https://discord.gg/csz");
 
     return callback();
 };
 
-exports.description = "Sendet einen Invite link für den Server";
+export const description = "Sendet einen Invite link für den Server";
