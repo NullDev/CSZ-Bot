@@ -34,7 +34,6 @@ let getContributors = async() => {
 export const run = async(client, message, args) => {
     const contribs = await getContributors();
 
-    await message.react("✉");
     await message.author.send(`
         Programmiert von ShadowByte#1337 für die Coding Shitpost Zentrale (<https://discord.gg/FABdvae>)
 
@@ -53,6 +52,7 @@ export const run = async(client, message, args) => {
 
         Source Code: <https://github.com/NullDev/CSC-Bot>
     `.replace(/  +/g, "")); // Remove leading indents
+    await message.react("✉"); // Only react when the message was actually sent
 };
 
 export const description = "Listet Informationen über diesen Bot";
