@@ -15,8 +15,7 @@ const fetchContributions = () => {
  *
  * @return {Promise<String>}
  */
-let getContributors = async() => {
-    const contributors = await fetchContributions();
+let formatContributors = (contributors) => {
     return contributors
         .filter(e => e.type === "User")
         .map(e => `<${e.html_url}> (Contributions: ${e.contributions})`)
@@ -32,13 +31,14 @@ let getContributors = async() => {
  * @returns {Promise<string | void>}
  */
 export const run = async(client, message, args) => {
-    const contribs = await getContributors();
+    const contributors = await fetchContributions();
+    const formattedContributors = formatContributors(contributors);
 
     await message.author.send(`
         Programmiert von ShadowByte#1337 für die Coding Shitpost Zentrale (<https://discord.gg/FABdvae>)
 
         Contributions von:
-        ${(contribs)}
+        ${(formattedContributors)}
 
         Eckdaten:
         - Programmiersprache: NodeJS
