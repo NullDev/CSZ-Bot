@@ -10,7 +10,7 @@
  * @param {Array<unknown>} args
  * @returns {Promise<string | void>}
  */
-export const run = (client, message, args) => {
+export const run = async(client, message, args) => {
     await message.author.send("Invite Link: https://discord.gg/csz");
     await message.react("✉"); // Only react when the message was actually sent
 };

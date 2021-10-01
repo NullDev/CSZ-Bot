@@ -43,7 +43,7 @@
         "no-shadow-restricted-names": 2,    // http://eslint.org/docs/rules/no-shadow-restricted-names
         "no-unused-vars": [2, {             // http://eslint.org/docs/rules/no-unused-vars
             "vars": "local",
-            "args": "after-used"
+            "args": "none"
         }],
         "no-use-before-define": 2,          // http://eslint.org/docs/rules/no-use-before-define
         /**
@@ -78,7 +78,8 @@
         "array-callback-return": [2, {      // http://eslint.org/docs/rules/array-callback-return
             "allowImplicit": true
         }],
-        "consistent-return": 1,             // http://eslint.org/docs/rules/consistent-return
+        // Disabled, because we use Promise<string | void>, which offers the option to not return anything (or a string alternatively)
+        // "consistent-return": 1,             // http://eslint.org/docs/rules/consistent-return
         "curly": [2, "multi-line"],         // http://eslint.org/docs/rules/curly
         "default-case": 2,                  // http://eslint.org/docs/rules/default-case
         "dot-notation": [2, {               // http://eslint.org/docs/rules/dot-notation
