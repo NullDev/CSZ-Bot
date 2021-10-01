@@ -39,10 +39,9 @@ const getCommandMessageChunksMatchingLimit = (commands) => {
  * @param {import("discord.js").Client} client
  * @param {import("discord.js").Message} message
  * @param {Array<unknown>} args
- * @param {Function} callback
- * @returns {Function} callback
+ * @returns {Promise<string | void>}
  */
-export const run = async(client, message, args, callback) => {
+export const run = async(client, message, args) => {
     let commandObj = {};
     const commandDir = __dirname;
 
@@ -76,7 +75,6 @@ export const run = async(client, message, args, callback) => {
 
     getCommandMessageChunksMatchingLimit(Object.entries(commandObj))
         .forEach(chunk => message.author.send(chunk));
-    return callback();
 };
 
 export const description = "Listet alle commands auf";
