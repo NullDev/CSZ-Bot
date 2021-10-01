@@ -8,17 +8,14 @@
  * @param {import("discord.js").Client} client
  * @param {import("discord.js").Message} message
  * @param {Array<unknown>} args
- * @param {Function} callback
- * @returns {Function} callback
+ * @returns {Promise<string | void>}
  */
-export const run = (client, message, args, callback) => {
+export const run = async(client, message, args) => {
     let roleNames = message.guild.roles.cache
         .filter(element => String(element.name).toLowerCase() !== "@everyone")
         .map(element => element.name);
 
-    message.channel.send("Roles: \n\n" + roleNames.join(", "));
-
-    return callback();
+    await message.channel.send("Roles: \n\n" + roleNames.join(", "));
 };
 
 export const description = "Listet alle server rollen auf";
