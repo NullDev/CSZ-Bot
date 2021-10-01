@@ -8,14 +8,11 @@
  * @param {import("discord.js").Client} client
  * @param {import("discord.js").Message} message
  * @param {Array<unknown>} args
- * @param {Function} callback
- * @returns {Function} callback
+ * @returns {Promise<string | void>}
  */
-export const run = (client, message, args, callback) => {
-    message.react("✉");
-    message.author.send("Invite Link: https://discord.gg/csz");
-
-    return callback();
+export const run = (client, message, args) => {
+    await message.author.send("Invite Link: https://discord.gg/csz");
+    await message.react("✉"); // Only react when the message was actually sent
 };
 
 export const description = "Sendet einen Invite link für den Server";
