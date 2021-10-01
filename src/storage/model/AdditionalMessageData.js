@@ -1,3 +1,6 @@
+/* Disabled due to sequelize's DataTypes */
+/* eslint-disable new-cap */
+
 import { Model, DataTypes } from "sequelize";
 import uuid from "uuid";
 
