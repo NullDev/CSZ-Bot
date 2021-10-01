@@ -15,10 +15,9 @@ const config = getConfig();
  * @param {import("discord.js").Client} client
  * @param {import("discord.js").Message} message
  * @param {Array<unknown>} args
- * @param {Function} callback
- * @returns {Function} callback
+ * @returns {Promise<string | void>}
  */
-export const run = (client, message, args, callback) => {
+export const run = async(client, message, args) => {
     let options = parseOptions(args, {
         "boolean": [
             "channel"
@@ -30,9 +29,9 @@ export const run = (client, message, args, callback) => {
 
     let parsedArgs = options._;
 
-    if (!parsedArgs.length) return callback("Bruder da ist keine Frage :c");
+    if (!parsedArgs.length) return "Bruder da ist keine Frage :c";
 
-    let embed = {
+    const embed = {
         embed: {
             title: `**${parsedArgs.join(" ")}**`,
             timestamp: moment.utc().format(),
@@ -43,16 +42,17 @@ export const run = (client, message, args, callback) => {
         }
     };
 
-    let channel = options.channel ? client.guilds.cache.get(config.ids.guild_id).channels.cache.get(config.ids.votes_channel_id) : message.channel;
-
     /** @type {import("discord.js").TextChannel} */
-    (channel).send(/** @type {any} embed */(embed))
-        .then(msg => {
-            message.delete();
-            msg.react("👍").then(() => msg.react("👎"));
-        });
+    const channel = options.channel
+        ? client.guilds.cache.get(config.ids.guild_id).channels.cache.get(config.ids.votes_channel_id)
+        : message.channel;
 
-    return callback();
+    const messageWithVoteContent = await channel.send(/** @type {any} embed */(embed))
+    await Promise.all([
+        messageWithVoteContent.react("👍"),
+        messageWithVoteContent.react("👎"),
+    ]);
+    await message.delete();
 };
 
 export const description = `Erstellt eine Umfrage (ja/nein).
