@@ -12,17 +12,7 @@
 let log = require("../utils/logger");
 let config = require("../utils/configHandler").getConfig();
 
-const NUMBERS = [
-    ":one:",
-    ":two:",
-    ":three:",
-    ":four:",
-    ":five:",
-    ":six:",
-    ":seven:",
-    ":eight:",
-    ":nine:",
-    ":keycap_ten:",
+const LETTERS = [
     ":regional_indicator_a:",
     ":regional_indicator_b:",
     ":regional_indicator_c:",
@@ -42,26 +32,10 @@ const NUMBERS = [
     ":regional_indicator_q:",
     ":regional_indicator_r:",
     ":regional_indicator_s:",
-    ":regional_indicator_t:",
-    ":regional_indicator_u:",
-    ":regional_indicator_v:",
-    ":regional_indicator_w:",
-    ":regional_indicator_x:",
-    ":regional_indicator_y:",
-    ":regional_indicator_z:"
+    ":regional_indicator_t:"
 ];
 
 const EMOJI = [
-    "1️⃣",
-    "2️⃣",
-    "3️⃣",
-    "4️⃣",
-    "5️⃣",
-    "6️⃣",
-    "7️⃣",
-    "8️⃣",
-    "9️⃣",
-    "🔟",
     "🇦",
     "🇧",
     "🇨",
@@ -81,16 +55,10 @@ const EMOJI = [
     "🇶",
     "🇷",
     "🇸",
-    "🇹",
-    "🇺",
-    "🇻",
-    "🇼",
-    "🇽",
-    "🇾",
-    "🇿"
+    "🇹"
 ];
 
-const LIMIT = NUMBERS.length;
+const LIMIT = LETTERS.length;
 const TEXT_LIMIT = 4096;
 
 /**
@@ -133,7 +101,7 @@ exports.run = async(client, message, args, callback) => {
     if (oldPollOptionsLength > TEXT_LIMIT) return callback("Bruder die Umfrage ist leider schon voll (⚆ ͜ʖ⚆)");
 
     for (let i = 0; i < oldPollOptions.length; ++i) {
-        if (!oldPollOptions[i].startsWith(NUMBERS[i])) {
+        if (!oldPollOptions[i].startsWith(LETTERS[i])) {
             return callback("Bruder das ist keine Umfrage ಠ╭╮ಠ");
         }
     }
@@ -155,7 +123,7 @@ exports.run = async(client, message, args, callback) => {
 
     let embed = replyMessage.embeds[0];
     embed.description += "\n";
-    additionalPollOptions.forEach((e, i) => (embed.description += `${NUMBERS[oldPollOptions.length + i]} - ${e}${authorNote}\n`));
+    additionalPollOptions.forEach((e, i) => (embed.description += `${LETTERS[oldPollOptions.length + i]} - ${e}${authorNote}\n`));
 
     if (oldPollOptions.length + additionalPollOptions.length === LIMIT) {
         embed.color = null;
