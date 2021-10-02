@@ -1,5 +1,3 @@
-"use strict";
-
 // ========================= //
 // = Copyright (c) NullDev = //
 // ========================= //
@@ -9,19 +7,17 @@
  * @typedef {import("discord.js").Client} Client
  */
 
-// Utils
-let config = require("../utils/configHandler").getConfig();
-let log = require("../utils/logger");
+import Jimp from "jimp";
+import * as path from "path";
+import * as fs from "fs";
+import { Util }  from "discord.js";
 
-// Discord
-const { Util } = require("discord.js");
+import * as log from "../utils/logger";
+import { getConfig } from "../utils/configHandler";
 
-// Handler
-let cmdHandler = require("./cmdHandler");
+import cmdHandler from "./cmdHandler";
 
-let Jimp = require("jimp");
-let path = require("path");
-let fs = require("fs");
+const config = getConfig();
 
 let lastSpecialCommand = 0;
 
@@ -159,7 +155,7 @@ const wat = function(message, client) {
     }
 };
 
-const specialCommands = [
+export const specialCommands = [
     {
         name: "nix",
         pattern: /(^|\s+)nix($|\s+)/gi,
@@ -209,7 +205,7 @@ const isCooledDown = function() {
  * @param {Client} client
  * @returns
  */
-module.exports = function(message, client){
+export default function(message, client){
     let nonBiased = message.content
         .replace(config.bot_settings.prefix.command_prefix, "")
         .replace(config.bot_settings.prefix.mod_prefix, "")
@@ -271,6 +267,4 @@ module.exports = function(message, client){
             if (err) inlineReply(message, err, client);
         });
     }
-};
-
-module.exports.specialCommands = specialCommands;
+}

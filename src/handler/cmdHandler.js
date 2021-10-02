@@ -1,18 +1,15 @@
-"use strict";
-
 // ========================= //
 // = Copyright (c) NullDev = //
 // ========================= //
 
-// Core Modules
-let fs = require("fs");
-let path = require("path");
+import { promises as fs } from "fs";
+import * as path from "path";
 
-// Utils
-let log = require("../utils/logger");
-let config = require("../utils/configHandler").getConfig();
+import * as log from "../utils/logger";
+import { getConfig } from "../utils/configHandler";
+import * as ban from "../commands/modcommands/ban";
 
-let ban = require("../commands/modcommands/ban");
+const config = getConfig();
 
 /**
  * Passes commands to the correct executor
@@ -23,8 +20,11 @@ let ban = require("../commands/modcommands/ban");
  * @param {Function} callback
  * @returns {Function} callback
  */
-let commandHandler = function(message, client, isModCommand, callback){
-    let cmdPrefix = isModCommand ? config.bot_settings.prefix.mod_prefix : config.bot_settings.prefix.command_prefix;
+export default async function(message, client, isModCommand, callback) {
+    let cmdPrefix = isModCommand
+        ? config.bot_settings.prefix.mod_prefix
+        : config.bot_settings.prefix.command_prefix;
+
     let args = message.content.slice(cmdPrefix.length).trim().split(/\s+/g);
     let command = args.shift().toLowerCase();
 
@@ -33,17 +33,20 @@ let commandHandler = function(message, client, isModCommand, callback){
         ? path.join(__dirname, "..", "commands", "modcommands")
         : path.join(__dirname, "..", "commands");
 
-    fs.readdirSync(commandDir).forEach(file => {
+    const files = await fs.readdir(commandDir);
+    for (const file of files) {
         let cmdPath = path.resolve(commandDir, file);
-        let stats = fs.statSync(cmdPath);
-        if (!stats.isDirectory()) commandArr.push(file.toLowerCase());
-    });
+        let stats = await fs.stat(cmdPath);
+        if (!stats.isDirectory()) {
+            commandArr.push(file.toLowerCase());
+        }
+    }
 
-    if (!commandArr.includes(command.toLowerCase() + ".js")){
+    if (!commandArr.includes(command.toLowerCase() + ".js")) {
         return callback();
     }
 
-    if (isModCommand && !message.member.roles.cache.some(r => config.bot_settings.moderator_roles.includes(r.name))){
+    if (isModCommand && !message.member.roles.cache.some(r => config.bot_settings.moderator_roles.includes(r.name))) {
         log.warn(`User "${message.author.tag}" (${message.author}) tried mod command "${cmdPrefix}${command}" and was denied`);
 
         if (message.member.roles.cache.some(r => r.id === config.ids.banned_role_id)) {
@@ -60,17 +63,20 @@ let commandHandler = function(message, client, isModCommand, callback){
         `User "${message.author.tag}" (${message.author}) performed ${(isModCommand ? "mod-" : "")}command: ${cmdPrefix}${command}`
     );
 
-    let cmdHandle = require(path.join(commandDir, command));
+    const commandPath = path.join(commandDir, command);
+    const usedCommand = await import(commandPath);
+
+    console.assert(!!usedCommand, "usedCommand must be non-falsy");
 
     try {
-        cmdHandle.run(client, message, args, function(err){
+        usedCommand.run(client, message, args, function(err) {
             // Non-Exception Error returned by the command (e.g.: Missing Argument)
             if (err) callback(err);
         });
     }
 
     // Exception returned by the command handler
-    catch (err){
+    catch (err) {
         callback(
             "Sorry, irgendwas ist schief gegangen! =("
         );
@@ -78,6 +84,4 @@ let commandHandler = function(message, client, isModCommand, callback){
     }
 
     return callback();
-};
-
-module.exports = commandHandler;
+}

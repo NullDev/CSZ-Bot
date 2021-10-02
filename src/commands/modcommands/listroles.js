@@ -1,5 +1,3 @@
-"use strict";
-
 // ========================= //
 // = Copyright (c) NullDev = //
 // ========================= //
@@ -13,7 +11,7 @@
  * @param {Function} callback
  * @returns {Function} callback
  */
-exports.run = (client, message, args, callback) => {
+export const run = (client, message, args, callback) => {
     let roleNames = message.guild.roles.cache
         .filter(element => String(element.name).toLowerCase() !== "@everyone")
         .map(element => element.name);
@@ -23,4 +21,4 @@ exports.run = (client, message, args, callback) => {
     return callback();
 };
 
-exports.description = "Listet alle server rollen auf";
+export const description = "Listet alle server rollen auf";

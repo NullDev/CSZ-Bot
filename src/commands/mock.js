@@ -1,11 +1,9 @@
-"use strict";
-
 // ========================= //
 // = Copyright (c) NullDev = //
 // ========================= //
 
-// Utils
-let config = require("../utils/configHandler").getConfig();
+import { getConfig } from "../utils/configHandler";
+const config = getConfig();
 
 /**
  * Randomly capitalize letters
@@ -35,6 +33,7 @@ const sendMock = (message, mocked) => {
     let embed = {
         embed: {
             description: `${mocked} <:mock:677504337769005096>`,
+            color: 0xFFC000,
             author: {
                 name: `${message.author.username}`,
                 icon_url: message.author.displayAvatarURL()
@@ -54,7 +53,7 @@ const sendMock = (message, mocked) => {
  * @param {Function} callback
  * @returns {Function} callback
  */
-exports.run = (client, message, args, callback) => {
+export const run = (client, message, args, callback) => {
     // TODO: Check for message type 19 when it is available in discord.js
     const referencedMessage = message.reference?.messageID;
     if (!args.length && !referencedMessage) return callback(`Bruder du bist zu dumm zum mocken? Mach \`${config.bot_settings.prefix.command_prefix}mock DEIN TEXT HIER\` oder antworte auf eine Nachricht`);
@@ -78,4 +77,4 @@ exports.run = (client, message, args, callback) => {
     return callback();
 };
 
-exports.description = `Mockt einen Text.\nBenutzung: ${config.bot_settings.prefix.command_prefix}mock [Hier dein Text] oder nur ${config.bot_settings.prefix.command_prefix}mock in einer reply`;
+export const description = `Mockt einen Text.\nBenutzung: ${config.bot_settings.prefix.command_prefix}mock [Hier dein Text] oder nur ${config.bot_settings.prefix.command_prefix}mock in einer reply`;

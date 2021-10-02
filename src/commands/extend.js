@@ -1,42 +1,16 @@
-"use strict";
-
 // =========================================== //
-// = Copyright (c) NullDev & diewellenlaenge = //
+// = Copyright (c) NullDev & diewellenlaenge & nimbl0 = //
 // =========================================== //
 
 /**
  * @typedef {import("discord.js").TextChannel} TC
  */
 
-// Utils
-let log = require("../utils/logger");
-let config = require("../utils/configHandler").getConfig();
+import * as log from "../utils/logger";
+import { getConfig } from "../utils/configHandler";
+import * as poll from "./poll";
 
-const NUMBERS = [
-    ":one:",
-    ":two:",
-    ":three:",
-    ":four:",
-    ":five:",
-    ":six:",
-    ":seven:",
-    ":eight:",
-    ":nine:",
-    ":keycap_ten:"
-];
-
-const EMOJI = [
-    "1️⃣",
-    "2️⃣",
-    "3️⃣",
-    "4️⃣",
-    "5️⃣",
-    "6️⃣",
-    "7️⃣",
-    "8️⃣",
-    "9️⃣",
-    "🔟"
-];
+const config = getConfig();
 
 /**
  * Extends an existing poll or strawpoll
@@ -47,7 +21,7 @@ const EMOJI = [
  * @param {Function} callback
  * @returns {Promise<Function>} callback
  */
-exports.run = async(client, message, args, callback) => {
+export const run = async(client, message, args, callback) => {
     if (!message.reference) return callback("Bruder schon mal was von der Replyfunktion gehört?");
     if (message.reference.guildID !== config.ids.guild_id || !message.reference.channelID) return callback("Bruder bleib mal hier auf'm Server.");
 
@@ -72,10 +46,13 @@ exports.run = async(client, message, args, callback) => {
 
     let oldPollOptions = replyMessage.embeds[0].description.split("\n");
 
-    if (oldPollOptions.length === 10) return callback("Bruder die Umfrage ist leider schon voll (⚆ ͜ʖ⚆)");
+    if (oldPollOptions.length === poll.OPTION_LIMIT) return callback("Bruder die Umfrage ist leider schon voll (⚆ ͜ʖ⚆)");
+
+    let oldPollOptionsLength = replyMessage.embeds[0].description.length;
+    if (oldPollOptionsLength > poll.TEXT_LIMIT) return callback("Bruder die Umfrage ist leider schon voll (⚆ ͜ʖ⚆)");
 
     for (let i = 0; i < oldPollOptions.length; ++i) {
-        if (!oldPollOptions[i].startsWith(NUMBERS[i])) {
+        if (!oldPollOptions[i].startsWith(poll.LETTERS[i])) {
             return callback("Bruder das ist keine Umfrage ಠ╭╮ಠ");
         }
     }
@@ -83,27 +60,32 @@ exports.run = async(client, message, args, callback) => {
     if (!args.length) return callback("Bruder da sind keine Antwortmöglichkeiten :c");
 
     let additionalPollOptions = args.join(" ").split(";").map(e => e.trim()).filter(e => e.replace(/\s/g, "") !== "");
+    let additionalPollOptionsLength = 0;
+    for (let additionalPollOption of additionalPollOptions) {
+        additionalPollOptionsLength += additionalPollOption.length;
+    }
 
     if (!additionalPollOptions.length) return callback("Bruder da sind keine Antwortmöglichkeiten :c");
-    if (oldPollOptions.length + additionalPollOptions.length > 10) return callback(`Bruder die Umfrage hat schon ${oldPollOptions.length} Antwortmöglichkeiten und du wolltest noch ${additionalPollOptions.length} hinzufügen, dumm oder sowas?`);
+    if(oldPollOptionsLength + additionalPollOptionsLength > poll.TEXT_LIMIT) return callback("Bruder die Umfrage ist zu lang");
+    if(oldPollOptions.length + additionalPollOptions.length > poll.OPTION_LIMIT) return callback(`Bruder mit deinen Antwortmöglichkeiten wird das Limit von ${poll.OPTION_LIMIT} überschritten!`);
 
     let originalAuthor = replyMessage.embeds[0].author.name.split(" ")[2];
     let authorNote = originalAuthor !== message.author.username ? ` (von ${message.author.username})` : "";
 
     let embed = replyMessage.embeds[0];
     embed.description += "\n";
-    additionalPollOptions.forEach((e, i) => (embed.description += `${NUMBERS[oldPollOptions.length + i]} - ${e}${authorNote}\n`));
+    additionalPollOptions.forEach((e, i) => (embed.description += `${poll.LETTERS[oldPollOptions.length + i]} - ${e}${authorNote}\n`));
 
-    if (oldPollOptions.length + additionalPollOptions.length === 10) {
-        embed.color = null;
+    if (oldPollOptions.length + additionalPollOptions.length === poll.OPTION_LIMIT) {
+        embed.color = 0xCD5C5C;
         delete embed.footer;
     }
 
     replyMessage.edit(undefined, embed).then(async msg => {
-        for (let i in additionalPollOptions) await msg.react(EMOJI[oldPollOptions.length + Number(i)]);
+        for (let i in additionalPollOptions) await msg.react(poll.EMOJI[oldPollOptions.length + Number(i)]);
     }).then(() => message.delete());
 
     return callback();
 };
 
-exports.description = `Nutzbar als Reply auf eine mit --extendable erstellte Umfrage, um eine/mehrere Antwortmöglichkeit/en hinzuzüfgen. Die Anzahl der bestehenden und neuen Antwortmöglichkeiten darf 10 nicht übersteigen.\nUsage: ${config.bot_settings.prefix.command_prefix}extend [Antwort 1] ; [...]`;
+export const description = `Nutzbar als Reply auf eine mit --extendable erstellte Umfrage, um eine/mehrere Antwortmöglichkeit/en hinzuzüfgen. Die Anzahl der bestehenden und neuen Antwortmöglichkeiten darf ${poll.OPTION_LIMIT} nicht übersteigen.\nUsage: ${config.bot_settings.prefix.command_prefix}extend [Antwort 1] ; [...]`;

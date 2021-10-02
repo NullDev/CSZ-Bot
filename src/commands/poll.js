@@ -1,44 +1,66 @@
-"use strict";
-
 // ========================= //
 // = Copyright (c) NullDev = //
 // ========================= //
 
-// Dependencies
-let moment = require("moment");
-let parseOptions = require("minimist");
-let cron = require("node-cron");
-const AdditionalMessageData = require("../storage/model/AdditionalMessageData");
-const logger = require("../utils/logger");
+import moment from "moment";
+import parseOptions from "minimist";
+import * as cron from "node-cron";
 
-// Utils
-let config = require("../utils/configHandler").getConfig();
+import * as log from "../utils/logger";
+import AdditionalMessageData from "../storage/model/AdditionalMessageData";
+import { getConfig } from "../utils/configHandler";
 
-const NUMBERS = [
-    ":one:",
-    ":two:",
-    ":three:",
-    ":four:",
-    ":five:",
-    ":six:",
-    ":seven:",
-    ":eight:",
-    ":nine:",
-    ":keycap_ten:"
+const config = getConfig();
+
+export const LETTERS = [
+    ":regional_indicator_a:",
+    ":regional_indicator_b:",
+    ":regional_indicator_c:",
+    ":regional_indicator_d:",
+    ":regional_indicator_e:",
+    ":regional_indicator_f:",
+    ":regional_indicator_g:",
+    ":regional_indicator_h:",
+    ":regional_indicator_i:",
+    ":regional_indicator_j:",
+    ":regional_indicator_k:",
+    ":regional_indicator_l:",
+    ":regional_indicator_m:",
+    ":regional_indicator_n:",
+    ":regional_indicator_o:",
+    ":regional_indicator_p:",
+    ":regional_indicator_q:",
+    ":regional_indicator_r:",
+    ":regional_indicator_s:",
+    ":regional_indicator_t:"
 ];
 
-const EMOJI = [
-    "1️⃣",
-    "2️⃣",
-    "3️⃣",
-    "4️⃣",
-    "5️⃣",
-    "6️⃣",
-    "7️⃣",
-    "8️⃣",
-    "9️⃣",
-    "🔟"
+export const EMOJI = [
+    "🇦",
+    "🇧",
+    "🇨",
+    "🇩",
+    "🇪",
+    "🇫",
+    "🇬",
+    "🇭",
+    "🇮",
+    "🇯",
+    "🇰",
+    "🇱",
+    "🇲",
+    "🇳",
+    "🇴",
+    "🇵",
+    "🇶",
+    "🇷",
+    "🇸",
+    "🇹"
 ];
+
+export const TEXT_LIMIT = 4096;
+export const OPTION_LIMIT = LETTERS.length;
+
 
 /**
  * @typedef {Object} DelayedPoll
@@ -52,7 +74,7 @@ const EMOJI = [
 /**
  * @type {DelayedPoll[]}
  */
-exports.delayedPolls = [];
+export const delayedPolls = [];
 
 /**
  * Creates a new poll (multiple answers) or strawpoll (single selection)
@@ -63,7 +85,7 @@ exports.delayedPolls = [];
  * @param {Function} callback
  * @returns {Function} callback
  */
-exports.run = (client, message, args, callback) => {
+export const run = (client, message, args, callback) => {
     let options = parseOptions(args, {
         "boolean": [
             "channel",
@@ -88,14 +110,21 @@ exports.run = (client, message, args, callback) => {
 
     let pollArray = parsedArgs.join(" ").split(";").map(e => e.trim()).filter(e => e.replace(/\s/g, "") !== "");
     let pollOptions = pollArray.slice(1);
+    let pollOptionsTextLength = 0;
+
+    let isExtenable = options.extendable;
+    for (let pollOption of pollOptions) {
+        pollOptionsTextLength += pollOption.length;
+    }
+
 
     if (!pollOptions.length) return callback("Bruder da sind keine Antwortmöglichkeiten :c");
-    else if (pollOptions.length < 2) return callback("Bruder du musst schon mehr als eine Antwortmöglichkeit geben 🙄");
-    else if (pollOptions.length > 10) return callback("Bitte gib nicht mehr als 10 Antwortmöglichkeiten an!");
-
+    else if (pollOptions.length < 2 && !isExtenable) return callback("Bruder du musst schon mehr als eine Antwortmöglichkeit geben 🙄");
+    else if (pollOptions.length > OPTION_LIMIT) return callback(`Bitte gib nicht mehr als ${OPTION_LIMIT} Antwortmöglichkeiten an!`);
+    else if (pollOptionsTextLength > TEXT_LIMIT) return callback("Bruder deine Umfrage ist zu lang!");
 
     let optionstext = "";
-    pollOptions.forEach((e, i) => (optionstext += `${NUMBERS[i]} - ${e}\n`));
+    pollOptions.forEach((e, i) => (optionstext += `${LETTERS[i]} - ${e}\n`));
 
     let finishTime = new Date(new Date().valueOf() + (delayTime * 60 * 1000));
     if(options.delayed) {
@@ -114,6 +143,7 @@ exports.run = (client, message, args, callback) => {
             title: pollArray[0],
             description: optionstext,
             timestamp: moment.utc().format(),
+            color: "#FFA07A",
             author: {
                 name: `${options.straw ? "Strawpoll" : "Umfrage"} von ${message.author.username}`,
                 icon_url: message.author.displayAvatarURL()
@@ -122,7 +152,7 @@ exports.run = (client, message, args, callback) => {
     };
 
     let footer = [];
-    let extendable = options.extendable && pollOptions.length < 10;
+    let extendable = options.extendable && pollOptions.length < OPTION_LIMIT && pollOptionsTextLength < TEXT_LIMIT;
 
     if (extendable) {
         if(options.delayed) {
@@ -138,7 +168,14 @@ exports.run = (client, message, args, callback) => {
         embed.embed.color = "#a10083";
     }
 
-    if (!options.straw) footer.push("Mehrfachauswahl");
+    if (!options.straw) {
+        footer.push("Mehrfachauswahl");
+    }
+
+    if(options.straw) {
+        footer.push("Einzelauswahl");
+        embed.embed.color = "#FF4500";
+    }
 
     if (footer.length) {
         embed.embed.footer = {
@@ -181,14 +218,14 @@ exports.run = (client, message, args, callback) => {
                 additionalData.customData = newCustomData;
                 await additionalData.save();
 
-                exports.delayedPolls.push(delayedPollData);
+                delayedPolls.push(delayedPollData);
             }
         });
 
     return callback();
 };
 
-exports.importPolls = async() => {
+export const importPolls = async() => {
     let additionalDatas = await AdditionalMessageData.findAll();
     let count = 0;
     additionalDatas.forEach(additionalData => {
@@ -196,20 +233,20 @@ exports.importPolls = async() => {
             return;
         }
 
-        exports.delayedPolls.push(additionalData.customData.delayedPollData);
+        delayedPolls.push(additionalData.customData.delayedPollData);
         count++;
     });
-    logger.info(`Loaded ${count} polls from database`);
+    log.info(`Loaded ${count} polls from database`);
 };
 
 /**
  * Initialized crons for delayed polls
  * @param {import("discord.js").Client} client
  */
-exports.startCron = (client) => {
+export const startCron = (client) => {
     cron.schedule("* * * * *", async() => {
         const currentDate = new Date();
-        const pollsToFinish = exports.delayedPolls.filter(delayedPoll => currentDate >= delayedPoll.finishesAt);
+        const pollsToFinish = delayedPolls.filter(delayedPoll => currentDate >= delayedPoll.finishesAt);
         /** @type {import("discord.js").GuildChannel} */
         const channel = client.guilds.cache.get(config.ids.guild_id).channels.cache.get(config.ids.votes_channel_id);
 
@@ -228,7 +265,7 @@ exports.startCron = (client) => {
             let toSend = {
                 embed: {
                     title: `Zusammenfassung: ${message.embeds[0].title}`,
-                    description: `${delayedPoll.reactions.map((x, index) => `${NUMBERS[index]} ${delayedPoll.reactionMap[index]} (${x.length}):
+                    description: `${delayedPoll.reactions.map((x, index) => `${LETTERS[index]} ${delayedPoll.reactionMap[index]} (${x.length}):
 ${x.map(uid => users[uid]).join("\n")}\n\n`).join("")}
 `,
                     timestamp: moment.utc().format(),
@@ -245,7 +282,7 @@ ${x.map(uid => users[uid]).join("\n")}\n\n`).join("")}
             await channel.send(toSend);
             await Promise.all(message.reactions.cache.map(reaction => reaction.remove()));
             await message.react("✅");
-            exports.delayedPolls.splice(exports.delayedPolls.indexOf(delayedPoll), 1);
+            delayedPolls.splice(delayedPolls.indexOf(delayedPoll), 1);
 
             let messageData = await AdditionalMessageData.fromMessage(message);
             let {customData} = messageData;
@@ -256,7 +293,7 @@ ${x.map(uid => users[uid]).join("\n")}\n\n`).join("")}
     });
 };
 
-exports.description = `Erstellt eine Umfrage mit mehreren Antwortmöglichkeiten (standardmäßig mit Mehrfachauswahl) (maximal 10).
+export const description = `Erstellt eine Umfrage mit mehreren Antwortmöglichkeiten (standardmäßig mit Mehrfachauswahl) (maximal ${OPTION_LIMIT}).
 Usage: ${config.bot_settings.prefix.command_prefix}poll [Optionen?] [Hier die Frage] ; [Antwort 1] ; [Antwort 2] ; [...]
 Optionen:
 \t-c, --channel
@@ -267,3 +304,4 @@ Optionen:
 \t\t\tStatt mehrerer Antworten kann nur eine Antwort gewählt werden
 \t-d <T>, --delayed <T>
 \t\t\tErgebnisse der Umfrage wird erst nach <T> Minuten angezeigt. (Noch) inkompatibel mit -e`;
+
