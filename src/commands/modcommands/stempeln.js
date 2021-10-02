@@ -12,23 +12,19 @@ exports.run = async(client, message, args, callback) => {
     if (args.length < 2) return callback("Du musst schon User angeben!");
     if (message.mentions.users.size !== 2) return callback("Du hast entweder zu viele oder zu wenige User angegeben Bruder");
 
-    let inviter = message.mentions.users.first();
-    let invited = message.mentions.users.last();
+    let invitator = message.mentions.users.first();
+    let invitedMember = message.mentions.users.last();
 
-    if (!inviter || !invited) return callback("Irgendwas stimmt mit deinen Usern nicht, check das mal ab!");
+    if (!invitator || !invitedMember) return callback("Irgendwas stimmt mit deinen Usern nicht, check das mal ab!");
 
-    let date = new Date();
-    date = date.getFullYear() + "-" + date.getMonth() + "-" + date.getDate() + " " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
-
-    let newInvite = await Stempel.insertStempel(inviter.id, invited.id, date);
-    if(newInvite === "true") {
-        return callback(`Der Bruder ${inviter.username} hat den neuen Bruder ${invited.username} eingeladen und du hast dies so eben bestätigt!`);
+    let isNewInvite = await Stempel.insertStempel(invitator.id, invitedMember.id);
+    if(isNewInvite) {
+        return callback(`Der Bruder ${invitator.username} hat den neuen Bruder ${invitedMember.username} eingeladen und du hast dies so eben bestätigt!`);
     }
-    else if(newInvite === "false") {
-        return callback(`Der Bruder ${invited.username} wurde bereits gestempelt!`);
+    else {
+        return callback(`Der Bruder ${invitedMember.username} wurde bereits gestempelt!`);
     }
-
-    return callback();
 };
 
-exports.description = "TODO!";
+exports.description = `Stempelkarten für Jeden! Mit ~stempeln @invitator @invitedMember kannst du ab sofort User stempeln! Der erste User ist dabei der, 
+                        der einen anderen User eingeladen hat und der zweite User ist der, der eingeladen wurde! `;

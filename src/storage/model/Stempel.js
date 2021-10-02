@@ -7,33 +7,28 @@ let uuid = require("uuid");
 class Stempel extends Model {
     /**
      *
-     * @param {BigInt} inviter
-     * @param {BigInt} invited
-     * @param {String} date
-     * @returns true/false depending if the invited person is already in the database
+     * @param {BigInt} invitator
+     * @param {BigInt} invitedMember
+     * @returns true/false depending if the invitedMember is already in the database
      */
-    static async insertStempel(inviter, invited, date) {
-        let newItem = "";
-        await Stempel.findOrCreate({
-            where: {
-                invited
-            },
-            defaults: {
-                inviter,
-                invited,
-                date
-            }
-        }).then((item) => {
-            newItem = item.toString().split(",")[1];
+    static async insertStempel(invitator, invitedMember) {
+        let isNewItem = false;
+        await Stempel.create({
+            invitator,
+            invitedMember
+        }).then(() => {
+            isNewItem = true;
+        }).catch(() => {
+            isNewItem = false;
         });
 
-        return newItem;
+        return isNewItem;
     }
 
-    static async getStempelByInviter(inviter) {
+    static async getStempelByinvitator(invitator) {
         return await Stempel.findAll({
             where: {
-                inviter
+                invitator
             }
         });
     }
@@ -45,17 +40,14 @@ class Stempel extends Model {
                 defaultValue: () => uuid.v4(),
                 primaryKey: true
             },
-            inviter: {
+            invitator: {
                 type: DataTypes.STRING(32),
                 allowNull: false
             },
-            invited: {
+            invitedMember: {
                 type: DataTypes.STRING(32),
-                allowNull: false
-            },
-            date: {
-                type: DataTypes.STRING,
-                allowNull: false
+                allowNull: false,
+                unique: true
             }
         },
         {
