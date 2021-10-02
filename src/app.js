@@ -80,20 +80,20 @@ function scheduleTimezoneFixedCronjob(cronString) {
 
         // Auto-kick members
         let membersWORoles = csz.members.cache.filter(m => {
-            return m.roles.cache.size === 0 && m.joinedTimestamp - Date.now() >= 48 * 3_600_000
+            return m.roles.cache.size === 0 && Date.now - m.joinedTimestamp >= 48 * 3_600_000;
           });
           for(member of membersWORoles) {
-               member.kick();
-               cnt++;
+              member.kick();
+              cnt++;
         }
         log.info(`Auto-kick: ${cnt} members kicked.`);
         if(cnt > 0){
             csz.channels.cache.get(config.ids.hauptchat_id).send(`Hab grad ${cnt} jockel gekickt :Dab:`);
         }
-        else{
+        else {
             csz.channels.cache.get(config.ids.hauptchat_id).send("Heute leider keine jockel gebannt :sadpingu:");
         }
-       
+
         const tomorrow = Date.now() + 60/* s*/ * 1000/* ms*/ * 60/* m*/ * 24/* h*/;
         const newCronString = timezone.getCronjobStringForHydrate(tomorrow);
         scheduleTimezoneFixedCronjob(newCronString);
