@@ -39,16 +39,14 @@ exports.run = (client: any, message: any, args: any, callback: any) => {
             "retard!",
             "you troglodyte!"
         ];
-        // by default, just pick the first or a fixed insult
+        // by default, just pick the first or a fixed insult, just in case
         let choice: number = 0;
         let insult: string = "Idiot!";
 
         if (!options.english){
             // insult user, then explain meta questions
-            if (germanInsults.length !== undefined){
-                choice = Math.max(choice, Math.floor(Math.random() * germanInsults.length));
-                insult = germanInsults[choice];
-            }
+            choice = Math.max(choice, Math.floor(Math.random() * germanInsults.length));
+            insult = germanInsults[choice];
             message.channel.send(`
             Hör auf, Metafragen zu stellen, ${insult}
             Das ist reine Zeitverschwendung und hindert uns nur daran, ~~uns zu beleidigen~~ an echten Problemen zu arbeiten.
@@ -57,10 +55,8 @@ exports.run = (client: any, message: any, args: any, callback: any) => {
         }
         else{
             // insult user, then explain meta questions - but this time in english!
-            if (englishInsults.length !== undefined){
-                choice = Math.max(choice, Math.floor(Math.random() * englishInsults.length));
-                insult = englishInsults[choice];
-            }
+            choice = Math.max(choice, Math.floor(Math.random() * englishInsults.length));
+            insult = englishInsults[choice];
             message.channel.send(`
             Stop asking meta questions, ${insult}
             It's a waste of time and stops us from ~~insulting each other~~ working on real problems.
