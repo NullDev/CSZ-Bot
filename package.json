@@ -22,7 +22,7 @@
   },
   "homepage": "https://github.com/NullDev/CSC-Bot#readme",
   "dependencies": {
-    "discord.js": "^12.5.3",
+    "discord.js": "^13.1.0",
     "jimp": "^0.16.1",
     "minimist": "^1.2.5",
     "moment": "^2.29.1",
@@ -47,7 +47,7 @@
     "typescript": "^4.4.3"
   },
   "engines": {
-    "node": ">=14.3.0"
+    "node": ">=16.6.0"
   },
   "nodemonConfig": {
     "ignore": [

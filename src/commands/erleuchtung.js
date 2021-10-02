@@ -31,23 +31,23 @@ function getInspiration() {
 export const run = async(_client, message, args) => {
     try {
         const response = await getInspiration();
-        const envelope = {
-            embed: {
-                image: {
-                    url: response
-                },
-                color: 0x26c723,
-                timestamp: moment.utc().format(),
-                author: {
-                    name: `${message.author.username} wurde erleuchtet`,
-                    icon_url: message.author.displayAvatarURL()
-                },
-                footer: {
-                    text: "🙏 Glaub an dich 🙏"
-                }
+        const embed = {
+            image: {
+                url: response
+            },
+            color: 0x26c723,
+            timestamp: moment.utc().format(),
+            author: {
+                name: `${message.author.username} wurde erleuchtet`,
+                icon_url: message.author.displayAvatarURL()
+            },
+            footer: {
+                text: "🙏 Glaub an dich 🙏"
             }
         };
-        await message.channel.send(envelope);
+        await message.channel.send({
+            embeds: [embed]
+        });
         await message.delete();
     }
     catch (err) {

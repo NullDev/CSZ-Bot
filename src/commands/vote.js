@@ -32,14 +32,12 @@ export const run = async(client, message, args) => {
     if (!parsedArgs.length) return "Bruder da ist keine Frage :c";
 
     const embed = {
-        embed: {
-            title: `**${parsedArgs.join(" ")}**`,
-            timestamp: moment.utc().format(),
-            color: 0x9400D3,
-            author: {
-                name: `Umfrage von ${message.author.username}`,
-                icon_url: message.author.displayAvatarURL()
-            }
+        title: `**${parsedArgs.join(" ")}**`,
+        timestamp: moment.utc().format(),
+        color: 0x9400D3,
+        author: {
+            name: `Umfrage von ${message.author.username}`,
+            icon_url: message.author.displayAvatarURL()
         }
     };
 
@@ -48,7 +46,9 @@ export const run = async(client, message, args) => {
         ? client.guilds.cache.get(config.ids.guild_id).channels.cache.get(config.ids.votes_channel_id)
         : message.channel;
 
-    const messageWithVoteContent = await channel.send(/** @type {any} embed */(embed));
+    const messageWithVoteContent = await channel.send( {
+        embeds: [embed]
+    });
     await Promise.all([
         messageWithVoteContent.react("👍"),
         messageWithVoteContent.react("👎")

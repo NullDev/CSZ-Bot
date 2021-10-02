@@ -42,7 +42,23 @@ log.done("Started.");
 
 const config = conf.getConfig();
 const client = new Discord.Client({
-    disableMentions: "everyone"
+    allowedMentions: {
+        parse: ["users", "roles"],
+        repliedUser: true
+    },
+    intents: ["DIRECT_MESSAGES",
+        "GUILDS",
+        "GUILD_BANS",
+        "GUILD_EMOJIS_AND_STICKERS",
+        "GUILD_INTEGRATIONS",
+        "GUILD_INVITES",
+        "GUILD_MEMBERS",
+        "GUILD_MESSAGES",
+        "GUILD_MESSAGE_REACTIONS",
+        "GUILD_MESSAGE_TYPING",
+        "GUILD_PRESENCES",
+        "GUILD_VOICE_STATES",
+        "GUILD_WEBHOOKS"]
 });
 
 // @ts-ignore
@@ -135,7 +151,7 @@ client.on("guildMemberRemove", (member) => {
     GuildRagequit.incrementRagequit(member.guild.id, member.id);
 });
 
-client.on("message", (message) => messageHandler(message, client));
+client.on("messageCreate", (message) => messageHandler(message, client));
 
 client.on("messageDelete", (message) => messageDeleteHandler(message, client));
 

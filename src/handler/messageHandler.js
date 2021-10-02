@@ -22,26 +22,6 @@ const config = getConfig();
 let lastSpecialCommand = 0;
 
 /**
- * Performs inline reply to a message
- * @param {import("discord.js").Message} messageRef message to which should be replied
- * @param {import("discord.js").APIMessage | string} content content
- * @param {import("discord.js").Client} client client
- */
-const inlineReply = function(messageRef, content, client) {
-    // @ts-ignore
-    client.api.channels[messageRef.channel.id].messages.post({
-        data: {
-            content,
-            message_reference: {
-                message_id: messageRef.id,
-                channel_id: messageRef.channel.id,
-                guild_id: messageRef.guild.id
-            }
-        }
-    });
-};
-
-/**
  * @param {import("discord.js").Message} messageRef message
  * @param {import("discord.js").Client} client client
  * @returns {import("discord.js").Collection<string, Message>}
@@ -89,11 +69,15 @@ const dadJoke = function(message) {
         if(trimmedWords.length > 0 && trimmedWords.length <= 10 && !randomUwe) {
             const whoIs = Util.removeMentions(Util.cleanContent(trimmedWords.join(" "), message));
             if(whoIs.trim().length > 0) {
-                inlineReply(message, `Hallo ${whoIs}, ich bin Shitpost Bot.`, message.client);
+                message.reply({
+                    content: `Hallo ${whoIs}, ich bin Shitpost Bot.`
+                });
             }
         }
         else if(randomUwe) {
-            inlineReply(message, "Und ich bin der Uwe, ich bin auch dabei", message.client);
+            message.reaply({
+                content: "Und ich bin der Uwe, ich bin auch dabei"
+            });
         }
     }
 };
@@ -240,7 +224,9 @@ export default async function(message, client) {
         // Unless you are a Marcel
         const shouldFlameUser = config.bot_settings.flame_trusted_user_on_bot_ping || !message.member.roles.cache.has(config.ids.trusted_role_id) || message.member.id === "209413133020823552";
         if (shouldFlameUser) {
-            inlineReply(message, "Was pingst du mich du Hurensohn :angry:", client);
+            message.reply({
+                content: "Was pingst du mich du Hurensohn :angry:"
+            });
         }
     }
 
@@ -257,6 +243,10 @@ export default async function(message, client) {
         // Get all inline replies to the message and delte them. Ignore errors, since cached is used and previously deleted messages are contained as well
         getInlineReplies(message, client).forEach(msg => msg.delete().catch(() => { return; }));
 
-        if (response) inlineReply(message, response, client);
+        if (response) {
+            message.reply({
+                content: response
+            });
+        }
     }
 }

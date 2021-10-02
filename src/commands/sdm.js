@@ -76,13 +76,11 @@ export const run = async(client, message, args) => {
     if (!question.endsWith("?")) question += "?";
 
     const embed = {
-        embed: {
-            title: Util.cleanContent(question, message),
-            timestamp: moment.utc().format(),
-            author: {
-                name: `Secure Decision für ${message.author.username}`,
-                icon_url: message.author.displayAvatarURL()
-            }
+        title: Util.cleanContent(question, message),
+        timestamp: moment.utc().format(),
+        author: {
+            name: `Secure Decision für ${message.author.username}`,
+            icon_url: message.author.displayAvatarURL()
         }
     };
 
@@ -90,25 +88,31 @@ export const run = async(client, message, args) => {
         const decision = secureDecisionMaker(question);
         let file;
         if(!!decision) {
-            embed.embed.color = 0x2ecc71;
+            embed.color = 0x2ecc71;
             file = "yes.png";
         }
         else {
-            embed.embed.color = 0xe74c3c;
+            embed.color = 0xe74c3c;
             file = "no.png";
         }
-        embed.embed.thumbnail = {
+        embed.thumbnail = {
             url: `attachment://${file}`
         };
-        embed.files = [`./assets/${file}`];
+
+        await message.channel.send({
+            embeds: [embed],
+            files: [`./assets/${file}`]
+        });
     }
     else {
         const decision = secureDecisionMaker(question, options.length - 1);
-        embed.embed.color = 0x9b59b6;
-        embed.embed.description = `Mashallah, ich rate dir zu **${options[decision]}**!`;
-    }
+        embed.color = 0x9b59b6;
+        embed.description = `Mashallah, ich rate dir zu **${options[decision]}**!`;
 
-    await message.channel.send(/** @type {any} embed */ (embed));
+        await message.channel.send({
+            embeds: [embed]
+        });
+    }
     await message.delete();
 };
 

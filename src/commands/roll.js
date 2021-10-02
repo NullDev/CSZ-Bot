@@ -105,23 +105,22 @@ export const run = async(_client, message, args) => {
         return error;
     }
 
-    let e = {
-        embed: {
-            title: Util.cleanContent(`${parsed}:`, message),
-            timestamp: moment.utc().format(),
-            author: {
-                name: `Würfel Resultat für ${message.author.username}`,
-                icon_url: message.author.displayAvatarURL()
-            }
-        }
-    };
-
     const maxHexCol = 16777214;
 
-    e.embed.color = pseudoRng(0, maxHexCol);
-    e.embed.description = constructResultStr(diceResult(amount, sides));
+    let embed = {
+        title: Util.cleanContent(`${parsed}:`, message),
+        timestamp: moment.utc().format(),
+        author: {
+            name: `Würfel Resultat für ${message.author.username}`,
+            icon_url: message.author.displayAvatarURL()
+        },
+        color: pseudoRng(0, maxHexCol),
+        description: constructResultStr(diceResult(amount, sides))
+    };
 
-    await message.channel.send(e);
+    await message.channel.send({
+        embeds: [embed]
+    });
     await message.delete();
 };
 

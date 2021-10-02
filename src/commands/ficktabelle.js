@@ -29,23 +29,23 @@ export const run = async(_client, message, args) => {
         "Minimum n Gummi drum 🚫👶"
     ];
 
-    const envelope = {
-        embed: {
-            image: {
-                url: FICKTABELLE_URL
-            },
-            timestamp: moment.utc().format(),
-            author: {
-                name: `${message.author.username} ${titles[Math.max(0, Math.floor(Math.random() * titles.length))]}`,
-                icon_url: message.author.displayAvatarURL()
-            },
-            footer: {
-                text: warnings[Math.max(0, Math.floor(Math.random() * warnings.length))]
-            }
+    const embed = {
+        image: {
+            url: FICKTABELLE_URL
+        },
+        timestamp: moment.utc().format(),
+        author: {
+            name: `${message.author.username} ${titles[Math.max(0, Math.floor(Math.random() * titles.length))]}`,
+            icon_url: message.author.displayAvatarURL()
+        },
+        footer: {
+            text: warnings[Math.max(0, Math.floor(Math.random() * warnings.length))]
         }
     };
 
-    await message.channel.send(envelope);
+    await message.channel.send({
+        embeds: [embed]
+    });
     await message.delete();
 };
 
