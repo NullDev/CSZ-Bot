@@ -7,7 +7,7 @@ import moment from "moment";
 
 import { getConfig } from "../utils/configHandler";
 
-import * as ban from"./modcommands/ban";
+import * as ban from "./modcommands/ban";
 
 const config = getConfig();
 
@@ -21,27 +21,38 @@ const config = getConfig();
  * @returns {Function} callback
  */
 export const run = (client, message, args, callback) => {
-    let durationArg = Number(args.length > 0 ? args[0] : "8");
-    let duration = moment.duration(durationArg, "hours");
-    let durationAsMinutes = Number(duration.asMinutes());
+    const durationArg = Number(args?.[0]?.trim() ?? "8");
 
-    if (!duration.isValid()) return callback("Bitte eine gültige Dauer in Stunden angeben (Kommazahlen erlaubt).");
+    if (Number.isNaN(durationArg) || !Number.isFinite(durationArg)) {
+        return callback("Gib ne Zahl ein du Lellek.");
+    }
 
-    if (!Number.isInteger(durationArg)) return callback("Gib ne Zahl ein du Lellek.");
-    if (durationAsMinutes < 0) return callback("Ach komm, für wie dumm hälst du mich?");
+    const durationInMinutes = Math.trunc(durationArg * 60);
+    const durationInHours = durationInMinutes / 60;
 
-    let self = message.member;
-    if (self.id === "371724846205239326") return callback("Aus Segurity lieber nicht dich bannen.");
+    if (durationInMinutes < 0) {
+        return callback("Ach komm, für wie dumm hälst du mich?");
+    }
 
-    if (self.roles.cache.some(r => r.id === config.ids.banned_role_id)) return callback("Du bist bereits gebannt du kek.");
+    const momentDuration = moment.duration(durationInMinutes, "minutes");
 
-    if (!ban.ban(self, duration)) return callback("Eine der angegebenen Rollen für das bannen existiert nich.");
+    if (durationInHours < 1 || !momentDuration.isValid()) {
+        return callback("Bitte eine gültige Dauer Δₜ in Stunden angeben; Δₜ ∈ [1, ∞) ∩ ℝ");
+    }
 
-    let durationHumanized = duration.locale("de").humanize();
-    if (durationAsMinutes === 0) durationHumanized = "manuell durch Moderader";
+    const invokingUser = message.member;
+    if (invokingUser.id === "371724846205239326") return callback("Aus Segurity lieber nicht dich bannen.");
 
-    message.channel.send(`User ${self} hat sich selber gebannt!\nEntbannen in: ${durationHumanized}`);
-    message.guild.member(self).send(`Du hast dich selber von der Coding Shitpost Zentrale gebannt!
+    if (invokingUser.roles.cache.some(r => r.id === config.ids.banned_role_id)) return callback("Du bist bereits gebannt du kek.");
+
+    if (!ban.ban(invokingUser, momentDuration)) return callback("Eine der angegebenen Rollen für das bannen existiert nich.");
+
+    const durationHumanized = durationInMinutes === 0
+        ? "manuell durch Moderader"
+        : momentDuration.locale("de").humanize();
+
+    message.channel.send(`User ${invokingUser} hat sich selber gebannt!\nEntbannen in: ${durationHumanized}`);
+    message.guild.member(invokingUser).send(`Du hast dich selber von der Coding Shitpost Zentrale gebannt!
 Du wirst entbannt in: ${durationHumanized}
 Falls du doch vorzeitig entbannt entbannt werden möchtest, kannst du dich im <#${config.ids.banned_channel_id}> Channel melden.
 
