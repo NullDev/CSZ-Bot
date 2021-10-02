@@ -29,7 +29,23 @@ let isValidJson = function(obj) {
 /**
  * Reads out config data
  *
- * @returns {Object} JSON Content
+ * @returns {{
+ *   auth: {
+ *     bot_token: string,
+ *     client_id: string
+ *   },
+ *   bot_settings: {
+ *      status: string,
+ *      prefix: {
+ *        command_prefix: string,
+ *        mod_prefix: string
+ *      },
+ *      moderator_roles: Array<string>,
+ *      woisping_limit: number,
+ *      woisping_threshold: number
+*    }
+ *   ids: Record<string, import("discord.js").Snowflake>
+ * }} JSON Content
  */
 export const getConfig = function() {
     if (!fs.existsSync(configPath)) {
