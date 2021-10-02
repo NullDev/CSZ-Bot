@@ -44,7 +44,7 @@ export const run = async(_client, message, args) => {
     };
 
     await message.channel.send({
-        embeds: [embed] 
+        embeds: [embed]
     });
     await message.delete();
 };

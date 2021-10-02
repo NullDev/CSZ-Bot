@@ -54,12 +54,12 @@ export const run = async(_client, message, args) => {
                 icon_url: message.author.displayAvatarURL()
             },
             footer: {
-            text: "🍻: Hab ich schon, 🚱: Hab ich noch nie"
+                text: "🍻: Hab ich schon, 🚱: Hab ich noch nie"
             }
         };
 
         const sentMessage = await message.channel.send({
-            embeds: [embed] 
+            embeds: [embed]
         });
         await Promise.all([
             message.delete(),

@@ -243,8 +243,10 @@ export default async function(message, client) {
         // Get all inline replies to the message and delte them. Ignore errors, since cached is used and previously deleted messages are contained as well
         getInlineReplies(message, client).forEach(msg => msg.delete().catch(() => { return; }));
 
-        if (response) message.reply({
-            content: response
-        });
+        if (response) {
+            message.reply({
+                content: response
+            });
+        }
     }
 }

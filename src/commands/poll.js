@@ -187,7 +187,7 @@ export const run = async(client, message, args) => {
     }
 
     const pollMessage = await (/** @type {import("discord.js").TextChannel} */ channel).send({
-        embeds: [embed] 
+        embeds: [embed]
     });
     await message.delete();
     for (let i in pollOptions) {
@@ -272,13 +272,13 @@ ${x.map((uid) => users[uid]).join("\n")}\n\n`
                 timestamp: moment.utc().format(),
                 author: {
                     name: `${message.embeds[0].author.name}`,
-                    icon_url: message.embeds[0].author.iconURL,
+                    icon_url: message.embeds[0].author.iconURL
                 },
                 footer: {
                     text: `Gesamtabstimmungen: ${delayedPoll.reactions
                         .map((x) => x.length)
-                        .reduce((a, b) => a + b)}`,
-                },
+                        .reduce((a, b) => a + b)}`
+                }
             };
 
             await channel.send({
