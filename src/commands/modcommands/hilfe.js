@@ -1,60 +1,62 @@
-"use strict";
-
 // ========================= //
 // = Copyright (c) NullDev = //
 // ========================= //
 
-// Core Modules
-let fs = require("fs");
-let path = require("path");
+import { promises as fs } from "fs";
+import * as path from "path";
 
-// Utils
-let config = require("../../utils/configHandler").getConfig();
+import { getConfig } from "../../utils/configHandler";
+const config = getConfig();
 
 /**
  * Enlists all mod-commands with descriptions
  *
  * @param {import("discord.js").Client} client
  * @param {import("discord.js").Message} message
- * @param {Array} args
- * @param {Function} callback
- * @returns {Function} callback
+ * @param {Array<unknown>} args
+ * @returns {Promise<string | void>}
  */
-exports.run = (client, message, args, callback) => {
+export const run = async(client, message, args) => {
     let commandObj = {};
     let commandDir = __dirname;
 
-    fs.readdirSync(commandDir).forEach(file => {
-        let cmdPath = path.resolve(commandDir, file);
-        let stats = fs.statSync(cmdPath);
+    const files = await fs.readdir(commandDir);
+    for (const file of files) {
+        if (!file.endsWith(".js")) {
+            continue; // Skip source maps etc
+        }
 
-        if (!stats.isDirectory()){
+        let cmdPath = path.resolve(commandDir, file);
+        let stats = await fs.stat(cmdPath);
+
+        if (!stats.isDirectory()) {
             // Prefix + Command name
             let commandStr = config.bot_settings.prefix.mod_prefix + file.toLowerCase().replace(/\.js/gi, "");
 
             // commandStr is the key and the description of the command is the value
-            commandObj[commandStr] = require(path.join(commandDir, file)).description;
+            const modulePath = path.join(commandDir, file);
+            const module = await import(modulePath);
+
+            commandObj[commandStr] = module.description;
         }
-    });
+    }
 
     let commandText = "";
-    for (let i in commandObj){
-        commandText += i;
+    for (const [commandName, description] of Object.entries(commandObj)) {
+        commandText += commandName;
         commandText += ":\n";
-        commandText += commandObj[i];
+        commandText += description;
         commandText += "\n\n";
     }
 
     // Add :envelope: reaction to authors message
-    message.react("✉");
-    message.author.send(
+    await message.author.send(
         "Hallo, " + message.author + "!\n\n" +
         "Hier ist eine Liste mit commands:\n\n```CSS\n" +
         commandText +
         "```"
     );
-
-    return callback();
+    await message.react("✉"); // Send this last, so we only display a confirmation when everything actually worked
 };
 
-exports.description = "Listet alle mod commands auf";
+export const description = "Listet alle mod commands auf";

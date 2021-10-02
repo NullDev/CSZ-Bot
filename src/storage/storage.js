@@ -1,16 +1,14 @@
-"use strict";
-// Core Modules
-let path = require("path");
+import * as path from "path";
 
-// Dependencies
-let {Sequelize} = require("sequelize");
-const AdditionalMessageData = require("./model/AdditionalMessageData");
+import { Sequelize } from "sequelize";
 
 // Models
-let FadingMessage = require("./model/FadingMessage");
-const GuildRagequit = require("./model/GuildRagequit");
+import AdditionalMessageData from "./model/AdditionalMessageData";
+import FadingMessage from "./model/FadingMessage";
+import GuildRagequit from "./model/GuildRagequit";
+import Stempel from "./model/Stempel";
 
-exports.initialize = async function() {
+export async function initialize() {
     let sequelize = new Sequelize({
         dialect: "sqlite",
         storage: path.resolve(__dirname, "..", "..", "storage.db"),
@@ -20,6 +18,7 @@ exports.initialize = async function() {
     FadingMessage.initialize(sequelize);
     AdditionalMessageData.initialize(sequelize);
     GuildRagequit.initialize(sequelize);
+    Stempel.initialize(sequelize);
 
     await sequelize.sync();
-};
+}

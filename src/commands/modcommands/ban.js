@@ -1,96 +1,36 @@
-"use strict";
-
 // ========================= //
 // = Copyright (c) NullDev = //
 // ========================= //
 
-// Dependencies
-let cron = require("node-cron");
-let moment = require("moment");
+import * as cron from "node-cron";
+import moment from "moment";
 
-// Utils
-let log = require("../../utils/logger");
-let config = require("../../utils/configHandler").getConfig();
+import * as log from "../../utils/logger";
+import { getConfig } from "../../utils/configHandler";
 
-// Other commands
-let unban = require("./unban");
+import * as unban from "./unban";
+
+const config = getConfig();
 
 /**
- * Ban a given user
- *
- * @param {import("discord.js").Client} client
- * @param {import("discord.js").Message} message
- * @param {Array} args
- * @param {Function} callback
- * @returns {Function} callback
+ * @type {Record<String, number>}
  */
-exports.run = (client, message, args, callback) => {
-    let mentioned = message.mentions?.users?.first?.();
-    let reason = args.slice(1).join(" ");
-
-    if (!mentioned) return callback(`Da ist kein username... Mach \`${config.bot_settings.prefix.mod_prefix}ban \@username [Banngrund]\``);
-
-    let mentionedUserObject = message.guild.member(mentioned);
-    if (mentionedUserObject.id === "371724846205239326" || mentionedUserObject.id === client.user.id) return callback("Fick dich bitte.");
-
-    if (mentionedUserObject.roles.cache.some(r => r.id === config.ids.banned_role_id)
-        && (!(mentionedUserObject.id in exports.bans) || exports.bans[mentionedUserObject.id] === 0)) return callback("Dieser User ist bereits gebannt du kek.");
-
-    if (!exports.ban(mentionedUserObject)) return callback("Eine der angegebenen Rollen für das bannen existiert nich.");
-
-    message.channel.send(`User ${mentionedUserObject} wurde gebannt!\nGrund: ${reason ?? "Kein Grund angegeben"}`);
-    message.guild.member(mentioned).send(`Du wurdest von der Coding Shitpost Zentrale gebannt!
-${!reason ? "Es wurde kein Banngrund angegeben." : "Banngrund: " + reason}
-Falls du Fragen zu dem Bann hast, kannst du dich im <#${config.ids.banned_channel_id}> Channel ausheulen.
-
-Lg & xD™`
-    );
-
-    return callback();
-};
-
-exports.bans = {
+export const bans = {
     /*
     user_id: unban_at as unix timestamp
     */
 };
 
-exports.saveBans = () => {
+export const saveBans = () => {
     // tbd
 };
 
-exports.loadBans = () => {
+export const loadBans = () => {
     // tbd
 };
 
-exports.startCron = (client) => {
-    cron.schedule("* * * * *", () => {
-        let userIds = Object.keys(exports.bans);
-        let modified = false;
 
-        for (let userId of userIds) {
-            let unbanAt = exports.bans[userId];
-
-            if (unbanAt !== 0 && unbanAt < Date.now()) {
-                let user = client.guilds.cache.get(config.ids.guild_id).members.cache.get(userId);
-
-                if (user) {
-                    unban.unban(user);
-                    user.send("Glückwunsch! Dein selbst auferlegter Bann in der Coding Shitpost Zentrale ist beendet.");
-                }
-
-                delete exports.bans[userId];
-                modified = true;
-            }
-        }
-
-        if (modified) {
-            exports.saveBans();
-        }
-    });
-};
-
-exports.ban = (user, duration) => {
+export const ban = (user, duration) => {
     let defaultRole = user.guild.roles.cache.find(role => role.id === config.ids.default_role_id);
     let bannedRole = user.guild.roles.cache.find(role => role.id === config.ids.banned_role_id);
 
@@ -127,11 +67,68 @@ exports.ban = (user, duration) => {
         unbanAt = unbanAtMoment.valueOf();
     }
 
-    exports.bans[user.id] = unbanAt;
+    bans[user.id] = unbanAt;
 
-    exports.saveBans();
+    saveBans();
 
     return true;
 };
 
-exports.description = `Bannt einen User indem er ihn von allen Channels ausschließt.\nBenutzung: ${config.bot_settings.prefix.mod_prefix}ban username [Banngrund]`;
+/**
+ * Ban a given user
+ *
+ * @param {import("discord.js").Client} client
+ * @param {import("discord.js").Message} message
+ * @param {Array<any>} args
+ * @returns {Promise<string | void>}
+ */
+export const run = async(client, message, args) => {
+    let mentioned = message.mentions?.users?.first?.();
+    let reason = args.slice(1).join(" ");
+
+    if (!mentioned) return `Da ist kein username... Mach \`${config.bot_settings.prefix.mod_prefix}ban \@username [Banngrund]\``;
+
+    let mentionedUserObject = message.guild.member(mentioned);
+    if (mentionedUserObject.id === "371724846205239326" || mentionedUserObject.id === client.user.id) return "Fick dich bitte.";
+
+    if (mentionedUserObject.roles.cache.some(r => r.id === config.ids.banned_role_id)
+        && (!(mentionedUserObject.id in bans) || bans[mentionedUserObject.id] === 0)) return "Dieser User ist bereits gebannt du kek.";
+
+    if (!ban(mentionedUserObject)) return "Eine der angegebenen Rollen für das bannen existiert nich.";
+
+    await message.channel.send(`User ${mentionedUserObject} wurde gebannt!\nGrund: ${reason ?? "Kein Grund angegeben"}`);
+    await message.guild.member(mentioned).send(`Du wurdest von der Coding Shitpost Zentrale gebannt!
+${!reason ? "Es wurde kein Banngrund angegeben." : "Banngrund: " + reason}
+Falls du Fragen zu dem Bann hast, kannst du dich im <#${config.ids.banned_channel_id}> Channel ausheulen.
+
+Lg & xD™`
+    );
+};
+export const startCron = (client) => {
+    cron.schedule("* * * * *", () => {
+        let userIds = Object.keys(bans);
+        let modified = false;
+
+        for (let userId of userIds) {
+            let unbanAt = bans[userId];
+
+            if (unbanAt !== 0 && unbanAt < Date.now()) {
+                let user = client.guilds.cache.get(config.ids.guild_id).members.cache.get(userId);
+
+                if (user) {
+                    unban.unban(user);
+                    user.send("Glückwunsch! Dein selbst auferlegter Bann in der Coding Shitpost Zentrale ist beendet.");
+                }
+
+                delete bans[userId];
+                modified = true;
+            }
+        }
+
+        if (modified) {
+            saveBans();
+        }
+    });
+};
+
+export const description = `Bannt einen User indem er ihn von allen Channels ausschließt.\nBenutzung: ${config.bot_settings.prefix.mod_prefix}ban username [Banngrund]`;

@@ -1,14 +1,12 @@
-"use strict";
-
 // ================================= //
 // = Copyright (c) diewellenlaenge = //
 // ================================= //
 
-let { Util } = require("discord.js");
+import { Util } from "discord.js";
 
-// Utils
-let log = require("../utils/logger");
-let config = require("../utils/configHandler").getConfig();
+import * as log from "../utils/logger";
+import { getConfig } from "../utils/configHandler";
+const config = getConfig();
 
 const pendingMessagePrefix = "*(Pending-Woisgang-Ping, bitte zustimmen)*";
 
@@ -21,42 +19,37 @@ let lastPing = 0;
  *
  * @param {import("discord.js").Client} client
  * @param {import("discord.js").Message} message
- * @param {Array} args
- * @param {Function} callback
- * @returns {Promise<Function>} callback
+ * @param {Array<unknown>} args
+ * @returns {Promise<string | void>}
  */
-exports.run = async(client, message, args, callback) => {
+export const run = async(client, message, args) => {
     const isMod = message.member.roles.cache.some(r => config.bot_settings.moderator_roles.includes(r.name));
 
     if (!isMod && !message.member.roles.cache.has(config.ids.woisgang_role_id)){
         log.warn(`User "${message.author.tag}" (${message.author}) tried command "${config.bot_settings.prefix.command_prefix}woisping" and was denied`);
 
-        return callback(
-            `Tut mir leid, ${message.author}. Du hast nicht genügend Rechte um dieses Command zu verwenden =(`
-        );
+        return `Tut mir leid, ${message.author}. Du hast nicht genügend Rechte um dieses Command zu verwenden =(`;
     }
 
     const now = Date.now();
 
     if (!isMod && lastPing + config.bot_settings.woisping_limit * 1000 > now) {
-        return callback("Piss dich und spam nicht.");
+        return "Piss dich und spam nicht.";
     }
 
     const reason = `${Util.removeMentions(Util.cleanContent(args.join(" "), message))} (von ${message.member})`;
 
     if (isMod) {
         lastPing = now;
-        message.channel.send(`<@&${config.ids.woisgang_role_id}> ${reason}`);
+        await message.channel.send(`<@&${config.ids.woisgang_role_id}> ${reason}`);
     }
     else {
         const msg = await message.channel.send(`${pendingMessagePrefix} ${reason}`);
-        msg.react("👍");
+        await msg.react("👍");
 
         // we don't set lastPing here to allow multiple concurrent requests
         // let the most liked reason win...
     }
-
-    return callback();
 };
 
 /**
@@ -65,12 +58,12 @@ exports.run = async(client, message, args, callback) => {
  * @param {any} event
  * @param {import("discord.js").Client} client
  * @param {import("discord.js").Message} message
- * @returns
+ * @returns {Promise<boolean>}
  */
-exports.reactionHandler = async(event, client, message) => {
+export const reactionHandler = async(event, client, message) => {
     if (message.embeds.length !== 0
-		|| !message.content.startsWith(pendingMessagePrefix)
-		|| event.d.emoji.name !== "👍") {
+        || !message.content.startsWith(pendingMessagePrefix)
+        || event.d.emoji.name !== "👍") {
         return false;
     }
 
@@ -112,10 +105,10 @@ exports.reactionHandler = async(event, client, message) => {
     }
     else if (!couldPing) {
         reaction.users.remove(data.user_id);
-        user.send("Somry, ich musste deine Zustimmung für den Woisgang-Ping entfernen, weil wir noch etwas warten müssen mit dem Ping.");
+        await user.send("Somry, ich musste deine Zustimmung für den Woisgang-Ping entfernen, weil wir noch etwas warten müssen mit dem Ping.");
     }
 
     return true;
 };
 
-exports.description = `Mitglieder der @Woisgang-Rolle können einen Ping an diese Gruppe absenden. Es müssen mindestens ${config.bot_settings.woisping_threshold} Woisgang-Mitglieder per Reaction zustimmen.\nUsage: ${config.bot_settings.prefix.command_prefix}woisping Text`;
+export const description = `Mitglieder der @Woisgang-Rolle können einen Ping an diese Gruppe absenden. Es müssen mindestens ${config.bot_settings.woisping_threshold} Woisgang-Mitglieder per Reaction zustimmen.\nUsage: ${config.bot_settings.prefix.command_prefix}woisping Text`;

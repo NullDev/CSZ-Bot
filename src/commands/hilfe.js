@@ -1,15 +1,12 @@
-"use strict";
-
 // ========================= //
 // = Copyright (c) NullDev = //
 // ========================= //
 
-// Core Modules
-let fs = require("fs");
-let path = require("path");
+import { promises as fs } from "fs";
+import * as path from "path";
 
-// Utils
-let config = require("../utils/configHandler").getConfig();
+import { getConfig } from "../utils/configHandler";
+const config = getConfig();
 
 /**
  * Retrieves commands in chunks that doesn't affect message limit
@@ -21,11 +18,11 @@ const getCommandMessageChunksMatchingLimit = (commands) => {
     let idx = 0;
 
     commands.forEach(value => {
-        if(chunk[idx] && chunk[idx].length + (value[0].length + value[1].length + 10) > 2000) {
+        if (chunk[idx] && chunk[idx].length + (value[0].length + value[1].length + 10) > 2000) {
             chunk[idx] += "```";
             ++idx;
         }
-        if(!chunk[idx]) {
+        if (!chunk[idx]) {
             chunk[idx] = "```css\n";
         }
         chunk[idx] += `${value[0]}: ${value[1]}\n\n`;
@@ -41,38 +38,47 @@ const getCommandMessageChunksMatchingLimit = (commands) => {
  *
  * @param {import("discord.js").Client} client
  * @param {import("discord.js").Message} message
- * @param {Array} args
- * @param {Function} callback
- * @returns {Function} callback
+ * @param {Array<unknown>} args
+ * @returns {Promise<string | void>}
  */
-exports.run = (client, message, args, callback) => {
+export const run = async(client, message, args) => {
     let commandObj = {};
-    let commandDir = __dirname;
+    const commandDir = __dirname;
 
-    fs.readdirSync(commandDir).forEach(file => {
+    const files = await fs.readdir(commandDir);
+    for (const file of files) {
+        if (!file.endsWith(".js")) {
+            continue; // Skip source maps etc
+        }
+
         let cmdPath = path.resolve(commandDir, file);
-        let stats = fs.statSync(cmdPath);
+        let stats = await fs.stat(cmdPath);
 
-        if (!stats.isDirectory()){
+        if (!stats.isDirectory()) {
             // Prefix + Command name
             let commandStr = config.bot_settings.prefix.command_prefix + file.toLowerCase().replace(/\.js/gi, "");
 
             // commandStr is the key and the description of the command is the value
-            commandObj[commandStr] = require(path.join(commandDir, file)).description;
+            const modulePath = path.join(commandDir, file);
+            const module = await import(modulePath);
+
+            commandObj[commandStr] = module.description;
         }
-    });
+    }
 
-
-    // Add :envelope: reaction to authors message
-    message.react("✉");
-    message.author.send(
+    await message.author.send(
         "Hallo, " + message.author.username + "!\n\n" +
         "Hier ist eine Liste mit Commands:\n\n" +
-        "Bei Fragen kannst du dich an @ShadowByte#1337 (<@!371724846205239326>) wenden!");
+        "Bei Fragen kannst du dich an @ShadowByte#1337 (<@!371724846205239326>) wenden!"
+    );
 
-    getCommandMessageChunksMatchingLimit(Object.entries(commandObj))
-        .forEach(chunk => message.author.send(chunk));
-    return callback();
+    const chunks = getCommandMessageChunksMatchingLimit(Object.entries(commandObj));
+    for (const chunk of chunks) {
+        await message.author.send(chunk);
+    }
+
+    // Add :envelope: reaction to authors message
+    await message.react("✉"); // Send this last, so we only display a confirmation when everything actually worked
 };
 
-exports.description = "Listet alle commands auf";
+export const description = "Listet alle commands auf";

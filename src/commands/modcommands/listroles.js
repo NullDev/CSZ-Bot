@@ -1,5 +1,3 @@
-"use strict";
-
 // ========================= //
 // = Copyright (c) NullDev = //
 // ========================= //
@@ -9,18 +7,15 @@
  *
  * @param {import("discord.js").Client} client
  * @param {import("discord.js").Message} message
- * @param {Array} args
- * @param {Function} callback
- * @returns {Function} callback
+ * @param {Array<unknown>} args
+ * @returns {Promise<string | void>}
  */
-exports.run = (client, message, args, callback) => {
+export const run = async(client, message, args) => {
     let roleNames = message.guild.roles.cache
         .filter(element => String(element.name).toLowerCase() !== "@everyone")
         .map(element => element.name);
 
-    message.channel.send("Roles: \n\n" + roleNames.join(", "));
-
-    return callback();
+    await message.channel.send("Roles: \n\n" + roleNames.join(", "));
 };
 
-exports.description = "Listet alle server rollen auf";
+export const description = "Listet alle server rollen auf";

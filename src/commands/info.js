@@ -1,20 +1,25 @@
-"use strict";
-
 // ========================= //
 // = Copyright (c) NullDev = //
 // ========================= //
 
-let fetch = require("node-fetch").default;
+import fetch from "node-fetch";
+
+const fetchContributions = () => {
+    return fetch("https://api.github.com/repos/NullDev/CSC-Bot/contributors", {
+        headers: { Accept: "application/vnd.github.v3+json" }
+    }).then(res => res.json());
+};
 
 /**
  * Get all contributors from GitHub
  *
  * @return {Promise<String>}
  */
-let getContributors = function(){
-    return new Promise(async resolve => resolve((await (await fetch("https://api.github.com/repos/NullDev/CSC-Bot/contributors", {
-        headers: { Accept: "application/vnd.github.v3+json" }
-    })).json()).filter(e => e.type === "User").map(e => `<${e.html_url}> (Contributions: ${e.contributions})`).join("\n")));
+let formatContributors = (contributors) => {
+    return contributors
+        .filter(e => e.type === "User")
+        .map(e => `<${e.html_url}> (Contributions: ${e.contributions})`)
+        .join("\n");
 };
 
 /**
@@ -22,18 +27,19 @@ let getContributors = function(){
  *
  * @param {import("discord.js").Client} client
  * @param {import("discord.js").Message} message
- * @param {Array} args
- * @param {Function} callback
- * @returns {Promise<Function>} callback
+ * @param {Array<unknown>} args
+ * @returns {Promise<string | void>}
  */
-exports.run = async(client, message, args, callback) => {
-    message.react("✉");
-    message.author.send(`
+export const run = async(client, message, args) => {
+    const contributors = await fetchContributions();
+    const formattedContributors = formatContributors(contributors);
+
+    await message.author.send(`
         Programmiert von ShadowByte#1337 für die Coding Shitpost Zentrale (<https://discord.gg/FABdvae>)
-        
+
         Contributions von:
-        ${(await getContributors())} 
-        
+        ${(formattedContributors)}
+
         Eckdaten:
         - Programmiersprache: NodeJS
         - NodeJS Version: ${process.version}
@@ -43,11 +49,10 @@ exports.run = async(client, message, args, callback) => {
         - System CPU usage time: ${process.cpuUsage().system}
         - User CPU usage time: ${process.cpuUsage().user}
         - Architecture: ${process.arch}
-        
+
         Source Code: <https://github.com/NullDev/CSC-Bot>
     `.replace(/  +/g, "")); // Remove leading indents
-
-    return callback();
+    await message.react("✉"); // Only react when the message was actually sent
 };
 
-exports.description = "Listet Informationen über diesen Bot";
+export const description = "Listet Informationen über diesen Bot";

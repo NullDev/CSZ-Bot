@@ -1,22 +1,21 @@
-"use strict";
-
 // ========================= //
 // = Copyright (c) NullDev = //
 // ========================= //
 
-// core modules
-let fs = require("fs");
-let path = require("path");
+import * as fs from "fs";
+import * as path from "path";
 
-// Utils
-let log = require("../utils/logger");
+import * as log from "../utils/logger";
+import { getConfig } from "../utils/configHandler";
+
+const config = getConfig();
 
 /**
  * Handles Birthdays
  *
  * @class BdayHandler
  */
-class BdayHandler {
+export default class BdayHandler {
     /**
      * Creates an instance of BdayHandler.
      * @param {import("discord.js").Client} client
@@ -25,7 +24,7 @@ class BdayHandler {
     constructor(client){
         this.client = client;
         this.path = path.join(__dirname, "..", "..", "database.json");
-        this.config = require("../utils/configHandler").getConfig();
+        this.config = config;
         this.bdayRole = client.guilds.cache.get(this.config.ids.guild_id).roles.cache.find(role => role.id === this.config.ids.bday_role_id);
 
         // Make sure file exists
@@ -60,5 +59,3 @@ class BdayHandler {
         });
     }
 }
-
-module.exports = BdayHandler;

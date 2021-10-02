@@ -1,5 +1,3 @@
-"use strict";
-
 // ========================= //
 // = Copyright (c) NullDev = //
 // ========================= //
@@ -7,26 +5,25 @@
 /** @typedef {import("discord.js").TextChannel} TC */
 
 // Dependencies
-let Discord = require("discord.js");
-let cron = require("node-cron");
+import * as Discord from "discord.js";
+import * as cron from "node-cron";
 
-// Utils
-let conf = require("./utils/configHandler");
-let log = require("./utils/logger");
-let timezone = require("./utils/timezone");
+import * as conf from "./utils/configHandler";
+import * as log from "./utils/logger";
+import * as timezone from "./utils/timezone";
 
 // Handler
-let messageHandler = require("./handler/messageHandler");
-let messageDeleteHandler = require("./handler/messageDeleteHandler");
-let reactionHandler = require("./handler/reactionHandler");
-let BdayHandler = require("./handler/bdayHandler");
-let fadingMessageHandler = require("./handler/fadingMessageHandler");
-let storage = require("./storage/storage");
+import messageHandler from "./handler/messageHandler";
+import messageDeleteHandler from "./handler/messageDeleteHandler";
+import reactionHandler from "./handler/reactionHandler";
+import BdayHandler from "./handler/bdayHandler";
+import * as fadingMessageHandler from "./handler/fadingMessageHandler";
+import * as storage from "./storage/storage";
 
 // Other commands
-let ban = require("./commands/modcommands/ban");
-let poll = require("./commands/poll");
-const GuildRagequit = require("./storage/model/GuildRagequit");
+import * as ban from "./commands/modcommands/ban";
+import * as poll from "./commands/poll";
+import GuildRagequit from "./storage/model/GuildRagequit";
 
 let version = conf.getVersion();
 let appname = conf.getName();
@@ -45,7 +42,23 @@ log.done("Started.");
 
 const config = conf.getConfig();
 const client = new Discord.Client({
-    disableMentions: "everyone"
+    allowedMentions: {
+        parse: ["users", "roles"],
+        repliedUser: true
+    },
+    intents: ["DIRECT_MESSAGES",
+        "GUILDS",
+        "GUILD_BANS",
+        "GUILD_EMOJIS_AND_STICKERS",
+        "GUILD_INTEGRATIONS",
+        "GUILD_INVITES",
+        "GUILD_MEMBERS",
+        "GUILD_MESSAGES",
+        "GUILD_MESSAGE_REACTIONS",
+        "GUILD_MESSAGE_TYPING",
+        "GUILD_PRESENCES",
+        "GUILD_VOICE_STATES",
+        "GUILD_WEBHOOKS"]
 });
 
 // @ts-ignore
@@ -138,7 +151,7 @@ client.on("guildMemberRemove", (member) => {
     GuildRagequit.incrementRagequit(member.guild.id, member.id);
 });
 
-client.on("message", (message) => messageHandler(message, client));
+client.on("messageCreate", (message) => messageHandler(message, client));
 
 client.on("messageDelete", (message) => messageDeleteHandler(message, client));
 

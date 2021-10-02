@@ -1,21 +1,18 @@
-"use strict";
-
 // ========================== //
 // = Copyright (c) s0LA1337 = //
 // ========================== //
 
-// Discord
-const { Util } = require("discord.js");
+import moment from "moment";
+import { Util } from "discord.js";
 
-// Utils
-let config = require("../utils/configHandler").getConfig();
+import { getConfig } from "../utils/configHandler";
+const config = getConfig();
 
-// Dependencies
-let moment = require("moment");
 
 /**
  * Creates a pseudo randomly generated number
- *
+ * @param {number} min
+ * @param {number} max
  * @returns {number} A pseudo randomly generated number
  */
 const pseudoRng = function(min, max) {
@@ -88,11 +85,10 @@ const constructResultStr = function(rolls) {
  *
  * @param {import("discord.js").Client} _client
  * @param {import("discord.js").Message} message
- * @param {Array} args
- * @param {Function} callback
- * @returns {Function} callback
+ * @param {Array<unknown>} args
+ * @returns {Promise<string | void>}
  */
-exports.run = (_client, message, args, callback) => {
+export const run = async(_client, message, args) => {
     let parsed = args[0]?.toLowerCase();
 
     // god i hate myself
@@ -106,33 +102,29 @@ exports.run = (_client, message, args, callback) => {
     let error = errorHandling(Number(amount), Number(sides));
 
     if(error) {
-        return callback(error);
+        return error;
     }
-
-    let e = {
-        embed: {
-            title: Util.cleanContent(`${parsed}:`, message),
-            timestamp: moment.utc().format(),
-            author: {
-                name: `Würfel Resultat für ${message.author.username}`,
-                icon_url: message.author.displayAvatarURL()
-            }
-        }
-    };
 
     const maxHexCol = 16777214;
 
-    e.embed.color = pseudoRng(0, maxHexCol);
-    e.embed.description = constructResultStr(diceResult(amount, sides));
+    let embed = {
+        title: Util.cleanContent(`${parsed}:`, message),
+        timestamp: moment.utc().format(),
+        author: {
+            name: `Würfel Resultat für ${message.author.username}`,
+            icon_url: message.author.displayAvatarURL()
+        },
+        color: pseudoRng(0, maxHexCol),
+        description: constructResultStr(diceResult(amount, sides))
+    };
 
-    message.channel
-        .send(e)
-        .then(() => message.delete());
-
-    return callback();
+    await message.channel.send({
+        embeds: [embed]
+    });
+    await message.delete();
 };
 
-exports.description =
+export const description =
 `Wirft x beliebig viele Würfel mit y vielen Seiten.
 Usage: ${config.bot_settings.prefix.command_prefix}roll xdy
 Mit x als die Anzahl der Würfel (<11) und y als die Menge der Seiten der Würfel (<=100)`;
