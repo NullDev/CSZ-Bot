@@ -41,28 +41,24 @@ export const run = async(client: Client, message: Message, args: string[]): Prom
             // insult user, then explain meta questions
             choice = Math.max(choice, Math.floor(Math.random() * germanInsults.length));
             insult = germanInsults[choice];
-            await message.channel.send(`
-            Hör auf, Metafragen zu stellen, ${insult}
-            Das ist reine Zeitverschwendung und hindert uns nur daran, ~~uns zu beleidigen~~ an echten Problemen zu arbeiten.
-            Für Tipps zum besser machen: <https://metafrage.de>
-            `);
+            await message.channel.send(
+                `Hör auf, Metafragen zu stellen, ${insult}\n` +
+                "Das ist reine Zeitverschwendung und hindert uns nur daran, ~~uns zu beleidigen~~ an echten Problemen zu arbeiten.\n" +
+                "Für Tipps zum besser machen: <https://metafrage.de>");
         }
         else {
             // insult user, then explain meta questions - but this time in english!
             choice = Math.max(choice, Math.floor(Math.random() * englishInsults.length));
             insult = englishInsults[choice];
 
-            await message.channel.send(`
-            Stop asking meta questions, ${insult}
-            It's a waste of time and stops us from ~~insulting each other~~ working on real problems.
-            Here's a few hints on how to do it better: <https://metaquestion.net>
-            `);
+            await message.channel.send(
+                `Stop asking meta questions, ${insult}\n` +
+                "It's a waste of time and stops us from ~~insulting each other~~ working on real problems.\n" +
+                "Here's a few hints on how to do it better: <https://metaquestion.net>");
         }
     }
     else {
-        await message.channel.send(`
-        Bruder, es gibt genau eine Option und die heißt -e! Versuch gar nicht erst, mich zu verarschen!
-        `);
+        await message.channel.send("Bruder, es gibt genau eine Option und die heißt -e! Versuch gar nicht erst, mich zu verarschen!");
     }
 };
 
