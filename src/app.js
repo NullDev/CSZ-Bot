@@ -125,7 +125,7 @@ client.on("ready", async() => {
 });
 
 client.on("ready", async() => {
-    registerAllCommandsAsGuildCommands()
+    registerAllCommandsAsGuildCommands();
 });
 
 client.on("guildCreate", guild => log.info(`New guild joined: ${guild.name} (id: ${guild.id}) with ${guild.memberCount} members`));
