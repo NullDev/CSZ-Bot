@@ -24,6 +24,7 @@ import * as storage from "./storage/storage";
 import * as ban from "./commands/modcommands/ban";
 import * as poll from "./commands/poll";
 import GuildRagequit from "./storage/model/GuildRagequit";
+import { registerAllCommandsAsGuildCommands } from "./handler/applicationCommandHandler";
 
 let version = conf.getVersion();
 let appname = conf.getName();
@@ -121,6 +122,10 @@ client.on("ready", async() => {
     poll.startCron(client);
 
     fadingMessageHandler.startLoop(client);
+});
+
+client.on("ready", async() => {
+    registerAllCommandsAsGuildCommands()
 });
 
 client.on("guildCreate", guild => log.info(`New guild joined: ${guild.name} (id: ${guild.id}) with ${guild.memberCount} members`));
