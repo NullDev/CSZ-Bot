@@ -78,16 +78,25 @@ function scheduleTimezoneFixedCronjob(cronString) {
         /** @type {TC} */
         (csz.channels.cache.get(config.ids.hauptchat_id)).send("Es ist `13:37` meine Kerle.\nBleibt hydriert! :grin: :sweat_drops:");
 
-        // Auto-Prune members
-        csz.members.prune({ days: 2, reason: "auto prune" })
-            .then(count => {
-                log.info(`Auto-prune: ${count} members pruned.`);
-                if (count >= 1) {
-                    /** @type {TC} */
-                    (csz.channels.cache.get(config.ids.hauptchat_id)).send(`Hab grad ${count} jockel weg-gepruned :joy:`);
-                }
-            }).catch(e => log.error(e));
-
+        //Auto-kick members
+        let membersWORoles = csz.members.cache.filter(m => !m.roles.cache.size);
+        let cnt = 0;
+        for(const [key, value] of membersWORoles){
+            if((membersWORoles.get(key).joinedTimestamp - Date.now()) > 48){
+                membersWORoles.get(key).kick;
+                cnt++;
+            }
+        }
+        log.info(`Auto-kick: ${cnt} members kicked.`);
+        if(cnt >= 1){
+            /** @type {TC} */
+            (csz.channels.cache.get(config.ids.hauptchat_id)).send(`Hab grad ${cnt} jockel gekickt :shibagrin:`);
+        } else{
+             /** @type {TC} */
+            (csz.channels.cache.get(config.ids.hauptchat_id)).send("Heute leider keine jockel gebannt :sadpingu:");
+        }
+       
+      
         const tomorrow = Date.now() + 60/* s*/ * 1000/* ms*/ * 60/* m*/ * 24/* h*/;
         const newCronString = timezone.getCronjobStringForHydrate(tomorrow);
         scheduleTimezoneFixedCronjob(newCronString);
