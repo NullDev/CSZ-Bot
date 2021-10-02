@@ -21,7 +21,7 @@ exports.run = async(client, message, args, callback) => {
     if(isNewInvite) {
         return callback(`Der Bruder ${invitator.username} hat den neuen Bruder ${invitedMember.username} eingeladen und du hast dies so eben bestätigt!`);
     }
-    
+
     return callback(`Der Bruder ${invitedMember.username} wurde bereits gestempelt!`);
 };
 
