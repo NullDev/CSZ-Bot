@@ -21,9 +21,8 @@ exports.run = async(client, message, args, callback) => {
     if(isNewInvite) {
         return callback(`Der Bruder ${invitator.username} hat den neuen Bruder ${invitedMember.username} eingeladen und du hast dies so eben bestätigt!`);
     }
-    else {
-        return callback(`Der Bruder ${invitedMember.username} wurde bereits gestempelt!`);
-    }
+    
+    return callback(`Der Bruder ${invitedMember.username} wurde bereits gestempelt!`);
 };
 
 exports.description = `Stempelkarten für Jeden! Mit ~stempeln @invitator @invitedMember kannst du ab sofort User stempeln! Der erste User ist dabei der, 
