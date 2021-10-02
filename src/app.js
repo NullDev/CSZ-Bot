@@ -80,7 +80,7 @@ function scheduleTimezoneFixedCronjob(cronString) {
 
         // Auto-kick members
         let membersWORoles = csz.members.cache.filter(m => {
-            return m.roles.cache.size === 0 && Date.now - m.joinedTimestamp >= 48 * 3_600_000;
+            return m.roles.cache.size === 0 && Date.now() - m.joinedTimestamp >= 48 * 3_600_000;
         });
         for(member of membersWORoles) {
             member.kick();
