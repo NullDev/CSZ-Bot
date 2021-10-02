@@ -52,7 +52,7 @@ const client = new Discord.Client({
         "GUILD_EMOJIS_AND_STICKERS",
         "GUILD_INTEGRATIONS",
         "GUILD_INVITES",
-        "GUILD_MEMBERS", 
+        "GUILD_MEMBERS",
         "GUILD_MESSAGES",
         "GUILD_MESSAGE_REACTIONS",
         "GUILD_MESSAGE_TYPING",
