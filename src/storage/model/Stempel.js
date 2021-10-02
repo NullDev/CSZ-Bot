@@ -7,8 +7,8 @@ let uuid = require("uuid");
 class Stempel extends Model {
     /**
      *
-     * @param {BigInt} invitator
-     * @param {BigInt} invitedMember
+     * @param {import("discord.js").Snowflake} invitator
+     * @param {import("discord.js").Snowflake} invitedMember
      * @returns true/false depending if the invitedMember is already in the database
      */
     static async insertStempel(invitator, invitedMember) {
@@ -25,7 +25,7 @@ class Stempel extends Model {
         return isNewItem;
     }
 
-    static async getStempelByinvitator(invitator) {
+    static async getStempelByInvitator(invitator) {
         return await Stempel.findAll({
             where: {
                 invitator
