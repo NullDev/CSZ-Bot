@@ -61,12 +61,11 @@ const secureDecisionMaker = (question, max = 1) => (rng(0, max, (Date.now() * io
  *
  * @param {import("discord.js").Client} client
  * @param {import("discord.js").Message} message
- * @param {array} args
- * @param {Function} callback
- * @returns {Function} callback
+ * @param {Array<unknown>} args
+ * @returns {Promise<string | void>}
  */
-export const run = (client, message, args, callback) => {
-    if (!args.length) return callback("Bruder da ist keine Frage :c");
+export const run = async(client, message, args) => {
+    if (!args.length) return "Bruder da ist keine Frage :c";
 
     let question = args.join(" ").replace(/\s\s+/g, " ");
     const options = question.split(/,|;|\s+oder\s+/gi).map(s => s.trim()).filter(s => !!s);
@@ -76,7 +75,7 @@ export const run = (client, message, args, callback) => {
     }
     if (!question.endsWith("?")) question += "?";
 
-    let embed = {
+    const embed = {
         embed: {
             title: Util.cleanContent(question, message),
             timestamp: moment.utc().format(),
@@ -86,6 +85,7 @@ export const run = (client, message, args, callback) => {
             }
         }
     };
+
     if(options.length === 1) {
         const decision = secureDecisionMaker(question);
         let file;
@@ -108,11 +108,8 @@ export const run = (client, message, args, callback) => {
         embed.embed.description = `Mashallah, ich rate dir zu **${options[decision]}**!`;
     }
 
-    message.channel
-        .send(/** @type {any} embed */ (embed))
-        .then(() => message.delete());
-
-    return callback();
+    await message.channel.send(/** @type {any} embed */ (embed));
+    await message.delete();
 };
 
 export const description = `Macht eine Secure Decision mithilfe eines komplexen, hochoptimierten, Blockchain Algorithmus.\nUsage:\n**ja/nein Frage**\n ${config.bot_settings.prefix.command_prefix}sdm [Hier die Frage]\n\n**Secure Auswahl**\n\n${config.bot_settings.prefix.command_prefix}sdm [Auswahl 1]; [Auswahl 2]`;

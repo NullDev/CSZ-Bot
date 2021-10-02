@@ -13,11 +13,10 @@ const config = getConfig();
  *
  * @param {import("discord.js").Client} client
  * @param {import("discord.js").Message} message
- * @param {Array} args
- * @param {Function} callback
- * @returns {Function} callback
+ * @param {Array<unknown>} args
+ * @returns {Promise<string | void>}
  */
-export const run = async(client, message, args, callback) => {
+export const run = async(client, message, args) => {
     let commandObj = {};
     let commandDir = __dirname;
 
@@ -51,15 +50,13 @@ export const run = async(client, message, args, callback) => {
     }
 
     // Add :envelope: reaction to authors message
-    message.react("✉");
-    message.author.send(
+    await message.author.send(
         "Hallo, " + message.author + "!\n\n" +
         "Hier ist eine Liste mit commands:\n\n```CSS\n" +
         commandText +
         "```"
     );
-
-    return callback();
+    await message.react("✉"); // Send this last, so we only display a confirmation when everything actually worked
 };
 
 export const description = "Listet alle mod commands auf";

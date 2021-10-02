@@ -80,32 +80,29 @@ export const ban = (user, duration) => {
  * @param {import("discord.js").Client} client
  * @param {import("discord.js").Message} message
  * @param {Array<any>} args
- * @param {Function} callback
- * @returns {Function} callback
+ * @returns {Promise<string | void>}
  */
-export const run = (client, message, args, callback) => {
+export const run = async(client, message, args) => {
     let mentioned = message.mentions?.users?.first?.();
     let reason = args.slice(1).join(" ");
 
-    if (!mentioned) return callback(`Da ist kein username... Mach \`${config.bot_settings.prefix.mod_prefix}ban \@username [Banngrund]\``);
+    if (!mentioned) return `Da ist kein username... Mach \`${config.bot_settings.prefix.mod_prefix}ban \@username [Banngrund]\``;
 
     let mentionedUserObject = message.guild.member(mentioned);
-    if (mentionedUserObject.id === "371724846205239326" || mentionedUserObject.id === client.user.id) return callback("Fick dich bitte.");
+    if (mentionedUserObject.id === "371724846205239326" || mentionedUserObject.id === client.user.id) return "Fick dich bitte.";
 
     if (mentionedUserObject.roles.cache.some(r => r.id === config.ids.banned_role_id)
-        && (!(mentionedUserObject.id in bans) || bans[mentionedUserObject.id] === 0)) return callback("Dieser User ist bereits gebannt du kek.");
+        && (!(mentionedUserObject.id in bans) || bans[mentionedUserObject.id] === 0)) return "Dieser User ist bereits gebannt du kek.";
 
-    if (!ban(mentionedUserObject)) return callback("Eine der angegebenen Rollen für das bannen existiert nich.");
+    if (!ban(mentionedUserObject)) return "Eine der angegebenen Rollen für das bannen existiert nich.";
 
-    message.channel.send(`User ${mentionedUserObject} wurde gebannt!\nGrund: ${reason ?? "Kein Grund angegeben"}`);
-    message.guild.member(mentioned).send(`Du wurdest von der Coding Shitpost Zentrale gebannt!
+    await message.channel.send(`User ${mentionedUserObject} wurde gebannt!\nGrund: ${reason ?? "Kein Grund angegeben"}`);
+    await message.guild.member(mentioned).send(`Du wurdest von der Coding Shitpost Zentrale gebannt!
 ${!reason ? "Es wurde kein Banngrund angegeben." : "Banngrund: " + reason}
 Falls du Fragen zu dem Bann hast, kannst du dich im <#${config.ids.banned_channel_id}> Channel ausheulen.
 
 Lg & xD™`
     );
-
-    return callback();
 };
 export const startCron = (client) => {
     cron.schedule("* * * * *", () => {

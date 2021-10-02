@@ -1,10 +1,10 @@
 /* Disabled due to sequelize's DataTypes */
 /* eslint-disable new-cap */
 
-let { Model, DataTypes } = require("sequelize");
-let uuid = require("uuid");
+import { Model, DataTypes } from "sequelize";
+import uuid from "uuid";
 
-class Stempel extends Model {
+export default class Stempel extends Model {
     /**
      *
      * @param {import("discord.js").Snowflake} invitator
@@ -56,5 +56,3 @@ class Stempel extends Model {
         });
     }
 }
-
-module.exports = Stempel;

@@ -1,21 +1,15 @@
-"use strict";
-
 // ========================= //
 // = Copyright (c) NullDev = //
 // ========================= //
 
 // Dependencies
-let parseOptions = require("minimist");
+import parseOptions from "minimist";
+import type { Client, Message } from "discord.js";
 
 /**
  * Sends instructions on how to ask better questions
- * @param {import("discord.js").Client} client
- * @param {import("discord.js").Message} message
- * @param {Array} args
- * @param {Function} callback
- * @returns {Function} callback
  */
-exports.run = (client: any, message: any, args: any, callback: any) => {
+export const run = async(client: Client, message: Message, args: string[]): Promise<string | void> => {
     // parse options
     let options = parseOptions(args, {
         "boolean": [
@@ -26,7 +20,7 @@ exports.run = (client: any, message: any, args: any, callback: any) => {
         }
     });
 
-    if (args.length === 0 || (args.length === 1 && options.english)){
+    if (args.length === 0 || (args.length === 1 && options.english)) {
         // insult collections, feel free to expand
         let germanInsults: string[] = [
             "du Sohn einer ranzigen Hafendirne!",
@@ -43,33 +37,33 @@ exports.run = (client: any, message: any, args: any, callback: any) => {
         let choice: number = 0;
         let insult: string = "Idiot!";
 
-        if (!options.english){
+        if (!options.english) {
             // insult user, then explain meta questions
             choice = Math.max(choice, Math.floor(Math.random() * germanInsults.length));
             insult = germanInsults[choice];
-            message.channel.send(`
+            await message.channel.send(`
             Hör auf, Metafragen zu stellen, ${insult}
             Das ist reine Zeitverschwendung und hindert uns nur daran, ~~uns zu beleidigen~~ an echten Problemen zu arbeiten.
             Für Tipps zum besser machen: <https://metafrage.de>
             `);
         }
-        else{
+        else {
             // insult user, then explain meta questions - but this time in english!
             choice = Math.max(choice, Math.floor(Math.random() * englishInsults.length));
             insult = englishInsults[choice];
-            message.channel.send(`
+
+            await message.channel.send(`
             Stop asking meta questions, ${insult}
             It's a waste of time and stops us from ~~insulting each other~~ working on real problems.
             Here's a few hints on how to do it better: <https://metaquestion.net>
             `);
         }
     }
-    else{
-        message.channel.send(`
+    else {
+        await message.channel.send(`
         Bruder, es gibt genau eine Option und die heißt -e! Versuch gar nicht erst, mich zu verarschen!
         `);
     }
-    return callback();
 };
 
-exports.description = "Weist freundlich darauf hin, keine Metafragen zu stellen. -e für englischsprachige Hurensöhne.";
+export const description = "Weist freundlich darauf hin, keine Metafragen zu stellen. -e für englischsprachige Hurensöhne.";

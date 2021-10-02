@@ -28,9 +28,10 @@ const mock = (str) => str.split("").map(transform).join("");
  * Sends mocked embed
  * @param {import("discord.js").Message} message
  * @param {string} mocked
+ * @returns {Promise<void>}
  */
-const sendMock = (message, mocked) => {
-    let embed = {
+const sendMock = async(message, mocked) => {
+    const embed = {
         embed: {
             description: `${mocked} <:mock:677504337769005096>`,
             color: 0xFFC000,
@@ -41,7 +42,8 @@ const sendMock = (message, mocked) => {
         }
     };
 
-    message.channel.send(embed).then(() => message.delete());
+    await message.channel.send(embed);
+    await message.delete();
 };
 
 /**
@@ -49,32 +51,28 @@ const sendMock = (message, mocked) => {
  *
  * @param {import("discord.js").Client} client
  * @param {import("discord.js").Message} message
- * @param {Array} args
- * @param {Function} callback
- * @returns {Function} callback
+ * @param {Array<unknown>} args
+ * @returns {Promise<string | void>}
  */
-export const run = (client, message, args, callback) => {
+export const run = async(client, message, args) => {
     // TODO: Check for message type 19 when it is available in discord.js
     const referencedMessage = message.reference?.messageID;
-    if (!args.length && !referencedMessage) return callback(`Bruder du bist zu dumm zum mocken? Mach \`${config.bot_settings.prefix.command_prefix}mock DEIN TEXT HIER\` oder antworte auf eine Nachricht`);
+    if (!args.length && !referencedMessage) return `Bruder du bist zu dumm zum mocken? Mach \`${config.bot_settings.prefix.command_prefix}mock DEIN TEXT HIER\` oder antworte auf eine Nachricht`;
 
     if(referencedMessage && !args.length) {
         // TODO: inline reply when it is available in discord.js
-        message.channel.messages.fetch(referencedMessage)
-            .then(msg => {
-                if(!!msg.content) {
-                    sendMock(message, mock(msg.content));
-                }
-                else {
-                    message.channel.send("Brudi da ist nix, was ich mocken kann");
-                }
-            });
+        const msg = await message.channel.messages.fetch(referencedMessage);
+        if(!!msg.content) {
+            await sendMock(message, mock(msg.content));
+        }
+        else {
+            await message.channel.send("Brudi da ist nix, was ich mocken kann");
+        }
     }
     else {
         const text = message.content.slice(`${config.bot_settings.prefix.command_prefix}mock `.length);
         sendMock(message, mock(text));
     }
-    return callback();
 };
 
 export const description = `Mockt einen Text.\nBenutzung: ${config.bot_settings.prefix.command_prefix}mock [Hier dein Text] oder nur ${config.bot_settings.prefix.command_prefix}mock in einer reply`;
