@@ -32,17 +32,17 @@ const mock = (str) => str.split("").map(transform).join("");
  */
 const sendMock = async(message, mocked) => {
     const embed = {
-        embed: {
-            description: `${mocked} <:mock:677504337769005096>`,
-            color: 0xFFC000,
-            author: {
-                name: `${message.author.username}`,
-                icon_url: message.author.displayAvatarURL()
-            }
+        description: `${mocked} <:mock:677504337769005096>`,
+        color: 0xFFC000,
+        author: {
+            name: `${message.author.username}`,
+            icon_url: message.author.displayAvatarURL()
         }
     };
 
-    await message.channel.send(embed);
+    await message.channel.send({
+        embeds: [embed]
+    });
     await message.delete();
 };
 

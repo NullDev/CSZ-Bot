@@ -45,22 +45,22 @@ export const run = async(_client, message, args) => {
         const prompt = await getPrompt(userInput);
 
         const emoji = QUESTION_LEVEL_EMOJI_MAP[prompt.level];
-        const envelope = {
-            embed: {
-                title: `Ich hab noch nie ${Util.cleanContent(prompt.prompt, message)}`,
-                timestamp: moment.utc().format(),
-                color: 0x2ecc71,
-                author: {
-                    name: `${message.author.username} ${emoji}`,
-                    icon_url: message.author.displayAvatarURL()
-                },
-                footer: {
-                    text: "🍻: Hab ich schon, 🚱: Hab ich noch nie"
-                }
+        const embed = {
+            title: `Ich hab noch nie ${Util.cleanContent(prompt.prompt, message)}`,
+            timestamp: moment.utc().format(),
+            color: 0x2ecc71,
+            author: {
+                name: `${message.author.username} ${emoji}`,
+                icon_url: message.author.displayAvatarURL()
+            },
+            footer: {
+            text: "🍻: Hab ich schon, 🚱: Hab ich noch nie"
             }
         };
 
-        const sentMessage = await message.channel.send(envelope);
+        const sentMessage = await message.channel.send({
+            embeds: [embed] 
+        });
         await Promise.all([
             message.delete(),
             sentMessage.react("🍻"),

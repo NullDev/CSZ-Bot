@@ -138,15 +138,13 @@ export const run = async(client, message, args) => {
     }
 
     const embed = {
-        embed: {
-            title: pollArray[0],
-            description: optionstext,
-            timestamp: moment.utc().format(),
-            color: "#FFA07A",
-            author: {
-                name: `${options.straw ? "Strawpoll" : "Umfrage"} von ${message.author.username}`,
-                icon_url: message.author.displayAvatarURL()
-            }
+        title: pollArray[0],
+        description: optionstext,
+        timestamp: moment.utc().format(),
+        color: "#FFA07A",
+        author: {
+            name: `${options.straw ? "Strawpoll" : "Umfrage"} von ${message.author.username}`,
+            icon_url: message.author.displayAvatarURL()
         }
     };
 
@@ -159,12 +157,12 @@ export const run = async(client, message, args) => {
         }
 
         footer.push("Erweiterbar mit .extend als Reply");
-        embed.embed.color = "GREEN";
+        embed.color = "GREEN";
     }
 
     if (options.delayed) {
         footer.push("⏳");
-        embed.embed.color = "#a10083";
+        embed.color = "#a10083";
     }
 
     if (!options.straw) {
@@ -173,11 +171,11 @@ export const run = async(client, message, args) => {
 
     if(options.straw) {
         footer.push("Einzelauswahl");
-        embed.embed.color = "#FF4500";
+        embed.color = "#FF4500";
     }
 
     if (footer.length) {
-        embed.embed.footer = {
+        embed.footer = {
             text: footer.join(" • ")
         };
     }
@@ -188,7 +186,9 @@ export const run = async(client, message, args) => {
         return "Du kannst keine verzögerte Abstimmung außerhalb des Umfragenchannels machen!";
     }
 
-    const pollMessage = await (/** @type {import("discord.js").TextChannel} */ channel).send(/** @type {Object} embed */(embed));
+    const pollMessage = await (/** @type {import("discord.js").TextChannel} */ channel).send({
+        embeds: [embed] 
+    });
     await message.delete();
     for (let i in pollOptions) {
         await pollMessage.react(EMOJI[i]);
@@ -259,23 +259,31 @@ export const startCron = (client) => {
                 }));
 
             let toSend = {
-                embed: {
-                    title: `Zusammenfassung: ${message.embeds[0].title}`,
-                    description: `${delayedPoll.reactions.map((x, index) => `${LETTERS[index]} ${delayedPoll.reactionMap[index]} (${x.length}):
-${x.map(uid => users[uid]).join("\n")}\n\n`).join("")}
+                title: `Zusammenfassung: ${message.embeds[0].title}`,
+                description: `${delayedPoll.reactions
+                    .map(
+                        (x, index) => `${LETTERS[index]} ${
+                            delayedPoll.reactionMap[index]
+                        } (${x.length}):
+${x.map((uid) => users[uid]).join("\n")}\n\n`
+                    )
+                    .join("")}
 `,
-                    timestamp: moment.utc().format(),
-                    author: {
-                        name: `${message.embeds[0].author.name}`,
-                        icon_url: message.embeds[0].author.iconURL
-                    },
-                    footer: {
-                        text: `Gesamtabstimmungen: ${delayedPoll.reactions.map(x => x.length).reduce((a, b) => a + b)}`
-                    }
-                }
+                timestamp: moment.utc().format(),
+                author: {
+                    name: `${message.embeds[0].author.name}`,
+                    icon_url: message.embeds[0].author.iconURL,
+                },
+                footer: {
+                    text: `Gesamtabstimmungen: ${delayedPoll.reactions
+                        .map((x) => x.length)
+                        .reduce((a, b) => a + b)}`,
+                },
             };
 
-            await channel.send(toSend);
+            await channel.send({
+                embeds: [toSend]
+            });
             await Promise.all(message.reactions.cache.map(reaction => reaction.remove()));
             await message.react("✅");
             delayedPolls.splice(delayedPolls.indexOf(delayedPoll), 1);
