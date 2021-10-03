@@ -43,22 +43,26 @@ $ `npm ci`<br><br>
         - Es müssen beide [Gateway Intents](https://discordjs.guide/popular-topics/intents.html#gateway-intents) eingeschalten werden.
         - Den Bot Token (NICHT die Application-ID oder den Public-Key) [in die Config](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L3) kopieren.
     - Um ID's kopieren zu können, den "Developer Mode" in den Discord Einstellungen aktivieren. Mit Rechts-Klick kann man dann die ID's kopieren:
-        - Die ID [des Servers](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L18)
-        - Die ID für [den Hauptchat](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L19)
-        - Die ID für [den Banned-Channel](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L31)
-        - Die ID für [den Umfrage-Channel](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L32)
+        - Die ID [des Servers](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L19)
+        - Die ID für [den Hauptchat](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L20)
+        - Die ID für [den Banned-Channel](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L32)
+        - Die ID für [den Umfrage-Channel](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L33)
     - Es müssen folgende Rollen am Server angelegt werden:
         - Moderator-Rolle ([Name der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L12)) - CSZ Default: Moderader
         - Default Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L21)) - CSZ Default: Nerd
-        - Banned-Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L21)) - CSZ Default: B&
-        - Geburtstags-Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L22)) - CSZ Default: Geburtstagskind
-        - Gründerväter-Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L25)) - CSZ Default: Gründerväter
-        - Trusted-Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L27)) - CSZ Default: Trusted
-        - Rejoiner / Shame-Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L29)) - CSZ Default: Rejoiner
-        - Gründerväter-Gebannt-Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L26)) - CSZ Default: B&-Gründerväter
-        - Trusted-Gebannt-Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L28)) - CSZ Default: B&-Trusted
+        - Banned-Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L22)) - CSZ Default: B&
+        - Geburtstags-Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L23)) - CSZ Default: Geburtstagskind
+        - Gründerväter-Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L26)) - CSZ Default: Gründerväter
+        - Trusted-Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L28)) - CSZ Default: Trusted
+        - Rejoiner / Shame-Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L30)) - CSZ Default: Rejoiner
+        - Gründerväter-Gebannt-Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L27)) - CSZ Default: B&-Gründerväter
+        - Trusted-Gebannt-Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L29)) - CSZ Default: B&-Trusted
         - Woisgang-Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L24)) - CSZ Default: woisgang<br><br>
 8. Das Script starten <br>
-$ `npm start` <br><br>
+Zuerst<br>
+$ `npm run watch`<br>
+im Projektverzeichnis ausführen. Anschließend<br>
+$ `npm start`<br>
+in einem separaten Terminal ebenfalls im Projekverzeichnis aufrufen.<br><br>
 
 <img height=auto width=100% src="https://repository-images.githubusercontent.com/231836048/9d94c400-2f6b-11ea-95d8-f9e72ddf020f">
