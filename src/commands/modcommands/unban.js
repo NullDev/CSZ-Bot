@@ -53,7 +53,9 @@ export const run = async(client, message, args) => {
 
     if (!mentioned) return `Da ist kein username... Mach \`${config.bot_settings.prefix.mod_prefix}unban \@username\``;
 
-    let mentionedUserObject = message.guild.member(mentioned);
+    let mentionedUserObject = message.guild.members.cache.get(mentioned);
+
+    if(!mentionedUserObject) return "Was hast du denn gemacht? Hab zwar ne Mention aber keinen passenden User gefunden";
 
     if (mentionedUserObject.roles.cache.some(r => r.id === config.ids.default_role_id)) return "Dieser User ist nicht gebannt du kek.";
 
