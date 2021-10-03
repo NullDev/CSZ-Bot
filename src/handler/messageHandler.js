@@ -27,7 +27,7 @@ let lastSpecialCommand = 0;
  * @returns {import("discord.js").Collection<string, Message>}
  */
 const getInlineReplies = function(messageRef, client) {
-    return messageRef.channel.messages.cache.filter(m => m.author.id === client.user.id && m.reference?.messageID === messageRef.id);
+    return messageRef.channel.messages.cache.filter(m => m.author.id === client.user.id && m.reference?.messageId === messageRef.id);
 };
 
 /**
@@ -121,7 +121,7 @@ const whereMeme = function(message) {
 const wat = function(message, client) {
     const watEmote = message.guild.emojis.cache.find(e => e.name === "wat");
     if(watEmote) {
-        const messageRef = message.reference?.messageID;
+        const messageRef = message.reference?.messageId;
         // If reply to message
         if(messageRef) {
             message.channel.messages.fetch(messageRef)

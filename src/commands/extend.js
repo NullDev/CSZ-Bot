@@ -22,16 +22,16 @@ const config = getConfig();
  */
 export const run = async(client, message, args) => {
     if (!message.reference) return "Bruder schon mal was von der Replyfunktion gehört?";
-    if (message.reference.guildID !== config.ids.guild_id || !message.reference.channelID) return "Bruder bleib mal hier auf'm Server.";
+    if (message.reference.guildId !== config.ids.guild_id || !message.reference.channelId) return "Bruder bleib mal hier auf'm Server.";
 
-    let channel = client.guilds.cache.get(config.ids.guild_id).channels.cache.get(message.reference.channelID);
+    let channel = client.guilds.cache.get(config.ids.guild_id).channels.cache.get(message.reference.channelId);
 
     if (!channel) return "Bruder der Channel existiert nicht? LOLWUT";
 
     let replyMessage = null;
 
     try {
-        replyMessage = await /** @type {TC} */ (channel).messages.fetch(message.reference.messageID);
+        replyMessage = await /** @type {TC} */ (channel).messages.fetch(message.reference.messageId);
     }
     catch (err) {
         log.error(err);
@@ -80,7 +80,9 @@ export const run = async(client, message, args) => {
         delete embed.footer;
     }
 
-    const msg = await replyMessage.edit(undefined, embed);
+    const msg = await replyMessage.edit({
+        embeds: [embed]
+    });
     for (let i in additionalPollOptions) {
         await msg.react(poll.EMOJI[oldPollOptions.length + Number(i)]);
     }
