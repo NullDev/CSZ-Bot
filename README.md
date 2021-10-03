@@ -23,7 +23,7 @@ German description of the Discord Server:
 
 ## :wrench: Installation
 
-<sub>NodeJS Version: >=14.3.0</sub>
+<sub>NodeJS Version: >=16.6.0</sub>
 
 0. Terminal aufmachen und dorthin navigieren, wo man es downloaden möchte <br><br>
 1. Sichergehen, dass NodeJS installiert ist. Teste mit: <br>
