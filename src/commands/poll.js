@@ -171,7 +171,9 @@ export const run = async(client, message, args) => {
 
     if(options.straw) {
         footer.push("Einzelauswahl");
-        embed.color = "#FF4500";
+        if (!extendable) {
+            embed.color = "#FF4500";
+        }
     }
 
     if (footer.length) {
