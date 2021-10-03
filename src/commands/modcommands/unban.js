@@ -53,7 +53,7 @@ export const run = async(client, message, args) => {
 
     if (!mentioned) return `Da ist kein username... Mach \`${config.bot_settings.prefix.mod_prefix}unban \@username\``;
 
-    let mentionedUserObject = message.guild.members.cache.get(mentioned);
+    let mentionedUserObject = message.guild.members.cache.get(mentioned.id);
 
     if(!mentionedUserObject) return "Was hast du denn gemacht? Hab zwar ne Mention aber keinen passenden User gefunden";
 
