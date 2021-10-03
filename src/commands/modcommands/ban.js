@@ -88,16 +88,16 @@ export const run = async(client, message, args) => {
 
     if (!mentioned) return `Da ist kein username... Mach \`${config.bot_settings.prefix.mod_prefix}ban \@username [Banngrund]\``;
 
-    let mentionedUserObject = message.guild.member(mentioned);
-    if (mentionedUserObject.id === "371724846205239326" || mentionedUserObject.id === client.user.id) return "Fick dich bitte.";
+    let mentionedUser = message.guild.members.cache.get(mentioned.id);
+    if (mentionedUser.id === "371724846205239326" || mentionedUser.id === client.user.id) return "Fick dich bitte.";
 
-    if (mentionedUserObject.roles.cache.some(r => r.id === config.ids.banned_role_id)
-        && (!(mentionedUserObject.id in bans) || bans[mentionedUserObject.id] === 0)) return "Dieser User ist bereits gebannt du kek.";
+    if (mentionedUser.roles.cache.some(r => r.id === config.ids.banned_role_id)
+        && (!(mentionedUser.id in bans) || bans[mentionedUser.id] === 0)) return "Dieser User ist bereits gebannt du kek.";
 
-    if (!ban(mentionedUserObject)) return "Eine der angegebenen Rollen für das bannen existiert nich.";
+    if (!ban(mentionedUser)) return "Eine der angegebenen Rollen für das bannen existiert nich.";
 
-    await message.channel.send(`User ${mentionedUserObject} wurde gebannt!\nGrund: ${reason ?? "Kein Grund angegeben"}`);
-    await message.guild.member(mentioned).send(`Du wurdest von der Coding Shitpost Zentrale gebannt!
+    await message.channel.send(`User ${mentionedUser} wurde gebannt!\nGrund: ${reason ?? "Kein Grund angegeben"}`);
+    await mentionedUser.send(`Du wurdest von der Coding Shitpost Zentrale gebannt!
 ${!reason ? "Es wurde kein Banngrund angegeben." : "Banngrund: " + reason}
 Falls du Fragen zu dem Bann hast, kannst du dich im <#${config.ids.banned_channel_id}> Channel ausheulen.
 
