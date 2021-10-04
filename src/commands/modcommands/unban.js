@@ -53,14 +53,16 @@ export const run = async(client, message, args) => {
 
     if (!mentioned) return `Da ist kein username... Mach \`${config.bot_settings.prefix.mod_prefix}unban \@username\``;
 
-    let mentionedUserObject = message.guild.member(mentioned);
+    let mentionedUser = message.guild.members.cache.get(mentioned.id);
 
-    if (mentionedUserObject.roles.cache.some(r => r.id === config.ids.default_role_id)) return "Dieser User ist nicht gebannt du kek.";
+    if(!mentionedUser) return "Was hast du denn gemacht? Hab zwar ne Mention aber keinen passenden User gefunden";
 
-    if (!unban(mentionedUserObject)) return "Eine der angegebenen Rollen für das bannen existiert nich.";
+    if (mentionedUser.roles.cache.some(r => r.id === config.ids.default_role_id)) return "Dieser User ist nicht gebannt du kek.";
 
-    await message.channel.send(`User ${mentionedUserObject} wurde entbannt!`);
-    await message.guild.member(mentioned).send("Glückwunsch! Du wurdest von der Coding Shitpost Zentrale entbannt. Und jetzt benimm dich.");
+    if (!unban(mentionedUser)) return "Eine der angegebenen Rollen für das bannen existiert nich.";
+
+    await message.channel.send(`User ${mentionedUser} wurde entbannt!`);
+    await mentionedUser.send("Glückwunsch! Du wurdest von der Coding Shitpost Zentrale entbannt. Und jetzt benimm dich.");
 };
 
 export const description = `Entbannt einen User womit er alle Channel wieder sehen kann.\nBenutzung: ${config.bot_settings.prefix.mod_prefix}unban username`;

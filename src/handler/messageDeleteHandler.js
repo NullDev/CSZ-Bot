@@ -10,7 +10,7 @@ const config = getConfig();
  */
 const deleteInlineRepliesFromBot = function(messageRef, client) {
     messageRef.channel.messages.cache
-        .filter(m => m.author.id === client.user.id && m.reference?.messageID === messageRef.id)
+        .filter(m => m.author.id === client.user.id && m.reference?.messageId === messageRef.id)
         .forEach(m => m.delete());
 };
 
