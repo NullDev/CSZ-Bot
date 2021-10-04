@@ -131,7 +131,6 @@ const wat = function(message, client) {
             // react to the last message
             message.channel.messages.fetch({ limit: 2 })
                 .then(messages => {
-                    console.log(messages);
                     messages.last().react(watEmote);
                 });
         }

@@ -2,7 +2,7 @@
 /* eslint-disable new-cap */
 
 import { Model, DataTypes } from "sequelize";
-import uuid from "uuid";
+import {v4 as uuidv4} from "uuid";
 
 export default class Stempel extends Model {
     /**
@@ -37,7 +37,7 @@ export default class Stempel extends Model {
         this.init({
             id: {
                 type: DataTypes.STRING(36),
-                defaultValue: () => uuid.v4(),
+                defaultValue: () => uuidv4(),
                 primaryKey: true
             },
             invitator: {
