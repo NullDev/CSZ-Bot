@@ -44,7 +44,7 @@ export const run = async(client: Client, message: Message, args: string[]): Prom
             await message.channel.send(
                 `Hör auf, Metafragen zu stellen, ${insult}\n` +
                 "Das ist reine Zeitverschwendung und hindert uns nur daran, ~~uns zu beleidigen~~ an echten Problemen zu arbeiten.\n" +
-                "Für Tipps zum besser machen: <https://metafrage.de>");
+                "Für Tipps zum besser machen: <http://metafrage.de>");
         }
         else {
             // insult user, then explain meta questions - but this time in english!
