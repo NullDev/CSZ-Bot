@@ -1,5 +1,6 @@
 import { Command } from "./command";
 import { SlashCommandBuilder } from '@discordjs/builders';
+// @ts-ignore
 import fetch from "node-fetch";
 import { Client, Message } from "discord.js";
 
