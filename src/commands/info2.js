@@ -15,7 +15,8 @@ const fetchContributions = () => {
  *
  * @return {Promise<String>}
  */
-/*let formatContributors = (contributors) => {
+/*
+let formatContributors = (contributors) => {
     return contributors
         .filter(e => e.type === "User")
         .map(e => `<${e.html_url}> (Contributions: ${e.contributions})`)
@@ -45,17 +46,17 @@ export const run = async(client, message, args) => {
             url: "https://discordapp.com/users/663146938811547660/",
             icon_url: "https://cdn.discordapp.com/avatars/663146938811547660/5ecc4eae57ad9acb497e5a346e852900.png?size=100"
         },
-        fields: [
-        {
-            name: "⚙️ Eckdaten",
-            value: `**Programmiersprache:** NodeJS \n**NodeJS Version:** ${process.version} \n**PID:** ${process.pid} \n**Uptime:** ${Math.floor(process.uptime())}s \n**Platform:** ${process.platform} \n**System CPU usage time:** ${process.cpuUsage().system} \n**User CPU usage time:** ${process.cpuUsage().user} \n**Architecture:** ${process.arch}`,
-            inline: true
-        },
-        {
+        fields: [   
+            {
+                name: "⚙️ Eckdaten",
+                value: `**Programmiersprache:** NodeJS \n**NodeJS Version:** ${process.version} \n**PID:** ${process.pid} \n**Uptime:** ${Math.floor(process.uptime())}s \n**Platform:** ${process.platform} \n**System CPU usage time:** ${process.cpuUsage().system} \n**User CPU usage time:** ${process.cpuUsage().user} \n**Architecture:** ${process.arch}`,
+                inline: true
+            },
+            {
             name: "🔗 Source Code",
             value: "**Link:** https://github.com/NullDev/CSC-Bot ",
             inline: true
-        }
+            }
         ]
     };
     await message.channel.send({embeds: [embed]});
