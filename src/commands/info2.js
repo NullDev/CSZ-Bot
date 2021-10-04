@@ -38,12 +38,12 @@ export const run = async(client, message, args) => {
         "url": "https://discordapp.com",
         "color": 2007432,
         "footer": {
-        "text": `${new Date().toDateString()} ${new Date().toLocaleTimeString()}`
+            "text": `${new Date().toDateString()} ${new Date().toLocaleTimeString()}`
         },
         "author": {
-        "name": "Shitpost Bot",
-        "url": "https://discordapp.com/users/663146938811547660/",
-        "icon_url": "https://cdn.discordapp.com/avatars/663146938811547660/5ecc4eae57ad9acb497e5a346e852900.png?size=100"
+            "name": "Shitpost Bot",
+            "url": "https://discordapp.com/users/663146938811547660/",
+            "icon_url": "https://cdn.discordapp.com/avatars/663146938811547660/5ecc4eae57ad9acb497e5a346e852900.png?size=100"
         },
         "fields": [
         {
