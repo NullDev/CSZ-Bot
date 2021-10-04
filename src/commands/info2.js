@@ -37,7 +37,9 @@ export const run = async(client, message, args) => {
     const embed = {
         "url": "https://discordapp.com",
         "color": 2007432,
-        "timestamp": "2021-10-03T10:05:20.573Z",
+        "footer": {
+        "text": `${new Date().toDateString()} ${new Date().toLocaleTimeString()}`
+        },
         "author": {
         "name": "Shitpost Bot",
         "url": "https://discordapp.com/users/663146938811547660/",
@@ -45,19 +47,19 @@ export const run = async(client, message, args) => {
         },
         "fields": [
         {
-            "name": ":gear: Eckdaten",
+            "name": "⚙️ Eckdaten",
             "value": `**Programmiersprache:** NodeJS \n**NodeJS Version:** ${process.version} \n**PID:** ${process.pid} \n**Uptime:** ${Math.floor(process.uptime())}s \n**Platform:** ${process.platform} \n**System CPU usage time:** ${process.cpuUsage().system} \n**User CPU usage time:** ${process.cpuUsage().user} \n**Architecture:** ${process.arch}`,
             "inline": true
         },
         {
-            "name": ":link: Source Code",
+            "name": "🔗 Source Code",
             "value": "**Link:** https://github.com/NullDev/CSC-Bot ",
             "inline": true
         }
         ]
     };
-    channel.send({ embed });
-    await message.react("✉"); // Only react when the message was actually sent
+    await message.channel.send({embeds: [embed]});
+    await message.react("⚙️"); // Only react when the message was actually sent
 };
 
-export const description = "Listet Informationen über diesen Bot";
+export const description = "Listet Informationen über diesen Bot in einem Embed auf";
