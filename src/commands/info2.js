@@ -34,24 +34,29 @@ export const run = async(client, message, args) => {
     const contributors = await fetchContributions();
     const formattedContributors = formatContributors(contributors);
 
-    await message.author.send(`
-        Programmiert von ShadowByte#1337 für die Coding Shitpost Zentrale (<https://discord.gg/FABdvae>)
-
-        Contributions von:
-        ${(formattedContributors)}
-
-        Eckdaten:
-        - Programmiersprache: NodeJS
-        - NodeJS Version: ${process.version}
-        - PID: ${process.pid}
-        - Uptime (seconds): ${Math.floor(process.uptime())}
-        - Platform: ${process.platform}
-        - System CPU usage time: ${process.cpuUsage().system}
-        - User CPU usage time: ${process.cpuUsage().user}
-        - Architecture: ${process.arch}
-
-        Source Code: <https://github.com/NullDev/CSC-Bot>
-    `.replace(/  +/g, "")); // Remove leading indents
+    const embed = {
+        "url": "https://discordapp.com",
+        "color": 2007432,
+        "timestamp": "2021-10-03T10:05:20.573Z",
+        "author": {
+        "name": "Shitpost Bot",
+        "url": "https://discordapp.com/users/663146938811547660/",
+        "icon_url": "https://cdn.discordapp.com/avatars/663146938811547660/5ecc4eae57ad9acb497e5a346e852900.png?size=100"
+        },
+        "fields": [
+        {
+            "name": ":gear: Eckdaten",
+            "value": `**Programmiersprache:** NodeJS \n**NodeJS Version:** ${process.version} \n**PID:** ${process.pid} \n**Uptime:** ${Math.floor(process.uptime())}s \n**Platform:** ${process.platform} \n**System CPU usage time:** ${process.cpuUsage().system} \n**User CPU usage time:** ${process.cpuUsage().user} \n**Architecture:** ${process.arch}`,
+            "inline": true
+        },
+        {
+            "name": ":link: Source Code",
+            "value": "**Link:** https://github.com/NullDev/CSC-Bot ",
+            "inline": true
+        }
+        ]
+    };
+    channel.send({ embed });
     await message.react("✉"); // Only react when the message was actually sent
 };
 
