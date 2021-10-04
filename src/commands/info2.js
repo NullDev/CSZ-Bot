@@ -2,26 +2,26 @@
 // = Copyright (c) NullDev = //
 // ========================= //
 
-import fetch from "node-fetch";
-
+// import fetch from "node-fetch";
+/*
 const fetchContributions = () => {
     return fetch("https://api.github.com/repos/NullDev/CSC-Bot/contributors", {
         headers: { Accept: "application/vnd.github.v3+json" }
     }).then(res => res.json());
 };
-
+*/
 /**
  * Get all contributors from GitHub
  *
  * @return {Promise<String>}
  */
-let formatContributors = (contributors) => {
+/*let formatContributors = (contributors) => {
     return contributors
         .filter(e => e.type === "User")
         .map(e => `<${e.html_url}> (Contributions: ${e.contributions})`)
         .join("\n");
 };
-
+*/
 /**
  * Shows some generic infos
  *
@@ -31,30 +31,30 @@ let formatContributors = (contributors) => {
  * @returns {Promise<string | void>}
  */
 export const run = async(client, message, args) => {
-    //const contributors = await fetchContributions();
-    //const formattedContributors = formatContributors(contributors);
+    // const contributors = await fetchContributions();
+    // const formattedContributors = formatContributors(contributors);
 
     const embed = {
         url: "https://discordapp.com",
         color: 2007432,
         footer: {
-            "text": `${new Date().toDateString()} ${new Date().toLocaleTimeString()}`
+            text: `${new Date().toDateString()} ${new Date().toLocaleTimeString()}`
         },
         author: {
-            "name": "Shitpost Bot",
-            "url": "https://discordapp.com/users/663146938811547660/",
-            "icon_url": "https://cdn.discordapp.com/avatars/663146938811547660/5ecc4eae57ad9acb497e5a346e852900.png?size=100"
+            name: "Shitpost Bot",
+            url: "https://discordapp.com/users/663146938811547660/",
+            icon_url: "https://cdn.discordapp.com/avatars/663146938811547660/5ecc4eae57ad9acb497e5a346e852900.png?size=100"
         },
         fields: [
         {
-            "name": "⚙️ Eckdaten",
-            "value": `**Programmiersprache:** NodeJS \n**NodeJS Version:** ${process.version} \n**PID:** ${process.pid} \n**Uptime:** ${Math.floor(process.uptime())}s \n**Platform:** ${process.platform} \n**System CPU usage time:** ${process.cpuUsage().system} \n**User CPU usage time:** ${process.cpuUsage().user} \n**Architecture:** ${process.arch}`,
-            "inline": true
+            name: "⚙️ Eckdaten",
+            value: `**Programmiersprache:** NodeJS \n**NodeJS Version:** ${process.version} \n**PID:** ${process.pid} \n**Uptime:** ${Math.floor(process.uptime())}s \n**Platform:** ${process.platform} \n**System CPU usage time:** ${process.cpuUsage().system} \n**User CPU usage time:** ${process.cpuUsage().user} \n**Architecture:** ${process.arch}`,
+            inline: true
         },
         {
-            "name": "🔗 Source Code",
-            "value": "**Link:** https://github.com/NullDev/CSC-Bot ",
-            "inline": true
+            name: "🔗 Source Code",
+            value: "**Link:** https://github.com/NullDev/CSC-Bot ",
+            inline: true
         }
         ]
     };
