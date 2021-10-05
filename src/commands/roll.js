@@ -83,10 +83,7 @@ const constructResultStr = function(rolls) {
 /**
  * Creates a dice throw (sequqnce)
  *
- * @param {import("discord.js").Client} _client
- * @param {import("discord.js").Message} message
- * @param {Array<unknown>} args
- * @returns {Promise<string | void>}
+ * @type {import("../types").CommandFunction}
  */
 export const run = async(_client, message, args) => {
     let parsed = args[0]?.toLowerCase();

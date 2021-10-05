@@ -17,7 +17,7 @@ const config = getConfig();
  * @param {import("discord.js").Message} message
  * @param {import("discord.js").Client} client
  * @param {Boolean} isModCommand
- * @returns {Promise<string | void>}
+ * @returns {import("../types").CommandResult}
  */
 export default async function(message, client, isModCommand) {
     let cmdPrefix = isModCommand
@@ -61,6 +61,13 @@ export default async function(message, client, isModCommand) {
     );
 
     const commandPath = path.join(commandDir, command);
+
+    /**
+     * @type {{
+     *    run: import("../types").CommandFunction,
+     *    descption: string,
+     * }}
+     */
     const usedCommand = await import(commandPath);
 
     console.assert(!!usedCommand, "usedCommand must be non-falsy");

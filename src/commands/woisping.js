@@ -17,10 +17,7 @@ let lastPing = 0;
 /**
  * Allows usage of @Woisgang mention for people having that role assigned
  *
- * @param {import("discord.js").Client} client
- * @param {import("discord.js").Message} message
- * @param {Array<unknown>} args
- * @returns {Promise<string | void>}
+ * @type {import("../types").CommandFunction}
  */
 export const run = async(client, message, args) => {
     const isMod = message.member.roles.cache.some(r => config.bot_settings.moderator_roles.includes(r.name));
