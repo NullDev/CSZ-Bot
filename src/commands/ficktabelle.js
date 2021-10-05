@@ -17,16 +17,20 @@ const FICKTABELLE_URL = "https://cdn.discordapp.com/attachments/6207219217675059
  */
 export const run = async(_client, message, args) => {
     let titles = [
-        "informiert sich übers fuggern",
+        "informiert sich übers Fuggern",
         "bereitet seinen Willie vor",
         "wird eine Straftat begehen 👮",
-        "sollte nicht vergessen, den Lümmel zu waschen!"
+        "sollte nicht vergessen, den Lümmel zu waschen!",
+        "will den Lachs buttern",
+        "hat Bock den Lörres reinzuhämmern",
+        "will die Fleischpeitsche einsauen",
     ];
 
     let warnings = [
         "Vergiss nicht, BKA is watching you! 👮",
         "Rot ist Tabu 🚫",
-        "Minimum n Gummi drum 🚫👶"
+        "Minimum n Gummi drum 🚫👶",
+        "Tu nichts, was Assi Toni nicht auch tun würde",
     ];
 
     const embed = {
