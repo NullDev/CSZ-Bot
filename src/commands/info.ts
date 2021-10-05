@@ -31,6 +31,9 @@ let formatContributors = (contributors: Array<Contributors>): string => {
         .join("\n");
 };
 
+/**
+  * @type {import("../types").CommandFunction}
+ */
 export const run = async(client: Client, message: Message, args: Array<unknown>) => {
     const contributors = await fetchContributions();
     const formattedContributors = formatContributors(contributors);

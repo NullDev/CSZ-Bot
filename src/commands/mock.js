@@ -49,10 +49,7 @@ const sendMock = async(message, mocked) => {
 /**
  * Mock a given text
  *
- * @param {import("discord.js").Client} client
- * @param {import("discord.js").Message} message
- * @param {Array<unknown>} args
- * @returns {Promise<string | void>}
+ * @type {import("../types").CommandFunction}
  */
 export const run = async(client, message, args) => {
     // TODO: Check for message type 19 when it is available in discord.js
