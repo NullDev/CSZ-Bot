@@ -64,8 +64,8 @@ export default async function(message, client, isModCommand) {
 
     /**
      * @type {{
-     *    run: import("../types").CommandFunction
-     *    descption: string
+     *    run: import("../types").CommandFunction,
+     *    descption: string,
      * }}
      */
     const usedCommand = await import(commandPath);
