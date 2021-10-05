@@ -28,7 +28,7 @@ export const run = async(client, message, args) => {
     if (!isMod && !message.member.roles.cache.has(config.ids.woisgang_role_id)){
         log.warn(`User "${message.author.tag}" (${message.author}) tried command "${config.bot_settings.prefix.command_prefix}woisping" and was denied`);
 
-        return `Tut mir leid, ${message.author}. Du hast nicht genügend Rechte um dieses Command zu verwenden =(`;
+        return `Tut mir leid, ${message.author}. Du hast nicht genügend Rechte um diesen Command zu verwenden =(`;
     }
 
     const now = Date.now();
@@ -86,7 +86,7 @@ export const reactionHandler = async(event, client, message) => {
 
     if (!isMod && !user.roles.cache.has(config.ids.woisgang_role_id)){
         reaction.users.remove(data.user_id);
-        user.send("Somry, du bist leider kein Woisgang-Mitglied und darfst nicht abstimmen.");
+        user.send("Sorry, du bist leider kein Woisgang-Mitglied und darfst nicht abstimmen.");
         return true;
     }
 
@@ -105,7 +105,7 @@ export const reactionHandler = async(event, client, message) => {
     }
     else if (!couldPing) {
         reaction.users.remove(data.user_id);
-        await user.send("Somry, ich musste deine Zustimmung für den Woisgang-Ping entfernen, weil wir noch etwas warten müssen mit dem Ping.");
+        await user.send("Sorry, ich musste deine Zustimmung für den Woisgang-Ping entfernen, weil wir noch etwas warten müssen mit dem Ping.");
     }
 
     return true;
