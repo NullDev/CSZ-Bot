@@ -33,14 +33,14 @@ const errorHandling = function(amount, sides) {
     }
 
     if(amount <= 0 || sides <= 0 || Number.isNaN(amount) || Number.isNaN(sides)) {
-        return "Du brauchst schon nen valides Argument...";
+        return "Du brauchst schon ein valides Argument...";
     }
 
     if(amount > 10) {
         return "Wieso brauchst du denn mehr als 10 Würfe?!";
     }
     if(sides > 100) {
-        return "Selbst nen 100 seitiger Würfel ist schon overkill.";
+        return "Selbst ein 100-seitiger Würfel ist schon Overkill.";
     }
 
     return "";
