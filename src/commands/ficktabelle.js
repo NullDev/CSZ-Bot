@@ -23,14 +23,14 @@ export const run = async(_client, message, args) => {
         "sollte nicht vergessen, den Lümmel zu waschen!",
         "will den Lachs buttern",
         "hat Bock den Lörres reinzuhämmern",
-        "will die Fleischpeitsche einsauen",
+        "will die Fleischpeitsche einsauen"
     ];
 
     let warnings = [
         "Vergiss nicht, BKA is watching you! 👮",
         "Rot ist Tabu 🚫",
         "Minimum n Gummi drum 🚫👶",
-        "Tu nichts, was Assi Toni nicht auch tun würde",
+        "Tu nichts, was Assi Toni nicht auch tun würde"
     ];
 
     const embed = {
