@@ -1,8 +1,8 @@
 import { Command } from "./command";
-import { SlashCommandBuilder } from '@discordjs/builders';
+import { Embed, SlashCommandBuilder } from '@discordjs/builders';
 // @ts-ignore
 import fetch from "node-fetch";
-import { Client, Message } from "discord.js";
+import { Client, Message, MessageEmbedOptions } from "discord.js";
 
 export class InfoCommand implements Command {
     public get applicationCommand(): SlashCommandBuilder {
@@ -18,7 +18,7 @@ interface Contributors {
     contributions: number
 };
 
-const fetchContributions = (): Promise<Array<Contributors>> => {
+const fetchContributions = async (): Promise<Array<Contributors>> => {
     return fetch("https://api.github.com/repos/NullDev/CSC-Bot/contributors", {
         headers: { Accept: "application/vnd.github.v3+json" }
     }).then((res : any) => res.json());
@@ -31,29 +31,47 @@ let formatContributors = (contributors: Array<Contributors>): string => {
         .join("\n");
 };
 
-export const run = async(_client : Client, message: Message, args: Array<unknown>) => {
+export const run = async(client: Client, message: Message, args: Array<unknown>) => {
     const contributors = await fetchContributions();
     const formattedContributors = formatContributors(contributors);
 
-    await message.author.send(`
-        Programmiert von ShadowByte#1337 für die Coding Shitpost Zentrale (<https://discord.gg/FABdvae>)
-
-        Contributions von:
-        ${(formattedContributors)}
-
-        Eckdaten:
-        - Programmiersprache: NodeJS
-        - NodeJS Version: ${process.version}
-        - PID: ${process.pid}
-        - Uptime (seconds): ${Math.floor(process.uptime())}
-        - Platform: ${process.platform}
-        - System CPU usage time: ${process.cpuUsage().system}
-        - User CPU usage time: ${process.cpuUsage().user}
-        - Architecture: ${process.arch}
-
-        Source Code: <https://github.com/NullDev/CSC-Bot>
-    `.replace(/  +/g, "")); // Remove leading indents
-    await message.react("✉"); // Only react when the message was actually sent
+    const embed: MessageEmbedOptions = {
+        color: 2007432,
+        footer: {
+            text: `${new Date().toDateString()} ${new Date().toLocaleTimeString()}`
+        },
+        author: {
+            name: "Shitpost Bot",
+            url: "https://discordapp.com/users/663146938811547660/",
+            icon_url: client.user?.avatarURL() ?? undefined
+        },
+        fields: [
+            {
+                name: "⚙️ Eckdaten",
+                value: "**Programmiersprache:** NodeJS \n" +
+                `**NodeJS Version:** ${process.version} \n` +
+                `**PID:** ${process.pid} \n` +
+                `**Uptime:** ${Math.floor(process.uptime())}s \n` +
+                `**Platform:** ${process.platform} \n` +
+                `**System CPU usage time:** ${process.cpuUsage().system} \n` +
+                `**User CPU usage time:** ${process.cpuUsage().user} \n` +
+                `**Architecture:** ${process.arch}`,
+                inline: true
+            },
+            {
+                name: "🔗 Source Code",
+                value: "**Link:** https://github.com/NullDev/CSC-Bot ",
+                inline: true
+            },
+            {
+                name: "🪛 Contributors",
+                value: `${formattedContributors}`,
+                inline: false
+            }
+        ]
+    };
+    await message.channel.send({embeds: [embed]});
+    await message.react("⚙️"); // Only react when the message was actually sent
 };
 
-export const description = "Listet Informationen über diesen Bot";
+export const description = "Listet Informationen über diesen Bot in einem Embed auf";
