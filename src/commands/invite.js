@@ -5,10 +5,7 @@
 /**
  * Send the invite link to the person issuing the command
  *
- * @param {import("discord.js").Client} client
- * @param {import("discord.js").Message} message
- * @param {Array<unknown>} args
- * @returns {Promise<string | void>}
+ * @type {import("../types").CommandFunction}
  */
 export const run = async(client, message, args) => {
     await message.author.send("Invite Link: https://discord.gg/csz");

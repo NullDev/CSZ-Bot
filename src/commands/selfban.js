@@ -14,10 +14,7 @@ const config = getConfig();
 /**
  * Ban a given user
  *
- * @param {import("discord.js").Client} client
- * @param {import("discord.js").Message} message
- * @param {Array<unknown>} args
- * @returns {Promise<string | void>}
+ * @type {import("../types").CommandFunction}
  */
 export const run = async(client, message, args) => {
     const durationArg = Number(args?.[0]?.trim() ?? "8");

@@ -79,10 +79,7 @@ export const delayedPolls = [];
 /**
  * Creates a new poll (multiple answers) or strawpoll (single selection)
  *
- * @param {import("discord.js").Client} client
- * @param {import("discord.js").Message} message
- * @param {Array<unknown>} args
- * @returns {Promise<string | void>}
+ * @type {import("../types").CommandFunction}
  */
 export const run = async(client, message, args) => {
     let options = parseOptions(args, {

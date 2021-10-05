@@ -43,10 +43,7 @@ export const unban = (user) => {
 /**
  * Unbans a given user
  *
- * @param {import("discord.js").Client} client
- * @param {import("discord.js").Message} message
- * @param {Array<any>} args
- * @returns {Promise<string | void>}
+ * @type {import("../../types").CommandFunction}
  */
 export const run = async(client, message, args) => {
     let mentioned = message.mentions?.users?.first?.();

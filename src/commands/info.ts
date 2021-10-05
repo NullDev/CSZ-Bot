@@ -2,7 +2,8 @@ import { Command } from "./command";
 import { Embed, SlashCommandBuilder } from '@discordjs/builders';
 // @ts-ignore
 import fetch from "node-fetch";
-import { Client, Message, MessageEmbedOptions } from "discord.js";
+import { MessageEmbedOptions } from "discord.js";
+import type { CommandFunction } from "../types";
 
 export class InfoCommand implements Command {
     public get applicationCommand(): SlashCommandBuilder {
@@ -21,7 +22,7 @@ interface Contributors {
 const fetchContributions = async (): Promise<Array<Contributors>> => {
     return fetch("https://api.github.com/repos/NullDev/CSC-Bot/contributors", {
         headers: { Accept: "application/vnd.github.v3+json" }
-    }).then((res : any) => res.json());
+    }).then((res: any) => res.json());
 };
 
 let formatContributors = (contributors: Array<Contributors>): string => {
@@ -31,7 +32,7 @@ let formatContributors = (contributors: Array<Contributors>): string => {
         .join("\n");
 };
 
-export const run = async(client: Client, message: Message, args: Array<unknown>) => {
+export const run: CommandFunction = async(client, message, args) => {
     const contributors = await fetchContributions();
     const formattedContributors = formatContributors(contributors);
 
@@ -49,13 +50,13 @@ export const run = async(client: Client, message: Message, args: Array<unknown>)
             {
                 name: "⚙️ Eckdaten",
                 value: "**Programmiersprache:** NodeJS \n" +
-                `**NodeJS Version:** ${process.version} \n` +
-                `**PID:** ${process.pid} \n` +
-                `**Uptime:** ${Math.floor(process.uptime())}s \n` +
-                `**Platform:** ${process.platform} \n` +
-                `**System CPU usage time:** ${process.cpuUsage().system} \n` +
-                `**User CPU usage time:** ${process.cpuUsage().user} \n` +
-                `**Architecture:** ${process.arch}`,
+                    `**NodeJS Version:** ${process.version} \n` +
+                    `**PID:** ${process.pid} \n` +
+                    `**Uptime:** ${Math.floor(process.uptime())}s \n` +
+                    `**Platform:** ${process.platform} \n` +
+                    `**System CPU usage time:** ${process.cpuUsage().system} \n` +
+                    `**User CPU usage time:** ${process.cpuUsage().user} \n` +
+                    `**Architecture:** ${process.arch}`,
                 inline: true
             },
             {
@@ -70,7 +71,7 @@ export const run = async(client: Client, message: Message, args: Array<unknown>)
             }
         ]
     };
-    await message.channel.send({embeds: [embed]});
+    await message.channel.send({ embeds: [embed] });
     await message.react("⚙️"); // Only react when the message was actually sent
 };
 
