@@ -15,4 +15,4 @@ export const run = async(client, message, args) => {
     await message.react("✉"); // Only react when the message was actually sent
 };
 
-export const description = "Sendet einen Invite link für den Server";
+export const description = "Sendet einen Invite-Link für den Server";

@@ -42,9 +42,9 @@ export const run = async(client, message, args) => {
     const invokingUser = message.member;
     if (invokingUser.id === "371724846205239326") return "Aus Segurity lieber nicht dich bannen.";
 
-    if (invokingUser.roles.cache.some(r => r.id === config.ids.banned_role_id)) return "Du bist bereits gebannt du kek.";
+    if (invokingUser.roles.cache.some(r => r.id === config.ids.banned_role_id)) return "Du bist bereits gebannt du Kek.";
 
-    if (!ban.ban(invokingUser, momentDuration)) return "Eine der angegebenen Rollen für das bannen existiert nich.";
+    if (!ban.ban(invokingUser, momentDuration)) return "Eine der angegebenen Rollen für das Bannen existiert nich.";
 
     const durationHumanized = durationInMinutes === 0
         ? "manuell durch Moderader"
