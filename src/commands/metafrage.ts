@@ -26,12 +26,15 @@ export const run = async(client: Client, message: Message, args: string[]): Prom
             "du Sohn einer ranzigen Hafendirne!",
             "möge dich der Blitz beim scheißen treffen!",
             "du verdammter Troglodyt!",
-            "sonst muss ich heute Nacht noch deine Mama besuchen!"
+            "sonst muss ich heute Nacht noch deine Mama besuchen!",
+            "dir bau ich gleich ein drittes Fickloch!",
+            "dein Stammbaum ist ein Tetradekagon!",
         ];
         let englishInsults: string[] = [
             "you fucking imbecile!",
             "retard!",
-            "you troglodyte!"
+            "you troglodyte!",
+            "even my brother is more capable and he's a retard!",
         ];
         // by default, just pick the first or a fixed insult, just in case
         let choice: number = 0;
