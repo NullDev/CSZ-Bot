@@ -1,0 +1,77 @@
+// ========================= //
+// = Copyright (c) NullDev = //
+// ========================= //
+
+import fetch from "node-fetch";
+
+const fetchContributions = () => {
+    return fetch("https://api.github.com/repos/NullDev/CSC-Bot/contributors", {
+        headers: { Accept: "application/vnd.github.v3+json" }
+    }).then(res => res.json());
+};
+
+/**
+ * Get all contributors from GitHub
+ *
+ * @return {Promise<String>}
+ */
+
+let formatContributors = (contributors) => {
+    return contributors
+        .filter(e => e.type === "User")
+        .map(e => `<${e.html_url}> (Contributions: ${e.contributions})`)
+        .join("\n");
+};
+
+/**
+ * Shows some generic infos
+ *
+ * @param {import("discord.js").Client} client
+ * @param {import("discord.js").Message} message
+ * @param {Array<unknown>} args
+ * @returns {Promise<string | void>}
+ */
+export const run = async(client, message, args) => {
+    const contributors = await fetchContributions();
+    const formattedContributors = formatContributors(contributors);
+
+    const embed = {
+        color: 2007432,
+        footer: {
+            text: `${new Date().toDateString()} ${new Date().toLocaleTimeString()}`
+        },
+        author: {
+            name: "Shitpost Bot",
+            url: "https://discordapp.com/users/663146938811547660/",
+            icon_url: client.user.avatarURL()
+        },
+        fields: [
+            {
+                name: "⚙️ Eckdaten",
+                value: "**Programmiersprache:** NodeJS \n" +
+                `**NodeJS Version:** ${process.version} \n` +
+                `**PID:** ${process.pid} \n` +
+                `**Uptime:** ${Math.floor(process.uptime())}s \n` +
+                `**Platform:** ${process.platform} \n` +
+                `**System CPU usage time:** ${process.cpuUsage().system} \n` +
+                `**User CPU usage time:** ${process.cpuUsage().user} \n` +
+                `**Architecture:** ${process.arch}`,
+                inline: true
+            },
+            {
+                name: "🔗 Source Code",
+                value: "**Link:** https://github.com/NullDev/CSC-Bot ",
+                inline: true
+            },
+            {
+                name: "🪛 Contributors",
+                value: `${formattedContributors}`,
+                inline: false
+            }
+        ]
+    };
+    await message.channel.send({embeds: [embed]});
+    await message.react("⚙️"); // Only react when the message was actually sent
+};
+
+export const description = "Listet Informationen über diesen Bot in einem Embed auf";

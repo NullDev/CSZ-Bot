@@ -4,10 +4,6 @@
         "editorconfig.editorconfig",
         "streetsidesoftware.code-spell-checker",
         "streetsidesoftware.code-spell-checker-german",
-        "dbaeumer.eslint",
-        "SonarSource.SonarLint"
+        "dbaeumer.vscode-eslint",
     ],
-    "settings": {
-        "sonarlint.disableTelemetry": true
-    }
 }
