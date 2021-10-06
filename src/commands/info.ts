@@ -1,6 +1,5 @@
 import { Command } from "./command";
 import { Embed, SlashCommandBuilder } from '@discordjs/builders';
-// @ts-ignore
 import fetch from "node-fetch";
 import { MessageEmbedOptions } from "discord.js";
 import type { CommandFunction } from "../types";

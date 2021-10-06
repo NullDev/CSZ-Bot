@@ -2,7 +2,7 @@
   "name": "csz-bot",
   "private": true,
   "version": "0.1.0",
-  "description": "Offizieller Coding Shitpost Zentrale Bot",
+  "description": "Offizieller Bot der Coding Shitpost Zentrale",
   "main": "built/app.js",
   "scripts": {
     "start": "nodemon ./built/app.js",
@@ -42,6 +42,7 @@
     "@types/minimist": "^1.2.2",
     "@types/node": "^16.10.2",
     "@types/node-cron": "^3.0.0",
+    "@types/node-fetch": "^3.0.3",
     "@types/sqlite3": "^3.1.7",
     "@types/uuid": "^8.3.1",
     "eslint": "^7.30.0",
