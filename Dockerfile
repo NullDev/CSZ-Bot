@@ -1,5 +1,5 @@
 FROM node:16-alpine as build
-    RUN apk add --no-cache python make g++ && rm -rf /var/cache/apk/*
+    RUN apk add --no-cache python3 make g++ && rm -rf /var/cache/apk/*
     WORKDIR /app
 
     COPY package*.json /app/
@@ -9,7 +9,7 @@ FROM node:16-alpine as build
     RUN npm run compile
 
 FROM node:16-alpine
-    RUN apk add --no-cache python make g++ && rm -rf /var/cache/apk/*
+    RUN apk add --no-cache python3 make g++ && rm -rf /var/cache/apk/*
     WORKDIR /app
     ENV NODE_ENV=production
     EXPOSE 3000
