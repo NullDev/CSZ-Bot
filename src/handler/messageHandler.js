@@ -138,6 +138,17 @@ const wat = function(message, client) {
     }
 };
 
+/**
+ *
+ * @param {import("discord.js").Message} message
+ */
+const yy = function(message) {
+    const yepEmote = message.guild.emojis.cache.find(e => e.name === "YEP");
+    if(yepEmote){
+        message.channel.send(`${yepEmote}${yepEmote}`);
+    }
+};
+
 export const specialCommands = [
     {
         name: "nix",
@@ -161,6 +172,12 @@ export const specialCommands = [
         name: "wat",
         pattern: /^wat$/gi,
         handler: wat,
+        randomness: 1
+    },
+    {
+        name: "yy",
+        pattern: /^yy$/gi,
+        handler: yy,
         randomness: 1
     }
 ];
