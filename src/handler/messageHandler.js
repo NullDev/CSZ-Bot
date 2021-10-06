@@ -35,23 +35,22 @@ const getInlineReplies = function(messageRef, client) {
  * @param {import("discord.js").Client} client client
  * @returns {Promise<string>}
  */
-const createWhereMeme = function(text) {
+const createWhereMeme = async(text) => {
     /** @type {import("jimp").Jimp} */
     let image = null;
-    return Jimp.read({
+    const where = await Jimp.read({
         url: "https://i.imgflip.com/52l6s0.jpg"
-    }).then(where => {
-        image = where;
-        return Jimp.loadFont("./assets/impact.fnt");
-    }).then(async font => {
-        const filename = `/tmp/where_meme_${Date.now()}.jpg`;
-        await image.print(font, 10, 10, {
-            text,
-            alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER,
-            alignmentY: Jimp.VERTICAL_ALIGN_TOP
-        }, image.bitmap.width).writeAsync(filename);
-        return filename;
     });
+
+    image = where;
+    const font = await Jimp.loadFont("./assets/impact.fnt");
+    const filename = `/tmp/where_meme_${Date.now()}.jpg`;
+    await image.print(font, 10, 10, {
+        text,
+        alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER,
+        alignmentY: Jimp.VERTICAL_ALIGN_TOP
+    }, image.bitmap.width).writeAsync(filename);
+    return await filename;
 };
 
 /**
