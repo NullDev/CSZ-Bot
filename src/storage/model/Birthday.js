@@ -12,21 +12,23 @@ export default class Birthday extends Model {
      * @returns {Boolean | null} depending if the birthday is already in the database
      */
     static async insertBirthday(userId, birthday) {
-        let items = await Birthday.getBirthday(userId);
-        if(items.length > 0) return false;
+        let item = await Birthday.getBirthday(userId);
 
+        if(item !== null) return false;
+        let isNewItem = null;
         await Birthday.create({
             userId,
             birthday
         }).then(() => {
-            return true;
-        }).catch((e) => {
-            return null;
+            isNewItem = true;
+        }).catch(() => {
+            isNewItem = null;
         });
+        return isNewItem;
     }
 
     static async getBirthday(userId) {
-        return await Birthday.findAll({
+        return await Birthday.findOne({
             where: {
                 userId
             }
