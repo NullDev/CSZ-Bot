@@ -60,7 +60,7 @@ export const run = async(client, message, args) => {
             const module = await import(modulePath);
 
             if(module.description) {
-              commandObj[commandStr] = module.description;
+                commandObj[commandStr] = module.description;
             }
         }
     }
