@@ -10,7 +10,6 @@ const config = getConfig();
 export const run = async(client, message, args) => {
     if (args.length !== 1) return "Bruder gib einfach nur dein Geburtsdatum an!";
 
-
     let bdayInput = args[0];
     let pattern = /^(0[1-9]|[12][0-9]|3[01])[- /.](0[1-9]|1[012])[- /.](19|20)\d\d$/;
 
@@ -19,6 +18,8 @@ export const run = async(client, message, args) => {
     let birthday = new Date(bdayInput.replace(pattern, "$3-$2-$1"));
 
     let addedBirthday = await Birthday.insertBirthday(client.user.id, birthday);
+
+    if(addedBirthday === null) return "Shit, irgendwas hat nicht geklappt beim speichern...";
 
     return addedBirthday
         ? `Danke mein G, ich hab dein Geburtstag ${birthday} eingetragen!`

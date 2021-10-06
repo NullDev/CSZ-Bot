@@ -9,20 +9,20 @@ export default class Birthday extends Model {
      *
      * @param {import("discord.js").Snowflake} userId
      * @param {Date} birthday
-     * @returns true/false depending if the birthday is already in the database
+     * @returns {Boolean | null} depending if the birthday is already in the database
      */
     static async insertBirthday(userId, birthday) {
-        let isNewItem = false;
+        let items = await Birthday.getBirthday(userId);
+        if(items.length > 0) return false;
+
         await Birthday.create({
             userId,
             birthday
         }).then(() => {
-            isNewItem = true;
+            return true;
         }).catch((e) => {
-            isNewItem = false;
+            return null;
         });
-
-        return isNewItem;
     }
 
     static async getBirthday(userId) {
