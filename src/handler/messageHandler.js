@@ -20,7 +20,7 @@ const config = getConfig();
 let lastSpecialCommand = 0;
 
 registerFont("assets/impact.ttf", {
-    family: "Impact",
+    family: "Impact"
 });
 
 /**
