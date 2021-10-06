@@ -7,10 +7,7 @@
  * @typedef {import("discord.js").Client} Client
  */
 
-import Jimp from "jimp";
-import * as path from "path";
-import * as fs from "fs";
-import { Util }  from "discord.js";
+import { createCanvas, loadImage, registerFont } from "canvas";
 
 import * as log from "../utils/logger";
 import { getConfig } from "../utils/configHandler";
@@ -32,25 +29,32 @@ const getInlineReplies = function(messageRef, client) {
 
 /**
  * @param {string} text
- * @param {import("discord.js").Client} client client
- * @returns {Promise<string>}
+ * @returns {Promise<Buffer>}
  */
-const createWhereMeme = async(text) => {
-    /** @type {import("jimp").Jimp} */
-    let image = null;
-    const where = await Jimp.read({
-        url: "https://i.imgflip.com/52l6s0.jpg"
-    });
+const createWhereMeme = async (text) => {
 
-    image = where;
-    const font = await Jimp.loadFont("./assets/impact.fnt");
-    const filename = `/tmp/where_meme_${Date.now()}.jpg`;
-    await image.print(font, 10, 10, {
-        text,
-        alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER,
-        alignmentY: Jimp.VERTICAL_ALIGN_TOP
-    }, image.bitmap.width).writeAsync(filename);
-    return await filename;
+    const whereImage = await loadImage("https://i.imgflip.com/52l6s0.jpg");
+    const canvas = createCanvas(whereImage.width, whereImage.height);
+    const ctx = canvas.getContext("2d");
+
+    ctx.drawImage(whereImage, 0, 0);
+
+    const textPos = {
+        x: 275,
+        y: 60,
+    };
+
+    ctx.font = "42px Impact";
+
+    ctx.lineWidth = 5;
+    ctx.lineCap = "butt";
+    ctx.strokeStyle = "#000";
+    ctx.strokeText(text, textPos.x, textPos.y);
+
+    ctx.fillStyle = "#fff";
+    ctx.fillText(text, textPos.x, textPos.y);
+
+    return canvas.toBuffer();
 };
 
 /**
@@ -85,31 +89,29 @@ const dadJoke = function(message) {
  *
  * @param {import("discord.js").Message} message
  */
-const nixos = function(message) {
+const nixos = function (message) {
     message.react(message.guild.emojis.cache.find(e => e.name === "nixos"));
 };
 
 /**
- *
  * @param {import("discord.js").Message} message
- * @param {import("discord.js").Client} client client
  */
-const whereMeme = function(message) {
-    createWhereMeme(Util.cleanContent(message.content.trim().toLowerCase().replace(/ß/g, "ss").toUpperCase(), message))
-        .then(where => {
-            message.channel.send({
-                files: [{
-                    attachment: where,
-                    name: path.basename(where)
-                }]
-            }).finally(() => fs.unlink(where, (err) => {
-                if(err) {
-                    console.error(err);
-                }
-                return;
-            }));
-        })
-        .catch(err => console.error(err));
+const whereMeme = async(message) => {
+    const subject = Util.cleanContent(message.content.trim().toUpperCase(), message);
+
+    try {
+        const whereMemeBuffer = await createWhereMeme(subject);
+
+        await message.channel.send({
+            files: [{
+                attachment: whereMemeBuffer,
+                name: subject + ".png",
+            }]
+        });
+
+    } catch(err) {
+        log.error(err);
+    }
 };
 
 /**
