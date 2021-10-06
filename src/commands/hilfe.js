@@ -59,7 +59,9 @@ export const run = async(client, message, args) => {
             const modulePath = path.join(commandDir, file);
             const module = await import(modulePath);
 
-            commandObj[commandStr] = module.description;
+            if(module.description) {
+              commandObj[commandStr] = module.description;
+            }
         }
     }
 
