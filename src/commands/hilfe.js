@@ -36,10 +36,7 @@ const getCommandMessageChunksMatchingLimit = (commands) => {
 /**
  * Enlists all user-commands with descriptions
  *
- * @param {import("discord.js").Client} client
- * @param {import("discord.js").Message} message
- * @param {Array<unknown>} args
- * @returns {Promise<string | void>}
+ * @type {import("../types").CommandFunction}
  */
 export const run = async(client, message, args) => {
     let commandObj = {};
@@ -62,7 +59,9 @@ export const run = async(client, message, args) => {
             const modulePath = path.join(commandDir, file);
             const module = await import(modulePath);
 
-            commandObj[commandStr] = module.description;
+            if(module.description) {
+                commandObj[commandStr] = module.description;
+            }
         }
     }
 

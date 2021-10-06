@@ -2,6 +2,7 @@
 // = Copyright (c) NullDev = //
 // ========================= //
 
+import type { CommandFunction } from "../types";
 // Dependencies
 import parseOptions from "minimist";
 import type { Client, Message } from "discord.js";
@@ -9,7 +10,7 @@ import type { Client, Message } from "discord.js";
 /**
  * Sends instructions on how to ask better questions
  */
-export const run = async(client: Client, message: Message, args: string[]): Promise<string | void> => {
+export const run: CommandFunction = async(client, message, args) => {
     // parse options
     let options = parseOptions(args, {
         "boolean": [

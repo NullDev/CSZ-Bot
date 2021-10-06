@@ -59,10 +59,7 @@ const secureDecisionMaker = (question, max = 1) => (rng(0, max, (Date.now() * io
 /**
  * Creates a new secure decision (sdm; yes/no)
  *
- * @param {import("discord.js").Client} client
- * @param {import("discord.js").Message} message
- * @param {Array<unknown>} args
- * @returns {Promise<string | void>}
+ * @type {import("../types").CommandFunction}
  */
 export const run = async(client, message, args) => {
     if (!args.length) return "Bruder da ist keine Frage :c";

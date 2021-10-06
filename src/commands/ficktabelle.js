@@ -11,9 +11,7 @@ const FICKTABELLE_URL = "https://cdn.discordapp.com/attachments/6207219217675059
 
 /**
  * Sends FUCKTABLE
- * @param {import("discord.js").Client} _client
- * @param {import("discord.js").Message} message
- * @returns {Promise<string | void>}
+ * @type {import("../types").CommandFunction}
  */
 export const run = async(_client, message, args) => {
     let titles = [
