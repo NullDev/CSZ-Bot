@@ -4,6 +4,7 @@ import { Sequelize } from "sequelize";
 
 // Models
 import AdditionalMessageData from "./model/AdditionalMessageData";
+import Birthday from "./model/Birthday";
 import FadingMessage from "./model/FadingMessage";
 import GuildRagequit from "./model/GuildRagequit";
 import Stempel from "./model/Stempel";
@@ -19,6 +20,7 @@ export async function initialize() {
     AdditionalMessageData.initialize(sequelize);
     GuildRagequit.initialize(sequelize);
     Stempel.initialize(sequelize);
+    Birthday.initialize(sequelize);
 
     await sequelize.sync();
 }
