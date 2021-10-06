@@ -44,11 +44,13 @@ const createWhereMeme = async(text) => {
     ctx.drawImage(whereImage, 0, 0);
 
     const textPos = {
-        x: 275,
+        x: (whereImage.width / 2) | 0,
         y: 60
     };
 
     ctx.font = "42px Impact";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
 
     ctx.lineWidth = 5;
     ctx.lineCap = "butt";
