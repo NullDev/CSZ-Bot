@@ -8,6 +8,7 @@
  */
 
 import { createCanvas, loadImage, registerFont } from "canvas";
+import { Util } from "discord.js";
 
 import * as log from "../utils/logger";
 import { getConfig } from "../utils/configHandler";
@@ -17,6 +18,10 @@ import cmdHandler from "./cmdHandler";
 const config = getConfig();
 
 let lastSpecialCommand = 0;
+
+registerFont("assets/impact.ttf", {
+    family: "Impact",
+});
 
 /**
  * @param {import("discord.js").Message} messageRef message
@@ -31,8 +36,7 @@ const getInlineReplies = function(messageRef, client) {
  * @param {string} text
  * @returns {Promise<Buffer>}
  */
-const createWhereMeme = async (text) => {
-
+const createWhereMeme = async(text) => {
     const whereImage = await loadImage("https://i.imgflip.com/52l6s0.jpg");
     const canvas = createCanvas(whereImage.width, whereImage.height);
     const ctx = canvas.getContext("2d");
@@ -41,7 +45,7 @@ const createWhereMeme = async (text) => {
 
     const textPos = {
         x: 275,
-        y: 60,
+        y: 60
     };
 
     ctx.font = "42px Impact";
@@ -63,22 +67,22 @@ const createWhereMeme = async (text) => {
  */
 const dadJoke = function(message) {
     const idx = message.content.toLowerCase().lastIndexOf("ich bin ");
-    if(idx < (message.content.length - 1)) {
+    if (idx < (message.content.length - 1)) {
         const indexOfTerminator = message.content.search(/(?:(?![,])[\p{P}\p{S}\p{C}])/gu);
         const trimmedWords = message.content.substring(idx + 8, indexOfTerminator !== -1 ? indexOfTerminator : message.content.length).split(/\s+/).map(w => w.trim());
 
         const randomUwe = Math.random() < 0.01;
 
-        if(trimmedWords.length > 0 && trimmedWords.length <= 10 && !randomUwe) {
+        if (trimmedWords.length > 0 && trimmedWords.length <= 10 && !randomUwe) {
             const whoIs = Util.removeMentions(Util.cleanContent(trimmedWords.join(" "), message));
-            if(whoIs.trim().length > 0) {
+            if (whoIs.trim().length > 0) {
                 message.reply({
                     content: `Hallo ${whoIs}, ich bin Shitpost Bot.`
                 });
             }
         }
-        else if(randomUwe) {
-            message.reaply({
+        else if (randomUwe) {
+            message.reply({
                 content: "Und ich bin der Uwe, ich bin auch dabei"
             });
         }
@@ -89,7 +93,7 @@ const dadJoke = function(message) {
  *
  * @param {import("discord.js").Message} message
  */
-const nixos = function (message) {
+const nixos = function(message) {
     message.react(message.guild.emojis.cache.find(e => e.name === "nixos"));
 };
 
@@ -105,11 +109,11 @@ const whereMeme = async(message) => {
         await message.channel.send({
             files: [{
                 attachment: whereMemeBuffer,
-                name: subject + ".png",
+                name: subject + ".png"
             }]
         });
-
-    } catch(err) {
+    }
+    catch(err) {
         log.error(err);
     }
 };
@@ -121,10 +125,10 @@ const whereMeme = async(message) => {
  */
 const wat = function(message, client) {
     const watEmote = message.guild.emojis.cache.find(e => e.name === "wat");
-    if(watEmote) {
+    if (watEmote) {
         const messageRef = message.reference?.messageId;
         // If reply to message
-        if(messageRef) {
+        if (messageRef) {
             message.channel.messages.fetch(messageRef)
                 .then(m => m.react(watEmote));
         }
@@ -174,7 +178,7 @@ const isCooledDown = function() {
     const diff = now - lastSpecialCommand;
     const fixedCooldown = 120000;
     // After 2 minutes command is cooled down
-    if(diff >= fixedCooldown) {
+    if (diff >= fixedCooldown) {
         return true;
     }
     // Otherwise a random function should evaluate the cooldown. The longer the last command was, the higher the chance
@@ -199,9 +203,9 @@ export default async function(message, client) {
 
     const isMod = message.member.roles.cache.some(r => config.bot_settings.moderator_roles.includes(r.name));
 
-    if(isMod || isCooledDown()) {
+    if (isMod || isCooledDown()) {
         const commandCandidates = specialCommands.filter(p => p.pattern.test(message.content));
-        if(commandCandidates.length > 0) {
+        if (commandCandidates.length > 0) {
             commandCandidates
                 .filter(c => Math.random() <= c.randomness)
                 .forEach(c => {
