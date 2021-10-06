@@ -1,4 +1,5 @@
 FROM node:16-alpine as build
+    RUN apk add build-base
     WORKDIR /app
 
     COPY package*.json /app/
@@ -8,6 +9,7 @@ FROM node:16-alpine as build
     RUN npm run compile
 
 FROM node:16-alpine
+    RUN apk add build-base
     WORKDIR /app
     ENV NODE_ENV=production
     EXPOSE 3000
