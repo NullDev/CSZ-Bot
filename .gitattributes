@@ -1,2 +1,2 @@
-*.js		text=auto
+*.js		text=auto eol=lf
 *.json		text=auto

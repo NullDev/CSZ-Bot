@@ -152,31 +152,31 @@ const yy = function(message) {
 export const specialCommands = [
     {
         name: "nix",
-        pattern: /(^|\s+)nix($|\s+)/gi,
+        pattern: /(^|\s+)nix($|\s+)/i,
         handler: nixos,
         randomness: 0.4
     },
     {
         name: "wo",
-        pattern: /^wo(\s+\S+){1,3}\S[^?]$/gi,
+        pattern: /^wo(\s+\S+){1,3}\S[^?]$/i,
         handler: whereMeme,
         randomness: 1
     },
     {
         name: "dadJoke",
-        pattern: /^ich bin\s+(.){3,}/gi,
+        pattern: /^ich bin\s+(.){3,}/i,
         handler: dadJoke,
         randomness: 0.1
     },
     {
         name: "wat",
-        pattern: /^wat$/gi,
+        pattern: /^wat$/i,
         handler: wat,
         randomness: 1
     },
     {
         name: "yy",
-        pattern: /^yy$/gi,
+        pattern: /^yy$/i,
         handler: yy,
         randomness: 1
     }
