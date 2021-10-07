@@ -55,9 +55,6 @@ Falls du doch vorzeitig entbannt entbannt werden möchtest, kannst du dich im <#
 
 Haddi & xD™`
     );
-
-    // Send ban confirmation to channel only if the user has received it
-    await message.channel.send(`User ${invokingUser} hat sich selber gebannt!\nEntbannen in: ${durationHumanized}`);
 };
 
 export const description = `Bannt den ausführenden User indem er ihn von allen Channels ausschließt.\nBenutzung: ${config.bot_settings.prefix.command_prefix}selfban [Dauer in Stunden = 8; 0 = manuelle Entbannung durch Moderader nötig]`;
