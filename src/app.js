@@ -23,7 +23,7 @@ import * as storage from "./storage/storage";
 import * as ban from "./commands/modcommands/ban";
 import * as poll from "./commands/poll";
 import GuildRagequit from "./storage/model/GuildRagequit";
-import { registerAllCommandsAsGuildCommands } from "./handler/applicationCommandHandler";
+import { handleInteractionEvent, registerAllCommandsAsGuildCommands } from "./handler/applicationCommandHandler";
 import reactionHandler from "./handler/reactionHandler";
 
 let version = conf.getVersion();
@@ -180,6 +180,8 @@ client.on("error", log.error);
 
 client.on("messageReactionAdd", async(event, user) => reactionHandler(event, user, client, false));
 client.on("messageReactionRemove", async(event, user) => reactionHandler(event, user, client, true));
+
+client.on("interactionCreate", async(interaction) => handleInteractionEvent(interaction, client));
 
 client.login(config.auth.bot_token).then(() => {
     log.done("Token login was successful!");

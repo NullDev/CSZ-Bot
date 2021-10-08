@@ -2,14 +2,25 @@ import { Command } from "./command";
 import { Embed, SlashCommandBuilder } from '@discordjs/builders';
 // @ts-ignore
 import fetch from "node-fetch";
-import { MessageEmbedOptions } from "discord.js";
+import { Client, CommandInteraction, MessageEmbedOptions } from "discord.js";
 import type { CommandFunction } from "../types";
 
-export class InfoCommand implements Command {
+export class InfoCommand extends Command {
     public get applicationCommand(): SlashCommandBuilder {
         return new SlashCommandBuilder()
             .setName('info')
             .setDescription('Get Bot Info')
+    }
+
+    async handle(command: CommandInteraction, client: Client): Promise<unknown> {
+        const contributors = await fetchContributions();
+        const formattedContributors = formatContributors(contributors);
+
+        const embed: MessageEmbedOptions = buildEmbed(formattedContributors, client.user?.avatarURL() ?? undefined);
+        return command.reply({
+            embeds: [embed],
+            ephemeral: true
+        });
     }
 }
 
@@ -25,18 +36,15 @@ const fetchContributions = async (): Promise<Array<Contributors>> => {
     }).then((res: any) => res.json());
 };
 
-let formatContributors = (contributors: Array<Contributors>): string => {
+const formatContributors = (contributors: Array<Contributors>): string => {
     return contributors
         .filter(e => e.type === "User")
         .map(e => `<${e.html_url}> (Contributions: ${e.contributions})`)
         .join("\n");
 };
 
-export const run: CommandFunction = async(client, message, args) => {
-    const contributors = await fetchContributions();
-    const formattedContributors = formatContributors(contributors);
-
-    const embed: MessageEmbedOptions = {
+const buildEmbed = (fmtContributors: string, avatarUrl?: string): MessageEmbedOptions => {
+    return {
         color: 2007432,
         footer: {
             text: `${new Date().toDateString()} ${new Date().toLocaleTimeString()}`
@@ -44,7 +52,7 @@ export const run: CommandFunction = async(client, message, args) => {
         author: {
             name: "Shitpost Bot",
             url: "https://discordapp.com/users/663146938811547660/",
-            icon_url: client.user?.avatarURL() ?? undefined
+            icon_url: avatarUrl
         },
         fields: [
             {
@@ -66,11 +74,18 @@ export const run: CommandFunction = async(client, message, args) => {
             },
             {
                 name: "🪛 Contributors",
-                value: `${formattedContributors}`,
+                value: `${fmtContributors}`,
                 inline: false
             }
         ]
     };
+}
+
+export const run: CommandFunction = async(client, message, args) => {
+    const contributors = await fetchContributions();
+    const formattedContributors = formatContributors(contributors);
+
+    const embed: MessageEmbedOptions = buildEmbed(formattedContributors, client.user?.avatarURL() ?? undefined);
     await message.channel.send({ embeds: [embed] });
     await message.react("⚙️"); // Only react when the message was actually sent
 };
