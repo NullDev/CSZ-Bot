@@ -4,15 +4,16 @@
 
 import * as log from "../../utils/logger";
 import { getConfig } from "../../utils/configHandler";
+import { CommandFunction, isGuildMessage } from "../../types";
 const config = getConfig();
 
 /**
  * Creates an assigner message
- *
- * @type {import("../../types").CommandFunction}
  */
-export const run = async(client, message, args) => {
+export const run: CommandFunction = async(client, message, args) => {
+    if (!isGuildMessage(message)) return;
     if (!args.length) return "Keine Rollen angegeben.";
+
 
     let roleNames = message.guild.roles.cache
         .filter(element => String(element.name).toLowerCase() !== "@everyone")
