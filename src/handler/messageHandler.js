@@ -19,9 +19,13 @@ const config = getConfig();
 
 let lastSpecialCommand = 0;
 
-registerFont("assets/impact.ttf", {
-    family: "Impact"
-});
+if (process.env.NODE_ENV === "production") {
+    // This is a simple detection if we're running inside docker
+    // We assume that every developer that wants to use this feature has impact installed
+    registerFont("assets/impact.ttf", {
+        family: "Impact"
+    });
+}
 
 /**
  * @param {import("discord.js").Message} messageRef message
