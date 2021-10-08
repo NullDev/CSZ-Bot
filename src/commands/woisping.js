@@ -52,15 +52,16 @@ export const run = async(client, message, args) => {
 /**
  * Handles changes on reactions specific to this command
  *
- * @param {any} event
+ * @param {import("discord.js").MessageReaction} reactionEvent
+ * @param {import("discord.js").User} user
  * @param {import("discord.js").Client} client
  * @param {import("discord.js").Message} message
  * @returns {Promise<boolean>}
  */
-export const reactionHandler = async(event, client, message) => {
+export const reactionHandler = async(reactionEvent, user, client, message) => {
     if (message.embeds.length !== 0
         || !message.content.startsWith(pendingMessagePrefix)
-        || event.d.emoji.name !== "👍") {
+        || reactionEvent.emoji.name !== "👍") {
         return false;
     }
 
@@ -71,19 +72,17 @@ export const reactionHandler = async(event, client, message) => {
         return true;
     }
 
-    const { d: data } = event;
+    const member = client.guilds.cache.get(config.ids.guild_id).members.cache.get(user.id);
 
-    const user = client.guilds.cache.get(config.ids.guild_id).members.cache.get(data.user_id);
-
-    if (!user) {
+    if (!member) {
         return true;
     }
 
-    const isMod = user.roles.cache.some(r => config.bot_settings.moderator_roles.includes(r.name));
+    const isMod = member.roles.cache.some(r => config.bot_settings.moderator_roles.includes(r.name));
 
-    if (!isMod && !user.roles.cache.has(config.ids.woisgang_role_id)){
-        reaction.users.remove(data.user_id);
-        user.send("Sorry, du bist leider kein Woisgang-Mitglied und darfst nicht abstimmen.");
+    if (!isMod && !member.roles.cache.has(config.ids.woisgang_role_id)){
+        reaction.users.remove(member.id);
+        member.send("Sorry, du bist leider kein Woisgang-Mitglied und darfst nicht abstimmen.");
         return true;
     }
 
@@ -101,8 +100,8 @@ export const reactionHandler = async(event, client, message) => {
         channel.send(`<@&${config.ids.woisgang_role_id}> ${reason}`);
     }
     else if (!couldPing) {
-        reaction.users.remove(data.user_id);
-        await user.send("Sorry, ich musste deine Zustimmung für den Woisgang-Ping entfernen, weil wir noch etwas warten müssen mit dem Ping.");
+        reaction.users.remove(member.id);
+        await member.send("Sorry, ich musste deine Zustimmung für den Woisgang-Ping entfernen, weil wir noch etwas warten müssen mit dem Ping.");
     }
 
     return true;
