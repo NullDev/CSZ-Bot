@@ -48,15 +48,13 @@ export const run = async(client, message, args) => {
         : momentDuration.locale("de").humanize();
 
     await message.channel.send(`User ${invokingUser} hat sich selber gebannt!\nEntbannen in: ${durationHumanized}`);
-    await message.guild.member(invokingUser).send(`Du hast dich selber von der Coding Shitpost Zentrale gebannt!
+
+    await message.author.send(`Du hast dich selber von der Coding Shitpost Zentrale gebannt!
 Du wirst entbannt in: ${durationHumanized}
 Falls du doch vorzeitig entbannt entbannt werden möchtest, kannst du dich im <#${config.ids.banned_channel_id}> Channel melden.
 
 Haddi & xD™`
     );
-
-    // Send ban confirmation to channel only if the user has received it
-    await message.channel.send(`User ${invokingUser} hat sich selber gebannt!\nEntbannen in: ${durationHumanized}`);
 };
 
 export const description = `Bannt den ausführenden User indem er ihn von allen Channels ausschließt.\nBenutzung: ${config.bot_settings.prefix.command_prefix}selfban [Dauer in Stunden = 8; 0 = manuelle Entbannung durch Moderader nötig]`;

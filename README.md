@@ -42,6 +42,7 @@ $ `npm ci`<br><br>
         - Die Applikation muss als "Bot" gesetzt werden.
         - Es müssen beide [Gateway Intents](https://discordjs.guide/popular-topics/intents.html#gateway-intents) eingeschalten werden.
         - Den Bot Token (NICHT die Application-ID oder den Public-Key) [in die Config](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L3) kopieren.
+        - Okay, die Application-ID / Client ID muss doch mit [in die Config](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L4) rein. 
     - Um ID's kopieren zu können, den "Developer Mode" in den Discord Einstellungen aktivieren. Mit Rechts-Klick kann man dann die ID's kopieren:
         - Die ID [des Servers](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L19)
         - Die ID für [den Hauptchat](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L20)
