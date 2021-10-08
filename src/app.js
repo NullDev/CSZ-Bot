@@ -81,7 +81,7 @@ function scheduleTimezoneFixedCronjob(cronString) {
 
         // Auto-kick members
         let sadPinguEmote = message.guild.emojis.cache.find(e => e.name === "sadpingu");
-        let dabEmote = message.guild.emojis.cache.find(e => e.name === "dab");
+        let dabEmote = message.guild.emojis.cache.find(e => e.name === "Dab");
         let membersWORoles = csz.members.cache.filter(m => {
             return m.roles.cache.size === 0 && Date.now() - m.joinedTimestamp >= 48 * 3_600_000;
         });
