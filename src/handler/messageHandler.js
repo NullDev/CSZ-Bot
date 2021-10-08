@@ -7,10 +7,8 @@
  * @typedef {import("discord.js").Client} Client
  */
 
-import Jimp from "jimp";
-import * as path from "path";
-import * as fs from "fs";
-import { Util }  from "discord.js";
+import { createCanvas, loadImage, registerFont } from "canvas";
+import { Util } from "discord.js";
 
 import * as log from "../utils/logger";
 import { getConfig } from "../utils/configHandler";
@@ -40,8 +38,7 @@ const getInlineReplies = function(messageRef, client) {
 
 /**
  * @param {string} text
- * @param {import("discord.js").Client} client client
- * @returns {Promise<string>}
+ * @returns {Promise<Buffer>}
  */
 const createWhereMeme = async(text) => {
     const whereImage = await loadImage("https://i.imgflip.com/52l6s0.jpg");
@@ -76,22 +73,22 @@ const createWhereMeme = async(text) => {
  */
 const dadJoke = function(message) {
     const idx = message.content.toLowerCase().lastIndexOf("ich bin ");
-    if(idx < (message.content.length - 1)) {
+    if (idx < (message.content.length - 1)) {
         const indexOfTerminator = message.content.search(/(?:(?![,])[\p{P}\p{S}\p{C}])/gu);
         const trimmedWords = message.content.substring(idx + 8, indexOfTerminator !== -1 ? indexOfTerminator : message.content.length).split(/\s+/).map(w => w.trim());
 
         const randomUwe = Math.random() < 0.01;
 
-        if(trimmedWords.length > 0 && trimmedWords.length <= 10 && !randomUwe) {
+        if (trimmedWords.length > 0 && trimmedWords.length <= 10 && !randomUwe) {
             const whoIs = Util.removeMentions(Util.cleanContent(trimmedWords.join(" "), message));
-            if(whoIs.trim().length > 0) {
+            if (whoIs.trim().length > 0) {
                 message.reply({
                     content: `Hallo ${whoIs}, ich bin Shitpost Bot.`
                 });
             }
         }
-        else if(randomUwe) {
-            message.reaply({
+        else if (randomUwe) {
+            message.reply({
                 content: "Und ich bin der Uwe, ich bin auch dabei"
             });
         }
@@ -107,26 +104,24 @@ const nixos = function(message) {
 };
 
 /**
- *
  * @param {import("discord.js").Message} message
- * @param {import("discord.js").Client} client client
  */
-const whereMeme = function(message) {
-    createWhereMeme(Util.cleanContent(message.content.trim().toLowerCase().replace(/ß/g, "ss").toUpperCase(), message))
-        .then(where => {
-            message.channel.send({
-                files: [{
-                    attachment: where,
-                    name: path.basename(where)
-                }]
-            }).finally(() => fs.unlink(where, (err) => {
-                if(err) {
-                    console.error(err);
-                }
-                return;
-            }));
-        })
-        .catch(err => console.error(err));
+const whereMeme = async(message) => {
+    const subject = Util.cleanContent(message.content.trim().toUpperCase(), message);
+
+    try {
+        const whereMemeBuffer = await createWhereMeme(subject);
+
+        await message.channel.send({
+            files: [{
+                attachment: whereMemeBuffer,
+                name: subject + ".png"
+            }]
+        });
+    }
+    catch(err) {
+        log.error(err);
+    }
 };
 
 /**
@@ -136,10 +131,10 @@ const whereMeme = function(message) {
  */
 const wat = function(message, client) {
     const watEmote = message.guild.emojis.cache.find(e => e.name === "wat");
-    if(watEmote) {
+    if (watEmote) {
         const messageRef = message.reference?.messageId;
         // If reply to message
-        if(messageRef) {
+        if (messageRef) {
             message.channel.messages.fetch(messageRef)
                 .then(m => m.react(watEmote));
         }
@@ -206,7 +201,7 @@ const isCooledDown = function() {
     const diff = now - lastSpecialCommand;
     const fixedCooldown = 120000;
     // After 2 minutes command is cooled down
-    if(diff >= fixedCooldown) {
+    if (diff >= fixedCooldown) {
         return true;
     }
     // Otherwise a random function should evaluate the cooldown. The longer the last command was, the higher the chance
@@ -231,9 +226,9 @@ export default async function(message, client) {
 
     const isMod = message.member.roles.cache.some(r => config.bot_settings.moderator_roles.includes(r.name));
 
-    if(isMod || isCooledDown()) {
+    if (isMod || isCooledDown()) {
         const commandCandidates = specialCommands.filter(p => p.pattern.test(message.content));
-        if(commandCandidates.length > 0) {
+        if (commandCandidates.length > 0) {
             commandCandidates
                 .filter(c => Math.random() <= c.randomness)
                 .forEach(c => {
