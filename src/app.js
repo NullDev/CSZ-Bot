@@ -80,6 +80,8 @@ function scheduleTimezoneFixedCronjob(cronString) {
         (csz.channels.cache.get(config.ids.hauptchat_id)).send("Es ist `13:37` meine Kerle.\nBleibt hydriert! :grin: :sweat_drops:");
 
         // Auto-kick members
+        let sadPinguEmote = message.guild.emojis.cache.find(e => e.name === "sadpingu");
+        let dabEmote = message.guild.emojis.cache.find(e => e.name === "dab");
         let membersWORoles = csz.members.cache.filter(m => {
             return m.roles.cache.size === 0 && Date.now() - m.joinedTimestamp >= 48 * 3_600_000;
         });
@@ -92,10 +94,10 @@ function scheduleTimezoneFixedCronjob(cronString) {
         }
         log.info(`Auto-kick: ${cnt} members kicked.`);
         if(cnt > 0){
-            csz.channels.cache.get(config.ids.hauptchat_id).send(`Hab grad ${cnt} jockel gekickt :Dab:`);
+            csz.channels.cache.get(config.ids.hauptchat_id).send(`Hab grad ${cnt} jockel gekickt ${dabEmote}`);
         }
         else {
-            csz.channels.cache.get(config.ids.hauptchat_id).send("Heute leider keine jockel gebannt :sadpingu:");
+            csz.channels.cache.get(config.ids.hauptchat_id).send(`Heute leider keine jockel gebannt ${sadPinguEmote}`);
         }
 
         const tomorrow = Date.now() + 60/* s*/ * 1000/* ms*/ * 60/* m*/ * 24/* h*/;
