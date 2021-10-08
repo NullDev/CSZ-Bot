@@ -8,7 +8,7 @@ import type { CommandFunction } from "../types";
 export class InfoCommand extends Command {
     public get applicationCommand(): SlashCommandBuilder {
         return new SlashCommandBuilder()
-            .setName('info')
+            .setName(this.name)
             .setDescription('Get Bot Info')
     }
 

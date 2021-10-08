@@ -23,6 +23,7 @@ const pollVoteEmojis = pollEmojis.concat(voteEmojis);
  * @returns {Promise<unknown>}
  */
 export default async function(reactionEvent, user, client, removal) {
+    console.log(reactionEvent);
     /** @type {import("discord.js").Message} */
     const message = await client.channels.cache.get(reactionEvent.message.channelId).messages.fetch(reactionEvent.message.id);
     if (message.author.id !== client.user.id) return;
