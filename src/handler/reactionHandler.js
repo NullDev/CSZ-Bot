@@ -8,6 +8,7 @@ import AdditionalMessageData from "../storage/model/AdditionalMessageData";
 import * as log from "../utils/logger";
 import * as poll from "../commands/poll";
 import * as woisping from "../commands/woisping";
+import {handleQuoteReaction} from "./quoteHandler";
 
 const pollEmojis = poll.EMOJI;
 const voteEmojis = ["👍", "👎"];
@@ -29,6 +30,8 @@ export default async function(reactionEvent, user, client, removal) {
 
     // TODO
     const member = await message.guild.members.fetch(user.id);
+
+    await handleQuoteReaction(client, user, reactionEvent);
 
     if(reactionEvent.emoji.name === "✅") {
         if (member.id !== client.user.id) {
