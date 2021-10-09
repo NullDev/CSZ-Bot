@@ -8,7 +8,6 @@ import AdditionalMessageData from "../storage/model/AdditionalMessageData";
 import * as log from "../utils/logger";
 import * as poll from "../commands/poll";
 import * as woisping from "../commands/woisping";
-import {quoteReactionHandler} from "./quoteHandler";
 
 const pollEmojis = poll.EMOJI;
 const voteEmojis = ["👍", "👎"];
