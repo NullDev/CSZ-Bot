@@ -23,8 +23,8 @@ import * as storage from "./storage/storage";
 import * as ban from "./commands/modcommands/ban";
 import * as poll from "./commands/poll";
 import GuildRagequit from "./storage/model/GuildRagequit";
-import { handleInteractionEvent, registerAllCommandsAsGuildCommands } from "./handler/applicationCommandHandler";
 import reactionHandler from "./handler/reactionHandler";
+import { handleInteractionEvent, messageCommandHandler, registerAllApplicationCommandsAsGuildCommands } from "./handler/commandHandler";
 
 let version = conf.getVersion();
 let appname = conf.getName();
@@ -138,9 +138,26 @@ client.on("ready", async() => {
     fadingMessageHandler.startLoop(client);
 });
 
+
+/**
+ * When the application is ready, slash commands should be registered
+ * TODO: This is not as urgent, but old slash commands should be deleted
+ * - Garbage Collectiong it is.
+ */
 client.on("ready", async() => {
-    registerAllCommandsAsGuildCommands();
+    registerAllApplicationCommandsAsGuildCommands();
 });
+
+/**
+ * This is an additional Message handler, that we use as a replacement
+ * for the "old commands". This way we can easily migrate commands to slash commands
+ * and still use the possility to use the commands textual. Win-Win :cooldoge:
+ */
+client.on("messageCreate", async(message) => {
+    messageCommandHandler(message, client);
+});
+
+client.on("interactionCreate", async(interaction) => handleInteractionEvent(interaction, client));
 
 client.on("guildCreate", guild => log.info(`New guild joined: ${guild.name} (id: ${guild.id}) with ${guild.memberCount} members`));
 
@@ -180,8 +197,6 @@ client.on("error", log.error);
 
 client.on("messageReactionAdd", async(event, user) => reactionHandler(event, user, client, false));
 client.on("messageReactionRemove", async(event, user) => reactionHandler(event, user, client, true));
-
-client.on("interactionCreate", async(interaction) => handleInteractionEvent(interaction, client));
 
 client.login(config.auth.bot_token).then(() => {
     log.done("Token login was successful!");

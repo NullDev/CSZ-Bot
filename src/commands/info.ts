@@ -1,26 +1,54 @@
-import { Command } from "./command";
 import { Embed, SlashCommandBuilder } from '@discordjs/builders';
 // @ts-ignore
 import fetch from "node-fetch";
-import { Client, CommandInteraction, MessageEmbedOptions } from "discord.js";
-import type { CommandFunction } from "../types";
+import { Client, CommandInteraction, Message, MessageEmbedOptions } from "discord.js";
+import { AbstractCommand, ApplicationCommand, MessageCommand } from './command';
 
-export class InfoCommand extends Command {
+/**
+ * Info command. Displays some useless information about the bot.
+ *
+ * This command is both - a slash command (application command) and a message command
+ */
+export class InfoCommand extends AbstractCommand implements ApplicationCommand, MessageCommand {
+    modCommand: boolean = false;
+
     public get applicationCommand(): SlashCommandBuilder {
+        // Every Application command would have this structure at minimal. However
+        // we don't enforce to use the name from the constructor, but highly encourage it
+        // since the command handler is based on that.
         return new SlashCommandBuilder()
             .setName(this.name)
-            .setDescription('Get Bot Info')
+            .setDescription(this.description);
     }
 
-    async handle(command: CommandInteraction, client: Client): Promise<unknown> {
-        const contributors = await fetchContributions();
-        const formattedContributors = formatContributors(contributors);
-
-        const embed: MessageEmbedOptions = buildEmbed(formattedContributors, client.user?.avatarURL() ?? undefined);
+    /**
+     * Replies to the interaction with the info embed as ephemeral reply
+     * @param command interaction
+     * @param client client
+     * @returns info reply
+     */
+    async handleInteraction(command: CommandInteraction, client: Client): Promise<unknown> {
+        const embed: MessageEmbedOptions = await buildEmbed(client.user?.avatarURL() ?? undefined);
         return command.reply({
             embeds: [embed],
             ephemeral: true
         });
+    }
+
+    /**
+     * Replies to the message with the info embed and reacts to the message
+     * @param message message
+     * @param client client
+     * @returns reply and reaction
+     */
+    async handleMessage(message: Message, client: Client): Promise<unknown> {
+        const embed: MessageEmbedOptions = await buildEmbed(client.user?.avatarURL() ?? undefined);
+
+        const reply = message.reply({
+            embeds: [embed]
+        });
+        const reaction = message.react("⚙️");
+        return Promise.all([reply, reaction]);
     }
 }
 
@@ -43,7 +71,10 @@ const formatContributors = (contributors: Array<Contributors>): string => {
         .join("\n");
 };
 
-const buildEmbed = (fmtContributors: string, avatarUrl?: string): MessageEmbedOptions => {
+const buildEmbed = async(avatarUrl?: string): Promise<MessageEmbedOptions> => {
+    const contributors = await fetchContributions();
+    const formattedContributors = formatContributors(contributors);
+
     return {
         color: 2007432,
         footer: {
@@ -74,20 +105,9 @@ const buildEmbed = (fmtContributors: string, avatarUrl?: string): MessageEmbedOp
             },
             {
                 name: "🪛 Contributors",
-                value: `${fmtContributors}`,
+                value: `${formattedContributors}`,
                 inline: false
             }
         ]
     };
-}
-
-export const run: CommandFunction = async(client, message, args) => {
-    const contributors = await fetchContributions();
-    const formattedContributors = formatContributors(contributors);
-
-    const embed: MessageEmbedOptions = buildEmbed(formattedContributors, client.user?.avatarURL() ?? undefined);
-    await message.channel.send({ embeds: [embed] });
-    await message.react("⚙️"); // Only react when the message was actually sent
 };
-
-export const description = "Listet Informationen über diesen Bot in einem Embed auf";
