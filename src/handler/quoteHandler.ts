@@ -23,7 +23,7 @@ const isMessageAlreadyQuoted = (message: Message, client: Client) => message.rea
 
 export const quoteReactionHandler = async (event: MessageReaction, user: User, client: Client) => {
 
-    if (!isQuoteEmoji(event) || null === event.message.guildId) {
+    if (!isQuoteEmoji(event) || null === event.message.guildId || user.id === client.user!.id) {
         return;
     }
 
