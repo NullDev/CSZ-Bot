@@ -1,18 +1,36 @@
-import { Command } from "./command";
 import { Embed, SlashCommandBuilder } from '@discordjs/builders';
 // @ts-ignore
 import fetch from "node-fetch";
-import { Client, CommandInteraction, Guild, MessageActionRowOptions, MessageEmbedOptions } from "discord.js";
-import type { CommandFunction, CommandResult, GitHubContributor } from "../types";
+import { Client, CommandInteraction, Guild, Message, MessageActionRowOptions, MessageEmbedOptions } from "discord.js";
+import { ApplicationCommand, MessageCommand } from './command';
+import { GitHubContributor } from '../types';
 
-export class InfoCommand extends Command {
+/**
+ * Info command. Displays some useless information about the bot.
+ *
+ * This command is both - a slash command (application command) and a message command
+ */
+export class InfoCommand implements ApplicationCommand, MessageCommand {
+    modCommand: boolean = false;
+    name = "info";
+    description = "Listet Informationen über diesen Bot in einem Embed auf";
+
     public get applicationCommand(): SlashCommandBuilder {
+        // Every Application command would have this structure at minimal. However
+        // we don't enforce to use the name from the constructor, but highly encourage it
+        // since the command handler is based on that.
         return new SlashCommandBuilder()
             .setName(this.name)
-            .setDescription('Get Bot Info')
+            .setDescription(this.description);
     }
 
-    async handle(command: CommandInteraction, client: Client): Promise<unknown> {
+    /**
+     * Replies to the interaction with the info embed as ephemeral reply
+     * @param command interaction
+     * @param client client
+     * @returns info reply
+     */
+    async handleInteraction(command: CommandInteraction, client: Client): Promise<unknown> {
         const embed: MessageEmbedOptions = await buildEmbed(command.guild, client.user?.avatarURL() ?? undefined);
         return command.reply({
             embeds: [embed],
@@ -20,18 +38,23 @@ export class InfoCommand extends Command {
             components: buildMessageActionsRow()
         });
     }
+
+    /**
+     * Replies to the message with the info embed and reacts to the message
+     * @param message message
+     * @param client client
+     * @returns reply and reaction
+     */
+    async handleMessage(message: Message, client: Client): Promise<unknown> {
+        const embed: MessageEmbedOptions = await buildEmbed(message.guild, client.user?.avatarURL() ?? undefined);
+
+        const reply = message.reply({
+            embeds: [embed]
+        });
+        const reaction = message.react("⚙️");
+        return Promise.all([reply, reaction]);
+    }
 }
-
-export const run: CommandFunction = async(client, message, args): Promise<CommandResult> => {
-    const embed: MessageEmbedOptions = await buildEmbed(message.guild, client.user?.avatarURL() ?? undefined);
-    message.reply({
-        embeds: [embed],
-        components: buildMessageActionsRow()
-    });
-    return;
-};
-
-export const description = "Zeigt unnötige Informationen über den Bot und Server an.";
 
 const fetchContributions = async (): Promise<Array<GitHubContributor>> => {
     return fetch("https://api.github.com/repos/NullDev/CSC-Bot/contributors", {
@@ -39,7 +62,7 @@ const fetchContributions = async (): Promise<Array<GitHubContributor>> => {
     }).then((res: any) => res.json());
 };
 
-const buildEmbed = async(guild: Guild | null, avatarUrl?: string, ): Promise<MessageEmbedOptions> => {
+const buildEmbed = async(guild: Guild | null, avatarUrl?: string): Promise<MessageEmbedOptions> => {
     const contributors = await fetchContributions();
 
     let embed = {
