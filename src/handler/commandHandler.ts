@@ -32,6 +32,7 @@ export const messageCommands: Array<MessageCommand> =
 
 /**
  * Registers all defined applicationCommands as guild commands
+ * We're overwriting ALL, therefore no deletion is necessary
  */
 export const registerAllApplicationCommandsAsGuildCommands = async () => {
     const guildId = config.ids.guild_id;

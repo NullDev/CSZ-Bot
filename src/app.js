@@ -141,8 +141,6 @@ client.on("ready", async() => {
 
 /**
  * When the application is ready, slash commands should be registered
- * TODO: This is not as urgent, but old slash commands should be deleted
- * - Garbage Collectiong it is.
  */
 client.on("ready", async() => {
     registerAllApplicationCommandsAsGuildCommands();
