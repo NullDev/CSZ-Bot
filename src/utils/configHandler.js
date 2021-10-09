@@ -48,7 +48,7 @@ let isValidJson = function(obj) {
           anonymous_channel_ids: Array<string>,
           blacklisted_channel_ids: Array<string>,
           target_channel_ids: Array<string>,
-          emoji_name: string,
+          emoji_id: string,
         }
 *    }
  *   ids: Record<string, import("discord.js").Snowflake>

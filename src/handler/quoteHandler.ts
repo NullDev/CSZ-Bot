@@ -14,10 +14,10 @@ import * as log from "../utils/logger";
 const quoteConfig = getConfig().bot_settings.quotes;
 const isSourceChannelAllowed = (channelId: string) => !quoteConfig.blacklisted_channel_ids.includes(channelId);
 const isChannelAnonymous = (channelId: string) => quoteConfig.anonymous_channel_ids.includes(channelId);
-const isQuoteEmoji = (reaction: MessageReaction) => reaction.emoji.name === quoteConfig.emoji_name;
+const isQuoteEmoji = (reaction: MessageReaction) => reaction.emoji.id === quoteConfig.emoji_id;
 const isMemberAllowedToQuote = (member: GuildMember) => member.roles.cache.hasAny(...quoteConfig.allowed_group_ids);
 const isMessageAlreadyQuoted = async (message: Message, client: Client) => message.channel.messages.fetch(message.id)
-    .then(message => message.reactions.cache.some(r => r.emoji.name === quoteConfig.emoji_name && r.users.cache.some(user => user.id === client.user!.id)));
+    .then(message => message.reactions.resolve(quoteConfig.emoji_id)?.users.resolve(client.user!.id))
 
 export const quoteReactionHandler = async (event: MessageReaction, user: User, client: Client) => {
 
