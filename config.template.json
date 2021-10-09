@@ -14,7 +14,14 @@
         ],
         "woisping_limit": 7200,
         "woisping_threshold": 2,
-        "flame_trusted_user_on_bot_ping": false
+        "flame_trusted_user_on_bot_ping": false,
+        "quotes": {
+            "emoji_name": "zitat",
+            "allowed_group_ids": [],
+            "anonymous_channel_ids": [],
+            "blacklisted_channel_ids": [],
+            "target_channel_ids": []
+        }
     },
     "ids": {
         "guild_id": "",

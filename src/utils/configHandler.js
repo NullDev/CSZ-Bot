@@ -42,7 +42,14 @@ let isValidJson = function(obj) {
  *      },
  *      moderator_roles: Array<string>,
  *      woisping_limit: number,
- *      woisping_threshold: number
+ *      woisping_threshold: number,
+ *      quotes: {
+          allowed_group_ids: Array<string>,
+          anonymous_channel_ids: Array<string>,
+          blacklisted_channel_ids: Array<string>,
+          target_channel_ids: Array<string>,
+          emoji_name: string,
+        }
 *    }
  *   ids: Record<string, import("discord.js").Snowflake>
  * }} JSON Content

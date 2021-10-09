@@ -25,6 +25,7 @@ import * as poll from "./commands/poll";
 import GuildRagequit from "./storage/model/GuildRagequit";
 import reactionHandler from "./handler/reactionHandler";
 import { handleInteractionEvent, messageCommandHandler, registerAllApplicationCommandsAsGuildCommands } from "./handler/commandHandler";
+import {quoteReactionHandler} from "./handler/quoteHandler";
 
 let version = conf.getVersion();
 let appname = conf.getName();
@@ -196,6 +197,7 @@ client.on("messageUpdate", (_, newMessage) => messageHandler(/** @type {import("
 client.on("error", log.error);
 
 client.on("messageReactionAdd", async(event, user) => reactionHandler(event, user, client, false));
+client.on("messageReactionAdd", async(event, user) => quoteReactionHandler(event, user, client));
 client.on("messageReactionRemove", async(event, user) => reactionHandler(event, user, client, true));
 
 client.login(config.auth.bot_token).then(() => {
