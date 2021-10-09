@@ -2,7 +2,6 @@
 // = Copyright (c) NullDev = //
 // ========================= //
 
-import * as log from "../../utils/logger";
 import { getConfig } from "../../utils/configHandler";
 import { restoreRoles } from "./ban";
 
@@ -15,7 +14,7 @@ const config = getConfig();
  *
  * @type {import("../../types").CommandFunction}
  */
-export const run = async (client, message, args) => {
+export const run = async(client, message, args) => {
     let mentioned = message.mentions?.users?.first?.();
 
     if (!mentioned) return `Da ist kein username... Mach \`${config.bot_settings.prefix.mod_prefix}unban \@username\``;

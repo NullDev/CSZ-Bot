@@ -1,6 +1,3 @@
-//@ts-check
-
-import { Op } from "sequelize";
 import * as cron from "node-cron";
 
 import Ban from "../../storage/model/Ban";
@@ -10,7 +7,7 @@ import { getConfig } from "../../utils/configHandler";
 
 const config = getConfig();
 
-//#region Banned User Role Assignment
+// #region Banned User Role Assignment
 
 const assignBannedRoles = (user) => {
     let defaultRole = user.guild.roles.cache.find(role => role.id === config.ids.default_role_id);
@@ -33,7 +30,7 @@ const assignBannedRoles = (user) => {
         user.roles.remove(user.guild.roles.cache.find(role => role.id === config.ids.trusted_role_id));
         user.roles.add(user.guild.roles.cache.find(role => role.id === config.ids.trusted_banned_role_id));
     }
-}
+};
 
 export const restoreRoles = (user) => {
     let defaultRole = user.guild.roles.cache.find(role => role.id === config.ids.default_role_id);
@@ -60,10 +57,10 @@ export const restoreRoles = (user) => {
     return true;
 };
 
-//#endregion
+// #endregion
 
 
-export const ban = async (user, reason, isSelfBan, durationInHours) => {
+export const ban = async(user, reason, isSelfBan, durationInHours) => {
     await assignBannedRoles(user);
 
     const unbanAtTimestamp = durationInHours === undefined
@@ -80,7 +77,7 @@ export const ban = async (user, reason, isSelfBan, durationInHours) => {
  *
  * @type {import("../../types").CommandFunction}
  */
-export const run = async (client, message, args) => {
+export const run = async(client, message, args) => {
     let mentioned = message.mentions?.users?.first?.();
     let reason = args.slice(1).join(" ");
 
@@ -91,13 +88,12 @@ export const run = async (client, message, args) => {
 
     const existingBan = await Ban.findExisting(mentionedUser);
     if (existingBan !== null) {
-        if (mentionedUser.roles.cache.some(r => r.id === config.ids.banned_role_id))
-            return "Dieser User ist bereits gebannt du kek.";
+        if (mentionedUser.roles.cache.some(r => r.id === config.ids.banned_role_id)) {return "Dieser User ist bereits gebannt du kek.";}
 
         return "Dieser nutzer ist laut Datenbank gebannt, ihm fehlt aber die Rolle. Fix das.";
     }
 
-    //(user, reason, isSelfBan, durationInHours)
+    // (user, reason, isSelfBan, durationInHours)
     if (!ban(mentionedUser, reason, undefined)) return "Eine der angegebenen Rollen für das bannen existiert nich.";
 
     await message.channel.send(`User ${mentionedUser} wurde gebannt!\nGrund: ${reason ?? "Kein Grund angegeben"}`);
@@ -109,8 +105,7 @@ Lg & xD™`
     );
 };
 export const startCron = (client) => {
-
-    cron.schedule("* * * * *", async () => {
+    cron.schedule("* * * * *", async() => {
         const now = Date.now();
 
         try {
@@ -120,8 +115,7 @@ export const startCron = (client) => {
                 await expiredBan.destroy();
 
                 const user = client.guilds.cache.get(config.ids.guild_id).members.cache.get(expiredBan.userId);
-                if (!user)
-                    continue;
+                if (!user) {continue;}
 
                 restoreRoles(user);
 
@@ -131,7 +125,8 @@ export const startCron = (client) => {
 
                 await user.send(msg);
             }
-        } catch (err) {
+        }
+        catch (err) {
             log.error(`Error in cron job: ${err}`);
         }
     });
