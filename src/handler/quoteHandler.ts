@@ -1,4 +1,13 @@
-import {Client, GuildMember, Message, MessageReaction, TextChannel, User, MessageEmbedOptions} from "discord.js";
+import {
+    Client,
+    GuildMember,
+    Message,
+    MessageReaction,
+    TextChannel,
+    User,
+    MessageEmbedOptions,
+    NewsChannel
+} from "discord.js";
 import {getConfig} from "../utils/configHandler";
 import * as log from "../utils/logger";
 
@@ -7,35 +16,26 @@ const isSourceChannelAllowed = (channelId: string) => !quoteConfig.blacklisted_c
 const isChannelAnonymous = (channelId: string) => quoteConfig.anonymous_channel_ids.includes(channelId);
 const isQuoteEmoji = (reaction: MessageReaction) => reaction.emoji.name === quoteConfig.emoji_name;
 const isMemberAllowedToQuote = (member: GuildMember) => member.roles.cache.hasAny(...quoteConfig.allowed_group_ids);
-const isMessageAlreadyQuoted = (message: Message) => !!message.reactions.cache.find(reaction => reaction.emoji.name === quoteConfig.emoji_name);
+const isMessageAlreadyQuoted = (message: Message, client: Client) => message.reactions.cache.some(r => {
+    return r.emoji.name === quoteConfig.emoji_name
+        && r.users.cache.some(user => user.id === client.user!.id)
+});
 
-export const handleQuoteReaction = async (client: Client, user: User, event: MessageReaction) => {
+export const quoteReactionHandler = async (event: MessageReaction, user: User, client: Client) => {
 
     if (!isQuoteEmoji(event) || null === event.message.guildId) {
         return;
     }
 
-    const quoter = client.guilds.cache.get(event.message.guildId)?.members.cache.get(user.id)!;
-    const quotedUser = event.message.member!;
-    const message = (<TextChannel>client.channels.cache.get(event.message.channelId)).messages.cache.get(event.message.id)!;
-    const embed = createEmbed(client, quotedUser.user, quoter.user, message);
+    const guild = client.guilds.cache.get(event.message.guildId)!;
+    const quoter = guild.members.cache.get(user.id)!;
+    const message = await (<TextChannel | NewsChannel>client.channels.cache.get(event.message.channelId))!.messages.fetch(event.message.id);
+    const quotedUser = message.member;
+    const embed = createEmbed(client, quotedUser?.user, quoter.user, message);
     const targetChannels = getChannels(quoteConfig.target_channel_ids, client);
 
-    if (!isMemberAllowedToQuote(quoter)) {
-        await message.channel.send(`@${quoter.nickname} Du darfst nicht zitieren!`);
-
-        return;
-    }
-
-    if (!isSourceChannelAllowed(message.channelId)) {
-        await message.channel.send(`@${quoter.nickname} In diesem Channel wird nicht zitiert!`);
-
-        return;
-    }
-
-    // ignore duplicate quotes
-    if (!quotedUser || isMessageAlreadyQuoted(message)) {
-        await event.remove();
+    if (!isMemberAllowedToQuote(quoter) || !isSourceChannelAllowed(message.channelId) || isMessageAlreadyQuoted(message, client)) {
+        await event.users.remove(quoter);
 
         return;
     }
@@ -48,14 +48,17 @@ export const handleQuoteReaction = async (client: Client, user: User, event: Mes
                 return;
             }
 
-            if (!channel.isText()) {
+            if (!(channel.isText())) {
                 log.error(`channel ${id} is configured as quote output channel but it is not a text channel`);
 
                 return;
             }
 
-            await (<TextChannel>channel).send({embeds: [embed]});
+            await (<TextChannel | NewsChannel>channel).send({embeds: [embed]});
         }));
+
+    await event.users.remove(quoter);
+    await message.react(event.emoji);
 }
 
 const getChannels = (channelIds: Array<string>, client: Client) => {
@@ -63,12 +66,12 @@ const getChannels = (channelIds: Array<string>, client: Client) => {
         .map(id => {
             return {
                 id: id,
-                channel: <TextChannel>client.channels.cache.get(id)
+                channel: client.channels.cache.get(id)
             }
         });
 }
 
-const createEmbed = (client: Client, quotedUser: User, quoter: User, quotedMessage: Message): MessageEmbedOptions => {
+const createEmbed = (client: Client, quotedUser: User | undefined, quoter: User, quotedMessage: Message): MessageEmbedOptions => {
     return {
         color: 0xFFC000,
         description: quotedMessage.content,
@@ -76,7 +79,7 @@ const createEmbed = (client: Client, quotedUser: User, quoter: User, quotedMessa
             text: quotedMessage.createdAt.toLocaleDateString()
         },
         author:
-            isChannelAnonymous(quotedMessage.channelId)
+            isChannelAnonymous(quotedMessage.channelId) || !quotedUser
                 ? {
                     name: "Anon"
                 }
