@@ -5,13 +5,13 @@ import * as log from "../utils/logger";
 const quoteConfig = getConfig().bot_settings.quotes;
 const isSourceChannelAllowed = (channelId: string) => !quoteConfig.blacklisted_channel_ids.includes(channelId);
 const isChannelAnonymous = (channelId: string) => quoteConfig.anonymous_channel_ids.includes(channelId);
-const isQuoteEmoji = (emojiIdentifier: string) => quoteConfig.emoji_identifier === emojiIdentifier;
+const isQuoteEmoji = (reaction: MessageReaction) => reaction.emoji.name === quoteConfig.emoji_name;
 const isMemberAllowedToQuote = (member: GuildMember) => member.roles.cache.hasAny(...quoteConfig.allowed_group_ids);
-const isMessageAlreadyQuoted = (message: Message) => !!message.reactions.cache.get(quoteConfig.emoji_identifier);
+const isMessageAlreadyQuoted = (message: Message) => !!message.reactions.cache.find(reaction => reaction.emoji.name === quoteConfig.emoji_name);
 
 export const handleQuoteReaction = async (client: Client, user: User, event: MessageReaction) => {
 
-    if (!isQuoteEmoji(event.emoji.identifier) || null === event.message.guildId) {
+    if (!isQuoteEmoji(event) || null === event.message.guildId) {
         return;
     }
 
