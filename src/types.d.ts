@@ -1,5 +1,3 @@
-import type { Client, Message } from "discord.js";
-
 /**
  * A string denotes the response to the message (for example a business error).
  */
