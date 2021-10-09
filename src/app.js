@@ -15,7 +15,6 @@ import * as timezone from "./utils/timezone";
 // Handler
 import messageHandler from "./handler/messageHandler";
 import messageDeleteHandler from "./handler/messageDeleteHandler";
-import reactionHandler from "./handler/reactionHandler";
 import BdayHandler from "./handler/bdayHandler";
 import * as fadingMessageHandler from "./handler/fadingMessageHandler";
 import * as storage from "./storage/storage";
@@ -24,7 +23,8 @@ import * as storage from "./storage/storage";
 import * as ban from "./commands/modcommands/ban";
 import * as poll from "./commands/poll";
 import GuildRagequit from "./storage/model/GuildRagequit";
-import { registerAllCommandsAsGuildCommands } from "./handler/applicationCommandHandler";
+import { handleInteractionEvent, registerAllCommandsAsGuildCommands } from "./handler/applicationCommandHandler";
+import reactionHandler from "./handler/reactionHandler";
 
 let version = conf.getVersion();
 let appname = conf.getName();
@@ -43,6 +43,11 @@ log.done("Started.");
 
 const config = conf.getConfig();
 const client = new Discord.Client({
+    partials: [
+        "MESSAGE",
+        "REACTION",
+        "USER"
+    ],
     allowedMentions: {
         parse: ["users", "roles"],
         repliedUser: true
@@ -175,7 +180,10 @@ client.on("messageUpdate", (_, newMessage) => messageHandler(/** @type {import("
 
 client.on("error", log.error);
 
-client.on("raw", async event => reactionHandler(event, client));
+client.on("messageReactionAdd", async(event, user) => reactionHandler(event, user, client, false));
+client.on("messageReactionRemove", async(event, user) => reactionHandler(event, user, client, true));
+
+client.on("interactionCreate", async(interaction) => handleInteractionEvent(interaction, client));
 
 client.login(config.auth.bot_token).then(() => {
     log.done("Token login was successful!");
