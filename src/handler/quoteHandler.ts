@@ -23,7 +23,7 @@ const isMessageAlreadyQuoted = (message: Message, client: Client) => message.rea
 
 export const quoteReactionHandler = async (event: MessageReaction, user: User, client: Client) => {
 
-    if (!isQuoteEmoji(event) || null === event.message.guildId || user.id === client.user!.id) {
+    if (!isQuoteEmoji(event) || event.message.guildId === null || user.id === client.user!.id) {
         return;
     }
 
@@ -42,7 +42,7 @@ export const quoteReactionHandler = async (event: MessageReaction, user: User, c
 
     await Promise.all(targetChannels
         .map(async ({id, channel}) => {
-            if (undefined === channel) {
+            if (channel === undefined) {
                 log.error(`channel ${id} is configured as quote output channel but it doesn't exist`);
 
                 return;
