@@ -2,15 +2,17 @@ import { Embed, SlashCommandBuilder } from '@discordjs/builders';
 // @ts-ignore
 import fetch from "node-fetch";
 import { Client, CommandInteraction, Message, MessageEmbedOptions } from "discord.js";
-import { AbstractCommand, ApplicationCommand, MessageCommand } from './command';
+import { ApplicationCommand, MessageCommand } from './command';
 
 /**
  * Info command. Displays some useless information about the bot.
  *
  * This command is both - a slash command (application command) and a message command
  */
-export class InfoCommand extends AbstractCommand implements ApplicationCommand, MessageCommand {
+export class InfoCommand implements ApplicationCommand, MessageCommand {
     modCommand: boolean = false;
+    name = "info";
+    description = "Listet Informationen über diesen Bot in einem Embed auf";
 
     public get applicationCommand(): SlashCommandBuilder {
         // Every Application command would have this structure at minimal. However

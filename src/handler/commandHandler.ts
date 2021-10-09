@@ -20,10 +20,7 @@ import {
 const config = getConfig();
 
 export const commands: Array<Command> = [
-    new InfoCommand(
-        "info",
-        "Listet Informationen über diesen Bot in einem Embed auf"
-    ),
+    new InfoCommand()
 ];
 export const applicationCommands: Array<ApplicationCommand> =
     commands.filter<ApplicationCommand>(isApplicationCommand);
