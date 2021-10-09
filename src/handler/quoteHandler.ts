@@ -14,10 +14,13 @@ import * as log from "../utils/logger";
 const quoteConfig = getConfig().bot_settings.quotes;
 const isSourceChannelAllowed = (channelId: string) => !quoteConfig.blacklisted_channel_ids.includes(channelId);
 const isChannelAnonymous = (channelId: string) => quoteConfig.anonymous_channel_ids.includes(channelId);
-const isQuoteEmoji = (reaction: MessageReaction) => reaction.emoji.id === quoteConfig.emoji_id;
+const isQuoteEmoji = (reaction: MessageReaction) => reaction.emoji.name === quoteConfig.emoji_name;
 const isMemberAllowedToQuote = (member: GuildMember) => member.roles.cache.hasAny(...quoteConfig.allowed_group_ids);
-const isMessageAlreadyQuoted = async (message: Message, client: Client) => message.channel.messages.fetch(message.id)
-    .then(message => message.reactions.resolve(quoteConfig.emoji_id)?.users.resolve(client.user!.id))
+const isMessageAlreadyQuoted = async (message: Message, reaction: MessageReaction, client: Client) => {
+    const fetchedMessage = await message.channel.messages.fetch(message.id);
+    const usersThatReacted = await fetchedMessage.reactions.resolve(reaction).users.fetch();
+    return usersThatReacted.some(u => u.id === client.user!.id);
+}
 
 export const quoteReactionHandler = async (event: MessageReaction, user: User, client: Client) => {
 
@@ -32,7 +35,7 @@ export const quoteReactionHandler = async (event: MessageReaction, user: User, c
     const embed = createEmbed(client, quotedUser?.user, quoter.user, message);
     const targetChannels = getChannels(quoteConfig.target_channel_ids, client);
 
-    if (!isMemberAllowedToQuote(quoter) || !isSourceChannelAllowed(message.channelId) || await isMessageAlreadyQuoted(message, client)) {
+    if (!isMemberAllowedToQuote(quoter) || !isSourceChannelAllowed(message.channelId) || await isMessageAlreadyQuoted(message, event, client)) {
         await event.users.remove(quoter);
 
         return;

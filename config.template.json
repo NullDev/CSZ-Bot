@@ -16,7 +16,7 @@
         "woisping_threshold": 2,
         "flame_trusted_user_on_bot_ping": false,
         "quotes": {
-            "emoji_id": "",
+            "emoji_name": "",
             "allowed_group_ids": [],
             "anonymous_channel_ids": [],
             "blacklisted_channel_ids": [],
