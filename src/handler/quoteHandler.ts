@@ -16,10 +16,8 @@ const isSourceChannelAllowed = (channelId: string) => !quoteConfig.blacklisted_c
 const isChannelAnonymous = (channelId: string) => quoteConfig.anonymous_channel_ids.includes(channelId);
 const isQuoteEmoji = (reaction: MessageReaction) => reaction.emoji.name === quoteConfig.emoji_name;
 const isMemberAllowedToQuote = (member: GuildMember) => member.roles.cache.hasAny(...quoteConfig.allowed_group_ids);
-const isMessageAlreadyQuoted = (message: Message, client: Client) => message.reactions.cache.some(r => {
-    return r.emoji.name === quoteConfig.emoji_name
-        && r.users.cache.some(user => user.id === client.user!.id)
-});
+const isMessageAlreadyQuoted = async (message: Message, client: Client) => message.channel.messages.fetch(message.id)
+    .then(message => message.reactions.cache.some(r => r.emoji.name === quoteConfig.emoji_name && r.users.cache.some(user => user.id === client.user!.id)));
 
 export const quoteReactionHandler = async (event: MessageReaction, user: User, client: Client) => {
 
@@ -34,7 +32,7 @@ export const quoteReactionHandler = async (event: MessageReaction, user: User, c
     const embed = createEmbed(client, quotedUser?.user, quoter.user, message);
     const targetChannels = getChannels(quoteConfig.target_channel_ids, client);
 
-    if (!isMemberAllowedToQuote(quoter) || !isSourceChannelAllowed(message.channelId) || isMessageAlreadyQuoted(message, client)) {
+    if (!isMemberAllowedToQuote(quoter) || !isSourceChannelAllowed(message.channelId) || await isMessageAlreadyQuoted(message, client)) {
         await event.users.remove(quoter);
 
         return;
