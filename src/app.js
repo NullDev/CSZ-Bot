@@ -85,9 +85,9 @@ function scheduleTimezoneFixedCronjob(cronString) {
         (csz.channels.cache.get(config.ids.hauptchat_id)).send("Es ist `13:37` meine Kerle.\nBleibt hydriert! :grin: :sweat_drops:");
 
         // Auto-kick members
-        let sadPinguEmote = message.guild.emojis.cache.find(e => e.name === "sadpingu");
-        let dabEmote = message.guild.emojis.cache.find(e => e.name === "Dab");
-        let membersWORoles = csz.members.cache.filter(m => {
+        const sadPinguEmote = message.guild.emojis.cache.find(e => e.name === "sadpingu");
+        const dabEmote = message.guild.emojis.cache.find(e => e.name === "Dab");
+        const membersWORoles = csz.members.cache.filter(m => {
             return m.roles.cache.size === 0 && Date.now() - m.joinedTimestamp >= 48 * 3_600_000;
         });
 
