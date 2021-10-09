@@ -7,8 +7,8 @@ export type ApplicationCommand = CommandBase & AppCommand;
 export type MessageCommand = CommandBase & MsgCommand;
 
 export interface CommandBase {
-    name: string,
-    description: string;
+    readonly name: string,
+    readonly description: string;
 };
 
 // For ApplicationCommands we require a SlashCommandBuilder object to create the command and a handler method
@@ -22,7 +22,7 @@ export interface AppCommand {
 
 // For a MessageCommand we require an additional modCommand property and a handler method
 export interface MsgCommand {
-    modCommand: boolean;
+    readonly modCommand: boolean;
     handleMessage(message: Message, client: Client): Promise<unknown>;
 };
 
