@@ -75,9 +75,6 @@ const createEmbed = (client: Client, quotedUser: User | undefined, quoter: User,
     return {
         color: 0xFFC000,
         description: quotedMessage.content,
-        footer: {
-            text: quotedMessage.createdAt.toLocaleDateString()
-        },
         author:
             isChannelAnonymous(quotedMessage.channelId) || !quotedUser
                 ? {
@@ -87,6 +84,7 @@ const createEmbed = (client: Client, quotedUser: User | undefined, quoter: User,
                     name: quotedUser.username,
                     icon_url: quotedUser.avatarURL() ?? undefined
                 },
+        timestamp: quotedMessage.createdTimestamp,
         fields: [
             {
                 name: "Link zur Nachricht",
