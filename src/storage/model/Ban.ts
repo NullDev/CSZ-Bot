@@ -1,4 +1,5 @@
-import { Model, DataTypes, Sequelize, Optional } from "sequelize";
+import type { User } from "discord.js";
+import { Model, DataTypes, Sequelize, Optional, Op } from "sequelize";
 import { v4 as uuidv4 } from "uuid";
 
 export interface BanAttributes {
@@ -20,6 +21,28 @@ export default class Ban extends Model<BanAttributes, BanCreationAttributes> imp
 
     readonly createdAt!: Date;
     readonly updatedAt!: Date;
+
+    static persist = (user: User, until: number, isSelfBan: boolean, reason: string | null = null) => {
+        return Ban.create({
+            userId: user.id,
+            reason,
+            bannedUntil: until,
+            isSelfBan
+        });
+    };
+
+    static remove = (user: User) => Ban.destroy({ where: { userId: user.id } });
+
+    static findExisting = (user: User) => Ban.findOne({ where: { userId: user.id } });
+
+    static findExpiredBans = (now: number) => Ban.findAll({
+        where: {
+            bannedUntil: {
+                [Op.gt]: 0,
+                [Op.lte]: now
+            }
+        },
+    });
 
     static initialize(sequelize: Sequelize) {
         this.init({

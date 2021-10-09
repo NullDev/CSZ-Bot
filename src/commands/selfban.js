@@ -41,7 +41,7 @@ export const run = async(client, message, args) => {
 
     if (invokingUser.roles.cache.some(r => r.id === config.ids.banned_role_id)) return "Du bist bereits gebannt du Kek.";
 
-    if (!ban.ban(invokingUser, momentDuration)) return "Eine der angegebenen Rollen für das Bannen existiert nich.";
+    if (!ban.ban(invokingUser, "Selbstauferlegt", true, durationInHours)) return "Eine der angegebenen Rollen für das Bannen existiert nich.";
 
     const durationHumanized = durationInMinutes === 0
         ? "manuell durch Moderader"

@@ -1,36 +1,18 @@
-// ========================= //
-// = Copyright (c) NullDev = //
-// ========================= //
+//@ts-check
 
+import { Op } from "sequelize";
 import * as cron from "node-cron";
-import moment from "moment";
+
+import Ban from "../../storage/model/Ban";
 
 import * as log from "../../utils/logger";
 import { getConfig } from "../../utils/configHandler";
 
-import * as unban from "./unban";
-
 const config = getConfig();
 
-/**
- * @type {Record<String, number>}
- */
-export const bans = {
-    /*
-    user_id: unban_at as unix timestamp
-    */
-};
+//#region Banned User Role Assignment
 
-export const saveBans = () => {
-    // tbd
-};
-
-export const loadBans = () => {
-    // tbd
-};
-
-
-export const ban = (user, duration) => {
+const assignBannedRoles = (user) => {
     let defaultRole = user.guild.roles.cache.find(role => role.id === config.ids.default_role_id);
     let bannedRole = user.guild.roles.cache.find(role => role.id === config.ids.banned_role_id);
 
@@ -51,25 +33,44 @@ export const ban = (user, duration) => {
         user.roles.remove(user.guild.roles.cache.find(role => role.id === config.ids.trusted_role_id));
         user.roles.add(user.guild.roles.cache.find(role => role.id === config.ids.trusted_banned_role_id));
     }
+}
 
-    let momentDuration = duration;
+export const restoreRoles = (user) => {
+    let defaultRole = user.guild.roles.cache.find(role => role.id === config.ids.default_role_id);
+    let bannedRole = user.guild.roles.cache.find(role => role.id === config.ids.banned_role_id);
 
-    if (typeof duration === "number" && isFinite(duration)) {
-        momentDuration = moment.duration(duration, "h");
+    if (!defaultRole || !bannedRole) {
+        log.error("Unban: default role and/or banned role is missing");
+        return false;
     }
 
-    let unbanAt = 0; // never
+    user.roles.add(defaultRole);
+    user.roles.remove(bannedRole);
 
-    if (!!momentDuration && momentDuration.asMilliseconds() > 0 && moment.isDuration(momentDuration) && momentDuration.isValid) {
-        let unbanAtMoment = moment();
-        unbanAtMoment.add(momentDuration);
-
-        unbanAt = unbanAtMoment.valueOf();
+    if (user.roles.cache.find(r => r.id === config.ids.gruendervaeter_banned_role_id)) {
+        user.roles.remove(user.guild.roles.cache.find(role => role.id === config.ids.gruendervaeter_banned_role_id));
+        user.roles.add(user.guild.roles.cache.find(role => role.id === config.ids.gruendervaeter_role_id));
     }
 
-    bans[user.id] = unbanAt;
+    if (user.roles.cache.find(r => r.id === config.ids.trusted_banned_role_id)) {
+        user.roles.remove(user.guild.roles.cache.find(role => role.id === config.ids.trusted_banned_role_id));
+        user.roles.add(user.guild.roles.cache.find(role => role.id === config.ids.trusted_role_id));
+    }
 
-    saveBans();
+    return true;
+};
+
+//#endregion
+
+
+export const ban = async (user, reason, isSelfBan, durationInHours) => {
+    await assignBannedRoles(user);
+
+    const unbanAtTimestamp = durationInHours === undefined
+        ? 0 // never
+        : Date.now() + (durationInHours * 60 * 60 * 1000); // using milliseconds here
+
+    await Ban.persist(user, unbanAtTimestamp, isSelfBan, reason);
 
     return true;
 };
@@ -79,7 +80,7 @@ export const ban = (user, duration) => {
  *
  * @type {import("../../types").CommandFunction}
  */
-export const run = async(client, message, args) => {
+export const run = async (client, message, args) => {
     let mentioned = message.mentions?.users?.first?.();
     let reason = args.slice(1).join(" ");
 
@@ -88,10 +89,16 @@ export const run = async(client, message, args) => {
     let mentionedUser = message.guild.members.cache.get(mentioned.id);
     if (mentionedUser.id === "371724846205239326" || mentionedUser.id === client.user.id) return "Fick dich bitte.";
 
-    if (mentionedUser.roles.cache.some(r => r.id === config.ids.banned_role_id)
-        && (!(mentionedUser.id in bans) || bans[mentionedUser.id] === 0)) return "Dieser User ist bereits gebannt du kek.";
+    const existingBan = await Ban.findExisting(mentionedUser);
+    if (existingBan !== null) {
+        if (mentionedUser.roles.cache.some(r => r.id === config.ids.banned_role_id))
+            return "Dieser User ist bereits gebannt du kek.";
 
-    if (!ban(mentionedUser)) return "Eine der angegebenen Rollen für das bannen existiert nich.";
+        return "Dieser nutzer ist laut Datenbank gebannt, ihm fehlt aber die Rolle. Fix das.";
+    }
+
+    //(user, reason, isSelfBan, durationInHours)
+    if (!ban(mentionedUser, reason, undefined)) return "Eine der angegebenen Rollen für das bannen existiert nich.";
 
     await message.channel.send(`User ${mentionedUser} wurde gebannt!\nGrund: ${reason ?? "Kein Grund angegeben"}`);
     await mentionedUser.send(`Du wurdest von der Coding Shitpost Zentrale gebannt!
@@ -102,28 +109,30 @@ Lg & xD™`
     );
 };
 export const startCron = (client) => {
-    cron.schedule("* * * * *", () => {
-        let userIds = Object.keys(bans);
-        let modified = false;
 
-        for (let userId of userIds) {
-            let unbanAt = bans[userId];
+    cron.schedule("* * * * *", async () => {
+        const now = Date.now();
 
-            if (unbanAt !== 0 && unbanAt < Date.now()) {
-                let user = client.guilds.cache.get(config.ids.guild_id).members.cache.get(userId);
+        try {
+            const expiredBans = await Ban.findExpiredBans(now);
 
-                if (user) {
-                    unban.unban(user);
-                    user.send("Glückwunsch! Dein selbst auferlegter Bann in der Coding Shitpost Zentrale ist beendet.");
-                }
+            for (const expiredBan of expiredBans) {
+                await expiredBan.destroy();
 
-                delete bans[userId];
-                modified = true;
+                const user = client.guilds.cache.get(config.ids.guild_id).members.cache.get(expiredBan.userId);
+                if (!user)
+                    continue;
+
+                restoreRoles(user);
+
+                const msg = expiredBan.isSelfBan
+                    ? "Glückwunsch! Dein selbst auferlegter Bann in der Coding Shitpost Zentrale ist beendet."
+                    : "Glückwunsch! Dein Bann in der Coding Shitpost Zentrale ist beendet. Sei nächstes Mal einfach kein Hurensohn.";
+
+                await user.send(msg);
             }
-        }
-
-        if (modified) {
-            saveBans();
+        } catch (err) {
+            log.error(`Error in cron job: ${err}`);
         }
     });
 };
