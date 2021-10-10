@@ -14,18 +14,35 @@ import {
     Command,
     isApplicationCommand,
     isMessageCommand,
+    isSpecialCommand,
     MessageCommand,
+    SpecialCommand,
 } from "../commands/command";
+import { YepYepCommand } from "../commands/special/yepyep";
+import { NixOsCommand } from "../commands/special/nixos";
+import { WhereCommand } from "../commands/special/where";
+import { DadJokeCommand } from "../commands/special/dadJoke";
+import { WatCommand } from "../commands/special/wat";
+import * as log from "../utils/logger";
 
 const config = getConfig();
 
+let lastSpecialCommand = 0;
+
 export const commands: Array<Command> = [
-    new InfoCommand()
+    new InfoCommand(),
+    new YepYepCommand(),
+    new NixOsCommand(),
+    new WhereCommand(),
+    new DadJokeCommand(),
+    new WatCommand(),
 ];
 export const applicationCommands: Array<ApplicationCommand> =
     commands.filter<ApplicationCommand>(isApplicationCommand);
 export const messageCommands: Array<MessageCommand> =
     commands.filter<MessageCommand>(isMessageCommand);
+export const specialCommands: Array<SpecialCommand> =
+    commands.filter<SpecialCommand>(isSpecialCommand);
 
 /**
  * Registers all defined applicationCommands as guild commands
@@ -98,6 +115,43 @@ const commandMessageHandler = async (
     return;
 };
 
+const isCooledDown = () => {
+    const now = Date.now();
+    const diff = now - lastSpecialCommand;
+    const fixedCooldown = 120000;
+    // After 2 minutes command is cooled down
+    if (diff >= fixedCooldown) {
+        return true;
+    }
+    // Otherwise a random function should evaluate the cooldown. The longer the last command was, the higher the chance
+    // diff is < fixedCooldown
+    return Math.random() < diff / fixedCooldown;
+};
+
+const specialCommandHandler = async (message: Message, client: Client) => {
+    const commandCandidates = specialCommands.filter((p) =>
+        p.pattern.test(message.content)
+    );
+
+    if (
+        commandCandidates.length > 0 &&
+        (isCooledDown() || (message.member && isMod(message.member)))
+    ) {
+        return Promise.all(
+            commandCandidates
+                .filter((c) => Math.random() <= c.randomness)
+                .map((c) => {
+                    log.info(
+                        `User "${message.author.tag}" (${message.author}) performed special command: ${c.name}`
+                    );
+                    lastSpecialCommand = Date.now();
+                    return c.handleSpecialMessage(message, client);
+                })
+        );
+    }
+    return;
+};
+
 export const handleInteractionEvent = async (
     interaction: Interaction,
     client: Client
@@ -127,5 +181,7 @@ export const messageCommandHandler = async (
             return commandMessageHandler(cmdString, message, client);
         }
         return;
+    } else {
+        return specialCommandHandler(message, client);
     }
 };
