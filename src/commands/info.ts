@@ -63,8 +63,6 @@ const fetchContributions = async (): Promise<Array<GitHubContributor>> => {
 };
 
 const buildEmbed = async(guild: Guild | null, avatarUrl?: string): Promise<MessageEmbedOptions> => {
-    const contributors = await fetchContributions();
-
     let embed = {
         color: 2007432,
         footer: {
@@ -78,7 +76,7 @@ const buildEmbed = async(guild: Guild | null, avatarUrl?: string): Promise<Messa
         fields: [
             {
                 name: "🪛 Contributors",
-                value: buildAsciiChart(contributors),
+                value: await getContributors(),
                 inline: false
             },
             {
@@ -122,30 +120,15 @@ const buildMessageActionsRow = (): MessageActionRowOptions[] => {
     ];
 };
 
-const buildAsciiChart = (contributors: Array<GitHubContributor>): string => {
-    const max = Math.max(...contributors.map(c => c.contributions));
-    const maxLength = max.toString().length;
-    const fractions = ['▏', '▎', '▍', '▋', '▊', '▉'];
 
+const getContributors = async(): Promise<string> => {
+    const contributors = await fetchContributions();
     return contributors
         .filter(c => c.type === "User")
         .map(c => {
-            const length = c.contributions * 25 / max;
-            const wholeNumberPart = Math.floor(length);
-            const fractionalPart = length - wholeNumberPart;
-            const contributions = c.contributions;
-
-            let bar = fractions[fractions.length - 1].repeat(wholeNumberPart);
-            if (fractionalPart > 0) {
-                bar += fractions[Math.floor(fractionalPart * fractions.length)];
-            }
-            return `\`${rjust(contributions.toString(), maxLength)}\` ${bar} [${c.login}](${c.html_url})`;
-        }).join("\n");
-}
-
-
-const rjust = (s: string, max: number) => {
-    return " ".repeat(max - s.length) + s;
+            const noBreakLogin = c.login.replace("-", "‑"); //Replace normal hyphen with no-breaking hypen
+            return `[${noBreakLogin}](${c.html_url})`
+        }).join(", ");
 };
 
 const getTechStackInfo = (): string => {
