@@ -113,8 +113,7 @@ export const run = async(client, message, args) => {
         return "Dieser nutzer ist laut Datenbank gebannt, ihm fehlt aber die Rolle. Fix das.";
     }
 
-    // (user, reason, isSelfBan, durationInHours)
-    if (!ban(mentionedUser, reason, undefined)) return "Eine der angegebenen Rollen für das bannen existiert nich.";
+    if (!ban(mentionedUser, reason, false, undefined /* duration */)) return "Eine der angegebenen Rollen für das bannen existiert nich.";
 
     await message.channel.send(`User ${mentionedUser} wurde gebannt!\nGrund: ${reason ?? "Kein Grund angegeben"}`);
     await mentionedUser.send(`Du wurdest von der Coding Shitpost Zentrale gebannt!
