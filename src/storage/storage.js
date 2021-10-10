@@ -7,6 +7,7 @@ import AdditionalMessageData from "./model/AdditionalMessageData";
 import FadingMessage from "./model/FadingMessage";
 import GuildRagequit from "./model/GuildRagequit";
 import Stempel from "./model/Stempel";
+import Ban from "./model/Ban";
 
 export async function initialize() {
     let sequelize = new Sequelize({
@@ -19,6 +20,7 @@ export async function initialize() {
     AdditionalMessageData.initialize(sequelize);
     GuildRagequit.initialize(sequelize);
     Stempel.initialize(sequelize);
+    Ban.initialize(sequelize);
 
     await sequelize.sync();
 }
