@@ -1,4 +1,7 @@
-import type { User } from "discord.js";
+/* Disabled due to sequelize's DataTypes */
+/* eslint-disable new-cap */
+
+import type { User, GuildMember } from "discord.js";
 import { Model, DataTypes, Sequelize, Optional, Op } from "sequelize";
 import { v4 as uuidv4 } from "uuid";
 
@@ -6,7 +9,7 @@ export interface BanAttributes {
     id: string;
     userId: string;
     reason: string | null;
-    bannedUntil: number;
+    bannedUntil: Date | null;
     isSelfBan: boolean;
 }
 
@@ -16,13 +19,13 @@ export default class Ban extends Model<BanAttributes, BanCreationAttributes> imp
     id!: string;
     userId!: string;
     reason!: string | null;
-    bannedUntil!: number;
+    bannedUntil!: Date | null;
     isSelfBan!: boolean;
 
     readonly createdAt!: Date;
     readonly updatedAt!: Date;
 
-    static persist = (user: User, until: number, isSelfBan: boolean, reason: string | null = null) => {
+    static persist = (user: GuildMember, until: Date | null, isSelfBan: boolean, reason: string | null = null) => {
         return Ban.create({
             userId: user.id,
             reason,
@@ -35,10 +38,10 @@ export default class Ban extends Model<BanAttributes, BanCreationAttributes> imp
 
     static findExisting = (user: User) => Ban.findOne({ where: { userId: user.id } });
 
-    static findExpiredBans = (now: number) => Ban.findAll({
+    static findExpiredBans = (now: Date) => Ban.findAll({
         where: {
             bannedUntil: {
-                [Op.gt]: 0,
+                [Op.ne]: null,
                 [Op.lte]: now
             }
         },
@@ -60,12 +63,12 @@ export default class Ban extends Model<BanAttributes, BanCreationAttributes> imp
                 allowNull: true
             },
             bannedUntil: {
-                type: DataTypes.BIGINT(), // 64 bit integer, used for unix timestamps
-                allowNull: false,
+                type: DataTypes.DATE,
+                allowNull: true
             },
             isSelfBan: {
                 type: DataTypes.BOOLEAN,
-                allowNull: false,
+                allowNull: false
             }
         }, {
             sequelize,
@@ -79,7 +82,7 @@ export default class Ban extends Model<BanAttributes, BanCreationAttributes> imp
                     fields: [
                         {
                             name: "bannedUntil",
-                            order: "ASC",
+                            order: "ASC"
                         }
                     ]
                 }

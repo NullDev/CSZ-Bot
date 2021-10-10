@@ -10,7 +10,7 @@ const config = getConfig();
 // #region Banned User Role Assignment
 
 /**
- * @param {import("discord.js").User} user
+ * @param {import("discord.js").GuildMember} user
  * @returns {boolean} true if successful
  */
 const assignBannedRoles = (user) => {
@@ -39,7 +39,7 @@ const assignBannedRoles = (user) => {
 };
 
 /**
- * @param {import("discord.js").User} user
+ * @param {import("discord.js").GuildMember} user
  * @returns {boolean} true if successful
  */
 export const restoreRoles = (user) => {
@@ -71,7 +71,7 @@ export const restoreRoles = (user) => {
 
 
 /**
- * @param {import("discord.js").User} user
+ * @param {import("discord.js").GuildMember} user
  * @param {string} reason
  * @param {boolean} isSelfBan
  * @param {number | undefined} durationInHours
@@ -80,11 +80,11 @@ export const restoreRoles = (user) => {
 export const ban = async(user, reason, isSelfBan, durationInHours) => {
     await assignBannedRoles(user);
 
-    const unbanAtTimestamp = durationInHours === undefined
-        ? 0 // never
-        : Date.now() + (durationInHours * 60 * 60 * 1000); // using milliseconds here
+    const unbanAt = durationInHours === undefined
+        ? null // never
+        : new Date(Date.now() + (durationInHours * 60 * 60 * 1000));
 
-    await Ban.persist(user, unbanAtTimestamp, isSelfBan, reason);
+    await Ban.persist(user, unbanAt, isSelfBan, reason);
 
     return true;
 };
@@ -129,7 +129,7 @@ Lg & xD™`
  */
 export const startCron = (client) => {
     cron.schedule("* * * * *", async() => {
-        const now = Date.now();
+        const now = new Date();
 
         try {
             const expiredBans = await Ban.findExpiredBans(now);
