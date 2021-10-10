@@ -25,13 +25,13 @@ export default class Ban extends Model<BanAttributes, BanCreationAttributes> imp
     readonly createdAt!: Date;
     readonly updatedAt!: Date;
 
-    static persist = (user: GuildMember, until: Date | null, isSelfBan: boolean, reason: string | null = null) => {
-        return Ban.create({
+    static persistOrUpdate = (user: GuildMember, until: Date | null, isSelfBan: boolean, reason: string | null = null): Promise<void> => {
+        return Ban.upsert({
             userId: user.id,
             reason,
             bannedUntil: until,
             isSelfBan
-        });
+        }) as Promise<any>;
     };
 
     static remove = (user: User) => Ban.destroy({ where: { userId: user.id } });

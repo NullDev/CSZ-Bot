@@ -84,7 +84,7 @@ export const ban = async(user, reason, isSelfBan, durationInHours) => {
         ? null // never
         : new Date(Date.now() + (durationInHours * 60 * 60 * 1000));
 
-    await Ban.persist(user, unbanAt, isSelfBan, reason);
+    await Ban.persistOrUpdate(user, unbanAt, isSelfBan, reason);
 
     return true;
 };
