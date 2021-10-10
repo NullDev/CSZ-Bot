@@ -133,7 +133,6 @@ client.on("ready", async() => {
         bday.checkBdays();
     }
 
-    ban.loadBans();
     ban.startCron(client);
 
     await poll.importPolls();

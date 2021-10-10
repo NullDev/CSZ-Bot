@@ -51,7 +51,8 @@ export default async function(message, client, isModCommand) {
         if (message.member.roles.cache.some(r => r.id === config.ids.banned_role_id)) {
             return "Da haste aber Schwein gehabt";
         }
-        ban.ban(message.member, 0.08);
+
+        await ban.ban(message.member, "Lol", false, 0.08);
 
         return `Tut mir leid, ${message.author}. Du hast nicht genügend Rechte um dieses Command zu verwenden, dafür gibt's erstmal mit dem Willkürhammer einen auf den Deckel.`;
     }
