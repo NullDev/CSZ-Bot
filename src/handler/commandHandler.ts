@@ -24,6 +24,7 @@ import { WhereCommand } from "../commands/special/where";
 import { DadJokeCommand } from "../commands/special/dadJoke";
 import { WatCommand } from "../commands/special/wat";
 import * as log from "../utils/logger";
+import { BotCommand } from "../commands/bot";
 
 const config = getConfig();
 
@@ -31,6 +32,7 @@ let lastSpecialCommand = 0;
 
 export const commands: Array<Command> = [
     new InfoCommand(),
+    new BotCommand(),
     new YepYepCommand(),
     new NixOsCommand(),
     new WhereCommand(),
