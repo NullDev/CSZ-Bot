@@ -9,7 +9,7 @@ import GuildRagequit from "./model/GuildRagequit";
 import Stempel from "./model/Stempel";
 
 export async function initialize() {
-    let sequelize = new Sequelize({
+    const sequelize = new Sequelize({
         dialect: "sqlite",
         storage: path.resolve(__dirname, "..", "..", "storage.db"),
         logging: false
