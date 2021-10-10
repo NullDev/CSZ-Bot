@@ -4,6 +4,7 @@
 
 // Dependencies
 import moment from "moment";
+import Ban from "../storage/model/Ban";
 
 import { getConfig } from "../utils/configHandler";
 
@@ -40,6 +41,9 @@ export const run = async(client, message, args) => {
     if (invokingUser.id === "371724846205239326") return "Aus Segurity lieber nicht dich bannen.";
 
     if (invokingUser.roles.cache.some(r => r.id === config.ids.banned_role_id)) return "Du bist bereits gebannt du Kek.";
+
+    const existingBan = await Ban.findExisting(invokingUser);
+    if (existingBan) return "Du bist bereits gebannt";
 
     if (!ban.ban(invokingUser, "Selbstauferlegt", true, durationInHours)) return "Eine der angegebenen Rollen für das Bannen existiert nich.";
 
