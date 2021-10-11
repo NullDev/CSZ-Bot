@@ -33,7 +33,7 @@ export default async function(reactionEvent, user, client, removal) {
     if(reactionEvent.emoji.name === "✅") {
         if (member.id !== client.user.id) {
             const role = message.guild.roles.cache.find(r => r.name === message.content);
-            if(removal) {
+            if(role && removal) {
                 member.roles.remove(role.id).catch(log.error);
             }
             else {
