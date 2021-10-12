@@ -8,12 +8,25 @@ export type CommandResult  = string | void;
 export type CommandFunction = (client: Client, message: Message, args: Array<string>) => Promise<CommandResult>;
 
 export interface GitHubContributor {
-    login: string,
-    id: number,
-    html_url: string,
-    type: "User" | "Bot",
+    login: string;
+    id: number;
+    "html_url": string;
+    type: "User" | "Bot";
     contributions: number
-};
+}
+
+export interface GitHubContributionWeek {
+    w: number;
+    a: number;
+    d: number;
+    c: number;
+}
+
+export interface SingleGitHubContributorStats {
+    total: number;
+    author: GitHubContributor;
+    weeks: Array<GitHubContributionWeek>;
+}
 
 export interface Config {
     auth: {
