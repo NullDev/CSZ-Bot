@@ -1,10 +1,16 @@
 import { Message, Client, Util } from "discord.js";
-import { fstat } from "fs";
-import Jimp from "jimp";
-import path from "path";
+import { createCanvas, loadImage, registerFont } from "canvas";
 import { SpecialCommand } from "../command";
-import * as fs from "fs";
 import * as log from "../../utils/logger";
+
+
+if (process.env.NODE_ENV === "production") {
+    // This is a simple detection if we're running inside docker
+    // We assume that every developer that wants to use this feature has impact installed
+    registerFont("assets/impact.ttf", {
+        family: "Impact"
+    });
+}
 
 export class WhereCommand implements SpecialCommand {
     name: string = "Where";
@@ -12,35 +18,48 @@ export class WhereCommand implements SpecialCommand {
     pattern: RegExp = /^wo(\s+\S+){1,3}\S[^?]$/i;
     randomness = 1;
 
-    async handleSpecialMessage(message: Message, client: Client<boolean>): Promise<unknown> {
-        const msg = Util.cleanContent(message.content.trim().toLowerCase().replace(/ß/g, "ss").toUpperCase(), message.channel);
-        const meme = await createWhereMeme(msg);
+    async handleSpecialMessage(message: Message, client: Client<boolean>) {
+        const subject = Util.cleanContent(message.content.trim().toUpperCase(), message.channel);
 
         try {
+            const whereMemeBuffer = await WhereCommand.createWhereMeme(subject);
+
             await message.channel.send({
                 files: [{
-                    attachment: meme,
-                    name: path.basename(meme)
+                    attachment: whereMemeBuffer,
+                    name: subject + ".png"
                 }]
             });
-        } catch(err) {
+        }
+        catch (err) {
             log.error(`Could not create where meme: ${err}`);
-        } finally {
-            return await fs.promises.unlink(meme);
         }
     }
+
+    static async createWhereMeme(text: string): Promise<Buffer> {
+        const whereImage = await loadImage("https://i.imgflip.com/52l6s0.jpg");
+        const canvas = createCanvas(whereImage.width, whereImage.height);
+        const ctx = canvas.getContext("2d");
+
+        ctx.drawImage(whereImage, 0, 0);
+
+        const textPos = {
+            x: (whereImage.width / 2) | 0,
+            y: 60
+        };
+
+        ctx.font = "42px Impact";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+
+        ctx.lineWidth = 5;
+        ctx.lineCap = "butt";
+        ctx.strokeStyle = "#000";
+        ctx.strokeText(text, textPos.x, textPos.y);
+
+        ctx.fillStyle = "#fff";
+        ctx.fillText(text, textPos.x, textPos.y);
+
+        return canvas.toBuffer();
+    }
 }
-
-const createWhereMeme = async(text: string): Promise<string> => {
-    const image = await Jimp.read("https://i.imgflip.com/52l6s0.jpg");
-    const font = await Jimp.loadFont("./assets/impact.fnt");
-    const filename = `/tmp/where_meme_${Date.now()}.jpg`;
-
-    await image.print(font, 10, 10, {
-        text,
-        alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER,
-        alignmentY: Jimp.VERTICAL_ALIGN_TOP
-    }, image.bitmap.width).writeAsync(filename);
-
-    return filename;
-};
