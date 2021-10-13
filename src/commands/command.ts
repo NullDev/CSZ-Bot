@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from "@discordjs/builders";
+import { SlashCommandBuilder, SlashCommandOptionsOnlyBuilder, SlashCommandSubcommandsOnlyBuilder } from "@discordjs/builders";
 import type { Client, CommandInteraction, Message } from "discord.js";
 import { Model } from "sequelize/types";
 
@@ -15,7 +15,7 @@ export interface CommandBase {
 
 // For ApplicationCommands we require a SlashCommandBuilder object to create the command and a handler method
 interface AppCommand {
-    applicationCommand: SlashCommandBuilder;
+    applicationCommand: Pick<SlashCommandBuilder, "toJSON">;
     handleInteraction(
         command: CommandInteraction,
         client: Client
