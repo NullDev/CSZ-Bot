@@ -51,7 +51,8 @@ export default async function(message, client, isModCommand) {
         if (message.member.roles.cache.some(r => r.id === config.ids.banned_role_id)) {
             return "Da haste aber Schwein gehabt";
         }
-        ban.ban(message.member, 0.08);
+
+        await ban.ban(message.member, "Lol", false, 0.08);
 
         return `Tut mir leid, ${message.author}. Du hast nicht genügend Rechte um dieses Command zu verwenden, dafür gibt's erstmal mit dem Willkürhammer einen auf den Deckel.`;
     }
@@ -73,9 +74,17 @@ export default async function(message, client, isModCommand) {
     console.assert(!!usedCommand, "usedCommand must be non-falsy");
 
     try {
-        const response = await usedCommand.run(client, message, args);
-        // Non-Exception Error returned by the command (e.g.: Missing Argument)
-        return response;
+        /**
+         * Since the "new commands" will also be loaded the command handler would
+         * try to invoke the run method, which is ofc not present - or at least it should
+         * not be present. Therefore we need to check for the method.
+         */
+        if(usedCommand.run) {
+            const response = await usedCommand.run(client, message, args);
+
+            // Non-Exception Error returned by the command (e.g.: Missing Argument)
+            return response;
+        }
     }
 
     // Exception returned by the command handler

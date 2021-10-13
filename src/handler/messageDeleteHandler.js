@@ -1,5 +1,5 @@
-import * as messageHandler from "./messageHandler";
 import { getConfig } from "../utils/configHandler";
+import { specialCommands } from "./commandHandler";
 
 const config = getConfig();
 
@@ -19,12 +19,14 @@ const deleteInlineRepliesFromBot = function(messageRef, client) {
  * @param {import("discord.js").Client} client client
  */
 export default function(message, client) {
-    if(message.author.id !== client.user.id) {
-        const isNormalCommand = message.content.startsWith(config.bot_settings.prefix.command_prefix) || message.content.startsWith(config.bot_settings.prefix.mod_prefix);
-        const isSpecialCommand = messageHandler.specialCommands.reduce((acc, curr) => acc || message.content.search(curr.pattern) !== -1, false);
+    if(message.author && message.author.id !== client.user.id) {
+        if(message.content) {
+            const isNormalCommand = message.content.startsWith(config.bot_settings.prefix.command_prefix) || message.content.startsWith(config.bot_settings.prefix.mod_prefix);
+            const isSpecialCommand = specialCommands.reduce((acc, curr) => acc || message.content.search(curr.pattern) !== -1, false);
 
-        if(isNormalCommand || isSpecialCommand) {
-            deleteInlineRepliesFromBot(message, client);
+            if(isNormalCommand || isSpecialCommand) {
+                deleteInlineRepliesFromBot(message, client);
+            }
         }
     }
 }

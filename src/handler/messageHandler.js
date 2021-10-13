@@ -6,26 +6,11 @@
  * @typedef {import("discord.js").Message} Message
  * @typedef {import("discord.js").Client} Client
  */
-
-import { createCanvas, loadImage, registerFont } from "canvas";
-import { Util } from "discord.js";
-
-import * as log from "../utils/logger";
 import { getConfig } from "../utils/configHandler";
 
 import cmdHandler from "./cmdHandler";
 
 const config = getConfig();
-
-let lastSpecialCommand = 0;
-
-if (process.env.NODE_ENV === "production") {
-    // This is a simple detection if we're running inside docker
-    // We assume that every developer that wants to use this feature has impact installed
-    registerFont("assets/impact.ttf", {
-        family: "Impact"
-    });
-}
 
 /**
  * @param {import("discord.js").Message} messageRef message
@@ -34,179 +19,6 @@ if (process.env.NODE_ENV === "production") {
  */
 const getInlineReplies = function(messageRef, client) {
     return messageRef.channel.messages.cache.filter(m => m.author.id === client.user.id && m.reference?.messageId === messageRef.id);
-};
-
-/**
- * @param {string} text
- * @returns {Promise<Buffer>}
- */
-const createWhereMeme = async(text) => {
-    const whereImage = await loadImage("https://i.imgflip.com/52l6s0.jpg");
-    const canvas = createCanvas(whereImage.width, whereImage.height);
-    const ctx = canvas.getContext("2d");
-
-    ctx.drawImage(whereImage, 0, 0);
-
-    const textPos = {
-        x: (whereImage.width / 2) | 0,
-        y: 60
-    };
-
-    ctx.font = "42px Impact";
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-
-    ctx.lineWidth = 5;
-    ctx.lineCap = "butt";
-    ctx.strokeStyle = "#000";
-    ctx.strokeText(text, textPos.x, textPos.y);
-
-    ctx.fillStyle = "#fff";
-    ctx.fillText(text, textPos.x, textPos.y);
-
-    return canvas.toBuffer();
-};
-
-/**
- *
- * @param {import("discord.js").Message} message
- */
-const dadJoke = function(message) {
-    const idx = message.content.toLowerCase().lastIndexOf("ich bin ");
-    if (idx < (message.content.length - 1)) {
-        const indexOfTerminator = message.content.search(/(?:(?![,])[\p{P}\p{S}\p{C}])/gu);
-        const trimmedWords = message.content.substring(idx + 8, indexOfTerminator !== -1 ? indexOfTerminator : message.content.length).split(/\s+/).map(w => w.trim());
-
-        const randomUwe = Math.random() < 0.01;
-
-        if (trimmedWords.length > 0 && trimmedWords.length <= 10 && !randomUwe) {
-            const whoIs = Util.removeMentions(Util.cleanContent(trimmedWords.join(" "), message));
-            if (whoIs.trim().length > 0) {
-                message.reply({
-                    content: `Hallo ${whoIs}, ich bin Shitpost Bot.`
-                });
-            }
-        }
-        else if (randomUwe) {
-            message.reply({
-                content: "Und ich bin der Uwe, ich bin auch dabei"
-            });
-        }
-    }
-};
-
-/**
- *
- * @param {import("discord.js").Message} message
- */
-const nixos = function(message) {
-    message.react(message.guild.emojis.cache.find(e => e.name === "nixos"));
-};
-
-/**
- * @param {import("discord.js").Message} message
- */
-const whereMeme = async(message) => {
-    const subject = Util.cleanContent(message.content.trim().toUpperCase(), message);
-
-    try {
-        const whereMemeBuffer = await createWhereMeme(subject);
-
-        await message.channel.send({
-            files: [{
-                attachment: whereMemeBuffer,
-                name: subject + ".png"
-            }]
-        });
-    }
-    catch(err) {
-        log.error(err);
-    }
-};
-
-/**
- *
- * @param {import("discord.js").Message} message
- * @param {import("discord.js").Client} client client
- */
-const wat = function(message, client) {
-    const watEmote = message.guild.emojis.cache.find(e => e.name === "wat");
-    if (watEmote) {
-        const messageRef = message.reference?.messageId;
-        // If reply to message
-        if (messageRef) {
-            message.channel.messages.fetch(messageRef)
-                .then(m => m.react(watEmote));
-        }
-        else {
-            // react to the last message
-            message.channel.messages.fetch({ limit: 2 })
-                .then(messages => {
-                    messages.last().react(watEmote);
-                });
-        }
-        getInlineReplies(message, client);
-    }
-};
-
-/**
- *
- * @param {import("discord.js").Message} message
- */
-const yy = function(message) {
-    const yepEmote = message.guild.emojis.cache.find(e => e.name === "YEP");
-    if(yepEmote){
-        message.channel.send(`${yepEmote}${yepEmote}`);
-    }
-};
-
-export const specialCommands = [
-    {
-        name: "nix",
-        pattern: /(^|\s+)nix($|\s+)/i,
-        handler: nixos,
-        randomness: 0.4
-    },
-    {
-        name: "wo",
-        pattern: /^wo(\s+\S+){1,3}\S[^?]$/i,
-        handler: whereMeme,
-        randomness: 1
-    },
-    {
-        name: "dadJoke",
-        pattern: /^ich bin\s+(.){3,}/i,
-        handler: dadJoke,
-        randomness: 0.1
-    },
-    {
-        name: "wat",
-        pattern: /^wat$/i,
-        handler: wat,
-        randomness: 1
-    },
-    {
-        name: "yy",
-        pattern: /^yy$/i,
-        handler: yy,
-        randomness: 1
-    }
-];
-
-/**
- * @returns {boolean}
- */
-const isCooledDown = function() {
-    const now = Date.now();
-    const diff = now - lastSpecialCommand;
-    const fixedCooldown = 120000;
-    // After 2 minutes command is cooled down
-    if (diff >= fixedCooldown) {
-        return true;
-    }
-    // Otherwise a random function should evaluate the cooldown. The longer the last command was, the higher the chance
-    // diff is < fixedCooldown
-    return Math.random() < (diff / fixedCooldown);
 };
 
 /**
@@ -223,23 +35,6 @@ export default async function(message, client) {
         .replace(/\s/g, "");
 
     if (message.author.bot || nonBiased === "" || message.channel.type === "dm") return;
-
-    const isMod = message.member.roles.cache.some(r => config.bot_settings.moderator_roles.includes(r.name));
-
-    if (isMod || isCooledDown()) {
-        const commandCandidates = specialCommands.filter(p => p.pattern.test(message.content));
-        if (commandCandidates.length > 0) {
-            commandCandidates
-                .filter(c => Math.random() <= c.randomness)
-                .forEach(c => {
-                    log.info(
-                        `User "${message.author.tag}" (${message.author}) performed special command: ${c.name}`
-                    );
-                    c.handler(message, client);
-                    lastSpecialCommand = Date.now();
-                });
-        }
-    }
 
     let isNormalCommand = message.content.startsWith(config.bot_settings.prefix.command_prefix);
     let isModCommand = message.content.startsWith(config.bot_settings.prefix.mod_prefix);
