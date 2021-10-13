@@ -26,6 +26,11 @@ const stempelLocations = [
     { x: 312, y: 190 }
 ];
 
+const firmenstempelCenter = {
+    x: 90,
+    y: 155
+};
+
 const getAvatarUrlForMember = (member?: GuildMember, size: AllowedImageSize = 32) => {
     return member?.user.avatarURL({
         size,
