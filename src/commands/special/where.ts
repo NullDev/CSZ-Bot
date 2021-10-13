@@ -4,13 +4,13 @@ import { SpecialCommand } from "../command";
 import * as log from "../../utils/logger";
 
 
-// if (process.env.NODE_ENV === "production") {
+if (process.env.NODE_ENV === "production") {
     // This is a simple detection if we're running inside docker
     // We assume that every developer that wants to use this feature has impact installed
     registerFont("assets/impact.ttf", {
         family: "Impact"
     });
-//}
+}
 
 export class WhereCommand implements SpecialCommand {
     name: string = "Where";
