@@ -24,6 +24,7 @@ import { WhereCommand } from "../commands/special/where";
 import { DadJokeCommand } from "../commands/special/dadJoke";
 import { WatCommand } from "../commands/special/wat";
 import * as log from "../utils/logger";
+import { StempelCommand } from "../commands/stempeln";
 
 const config = getConfig();
 
@@ -36,6 +37,7 @@ export const commands: Array<Command> = [
     new WhereCommand(),
     new DadJokeCommand(),
     new WatCommand(),
+    new StempelCommand()
 ];
 export const applicationCommands: Array<ApplicationCommand> =
     commands.filter<ApplicationCommand>(isApplicationCommand);
