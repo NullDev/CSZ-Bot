@@ -4,7 +4,7 @@ import { AllowedImageSize, GuildMember, Snowflake } from "discord.js";
 
 import type { CommandFunction } from "../types";
 import Stempel from "../storage/model/Stempel";
-import * as log from "../../utils/logger";
+import * as log from "../utils/logger";
 
 const stempelLocations = [
     // 1-3
