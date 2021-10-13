@@ -7,6 +7,15 @@ const stempelUser = async(invitator: GuildMember, invitedMember: GuildMember): P
     return Stempel.insertStempel(invitator.id, invitedMember.id);
 };
 
+const replies = [
+    "Der Bruder {0} hat den neuen Bruder {1} eingeladen und du hast dies so eben bestätigt!",
+    "Oh shit, {0} der Ficker hat {1} angeschleppt.",
+    "Der werte Herr {0} hat den Gesellen {1} in dieses Paradies geleitet und sich somit einen Stempelpunkt verdient",
+    "HALLOBITTSCHÖN, ein {1} von {0}",
+    "Manchmal gibt einem das Leben Zitronen und manchmal bringt {0} einem {1}",
+    "Rosen sind rot, Veilchen sind blau, {0} und {1} sind verliebt, das weiß ich genau"
+];
+
 export class StempelCommand implements ApplicationCommand {
     modCommand: boolean = false;
     name: string = "stempeln";
@@ -33,7 +42,10 @@ export class StempelCommand implements ApplicationCommand {
 
         const isNewInvite = await stempelUser(invitator!, invitedUser!);
         if(isNewInvite) {
-            return command.reply(`Der Bruder ${invitator!.nickname ? invitator!.nickname : invitator!.user.username} hat den neuen Bruder ${invitedUser!.nickname ? invitedUser!.nickname : invitedUser!.user.username} eingeladen und du hast dies so eben bestätigt!`);
+            const reply = replies[Math.floor(Math.random() * replies.length)]
+                .replace("{0}", invitator!.nickname ? invitator!.nickname : invitator!.user.username)
+                .replace("{1}", invitedUser!.nickname ? invitedUser!.nickname : invitedUser!.user.username);
+            return command.reply(reply);
         }
         return command.reply("Alla du hast schonmal gestempelt");
     }
