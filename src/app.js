@@ -104,7 +104,7 @@ function scheduleTimezoneFixedCronjob(cronString) {
             csz.channels.cache.get(config.ids.hauptchat_id).send(`Hab grad ${cnt} jockel gekickt ${dabEmote}`);
         }
         else {
-            csz.channels.cache.get(config.ids.hauptchat_id).send(`Heute leider keine jockel gebannt ${sadPinguEmote}`);
+            csz.channels.cache.get(config.ids.hauptchat_id).send(`Heute leider keine jockel gekickt ${sadPinguEmote}`);
         }
 
         const tomorrow = Date.now() + 60/* s*/ * 1000/* ms*/ * 60/* m*/ * 24/* h*/;
