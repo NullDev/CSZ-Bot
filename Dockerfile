@@ -1,8 +1,6 @@
 FROM node:16-slim as build
     WORKDIR /app
 
-    RUN apk add --no-cache python3 build-base g++ libpng libpng-dev jpeg-dev pango-dev cairo-dev make g++ && rm -rf /var/cache/apk/*
-
     # Install dependencies (with dev-deps)
     COPY package*.json /app/
     RUN npm ci
@@ -10,10 +8,14 @@ FROM node:16-slim as build
     COPY . /app/
     RUN npm run compile
 
+FROM node:16-slim as runtime-dependencies
+    WORKDIR /app
+
     # Install dependencies (runtime-deps only)
+    COPY package*.json /app/
     RUN NODE_ENV=production npm ci
 
-FROM node:16-alpine
+FROM node:16-slim
     WORKDIR /app
 
     ENV NODE_ENV=production
@@ -22,7 +24,7 @@ FROM node:16-alpine
     ENV TZ 'Europe/Berlin'
     RUN cp /usr/share/zoneinfo/${TZ} /etc/localtime
 
-    COPY --from=build /app/node_modules /app/node_modules
+    COPY --from=runtime-dependencies /app/node_modules /app/node_modules
     COPY --from=build /app/assets /app/assets
     COPY --from=build /app/built /app/built
 
