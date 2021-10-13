@@ -1,4 +1,4 @@
-import { Snowflake } from "discord.js";
+import type { Snowflake, Message, Client } from "discord.js";
 
 /**
  * A string denotes the response to the message (for example a business error).
