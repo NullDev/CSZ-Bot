@@ -99,3 +99,5 @@ export const run: CommandFunction = async(client, message, args) => {
         log.error(`Could not create where meme: ${err}`);
     }
 };
+
+export const description = "Zeigt eine die Stempelkarte eines Users an.";
