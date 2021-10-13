@@ -43,8 +43,8 @@ export class StempelCommand implements ApplicationCommand {
         const isNewInvite = await stempelUser(invitator!, invitedUser!);
         if(isNewInvite) {
             const reply = replies[Math.floor(Math.random() * replies.length)]
-                .replace("{0}", invitator!.nickname ? invitator!.nickname : invitator!.user.username)
-                .replace("{1}", invitedUser!.nickname ? invitedUser!.nickname : invitedUser!.user.username);
+                .replace("{0}", `<@${invitator.id}>`)
+                .replace("{1}", `<@${invitedUser.id}>`);
             return command.reply(reply);
         }
         return command.reply("Alla du hast schonmal gestempelt");
