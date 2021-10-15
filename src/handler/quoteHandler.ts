@@ -110,6 +110,8 @@ export const quoteReactionHandler = async(event: MessageReaction, user: User, cl
 
     if (!targetChannel.isText()) {
         log.error(`channel ${targetChannelId} is configured as quote output channel but it is not a text channel`);
+
+        return;
     }
 
     if (reference !== undefined) {
