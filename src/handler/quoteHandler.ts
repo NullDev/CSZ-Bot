@@ -20,57 +20,17 @@ const isMessageAlreadyQuoted = async (message: Message, reaction: MessageReactio
     const fetchedMessage = await message.channel.messages.fetch(message.id);
     const usersThatReacted = await fetchedMessage.reactions.resolve(reaction).users.fetch();
     return usersThatReacted.some(u => u.id === client.user!.id);
-}
-
-export const quoteReactionHandler = async (event: MessageReaction, user: User, client: Client) => {
-
-    if (!isQuoteEmoji(event) || event.message.guildId === null || user.id === client.user!.id) {
-        return;
-    }
-
-    const guild = client.guilds.cache.get(event.message.guildId)!;
-    const quoter = guild.members.cache.get(user.id)!;
-    const message = await (<TextChannel | NewsChannel>client.channels.cache.get(event.message.channelId))!.messages.fetch(event.message.id);
-    const quotedUser = message.member;
-    const embed = createEmbed(client, quotedUser?.user, quoter.user, message);
-    const targetChannels = getChannels(quoteConfig.target_channel_ids, client);
-
-    if (!isMemberAllowedToQuote(quoter) || !isSourceChannelAllowed(message.channelId) || await isMessageAlreadyQuoted(message, event, client)) {
-        await event.users.remove(quoter);
-
-        return;
-    }
-
-    await Promise.all(targetChannels
-        .map(async ({id, channel}) => {
-            if (channel === undefined) {
-                log.error(`channel ${id} is configured as quote output channel but it doesn't exist`);
-
-                return;
-            }
-
-            if (!(channel.isText())) {
-                log.error(`channel ${id} is configured as quote output channel but it is not a text channel`);
-
-                return;
-            }
-
-            await (<TextChannel | NewsChannel>channel).send({embeds: [embed]});
-        }));
-
-    await event.users.remove(quoter);
-    await message.react(event.emoji);
-}
+};
 
 const getChannels = (channelIds: Array<string>, client: Client) => {
     return quoteConfig.target_channel_ids
         .map(id => {
             return {
-                id: id,
+                id,
                 channel: client.channels.cache.get(id)
-            }
+            };
         });
-}
+};
 
 const createEmbed = (client: Client, quotedUser: User | undefined, quoter: User, quotedMessage: Message): MessageEmbedOptions => {
     return {
@@ -96,5 +56,45 @@ const createEmbed = (client: Client, quotedUser: User | undefined, quoter: User,
                 value: quoter.username
             }
         ]
+    };
+};
+
+export const quoteReactionHandler = async(event: MessageReaction, user: User, client: Client) => {
+
+    if (!isQuoteEmoji(event) || event.message.guildId === null || user.id === client.user!.id) {
+        return;
     }
-}
+
+    const guild = client.guilds.cache.get(event.message.guildId)!;
+    const quoter = guild.members.cache.get(user.id)!;
+    const message = await (<TextChannel | NewsChannel>client.channels.cache.get(event.message.channelId))!.messages.fetch(event.message.id);
+    const quotedUser = message.member;
+    const embed = createEmbed(client, quotedUser?.user, quoter.user, message);
+    const targetChannels = getChannels(quoteConfig.target_channel_ids, client);
+
+    if (!isMemberAllowedToQuote(quoter) || !isSourceChannelAllowed(message.channelId) || await isMessageAlreadyQuoted(message, event, client)) {
+        await event.users.remove(quoter);
+
+        return;
+    }
+
+    await Promise.all(targetChannels
+        .map(async({id, channel}) => {
+            if (channel === undefined) {
+                log.error(`channel ${id} is configured as quote output channel but it doesn't exist`);
+
+                return;
+            }
+
+            if (!(channel.isText())) {
+                log.error(`channel ${id} is configured as quote output channel but it is not a text channel`);
+
+                return;
+            }
+
+            await (<TextChannel | NewsChannel>channel).send({embeds: [embed]});
+        }));
+
+    await message.react(event.emoji);
+    await event.users.remove(quoter);
+};
