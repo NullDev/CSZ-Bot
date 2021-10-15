@@ -5,8 +5,7 @@ import {
     MessageReaction,
     TextChannel,
     User,
-    MessageEmbedOptions,
-    NewsChannel
+    NewsChannel, MessageOptions
 } from "discord.js";
 import {getConfig} from "../utils/configHandler";
 import * as log from "../utils/logger";
@@ -32,35 +31,39 @@ const getChannels = (channelIds: Array<string>, client: Client) => {
         });
 };
 
-const createEmbed = (client: Client, quotedUser: User | undefined, quoter: User, quotedMessage: Message): MessageEmbedOptions => {
+const createQuoteMessage = (client: Client, quotedUser: User | undefined, quoter: User, quotedMessage: Message): MessageOptions => {
     return {
-        color: 0xFFC000,
-        description: quotedMessage.content,
-        author:
-            isChannelAnonymous(quotedMessage.channelId) || !quotedUser
-                ? {
-                    name: "Anon"
-                }
-                : {
-                    name: quotedUser.username,
-                    icon_url: quotedUser.avatarURL() ?? undefined
-                },
-        timestamp: quotedMessage.createdTimestamp,
-        fields: [
+        embeds: [
             {
-                name: "Link zur Nachricht",
-                value: quotedMessage.url
-            },
-            {
-                name: "zitiert von",
-                value: quoter.username
+                color: 0xFFC000,
+                description: quotedMessage.content,
+                author:
+                    isChannelAnonymous(quotedMessage.channelId) || !quotedUser
+                        ? {
+                            name: "Anon"
+                        }
+                        : {
+                            name: quotedUser.username,
+                            icon_url: quotedUser.avatarURL() ?? undefined
+                        },
+                timestamp: quotedMessage.createdTimestamp,
+                fields: [
+                    {
+                        name: "Link zur Nachricht",
+                        value: quotedMessage.url
+                    },
+                    {
+                        name: "zitiert von",
+                        value: quoter.username
+                    }
+                ]
             }
-        ]
+        ],
+        files: quotedMessage.attachments.map((attachment, _key) => attachment)
     };
 };
 
 export const quoteReactionHandler = async(event: MessageReaction, user: User, client: Client) => {
-
     if (!isQuoteEmoji(event) || event.message.guildId === null || user.id === client.user!.id) {
         return;
     }
@@ -69,7 +72,7 @@ export const quoteReactionHandler = async(event: MessageReaction, user: User, cl
     const quoter = guild.members.cache.get(user.id)!;
     const message = await (<TextChannel | NewsChannel>client.channels.cache.get(event.message.channelId))!.messages.fetch(event.message.id);
     const quotedUser = message.member;
-    const embed = createEmbed(client, quotedUser?.user, quoter.user, message);
+    const quote = createQuoteMessage(client, quotedUser?.user, quoter.user, message);
     const targetChannels = getChannels(quoteConfig.target_channel_ids, client);
 
     if (!isMemberAllowedToQuote(quoter) || !isSourceChannelAllowed(message.channelId) || await isMessageAlreadyQuoted(message, event, client)) {
@@ -92,7 +95,7 @@ export const quoteReactionHandler = async(event: MessageReaction, user: User, cl
                 return;
             }
 
-            await (<TextChannel | NewsChannel>channel).send({embeds: [embed]});
+            await (<TextChannel | NewsChannel>channel).send(quote);
         }));
 
     await message.react(event.emoji);
