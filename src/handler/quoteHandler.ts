@@ -34,6 +34,7 @@ const getChannels = (channelIds: Array<string>, client: Client) => {
 const createQuoteMessage = (client: Client, quotedUser: User | undefined, quoter: User, quotedMessage: Message): MessageOptions => {
     return {
         embeds: [
+            ...quotedMessage.embeds,
             {
                 color: 0xFFC000,
                 description: quotedMessage.content,
