@@ -40,7 +40,12 @@ export default class Birthday extends Model {
         return await Birthday.findAll({
             where: {
                 birthday: {
-                    [Op.eq]: moment().year(1900).toDate()
+                    [Op.eq]: moment().year(1900).utcOffset(0).set({
+                        hour: 0,
+                        minute: 0,
+                        second: 0,
+                        millisecond: 0
+                    }).toDate()
                 }
             }
         });
