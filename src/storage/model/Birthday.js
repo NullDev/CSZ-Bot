@@ -43,10 +43,10 @@ export default class Birthday extends Model {
         return await Birthday.findAll({
             where: {
                 day: {
-                    [Op.eq]: today.day()
+                    [Op.eq]: today.date()
                 },
                 month: {
-                    [Op.eq]: today.month()
+                    [Op.eq]: today.month() + 1
                 }
             }
         });
