@@ -3,6 +3,7 @@
 
 import { Model, DataTypes } from "sequelize";
 import {v4 as uuidv4} from "uuid";
+import moment from "moment";
 
 export default class Birthday extends Model {
     /**
@@ -31,6 +32,16 @@ export default class Birthday extends Model {
         return await Birthday.findOne({
             where: {
                 userId
+            }
+        });
+    }
+
+    static async getTodaysBirthdays() {
+        return await Birthday.findAll({
+            where: {
+                birthday: {
+                    [Op.eq]: moment().year(1900).toDate()
+                }
             }
         });
     }

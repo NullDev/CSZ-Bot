@@ -129,8 +129,8 @@ client.on("ready", async() => {
         const newCronString = timezone.getCronjobStringForHydrate(Date.now());
         scheduleTimezoneFixedCronjob(newCronString);
 
-        cron.schedule("1 0 * * *", () => bday.checkBdays(), { timezone: "Europe/Vienna" });
-        bday.checkBdays();
+        cron.schedule("1 0 * * *", async() => await bday.checkBdays(), { timezone: "Europe/Vienna" });
+        await bday.checkBdays();
     }
 
     ban.startCron(client);
