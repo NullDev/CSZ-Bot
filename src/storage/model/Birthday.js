@@ -9,17 +9,19 @@ export default class Birthday extends Model {
     /**
      *
      * @param {import("discord.js").Snowflake} userId
-     * @param {Date} birthday
-     * @returns {Boolean | null} depending if the birthday is already in the database
+     * @param {number} day
+     * @param {number} month
+     * @returns {Promise<Boolean | null>} depending if the birthday is already in the database
      */
-    static async insertBirthday(userId, birthday) {
+    static async insertBirthday(userId, day, month) {
         let item = await Birthday.getBirthday(userId);
 
         if(item !== null) return false;
         let isNewItem = null;
         await Birthday.create({
             userId,
-            birthday
+            day,
+            month
         }).then(() => {
             isNewItem = true;
         }).catch(() => {
@@ -37,15 +39,14 @@ export default class Birthday extends Model {
     }
 
     static async getTodaysBirthdays() {
+        const today = moment();
         return await Birthday.findAll({
             where: {
-                birthday: {
-                    [Op.eq]: moment().year(1900).utcOffset(0).set({
-                        hour: 0,
-                        minute: 0,
-                        second: 0,
-                        millisecond: 0
-                    }).format("YYYY-MM-DD HH:mm:ss.SSS Z")
+                day: {
+                    [Op.eq]: today.day()
+                },
+                month: {
+                    [Op.eq]: today.month()
                 }
             }
         });
@@ -63,9 +64,21 @@ export default class Birthday extends Model {
                 allowNull: false,
                 unique: true
             },
-            birthday: {
-                type: DataTypes.DATE,
-                allowNull: false
+            day: {
+                type: DataTypes.INTEGER,
+                allowNull: false,
+                validate: {
+                    min: 1,
+                    max: 31
+                }
+            },
+            month: {
+                type: DataTypes.INTEGER,
+                allowNull: false,
+                validate: {
+                    min: 1,
+                    max: 12
+                }
             }
         },
         {

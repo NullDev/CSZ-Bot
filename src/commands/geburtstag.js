@@ -14,11 +14,10 @@ export const run = async(client, message, args) => {
     let bdayInput = args[0];
 
     let birthday = moment.utc(bdayInput, ["DD.MM", "DD.MM.", "DD-MM"]);
-    birthday.year(1900);
 
     if (!birthday.isValid()) return "Dawg, ich brauchs im Format [DD.MM] oder [DD-MM]";
 
-    let addedBirthday = await Birthday.insertBirthday(client.user.id, birthday.toDate());
+    let addedBirthday = await Birthday.insertBirthday(client.user.id, birthday.day(), birthday.month());
 
     if(addedBirthday === null) return "Shit, irgendwas hat nicht geklappt beim speichern...";
 
