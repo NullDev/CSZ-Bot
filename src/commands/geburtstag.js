@@ -17,7 +17,7 @@ export const run = async(client, message, args) => {
 
     if (!birthday.isValid()) return "Dawg, ich brauchs im Format [DD.MM] oder [DD-MM]";
 
-    let addedBirthday = await Birthday.insertBirthday(client.user.id, birthday.day(), birthday.month());
+    let addedBirthday = await Birthday.insertBirthday(client.user.id, birthday.date(), birthday.month() + 1);
 
     if(addedBirthday === null) return "Shit, irgendwas hat nicht geklappt beim speichern...";
 
