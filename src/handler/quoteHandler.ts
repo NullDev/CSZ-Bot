@@ -1,4 +1,4 @@
-import {Client, GuildMember, Message, MessageReaction, User, MessageOptions, TextBasedChannels} from "discord.js";
+import {Client, GuildMember, Message, MessageReaction, User, TextBasedChannels} from "discord.js";
 import {getConfig} from "../utils/configHandler";
 import * as log from "../utils/logger";
 
@@ -24,36 +24,60 @@ const getTargetChannel = (sourceChannelId: string, client: Client) => {
     };
 };
 
-const createQuoteMessage = (client: Client, quotedUser: User | undefined, quoter: User, quotedMessage: Message): MessageOptions => {
-    return {
-        embeds: [
-            ...quotedMessage.embeds,
-            {
-                color: 0xFFC000,
-                description: quotedMessage.content,
-                author:
-                    isChannelAnonymous(quotedMessage.channelId) || !quotedUser
-                        ? {
-                            name: "Anon"
-                        }
-                        : {
-                            name: quotedUser.username,
-                            icon_url: quotedUser.avatarURL() ?? undefined
-                        },
-                timestamp: quotedMessage.createdTimestamp,
-                fields: [
-                    {
-                        name: "Link zur Nachricht",
-                        value: quotedMessage.url
-                    },
-                    {
-                        name: "zitiert von",
-                        value: quoter.username
-                    }
-                ]
+const createQuote = (
+    client: Client,
+    quotedUser: User | undefined,
+    quoter: User,
+    referencedUser: User | undefined,
+    quotedMessage: Message,
+    referencedMessage: Message | undefined
+) => {
+    const getAuthor = (user: User | undefined) => {
+        return isChannelAnonymous(quotedMessage.channelId) || !user
+            ? {
+                name: "Anon"
             }
-        ],
-        files: quotedMessage.attachments.map((attachment, _key) => attachment)
+            : {
+                name: user.username,
+                icon_url: user.avatarURL() ?? undefined
+            };
+    };
+
+    return {
+        quote: {
+            embeds: [
+                ...quotedMessage.embeds,
+                {
+                    color: 0xFFC000,
+                    description: quotedMessage.content,
+                    author: getAuthor(quotedUser),
+                    timestamp: quotedMessage.createdTimestamp,
+                    fields: [
+                        {
+                            name: "Link zur Nachricht",
+                            value: quotedMessage.url
+                        },
+                        {
+                            name: "zitiert von",
+                            value: quoter.username
+                        }
+                    ]
+                }
+            ],
+            files: quotedMessage.attachments.map((attachment, _key) => attachment)
+        },
+        reference: referencedMessage !== undefined ? {
+            embeds: [
+                ...referencedMessage.embeds,
+                {
+                    color: 0xFFC000,
+                    description: referencedMessage.content,
+                    author: getAuthor(referencedUser),
+                    timestamp: referencedMessage.createdTimestamp
+                }
+            ],
+            files: referencedMessage.attachments.map((attachment, _key) => attachment)
+        } : undefined
     };
 };
 
@@ -64,12 +88,15 @@ export const quoteReactionHandler = async(event: MessageReaction, user: User, cl
 
     const guild = client.guilds.cache.get(event.message.guildId)!;
     const quoter = guild.members.cache.get(user.id)!;
-    const message = await (<TextBasedChannels>client.channels.cache.get(event.message.channelId))!.messages.fetch(event.message.id);
-    const quotedUser = message.member;
-    const quote = createQuoteMessage(client, quotedUser?.user, quoter.user, message);
-    const {id: targetChannelId, channel: targetChannel} = getTargetChannel(message.channelId, client);
+    const sourceChannel = <TextBasedChannels>client.channels.cache.get(event.message.channelId)!;
+    const quotedMessage = await sourceChannel.messages.fetch(event.message.id);
+    const referencedMessage = quotedMessage.reference !== undefined ? await sourceChannel.messages.fetch(quotedMessage.reference?.messageId!) : undefined;
+    const quotedUser = quotedMessage.member;
+    const referencedUser = referencedMessage?.member;
+    const {quote, reference} = createQuote(client, quotedUser?.user, quoter.user, referencedUser?.user, quotedMessage, referencedMessage);
+    const {id: targetChannelId, channel: targetChannel} = getTargetChannel(quotedMessage.channelId, client);
 
-    if (!isMemberAllowedToQuote(quoter) || !isSourceChannelAllowed(message.channelId) || await isMessageAlreadyQuoted(message, event, client)) {
+    if (!isMemberAllowedToQuote(quoter) || !isSourceChannelAllowed(quotedMessage.channelId) || await isMessageAlreadyQuoted(quotedMessage, event, client)) {
         await event.users.remove(quoter);
 
         return;
@@ -83,9 +110,18 @@ export const quoteReactionHandler = async(event: MessageReaction, user: User, cl
 
     if (!targetChannel.isText()) {
         log.error(`channel ${targetChannelId} is configured as quote output channel but it is not a text channel`);
+
+        return;
     }
 
-    await (<TextBasedChannels>targetChannel).send(quote);
-    await message.react(event.emoji);
+    if (reference !== undefined) {
+        const quoteMessage = await (<TextBasedChannels>targetChannel).send(reference);
+        await quoteMessage.reply(quote);
+    }
+    else {
+        await (<TextBasedChannels>targetChannel).send(quote);
+    }
+
+    await quotedMessage.react(event.emoji);
     await event.users.remove(quoter);
 };
