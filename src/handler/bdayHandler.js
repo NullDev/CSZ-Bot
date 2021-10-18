@@ -43,7 +43,7 @@ export default class BdayHandler {
 
         const todaysBirthdays = await Birthday.getTodaysBirthdays();
         todaysBirthdays.forEach(e=>{
-            this.client.guilds.cache.get(this.config.ids.guild_id).members.cache.get(e)?.roles?.add(this.bdayRole);
+            this.client.guilds.cache.get(this.config.ids.guild_id).members.cache.get(e.userId)?.roles?.add(this.bdayRole);
         });
     }
 }
