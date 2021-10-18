@@ -1,42 +1,69 @@
-import { Command } from "./command";
 import { Embed, SlashCommandBuilder } from '@discordjs/builders';
 // @ts-ignore
 import fetch from "node-fetch";
-import { MessageEmbedOptions } from "discord.js";
-import type { CommandFunction } from "../types";
+import { Client, CommandInteraction, Guild, Message, MessageActionRowOptions, MessageEmbedOptions } from "discord.js";
+import { ApplicationCommand, MessageCommand } from './command';
+import { GitHubContributor } from '../types';
 
-export class InfoCommand implements Command {
+/**
+ * Info command. Displays some useless information about the bot.
+ *
+ * This command is both - a slash command (application command) and a message command
+ */
+export class InfoCommand implements ApplicationCommand, MessageCommand {
+    modCommand: boolean = false;
+    name = "info";
+    description = "Listet Informationen über diesen Bot in einem Embed auf";
+
     public get applicationCommand(): SlashCommandBuilder {
+        // Every Application command would have this structure at minimal. However
+        // we don't enforce to use the name from the constructor, but highly encourage it
+        // since the command handler is based on that.
         return new SlashCommandBuilder()
-            .setName('info')
-            .setDescription('Get Bot Info')
+            .setName(this.name)
+            .setDescription(this.description);
+    }
+
+    /**
+     * Replies to the interaction with the info embed as ephemeral reply
+     * @param command interaction
+     * @param client client
+     * @returns info reply
+     */
+    async handleInteraction(command: CommandInteraction, client: Client): Promise<unknown> {
+        const embed: MessageEmbedOptions = await buildEmbed(command.guild, client.user?.avatarURL() ?? undefined);
+        return command.reply({
+            embeds: [embed],
+            ephemeral: true,
+            components: buildMessageActionsRow()
+        });
+    }
+
+    /**
+     * Replies to the message with the info embed and reacts to the message
+     * @param message message
+     * @param client client
+     * @returns reply and reaction
+     */
+    async handleMessage(message: Message, client: Client): Promise<unknown> {
+        const embed: MessageEmbedOptions = await buildEmbed(message.guild, client.user?.avatarURL() ?? undefined);
+
+        const reply = message.reply({
+            embeds: [embed]
+        });
+        const reaction = message.react("⚙️");
+        return Promise.all([reply, reaction]);
     }
 }
 
-interface Contributors {
-    type: string,
-    html_url: string,
-    contributions: number
-};
-
-const fetchContributions = async (): Promise<Array<Contributors>> => {
+const fetchContributions = async (): Promise<Array<GitHubContributor>> => {
     return fetch("https://api.github.com/repos/NullDev/CSC-Bot/contributors", {
         headers: { Accept: "application/vnd.github.v3+json" }
     }).then((res: any) => res.json());
 };
 
-let formatContributors = (contributors: Array<Contributors>): string => {
-    return contributors
-        .filter(e => e.type === "User")
-        .map(e => `<${e.html_url}> (Contributions: ${e.contributions})`)
-        .join("\n");
-};
-
-export const run: CommandFunction = async(client, message, args) => {
-    const contributors = await fetchContributions();
-    const formattedContributors = formatContributors(contributors);
-
-    const embed: MessageEmbedOptions = {
+const buildEmbed = async(guild: Guild | null, avatarUrl?: string): Promise<MessageEmbedOptions> => {
+    let embed = {
         color: 2007432,
         footer: {
             text: `${new Date().toDateString()} ${new Date().toLocaleTimeString()}`
@@ -44,35 +71,101 @@ export const run: CommandFunction = async(client, message, args) => {
         author: {
             name: "Shitpost Bot",
             url: "https://discordapp.com/users/663146938811547660/",
-            icon_url: client.user?.avatarURL() ?? undefined
+            icon_url: avatarUrl
         },
         fields: [
             {
-                name: "⚙️ Eckdaten",
-                value: "**Programmiersprache:** NodeJS \n" +
-                    `**NodeJS Version:** ${process.version} \n` +
-                    `**PID:** ${process.pid} \n` +
-                    `**Uptime:** ${Math.floor(process.uptime())}s \n` +
-                    `**Platform:** ${process.platform} \n` +
-                    `**System CPU usage time:** ${process.cpuUsage().system} \n` +
-                    `**User CPU usage time:** ${process.cpuUsage().user} \n` +
-                    `**Architecture:** ${process.arch}`,
-                inline: true
-            },
-            {
-                name: "🔗 Source Code",
-                value: "**Link:** https://github.com/NullDev/CSC-Bot ",
-                inline: true
-            },
-            {
                 name: "🪛 Contributors",
-                value: `${formattedContributors}`,
+                value: await getContributors(),
                 inline: false
+            },
+            {
+                name: "🧬 Tech-Stack",
+                value: getTechStackInfo(),
+                inline: true
+            },
+            {
+                name: "⚙️ System",
+                value: getSystemInfo(),
+                inline: true
             }
         ]
     };
-    await message.channel.send({ embeds: [embed] });
-    await message.react("⚙️"); // Only react when the message was actually sent
+
+    if(guild != null) {
+        embed.fields.push({
+            name: "👑 Server",
+            value: getServerInfo(guild),
+            inline: true
+        })
+    }
+
+    return embed;
 };
 
-export const description = "Listet Informationen über diesen Bot in einem Embed auf";
+const buildMessageActionsRow = (): MessageActionRowOptions[] => {
+    return [
+        {
+            type: 1,
+            components: [
+                {
+                    style: 5,
+                    label: "GitHub",
+                    url: "https://github.com/repos/NullDev/CSC-Bot",
+                    disabled: false,
+                    type: "BUTTON"
+                }
+            ]
+        }
+    ];
+};
+
+
+const getContributors = async(): Promise<string> => {
+    const contributors = await fetchContributions();
+    return contributors
+        .filter(c => c.type === "User")
+        .map(c => {
+            const noBreakLogin = c.login.replace("-", "‑"); //Replace normal hyphen with no-breaking hypen
+            return `[${noBreakLogin}](${c.html_url})`
+        }).join(", ");
+};
+
+const getTechStackInfo = (): string => {
+    return "**Programmiersprache\n** NodeJS \n" +
+        `**NodeJS Version\n** ${process.version} \n`
+};
+
+const getSystemInfo = (): string => {
+    return `**PID\n** ${process.pid} \n` +
+        `**Uptime\n** ${Math.floor(process.uptime())}s \n` +
+        `**Platform\n** ${process.platform} \n` +
+        `**System CPU usage time\n** ${process.cpuUsage().system} \n` +
+        `**User CPU usage time\n** ${process.cpuUsage().user} \n` +
+        `**Architecture\n** ${process.arch}`
+}
+
+const getServerInfo = (guild: Guild): string => {
+    const birthday = Intl.DateTimeFormat("de-DE").format(guild.joinedTimestamp);
+    let level = 0;
+
+    switch(guild.premiumTier) {
+        case "TIER_1":
+            level = 1;
+            break;
+        case "TIER_2":
+            level = 2;
+            break;
+        case "TIER_3":
+            level = 3;
+            break;
+        default:
+            break;
+    }
+
+    return `**Mitglieder\n** ${guild.memberCount} / ${guild.maximumMembers} \n` +
+        `**Oberbabo\n** <@!${guild.ownerId}> \n` +
+        `**Geburtstag\n** ${birthday} \n` +
+        `**Boosts\n** ${guild.premiumSubscriptionCount} (Level: ${level}) \n` +
+        "**Invite\n** https://discord.gg/csz";
+}

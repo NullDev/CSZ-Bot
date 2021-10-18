@@ -4,6 +4,7 @@
 
 import { promises as fs } from "fs";
 import * as path from "path";
+import { messageCommands } from "../handler/commandHandler";
 
 import { getConfig } from "../utils/configHandler";
 const config = getConfig();
@@ -17,16 +18,18 @@ const getCommandMessageChunksMatchingLimit = (commands) => {
     let chunk = [];
     let idx = 0;
 
-    commands.forEach(value => {
-        if (chunk[idx] && chunk[idx].length + (value[0].length + value[1].length + 10) > 2000) {
-            chunk[idx] += "```";
-            ++idx;
-        }
-        if (!chunk[idx]) {
-            chunk[idx] = "```css\n";
-        }
-        chunk[idx] += `${value[0]}: ${value[1]}\n\n`;
-    });
+    commands
+        .sort((a, b) => a[0].localeCompare(b[0]))
+        .forEach(value => {
+            if (chunk[idx] && chunk[idx].length + (value[0].length + value[1].length + 10) > 2000) {
+                chunk[idx] += "```";
+                ++idx;
+            }
+            if (!chunk[idx]) {
+                chunk[idx] = "```css\n";
+            }
+            chunk[idx] += `${value[0]}: ${value[1]}\n\n`;
+        });
 
     chunk[idx] += "```";
 
@@ -52,17 +55,24 @@ export const run = async(client, message, args) => {
         let stats = await fs.stat(cmdPath);
 
         if (!stats.isDirectory()) {
-            // Prefix + Command name
-            let commandStr = config.bot_settings.prefix.command_prefix + file.toLowerCase().replace(/\.js/gi, "");
-
             // commandStr is the key and the description of the command is the value
             const modulePath = path.join(commandDir, file);
             const module = await import(modulePath);
 
+            // Old file-based commands
             if(module.description) {
+                let commandStr = config.bot_settings.prefix.command_prefix + file.toLowerCase().replace(/\.js/gi, "");
                 commandObj[commandStr] = module.description;
             }
         }
+
+        // New Class-based commands
+        messageCommands
+            .filter(cmd => !cmd.modCommand)
+            .forEach(cmd => {
+                let commandStr = config.bot_settings.prefix.command_prefix + cmd.name;
+                commandObj[commandStr] = cmd.description;
+            });
     }
 
     await message.author.send(
