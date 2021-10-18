@@ -33,7 +33,8 @@ export interface Config {
             allowed_group_ids: Array<Snowflake>,
             anonymous_channel_ids: Array<Snowflake>,
             blacklisted_channel_ids: Array<Snowflake>,
-            target_channel_ids: Array<Snowflake>,
+            target_channel_overrides: { [key:string]:string },
+            default_target_channel_id: Snowflake,
             emoji_name: string,
         }
     },

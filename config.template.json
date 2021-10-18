@@ -20,7 +20,8 @@
             "allowed_group_ids": [],
             "anonymous_channel_ids": [],
             "blacklisted_channel_ids": [],
-            "target_channel_ids": []
+            "target_channel_overrides": [],
+            "default_target_channel_id": ""
         }
     },
     "ids": {

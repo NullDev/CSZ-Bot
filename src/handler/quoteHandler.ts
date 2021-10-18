@@ -1,12 +1,4 @@
-import {
-    Client,
-    GuildMember,
-    Message,
-    MessageReaction,
-    TextChannel,
-    User,
-    NewsChannel, MessageOptions
-} from "discord.js";
+import {Client, GuildMember, Message, MessageReaction, User, MessageOptions, TextBasedChannels} from "discord.js";
 import {getConfig} from "../utils/configHandler";
 import * as log from "../utils/logger";
 
@@ -15,20 +7,21 @@ const isSourceChannelAllowed = (channelId: string) => !quoteConfig.blacklisted_c
 const isChannelAnonymous = (channelId: string) => quoteConfig.anonymous_channel_ids.includes(channelId);
 const isQuoteEmoji = (reaction: MessageReaction) => reaction.emoji.name === quoteConfig.emoji_name;
 const isMemberAllowedToQuote = (member: GuildMember) => member.roles.cache.hasAny(...quoteConfig.allowed_group_ids);
-const isMessageAlreadyQuoted = async (message: Message, reaction: MessageReaction, client: Client) => {
+const isMessageAlreadyQuoted = async(message: Message, reaction: MessageReaction, client: Client) => {
     const fetchedMessage = await message.channel.messages.fetch(message.id);
     const usersThatReacted = await fetchedMessage.reactions.resolve(reaction).users.fetch();
     return usersThatReacted.some(u => u.id === client.user!.id);
 };
 
-const getChannels = (channelIds: Array<string>, client: Client) => {
-    return quoteConfig.target_channel_ids
-        .map(id => {
-            return {
-                id,
-                channel: client.channels.cache.get(id)
-            };
-        });
+const getTargetChannel = (sourceChannelId: string, client: Client) => {
+    const targetChannelId =
+        quoteConfig.target_channel_overrides[sourceChannelId]
+        ?? quoteConfig.default_target_channel_id;
+
+    return {
+        id: targetChannelId,
+        channel: client.channels.cache.get(targetChannelId)
+    };
 };
 
 const createQuoteMessage = (client: Client, quotedUser: User | undefined, quoter: User, quotedMessage: Message): MessageOptions => {
@@ -71,10 +64,10 @@ export const quoteReactionHandler = async(event: MessageReaction, user: User, cl
 
     const guild = client.guilds.cache.get(event.message.guildId)!;
     const quoter = guild.members.cache.get(user.id)!;
-    const message = await (<TextChannel | NewsChannel>client.channels.cache.get(event.message.channelId))!.messages.fetch(event.message.id);
+    const message = await (<TextBasedChannels>client.channels.cache.get(event.message.channelId))!.messages.fetch(event.message.id);
     const quotedUser = message.member;
     const quote = createQuoteMessage(client, quotedUser?.user, quoter.user, message);
-    const targetChannels = getChannels(quoteConfig.target_channel_ids, client);
+    const {id: targetChannelId, channel: targetChannel} = getTargetChannel(message.channelId, client);
 
     if (!isMemberAllowedToQuote(quoter) || !isSourceChannelAllowed(message.channelId) || await isMessageAlreadyQuoted(message, event, client)) {
         await event.users.remove(quoter);
@@ -82,23 +75,17 @@ export const quoteReactionHandler = async(event: MessageReaction, user: User, cl
         return;
     }
 
-    await Promise.all(targetChannels
-        .map(async({id, channel}) => {
-            if (channel === undefined) {
-                log.error(`channel ${id} is configured as quote output channel but it doesn't exist`);
+    if (targetChannel === undefined) {
+        log.error(`channel ${targetChannelId} is configured as quote output channel but it doesn't exist`);
 
-                return;
-            }
+        return;
+    }
 
-            if (!(channel.isText())) {
-                log.error(`channel ${id} is configured as quote output channel but it is not a text channel`);
+    if (!targetChannel.isText()) {
+        log.error(`channel ${targetChannelId} is configured as quote output channel but it is not a text channel`);
+    }
 
-                return;
-            }
-
-            await (<TextChannel | NewsChannel>channel).send(quote);
-        }));
-
+    await (<TextBasedChannels>targetChannel).send(quote);
     await message.react(event.emoji);
     await event.users.remove(quoter);
 };
