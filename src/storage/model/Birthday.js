@@ -45,7 +45,7 @@ export default class Birthday extends Model {
                         minute: 0,
                         second: 0,
                         millisecond: 0
-                    }).toDate()
+                    }).toISOString()
                 }
             }
         });
