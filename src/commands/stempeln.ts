@@ -39,6 +39,9 @@ export class StempelCommand implements ApplicationCommand {
         if(invitator!.user.bot) {
             return command.reply("Alter als ob dich der Bot invited hat. Laber nich!");
         }
+        if(invitator.id === invitedUser.id) {
+            return command.reply("Bruder wie solltest du dich bitte selbst inviten können?");
+        }
 
         const isNewInvite = await stempelUser(invitator!, invitedUser!);
         if(isNewInvite) {
