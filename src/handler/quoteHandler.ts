@@ -43,6 +43,8 @@ const createQuote = (
             };
     };
 
+    console.log(referencedMessage);
+
     return {
         quote: {
             embeds: [
@@ -90,7 +92,7 @@ export const quoteReactionHandler = async(event: MessageReaction, user: User, cl
     const quoter = guild.members.cache.get(user.id)!;
     const sourceChannel = <TextBasedChannels>client.channels.cache.get(event.message.channelId)!;
     const quotedMessage = await sourceChannel.messages.fetch(event.message.id);
-    const referencedMessage = quotedMessage.reference !== undefined ? await sourceChannel.messages.fetch(quotedMessage.reference?.messageId!) : undefined;
+    const referencedMessage = quotedMessage.reference ? await sourceChannel.messages.fetch(quotedMessage.reference?.messageId!) : undefined;
     const quotedUser = quotedMessage.member;
     const referencedUser = referencedMessage?.member;
     const {quote, reference} = createQuote(client, quotedUser?.user, quoter.user, referencedUser?.user, quotedMessage, referencedMessage);
