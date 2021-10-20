@@ -25,7 +25,7 @@ const getTargetChannel = (sourceChannelId: string, client: Client) => {
 };
 
 const createQuote = (
-    client: Client,
+    _client: Client,
     quotedUser: User | undefined,
     quoter: User,
     referencedUser: User | undefined,
@@ -68,7 +68,7 @@ const createQuote = (
         },
         reference: referencedMessage !== undefined ? {
             embeds: [
-                ...referencedMessage.embeds,
+                ...referencedMessage.embeds ?? [],
                 {
                     color: 0xFFC000,
                     description: referencedMessage.content,
@@ -76,7 +76,7 @@ const createQuote = (
                     timestamp: referencedMessage.createdTimestamp
                 }
             ],
-            files: referencedMessage.attachments.map((attachment, _key) => attachment)
+            files: referencedMessage.attachments?.map((attachment, _key) => attachment)
         } : undefined
     };
 };
