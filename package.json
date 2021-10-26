@@ -8,7 +8,7 @@
     "start": "nodemon ./built/app.js",
     "watch": "tsc --watch",
     "compile": "tsc --sourceMap false",
-    "lint": "eslint ./src --fix",
+    "lint": "eslint -c .eslintrc.json ./src/**",
     "dev": "npm run lint && npm start"
   },
   "repository": {
