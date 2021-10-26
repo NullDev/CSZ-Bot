@@ -9,10 +9,10 @@ export class YepYepCommand implements SpecialCommand {
 
     async handleSpecialMessage(message: Message, _client: Client<boolean>): Promise<unknown> {
         const yepEmote = message.guild?.emojis.cache.find(e => e.name === "YEP");
-        if(yepEmote){
+        if (yepEmote){
             return message.channel.send(`${yepEmote}${yepEmote}`);
-        } else {
-            throw new Error("Could not find YEP emote :sadge:");
         }
+
+        throw new Error("Could not find YEP emote :sadge:");
     }
 }

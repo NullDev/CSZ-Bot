@@ -1,6 +1,7 @@
-import { SlashCommandBuilder, SlashCommandOptionsOnlyBuilder, SlashCommandSubcommandsOnlyBuilder } from "@discordjs/builders";
+/* eslint-disable no-use-before-define */
+import { SlashCommandBuilder /* , SlashCommandOptionsOnlyBuilder, SlashCommandSubcommandsOnlyBuilder */ } from "@discordjs/builders";
 import type { Client, CommandInteraction, Message } from "discord.js";
-import { Model } from "sequelize/types";
+// import { Model } from "sequelize/types";
 
 // A command can be an application command (slash command) or a message command or both
 export type Command = ApplicationCommand | MessageCommand | SpecialCommand;
@@ -11,7 +12,7 @@ export type SpecialCommand = CommandBase & SpcalCommand;
 export interface CommandBase {
     readonly name: string,
     readonly description: string;
-};
+}
 
 // For ApplicationCommands we require a SlashCommandBuilder object to create the command and a handler method
 interface AppCommand {
@@ -20,13 +21,13 @@ interface AppCommand {
         command: CommandInteraction,
         client: Client
     ): Promise<unknown>;
-};
+}
 
 // For a MessageCommand we require an additional modCommand property and a handler method
 interface MsgCommand {
     readonly modCommand: boolean;
     handleMessage(message: Message, client: Client): Promise<unknown>;
-};
+}
 
 // For SpecialCommands we require a pattern and a randomenss (<= 1)
 interface SpcalCommand {

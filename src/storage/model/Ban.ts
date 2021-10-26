@@ -44,7 +44,7 @@ export default class Ban extends Model<BanAttributes, BanCreationAttributes> imp
                 [Op.ne]: null,
                 [Op.lte]: now
             }
-        },
+        }
     });
 
     static initialize(sequelize: Sequelize) {
