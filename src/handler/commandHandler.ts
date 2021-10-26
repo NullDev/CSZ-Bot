@@ -23,6 +23,7 @@ import { NixOsCommand } from "../commands/special/nixos";
 import { WhereCommand } from "../commands/special/where";
 import { DadJokeCommand } from "../commands/special/dadJoke";
 import { WatCommand } from "../commands/special/wat";
+import { TikTokLink } from "../commands/special/tiktok";
 import * as log from "../utils/logger";
 import { StempelCommand } from "../commands/stempeln";
 
@@ -37,6 +38,7 @@ export const commands: Array<Command> = [
     new WhereCommand(),
     new DadJokeCommand(),
     new WatCommand(),
+    new TikTokLink(),
     new StempelCommand()
 ];
 export const applicationCommands: Array<ApplicationCommand> =

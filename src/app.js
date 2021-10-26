@@ -85,7 +85,6 @@ function scheduleTimezoneFixedCronjob(cronString) {
         /** @type {TC} */
         (csz.channels.cache.get(config.ids.hauptchat_id)).send("Es ist `13:37` meine Kerle.\nBleibt hydriert! :grin: :sweat_drops:");
 
-
         // Auto-kick members
         const sadPinguEmote = csz.emojis.cache.find(e => e.name === "sadpingu");
         const dabEmote = csz.emojis.cache.find(e => e.name === "Dab");
@@ -140,7 +139,6 @@ client.on("ready", async() => {
 
     fadingMessageHandler.startLoop(client);
 });
-
 
 /**
  * When the application is ready, slash commands should be registered
