@@ -25,7 +25,7 @@ const tiktokOptions = {
         referer: "https://www.tiktok.com/",
         cookie: "tt_webid_v2=csz"
     }
-};
+} as const;
 
 export class TikTokLink implements SpecialCommand {
     name: string = "Tiktok";
@@ -43,7 +43,7 @@ export class TikTokLink implements SpecialCommand {
             const videoMeta = await TikTokScraper.getVideoMeta(uri, tiktokOptions);
 
             let res = await fetch(videoMeta.collector[0].videoUrl, {
-                headers: videoMeta.headers
+                headers: videoMeta.headers as any
             });
             let buf = await res.buffer();
 
