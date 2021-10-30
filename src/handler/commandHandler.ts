@@ -81,7 +81,7 @@ export const registerAllApplicationCommandsAsGuildCommands = async () => {
     const permissionizedCommands = applicationCommands.filter((cmd) => cmd.permissions && cmd.permissions.length > 0);
 
     // Create a request body for the permissions
-    const permissionsToPost: {id: string, permissions: CommandPermission[]}[] = createdCommands
+    const permissionsToPost: {id: string, permissions: readonly CommandPermission[]}[] = createdCommands
         .filter(cmd => permissionizedCommands.find(pCmd => pCmd.name === cmd.name))
         .map(cmd => ({id: cmd.id, permissions: permissionizedCommands.find(pCmd => pCmd.name === cmd.name)!.permissions!}));
 
