@@ -45,7 +45,14 @@ export class UnbanCommand implements ApplicationCommand, MessageCommand {
             });
         }
 
-        await unban(userAsGuildMember);
+        const err = await unban(userAsGuildMember);
+
+        if(err) {
+            return command.reply({
+                content: err,
+                ephemeral: true
+            });
+        }
 
         return command.reply({
             content: "Yo bruder, hab ihn entbannt"
@@ -64,7 +71,13 @@ export class UnbanCommand implements ApplicationCommand, MessageCommand {
             return message.reply("Bruder, der ist nicht auf diesem Server.");
         }
 
-        await unban(userAsGuildMember);
+        const err = await unban(userAsGuildMember);
+
+        if(err) {
+            return message.reply({
+                content: err
+            });
+        }
 
         return message.reply("Yo bruder, hab ihn entbannt");
     }

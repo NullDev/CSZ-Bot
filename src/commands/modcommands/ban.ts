@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, SlashCommandIntegerOption, SlashCommandNumberOption, SlashCommandStringOption, SlashCommandUserOption } from "@discordjs/builders";
+import { SlashCommandBuilder, SlashCommandIntegerOption, SlashCommandStringOption, SlashCommandUserOption } from "@discordjs/builders";
 import { CommandInteraction, GuildMember } from "discord.js";
 import { Message, Client } from "discord.js";
 import Ban from "../../storage/model/Ban";
@@ -89,7 +89,16 @@ export const startCron = (client: Client) => {
     });
 };
 
-export const ban = async(member: GuildMember, reason: string, isSelfBan: boolean, duration?: number): Promise<void> => {
+export const ban = async(client: Client, member: GuildMember, reason: string, isSelfBan: boolean, duration?: number): Promise<string | undefined> => {
+    if (member.id === "371724846205239326" || member.id === client.user!.id) return "Fick dich bitte.";
+
+    const existingBan = await Ban.findExisting(member.user);
+    if (existingBan !== null) {
+        if (member.roles.cache.some(r => r.id === config.ids.banned_role_id)) { return "Dieser User ist bereits gebannt du kek."; }
+
+        return "Dieser nutzer ist laut Datenbank gebannt, ihm fehlt aber die Rolle. Fix das.";
+    }
+
     await assignBannedRoles(member);
 
     const unbanAt = duration === undefined || duration === 0
@@ -136,7 +145,7 @@ export class BanCommand implements ApplicationCommand, MessageCommand {
                 .setDescription("Wie lange in Minuten"));
     }
 
-    async handleInteraction(command: CommandInteraction, _client: Client<boolean>): Promise<void> {
+    async handleInteraction(command: CommandInteraction, client: Client<boolean>): Promise<void> {
         const user = command.options.getUser("user", true);
         const reason = command.options.getString("reason", true);
         const durationHours = command.options.getInteger("hours", false);
@@ -151,13 +160,20 @@ export class BanCommand implements ApplicationCommand, MessageCommand {
             });
         }
 
-        await ban(userAsGuildMember, reason, false, duration ?? undefined);
+        const err = await ban(client, userAsGuildMember, reason, false, duration ?? undefined);
+
+        if(err) {
+            return command.reply({
+                content: err,
+                ephemeral: true
+            });
+        }
 
         return command.reply({
             content: "Yo bruder, hab ihn gebannt"
         });
     }
-    async handleMessage(message: Message, _client: Client<boolean>): Promise<unknown> {
+    async handleMessage(message: Message, client: Client<boolean>): Promise<unknown> {
         const user = message.mentions.users.first();
 
         if(!user) {
@@ -189,7 +205,13 @@ export class BanCommand implements ApplicationCommand, MessageCommand {
             }
         }
 
-        await ban(userAsGuildMember, reason, false);
+        const err = await ban(client, userAsGuildMember, reason, false);
+
+        if(err) {
+            return message.reply({
+                content: err
+            });
+        }
 
         return message.reply("Yo bruder, hab ihn gebannt");
     }
