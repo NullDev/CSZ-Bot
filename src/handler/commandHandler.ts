@@ -12,6 +12,7 @@ import { isMod } from "../utils/securityUtils";
 import {
     ApplicationCommand,
     Command,
+    CommandPermission,
     isApplicationCommand,
     isMessageCommand,
     isSpecialCommand,
@@ -26,6 +27,9 @@ import { WatCommand } from "../commands/special/wat";
 import { TikTokLink } from "../commands/special/tiktok";
 import * as log from "../utils/logger";
 import { StempelCommand } from "../commands/stempeln";
+import { GuildMember } from "discord.js";
+import { ban, BanCommand } from "../commands/modcommands/ban";
+import { UnbanCommand } from "../commands/modcommands/unban";
 
 const config = getConfig();
 
@@ -39,7 +43,9 @@ export const commands: Array<Command> = [
     new DadJokeCommand(),
     new WatCommand(),
     new TikTokLink(),
-    new StempelCommand()
+    new StempelCommand(),
+    new BanCommand(),
+    new UnbanCommand()
 ];
 export const applicationCommands: Array<ApplicationCommand> =
     commands.filter<ApplicationCommand>(isApplicationCommand);
@@ -60,11 +66,28 @@ export const registerAllApplicationCommandsAsGuildCommands = async () => {
     const rest = new REST({ version: "9" }).setToken(token);
 
     const commandData = applicationCommands.map((cmd) =>
-        cmd.applicationCommand.toJSON()
+        ({
+            ...cmd.applicationCommand.toJSON(),
+            default_permission: cmd.permissions ? cmd.permissions.length === 0 : true
+        })
     );
 
-    await rest.put(Routes.applicationGuildCommands(clientId, guildId), {
-        body: commandData,
+    // Bulk Overwrite Guild Application Commands
+    const createdCommands = await rest.put(Routes.applicationGuildCommands(clientId, guildId), {
+        body: commandData
+    }) as {id: string, name: string}[];
+
+    // Get commands that have permissions
+    const permissionizedCommands = applicationCommands.filter((cmd) => cmd.permissions && cmd.permissions.length > 0);
+
+    // Create a request body for the permissions
+    const permissionsToPost: {id: string, permissions: readonly CommandPermission[]}[] = createdCommands
+        .filter(cmd => permissionizedCommands.find(pCmd => pCmd.name === cmd.name))
+        .map(cmd => ({id: cmd.id, permissions: permissionizedCommands.find(pCmd => pCmd.name === cmd.name)!.permissions!}));
+
+    // Batch Edit Application Command Permissions
+    await rest.put(Routes.guildApplicationCommandsPermissions(clientId, guildId), {
+        body: permissionsToPost
     });
 };
 
@@ -90,6 +113,29 @@ const commandInteractionHandler = async (
     }
 };
 
+const checkPermissions = (member: GuildMember, permissions: ReadonlyArray<CommandPermission>): boolean => {
+    if(permissions.length === 0) {
+        return true;
+    }
+    const userPermission = permissions
+        .find(perm => perm.type === 1 && perm.id === member.id)?.permission ?? false;
+
+    if(userPermission === true) {
+        return true;
+    }
+
+    const highestMatchingRole = member.roles.cache
+        .filter(role => permissions.find(perm => perm.type === 2 && perm.id === role.id) !== undefined)
+        .sort((a, b) => a.position - b.position)
+        .first();
+
+    if(highestMatchingRole === undefined) {
+        return false;
+    }
+
+    return permissions.find(perm => perm.id === highestMatchingRole.id)!.permission;
+};
+
 /**
  * handles message commands
  * @param commandString the sliced command (e.g. "info")
@@ -108,10 +154,14 @@ const commandMessageHandler = async (
         (cmd) => cmd.name === commandString
     );
     if (matchingCommand) {
-        if (matchingCommand.modCommand) {
+        if (matchingCommand.permissions) {
             const member = message.guild?.members.cache.get(message.author.id);
-            if (!member || !isMod(member)) {
-                throw new Error(`Not a mod`);
+            if (member && !checkPermissions(member, matchingCommand.permissions)) {
+                await ban(client, member, "Lol", false, 0.08);
+                message.reply({
+                    content: `Tut mir leid, ${message.author}. Du hast nicht genügend Rechte um dieses Command zu verwenden, dafür gibt's erstmal mit dem Willkürhammer einen auf den Deckel.`
+                });
+                return;
             }
         }
         return matchingCommand.handleMessage(message, client);
