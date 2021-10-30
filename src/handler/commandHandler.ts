@@ -66,7 +66,10 @@ export const registerAllApplicationCommandsAsGuildCommands = async () => {
     const rest = new REST({ version: "9" }).setToken(token);
 
     const commandData = applicationCommands.map((cmd) =>
-        cmd.applicationCommand.toJSON()
+        ({
+            ...cmd.applicationCommand.toJSON(),
+            default_permission: cmd.permissions ? cmd.permissions.length === 0 : true
+        })
     );
 
     // Bulk Overwrite Guild Application Commands
