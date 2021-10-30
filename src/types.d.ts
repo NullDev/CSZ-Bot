@@ -26,6 +26,8 @@ export interface Config {
             command_prefix: string,
             mod_prefix: string
         },
+        moderator_id: Snowflake,
+        ban_reason_channel_id: Snowflake,
         moderator_roles: Array<string>,
         woisping_limit: number,
         woisping_threshold: number,

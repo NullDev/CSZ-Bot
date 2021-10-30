@@ -9,6 +9,8 @@
             "command_prefix": ".",
             "mod_prefix": "~"
         },
+        "moderator_id": "",
+        "ban_reason_channel_id": "624931933758947343",
         "moderator_roles": [
             "Moderator"
         ],

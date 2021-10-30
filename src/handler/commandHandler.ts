@@ -28,6 +28,8 @@ import { TikTokLink } from "../commands/special/tiktok";
 import * as log from "../utils/logger";
 import { StempelCommand } from "../commands/stempeln";
 import { GuildMember } from "discord.js";
+import { BanCommand } from "../commands/modcommands/ban";
+import { UnbanCommand } from "../commands/modcommands/unban";
 
 const config = getConfig();
 
@@ -41,7 +43,9 @@ export const commands: Array<Command> = [
     new DadJokeCommand(),
     new WatCommand(),
     new TikTokLink(),
-    new StempelCommand()
+    new StempelCommand(),
+    new BanCommand(),
+    new UnbanCommand()
 ];
 export const applicationCommands: Array<ApplicationCommand> =
     commands.filter<ApplicationCommand>(isApplicationCommand);
