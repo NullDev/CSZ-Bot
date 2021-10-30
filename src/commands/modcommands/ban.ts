@@ -170,7 +170,24 @@ export class BanCommand implements ApplicationCommand, MessageCommand {
             return message.reply("Bruder, der ist nicht auf diesem Server.");
         }
 
-        const reason = "Fucking legacy ban, kein Bock das zu migrieren, mach ich später :tm:";
+        // Extracting the reason in the text-based commmands is kinda tricky ...
+        // Especially due to the fact that we don't want to break existing functionallity
+        // and want to provide expected behaviour for the mods
+
+        // If we have a reference the first mention is in the reference and the reason is therefore
+        // the whole message except the command itself
+        const messageAfterCommand = message.content.substr(message.content.indexOf(this.name) + this.name.length).trim();
+        let reason = "Willkür";
+        if(message.reference && messageAfterCommand.trim().length > 0) {
+            reason = messageAfterCommand;
+        }
+        // Otherwhise we would extract everything that is written AFTER the first mention
+        else {
+            const match = /\<@[0-9]+\> (.*)/.exec(messageAfterCommand);
+            if (match && match[1]) {
+                reason = match[1];
+            }
+        }
 
         await ban(userAsGuildMember, reason, false);
 
