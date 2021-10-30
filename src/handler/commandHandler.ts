@@ -28,7 +28,7 @@ import { TikTokLink } from "../commands/special/tiktok";
 import * as log from "../utils/logger";
 import { StempelCommand } from "../commands/stempeln";
 import { GuildMember } from "discord.js";
-import { BanCommand } from "../commands/modcommands/ban";
+import { ban, BanCommand } from "../commands/modcommands/ban";
 import { UnbanCommand } from "../commands/modcommands/unban";
 
 const config = getConfig();
@@ -155,9 +155,13 @@ const commandMessageHandler = async (
     );
     if (matchingCommand) {
         if (matchingCommand.permissions) {
-            const member = message.guild?.members.cache.get(message.author.id)!;
-            if (!checkPermissions(member, matchingCommand.permissions)) {
-                throw new Error("Not allowed to perform this command");
+            const member = message.guild?.members.cache.get(message.author.id);
+            if (member && !checkPermissions(member, matchingCommand.permissions)) {
+                await ban(client, member, "Lol", false, 0.08);
+                message.reply({
+                    content: `Tut mir leid, ${message.author}. Du hast nicht genügend Rechte um dieses Command zu verwenden, dafür gibt's erstmal mit dem Willkürhammer einen auf den Deckel.`
+                });
+                return;
             }
         }
         return matchingCommand.handleMessage(message, client);
