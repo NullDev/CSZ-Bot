@@ -98,19 +98,23 @@ export const quoteReactionHandler = async(event: MessageReaction, user: User, cl
     const quotedUser = quotedMessage.member;
     const referencedUser = referencedMessage?.member;
 
-    if(isQuoterQuotingHimself(quoter.user, quotedUser!.user)) {
-        const hauptchat = await client.channels.fetch(hauptchatId) as TextChannel;
-        hauptchat.send(`<@${quoter.id}> der Lellek hat gerade versucht sich selbst zu quoten. Was ein Opfer!`);
-    }
-
-    const {quote, reference} = createQuote(client, quotedUser?.user, quoter.user, referencedUser?.user, quotedMessage, referencedMessage);
-    const {id: targetChannelId, channel: targetChannel} = getTargetChannel(quotedMessage.channelId, client);
-
     if (!isMemberAllowedToQuote(quoter) || !isSourceChannelAllowed(quotedMessage.channelId) || await isMessageAlreadyQuoted(quotedMessage, event, client)) {
         await event.users.remove(quoter);
 
         return;
     }
+
+    if(isQuoterQuotingHimself(quoter.user, quotedUser!.user)) {
+        const hauptchat = await client.channels.fetch(hauptchatId) as TextChannel;
+        await hauptchat.send(`<@${quoter.id}> der Lellek hat gerade versucht sich selbst zu quoten. Was ein Opfer!`);
+
+        await event.users.remove(quoter);
+        return;
+    }
+
+    const {quote, reference} = createQuote(client, quotedUser?.user, quoter.user, referencedUser?.user, quotedMessage, referencedMessage);
+    const {id: targetChannelId, channel: targetChannel} = getTargetChannel(quotedMessage.channelId, client);
+
 
     if (targetChannel === undefined) {
         log.error(`channel ${targetChannelId} is configured as quote output channel but it doesn't exist`);
