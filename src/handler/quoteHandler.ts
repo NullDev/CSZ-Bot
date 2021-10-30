@@ -1,7 +1,8 @@
-import {Client, GuildMember, Message, MessageReaction, User, TextBasedChannels} from "discord.js";
+import {Client, GuildMember, Message, MessageReaction, User, TextBasedChannels, TextChannel} from "discord.js";
 import {getConfig} from "../utils/configHandler";
 import * as log from "../utils/logger";
 
+const hauptchatId = getConfig().ids.hauptchat_id;
 const quoteConfig = getConfig().bot_settings.quotes;
 const isSourceChannelAllowed = (channelId: string) => !quoteConfig.blacklisted_channel_ids.includes(channelId);
 const isChannelAnonymous = (channelId: string) => quoteConfig.anonymous_channel_ids.includes(channelId);
@@ -12,6 +13,7 @@ const isMessageAlreadyQuoted = async(message: Message, reaction: MessageReaction
     const usersThatReacted = await fetchedMessage.reactions.resolve(reaction).users.fetch();
     return usersThatReacted.some(u => u.id === client.user!.id);
 };
+const isQuoterQuotingHimself = (quoter: User, messageAuthor: User) => quoter.id === messageAuthor.id;
 
 const getTargetChannel = (sourceChannelId: string, client: Client) => {
     const targetChannelId =
@@ -95,6 +97,12 @@ export const quoteReactionHandler = async(event: MessageReaction, user: User, cl
     const referencedMessage = quotedMessage.reference ? await sourceChannel.messages.fetch(quotedMessage.reference?.messageId!) : undefined;
     const quotedUser = quotedMessage.member;
     const referencedUser = referencedMessage?.member;
+
+    if(isQuoterQuotingHimself(quoter.user, quotedUser!.user)) {
+        const hauptchat = await client.channels.fetch(hauptchatId) as TextChannel;
+        hauptchat.send(`<@${quoter.id}> der Lellek hat gerade versucht sich selbst zu quoten. Was ein Opfer!`);
+    }
+
     const {quote, reference} = createQuote(client, quotedUser?.user, quoter.user, referencedUser?.user, quotedMessage, referencedMessage);
     const {id: targetChannelId, channel: targetChannel} = getTargetChannel(quotedMessage.channelId, client);
 
