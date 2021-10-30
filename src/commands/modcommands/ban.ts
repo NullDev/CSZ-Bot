@@ -170,7 +170,7 @@ export class BanCommand implements ApplicationCommand, MessageCommand {
         }
 
         return command.reply({
-            content: "Yo bruder, hab ihn gebannt"
+            content: `Ok Bruder, ich hab <@${user.id}> wegen ${reason} ${ duration > 0 ? `für ${duration} Stunden` : ""} gebannt`
         });
     }
     async handleMessage(message: Message, client: Client<boolean>): Promise<unknown> {
@@ -213,6 +213,8 @@ export class BanCommand implements ApplicationCommand, MessageCommand {
             });
         }
 
-        return message.reply("Yo bruder, hab ihn gebannt");
+        return message.reply({
+            content: `Ok Bruder, ich hab <@${user.id}> wegen ${reason} gebannt`
+        });
     }
 }
