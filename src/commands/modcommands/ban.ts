@@ -6,6 +6,7 @@ import { getConfig } from "../../utils/configHandler";
 import { ApplicationCommand, CommandPermission, MessageCommand, PermissionType } from "../command";
 import * as cron from "node-cron";
 import * as log from "../../utils/logger";
+import moment from "moment";
 
 const config = getConfig();
 
@@ -104,11 +105,12 @@ export const ban = async(client: Client, member: GuildMember, reason: string, is
     const unbanAt = duration === undefined || duration === 0
         ? null // never
         : new Date(Date.now() + (duration * 60 * 60 * 1000));
+    const humanReadableDuration = duration ? moment.duration(duration, "hours").locale("de").humanize() : undefined;
 
     const banReasonChannel = member.guild.channels.resolve(config.bot_settings.ban_reason_channel_id);
     if(banReasonChannel && banReasonChannel.isText()) {
         banReasonChannel.send({
-            content: `<@${member.id}> wurde gebannt, weil wegen ${reason} ${duration ? `(Dauer: ${duration} Stunden)` : ""} `
+            content: `<@${member.id}> wurde gebannt, weil wegen ${reason} ${humanReadableDuration ? `(Dauer: ${humanReadableDuration})` : ""} `
         });
     }
 
@@ -151,6 +153,7 @@ export class BanCommand implements ApplicationCommand, MessageCommand {
         const durationHours = command.options.getInteger("hours", false);
         const durationMinutes = command.options.getInteger("minutes", false);
         const duration = (durationHours ? durationHours : 0) + (durationMinutes ? durationMinutes / 60 : 0);
+        const humanReadableDuration = moment.duration(duration, "hours").locale("de").humanize();
 
         const userAsGuildMember = command.guild?.members.resolve(user);
         if(!userAsGuildMember) {
@@ -170,7 +173,7 @@ export class BanCommand implements ApplicationCommand, MessageCommand {
         }
 
         return command.reply({
-            content: `Ok Bruder, ich hab <@${user.id}> wegen ${reason} ${ duration > 0 ? `für ${duration} Stunden` : ""} gebannt`
+            content: `Ok Bruder, ich hab <@${user.id}> wegen ${reason} ${ duration > 0 ? `für ${humanReadableDuration}` : ""} gebannt`
         });
     }
     async handleMessage(message: Message, client: Client<boolean>): Promise<unknown> {
