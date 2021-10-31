@@ -115,6 +115,11 @@ export const ban = async(client: Client, member: GuildMember, reason: string, is
     }
 
     await Ban.persistOrUpdate(member, unbanAt, isSelfBan, reason);
+
+    await member.send(`Du wurdest von der Coding Shitpost Zentrale gebannt!
+${!reason ? "Es wurde kein Banngrund angegeben." : "Banngrund: " + reason}
+Falls du Fragen zu dem Bann hast, kannst du dich im <#${config.ids.banned_channel_id}> Channel ausheulen.
+Lg & xD™`);
 };
 
 export class BanCommand implements ApplicationCommand, MessageCommand {
