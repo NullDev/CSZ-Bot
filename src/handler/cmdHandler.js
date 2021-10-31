@@ -19,7 +19,7 @@ const config = getConfig();
  * @param {Boolean} isModCommand
  * @returns {import("../types").CommandResult}
  */
-export default async function (message, client, isModCommand) {
+export default async function(message, client, isModCommand) {
     let cmdPrefix = isModCommand
         ? config.bot_settings.prefix.mod_prefix
         : config.bot_settings.prefix.command_prefix;
@@ -44,6 +44,18 @@ export default async function (message, client, isModCommand) {
     if (!commandArr.includes(command.toLowerCase() + ".js")) {
         return;
     }
+
+    const commandPath = path.join(commandDir, command);
+
+    /**
+     * @type {{
+     *    run: import("../types").CommandFunction,
+     *    descption: string,
+     * }}
+     */
+    const usedCommand = await import(commandPath);
+
+    console.assert(!!usedCommand, "usedCommand must be non-falsy");
 
     /**
      * Since the "new commands" will also be loaded the command handler would
@@ -80,24 +92,13 @@ export default async function (message, client, isModCommand) {
             }command: ${cmdPrefix}${command}`
         );
 
-        const commandPath = path.join(commandDir, command);
-
-        /**
-         * @type {{
-         *    run: import("../types").CommandFunction,
-         *    descption: string,
-         * }}
-         */
-        const usedCommand = await import(commandPath);
-
-        console.assert(!!usedCommand, "usedCommand must be non-falsy");
-
         try {
             const response = await usedCommand.run(client, message, args);
 
             // Non-Exception Error returned by the command (e.g.: Missing Argument)
             return response;
-        } catch (err) {
+        }
+        catch (err) {
             // Exception returned by the command handler
             log.error(err);
             return "Sorry, irgendwas ist schief gegangen! =(";
