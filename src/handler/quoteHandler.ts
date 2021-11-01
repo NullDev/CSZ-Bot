@@ -8,7 +8,7 @@ const quoteThreshold = quoteConfig.quote_threshold;
 const isSourceChannelAllowed = (channelId: string) => !quoteConfig.blacklisted_channel_ids.includes(channelId);
 const isChannelAnonymous = (channelId: string) => quoteConfig.anonymous_channel_ids.includes(channelId);
 const isQuoteEmoji = (reaction: MessageReaction) => reaction.emoji.name === quoteConfig.emoji_name;
-const isMemberAllowedToQuote = (member: GuildMember) => member.id !== "97667055897018368" && member.roles.cache.hasAny(...quoteConfig.allowed_group_ids);
+const isMemberAllowedToQuote = (member: GuildMember) => member.roles.cache.hasAny(...quoteConfig.allowed_group_ids);
 const isMessageAlreadyQuoted = async(message: Message, reaction: MessageReaction, client: Client) => {
     const fetchedMessage = await message.channel.messages.fetch(message.id);
     const usersThatReacted = await fetchedMessage.reactions.resolve(reaction).users.fetch();
