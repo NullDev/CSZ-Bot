@@ -1,6 +1,7 @@
 import {Client, GuildMember, Message, MessageReaction, User, TextBasedChannels, TextChannel} from "discord.js";
 import {getConfig} from "../utils/configHandler";
 import * as log from "../utils/logger";
+import { isMod } from "../utils/securityUtils";
 
 const hauptchatId = getConfig().ids.hauptchat_id;
 const quoteConfig = getConfig().bot_settings.quotes;
@@ -112,7 +113,7 @@ export const quoteReactionHandler = async(event: MessageReaction, user: User, cl
         return;
     }
 
-    if(!(await hasMessageEnoughQuotes(quotedMessage, event, client))) {
+    if(!isMod(quoter) && !(await hasMessageEnoughQuotes(quotedMessage, event, client))) {
         return;
     }
 
