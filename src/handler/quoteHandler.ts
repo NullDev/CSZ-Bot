@@ -4,6 +4,7 @@ import * as log from "../utils/logger";
 
 const hauptchatId = getConfig().ids.hauptchat_id;
 const quoteConfig = getConfig().bot_settings.quotes;
+const quoteThreshold = quoteConfig.quote_threshold;
 const isSourceChannelAllowed = (channelId: string) => !quoteConfig.blacklisted_channel_ids.includes(channelId);
 const isChannelAnonymous = (channelId: string) => quoteConfig.anonymous_channel_ids.includes(channelId);
 const isQuoteEmoji = (reaction: MessageReaction) => reaction.emoji.name === quoteConfig.emoji_name;
@@ -12,6 +13,13 @@ const isMessageAlreadyQuoted = async(message: Message, reaction: MessageReaction
     const fetchedMessage = await message.channel.messages.fetch(message.id);
     const usersThatReacted = await fetchedMessage.reactions.resolve(reaction).users.fetch();
     return usersThatReacted.some(u => u.id === client.user!.id);
+};
+const hasMessageEnoughQuotes = async(message: Message, reaction: MessageReaction, client: Client) => {
+    const fetchedMessage = await message.channel.messages.fetch(message.id);
+    const membersThatReacted = (await fetchedMessage.reactions.resolve(reaction).users.fetch())
+        .map(user => message.guild!.members.resolve(user))
+        .filter(user => user !== null);
+    return membersThatReacted.filter(m => isMemberAllowedToQuote(m!)).length >= quoteThreshold;
 };
 const isQuoterQuotingHimself = (quoter: User, messageAuthor: User) => quoter.id === messageAuthor.id;
 
@@ -101,6 +109,10 @@ export const quoteReactionHandler = async(event: MessageReaction, user: User, cl
     if (!isMemberAllowedToQuote(quoter) || !isSourceChannelAllowed(quotedMessage.channelId) || await isMessageAlreadyQuoted(quotedMessage, event, client)) {
         await event.users.remove(quoter);
 
+        return;
+    }
+
+    if(!(await hasMessageEnoughQuotes(quotedMessage, event, client))) {
         return;
     }
 
