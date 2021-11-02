@@ -16,8 +16,8 @@ export class DadJokeCommand implements SpecialCommand {
             const randomUwe = Math.random() < 0.01;
 
             if(trimmedWords.length > 0 && trimmedWords.length <= 10 && !randomUwe) {
-                const whoIs = Util.removeMentions(Util.cleanContent(trimmedWords.join(" "), message.channel));
-                if(whoIs.trim().length > 0) {
+                const whoIs = Util.removeMentions(Util.cleanContent(trimmedWords.join(" "), message.channel)).trim();
+                if(whoIs.length > 0) {
                     return message.reply({
                         content: `Hallo ${whoIs}, ich bin Shitpost Bot.`
                     });
