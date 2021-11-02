@@ -17,7 +17,7 @@ import {
     isMessageCommand,
     isSpecialCommand,
     MessageCommand,
-    SpecialCommand,
+    SpecialCommand
 } from "../commands/command";
 import { YepYepCommand } from "../commands/special/yepyep";
 import { NixOsCommand } from "../commands/special/nixos";
@@ -58,7 +58,7 @@ export const specialCommands: Array<SpecialCommand> =
  * Registers all defined applicationCommands as guild commands
  * We're overwriting ALL, therefore no deletion is necessary
  */
-export const registerAllApplicationCommandsAsGuildCommands = async () => {
+export const registerAllApplicationCommandsAsGuildCommands = async() => {
     const guildId = config.ids.guild_id;
     const clientId = config.auth.client_id;
     const token = config.auth.bot_token;
@@ -97,7 +97,7 @@ export const registerAllApplicationCommandsAsGuildCommands = async () => {
  * @param client client
  * @returns the handled command or an error if no matching command was found.
  */
-const commandInteractionHandler = async (
+const commandInteractionHandler = async(
     command: CommandInteraction,
     client: Client
 ) => {
@@ -106,11 +106,11 @@ const commandInteractionHandler = async (
     );
     if (matchingCommand) {
         return matchingCommand.handleInteraction(command, client);
-    } else {
-        throw new Error(
-            `Application Command ${command.commandName} with ID ${command.id} invoked, but not availabe`
-        );
     }
+
+    throw new Error(
+        `Application Command ${command.commandName} with ID ${command.id} invoked, but not availabe`
+    );
 };
 
 const checkPermissions = (member: GuildMember, permissions: ReadonlyArray<CommandPermission>): boolean => {
@@ -145,7 +145,7 @@ const checkPermissions = (member: GuildMember, permissions: ReadonlyArray<Comman
  * was found or an error if the command would be a mod command but the
  * invoking user is not a mod
  */
-const commandMessageHandler = async (
+const commandMessageHandler = async(
     commandString: String,
     message: Message,
     client: Client
@@ -182,7 +182,7 @@ const isCooledDown = () => {
     return Math.random() < diff / fixedCooldown;
 };
 
-const specialCommandHandler = async (message: Message, client: Client) => {
+const specialCommandHandler = async(message: Message, client: Client) => {
     const commandCandidates = specialCommands.filter((p) =>
         p.pattern.test(message.content)
     );
@@ -206,7 +206,7 @@ const specialCommandHandler = async (message: Message, client: Client) => {
     return;
 };
 
-export const handleInteractionEvent = async (
+export const handleInteractionEvent = async(
     interaction: Interaction,
     client: Client
 ) => {
@@ -218,7 +218,7 @@ export const handleInteractionEvent = async (
     }
 };
 
-export const messageCommandHandler = async (
+export const messageCommandHandler = async(
     message: Message,
     client: Client
 ) => {
@@ -235,7 +235,7 @@ export const messageCommandHandler = async (
             return commandMessageHandler(cmdString, message, client);
         }
         return;
-    } else {
-        return specialCommandHandler(message, client);
     }
+
+    return specialCommandHandler(message, client);
 };

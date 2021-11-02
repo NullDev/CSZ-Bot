@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import { Snowflake } from "discord.js";
 
 /**
@@ -13,7 +14,7 @@ export interface GitHubContributor {
     html_url: string,
     type: "User" | "Bot",
     contributions: number
-};
+}
 
 export interface Config {
     auth: {
@@ -42,4 +43,4 @@ export interface Config {
         }
     },
     ids: Record<string, Snowflake>
-};
+}
