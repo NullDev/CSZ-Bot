@@ -6,7 +6,6 @@ import { MessageCommand } from "./command";
  * Penis command. Displays the users penis length
  */
 export class PenisCommand implements MessageCommand {
-    modCommand: boolean = false;
     name = "penis";
     description = "Zeigt dir die Schwanzlänge eines Nutzers an.";
 
