@@ -30,6 +30,7 @@ import { StempelCommand } from "../commands/stempeln";
 import { GuildMember } from "discord.js";
 import { ban, BanCommand } from "../commands/modcommands/ban";
 import { UnbanCommand } from "../commands/modcommands/unban";
+import { PenisCommand } from "../commands/penis";
 
 const config = getConfig();
 
@@ -45,7 +46,8 @@ export const commands: Array<Command> = [
     new TikTokLink(),
     new StempelCommand(),
     new BanCommand(),
-    new UnbanCommand()
+    new UnbanCommand(),
+    new PenisCommand()
 ];
 export const applicationCommands: Array<ApplicationCommand> =
     commands.filter<ApplicationCommand>(isApplicationCommand);

@@ -48,21 +48,21 @@ $ `npm ci`<br><br>
         - Den Bot Token (NICHT die Application-ID oder den Public-Key) [in die Config](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L3) kopieren.
         - Okay, die Application-ID / Client ID muss doch mit [in die Config](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L4) rein.
     - Um ID's kopieren zu können, den "Developer Mode" in den Discord Einstellungen aktivieren. Mit Rechts-Klick kann man dann die ID's kopieren:
-        - Die ID [des Servers](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L19)
-        - Die ID für [den Hauptchat](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L20)
-        - Die ID für [den Banned-Channel](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L32)
-        - Die ID für [den Umfrage-Channel](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L33)
+        - Die ID [des Servers](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L31)
+        - Die ID für [den Hauptchat](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L32)
+        - Die ID für [den Banned-Channel](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L44)
+        - Die ID für [den Umfrage-Channel](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L45)
     - Es müssen folgende Rollen am Server angelegt werden:
         - Moderator-Rolle ([Name der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L12)) - CSZ Default: Moderader
-        - Default Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L21)) - CSZ Default: Nerd
+        - Default Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L33)) - CSZ Default: Nerd
         - Banned-Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L22)) - CSZ Default: B&
-        - Geburtstags-Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L23)) - CSZ Default: Geburtstagskind
-        - Gründerväter-Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L26)) - CSZ Default: Gründerväter
-        - Trusted-Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L28)) - CSZ Default: Trusted
-        - Rejoiner / Shame-Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L30)) - CSZ Default: Rejoiner
-        - Gründerväter-Gebannt-Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L27)) - CSZ Default: B&-Gründerväter
-        - Trusted-Gebannt-Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L29)) - CSZ Default: B&-Trusted
-        - Woisgang-Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L24)) - CSZ Default: woisgang<br><br>
+        - Geburtstags-Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L35)) - CSZ Default: Geburtstagskind
+        - Gründerväter-Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L38)) - CSZ Default: Gründerväter
+        - Trusted-Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L40)) - CSZ Default: Trusted
+        - Rejoiner / Shame-Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L42)) - CSZ Default: Rejoiner
+        - Gründerväter-Gebannt-Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L39)) - CSZ Default: B&-Gründerväter
+        - Trusted-Gebannt-Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L41)) - CSZ Default: B&-Trusted
+        - Woisgang-Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L36)) - CSZ Default: woisgang<br><br>
 8. Das Script starten <br>
 Zuerst<br>
 $ `npm run watch`<br>

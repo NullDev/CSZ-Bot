@@ -3,7 +3,7 @@
 We differentiate between the following types of commands:
 - **ApplicationCommands**: These are the new so-called [SlashCommands](https://discord.com/developers/docs/interactions/application-commands) by Discord.
 - **MessageCommands**: These are plain-old discord commands invoked by writing a prefixed message into the chat
-- **SpecialCommands**: These commands will be automatically invoked by wrtigin a message matching a defined pattern into the chat
+- **SpecialCommands**: These commands will be automatically invoked by writing a message matching a defined pattern into the chat
 
 So how do I create a new Command? Because of our new abstraction, you first need to define a command and register it in our handler.
 
