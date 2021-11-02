@@ -9,9 +9,21 @@ export type ApplicationCommand = CommandBase & AppCommand;
 export type MessageCommand = CommandBase & MsgCommand;
 export type SpecialCommand = CommandBase & SpcalCommand;
 
+export enum PermissionType {
+    USER = 1,
+    ROLE = 2
+}
+
+export interface CommandPermission {
+    readonly id: string;
+    readonly type: PermissionType;
+    readonly permission: boolean;
+}
+
 export interface CommandBase {
     readonly name: string,
     readonly description: string;
+    readonly permissions?: ReadonlyArray<CommandPermission>;
 }
 
 // For ApplicationCommands we require a SlashCommandBuilder object to create the command and a handler method
@@ -25,7 +37,6 @@ interface AppCommand {
 
 // For a MessageCommand we require an additional modCommand property and a handler method
 interface MsgCommand {
-    readonly modCommand: boolean;
     handleMessage(message: Message, client: Client): Promise<unknown>;
 }
 

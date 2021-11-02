@@ -1,17 +1,30 @@
-import {Client, GuildMember, Message, MessageReaction, User, TextBasedChannels} from "discord.js";
+import {Client, GuildMember, Message, MessageReaction, User, TextBasedChannels, TextChannel} from "discord.js";
 import {getConfig} from "../utils/configHandler";
 import * as log from "../utils/logger";
+import { isMod } from "../utils/securityUtils";
 
+const hauptchatId = getConfig().ids.hauptchat_id;
 const quoteConfig = getConfig().bot_settings.quotes;
+const quoteThreshold = quoteConfig.quote_threshold;
 const isSourceChannelAllowed = (channelId: string) => !quoteConfig.blacklisted_channel_ids.includes(channelId);
 const isChannelAnonymous = (channelId: string) => quoteConfig.anonymous_channel_ids.includes(channelId);
 const isQuoteEmoji = (reaction: MessageReaction) => reaction.emoji.name === quoteConfig.emoji_name;
 const isMemberAllowedToQuote = (member: GuildMember) => member.roles.cache.hasAny(...quoteConfig.allowed_group_ids);
-const isMessageAlreadyQuoted = async(message: Message, reaction: MessageReaction, client: Client) => {
+const getMessageQuoter = async(message: Message, reaction: MessageReaction, client: Client): Promise<readonly GuildMember[]> => {
     const fetchedMessage = await message.channel.messages.fetch(message.id);
-    const usersThatReacted = await fetchedMessage.reactions.resolve(reaction).users.fetch();
-    return usersThatReacted.some(u => u.id === client.user!.id);
+    return (await fetchedMessage.reactions.resolve(reaction).users.fetch())
+        .map(user => message.guild!.members.resolve(user))
+        .filter(member => member !== null)
+        .map(member => member!)
+        .filter(member => isMemberAllowedToQuote(member));
 };
+const isMessageAlreadyQuoted = async(message: Message, reaction: MessageReaction, client: Client): Promise<boolean> => {
+    return (await getMessageQuoter(message, reaction, client)).some(u => u.id === client.user!.id);
+};
+const hasMessageEnoughQuotes = async(message: Message, reaction: MessageReaction, client: Client): Promise<boolean> => {
+    return (await getMessageQuoter(message, reaction, client)).length >= quoteThreshold;
+};
+const isQuoterQuotingHimself = (quoter: User, messageAuthor: User) => quoter.id === messageAuthor.id;
 
 const getTargetChannel = (sourceChannelId: string, client: Client) => {
     const targetChannelId =
@@ -27,7 +40,7 @@ const getTargetChannel = (sourceChannelId: string, client: Client) => {
 const createQuote = (
     _client: Client,
     quotedUser: User | undefined,
-    quoter: User,
+    quoter: readonly User[],
     referencedUser: User | undefined,
     quotedMessage: Message,
     referencedMessage: Message | undefined
@@ -61,7 +74,7 @@ const createQuote = (
                         },
                         {
                             name: "zitiert von",
-                            value: quoter.username
+                            value: quoter.map(u => u.username).join(", ")
                         }
                     ]
                 }
@@ -95,14 +108,29 @@ export const quoteReactionHandler = async(event: MessageReaction, user: User, cl
     const referencedMessage = quotedMessage.reference ? await sourceChannel.messages.fetch(quotedMessage.reference?.messageId!) : undefined;
     const quotedUser = quotedMessage.member;
     const referencedUser = referencedMessage?.member;
-    const {quote, reference} = createQuote(client, quotedUser?.user, quoter.user, referencedUser?.user, quotedMessage, referencedMessage);
-    const {id: targetChannelId, channel: targetChannel} = getTargetChannel(quotedMessage.channelId, client);
+    const quotingUsers = (await getMessageQuoter(quotedMessage, event, client)).map(member => member.user);
 
     if (!isMemberAllowedToQuote(quoter) || !isSourceChannelAllowed(quotedMessage.channelId) || await isMessageAlreadyQuoted(quotedMessage, event, client)) {
         await event.users.remove(quoter);
 
         return;
     }
+
+    if(!isMod(quoter) && !(await hasMessageEnoughQuotes(quotedMessage, event, client))) {
+        return;
+    }
+
+    if(isQuoterQuotingHimself(quoter.user, quotedUser!.user)) {
+        const hauptchat = await client.channels.fetch(hauptchatId) as TextChannel;
+        await hauptchat.send(`<@${quoter.id}> der Lellek hat gerade versucht sich selbst zu quoten. Was ein Opfer!`);
+
+        await event.users.remove(quoter);
+        return;
+    }
+
+    const {quote, reference} = createQuote(client, quotedUser?.user, quotingUsers, referencedUser?.user, quotedMessage, referencedMessage);
+    const {id: targetChannelId, channel: targetChannel} = getTargetChannel(quotedMessage.channelId, client);
+
 
     if (targetChannel === undefined) {
         log.error(`channel ${targetChannelId} is configured as quote output channel but it doesn't exist`);

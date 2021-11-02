@@ -9,6 +9,8 @@
             "command_prefix": ".",
             "mod_prefix": "~"
         },
+        "moderator_id": "",
+        "ban_reason_channel_id": "624931933758947343",
         "moderator_roles": [
             "Moderator"
         ],
@@ -18,6 +20,7 @@
         "quotes": {
             "emoji_name": "",
             "allowed_group_ids": [],
+            "quote_threshold": 2,
             "anonymous_channel_ids": [],
             "blacklisted_channel_ids": [],
             "target_channel_overrides": [],

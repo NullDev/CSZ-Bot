@@ -27,12 +27,15 @@ export interface Config {
             command_prefix: string,
             mod_prefix: string
         },
+        moderator_id: Snowflake,
+        ban_reason_channel_id: Snowflake,
         moderator_roles: Array<string>,
         woisping_limit: number,
         woisping_threshold: number,
         quotes: {
             allowed_group_ids: Array<Snowflake>,
             anonymous_channel_ids: Array<Snowflake>,
+            quote_threshold: number,
             blacklisted_channel_ids: Array<Snowflake>,
             target_channel_overrides: { [key:string]:string },
             default_target_channel_id: Snowflake,
