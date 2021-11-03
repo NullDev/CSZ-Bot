@@ -31,6 +31,7 @@ import { GuildMember } from "discord.js";
 import { ban, BanCommand } from "../commands/modcommands/ban";
 import { UnbanCommand } from "../commands/modcommands/unban";
 import { PenisCommand } from "../commands/penis";
+import { BonkCommand } from "../commands/bonk";
 
 const config = getConfig();
 
@@ -47,7 +48,8 @@ export const commands: Array<Command> = [
     new StempelCommand(),
     new BanCommand(),
     new UnbanCommand(),
-    new PenisCommand()
+    new PenisCommand(),
+    new BonkCommand()
 ];
 export const applicationCommands: Array<ApplicationCommand> =
     commands.filter<ApplicationCommand>(isApplicationCommand);
