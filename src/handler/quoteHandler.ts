@@ -18,10 +18,10 @@ const getMessageQuoter = async(message: Message, reaction: MessageReaction): Pro
         .map(member => member!)
         .filter(member => isMemberAllowedToQuote(member));
 };
-const isMessageAlreadyQuoted = async(messageQuoter: readonly GuildMember[], client: Client): Promise<boolean> => {
+const isMessageAlreadyQuoted = (messageQuoter: readonly GuildMember[], client: Client): boolean => {
     return messageQuoter.some(u => u.id === client.user!.id);
 };
-const hasMessageEnoughQuotes = async(messageQuoter: readonly GuildMember[]): Promise<boolean> => {
+const hasMessageEnoughQuotes = (messageQuoter: readonly GuildMember[]): boolean => {
     return messageQuoter.length >= quoteThreshold;
 };
 const isQuoterQuotingHimself = (quoter: User, messageAuthor: User) => quoter.id === messageAuthor.id;
@@ -110,13 +110,13 @@ export const quoteReactionHandler = async(event: MessageReaction, user: User, cl
     const referencedUser = referencedMessage?.member;
     const quotingMembers = (await getMessageQuoter(quotedMessage, event));
 
-    if (!isMemberAllowedToQuote(quoter) || !isSourceChannelAllowed(quotedMessage.channelId) || await isMessageAlreadyQuoted(quotingMembers, client)) {
+    if (!isMemberAllowedToQuote(quoter) || !isSourceChannelAllowed(quotedMessage.channelId) || isMessageAlreadyQuoted(quotingMembers, client)) {
         await event.users.remove(quoter);
 
         return;
     }
 
-    if(!isMod(quoter) && !(await hasMessageEnoughQuotes(quotingMembers))) {
+    if(!isMod(quoter) && !hasMessageEnoughQuotes(quotingMembers)) {
         return;
     }
 
