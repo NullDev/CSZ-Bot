@@ -1,9 +1,11 @@
 import { Message, Client } from "discord.js";
+import { MessageCommand } from "./command";
 import Jimp from "jimp";
 import path from "path";
-import { SpecialCommand } from "../command";
 import * as fs from "fs";
-import * as log from "../../utils/logger";
+import * as log from "../utils/logger";
+import { getConfig } from "../utils/configHandler";
+const config = getConfig();
 
 const createBonkMeme = async(author: any): Promise<string> => {
     const image = await Jimp.read("https://i.imgur.com/nav6WWX.png");
@@ -22,13 +24,16 @@ const createBonkMeme = async(author: any): Promise<string> => {
     return filename;
 };
 
-export class BonkCommand implements SpecialCommand {
-    name: string = "Bonk";
-    description: string = "Bonkt einen User";
+export class BonkCommand implements MessageCommand {
+    name: string = "bonk";
+    description: string = `Bonkt einen Nutzer und ersetzt den rechten gelben Hund mit dem Avatar des Nutzers.
+Usage: ${config.bot_settings.prefix.command_prefix}bonk
+       ${config.bot_settings.prefix.command_prefix}bonk @ShadowByte#1337
+       Oder auf eine Nachricht mit ${config.bot_settings.prefix.command_prefix}bonk antworten.`;
     pattern: RegExp = /^bonk(.*)$/i;
     randomness = 1;
 
-    async handleSpecialMessage(message: Message, client: Client<boolean>): Promise<unknown> {
+    async handleMessage(message: Message, client: Client<boolean>): Promise<unknown> {
         const messageRef = message.reference?.messageId;
         const messagePing = message.mentions?.users.first();
         let toBeBonked;

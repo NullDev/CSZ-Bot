@@ -31,7 +31,7 @@ import { GuildMember } from "discord.js";
 import { ban, BanCommand } from "../commands/modcommands/ban";
 import { UnbanCommand } from "../commands/modcommands/unban";
 import { PenisCommand } from "../commands/penis";
-import { BonkCommand } from "../commands/special/bonk";
+import { BonkCommand } from "../commands/bonk";
 
 const config = getConfig();
 
