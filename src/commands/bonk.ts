@@ -30,8 +30,6 @@ export class BonkCommand implements MessageCommand {
 Usage: ${config.bot_settings.prefix.command_prefix}bonk
        ${config.bot_settings.prefix.command_prefix}bonk @ShadowByte#1337
        Oder auf eine Nachricht mit ${config.bot_settings.prefix.command_prefix}bonk antworten.`;
-    pattern: RegExp = /^bonk(.*)$/i;
-    randomness = 1;
 
     async handleMessage(message: Message, client: Client<boolean>): Promise<unknown> {
         const messageRef = message.reference?.messageId;
