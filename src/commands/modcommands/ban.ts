@@ -1,5 +1,5 @@
 import { SlashCommandBuilder, SlashCommandIntegerOption, SlashCommandStringOption, SlashCommandUserOption } from "@discordjs/builders";
-import { CommandInteraction, GuildMember } from "discord.js";
+import { CommandInteraction, GuildMember, User } from "discord.js";
 import { Message, Client } from "discord.js";
 import Ban from "../../storage/model/Ban";
 import { getConfig } from "../../utils/configHandler";
@@ -90,7 +90,7 @@ export const startCron = (client: Client) => {
     });
 };
 
-export const ban = async(client: Client, member: GuildMember, reason: string, isSelfBan: boolean, duration?: number): Promise<string | undefined> => {
+export const ban = async(client: Client, member: GuildMember, banInvoker: GuildMember | User, reason: string, isSelfBan: boolean, duration?: number): Promise<string | undefined> => {
     if (member.id === "371724846205239326" || member.id === client.user!.id) return "Fick dich bitte.";
 
     const existingBan = await Ban.findExisting(member.user);
@@ -110,7 +110,7 @@ export const ban = async(client: Client, member: GuildMember, reason: string, is
     const banReasonChannel = member.guild.channels.resolve(config.bot_settings.ban_reason_channel_id);
     if(banReasonChannel && banReasonChannel.isText()) {
         banReasonChannel.send({
-            content: `<@${member.id}> wurde gebannt, weil wegen ${reason} ${humanReadableDuration ? `(Dauer: ${humanReadableDuration})` : ""} `
+            content: `<@${member.id}> ${isSelfBan ? "hat sich selbst" : `wurde von <@${banInvoker}>`} ${humanReadableDuration ? ` für ${humanReadableDuration}` : "bis auf unbestimmte Zeit"} gebannt. \nGrund: ${reason}`
         });
     }
 
@@ -154,6 +154,7 @@ export class BanCommand implements ApplicationCommand, MessageCommand {
 
     async handleInteraction(command: CommandInteraction, client: Client<boolean>): Promise<void> {
         const user = command.options.getUser("user", true);
+        const invokingUser = command.user;
         const reason = command.options.getString("reason", true);
         const durationHours = command.options.getInteger("hours", false);
         const durationMinutes = command.options.getInteger("minutes", false);
@@ -168,7 +169,7 @@ export class BanCommand implements ApplicationCommand, MessageCommand {
             });
         }
 
-        const err = await ban(client, userAsGuildMember, reason, false, duration ?? undefined);
+        const err = await ban(client, userAsGuildMember, invokingUser, reason, false, duration ?? undefined);
 
         if(err) {
             return command.reply({
@@ -183,6 +184,7 @@ export class BanCommand implements ApplicationCommand, MessageCommand {
     }
     async handleMessage(message: Message, client: Client<boolean>): Promise<unknown> {
         const user = message.mentions.users.first();
+        const invokingUser = message.author;
 
         if(!user) {
             return message.reply("Bruder, gib doch einen User an.");
@@ -213,7 +215,7 @@ export class BanCommand implements ApplicationCommand, MessageCommand {
             }
         }
 
-        const err = await ban(client, userAsGuildMember, reason, false);
+        const err = await ban(client, userAsGuildMember, invokingUser, reason, false);
 
         if(err) {
             return message.reply({

@@ -161,7 +161,7 @@ const commandMessageHandler = async(
         if (matchingCommand.permissions) {
             const member = message.guild?.members.cache.get(message.author.id);
             if (member && !checkPermissions(member, matchingCommand.permissions)) {
-                await ban(client, member, "Lol", false, 0.08);
+                await ban(client, member, client.user!, "Lol", false, 0.08);
                 message.reply({
                     content: `Tut mir leid, ${message.author}. Du hast nicht genügend Rechte um dieses Command zu verwenden, dafür gibt's erstmal mit dem Willkürhammer einen auf den Deckel.`
                 });
