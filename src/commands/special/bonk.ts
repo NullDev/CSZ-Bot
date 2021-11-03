@@ -1,4 +1,4 @@
-import { Message, Client, User } from "discord.js";
+import { Message, Client } from "discord.js";
 import Jimp from "jimp";
 import path from "path";
 import { SpecialCommand } from "../command";
