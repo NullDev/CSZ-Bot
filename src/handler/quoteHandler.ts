@@ -1,4 +1,4 @@
-import {Client, GuildMember, Message, MessageReaction, User, TextBasedChannels, TextChannel} from "discord.js";
+import {Client, GuildMember, Message, MessageReaction, User, TextBasedChannels, TextChannel, GuildEmoji, ReactionEmoji} from "discord.js";
 import {getConfig} from "../utils/configHandler";
 import * as log from "../utils/logger";
 import { isMod } from "../utils/securityUtils";
@@ -8,15 +8,16 @@ const quoteConfig = getConfig().bot_settings.quotes;
 const quoteThreshold = quoteConfig.quote_threshold;
 const isSourceChannelAllowed = (channelId: string) => !quoteConfig.blacklisted_channel_ids.includes(channelId);
 const isChannelAnonymous = (channelId: string) => quoteConfig.anonymous_channel_ids.includes(channelId);
-const isQuoteEmoji = (reaction: MessageReaction) => reaction.emoji.name === quoteConfig.emoji_name;
+const isQuoteEmoji = (emoji: GuildEmoji | ReactionEmoji) => emoji.name === quoteConfig.emoji_name;
 const isMemberAllowedToQuote = (member: GuildMember) => member.roles.cache.hasAny(...quoteConfig.allowed_group_ids);
-const getMessageQuoter = async(message: Message, reaction: MessageReaction): Promise<readonly GuildMember[]> => {
+const getMessageQuoter = async(message: Message): Promise<readonly GuildMember[]> => {
     const fetchedMessage = await message.channel.messages.fetch(message.id);
-    return (await fetchedMessage.reactions.resolve(reaction).users.fetch())
-        .map(user => message.guild!.members.resolve(user))
+    const messageReaction = fetchedMessage.reactions.cache.find(r => isQuoteEmoji(r.emoji))!;
+    const fetchedUsersOfReaction = await messageReaction.users.fetch();
+    return fetchedUsersOfReaction
+        .map(user => message.guild!.members.resolve(user.id))
         .filter(member => member !== null)
-        .map(member => member!)
-        .filter(member => isMemberAllowedToQuote(member));
+        .map(member => member!);
 };
 const isMessageAlreadyQuoted = (messageQuoter: readonly GuildMember[], client: Client): boolean => {
     return messageQuoter.some(u => u.id === client.user!.id);
@@ -97,7 +98,7 @@ const createQuote = (
 };
 
 export const quoteReactionHandler = async(event: MessageReaction, user: User, client: Client) => {
-    if (!isQuoteEmoji(event) || event.message.guildId === null || user.id === client.user!.id) {
+    if (!isQuoteEmoji(event.emoji) || event.message.guildId === null || user.id === client.user!.id) {
         return;
     }
 
@@ -108,7 +109,8 @@ export const quoteReactionHandler = async(event: MessageReaction, user: User, cl
     const referencedMessage = quotedMessage.reference ? await sourceChannel.messages.fetch(quotedMessage.reference?.messageId!) : undefined;
     const quotedUser = quotedMessage.member;
     const referencedUser = referencedMessage?.member;
-    const quotingMembers = (await getMessageQuoter(quotedMessage, event));
+    const quotingMembers = (await getMessageQuoter(quotedMessage));
+    const quotingMembersAllowed = quotingMembers.filter(member => isMemberAllowedToQuote(member));
 
     if (!isMemberAllowedToQuote(quoter) || !isSourceChannelAllowed(quotedMessage.channelId) || isMessageAlreadyQuoted(quotingMembers, client)) {
         await event.users.remove(quoter);
@@ -116,7 +118,7 @@ export const quoteReactionHandler = async(event: MessageReaction, user: User, cl
         return;
     }
 
-    if(!isMod(quoter) && !hasMessageEnoughQuotes(quotingMembers)) {
+    if(!isMod(quoter) && !hasMessageEnoughQuotes(quotingMembersAllowed)) {
         return;
     }
 
@@ -128,7 +130,7 @@ export const quoteReactionHandler = async(event: MessageReaction, user: User, cl
         return;
     }
 
-    const {quote, reference} = createQuote(client, quotedUser?.user, quotingMembers.map(member => member.user), referencedUser?.user, quotedMessage, referencedMessage);
+    const {quote, reference} = createQuote(client, quotedUser?.user, quotingMembersAllowed.map(member => member.user), referencedUser?.user, quotedMessage, referencedMessage);
     const {id: targetChannelId, channel: targetChannel} = getTargetChannel(quotedMessage.channelId, client);
 
 
