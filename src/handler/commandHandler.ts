@@ -8,7 +8,6 @@ import { getConfig } from "../utils/configHandler";
 import { REST } from "@discordjs/rest";
 import { Routes } from "discord-api-types/v9";
 import { Client, CommandInteraction, Interaction, Message } from "discord.js";
-import { isMod } from "../utils/securityUtils";
 import {
     ApplicationCommand,
     Command,
@@ -35,8 +34,6 @@ import { BonkCommand } from "../commands/bonk";
 
 const config = getConfig();
 
-let lastSpecialCommand = 0;
-
 export const commands: Array<Command> = [
     new InfoCommand(),
     new YepYepCommand(),
@@ -57,6 +54,8 @@ export const messageCommands: Array<MessageCommand> =
     commands.filter<MessageCommand>(isMessageCommand);
 export const specialCommands: Array<SpecialCommand> =
     commands.filter<SpecialCommand>(isSpecialCommand);
+
+let lastSpecialCommands: Record<string, number> = specialCommands.reduce((acc, cmd) => ({...acc, [cmd.name]: 0}), {});
 
 /**
  * Registers all defined applicationCommands as guild commands
@@ -175,7 +174,7 @@ const commandMessageHandler = async(
 
 const isCooledDown = (command: SpecialCommand) => {
     const now = Date.now();
-    const diff = now - lastSpecialCommand;
+    const diff = now - lastSpecialCommands[command.name];
     const cooldownTime = command.cooldownTime ?? 120000;
     // After 2 minutes command is cooled down
     if (diff >= cooldownTime) {
@@ -198,7 +197,7 @@ const specialCommandHandler = async(message: Message, client: Client) => {
                 log.info(
                     `User "${message.author.tag}" (${message.author}) performed special command: ${c.name}`
                 );
-                lastSpecialCommand = Date.now();
+                lastSpecialCommands[c.name] = Date.now();
                 return c.handleSpecialMessage(message, client);
             })
     );
