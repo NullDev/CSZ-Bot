@@ -6,6 +6,7 @@ export class WatCommand implements SpecialCommand {
     description: string = "Reagiert mit wat emote sobald jemand wat schreibt";
     pattern: RegExp = /^wat$/i;
     randomness = 0.3;
+    cooldownTime = 300000;
 
     async handleSpecialMessage(message: Message, _client: Client<boolean>): Promise<unknown> {
         const watEmote = message.guild?.emojis.cache.find(e => e.name === "wat");

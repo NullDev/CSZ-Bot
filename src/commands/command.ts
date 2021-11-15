@@ -44,6 +44,7 @@ interface MsgCommand {
 interface SpcalCommand {
     pattern: RegExp;
     randomness: number;
+    cooldownTime?: number;
     handleSpecialMessage(message: Message, client: Client): Promise<unknown>;
 }
 

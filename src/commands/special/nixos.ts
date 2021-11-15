@@ -6,6 +6,7 @@ export class NixOsCommand implements SpecialCommand {
     description: string = "Nix Command - NixOS, nix Problem";
     pattern: RegExp = /(^|\s+)nix($|\s+)/i;
     randomness = 0.4;
+    cooldownTime = 300000;
 
     async handleSpecialMessage(message: Message, _client: Client<boolean>): Promise<unknown> {
         const nixEmote = message.guild?.emojis.cache.find(e => e.name === "nixos");

@@ -6,6 +6,7 @@ export class YepYepCommand implements SpecialCommand {
     description: string = "Schreibt :YEP: :YEP: wenn einer \"yy\" schreibt";
     pattern: RegExp = /^yy$/i;
     randomness = 1;
+    cooldownTime = 0;
 
     async handleSpecialMessage(message: Message, _client: Client<boolean>): Promise<unknown> {
         const yepEmote = message.guild?.emojis.cache.find(e => e.name === "YEP");

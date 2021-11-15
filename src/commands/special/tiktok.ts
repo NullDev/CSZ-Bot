@@ -32,6 +32,7 @@ export class TikTokLink implements SpecialCommand {
     description: string = "Embedded TikTok Links";
     pattern: RegExp = /(www\.tiktok\.com)|(vm\.tiktok\.com)/i;
     randomness = 1;
+    cooldownTime = 0;
 
     async handleSpecialMessage(message: Message): Promise<void> {
         await message.channel.sendTyping();

@@ -173,41 +173,35 @@ const commandMessageHandler = async(
     return;
 };
 
-const isCooledDown = () => {
+const isCooledDown = (command: SpecialCommand) => {
     const now = Date.now();
     const diff = now - lastSpecialCommand;
-    const fixedCooldown = 120000;
+    const cooldownTime = command.cooldownTime ?? 120000;
     // After 2 minutes command is cooled down
-    if (diff >= fixedCooldown) {
+    if (diff >= cooldownTime) {
         return true;
     }
     // Otherwise a random function should evaluate the cooldown. The longer the last command was, the higher the chance
     // diff is < fixedCooldown
-    return Math.random() < diff / fixedCooldown;
+    return Math.random() < diff / cooldownTime;
 };
 
 const specialCommandHandler = async(message: Message, client: Client) => {
     const commandCandidates = specialCommands.filter((p) =>
         p.pattern.test(message.content)
     );
-
-    if (
-        commandCandidates.length > 0 &&
-        (isCooledDown() || (message.member && isMod(message.member)))
-    ) {
-        return Promise.all(
-            commandCandidates
-                .filter((c) => Math.random() <= c.randomness)
-                .map((c) => {
-                    log.info(
-                        `User "${message.author.tag}" (${message.author}) performed special command: ${c.name}`
-                    );
-                    lastSpecialCommand = Date.now();
-                    return c.handleSpecialMessage(message, client);
-                })
-        );
-    }
-    return;
+    return Promise.all(
+        commandCandidates
+            .filter((c) => Math.random() <= c.randomness)
+            .filter((c) => isCooledDown(c))
+            .map((c) => {
+                log.info(
+                    `User "${message.author.tag}" (${message.author}) performed special command: ${c.name}`
+                );
+                lastSpecialCommand = Date.now();
+                return c.handleSpecialMessage(message, client);
+            })
+    );
 };
 
 export const handleInteractionEvent = async(
