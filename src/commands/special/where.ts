@@ -24,7 +24,7 @@ export class WhereCommand implements SpecialCommand {
     name: string = "Where";
     description: string = "Macht ein Ape-Meme";
     pattern: RegExp = /^wo(\s+\S+){1,3}\S[^?]$/i;
-    randomness = 1;
+    randomness = 0.2;
 
     async handleSpecialMessage(message: Message, client: Client<boolean>): Promise<unknown> {
         const msg = Util.cleanContent(message.content.trim().toLowerCase().replace(/ß/g, "ss").toUpperCase(), message.channel);
