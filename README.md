@@ -1,6 +1,7 @@
 # CSC-Bot
 
 [![ESLint Codestyle](https://github.com/NullDev/CSC-Bot/actions/workflows/codestyle.yml/badge.svg)](https://github.com/NullDev/CSC-Bot/actions/workflows/codestyle.yml)
+[![CSZ Discord](https://img.shields.io/discord/618781839338897443?color=%237289DA&label=CSZ%20Discord&logo=discord&logoColor=white)](https://discord.gg/csz)
 
 <p align="center">
 <img height="150" width="auto" src="https://cdn.discordapp.com/icons/618781839338897443/a_82f94d024985d290862ef86ada2f2ef1.gif?size=128" /><br>
@@ -9,7 +10,7 @@ Official Coding Shitpost Central Discord Bot
 
 ## :information_source: OwO wats dis?
 
-Please ignore this repo. This is just a management bot I made for my stupid [german coding discord server](https://discord.gg/FABdvae)...
+Please ignore this repo. This is just a management bot I made for my stupid [german coding discord server](https://discord.gg/csz)...
 
 German description of the Discord Server:
 
