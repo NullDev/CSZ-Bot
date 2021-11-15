@@ -89,7 +89,7 @@ function scheduleTimezoneFixedCronjob(cronString) {
         const sadPinguEmote = csz.emojis.cache.find(e => e.name === "sadpingu");
         const dabEmote = csz.emojis.cache.find(e => e.name === "Dab");
         const membersWORoles = csz.members.cache.filter(m => {
-            return m.roles.cache.size === 0 && Date.now() - m.joinedTimestamp >= 48 * 3_600_000;
+            return m.roles.cache.filter(r => r.name !== "@everyone").size === 0 && Date.now() - m.joinedTimestamp >= 48 * 3_600_000;
         });
 
         let cnt = 0;
