@@ -16,21 +16,23 @@ export default class Birthday extends Model {
      * @returns {Promise<Boolean | null>} depending if the birthday is already in the database
      */
     static async insertBirthday(userId, day, month) {
-        let item = await Birthday.getBirthday(userId);
+        const item = await Birthday.getBirthday(userId);
 
         if(!!item) return false;
-        let isNewItem = null;
-        await Birthday.create({
-            userId,
-            day,
-            month
-        }).then(() => {
-            isNewItem = true;
-        }).catch(e => {
+
+        try {
+            const newItem = await Birthday.create({
+                userId,
+                day,
+                month
+            });
+            if(!!newItem) return true;
+        }
+        catch(e) {
             log.error(e);
-            isNewItem = null;
-        });
-        return isNewItem;
+            return false;
+        }
+        return false;
     }
 
     static async getBirthday(userId) {
