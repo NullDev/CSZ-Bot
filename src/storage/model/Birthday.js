@@ -4,6 +4,8 @@
 import { Model, DataTypes, Op } from "sequelize";
 import {v4 as uuidv4} from "uuid";
 import moment from "moment";
+import * as log from "../../utils/logger";
+
 
 export default class Birthday extends Model {
     /**
@@ -16,7 +18,7 @@ export default class Birthday extends Model {
     static async insertBirthday(userId, day, month) {
         let item = await Birthday.getBirthday(userId);
 
-        if(item !== null) return false;
+        if(!!item) return false;
         let isNewItem = null;
         await Birthday.create({
             userId,
@@ -24,7 +26,8 @@ export default class Birthday extends Model {
             month
         }).then(() => {
             isNewItem = true;
-        }).catch(() => {
+        }).catch(e => {
+            log.error(e);
             isNewItem = null;
         });
         return isNewItem;
