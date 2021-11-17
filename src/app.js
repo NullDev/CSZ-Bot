@@ -88,16 +88,15 @@ function scheduleTimezoneFixedCronjob(cronString) {
         // Auto-kick members
         const sadPinguEmote = csz.emojis.cache.find(e => e.name === "sadpingu");
         const dabEmote = csz.emojis.cache.find(e => e.name === "Dab");
-        const membersWORoles = csz.members.cache.filter(m => {
-            return m.roles.cache.filter(r => r.name !== "@everyone").size === 0 && Date.now() - m.joinedTimestamp >= 48 * 3_600_000;
-        });
-
         let cnt = 0;
 
-        for(member of membersWORoles) {
+        csz.members.cache.filter(m => {
+            return m && m.roles.cache.filter(r => r.name !== "@everyone").size === 0 && Date.now() - m.joinedTimestamp >= 48 * 3_600_000;
+        }).forEach(member => {
             member.kick();
             cnt++;
-        }
+        });
+
         log.info(`Auto-kick: ${cnt} members kicked.`);
         if(cnt > 0){
             csz.channels.cache.get(config.ids.hauptchat_id).send(`Hab grad ${cnt} jockel gekickt ${dabEmote}`);
