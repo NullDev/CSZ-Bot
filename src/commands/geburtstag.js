@@ -1,6 +1,9 @@
 import Birthday from "../storage/model/Birthday";
 import { getConfig } from "../utils/configHandler";
 import moment from "moment";
+
+import * as log from "../utils/logger";
+
 const config = getConfig();
 
 /**
@@ -22,6 +25,7 @@ export const run = async(client, message, args) => {
         return `Danke mein G, ich hab dein Geburtstag ${birthday.utc().format("DD.MM.")} eingetragen!`;
     }
     catch(err) {
+        log.error(err);
         return "Shit, da ist was schief gegangen - hast du deinen Geburtstag schon eingetragen und bist so dumm das jetzt nochmal zu machen? Piss dich.";
     }
 };
