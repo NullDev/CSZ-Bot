@@ -9,6 +9,7 @@ const config = getConfig();
 /**
  * User kann sein Geburtstag speichern
  *
+ * @param {import("discord.js").Message} message
  * @type {import("../../types").CommandFunction}
  */
 export const run = async(client, message, args) => {
@@ -21,7 +22,7 @@ export const run = async(client, message, args) => {
     if (!birthday.isValid()) return "Dawg, ich brauchs im Format [DD.MM] oder [DD-MM]";
 
     try {
-        await Birthday.insertBirthday(client.user.id, birthday.date(), birthday.month() + 1);
+        await Birthday.insertBirthday(message.author.id, birthday.date(), birthday.month() + 1);
         return `Danke mein G, ich hab dein Geburtstag ${birthday.utc().format("DD.MM.")} eingetragen!`;
     }
     catch(err) {

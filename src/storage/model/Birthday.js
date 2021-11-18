@@ -17,8 +17,6 @@ export default class Birthday extends Model {
     static async insertBirthday(userId, day, month) {
         const item = await Birthday.getBirthday(userId);
 
-        console.log(item);
-
         if(item !== null) throw new Error("Birthday for this user already exists");
 
         return Birthday.create({
