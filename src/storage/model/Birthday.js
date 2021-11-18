@@ -27,7 +27,7 @@ export default class Birthday extends Model {
     }
 
     static async getBirthday(userId) {
-        return await Birthday.findOne({
+        return Birthday.findOne({
             where: {
                 userId
             }
@@ -36,7 +36,7 @@ export default class Birthday extends Model {
 
     static async getTodaysBirthdays() {
         const today = moment();
-        return await Birthday.findAll({
+        return Birthday.findAll({
             where: {
                 day: {
                     [Op.eq]: today.date()
