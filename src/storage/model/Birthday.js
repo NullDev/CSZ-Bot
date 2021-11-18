@@ -4,7 +4,6 @@
 import { Model, DataTypes, Op } from "sequelize";
 import {v4 as uuidv4} from "uuid";
 import moment from "moment";
-import * as log from "../../utils/logger";
 
 
 export default class Birthday extends Model {
@@ -13,26 +12,18 @@ export default class Birthday extends Model {
      * @param {import("discord.js").Snowflake} userId
      * @param {number} day
      * @param {number} month
-     * @returns {Promise<Boolean | null>} depending if the birthday is already in the database
+     * @returns {Promise<Birthday>}
      */
     static async insertBirthday(userId, day, month) {
         const item = await Birthday.getBirthday(userId);
 
-        if(!!item) return false;
+        if(item !== null) throw new Error("Birthday for this user already exists");
 
-        try {
-            const newItem = await Birthday.create({
-                userId,
-                day,
-                month
-            });
-            if(!!newItem) return true;
-        }
-        catch(e) {
-            log.error(e);
-            return false;
-        }
-        return false;
+        return Birthday.create({
+            userId,
+            day,
+            month
+        });
     }
 
     static async getBirthday(userId) {

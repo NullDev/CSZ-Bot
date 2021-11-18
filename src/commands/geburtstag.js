@@ -17,13 +17,13 @@ export const run = async(client, message, args) => {
 
     if (!birthday.isValid()) return "Dawg, ich brauchs im Format [DD.MM] oder [DD-MM]";
 
-    let addedBirthday = await Birthday.insertBirthday(client.user.id, birthday.date(), birthday.month() + 1);
-
-    if(addedBirthday === null) return "Shit, irgendwas hat nicht geklappt beim speichern...";
-
-    return addedBirthday
-        ? `Danke mein G, ich hab dein Geburtstag ${birthday.utc().format("DD.MM.")} eingetragen!`
-        : "Oida, bist du echt so dumm und hast beim ersten Mal das falsche Datum eingetragen? Frag nen Mod um Hilfe";
+    try {
+        await Birthday.insertBirthday(client.user.id, birthday.date(), birthday.month() + 1);
+        return `Danke mein G, ich hab dein Geburtstag ${birthday.utc().format("DD.MM.")} eingetragen!`;
+    }
+    catch(err) {
+        return "Shit, da ist was schief gegangen - hast du deinen Geburtstag schon eingetragen und bist so dumm das jetzt nochmal zu machen? Piss dich.";
+    }
 };
 
 export const description = `Trag deinen Geburtstag ein, damit du an deinem Geburtstag die entsprechende Rolle bekommst!\nUsage: ${config.bot_settings.prefix.command_prefix}geburtstag [DD.MM] oder ${config.bot_settings.prefix.command_prefix}geburtstag [DD-MM]`;
