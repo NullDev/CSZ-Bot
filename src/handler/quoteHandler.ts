@@ -1,7 +1,7 @@
 import {Client, GuildMember, Message, MessageReaction, User, TextBasedChannels, TextChannel, GuildEmoji, ReactionEmoji} from "discord.js";
 import {getConfig} from "../utils/configHandler";
 import * as log from "../utils/logger";
-import { isMod } from "../utils/securityUtils";
+import { isMod } from "../utils/userUtils";
 
 const hauptchatId = getConfig().ids.hauptchat_id;
 const quoteConfig = getConfig().bot_settings.quotes;
