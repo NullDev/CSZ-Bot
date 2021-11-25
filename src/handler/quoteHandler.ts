@@ -1,7 +1,7 @@
 import {Client, GuildMember, Message, MessageReaction, User, TextBasedChannels, TextChannel, GuildEmoji, ReactionEmoji} from "discord.js";
 import {getConfig} from "../utils/configHandler";
 import * as log from "../utils/logger";
-import { isMod } from "../utils/userUtils";
+import { isMod, isNerd, isTrusted } from "../utils/userUtils";
 
 const hauptchatId = getConfig().ids.hauptchat_id;
 const quoteConfig = getConfig().bot_settings.quotes;
@@ -9,7 +9,7 @@ const quoteThreshold = quoteConfig.quote_threshold;
 const isSourceChannelAllowed = (channelId: string) => !quoteConfig.blacklisted_channel_ids.includes(channelId);
 const isChannelAnonymous = (channelId: string) => quoteConfig.anonymous_channel_ids.includes(channelId);
 const isQuoteEmoji = (emoji: GuildEmoji | ReactionEmoji) => emoji.name === quoteConfig.emoji_name;
-const isMemberAllowedToQuote = (member: GuildMember) => member.roles.cache.hasAny(...quoteConfig.allowed_group_ids);
+const isMemberAllowedToQuote = (member: GuildMember) => isNerd(member);
 const getMessageQuoter = async(message: Message): Promise<readonly GuildMember[]> => {
     const fetchedMessage = await message.channel.messages.fetch(message.id);
     const messageReaction = fetchedMessage.reactions.cache.find(r => isQuoteEmoji(r.emoji))!;
@@ -23,7 +23,7 @@ const isMessageAlreadyQuoted = (messageQuoter: readonly GuildMember[], client: C
     return messageQuoter.some(u => u.id === client.user!.id);
 };
 const hasMessageEnoughQuotes = (messageQuoter: readonly GuildMember[]): boolean => {
-    return messageQuoter.length >= quoteThreshold;
+    return messageQuoter.reduce((prev, curr) => isTrusted(curr) ? prev + 2 : prev + 1, 0) >= quoteThreshold;
 };
 const isQuoterQuotingHimself = (quoter: User, messageAuthor: User) => quoter.id === messageAuthor.id;
 
