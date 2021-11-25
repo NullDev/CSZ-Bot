@@ -1,7 +1,7 @@
 import {Client, GuildMember, Message, MessageReaction, User, TextBasedChannels, TextChannel, GuildEmoji, ReactionEmoji} from "discord.js";
 import {getConfig} from "../utils/configHandler";
 import * as log from "../utils/logger";
-import { isMod, isNerd, isTrusted } from "../utils/userUtils";
+import { isNerd, isTrusted } from "../utils/userUtils";
 
 const hauptchatId = getConfig().ids.hauptchat_id;
 const quoteConfig = getConfig().bot_settings.quotes;
@@ -118,7 +118,7 @@ export const quoteReactionHandler = async(event: MessageReaction, user: User, cl
         return;
     }
 
-    if(!isMod(quoter) && !hasMessageEnoughQuotes(quotingMembersAllowed)) {
+    if(!hasMessageEnoughQuotes(quotingMembersAllowed)) {
         return;
     }
 
