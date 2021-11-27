@@ -85,26 +85,24 @@ function scheduleTimezoneFixedCronjob(cronString) {
         /** @type {TC} */
         (csz.channels.cache.get(config.ids.hauptchat_id)).send("Es ist `13:37` meine Kerle.\nBleibt hydriert! :grin: :sweat_drops:");
 
-
         // Auto-kick members
         const sadPinguEmote = csz.emojis.cache.find(e => e.name === "sadpingu");
         const dabEmote = csz.emojis.cache.find(e => e.name === "Dab");
-        const membersWORoles = csz.members.cache.filter(m => {
-            return m.roles.cache.size === 0 && Date.now() - m.joinedTimestamp >= 48 * 3_600_000;
-        });
-
         let cnt = 0;
 
-        for(member of membersWORoles) {
+        csz.members.cache.filter(m => {
+            return m && m.roles.cache.filter(r => r.name !== "@everyone").size === 0 && Date.now() - m.joinedTimestamp >= 48 * 3_600_000;
+        }).forEach(member => {
             member.kick();
             cnt++;
-        }
+        });
+
         log.info(`Auto-kick: ${cnt} members kicked.`);
         if(cnt > 0){
             csz.channels.cache.get(config.ids.hauptchat_id).send(`Hab grad ${cnt} jockel gekickt ${dabEmote}`);
         }
         else {
-            csz.channels.cache.get(config.ids.hauptchat_id).send(`Heute leider keine jockel gebannt ${sadPinguEmote}`);
+            csz.channels.cache.get(config.ids.hauptchat_id).send(`Heute leider keine jockel gekickt ${sadPinguEmote}`);
         }
 
         const tomorrow = Date.now() + 60/* s*/ * 1000/* ms*/ * 60/* m*/ * 24/* h*/;
@@ -129,8 +127,8 @@ client.on("ready", async() => {
         const newCronString = timezone.getCronjobStringForHydrate(Date.now());
         scheduleTimezoneFixedCronjob(newCronString);
 
-        cron.schedule("1 0 * * *", () => bday.checkBdays(), { timezone: "Europe/Vienna" });
-        bday.checkBdays();
+        cron.schedule("1 0 * * *", async() => await bday.checkBdays(), { timezone: "Europe/Vienna" });
+        await bday.checkBdays();
     }
 
     ban.startCron(client);
@@ -140,7 +138,6 @@ client.on("ready", async() => {
 
     fadingMessageHandler.startLoop(client);
 });
-
 
 /**
  * When the application is ready, slash commands should be registered

@@ -2,11 +2,9 @@
 // = Copyright (c) NullDev = //
 // ========================= //
 
-import * as fs from "fs";
-import * as path from "path";
-
 import * as log from "../utils/logger";
 import { getConfig } from "../utils/configHandler";
+import Birthday from "../storage/model/Birthday";
 
 const config = getConfig();
 
@@ -23,12 +21,8 @@ export default class BdayHandler {
      */
     constructor(client){
         this.client = client;
-        this.path = path.join(__dirname, "..", "..", "database.json");
         this.config = config;
         this.bdayRole = client.guilds.cache.get(this.config.ids.guild_id).roles.cache.find(role => role.id === this.config.ids.bday_role_id);
-
-        // Make sure file exists
-        if (!fs.existsSync(this.path)) fs.writeFileSync(this.path, "[]\n");
     }
 
     /**
@@ -36,14 +30,7 @@ export default class BdayHandler {
      *
      * @memberof BdayHandler
      */
-    checkBdays(){
-        let date = new Date();
-
-        let today = date.toLocaleString("de-DE", {
-            month: "2-digit",
-            day: "2-digit"
-        });
-
+    async checkBdays(){
         this.client.guilds.cache.get(this.config.ids.guild_id).members.cache.forEach(member => {
             if (!member.roles.cache.find(t => t.id === this.config.ids.bday_role_id)) return;
             try {
@@ -54,8 +41,9 @@ export default class BdayHandler {
             }
         });
 
-        JSON.parse(String(fs.readFileSync(this.path))).filter(e => e.date === today).map(e => e.user_id).forEach(e => {
-            this.client.guilds.cache.get(this.config.ids.guild_id).members.cache.get(e)?.roles?.add(this.bdayRole);
+        const todaysBirthdays = await Birthday.getTodaysBirthdays();
+        todaysBirthdays.forEach(e=>{
+            this.client.guilds.cache.get(this.config.ids.guild_id).members.cache.get(e.userId)?.roles?.add(this.bdayRole);
         });
     }
 }

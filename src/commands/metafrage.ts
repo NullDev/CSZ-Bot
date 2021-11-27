@@ -5,7 +5,7 @@
 import type { CommandFunction } from "../types";
 // Dependencies
 import parseOptions from "minimist";
-import type { Client, Message } from "discord.js";
+// import type { Client, Message } from "discord.js";
 
 /**
  * Sends instructions on how to ask better questions
@@ -29,13 +29,13 @@ export const run: CommandFunction = async(client, message, args) => {
             "du verdammter Troglodyt!",
             "sonst muss ich heute Nacht noch deine Mama besuchen!",
             "dir bau ich gleich ein drittes Fickloch!",
-            "dein Stammbaum ist ein Tetradekagon!",
+            "dein Stammbaum ist ein Tetradekagon!"
         ];
         let englishInsults: string[] = [
             "you fucking imbecile!",
             "retard!",
             "you troglodyte!",
-            "even my brother is more capable and he's a retard!",
+            "even my brother is more capable and he's a retard!"
         ];
         // by default, just pick the first or a fixed insult, just in case
         let choice: number = 0;
