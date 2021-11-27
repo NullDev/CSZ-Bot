@@ -75,6 +75,19 @@ const drawStempelkarteBackside = async(avatars: ReadonlyArray<string | undefined
     return canvas.toBuffer();
 };
 
+function chunkArray<T>(array: T[], chunkSize: number): T[][] {
+    let index = 0;
+    let arrayLength = array.length;
+    let tempArray = [];
+
+    for (index = 0; index < arrayLength; index += chunkSize) {
+        const myChunk = array.slice(index, index + chunkSize);
+        tempArray.push(myChunk);
+    }
+
+    return tempArray;
+}
+
 export const run: CommandFunction = async(client, message, args) => {
     const ofUser = message.mentions.members?.first() ?? message.member;
     if (ofUser === null) {
@@ -83,25 +96,29 @@ export const run: CommandFunction = async(client, message, args) => {
 
     const getUserById = (id: Snowflake) => message.guild?.members.cache.find(member => member.id === id);
 
-    const invitees = await Stempel.getStempelByInvitator(ofUser.id);
+    const allInvitees = await Stempel.getStempelByInvitator(ofUser.id);
 
-    const avatarUrls = invitees
-        .map(s => s.invitedMember)
-        .map(getUserById)
-        .map(member => getAvatarUrlForMember(member));
+    const inviteesChunked = chunkArray(allInvitees, 10);
 
-    const stempelkarte = await drawStempelkarteBackside(avatarUrls);
+    for (const invitees of inviteesChunked) {
+        const avatarUrls = invitees
+            .map(s => s.invitedMember)
+            .map(getUserById)
+            .map(member => getAvatarUrlForMember(member));
 
-    try {
-        await message.channel.send({
-            files: [{
-                attachment: stempelkarte,
-                name: `stempelkarte-${ofUser.nickname}.png`
-            }]
-        });
-    }
-    catch (err) {
-        log.error(`Could not create where meme: ${err}`);
+        const stempelkarte = await drawStempelkarteBackside(avatarUrls);
+
+        try {
+            await message.channel.send({
+                files: [{
+                    attachment: stempelkarte,
+                    name: `stempelkarte-${ofUser.nickname}.png`
+                }]
+            });
+        }
+        catch (err) {
+            log.error(`Could not create where meme: ${err}`);
+        }
     }
 };
 
