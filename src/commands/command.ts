@@ -1,7 +1,6 @@
 /* eslint-disable no-use-before-define */
 import { SlashCommandBuilder /* , SlashCommandOptionsOnlyBuilder, SlashCommandSubcommandsOnlyBuilder */ } from "@discordjs/builders";
 import type { Client, CommandInteraction, Message } from "discord.js";
-// import { Model } from "sequelize/types";
 
 // A command can be an application command (slash command) or a message command or both
 export type Command = ApplicationCommand | MessageCommand | SpecialCommand;

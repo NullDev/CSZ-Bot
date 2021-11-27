@@ -2,7 +2,7 @@
   "name": "csz-bot",
   "private": true,
   "version": "0.1.0",
-  "description": "Offizieller Coding Shitpost Zentrale Bot",
+  "description": "Offizieller Bot der Coding Shitpost Zentrale",
   "main": "built/app.js",
   "scripts": {
     "start": "nodemon ./built/app.js",
@@ -24,6 +24,7 @@
   "dependencies": {
     "@discordjs/builders": "^0.6.0",
     "@discordjs/rest": "^0.1.0-canary.0",
+    "canvas": "^2.8.0",
     "discord-api-types": "^0.23.1",
     "discord.js": "^13.1.0",
     "jimp": "^0.16.1",

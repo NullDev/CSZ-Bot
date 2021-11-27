@@ -1,10 +1,10 @@
 /* eslint-disable camelcase */
-import { Snowflake } from "discord.js";
+import type { Snowflake, Message, Client } from "discord.js";
 
 /**
  * A string denotes the response to the message (for example a business error).
  */
-export type CommandResult  = string | void;
+export type CommandResult = string | void;
 
 export type CommandFunction = (client: Client, message: Message, args: Array<string>) => Promise<CommandResult>;
 
@@ -37,7 +37,7 @@ export interface Config {
             anonymous_channel_ids: Array<Snowflake>,
             quote_threshold: number,
             blacklisted_channel_ids: Array<Snowflake>,
-            target_channel_overrides: { [key:string]:string },
+            target_channel_overrides: { [key: string]: string },
             default_target_channel_id: Snowflake,
             emoji_name: string,
         }

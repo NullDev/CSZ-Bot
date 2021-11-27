@@ -46,9 +46,9 @@ $ `npm ci`<br><br>
     - Um einen Bot zum Testen anzulegen, einfach den Instruktionen im [Discord Developer Portal](https://discord.com/developers/applications) folgen.
         - Die Applikation muss als "Bot" gesetzt werden.
         - Es müssen beide [Gateway Intents](https://discordjs.guide/popular-topics/intents.html#gateway-intents) eingeschalten werden.
-        - Den Bot Token (NICHT die Application-ID oder den Public-Key) [in die Config](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L3) kopieren.
-        - Okay, die Application-ID / Client ID muss doch mit [in die Config](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L4) rein.
-    - Um ID's kopieren zu können, den "Developer Mode" in den Discord Einstellungen aktivieren. Mit Rechts-Klick kann man dann die ID's kopieren:
+        - Den Bot Token (**nicht** die Application-ID oder den Public-Key) [in die Config](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L3) unter `bot_token` kopieren.
+        - Okay, die Application-ID muss doch mit [in die Config beim Feld `client_id`](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L4) rein.
+    - Um IDs kopieren zu können, den "Developer Mode" in den Discord Einstellungen aktivieren. Mit Rechtsklick kann man dann die IDs kopieren:
         - Die ID [des Servers](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L31)
         - Die ID für [den Hauptchat](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L32)
         - Die ID für [den Banned-Channel](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L44)
