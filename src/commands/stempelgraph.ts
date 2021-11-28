@@ -13,6 +13,9 @@ const config = getConfig();
 
 const viz = new Viz({ Module, render });
 
+const suportedLayoutEngines = ["circo", "dot", "fdp", "neato", "osage", "twopi"] as const;
+type LayoutEngine = (typeof suportedLayoutEngines)[number];
+
 interface StempelConnection {
     inviter: GuildMember;
     invitee: GuildMember;
@@ -71,9 +74,7 @@ function getMemberNode(member: UserInfo): string {
     return `"${member.member.id}" [label="${escapedLabel}", color="${boxColor}", style="${nodeStyle}"]`;
 }
 
-async function drawStempelgraph(stempels: StempelConnection[], userInfo: Map<GuildMember, UserInfo>): Promise<Buffer> {
-    const layoutEngine = "dot";
-
+async function drawStempelgraph(stempels: StempelConnection[], engine: LayoutEngine, userInfo: Map<GuildMember, UserInfo>): Promise<Buffer> {
     const inviterNodes = stempels
         .map(s => userInfo.get(s.inviter)!)
         .map(getMemberNode)
@@ -88,9 +89,10 @@ async function drawStempelgraph(stempels: StempelConnection[], userInfo: Map<Gui
         .map(s => `"${s.inviter.id}" -> "${s.invitee.id}"`)
         .join(";\n");
 
+
     const dotSrc = `digraph {
-        layout = ${layoutEngine};
-        splines=line;
+        layout = ${engine};
+        ${engine === "dot" ? "splines=line;" : ""}
 
         bgcolor="#36393f";
         fontcolor="#ffffff";
@@ -190,7 +192,9 @@ export const run: CommandFunction = async (client, message, args) => {
         });
     }
 
-    const stempelGraph = await drawStempelgraph(namedStempels, graphUserInfo);
+    const engine = "dot";
+
+    const stempelGraph = await drawStempelgraph(namedStempels, engine, graphUserInfo);
 
     try {
         await message.channel.send({
