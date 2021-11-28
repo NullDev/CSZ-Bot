@@ -64,7 +64,7 @@ export const run: CommandFunction = async (client, message, args) => {
         await message.reply({
             files: [{
                 attachment: stempelGraph,
-                name: "stempelgraph.svg"
+                name: "stempelgraph.png"
             }]
         });
     }
