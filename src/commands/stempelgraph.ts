@@ -92,7 +92,7 @@ async function drawStempelgraph(stempels: StempelConnection[], engine: LayoutEng
 
     const dotSrc = `digraph {
         layout = ${engine};
-        ${engine === "dot" ? "splines=line;" : ""}
+        # ${engine === "dot" ? "splines=line;" : ""}
 
         bgcolor="#36393f";
         fontcolor="#ffffff";
