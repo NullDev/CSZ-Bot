@@ -26,6 +26,7 @@ import { WatCommand } from "../commands/special/wat";
 import { TikTokLink } from "../commands/special/tiktok";
 import * as log from "../utils/logger";
 import { StempelCommand } from "../commands/stempeln";
+import { StempelgraphCommand } from "../commands/stempelgraph";
 import { GuildMember } from "discord.js";
 import { ban, BanCommand } from "../commands/modcommands/ban";
 import { UnbanCommand } from "../commands/modcommands/unban";
@@ -43,6 +44,7 @@ export const commands: Array<Command> = [
     new WatCommand(),
     new TikTokLink(),
     new StempelCommand(),
+    new StempelgraphCommand(),
     new BanCommand(),
     new UnbanCommand(),
     new PenisCommand(),
