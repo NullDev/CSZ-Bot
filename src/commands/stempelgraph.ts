@@ -19,6 +19,7 @@ interface StempelConnection {
 }
 
 type RoleInGraph =
+    | "rejoiner"
     | "woisgang"
     | "trusted"
     | "moderator"
@@ -62,8 +63,12 @@ function getMemberNode(member: UserInfo): string {
         }
     }
 
+    const nodeStyle = roles.includes("rejoiner")
+        ? "dashed"
+        : "solid";
+
     const escapedLabel = label.replaceAll('"', '\\"'); // dirty hack to fix quotes in user names
-    return `"${member.member.id}" [label="${escapedLabel}", color="${boxColor}"]`;
+    return `"${member.member.id}" [label="${escapedLabel}", color="${boxColor}", style="${nodeStyle}"]`;
 }
 
 async function drawStempelgraph(stempels: StempelConnection[], userInfo: Map<GuildMember, UserInfo>): Promise<Buffer> {
@@ -144,12 +149,15 @@ function getRoles(member: GuildMember): RoleInGraph[] {
     if (member.roles.cache.has(config.ids.gruendervaeter_role_id)) {
         res.push("gruendervaeter");
     }
+    if (member.roles.cache.has("856269806969421844")) {
+        res.push("rejoiner");
+    }
     if (isMod(member)) {
         res.push("moderator");
     }
-    // if (member.roles.cache.has(config.bot_settings.administrator_id)) {
-    //     res.push("administrator");
-    // }
+    if (member.roles.cache.has("620762567568130089")) {
+        res.push("administrator");
+    }
     return res;
 }
 
