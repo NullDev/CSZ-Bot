@@ -109,7 +109,7 @@ export const run: CommandFunction = async(client, message, args) => {
         const stempelkarte = await drawStempelkarteBackside(avatarUrls);
 
         try {
-            await message.reply({
+            await message.channel.send({
                 files: [{
                     attachment: stempelkarte,
                     name: `stempelkarte-${ofUser.nickname}.png`
