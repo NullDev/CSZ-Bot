@@ -26,6 +26,7 @@ import { WatCommand } from "../commands/special/wat";
 import { TikTokLink } from "../commands/special/tiktok";
 import * as log from "../utils/logger";
 import { StempelCommand } from "../commands/stempeln";
+import { StempelgraphCommand } from "../commands/stempelgraph";
 import { GuildMember } from "discord.js";
 import { ban, BanCommand } from "../commands/modcommands/ban";
 import { UnbanCommand } from "../commands/modcommands/unban";
@@ -34,7 +35,7 @@ import { BonkCommand } from "../commands/bonk";
 
 const config = getConfig();
 
-export const commands: Array<Command> = [
+export const commands: readonly Command[] = [
     new InfoCommand(),
     new YepYepCommand(),
     new NixOsCommand(),
@@ -43,6 +44,7 @@ export const commands: Array<Command> = [
     new WatCommand(),
     new TikTokLink(),
     new StempelCommand(),
+    new StempelgraphCommand(),
     new BanCommand(),
     new UnbanCommand(),
     new PenisCommand(),
@@ -220,7 +222,7 @@ export const messageCommandHandler = async(
     client: Client
 ) => {
     // TODO: The Prefix is now completly irrelevant, since the commands itself define
-    // their permisson.
+    // their permission.
     const plebPrefix = config.bot_settings.prefix.command_prefix;
     const modPrefix = config.bot_settings.prefix.mod_prefix;
     if (
