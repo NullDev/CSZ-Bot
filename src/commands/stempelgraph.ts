@@ -1,6 +1,5 @@
-import { createCanvas, loadImage } from "canvas";
-import { promises as fs } from "fs";
-import { AllowedImageSize, Client, GuildMember, Snowflake } from "discord.js";
+import { Client, Snowflake } from "discord.js";
+import { svg2png } from "svg-png-converter";
 
 import Viz from "viz.js";
 import { Module, render } from "viz.js/full.render.js";
@@ -22,7 +21,11 @@ async function drawStempelgraph(stempels: NamedStempel[]): Promise<Buffer> {
     }`;
 
     const srvStr = await viz.renderString(dotSrc);
-    return Buffer.from(srvStr, "utf-8");
+    return await svg2png({
+        input: srvStr,
+        encoding: "buffer",
+        format: "png"
+    });
 }
 
 async function fetchUserInfo(client: Client<boolean>, ids: Set<Snowflake>): Promise<Map<Snowflake, string>> {
