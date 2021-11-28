@@ -1,13 +1,14 @@
 import Viz from "viz.js";
 import { Module, render } from "viz.js/full.render.js";
-import { GuildMember, Message, Snowflake } from "discord.js";
+import { Client, CommandInteraction, Guild, GuildMember, Snowflake } from "discord.js";
 import { svg2png } from "svg-png-converter";
 
 import { getConfig } from "../utils/configHandler";
-import type { CommandFunction } from "../types";
 import Stempel from "../storage/model/Stempel";
 import * as log from "../utils/logger";
 import { isMod } from "../utils/userUtils";
+import { SlashCommandBuilder, SlashCommandStringOption } from "@discordjs/builders";
+import { ApplicationCommand } from "./command";
 
 const config = getConfig();
 
@@ -67,8 +68,8 @@ function getMemberNode(member: UserInfo): string {
     }
 
     const nodeStyle = roles.includes("rejoiner")
-        ? "dashed"
-        : "solid";
+        ? "dashed,bold"
+        : "solid,bold";
 
     const escapedLabel = label.replaceAll('"', '\\"'); // dirty hack to fix quotes in user names
     return `"${member.member.id}" [label="${escapedLabel}", color="${boxColor}", style="${nodeStyle}"]`;
@@ -125,14 +126,14 @@ async function drawStempelgraph(stempels: StempelConnection[], engine: LayoutEng
     });
 }
 
-async function fetchMemberInfo(message: Message, ids: Set<Snowflake>): Promise<Map<Snowflake, GuildMember>> {
+async function fetchMemberInfo(guild: Guild, ids: Set<Snowflake>): Promise<Map<Snowflake, GuildMember>> {
     const memberMap = new Map<Snowflake, GuildMember>();
     for (const id of ids) {
         const cachedUser = memberMap.get(id);
         if (cachedUser) {
             continue;
         }
-        const member = message.guild?.members.cache.get(id);
+        const member = guild.members.cache.get(id);
         if (member) {
             memberMap.set(id, member);
         }
@@ -163,50 +164,62 @@ function getRoles(member: GuildMember): RoleInGraph[] {
     return res;
 }
 
-export const run: CommandFunction = async (client, message, args) => {
-    const ofUser = message.mentions.members?.first() ?? message.member;
-    if (ofUser === null) {
-        return;
+export class StempelgraphCommand implements ApplicationCommand {
+    modCommand: boolean = false;
+    name: string = "stempelgraph";
+    description: string = "Zeigt einen Sozialgraphen der Stempel. 1984 ist real!";
+
+    get applicationCommand(): Pick<SlashCommandBuilder, "toJSON"> {
+        return new SlashCommandBuilder()
+            .setName(this.name)
+            .setDescription(this.description)
+            .addStringOption(
+                new SlashCommandStringOption()
+                    .setDescription("Die layout-engine für GraphViz")
+                    .setRequired(false)
+                    .addChoices(suportedLayoutEngines.map(e => [e, e]))
+                    .setName("engine")
+            );
     }
 
-    const members = message.guild?.members.cache;
-    if (!members) {
-        return;
+    async handleInteraction(command: CommandInteraction, _client: Client<boolean>): Promise<void> {
+        const members = command.guild?.members.cache;
+        if (!members) {
+            return;
+        }
+
+        const stempels = await Stempel.findAll();
+        const allUserIds = new Set<string>(stempels.map(s => s.invitator).concat(stempels.map(s => s.invitedMember)));
+        const memberInfoMap = await fetchMemberInfo(command.guild, allUserIds);
+
+        const namedStempels = stempels.map(s => ({
+            inviter: memberInfoMap.get(s.invitator)!,
+            invitee: memberInfoMap.get(s.invitedMember)!
+        }));
+
+        const graphUserInfo = new Map<GuildMember, UserInfo>();
+        for (const member of memberInfoMap.values()) {
+            graphUserInfo.set(member, {
+                member,
+                name: member.nickname ?? member.displayName,
+                roles: getRoles(member)
+            });
+        }
+
+        const engine = (command.options.getString("engine") ?? "dot") as LayoutEngine;
+
+        const stempelGraph = await drawStempelgraph(namedStempels, engine, graphUserInfo);
+
+        try {
+            await command.reply({
+                files: [{
+                    attachment: stempelGraph,
+                    name: "stempelgraph.png"
+                }]
+            });
+        }
+        catch (err) {
+            log.error(`Could not create where meme: ${err}`);
+        }
     }
-
-    const stempels = await Stempel.findAll();
-    const allUserIds = new Set<string>(stempels.map(s => s.invitator).concat(stempels.map(s => s.invitedMember)));
-    const memberInfoMap = await fetchMemberInfo(message, allUserIds);
-
-    const namedStempels = stempels.map(s => ({
-        inviter: memberInfoMap.get(s.invitator)!,
-        invitee: memberInfoMap.get(s.invitedMember)!
-    }));
-
-    const graphUserInfo = new Map<GuildMember, UserInfo>();
-    for (const member of memberInfoMap.values()) {
-        graphUserInfo.set(member, {
-            member,
-            name: member.nickname ?? member.displayName,
-            roles: getRoles(member)
-        });
-    }
-
-    const engine = "dot";
-
-    const stempelGraph = await drawStempelgraph(namedStempels, engine, graphUserInfo);
-
-    try {
-        await message.channel.send({
-            files: [{
-                attachment: stempelGraph,
-                name: "stempelgraph.png"
-            }]
-        });
-    }
-    catch (err) {
-        log.error(`Could not create where meme: ${err}`);
-    }
-};
-
-export const description = "Zeigt einen Sozialgraphen der Stempel. 1984 ist real!";
+}
