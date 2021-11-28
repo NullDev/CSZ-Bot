@@ -34,5 +34,5 @@ export function isNerd(member: GuildMember): boolean {
 }
 
 export function isTrusted(member: GuildMember): boolean {
-    return hasRoleByName(member, config.ids.trusted_role_id);
+    return hasRoleById(member, config.ids.trusted_role_id);
 }
