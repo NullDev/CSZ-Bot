@@ -61,7 +61,7 @@ export const run: CommandFunction = async (client, message, args) => {
     const stempelGraph = await drawStempelgraph(namedStempels);
 
     try {
-        await message.reply({
+        await message.channel.send({
             files: [{
                 attachment: stempelGraph,
                 name: "stempelgraph.png"
