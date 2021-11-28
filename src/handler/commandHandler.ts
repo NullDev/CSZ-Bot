@@ -35,7 +35,7 @@ import { BonkCommand } from "../commands/bonk";
 
 const config = getConfig();
 
-export const commands: Array<Command> = [
+export const commands: readonly Command[] = [
     new InfoCommand(),
     new YepYepCommand(),
     new NixOsCommand(),
@@ -222,7 +222,7 @@ export const messageCommandHandler = async(
     client: Client
 ) => {
     // TODO: The Prefix is now completly irrelevant, since the commands itself define
-    // their permisson.
+    // their permission.
     const plebPrefix = config.bot_settings.prefix.command_prefix;
     const modPrefix = config.bot_settings.prefix.mod_prefix;
     if (
