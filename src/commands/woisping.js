@@ -5,7 +5,10 @@
 import { Util } from "discord.js";
 
 import * as log from "../utils/logger";
+import { isMod } from "../utils/userUtils";
+
 import { getConfig } from "../utils/configHandler";
+
 const config = getConfig();
 
 const pendingMessagePrefix = "*(Pending-Woisgang-Ping, bitte zustimmen)*";
@@ -20,9 +23,9 @@ let lastPing = 0;
  * @type {import("../types").CommandFunction}
  */
 export const run = async(client, message, args) => {
-    const isMod = message.member.roles.cache.some(r => config.bot_settings.moderator_roles.includes(r.name));
+    const isModMessage = isMod(message.member);
 
-    if (!isMod && !message.member.roles.cache.has(config.ids.woisgang_role_id)){
+    if (!isModMessage && !message.member.roles.cache.has(config.ids.woisgang_role_id)){
         log.warn(`User "${message.author.tag}" (${message.author}) tried command "${config.bot_settings.prefix.command_prefix}woisping" and was denied`);
 
         return `Tut mir leid, ${message.author}. Du hast nicht genügend Rechte um diesen Command zu verwenden =(`;
@@ -30,13 +33,13 @@ export const run = async(client, message, args) => {
 
     const now = Date.now();
 
-    if (!isMod && lastPing + config.bot_settings.woisping_limit * 1000 > now) {
+    if (!isModMessage && lastPing + config.bot_settings.woisping_limit * 1000 > now) {
         return "Piss dich und spam nicht.";
     }
 
     const reason = `${Util.removeMentions(Util.cleanContent(args.join(" "), message))} (von ${message.member})`;
 
-    if (isMod) {
+    if (isModMessage) {
         lastPing = now;
         await message.channel.send(`<@&${config.ids.woisgang_role_id}> ${reason}`);
     }
@@ -78,9 +81,9 @@ export const reactionHandler = async(reactionEvent, user, client, message) => {
         return true;
     }
 
-    const isMod = member.roles.cache.some(r => config.bot_settings.moderator_roles.includes(r.name));
+    const isModMessage = isMod(member);
 
-    if (!isMod && !member.roles.cache.has(config.ids.woisgang_role_id)){
+    if (!isModMessage && !member.roles.cache.has(config.ids.woisgang_role_id)){
         reaction.users.remove(member.id);
         member.send("Sorry, du bist leider kein Woisgang-Mitglied und darfst nicht abstimmen.");
         return true;
@@ -90,7 +93,7 @@ export const reactionHandler = async(reactionEvent, user, client, message) => {
     const now = Date.now();
     const couldPing = lastPing + config.bot_settings.woisping_limit * 1000 <= now;
 
-    if (isMod || (amount >= config.bot_settings.woisping_threshold && couldPing)) {
+    if (isModMessage || (amount >= config.bot_settings.woisping_threshold && couldPing)) {
         const reason = message.content.substr(pendingMessagePrefix.length + 1);
 
         const {channel} = message;

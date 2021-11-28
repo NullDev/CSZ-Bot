@@ -21,7 +21,7 @@ export const run = async(client, message, args) => {
     const durationArg = Number(args?.[0]?.trim() ?? "8");
 
     if (Number.isNaN(durationArg) || !Number.isFinite(durationArg)) {
-        return "Gib ne Zahl ein du Lellek.";
+        return "Gib ne Zahl ein, du Lellek.";
     }
 
     const durationInMinutes = Math.trunc(durationArg * 60);

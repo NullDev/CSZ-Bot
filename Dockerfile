@@ -18,8 +18,9 @@ FROM node:16-slim as runtime-dependencies
 FROM node:16-slim
     WORKDIR /app
     RUN apt update -yqq && \
-        apt install fonts-noto-color-emoji -yqq && \
-        apt clean
+        apt install fonts-noto-color-emoji fontconfig fonts-liberation -yqq && \
+        apt clean && \
+        fc-cache -f -v
 
     ENV NODE_ENV=production
     EXPOSE 3000
