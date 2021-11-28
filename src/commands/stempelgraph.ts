@@ -47,12 +47,8 @@ export const run: CommandFunction = async (client, message, args) => {
     }
 
     const stempels = await Stempel.findAll();
-    const allUserIds = stempels.reduce(
-        (prev, current) => [...prev, current.invitator, current.invitedMember],
-        [] as Snowflake[]
-    );
-
-    const nameMap = await fetchUserInfo(client, new Set<string>(...allUserIds));
+    const allUserIds = stempels.map(s => s.invitator).concat(stempels.map(s => s.invitedMember));
+    const nameMap = await fetchUserInfo(client, new Set<string>(allUserIds));
 
     const namedStempels = stempels.map(s => ({
         inviter: nameMap.get(s.invitator)!,
