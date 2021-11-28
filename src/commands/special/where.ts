@@ -45,8 +45,8 @@ export class WhereCommand implements SpecialCommand {
         ctx.drawImage(whereImage, 0, 0);
 
         const textPos = {
-            x: (whereImage.width / 2 + 50) | 0,
-            y: 60
+            x: (whereImage.width / 2) | 0,
+            y: 40
         };
 
         ctx.font = "42px Impact";
