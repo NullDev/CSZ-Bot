@@ -204,8 +204,10 @@ export class BanCommand implements ApplicationCommand, MessageCommand {
         // the whole message except the command itself
         const messageAfterCommand = message.content.substr(message.content.indexOf(this.name) + this.name.length).trim();
         let reason = "Willkür";
-        if(message.reference && messageAfterCommand.trim().length > 0) {
-            reason = messageAfterCommand;
+        if(message.reference) {
+            if(messageAfterCommand.trim().length > 0) {
+                reason = messageAfterCommand;
+            }
         }
         // Otherwhise we would extract everything that is written AFTER the first mention
         else {
