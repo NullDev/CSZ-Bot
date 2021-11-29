@@ -107,7 +107,7 @@ export const ban = async(client: Client, member: GuildMember, banInvoker: GuildM
         : new Date(Date.now() + (duration * 60 * 60 * 1000));
     const humanReadableDuration = duration ? moment.duration(duration, "hours").locale("de").humanize() : undefined;
 
-    const banReasonChannel = member.guild.channels.resolve(config.bot_settings.ban_reason_channel_id);
+    const banReasonChannel = member.guild.channels.resolve(config.ids.bot_log_channel_id);
     if(banReasonChannel && banReasonChannel.isText()) {
         banReasonChannel.send({
             content: `<@${member.id}> ${isSelfBan ? "hat sich selbst" : `wurde von ${banInvoker}`} ${humanReadableDuration ? `für ${humanReadableDuration}` : "bis auf unbestimmte Zeit"} gebannt. \nGrund: ${reason}`
