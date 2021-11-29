@@ -26,6 +26,7 @@ const hasMessageEnoughQuotes = (messageQuoter: readonly GuildMember[]): boolean 
     return messageQuoter.reduce((prev, curr) => isTrusted(curr) ? prev + 2 : prev + 1, 0) >= quoteThreshold;
 };
 const isQuoterQuotingHimself = (quoter: User, messageAuthor: User) => quoter.id === messageAuthor.id;
+const generateRandomColor = () => Math.floor(Math.random() * 16777215);
 
 const getTargetChannel = (sourceChannelId: string, client: Client) => {
     const targetChannelId =
@@ -57,14 +58,14 @@ const createQuote = (
             };
     };
 
-    console.log(referencedMessage);
+    const randomizedColor = generateRandomColor();
 
     return {
         quote: {
             embeds: [
                 ...quotedMessage.embeds,
                 {
-                    color: 0xFFC000,
+                    color: randomizedColor,
                     description: quotedMessage.content,
                     author: getAuthor(quotedUser),
                     timestamp: quotedMessage.createdTimestamp,
@@ -86,7 +87,7 @@ const createQuote = (
             embeds: [
                 ...referencedMessage.embeds,
                 {
-                    color: 0xFFC000,
+                    color: randomizedColor,
                     description: referencedMessage.content,
                     author: getAuthor(referencedUser),
                     timestamp: referencedMessage.createdTimestamp
