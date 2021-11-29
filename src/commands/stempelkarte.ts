@@ -1,10 +1,11 @@
 import { createCanvas, loadImage } from "canvas";
 import { promises as fs } from "fs";
-import { AllowedImageSize, GuildMember, Snowflake } from "discord.js";
+import { AllowedImageSize, Client, CommandInteraction, GuildMember, Snowflake } from "discord.js";
 
-import type { CommandFunction } from "../types";
 import Stempel from "../storage/model/Stempel";
 import * as log from "../utils/logger";
+import { ApplicationCommand } from "./command";
+import { SlashCommandBuilder, SlashCommandUserOption } from "@discordjs/builders";
 
 const stempelLocations = [
     // 1-3
@@ -39,7 +40,7 @@ const getAvatarUrlForMember = (member?: GuildMember, size: AllowedImageSize = 32
     }) ?? undefined;
 };
 
-const drawStempelkarteBackside = async(avatars: ReadonlyArray<string | undefined>) => {
+const drawStempelkarteBackside = async(subjectAvatarUrl: string | undefined, avatars: ReadonlyArray<string | undefined>) => {
     console.assert(avatars.length <= 10, "TODO: Implement multiple pages by batching avatars by 10");
 
     const avatarUnavailable = await fs.readFile("assets/no-avatar.png");
@@ -72,6 +73,16 @@ const drawStempelkarteBackside = async(avatars: ReadonlyArray<string | undefined
         );
     }
 
+    const subjectAvatar = subjectAvatarUrl
+        ? await loadImage(subjectAvatarUrl)
+        : avatarUnavailableImage;
+
+    ctx.drawImage(
+        subjectAvatar,
+        firmenstempelCenter.x - subjectAvatar.width / 2,
+        firmenstempelCenter.y - subjectAvatar.height / 2
+    );
+
     return canvas.toBuffer();
 };
 
@@ -88,38 +99,56 @@ function chunkArray<T>(array: T[], chunkSize: number): T[][] {
     return tempArray;
 }
 
-export const run: CommandFunction = async(client, message, args) => {
-    const ofUser = message.mentions.members?.first() ?? message.member;
-    if (ofUser === null) {
-        return;
-    }
 
-    const getUserById = (id: Snowflake) => message.guild?.members.cache.find(member => member.id === id);
+export class StempelkarteCommand implements ApplicationCommand {
+    modCommand: boolean = false;
+    name: string = "stempelkarte";
+    description: string = "Zeigt eine die Stempelkarte eines Users an.";
 
-    const allInvitees = await Stempel.getStempelByInvitator(ofUser.id);
+    applicationCommand = new SlashCommandBuilder()
+        .setName(this.name)
+        .setDescription(this.description)
+        .addUserOption(new SlashCommandUserOption()
+            .setRequired(false)
+            .setName("user")
+            .setDescription("Derjeniche, von dem du die Stempelkarte sehen möchtest")
+        );
 
-    const inviteesChunked = chunkArray(allInvitees, 10);
+    async handleInteraction(command: CommandInteraction, _client: Client<boolean>): Promise<void> {
+        const userOption = command.options.getUser("user") ?? command.user;
 
-    for (const invitees of inviteesChunked) {
-        const avatarUrls = invitees
-            .map(s => s.invitedMember)
-            .map(getUserById)
-            .map(member => getAvatarUrlForMember(member));
-
-        const stempelkarte = await drawStempelkarteBackside(avatarUrls);
-
-        try {
-            await message.channel.send({
-                files: [{
-                    attachment: stempelkarte,
-                    name: `stempelkarte-${ofUser.nickname}.png`
-                }]
-            });
+        const ofMember = command.guild?.members.cache.find(m => m.id === userOption.id);
+        if (!ofMember) {
+            return;
         }
-        catch (err) {
-            log.error(`Could not create where meme: ${err}`);
+
+        const getUserById = (id: Snowflake) => command.guild?.members.cache.find(member => member.id === id);
+
+        const allInvitees = await Stempel.getStempelByInvitator(ofMember.id);
+
+        const subjectAvatarUrl = getAvatarUrlForMember(ofMember, 64);
+
+        const inviteesChunked = chunkArray(allInvitees, 10);
+
+        for (const invitees of inviteesChunked) {
+            const avatarUrls = invitees
+                .map(s => s.invitedMember)
+                .map(getUserById)
+                .map(member => getAvatarUrlForMember(member));
+
+            const stempelkarte = await drawStempelkarteBackside(subjectAvatarUrl, avatarUrls);
+
+            try {
+                await command.reply({
+                    files: [{
+                        attachment: stempelkarte,
+                        name: `stempelkarte-${ofMember.nickname}.png`
+                    }]
+                });
+            }
+            catch (err) {
+                log.error(`Could not create where meme: ${err}`);
+            }
         }
     }
-};
-
-export const description = "Zeigt eine die Stempelkarte eines Users an.";
+}
