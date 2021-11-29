@@ -39,7 +39,7 @@ const getAvatarUrlForMember = (member?: GuildMember, size: AllowedImageSize = 32
     }) ?? undefined;
 };
 
-const drawStempelkarteBackside = async(avatars: ReadonlyArray<string | undefined>) => {
+const drawStempelkarteBackside = async(subjectAvatarUrl: string | undefined, avatars: ReadonlyArray<string | undefined>) => {
     console.assert(avatars.length <= 10, "TODO: Implement multiple pages by batching avatars by 10");
 
     const avatarUnavailable = await fs.readFile("assets/no-avatar.png");
@@ -72,6 +72,16 @@ const drawStempelkarteBackside = async(avatars: ReadonlyArray<string | undefined
         );
     }
 
+    const subjectAvatar = subjectAvatarUrl
+        ? await loadImage(subjectAvatarUrl)
+        : avatarUnavailableImage;
+
+    ctx.drawImage(
+        subjectAvatar,
+        firmenstempelCenter.x - subjectAvatar.width / 2,
+        firmenstempelCenter.y - subjectAvatar.height / 2
+    );
+
     return canvas.toBuffer();
 };
 
@@ -98,6 +108,8 @@ export const run: CommandFunction = async(client, message, args) => {
 
     const allInvitees = await Stempel.getStempelByInvitator(ofUser.id);
 
+    const subjectAvatarUrl = getAvatarUrlForMember(ofUser, 64);
+
     const inviteesChunked = chunkArray(allInvitees, 10);
 
     for (const invitees of inviteesChunked) {
@@ -106,7 +118,7 @@ export const run: CommandFunction = async(client, message, args) => {
             .map(getUserById)
             .map(member => getAvatarUrlForMember(member));
 
-        const stempelkarte = await drawStempelkarteBackside(avatarUrls);
+        const stempelkarte = await drawStempelkarteBackside(subjectAvatarUrl, avatarUrls);
 
         try {
             await message.channel.send({
