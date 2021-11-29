@@ -28,7 +28,7 @@ export class StempelCommand implements ApplicationCommand {
             .addUserOption(new SlashCommandUserOption()
                 .setRequired(true)
                 .setName("inviter")
-                .setDescription("Derjenige, der dich invited hat"));
+                .setDescription("Derjeniche, der dich invited hat"));
     }
     async handleInteraction(command: CommandInteraction, client: Client<boolean>): Promise<unknown> {
         const invitator = command.guild?.members.cache.find(m => m.id === command.options.getUser("inviter", true).id);
