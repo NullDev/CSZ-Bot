@@ -23,6 +23,7 @@ interface StempelConnection {
 }
 
 type RoleInGraph =
+    | "english"
     | "rejoiner"
     | "woisgang"
     | "trusted"
@@ -48,12 +49,15 @@ function getMemberNode(member: UserInfo): string {
     const { roles } = member;
     let label = "";
 
+    if (roles.includes("english")) {
+        label += "🇬🇧 ";
+    }
     if (roles.includes("woisgang")) {
         label += "🎤 ";
     }
     label += member.name;
     if (roles.includes("trusted")) {
-        label += " ✅";
+        label += " 💕";
     }
 
     let boxColor = "#ffffff";
@@ -160,6 +164,9 @@ function getRoles(member: GuildMember): RoleInGraph[] {
     }
     if (member.roles.cache.has("620762567568130089")) {
         res.push("administrator");
+    }
+    if (member.roles.cache.has("647914008065867798")) {
+        res.push("english");
     }
     return res;
 }
