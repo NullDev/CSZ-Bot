@@ -29,10 +29,12 @@ type RoleInGraph =
     | "trusted"
     | "moderator"
     | "gruendervaeter"
-    | "administrator";
+    | "administrator"
+    | "booster";
 
 const roleColors: Partial<Record<RoleInGraph, string>> = {
     // Order is important here: The lower the color, the higher the priority
+    booster: "#1cb992",
     trusted: "#e91e63",
     moderator: "#5865f2",
     gruendervaeter: "#faa81a",
@@ -147,6 +149,8 @@ async function fetchMemberInfo(guild: Guild, ids: Set<Snowflake>): Promise<Map<S
 
 function getRoles(member: GuildMember): RoleInGraph[] {
     const res: RoleInGraph[] = [];
+
+    // TODO: Das Zeug hier aufräumen am besten ins userUtils Modul. Soon:tm:
     if (member.roles.cache.has(config.ids.woisgang_role_id)) {
         res.push("woisgang");
     }
@@ -167,6 +171,9 @@ function getRoles(member: GuildMember): RoleInGraph[] {
     }
     if (member.roles.cache.has("647914008065867798")) {
         res.push("english");
+    }
+    if (member.roles.cache.has("624966226010963969")) {
+        res.push("booster");
     }
     return res;
 }
