@@ -10,7 +10,7 @@ const config = getConfig();
 const createBonkMeme = async(author: any): Promise<string> => {
     const image = await Jimp.read("https://i.imgur.com/nav6WWX.png");
     const filename = `/tmp/bonk_meme_${Date.now()}.png`;
-    const avatarURL = author.avatarURL({ format: "png" });
+    const avatarURL = author.displayAvatarURL({ format: "png" });
     let avatar = await Jimp.read(avatarURL);
 
     avatar = avatar.resize(128, 128);
