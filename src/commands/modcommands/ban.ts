@@ -203,6 +203,7 @@ export class BanCommand implements ApplicationCommand, MessageCommand {
         // If we have a reference the first mention is in the reference and the reason is therefore
         // the whole message except the command itself
         const messageAfterCommand = message.content.substr(message.content.indexOf(this.name) + this.name.length).trim();
+        console.log(messageAfterCommand);
         let reason = "Willkür";
         if(message.reference) {
             if(messageAfterCommand.trim().length > 0) {
@@ -211,9 +212,10 @@ export class BanCommand implements ApplicationCommand, MessageCommand {
         }
         // Otherwhise we would extract everything that is written AFTER the first mention
         else {
-            const match = /\<@[0-9]+\> (.*)/.exec(messageAfterCommand);
+            const match = /\<@!?[0-9]+\> (.+)/.exec(messageAfterCommand);
             if (match && match[1]) {
                 reason = match[1];
+                console.log(reason);
             }
         }
 
