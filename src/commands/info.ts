@@ -13,7 +13,7 @@ const buildMessageActionsRow = (): MessageActionRowOptions[] => {
                 {
                     style: 5,
                     label: "GitHub",
-                    url: "https://github.com/repos/NullDev/CSC-Bot",
+                    url: "https://github.com/NullDev/CSC-Bot",
                     disabled: false,
                     type: "BUTTON"
                 }
