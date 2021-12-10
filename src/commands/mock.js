@@ -70,11 +70,14 @@ export const run = async(client, message, args) => {
     const referencedMessage = message.reference?.messageId;
     if (!args.length && !referencedMessage) return `Bruder du bist zu dumm zum mocken? Mach \`${config.bot_settings.prefix.command_prefix}mock DEIN TEXT HIER\` oder antworte auf eine Nachricht`;
 
-    if(referencedMessage && !args.length) {
-        // TODO: inline reply when it is available in discord.js
+    if(referencedMessage) {
         const msg = await message.channel.messages.fetch(referencedMessage);
-        if(!!msg.content) {
+        if(!args.length && !!msg.content) {
             await sendMock(message, mock(msg.content), msg);
+        }
+        else if (args.length) {
+            const text = message.content.slice(`${config.bot_settings.prefix.command_prefix}mock `.length);
+            await sendMock(message, mock(text), msg);
         }
         else {
             await message.channel.send("Brudi da ist nix, was ich mocken kann");
