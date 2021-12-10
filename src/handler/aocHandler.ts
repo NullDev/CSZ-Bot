@@ -4,21 +4,17 @@
 // =============================== //
 
 import * as discord from "discord.js";
-import * as log from "../utils/logger";
 import { getConfig } from "../utils/configHandler";
 import * as path from "path";
 import * as fs from "fs";
 import fetch from "node-fetch";
 
-const aocConfig = path.resolve("aoc.config.json");
+const aocConfigPath = path.resolve("aoc.config.json");
 
 const config = getConfig();
 
-if (!fs.existsSync(aocConfig)) {
-    log.error("AOC Config does not exist! We're not going to do fancy AoC stuff.");
-}
-
 type AoCConfig = {
+    targetChannelId: string;
     sessionToken: string;
     leaderBoardJsonUrl: string;
     userMap: Record<string, string>;
@@ -44,19 +40,53 @@ type LeaderBoard = {
 
 export default class AoCHandler {
     readonly config: any;
-    readonly aocConfig: AoCConfig;
     constructor(private readonly client: discord.Client) {
         this.config = config;
-        this.aocConfig = JSON.parse(fs.readFileSync(aocConfig, "utf8")) as AoCConfig;
     }
 
     async publishLeaderBoard() {
-        const leaderBoard = await fetch(this.aocConfig.leaderBoardJsonUrl, {
-            // credentials: "include",
+        if (!fs.existsSync(aocConfigPath)) return;
+        const aocConfig = JSON.parse(fs.readFileSync(aocConfigPath, "utf8")) as AoCConfig;
+
+        const leaderBoard = await fetch(aocConfig.leaderBoardJsonUrl, {
             headers: {
-                Cookie: `session=${this.aocConfig.sessionToken}`
+                Cookie: `session=${aocConfig.sessionToken}`
             }
         }).then(r => r.json()) as LeaderBoard;
-        leaderBoard.members;
+        const guild = this.client.guilds.cache.get(this.config.ids.guild_id);
+        if (!guild) {
+            return;
+        }
+        const targetChannel = guild.channels.cache.get(aocConfig.targetChannelId);
+        if (!targetChannel) {
+            return;
+        }
+
+        const channel = targetChannel as discord.ThreadChannel;
+        const embed = this.createEmbedFromLeaderBoard(aocConfig.userMap, leaderBoard);
+        return channel.send({ embeds: [embed] });
+    }
+
+    private createEmbedFromLeaderBoard(userMap: Record<string, string>, lb: LeaderBoard): discord.MessageEmbed {
+        const members = Object.values(lb.members);
+        members.sort((a, b) => a.local_score - b.local_score);
+        const users = members.map((m, i) => `${i + 1}. ${userMap[m.name] ?? m.name}`).join("\n");
+
+        return {
+            title: "AoC Leaderboard",
+            description: "Aktuelle Platzierungen in der CSZ",
+            author: {
+                name: "AoC-Shitpost-Bot"
+            },
+            color: 0x009900,
+            createdAt: new Date(),
+            fields: [
+                {
+                    name: "Platzierungen",
+                    value: users,
+                    inline: false
+                }
+            ]
+        } as discord.MessageEmbed;
     }
 }

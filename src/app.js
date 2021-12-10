@@ -16,6 +16,7 @@ import * as timezone from "./utils/timezone";
 import messageHandler from "./handler/messageHandler";
 import messageDeleteHandler from "./handler/messageDeleteHandler";
 import BdayHandler from "./handler/bdayHandler";
+import AoCHandler from "./handler/aocHandler";
 import * as fadingMessageHandler from "./handler/fadingMessageHandler";
 import * as storage from "./storage/storage";
 
@@ -120,6 +121,7 @@ client.on("ready", async() => {
     client.user.setActivity(config.bot_settings.status);
 
     const bday = new BdayHandler(client);
+    const aoc = new AoCHandler(client);
     if (firstRun){
         await storage.initialize();
         firstRun = false; // Hacky deadlock ...
@@ -129,6 +131,9 @@ client.on("ready", async() => {
 
         cron.schedule("1 0 * * *", async() => await bday.checkBdays(), { timezone: "Europe/Vienna" });
         await bday.checkBdays();
+
+        cron.schedule("0 * * * *", async() => await aoc.publishLeaderBoard(), { timezone: "Europe/Vienna" });
+        aoc.publishLeaderBoard();
     }
 
     ban.startCron(client);
