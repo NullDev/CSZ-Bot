@@ -66,7 +66,6 @@ const sendMock = async(message, mockedText, replyTo) => {
  * @type {import("../types").CommandFunction}
  */
 export const run = async(client, message, args) => {
-    // TODO: Check for message type 19 when it is available in discord.js
     const referencedMessage = message.reference?.messageId;
     if (!args.length && !referencedMessage) return `Bruder du bist zu dumm zum mocken? Mach \`${config.bot_settings.prefix.command_prefix}mock DEIN TEXT HIER\` oder antworte auf eine Nachricht`;
 
