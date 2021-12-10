@@ -25,13 +25,13 @@ let transform = function(c){
 const mock = (str) => str.split("").map(transform).join("");
 
 /**
- * Sends mocked embed
+ * build mocked embed
  * @param {import("discord.js").Message} message
  * @param {string} mocked
- * @returns {Promise<void>}
+ * @returns {MessageEmbed}
  */
-const sendMock = async(message, mocked) => {
-    const embed = {
+const buildMock = (message, mocked) => {
+    return {
         description: `${mocked} <:mock:677504337769005096>`,
         color: 0xFFC000,
         author: {
@@ -39,11 +39,25 @@ const sendMock = async(message, mocked) => {
             icon_url: message.author.displayAvatarURL()
         }
     };
+};
 
-    await message.channel.send({
+/**
+ *
+ * @param {import("discord.js").Message} message
+ * @param {string} mockedText
+ * @param {import("discord.js").Message | undefined} replyTo
+ * @returns {Promise<[Message, Message]>}
+ */
+const sendMock = async(message, mockedText, replyTo) => {
+    const embed = buildMock(message, mockedText);
+    if (replyTo) {
+        return Promise.all([replyTo.reply({
+            embeds: [embed]
+        }), message.delete()]);
+    }
+    return Promise.all([message.channel.send({
         embeds: [embed]
-    });
-    await message.delete();
+    }), message.delete()]);
 };
 
 /**
@@ -60,7 +74,7 @@ export const run = async(client, message, args) => {
         // TODO: inline reply when it is available in discord.js
         const msg = await message.channel.messages.fetch(referencedMessage);
         if(!!msg.content) {
-            await sendMock(message, mock(msg.content));
+            await sendMock(message, mock(msg.content), msg);
         }
         else {
             await message.channel.send("Brudi da ist nix, was ich mocken kann");
@@ -68,7 +82,7 @@ export const run = async(client, message, args) => {
     }
     else {
         const text = message.content.slice(`${config.bot_settings.prefix.command_prefix}mock `.length);
-        sendMock(message, mock(text));
+        await sendMock(message, mock(text));
     }
 };
 
