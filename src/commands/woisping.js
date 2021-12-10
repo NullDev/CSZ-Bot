@@ -1,14 +1,15 @@
-"use strict";
-
 // ================================= //
 // = Copyright (c) diewellenlaenge = //
 // ================================= //
 
-let { Util } = require("discord.js");
+import { Util } from "discord.js";
 
-// Utils
-let log = require("../utils/logger");
-let config = require("../utils/configHandler").getConfig();
+import * as log from "../utils/logger";
+import { isMod } from "../utils/userUtils";
+
+import { getConfig } from "../utils/configHandler";
+
+const config = getConfig();
 
 const pendingMessagePrefix = "*(Pending-Woisgang-Ping, bitte zustimmen)*";
 
@@ -19,58 +20,51 @@ let lastPing = 0;
 /**
  * Allows usage of @Woisgang mention for people having that role assigned
  *
- * @param {import("discord.js").Client} client
- * @param {import("discord.js").Message} message
- * @param {Array} args
- * @param {Function} callback
- * @returns {Promise<Function>} callback
+ * @type {import("../types").CommandFunction}
  */
-exports.run = async(client, message, args, callback) => {
-    const isMod = message.member.roles.cache.some(r => config.bot_settings.moderator_roles.includes(r.name));
+export const run = async(client, message, args) => {
+    const isModMessage = isMod(message.member);
 
-    if (!isMod && !message.member.roles.cache.has(config.ids.woisgang_role_id)){
+    if (!isModMessage && !message.member.roles.cache.has(config.ids.woisgang_role_id)){
         log.warn(`User "${message.author.tag}" (${message.author}) tried command "${config.bot_settings.prefix.command_prefix}woisping" and was denied`);
 
-        return callback(
-            `Tut mir leid, ${message.author}. Du hast nicht genügend Rechte um dieses Command zu verwenden =(`
-        );
+        return `Tut mir leid, ${message.author}. Du hast nicht genügend Rechte um diesen Command zu verwenden =(`;
     }
 
     const now = Date.now();
 
-    if (!isMod && lastPing + config.bot_settings.woisping_limit * 1000 > now) {
-        return callback("Piss dich und spam nicht.");
+    if (!isModMessage && lastPing + config.bot_settings.woisping_limit * 1000 > now) {
+        return "Piss dich und spam nicht.";
     }
 
     const reason = `${Util.removeMentions(Util.cleanContent(args.join(" "), message))} (von ${message.member})`;
 
-    if (isMod) {
+    if (isModMessage) {
         lastPing = now;
-        message.channel.send(`<@&${config.ids.woisgang_role_id}> ${reason}`);
+        await message.channel.send(`<@&${config.ids.woisgang_role_id}> ${reason}`);
     }
     else {
         const msg = await message.channel.send(`${pendingMessagePrefix} ${reason}`);
-        msg.react("👍");
+        await msg.react("👍");
 
         // we don't set lastPing here to allow multiple concurrent requests
         // let the most liked reason win...
     }
-
-    return callback();
 };
 
 /**
  * Handles changes on reactions specific to this command
  *
- * @param {any} event
+ * @param {import("discord.js").MessageReaction} reactionEvent
+ * @param {import("discord.js").User} user
  * @param {import("discord.js").Client} client
  * @param {import("discord.js").Message} message
- * @returns
+ * @returns {Promise<boolean>}
  */
-exports.reactionHandler = async(event, client, message) => {
+export const reactionHandler = async(reactionEvent, user, client, message) => {
     if (message.embeds.length !== 0
-		|| !message.content.startsWith(pendingMessagePrefix)
-		|| event.d.emoji.name !== "👍") {
+        || !message.content.startsWith(pendingMessagePrefix)
+        || reactionEvent.emoji.name !== "👍") {
         return false;
     }
 
@@ -81,19 +75,17 @@ exports.reactionHandler = async(event, client, message) => {
         return true;
     }
 
-    const { d: data } = event;
+    const member = client.guilds.cache.get(config.ids.guild_id).members.cache.get(user.id);
 
-    const user = client.guilds.cache.get(config.ids.guild_id).members.cache.get(data.user_id);
-
-    if (!user) {
+    if (!member) {
         return true;
     }
 
-    const isMod = user.roles.cache.some(r => config.bot_settings.moderator_roles.includes(r.name));
+    const isModMessage = isMod(member);
 
-    if (!isMod && !user.roles.cache.has(config.ids.woisgang_role_id)){
-        reaction.users.remove(data.user_id);
-        user.send("Somry, du bist leider kein Woisgang-Mitglied und darfst nicht abstimmen.");
+    if (!isModMessage && !member.roles.cache.has(config.ids.woisgang_role_id)){
+        reaction.users.remove(member.id);
+        member.send("Sorry, du bist leider kein Woisgang-Mitglied und darfst nicht abstimmen.");
         return true;
     }
 
@@ -101,7 +93,7 @@ exports.reactionHandler = async(event, client, message) => {
     const now = Date.now();
     const couldPing = lastPing + config.bot_settings.woisping_limit * 1000 <= now;
 
-    if (isMod || (amount >= config.bot_settings.woisping_threshold && couldPing)) {
+    if (isModMessage || (amount >= config.bot_settings.woisping_threshold && couldPing)) {
         const reason = message.content.substr(pendingMessagePrefix.length + 1);
 
         const {channel} = message;
@@ -111,11 +103,11 @@ exports.reactionHandler = async(event, client, message) => {
         channel.send(`<@&${config.ids.woisgang_role_id}> ${reason}`);
     }
     else if (!couldPing) {
-        reaction.users.remove(data.user_id);
-        user.send("Somry, ich musste deine Zustimmung für den Woisgang-Ping entfernen, weil wir noch etwas warten müssen mit dem Ping.");
+        reaction.users.remove(member.id);
+        await member.send("Sorry, ich musste deine Zustimmung für den Woisgang-Ping entfernen, weil wir noch etwas warten müssen mit dem Ping.");
     }
 
     return true;
 };
 
-exports.description = `Mitglieder der @Woisgang-Rolle können einen Ping an diese Gruppe absenden. Es müssen mindestens ${config.bot_settings.woisping_threshold} Woisgang-Mitglieder per Reaction zustimmen.\nUsage: ${config.bot_settings.prefix.command_prefix}woisping Text`;
+export const description = `Mitglieder der @Woisgang-Rolle können einen Ping an diese Gruppe absenden. Es müssen mindestens ${config.bot_settings.woisping_threshold} Woisgang-Mitglieder per Reaction zustimmen.\nUsage: ${config.bot_settings.prefix.command_prefix}woisping Text`;

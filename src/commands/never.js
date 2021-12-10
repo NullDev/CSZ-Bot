@@ -1,13 +1,10 @@
-"use strict";
-
 // ==================================================== //
 // = Copyright (c) ist mir egal wer hauptsache code   = //
 // ==================================================== //
 
-// Discord
-const fetch = require("node-fetch").default;
-const moment = require("moment");
-const { Util } = require("discord.js");
+import fetch from "node-fetch";
+import moment from "moment";
+import { Util } from "discord.js";
 
 const NEVER_EVER_RANDOM_PROMPT_API_URL = "https://thepartyapp.xyz/api/games/neverever/getRandomPrompt";
 const QUESTION_LEVEL_EMOJI_MAP = {
@@ -37,46 +34,39 @@ async function getPrompt(userPrompt) {
 /**
  * Prompts a "never have i ever" message to the channel and gives two choices for users to pick from
  *
- * @param {import("discord.js").Client} _client
- * @param {import("discord.js").Message} message
- * @param {Array} args
- * @param {Function} callback
- * @returns {Function} callback
+ * @type {import("../types").CommandFunction}
  */
-exports.run = (_client, message, args, callback) => {
+export const run = async(_client, message, args) => {
     const userInput = (args || []).join(" ");
-    getPrompt(userInput)
-        .then(prompt => {
-            const emoji = QUESTION_LEVEL_EMOJI_MAP[prompt.level];
-            const envelope = {
-                embed: {
-                    title: `Ich hab noch nie ${Util.cleanContent(prompt.prompt, message)}`,
-                    timestamp: moment.utc().format(),
-                    color: 0x2ecc71,
-                    author: {
-                        name: `${message.author.username} ${emoji}`,
-                        icon_url: message.author.displayAvatarURL()
-                    },
-                    footer: {
-                        text: "🍻: Hab ich schon, 🚱: Hab ich noch nie"
-                    }
-                }
-            };
+    try {
+        const prompt = await getPrompt(userInput);
 
-            return message.channel
-                .send(envelope)
-                .then(sentMessage => {
-                    return Promise.all([
-                        message.delete(),
-                        sentMessage.react("🍻"),
-                        sentMessage.react("🚱")
-                    ]);
-                });
-        })
-        .then(() => callback())
-        .catch(error => {
-            callback(error);
+        const emoji = QUESTION_LEVEL_EMOJI_MAP[prompt.level];
+        const embed = {
+            title: `Ich hab noch nie ${Util.cleanContent(prompt.prompt, message)}`,
+            timestamp: moment.utc().format(),
+            color: 0x2ecc71,
+            author: {
+                name: `${message.author.username} ${emoji}`,
+                icon_url: message.author.displayAvatarURL()
+            },
+            footer: {
+                text: "🍻: Hab ich schon, 🚱: Hab ich noch nie"
+            }
+        };
+
+        const sentMessage = await message.channel.send({
+            embeds: [embed]
         });
+        await Promise.all([
+            message.delete(),
+            sentMessage.react("🍻"),
+            sentMessage.react("🚱")
+        ]);
+    }
+    catch (err) {
+        return err;
+    }
 };
 
-exports.description = "Stellt eine \"ich hab noch nie\" Frage";
+export const description = "Stellt eine \"ich hab noch nie\" Frage";

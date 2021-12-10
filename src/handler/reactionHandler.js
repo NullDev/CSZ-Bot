@@ -1,70 +1,64 @@
-"use strict";
-
 // ========================= //
 // = Copyright (c) NullDev = //
 // ========================= //
 
-// Models
-let FadingMessage = require("../storage/model/FadingMessage");
-let AdditionalMessageData = require("../storage/model/AdditionalMessageData");
+import FadingMessage from "../storage/model/FadingMessage";
+import AdditionalMessageData from "../storage/model/AdditionalMessageData";
 
-// Utils
-let log = require("../utils/logger");
-let poll = require("../commands/poll");
-const woisping = require("../commands/woisping");
+import * as log from "../utils/logger";
+import * as poll from "../commands/poll";
+import * as woisping from "../commands/woisping";
 
-const events = {
-    MESSAGE_REACTION_ADD: "messageReactionAdd",
-    MESSAGE_REACTION_REMOVE: "messageReactionRemove"
-};
-
-const voteEmojis = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣", "🔟", "👍", "👎"];
+const pollEmojis = poll.EMOJI;
+const voteEmojis = ["👍", "👎"];
+const pollVoteEmojis = pollEmojis.concat(voteEmojis);
 
 /**
- * Handles changes on reactions
+ * Handles reactions
  *
- * @param {any} event
+ * @param {import("discord.js").MessageReaction} reactionEvent
+ * @param {import("discord.js").User} user
  * @param {import("discord.js").Client} client
- * @returns
+ * @param {boolean} removal
+ * @returns {Promise<unknown>}
  */
-module.exports = async function(event, client) {
-    if (!Object.prototype.hasOwnProperty.call(events, event.t)) return;
-
-    const { d: data } = event;
-
+export default async function(reactionEvent, user, client, removal) {
     /** @type {import("discord.js").Message} */
-    const message = await client.channels.cache.get(data.channel_id).messages.fetch(data.message_id);
-
+    const message = await client.channels.cache.get(reactionEvent.message.channelId).messages.fetch(reactionEvent.message.id);
     if (message.author.id !== client.user.id) return;
 
-    if (event.d.emoji.name === "✅") {
-        const member = message.guild.members.cache.get(client.users.cache.get(data.user_id).id);
+    // TODO
+    const member = await message.guild.members.fetch(user.id);
 
+    if(reactionEvent.emoji.name === "✅") {
         if (member.id !== client.user.id) {
             const role = message.guild.roles.cache.find(r => r.name === message.content);
-            if (event.t === "MESSAGE_REACTION_ADD") member.roles.add(role.id).catch(log.error);
-            else if (event.t === "MESSAGE_REACTION_REMOVE") member.roles.remove(role.id).catch(log.error);
+            if(role && removal) {
+                member.roles.remove(role.id).catch(log.error);
+            }
+            else {
+                member.roles.add(role.id).catch(log.error);
+            }
         }
         return;
     }
 
-    if (voteEmojis.includes(event.d.emoji.name) && event.t === "MESSAGE_REACTION_ADD") {
-        const member = await message.guild.members.fetch((await client.users.fetch(data.user_id)).id);
+    if (pollVoteEmojis.includes(reactionEvent.emoji.name) && !removal) {
         const fromThisBot = member.id === client.user.id;
 
         if(fromThisBot) {
             return;
         }
 
-        if (await woisping.reactionHandler(event, client, message)) {
+        if (await woisping.reactionHandler(reactionEvent, user, client, message)) {
             return;
         }
 
         const isStrawpoll = message.embeds.length === 1 &&
-            message.embeds[0].author.name.indexOf("Strawpoll") >= 0 && voteEmojis.slice(0, 10).includes(event.d.emoji.name);
+            message.embeds[0].author.name.indexOf("Strawpoll") >= 0 && pollEmojis.includes(reactionEvent.emoji.name);
 
         const isUmfrage = message.embeds.length === 1 &&
-            message.embeds[0].author.name.indexOf("Umfrage") >= 0 && voteEmojis.slice(0, 10).includes(event.d.emoji.name);
+            message.embeds[0].author.name.indexOf("Umfrage") >= 0 && voteEmojis.includes(reactionEvent.emoji.name);
 
         const delayedPoll = poll.delayedPolls.find(x => x.pollId === message.id);
         const isDelayedPoll = Boolean(delayedPoll);
@@ -76,21 +70,21 @@ module.exports = async function(event, client) {
                         if(x === member.id) reactionList.splice(i);
                     });
                 });
-                const delayedPollReactions = delayedPoll.reactions[voteEmojis.indexOf(event.d.emoji.name)];
+                const delayedPollReactions = delayedPoll.reactions[pollEmojis.indexOf(reactionEvent.emoji.name)];
                 delayedPollReactions.push(member.id);
             }
 
-            const reactions = message.reactions.cache.filter(reaction =>
-                reaction.users.cache.has(member.id) &&
-                reaction._emoji.name !== event.d.emoji.name &&
-                voteEmojis.includes(reaction._emoji.name)
+            const reactions = message.reactions.cache.filter(r =>
+                r.users.cache.has(member.id) &&
+                r.emoji.name !== reactionEvent.emoji.name &&
+                pollEmojis.includes(r.emoji.name)
             );
 
-            for (let reaction of reactions.values()) await reaction.users.remove(member.id).catch(log.error);
+            for (let r of reactions.values()) await r.users.remove(member.id).catch(log.error);
         }
         else if(isUmfrage) {
             if(isDelayedPoll) {
-                const delayedPollReactions = delayedPoll.reactions[voteEmojis.indexOf(event.d.emoji.name)];
+                const delayedPollReactions = delayedPoll.reactions[voteEmojis.indexOf(reactionEvent.emoji.name)];
                 let hasVoted = delayedPollReactions.some(x => x === member.id);
                 if(!hasVoted) {
                     delayedPollReactions.push(member.id);
@@ -106,11 +100,11 @@ module.exports = async function(event, client) {
 
         // If it's a delayed poll, we clear all Reactions
         if(isDelayedPoll) {
-            const allUserReactions = message.reactions.cache.filter(reaction =>
-                reaction.users.cache.has(member.id) &&
-                voteEmojis.includes(reaction._emoji.name)
+            const allUserReactions = message.reactions.cache.filter(r =>
+                r.users.cache.has(member.id) &&
+                pollEmojis.includes(r.emoji.name)
             );
-            for (let reaction of allUserReactions.values()) await reaction.users.remove(member.id).catch(log.error);
+            for (let r of allUserReactions.values()) await r.users.remove(member.id).catch(log.error);
         }
 
         let additionalData = await AdditionalMessageData.fromMessage(message);
@@ -119,4 +113,4 @@ module.exports = async function(event, client) {
         additionalData.customData = newCustomData;
         await additionalData.save();
     }
-};
+}

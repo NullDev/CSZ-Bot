@@ -1,11 +1,12 @@
+/* Disabled due to sequelize's DataTypes */
 /* eslint-disable new-cap */
-"use strict";
-// Dependencies
-let {Model, DataTypes} = require("sequelize");
-let uuid = require("uuid");
-const logger = require("../../utils/logger");
 
-class AdditionalMessageData extends Model {
+import { Model, DataTypes } from "sequelize";
+import { v4 as uuidv4 } from "uuid";
+
+import * as log from "../../utils/logger";
+
+export default class AdditionalMessageData extends Model {
     /**
      * Fetches the discord message associated with this data
      * @param {import("discord.js").Client} client
@@ -17,7 +18,7 @@ class AdditionalMessageData extends Model {
                 .messages.cache.get(message.id);
         }
         catch(err) {
-            logger.error(`Failed to fetch message from additional data [${JSON.stringify(this)}]: ${err.message}`);
+            log.error(`Failed to fetch message from additional data [${JSON.stringify(this)}]: ${err.message}`);
         }
         return null;
     }
@@ -46,7 +47,7 @@ class AdditionalMessageData extends Model {
         this.init({
             id: {
                 type: DataTypes.STRING(36),
-                defaultValue: () => uuid.v4(),
+                defaultValue: () => uuidv4(),
                 primaryKey: true
             },
             messageId: {
@@ -87,5 +88,3 @@ class AdditionalMessageData extends Model {
         });
     }
 }
-
-module.exports = AdditionalMessageData;

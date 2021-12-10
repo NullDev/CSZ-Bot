@@ -1,26 +1,20 @@
-"use strict";
-
 // ========================= //
 // = Copyright (c) NullDev = //
 // ========================= //
 
 // Dependencies
-let moment = require("moment");
-let parseOptions = require("minimist");
+import moment from "moment";
+import parseOptions from "minimist";
 
-// Utils
-let config = require("../utils/configHandler").getConfig();
+import { getConfig } from "../utils/configHandler";
+const config = getConfig();
 
 /**
  * Creates a new poll (vote; yes/no)
  *
- * @param {import("discord.js").Client} client
- * @param {import("discord.js").Message} message
- * @param {Array} args
- * @param {Function} callback
- * @returns {Function} callback
+ * @type {import("../types").CommandFunction}
  */
-exports.run = (client, message, args, callback) => {
+export const run = async(client, message, args) => {
     let options = parseOptions(args, {
         "boolean": [
             "channel"
@@ -32,32 +26,34 @@ exports.run = (client, message, args, callback) => {
 
     let parsedArgs = options._;
 
-    if (!parsedArgs.length) return callback("Bruder da ist keine Frage :c");
+    if (!parsedArgs.length) return "Bruder da ist keine Frage :c";
 
-    let embed = {
-        embed: {
-            title: `**${parsedArgs.join(" ")}**`,
-            timestamp: moment.utc().format(),
-            author: {
-                name: `Umfrage von ${message.author.username}`,
-                icon_url: message.author.displayAvatarURL()
-            }
+    const embed = {
+        title: `**${parsedArgs.join(" ")}**`,
+        timestamp: moment.utc().format(),
+        color: 0x9400D3,
+        author: {
+            name: `Umfrage von ${message.author.username}`,
+            icon_url: message.author.displayAvatarURL()
         }
     };
 
-    let channel = options.channel ? client.guilds.cache.get(config.ids.guild_id).channels.cache.get(config.ids.votes_channel_id) : message.channel;
-
     /** @type {import("discord.js").TextChannel} */
-    (channel).send(/** @type {any} embed */(embed))
-        .then(msg => {
-            message.delete();
-            msg.react("👍").then(() => msg.react("👎"));
-        });
+    const channel = options.channel
+        ? client.guilds.cache.get(config.ids.guild_id).channels.cache.get(config.ids.votes_channel_id)
+        : message.channel;
 
-    return callback();
+    const messageWithVoteContent = await channel.send( {
+        embeds: [embed]
+    });
+    await Promise.all([
+        messageWithVoteContent.react("👍"),
+        messageWithVoteContent.react("👎")
+    ]);
+    await message.delete();
 };
 
-exports.description = `Erstellt eine Umfrage (ja/nein).
+export const description = `Erstellt eine Umfrage (ja/nein).
 Usage: ${config.bot_settings.prefix.command_prefix}vote [Optionen?] [Hier die Frage]
 Optionen:
 \t-c, --channel

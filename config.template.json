@@ -1,6 +1,7 @@
 {
     "auth": {
-        "bot_token": ""
+        "bot_token": "",
+        "client_id": ""
     },
     "bot_settings": {
         "status": "Hi!",
@@ -8,12 +9,23 @@
             "command_prefix": ".",
             "mod_prefix": "~"
         },
+        "moderator_id": "",
+        "ban_reason_channel_id": "624931933758947343",
         "moderator_roles": [
             "Moderator"
         ],
         "woisping_limit": 7200,
         "woisping_threshold": 2,
-        "flame_trusted_user_on_bot_ping": false
+        "flame_trusted_user_on_bot_ping": false,
+        "quotes": {
+            "emoji_name": "",
+            "allowed_group_ids": [],
+            "quote_threshold": 2,
+            "anonymous_channel_ids": [],
+            "blacklisted_channel_ids": [],
+            "target_channel_overrides": [],
+            "default_target_channel_id": ""
+        }
     },
     "ids": {
         "guild_id": "",
@@ -30,6 +42,7 @@
         "shame_role_id": "",
 
         "banned_channel_id": "",
-        "votes_channel_id": ""
+        "votes_channel_id": "",
+        "bot_log_channel_id": ""
     }
 }

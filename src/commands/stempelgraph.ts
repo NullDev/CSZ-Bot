@@ -1,0 +1,239 @@
+import Viz from "viz.js";
+import { Module, render } from "viz.js/full.render.js";
+import { Client, CommandInteraction, Guild, GuildMember, Snowflake } from "discord.js";
+import { svg2png } from "svg-png-converter";
+
+import { getConfig } from "../utils/configHandler";
+import Stempel from "../storage/model/Stempel";
+import * as log from "../utils/logger";
+import { isMod } from "../utils/userUtils";
+import { SlashCommandBuilder, SlashCommandStringOption } from "@discordjs/builders";
+import { ApplicationCommand } from "./command";
+
+const config = getConfig();
+
+const viz = new Viz({ Module, render });
+
+const suportedLayoutEngines = ["circo", "dot", "fdp", "neato", "osage", "twopi"] as const;
+type LayoutEngine = (typeof suportedLayoutEngines)[number];
+
+interface StempelConnection {
+    inviter: GuildMember;
+    invitee: GuildMember;
+}
+
+type RoleInGraph =
+    | "english"
+    | "rejoiner"
+    | "woisgang"
+    | "trusted"
+    | "moderator"
+    | "gruendervaeter"
+    | "administrator"
+    | "booster";
+
+const roleColors: Partial<Record<RoleInGraph, string>> = {
+    // Order is important here: The lower the color, the higher the priority
+    booster: "#1cb992",
+    trusted: "#e91e63",
+    moderator: "#5865f2",
+    gruendervaeter: "#faa81a",
+    administrator: "#8b51ff"
+};
+
+interface UserInfo {
+    member: GuildMember;
+    name: string;
+    roles: readonly RoleInGraph[];
+}
+
+function getMemberNode(member: UserInfo): string {
+    const { roles } = member;
+    let label = "";
+
+    if (roles.includes("english")) {
+        label += "🇬🇧 ";
+    }
+    if (roles.includes("woisgang")) {
+        label += "🎤 ";
+    }
+    label += member.name;
+    if (roles.includes("trusted")) {
+        label += " 💕";
+    }
+
+    let boxColor = "#ffffff";
+    for (const [roleName, color] of Object.entries(roleColors)) {
+        if (!roleName || !color) {
+            continue;
+        }
+
+        if (roles.includes(roleName as RoleInGraph)) {
+            boxColor = color;
+        }
+    }
+
+    const nodeStyle = roles.includes("rejoiner")
+        ? "dashed,bold"
+        : "solid,bold";
+
+    const escapedLabel = label.replaceAll('"', '\\"'); // dirty hack to fix quotes in user names
+    return `"${member.member.id}" [label="${escapedLabel}", color="${boxColor}", style="${nodeStyle}"]`;
+}
+
+async function drawStempelgraph(stempels: StempelConnection[], engine: LayoutEngine, userInfo: Map<GuildMember, UserInfo>): Promise<Buffer> {
+    const inviterNodes = stempels
+        .map(s => userInfo.get(s.inviter)!)
+        .map(getMemberNode)
+        .join(";\n");
+
+    const inviteeNodes = stempels
+        .map(s => userInfo.get(s.invitee)!)
+        .map(getMemberNode)
+        .join(";\n");
+
+    const connections = stempels
+        .map(s => `"${s.inviter.id}" -> "${s.invitee.id}"`)
+        .join(";\n");
+
+
+    const dotSrc = `digraph {
+        layout = ${engine};
+        # ${engine === "dot" ? "splines=line;" : ""}
+
+        bgcolor="#36393f";
+        fontcolor="#ffffff";
+        fontname="Monospace"
+        label="CSZ Social Graph";
+
+        node [
+            color="#ffffff"
+            fontcolor="#ffffff",
+            labelfontcolor="#ffffff",
+            shape=box,
+        ];
+
+        edge [
+            color="#ffffff"
+            fontcolor="#ffffff",
+            labelfontcolor="#ffffff",
+        ];
+
+        ${inviterNodes}
+        ${inviteeNodes}
+        ${connections}
+    }`;
+
+    const svgSrc = await viz.renderString(dotSrc);
+    return await svg2png({
+        input: svgSrc,
+        encoding: "buffer",
+        format: "png"
+    });
+}
+
+async function fetchMemberInfo(guild: Guild, ids: Set<Snowflake>): Promise<Map<Snowflake, GuildMember>> {
+    const memberMap = new Map<Snowflake, GuildMember>();
+    for (const id of ids) {
+        const cachedUser = memberMap.get(id);
+        if (cachedUser) {
+            continue;
+        }
+        const member = guild.members.cache.get(id);
+        if (member) {
+            memberMap.set(id, member);
+        }
+    }
+    return memberMap;
+}
+
+function getRoles(member: GuildMember): RoleInGraph[] {
+    const res: RoleInGraph[] = [];
+
+    // TODO: Das Zeug hier aufräumen am besten ins userUtils Modul. Soon:tm:
+    if (member.roles.cache.has(config.ids.woisgang_role_id)) {
+        res.push("woisgang");
+    }
+    if (member.roles.cache.has(config.ids.trusted_role_id)) {
+        res.push("trusted");
+    }
+    if (member.roles.cache.has(config.ids.gruendervaeter_role_id)) {
+        res.push("gruendervaeter");
+    }
+    if (member.roles.cache.has("856269806969421844")) {
+        res.push("rejoiner");
+    }
+    if (isMod(member)) {
+        res.push("moderator");
+    }
+    if (member.roles.cache.has("620762567568130089")) {
+        res.push("administrator");
+    }
+    if (member.roles.cache.has("647914008065867798")) {
+        res.push("english");
+    }
+    if (member.roles.cache.has("624966226010963969")) {
+        res.push("booster");
+    }
+    return res;
+}
+
+export class StempelgraphCommand implements ApplicationCommand {
+    modCommand: boolean = false;
+    name: string = "stempelgraph";
+    description: string = "Zeigt einen Sozialgraphen der Stempel. 1984 ist real!";
+
+    get applicationCommand(): Pick<SlashCommandBuilder, "toJSON"> {
+        return new SlashCommandBuilder()
+            .setName(this.name)
+            .setDescription(this.description)
+            .addStringOption(
+                new SlashCommandStringOption()
+                    .setDescription("Die layout-engine für GraphViz")
+                    .setRequired(false)
+                    .addChoices(suportedLayoutEngines.map(e => [e, e]))
+                    .setName("engine")
+            );
+    }
+
+    async handleInteraction(command: CommandInteraction, _client: Client<boolean>): Promise<void> {
+        const members = command.guild?.members.cache;
+        if (!members) {
+            return;
+        }
+
+        const stempels = await Stempel.findAll();
+        const allUserIds = new Set<string>(stempels.map(s => s.invitator).concat(stempels.map(s => s.invitedMember)));
+        const memberInfoMap = await fetchMemberInfo(command.guild, allUserIds);
+
+        const namedStempels = stempels.map(s => ({
+            inviter: memberInfoMap.get(s.invitator)!,
+            invitee: memberInfoMap.get(s.invitedMember)!
+        }));
+
+        const graphUserInfo = new Map<GuildMember, UserInfo>();
+        for (const member of memberInfoMap.values()) {
+            graphUserInfo.set(member, {
+                member,
+                name: member.nickname ?? member.displayName,
+                roles: getRoles(member)
+            });
+        }
+
+        const engine = (command.options.getString("engine") ?? "dot") as LayoutEngine;
+
+        const stempelGraph = await drawStempelgraph(namedStempels, engine, graphUserInfo);
+
+        try {
+            await command.reply({
+                files: [{
+                    attachment: stempelGraph,
+                    name: "stempelgraph.png"
+                }]
+            });
+        }
+        catch (err) {
+            log.error(`Could not create where meme: ${err}`);
+        }
+    }
+}

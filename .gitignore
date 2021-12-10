@@ -111,9 +111,6 @@ dist
 
 storage.db
 
-# Visual Studio Code
-.vscode/
-
 # JetBrains.gitignore
 # see https://github.com/github/gitignore/blob/master/Global/JetBrains.gitignore
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio, WebStorm and Rider
@@ -138,3 +135,5 @@ com_crashlytics_export_strings.xml
 crashlytics.properties
 crashlytics-build.properties
 fabric.properties
+
+built/

@@ -1,10 +1,10 @@
+/* Disabled due to sequelize's DataTypes */
 /* eslint-disable new-cap */
-"use strict";
-// Dependencies
-let {Model, DataTypes} = require("sequelize");
-let uuid = require("uuid");
 
-class FadingMessage extends Model {
+import { Model, DataTypes } from "sequelize";
+import { v4 as uuidv4 } from "uuid";
+
+export default class FadingMessage extends Model {
     /**
      * Starts a fading message object
      * @param {import("discord.js").Message} message
@@ -35,7 +35,7 @@ class FadingMessage extends Model {
         this.init({
             id: {
                 type: DataTypes.STRING(36),
-                defaultValue: () => uuid.v4(),
+                defaultValue: () => uuidv4(),
                 primaryKey: true
             },
             messageId: {
@@ -83,5 +83,3 @@ class FadingMessage extends Model {
         });
     }
 }
-
-module.exports = FadingMessage;

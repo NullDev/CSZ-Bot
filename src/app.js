@@ -1,5 +1,3 @@
-"use strict";
-
 // ========================= //
 // = Copyright (c) NullDev = //
 // ========================= //
@@ -7,26 +5,27 @@
 /** @typedef {import("discord.js").TextChannel} TC */
 
 // Dependencies
-let Discord = require("discord.js");
-let cron = require("node-cron");
+import * as Discord from "discord.js";
+import * as cron from "node-cron";
 
-// Utils
-let conf = require("./utils/configHandler");
-let log = require("./utils/logger");
-let timezone = require("./utils/timezone");
+import * as conf from "./utils/configHandler";
+import * as log from "./utils/logger";
+import * as timezone from "./utils/timezone";
 
 // Handler
-let messageHandler = require("./handler/messageHandler");
-let messageDeleteHandler = require("./handler/messageDeleteHandler");
-let reactionHandler = require("./handler/reactionHandler");
-let BdayHandler = require("./handler/bdayHandler");
-let fadingMessageHandler = require("./handler/fadingMessageHandler");
-let storage = require("./storage/storage");
+import messageHandler from "./handler/messageHandler";
+import messageDeleteHandler from "./handler/messageDeleteHandler";
+import BdayHandler from "./handler/bdayHandler";
+import * as fadingMessageHandler from "./handler/fadingMessageHandler";
+import * as storage from "./storage/storage";
 
 // Other commands
-let ban = require("./commands/modcommands/ban");
-let poll = require("./commands/poll");
-const GuildRagequit = require("./storage/model/GuildRagequit");
+import * as ban from "./commands/modcommands/ban";
+import * as poll from "./commands/poll";
+import GuildRagequit from "./storage/model/GuildRagequit";
+import reactionHandler from "./handler/reactionHandler";
+import { handleInteractionEvent, messageCommandHandler, registerAllApplicationCommandsAsGuildCommands } from "./handler/commandHandler";
+import {quoteReactionHandler} from "./handler/quoteHandler";
 
 let version = conf.getVersion();
 let appname = conf.getName();
@@ -45,7 +44,28 @@ log.done("Started.");
 
 const config = conf.getConfig();
 const client = new Discord.Client({
-    disableMentions: "everyone"
+    partials: [
+        "MESSAGE",
+        "REACTION",
+        "USER"
+    ],
+    allowedMentions: {
+        parse: ["users", "roles"],
+        repliedUser: true
+    },
+    intents: ["DIRECT_MESSAGES",
+        "GUILDS",
+        "GUILD_BANS",
+        "GUILD_EMOJIS_AND_STICKERS",
+        "GUILD_INTEGRATIONS",
+        "GUILD_INVITES",
+        "GUILD_MEMBERS",
+        "GUILD_MESSAGES",
+        "GUILD_MESSAGE_REACTIONS",
+        "GUILD_MESSAGE_TYPING",
+        "GUILD_PRESENCES",
+        "GUILD_VOICE_STATES",
+        "GUILD_WEBHOOKS"]
 });
 
 // @ts-ignore
@@ -65,15 +85,25 @@ function scheduleTimezoneFixedCronjob(cronString) {
         /** @type {TC} */
         (csz.channels.cache.get(config.ids.hauptchat_id)).send("Es ist `13:37` meine Kerle.\nBleibt hydriert! :grin: :sweat_drops:");
 
-        // Auto-Prune members
-        csz.members.prune({ days: 2, reason: "auto prune" })
-            .then(count => {
-                log.info(`Auto-prune: ${count} members pruned.`);
-                if (count >= 1) {
-                    /** @type {TC} */
-                    (csz.channels.cache.get(config.ids.hauptchat_id)).send(`Hab grad ${count} jockel weg-gepruned :joy:`);
-                }
-            }).catch(e => log.error(e));
+        // Auto-kick members
+        const sadPinguEmote = csz.emojis.cache.find(e => e.name === "sadpingu");
+        const dabEmote = csz.emojis.cache.find(e => e.name === "Dab");
+        let cnt = 0;
+
+        csz.members.cache.filter(m => {
+            return m && m.roles.cache.filter(r => r.name !== "@everyone").size === 0 && Date.now() - m.joinedTimestamp >= 48 * 3_600_000;
+        }).forEach(member => {
+            member.kick();
+            cnt++;
+        });
+
+        log.info(`Auto-kick: ${cnt} members kicked.`);
+        if(cnt > 0){
+            csz.channels.cache.get(config.ids.hauptchat_id).send(`Hab grad ${cnt} jockel gekickt ${dabEmote}`);
+        }
+        else {
+            csz.channels.cache.get(config.ids.hauptchat_id).send(`Heute leider keine jockel gekickt ${sadPinguEmote}`);
+        }
 
         const tomorrow = Date.now() + 60/* s*/ * 1000/* ms*/ * 60/* m*/ * 24/* h*/;
         const newCronString = timezone.getCronjobStringForHydrate(tomorrow);
@@ -97,11 +127,10 @@ client.on("ready", async() => {
         const newCronString = timezone.getCronjobStringForHydrate(Date.now());
         scheduleTimezoneFixedCronjob(newCronString);
 
-        cron.schedule("1 0 * * *", () => bday.checkBdays(), { timezone: "Europe/Vienna" });
-        bday.checkBdays();
+        cron.schedule("1 0 * * *", async() => await bday.checkBdays(), { timezone: "Europe/Vienna" });
+        await bday.checkBdays();
     }
 
-    ban.loadBans();
     ban.startCron(client);
 
     await poll.importPolls();
@@ -109,6 +138,24 @@ client.on("ready", async() => {
 
     fadingMessageHandler.startLoop(client);
 });
+
+/**
+ * When the application is ready, slash commands should be registered
+ */
+client.on("ready", async() => {
+    registerAllApplicationCommandsAsGuildCommands();
+});
+
+/**
+ * This is an additional Message handler, that we use as a replacement
+ * for the "old commands". This way we can easily migrate commands to slash commands
+ * and still use the possility to use the commands textual. Win-Win :cooldoge:
+ */
+client.on("messageCreate", async(message) => {
+    messageCommandHandler(message, client);
+});
+
+client.on("interactionCreate", async(interaction) => handleInteractionEvent(interaction, client));
 
 client.on("guildCreate", guild => log.info(`New guild joined: ${guild.name} (id: ${guild.id}) with ${guild.memberCount} members`));
 
@@ -138,7 +185,7 @@ client.on("guildMemberRemove", (member) => {
     GuildRagequit.incrementRagequit(member.guild.id, member.id);
 });
 
-client.on("message", (message) => messageHandler(message, client));
+client.on("messageCreate", (message) => messageHandler(message, client));
 
 client.on("messageDelete", (message) => messageDeleteHandler(message, client));
 
@@ -146,7 +193,9 @@ client.on("messageUpdate", (_, newMessage) => messageHandler(/** @type {import("
 
 client.on("error", log.error);
 
-client.on("raw", async event => reactionHandler(event, client));
+client.on("messageReactionAdd", async(event, user) => reactionHandler(event, user, client, false));
+client.on("messageReactionAdd", async(event, user) => quoteReactionHandler(event, user, client));
+client.on("messageReactionRemove", async(event, user) => reactionHandler(event, user, client, true));
 
 client.login(config.auth.bot_token).then(() => {
     log.done("Token login was successful!");
