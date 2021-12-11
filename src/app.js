@@ -132,7 +132,7 @@ client.on("ready", async() => {
         cron.schedule("1 0 * * *", async() => await bday.checkBdays(), { timezone: "Europe/Vienna" });
         await bday.checkBdays();
 
-        cron.schedule("0 0 1-25 12 *", async() => await aoc.publishLeaderBoard(), { timezone: "Europe/Vienna" });
+        cron.schedule("0 15 1-25 12 *", async() => await aoc.publishLeaderBoard(), { timezone: "Europe/Vienna" });
         aoc.publishLeaderBoard();
     }
 
