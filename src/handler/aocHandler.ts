@@ -39,6 +39,12 @@ type LeaderBoard = {
     members: Record<number, AoCMember>;
 }
 
+const medals = ["🥇", "🥈", "🥉", "🪙", "🏵️", "🌹"];
+
+const convertName = (member: AoCMember, userMap: Record<string, string>): string => {
+    return userMap[member.name] ?? userMap[`(anonymous user #${member.id})`] ?? member.name ?? `(anonymous user #${member.id})`;
+};
+
 export default class AoCHandler {
     readonly config: any;
     constructor(private readonly client: discord.Client) {
@@ -76,7 +82,17 @@ export default class AoCHandler {
     private createEmbedFromLeaderBoard(userMap: Record<string, string>, lb: LeaderBoard): discord.MessageEmbed {
         const members = Object.values(lb.members);
         members.sort((a, b) => b.local_score - a.local_score);
-        const users = members.map((m, i) => `${i + 1}. ${userMap[m.name] ?? userMap[`(anonymous user #${m.id})`] ?? m.name ?? `(anonymous user #${m.id})`}`).join("\n");
+        const top: discord.EmbedField[] = members.slice(0, 6).map((m, i) => ({
+            name: `${medals[i]} ${i + 1}. ${convertName(m, userMap)}`,
+            value: `⭐ ${m.stars}\nLocal Score: ${m.local_score}`,
+            inline: true
+        }));
+
+        const noobs: discord.EmbedField = {
+            name: "Sonstige Platzierungen",
+            value: members.slice(top.length).map((m, i) => `${i + 1}. ${convertName(m, userMap)} (⭐ ${m.stars} // Local Score: ${m.local_score})`).join("\n"),
+            inline: false
+        };
 
         return {
             title: "AoC Leaderboard",
@@ -87,11 +103,8 @@ export default class AoCHandler {
             color: 0x009900,
             createdAt: new Date(),
             fields: [
-                {
-                    name: "Platzierungen",
-                    value: users,
-                    inline: false
-                }
+                ...top,
+                noobs
             ]
         } as discord.MessageEmbed;
     }
