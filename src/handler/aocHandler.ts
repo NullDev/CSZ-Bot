@@ -50,9 +50,9 @@ const getLanguage = (member: AoCMember, userMap: Record<string, UserMapEntry>): 
     return userMap[member.id].language ?? "n/a";
 };
 
-const getNameString = (member: AoCMember, userMap: Record<string, UserMapEntry>, includeLanguage?: boolean): string => {
+const getNameString = (member: AoCMember, userMap: Record<string, UserMapEntry>, includeLanguage: boolean): string => {
     const convertedName = userMap[member.id].displayName ?? member.name ?? `(anonymous user #${member.id})`;
-    if(!!includeLanguage) {
+    if(includeLanguage) {
         const language = getLanguage(member, userMap);
         return `${convertedName} [${language}]`;
     }
@@ -111,7 +111,7 @@ export default class AoCHandler {
 
         const noobs: discord.EmbedField = {
             name: "Sonstige Platzierungen",
-            value: members.slice(top.length).map((m, i) => `${top.length + i + 1}. ${getNameString(m, userMap)} [${getLanguage(m, userMap)}] (Stars: ${m.stars} // Local Score: ${m.local_score})`).join("\n"),
+            value: members.slice(top.length).map((m, i) => `${top.length + i + 1}. ${getNameString(m, userMap, true)} (Stars: ${m.stars} / Local Score: ${m.local_score})`).join("\n"),
             inline: false
         };
 
