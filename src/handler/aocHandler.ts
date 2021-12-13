@@ -84,13 +84,13 @@ export default class AoCHandler {
         members.sort((a, b) => b.local_score - a.local_score);
         const top: discord.EmbedField[] = members.slice(0, 6).map((m, i) => ({
             name: `${medals[i]} ${i + 1}. ${convertName(m, userMap)}`,
-            value: `⭐ ${m.stars}\nLocal Score: ${m.local_score}`,
+            value: `⭐ ${m.stars}\n🏆 ${m.local_score}`,
             inline: true
         }));
 
         const noobs: discord.EmbedField = {
             name: "Sonstige Platzierungen",
-            value: members.slice(top.length).map((m, i) => `${i + 1}. ${convertName(m, userMap)} (⭐ ${m.stars} // Local Score: ${m.local_score})`).join("\n"),
+            value: members.slice(top.length).map((m, i) => `${i + 1}. ${convertName(m, userMap)} (Stars: ${m.stars} // Local Score: ${m.local_score})`).join("\n"),
             inline: false
         };
 
