@@ -47,13 +47,13 @@ type LeaderBoard = {
 const medals = ["🥇", "🥈", "🥉", "🪙", "🏵️", "🌹"];
 
 const getLanguage = (member: AoCMember, userMap: Record<string, UserMapEntry>): string => {
-    const language = userMap[member.id].language ?? "n/a";
-    log.debug(`[AoC] Resolved ${language} for member with id ${member.id}`);
+    const language = userMap[member.id]?.language ?? "n/a";
+    log.debug(`[AoC] Resolved language ${language} for member with id ${member.id}`);
     return language;
 };
 
 const getNameString = (member: AoCMember, userMap: Record<string, UserMapEntry>, includeLanguage: boolean): string => {
-    const convertedName = userMap[member.id].displayName ?? member.name ?? `(anonymous user #${member.id})`;
+    const convertedName = userMap[member.id]?.displayName ?? member.name ?? `(anonymous user #${member.id})`;
     if(includeLanguage) {
         const language = getLanguage(member, userMap);
         log.debug(`[AoC] Resolved ${convertedName} with language ${language} for member with id ${member.id}`);

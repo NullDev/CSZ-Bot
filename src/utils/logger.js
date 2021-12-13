@@ -69,5 +69,5 @@ export const done = (input) => {
 };
 
 export const debug = (input) => {
-    console.log(" \x1b[45m\x1b[30m 🐛 \x1b[0m\x1b[32m [DEBUG]  " + getDate() + " - " + input + "\x1b[0m");
+    console.log(" \x1b[45m\x1b[30m 🐛 \x1b[0m\x1b[35m [DEBUG]  " + getDate() + " - " + input + "\x1b[0m");
 };
