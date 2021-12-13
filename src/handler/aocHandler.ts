@@ -75,7 +75,7 @@ export default class AoCHandler {
 
     private createEmbedFromLeaderBoard(userMap: Record<string, string>, lb: LeaderBoard): discord.MessageEmbed {
         const members = Object.values(lb.members);
-        members.sort((a, b) => a.local_score - b.local_score);
+        members.sort((a, b) => b.local_score - a.local_score);
         const users = members.map((m, i) => `${i + 1}. ${userMap[m.name] ?? m.name}`).join("\n");
 
         return {
