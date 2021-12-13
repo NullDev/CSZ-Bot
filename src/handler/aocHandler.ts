@@ -52,7 +52,7 @@ const getLanguage = (member: AoCMember, userMap: Record<string, UserMapEntry>): 
 
 const getNameString = (member: AoCMember, userMap: Record<string, UserMapEntry>, includeLanguage?: boolean): string => {
     const convertedName = userMap[member.id].displayName ?? member.name ?? `(anonymous user #${member.id})`;
-    if(!includeLanguage) {
+    if(!!includeLanguage) {
         const language = getLanguage(member, userMap);
         return `${convertedName} [${language}]`;
     }
