@@ -77,6 +77,9 @@ export default class AoCHandler {
                 Cookie: `session=${aocConfig.sessionToken}`
             }
         }).then(r => r.json()) as LeaderBoard;
+
+        log.info(`[AoC] Retrieved Leaderboard with ${Object.keys(leaderBoard).length} Members`);
+
         const guild = this.client.guilds.cache.get(this.config.ids.guild_id);
         if (!guild) {
             log.error(`Guild ${this.config.ids.guild_id} not found`);
@@ -94,6 +97,8 @@ export default class AoCHandler {
     }
 
     private createEmbedFromLeaderBoard(userMap: Record<string, UserMapEntry>, lb: LeaderBoard): discord.MessageEmbed {
+        log.info("[AoC] Creating Embed from leaderboard...");
+
         const members = Object.values(lb.members);
         members.sort((a, b) => b.local_score - a.local_score);
         const top: discord.EmbedField[] = members.slice(0, 6).map((m, i) => ({
@@ -102,11 +107,15 @@ export default class AoCHandler {
             inline: true
         }));
 
+        log.info(`[AoC] Created Fields for the first ${top.length} Members`);
+
         const noobs: discord.EmbedField = {
             name: "Sonstige Platzierungen",
             value: members.slice(top.length).map((m, i) => `${top.length + i + 1}. ${getNameString(m, userMap)} [${getLanguage(m, userMap)}] (Stars: ${m.stars} // Local Score: ${m.local_score})`).join("\n"),
             inline: false
         };
+
+        log.info(`[AoC] Created Fields for the butom ${noobs.length} Members`);
 
         return {
             title: "AoC Leaderboard",
