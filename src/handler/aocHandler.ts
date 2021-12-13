@@ -107,7 +107,7 @@ export default class AoCHandler {
         members.sort((a, b) => b.local_score - a.local_score);
         const top: discord.EmbedField[] = members.slice(0, 6).map((m, i) => ({
             name: `${medals[i]} ${i + 1}. ${getNameString(m, userMap, false)}`,
-            value: `⭐ ${m.stars}\n🏆 ${m.local_score}\n🌐${getLanguage(m, userMap)}`,
+            value: `⭐ ${m.stars}\n🏆 ${m.local_score}\n🌐 ${getLanguage(m, userMap)}`,
             inline: true
         }));
 

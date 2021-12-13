@@ -133,7 +133,6 @@ client.on("ready", async() => {
         await bday.checkBdays();
 
         cron.schedule("0 20 1-25 12 *", async() => await aoc.publishLeaderBoard(), { timezone: "Europe/Vienna" });
-        await aoc.publishLeaderBoard();
     }
 
     ban.startCron(client);
