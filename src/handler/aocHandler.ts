@@ -115,7 +115,7 @@ export default class AoCHandler {
             inline: false
         };
 
-        log.info(`[AoC] Created Fields for the butom ${noobs.length} Members`);
+        log.info(`[AoC] Created Fields for the butom ${members.length - top.length} Members`);
 
         return {
             title: "AoC Leaderboard",
