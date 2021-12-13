@@ -8,6 +8,7 @@ import { getConfig } from "../utils/configHandler";
 import * as path from "path";
 import * as fs from "fs";
 import fetch from "node-fetch";
+import * as log from "../utils/logger";
 
 const aocConfigPath = path.resolve("aoc.config.json");
 
@@ -45,7 +46,10 @@ export default class AoCHandler {
     }
 
     async publishLeaderBoard() {
-        if (!fs.existsSync(aocConfigPath)) return;
+        if (!fs.existsSync(aocConfigPath)) {
+            log.error(`Could not find AoC config ${aocConfigPath}`);
+            return;
+        }
         const aocConfig = JSON.parse(fs.readFileSync(aocConfigPath, "utf8")) as AoCConfig;
 
         const leaderBoard = await fetch(aocConfig.leaderBoardJsonUrl, {
@@ -55,10 +59,12 @@ export default class AoCHandler {
         }).then(r => r.json()) as LeaderBoard;
         const guild = this.client.guilds.cache.get(this.config.ids.guild_id);
         if (!guild) {
+            log.error(`Guild ${this.config.ids.guild_id} not found`);
             return;
         }
         const targetChannel = guild.channels.cache.get(aocConfig.targetChannelId);
         if (!targetChannel) {
+            log.error(`Target channel ${aocConfig.targetChannelId} not found`);
             return;
         }
 
