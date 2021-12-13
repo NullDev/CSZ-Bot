@@ -5,6 +5,7 @@
 // Dependencies
 import moment from "moment";
 import parseOptions from "minimist";
+import { Util } from "discord.js";
 
 import { getConfig } from "../utils/configHandler";
 const config = getConfig();
@@ -29,7 +30,7 @@ export const run = async(client, message, args) => {
     if (!parsedArgs.length) return "Bruder da ist keine Frage :c";
 
     const embed = {
-        title: `**${parsedArgs.join(" ")}**`,
+        title: `**${Util.cleanContent(parsedArgs.join(" "), message.channel)}**`,
         timestamp: moment.utc().format(),
         color: 0x9400D3,
         author: {
