@@ -16,7 +16,7 @@ const config = getConfig();
 
 type UserMapEntry = {
     displayName: string;
-    language?: string;
+    language: string;
 };
 
 type AoCConfig = {
