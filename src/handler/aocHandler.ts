@@ -104,7 +104,7 @@ export default class AoCHandler {
 
         const noobs: discord.EmbedField = {
             name: "Sonstige Platzierungen",
-            value: members.slice(top.length).map((m, i) => `${i + 1}. ${getNameString(m, userMap)} [${getLanguage(m, userMap)}] (Stars: ${m.stars} // Local Score: ${m.local_score})`).join("\n"),
+            value: members.slice(top.length).map((m, i) => `${top.length + i + 1}. ${getNameString(m, userMap)} [${getLanguage(m, userMap)}] (Stars: ${m.stars} // Local Score: ${m.local_score})`).join("\n"),
             inline: false
         };
 
