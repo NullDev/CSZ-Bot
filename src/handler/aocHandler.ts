@@ -14,11 +14,16 @@ const aocConfigPath = path.resolve("aoc.config.json");
 
 const config = getConfig();
 
+type UserMapEntry = {
+    displayName: string;
+    language?: string;
+};
+
 type AoCConfig = {
     targetChannelId: string;
     sessionToken: string;
     leaderBoardJsonUrl: string;
-    userMap: Record<string, string>;
+    userMap: Record<string, UserMapEntry>;
 };
 
 type CompletionInfo = Record<1 | 2, { get_start_ts: number }>;
@@ -41,8 +46,17 @@ type LeaderBoard = {
 
 const medals = ["🥇", "🥈", "🥉", "🪙", "🏵️", "🌹"];
 
-const convertName = (member: AoCMember, userMap: Record<string, string>): string => {
-    return userMap[member.name] ?? userMap[`(anonymous user #${member.id})`] ?? member.name ?? `(anonymous user #${member.id})`;
+const getLanguage = (member: AoCMember, userMap: Record<string, UserMapEntry>): string => {
+    return userMap[member.id].language ?? "n/a";
+};
+
+const getNameString = (member: AoCMember, userMap: Record<string, UserMapEntry>, includeLanguage?: boolean): string => {
+    const convertedName = userMap[member.id].displayName ?? member.name ?? `(anonymous user #${member.id})`;
+    if(!includeLanguage) {
+        const language = getLanguage(member, userMap);
+        return `${convertedName} [${language}]`;
+    }
+    return convertedName;
 };
 
 export default class AoCHandler {
@@ -79,18 +93,18 @@ export default class AoCHandler {
         return channel.send({ embeds: [embed] });
     }
 
-    private createEmbedFromLeaderBoard(userMap: Record<string, string>, lb: LeaderBoard): discord.MessageEmbed {
+    private createEmbedFromLeaderBoard(userMap: Record<string, UserMapEntry>, lb: LeaderBoard): discord.MessageEmbed {
         const members = Object.values(lb.members);
         members.sort((a, b) => b.local_score - a.local_score);
         const top: discord.EmbedField[] = members.slice(0, 6).map((m, i) => ({
-            name: `${medals[i]} ${i + 1}. ${convertName(m, userMap)}`,
-            value: `⭐ ${m.stars}\n🏆 ${m.local_score}`,
+            name: `${medals[i]} ${i + 1}. ${getNameString(m, userMap, false)}`,
+            value: `⭐ ${m.stars}\n🏆 ${m.local_score}\n🌐${getLanguage(m, userMap)}`,
             inline: true
         }));
 
         const noobs: discord.EmbedField = {
             name: "Sonstige Platzierungen",
-            value: members.slice(top.length).map((m, i) => `${i + 1}. ${convertName(m, userMap)} (Stars: ${m.stars} // Local Score: ${m.local_score})`).join("\n"),
+            value: members.slice(top.length).map((m, i) => `${i + 1}. ${getNameString(m, userMap)} [${getLanguage(m, userMap)}] (Stars: ${m.stars} // Local Score: ${m.local_score})`).join("\n"),
             inline: false
         };
 
