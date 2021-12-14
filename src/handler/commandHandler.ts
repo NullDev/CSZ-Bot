@@ -33,6 +33,7 @@ import { ban, BanCommand } from "../commands/modcommands/ban";
 import { UnbanCommand } from "../commands/modcommands/unban";
 import { PenisCommand } from "../commands/penis";
 import { BonkCommand } from "../commands/bonk";
+import {GoogleCommand} from "../commands/google";
 
 const config = getConfig();
 
@@ -50,7 +51,8 @@ export const commands: readonly Command[] = [
     new BanCommand(),
     new UnbanCommand(),
     new PenisCommand(),
-    new BonkCommand()
+    new BonkCommand(),
+    new GoogleCommand()
 ];
 export const applicationCommands: Array<ApplicationCommand> =
     commands.filter<ApplicationCommand>(isApplicationCommand);
