@@ -82,6 +82,7 @@ function getMemberNode(member: UserInfo): string {
 }
 
 async function drawStempelgraph(stempels: StempelConnection[], engine: LayoutEngine, userInfo: Map<GuildMember, UserInfo>): Promise<Buffer> {
+    log.debug(`[Stempelgraph] Stempels: ${stempels}, engine: ${engine}, UserInfo: ${userInfo.values()}`);
     const inviterNodes = stempels
         .map(s => userInfo.get(s.inviter)!)
         .map(getMemberNode)
