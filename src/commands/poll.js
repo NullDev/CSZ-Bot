@@ -9,6 +9,7 @@ import * as cron from "node-cron";
 import * as log from "../utils/logger";
 import AdditionalMessageData from "../storage/model/AdditionalMessageData";
 import { getConfig } from "../utils/configHandler";
+import { Util } from "discord.js";
 
 const config = getConfig();
 
@@ -135,7 +136,7 @@ export const run = async(client, message, args) => {
     }
 
     const embed = {
-        title: pollArray[0],
+        title: Util.cleanContent(pollArray[0], message.channel),
         description: optionstext,
         timestamp: moment.utc().format(),
         author: {
