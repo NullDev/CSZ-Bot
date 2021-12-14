@@ -221,7 +221,7 @@ export class StempelgraphCommand implements ApplicationCommand {
         const namedStempels = stempels.map(s => ({
             inviter: memberInfoMap.get(s.invitator)!,
             invitee: memberInfoMap.get(s.invitedMember)!
-        })).filter(s => !s.invitee || !s.inviter);
+        })).filter(s => s.invitee && s.inviter);
 
         const graphUserInfo = new Map<GuildMember, UserInfo>();
         for (const member of memberInfoMap.values()) {
