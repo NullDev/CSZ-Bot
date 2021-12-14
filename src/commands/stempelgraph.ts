@@ -199,12 +199,18 @@ export class StempelgraphCommand implements ApplicationCommand {
     async handleInteraction(command: CommandInteraction, _client: Client<boolean>): Promise<void> {
         const members = command.guild?.members.cache;
         if (!members) {
+            log.debug(`No Members found within guild ${command.guild}`);
             return;
         }
 
         const stempels = await Stempel.findAll();
+        log.debug(`Found ${stempels.length} Stempels`);
+
         const allUserIds = new Set<string>(stempels.map(s => s.invitator).concat(stempels.map(s => s.invitedMember)));
+        log.debug(`All in all we have ${allUserIds.size} unique Stempler`);
+
         const memberInfoMap = await fetchMemberInfo(command.guild, allUserIds);
+        log.debug(`All in all we have ${allUserIds.size} unique Stempler`);
 
         const namedStempels = stempels.map(s => ({
             inviter: memberInfoMap.get(s.invitator)!,
@@ -222,9 +228,9 @@ export class StempelgraphCommand implements ApplicationCommand {
 
         const engine = (command.options.getString("engine") ?? "dot") as LayoutEngine;
 
-        const stempelGraph = await drawStempelgraph(namedStempels, engine, graphUserInfo);
-
         try {
+            const stempelGraph = await drawStempelgraph(namedStempels, engine, graphUserInfo);
+
             await command.reply({
                 files: [{
                     attachment: stempelGraph,
@@ -233,7 +239,7 @@ export class StempelgraphCommand implements ApplicationCommand {
             });
         }
         catch (err) {
-            log.error(`Could not create where meme: ${err}`);
+            log.error(`Could not draw stempelgraph: ${err}`);
         }
     }
 }
