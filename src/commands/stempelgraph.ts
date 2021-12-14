@@ -83,6 +83,9 @@ function getMemberNode(member: UserInfo): string {
 }
 
 async function drawStempelgraph(stempels: StempelConnection[], engine: LayoutEngine, userInfo: Map<GuildMember, UserInfo>): Promise<Buffer> {
+    for(const stempel of stempels) {
+        log.debug(`${stempel.inviter} --> ${stempel.invitee}`);
+    }
     for(const info of userInfo) {
         log.debug(`${info[0].id} : ${info[1].name} / ${info[1].member} / ${info[1].roles}`);
     }
