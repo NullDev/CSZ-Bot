@@ -9,6 +9,7 @@ import * as log from "../utils/logger";
 import { isMod } from "../utils/userUtils";
 import { SlashCommandBuilder, SlashCommandStringOption } from "@discordjs/builders";
 import { ApplicationCommand } from "./command";
+import { user } from "tiktok-scraper";
 
 const config = getConfig();
 
@@ -82,7 +83,9 @@ function getMemberNode(member: UserInfo): string {
 }
 
 async function drawStempelgraph(stempels: StempelConnection[], engine: LayoutEngine, userInfo: Map<GuildMember, UserInfo>): Promise<Buffer> {
-    log.debug(`[Stempelgraph] Stempels: ${stempels}, engine: ${engine}, UserInfo: ${userInfo.values()}`);
+    for(const info of userInfo) {
+        log.debug(`${info[0].id} : ${info[1].name} / ${info[1].member} / ${info[1].roles}`);
+    }
     const inviterNodes = stempels
         .map(s => userInfo.get(s.inviter)!)
         .map(getMemberNode)
