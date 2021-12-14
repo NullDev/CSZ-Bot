@@ -9,7 +9,6 @@ import * as log from "../utils/logger";
 import { isMod } from "../utils/userUtils";
 import { SlashCommandBuilder, SlashCommandStringOption } from "@discordjs/builders";
 import { ApplicationCommand } from "./command";
-import { user } from "tiktok-scraper";
 
 const config = getConfig();
 
@@ -222,7 +221,7 @@ export class StempelgraphCommand implements ApplicationCommand {
         const namedStempels = stempels.map(s => ({
             inviter: memberInfoMap.get(s.invitator)!,
             invitee: memberInfoMap.get(s.invitedMember)!
-        }));
+        })).filter(s => !s.invitee || !s.inviter);
 
         const graphUserInfo = new Map<GuildMember, UserInfo>();
         for (const member of memberInfoMap.values()) {
