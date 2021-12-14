@@ -36,29 +36,23 @@ exports.run = (client, message, args, callback) => {
             commandObj[commandStr] = require(path.join(commandDir, file)).description;
         }
     });
-
-
     // Add :envelope: reaction to authors message
     message.react("✉");
     message.author.send(
         "Hallo, " + message.author.username + "!\n\n" +
-        "Hier ist eine Liste mit commands:\n\n`"+
-        "Bei fragen kannst du dich an @ShadowByte#1337 wenden!");
-    let commandText = "```CSS";
+        "Hier ist eine Liste mit commands:\n\n\n" +
+        " \n\n" +
+        "Bei fragen kannst du dich an @ShadowByte#1337 wenden!",
+        { split: true }
+    );
     for (let i in commandObj){
+        let commandText = "```CSS";
         commandText += i;
         commandText += ":\n";
         commandText += commandObj[i];
-        commandText += "\n\n";
-         if(Math.random()<0.1){
-             message.author.send(commandText+"```");
-             commandText = "```CSS";
-         }
+        commandText += "```\n\n";
+        message.author.send(commandText)
     }
-
-
-
-
     return callback();
 };
 
