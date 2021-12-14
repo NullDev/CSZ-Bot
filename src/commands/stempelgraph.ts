@@ -48,7 +48,7 @@ interface UserInfo {
 }
 
 function getMemberNode(member: UserInfo): string {
-    const { roles } = member;
+    const { roles = [] } = member;
     let label = "";
 
     if (roles.includes("english")) {
