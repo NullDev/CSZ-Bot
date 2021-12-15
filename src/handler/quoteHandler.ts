@@ -41,20 +41,20 @@ const getTargetChannel = (sourceChannelId: string, client: Client) => {
 
 const createQuote = (
     _client: Client,
-    quotedUser: User | undefined,
+    quotedUser: GuildMember,
     quoter: readonly User[],
-    referencedUser: User | undefined,
+    referencedUser: GuildMember | null | undefined,
     quotedMessage: Message,
     referencedMessage: Message | undefined
 ) => {
-    const getAuthor = (user: User | undefined) => {
+    const getAuthor = (user: GuildMember) => {
         return isChannelAnonymous(quotedMessage.channelId) || !user
             ? {
                 name: "Anon"
             }
             : {
-                name: user.username,
-                icon_url: user.avatarURL() ?? undefined
+                name: user.displayName,
+                icon_url: user.user.displayAvatarURL()
             };
     };
 
@@ -89,7 +89,7 @@ const createQuote = (
                 {
                     color: randomizedColor,
                     description: referencedMessage.content,
-                    author: getAuthor(referencedUser),
+                    author: getAuthor(referencedUser!),
                     timestamp: referencedMessage.createdTimestamp
                 }
             ],
@@ -138,7 +138,7 @@ export const quoteReactionHandler = async(event: MessageReaction, user: User, cl
         return;
     }
 
-    const {quote, reference} = createQuote(client, quotedUser?.user, quotingMembersAllowed.map(member => member.user), referencedUser?.user, quotedMessage, referencedMessage);
+    const {quote, reference} = createQuote(client, quotedUser, quotingMembersAllowed.map(member => member.user), referencedUser, quotedMessage, referencedMessage);
     const {id: targetChannelId, channel: targetChannel} = getTargetChannel(quotedMessage.channelId, client);
 
 
