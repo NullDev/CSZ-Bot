@@ -23,7 +23,7 @@ const isMessageAlreadyQuoted = (messageQuoter: readonly GuildMember[], client: C
     return messageQuoter.some(u => u.id === client.user!.id);
 };
 const hasMessageEnoughQuotes = (messageQuoter: readonly GuildMember[]): boolean => {
-    return messageQuoter.reduce((prev, curr) => isTrusted(curr) ? prev + 2 : prev + 1, 0) >= quoteThreshold;
+    return messageQuoter.reduce((prev, curr) => isTrusted(curr) ? prev + 2 : prev + 1, 0) === quoteThreshold;
 };
 const isQuoterQuotingHimself = (quoter: GuildMember, messageAuthor: GuildMember) => quoter.id === messageAuthor.id;
 const generateRandomColor = () => Math.floor(Math.random() * 16777215);
