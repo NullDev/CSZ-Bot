@@ -127,14 +127,14 @@ const checkPermissions = (member: GuildMember, permissions: ReadonlyArray<Comman
         return true;
     }
     const userPermission = permissions
-        .find(perm => perm.type === 1 && perm.id === member.id)?.permission ?? false;
+        .find(perm => perm.type === "USER" && perm.id === member.id)?.permission ?? false;
 
     if(userPermission === true) {
         return true;
     }
 
     const highestMatchingRole = member.roles.cache
-        .filter(role => permissions.find(perm => perm.type === 2 && perm.id === role.id) !== undefined)
+        .filter(role => permissions.find(perm => perm.type === "ROLE" && perm.id === role.id) !== undefined)
         .sort((a, b) => a.position - b.position)
         .first();
 

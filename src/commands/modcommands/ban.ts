@@ -3,7 +3,7 @@ import { CommandInteraction, GuildMember, User } from "discord.js";
 import { Message, Client } from "discord.js";
 import Ban from "../../storage/model/Ban";
 import { getConfig } from "../../utils/configHandler";
-import { ApplicationCommand, CommandPermission, MessageCommand, PermissionType } from "../command";
+import { ApplicationCommand, CommandPermission, MessageCommand } from "../command";
 import * as cron from "node-cron";
 import * as log from "../../utils/logger";
 import moment from "moment";
@@ -128,7 +128,7 @@ export class BanCommand implements ApplicationCommand, MessageCommand {
     permissions?: readonly CommandPermission[] | undefined = [{
         id: config.bot_settings.moderator_id,
         permission: true,
-        type: PermissionType.ROLE
+        type: "ROLE"
     }];
     get applicationCommand(): Pick<SlashCommandBuilder, "toJSON"> {
         return new SlashCommandBuilder()

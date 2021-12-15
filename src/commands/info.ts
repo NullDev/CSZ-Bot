@@ -1,24 +1,19 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 // @ts-ignore
 import fetch from "node-fetch";
-import { Client, CommandInteraction, Guild, Message, MessageActionRowOptions, MessageEmbedOptions } from "discord.js";
+import { Client, CommandInteraction, Guild, Message, MessageActionRow, MessageButton, MessageEmbedOptions } from "discord.js";
 import { ApplicationCommand, MessageCommand } from "./command";
 import { GitHubContributor } from "../types";
 
-const buildMessageActionsRow = (): MessageActionRowOptions[] => {
+const buildMessageActionsRow = (): MessageActionRow[] => {
     return [
-        {
-            type: 1,
-            components: [
-                {
-                    style: 5,
-                    label: "GitHub",
-                    url: "https://github.com/NullDev/CSC-Bot",
-                    disabled: false,
-                    type: "BUTTON"
-                }
-            ]
-        }
+        new MessageActionRow()
+            .addComponents(
+                new MessageButton()
+                    .setURL("https://github.com/NullDev/CSC-Bot")
+                    .setLabel("GitHub")
+                    .setStyle("LINK")
+                    .setDisabled(false))
     ];
 };
 

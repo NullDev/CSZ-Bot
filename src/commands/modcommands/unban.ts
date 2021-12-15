@@ -1,9 +1,9 @@
-import { SlashCommandBuilder, SlashCommandNumberOption, SlashCommandStringOption, SlashCommandUserOption } from "@discordjs/builders";
+import { SlashCommandBuilder, SlashCommandUserOption } from "@discordjs/builders";
 import { CommandInteraction, GuildMember } from "discord.js";
 import { Message, Client } from "discord.js";
 import Ban from "../../storage/model/Ban";
 import { getConfig } from "../../utils/configHandler";
-import { ApplicationCommand, CommandPermission, MessageCommand, PermissionType } from "../command";
+import { ApplicationCommand, CommandPermission, MessageCommand } from "../command";
 import { restoreRoles } from "./ban";
 
 const config = getConfig();
@@ -22,7 +22,7 @@ export class UnbanCommand implements ApplicationCommand, MessageCommand {
     permissions?: readonly CommandPermission[] | undefined = [{
         id: config.bot_settings.moderator_id,
         permission: true,
-        type: PermissionType.ROLE
+        type: "ROLE"
     }];
     get applicationCommand(): Pick<SlashCommandBuilder, "toJSON"> {
         return new SlashCommandBuilder()

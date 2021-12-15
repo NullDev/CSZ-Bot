@@ -1,6 +1,6 @@
 /* eslint-disable no-use-before-define */
 import { SlashCommandBuilder /* , SlashCommandOptionsOnlyBuilder, SlashCommandSubcommandsOnlyBuilder */ } from "@discordjs/builders";
-import type { Client, CommandInteraction, Message } from "discord.js";
+import type { ApplicationCommandPermissionType, Client, CommandInteraction, Message } from "discord.js";
 
 // A command can be an application command (slash command) or a message command or both
 export type Command = ApplicationCommand | MessageCommand | SpecialCommand;
@@ -8,14 +8,9 @@ export type ApplicationCommand = CommandBase & AppCommand;
 export type MessageCommand = CommandBase & MsgCommand;
 export type SpecialCommand = CommandBase & SpcalCommand;
 
-export enum PermissionType {
-    USER = 1,
-    ROLE = 2
-}
-
 export interface CommandPermission {
     readonly id: string;
-    readonly type: PermissionType;
+    readonly type: ApplicationCommandPermissionType
     readonly permission: boolean;
 }
 
