@@ -147,7 +147,7 @@ client.on("ready", async() => {
  * When the application is ready, slash commands should be registered
  */
 client.on("ready", async() => {
-    registerAllApplicationCommandsAsGuildCommands();
+    registerAllApplicationCommandsAsGuildCommands(client);
 });
 
 /**

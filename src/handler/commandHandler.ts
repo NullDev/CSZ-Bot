@@ -7,7 +7,7 @@ import { InfoCommand } from "../commands/info";
 import { getConfig } from "../utils/configHandler";
 import { REST } from "@discordjs/rest";
 import { Routes } from "discord-api-types/v9";
-import { Client, CommandInteraction, Interaction, Message } from "discord.js";
+import { Client, CommandInteraction, GuildApplicationCommandPermissionData, Interaction, Message } from "discord.js";
 import {
     ApplicationCommand,
     Command,
@@ -34,6 +34,7 @@ import { UnbanCommand } from "../commands/modcommands/unban";
 import { PenisCommand } from "../commands/penis";
 import { BonkCommand } from "../commands/bonk";
 import {GoogleCommand} from "../commands/google";
+import { Mutable } from "../types";
 
 const config = getConfig();
 
@@ -67,7 +68,7 @@ let lastSpecialCommands: Record<string, number> = specialCommands.reduce((acc, c
  * Registers all defined applicationCommands as guild commands
  * We're overwriting ALL, therefore no deletion is necessary
  */
-export const registerAllApplicationCommandsAsGuildCommands = async() => {
+export const registerAllApplicationCommandsAsGuildCommands = async(client: Client) => {
     const guildId = config.ids.guild_id;
     const clientId = config.auth.client_id;
     const token = config.auth.bot_token;
@@ -82,6 +83,10 @@ export const registerAllApplicationCommandsAsGuildCommands = async() => {
     );
 
     try {
+        const guild = client.guilds.cache.get(guildId);
+        if (!guild) {
+            throw new Error(`Guild with ID ${guildId} not found`);
+        }
         // Bulk Overwrite Guild Application Commands
         const createdCommands = await rest.put(Routes.applicationGuildCommands(clientId, guildId), {
             body: commandData
@@ -91,13 +96,16 @@ export const registerAllApplicationCommandsAsGuildCommands = async() => {
         const permissionizedCommands = applicationCommands.filter((cmd) => cmd.permissions && cmd.permissions.length > 0);
 
         // Create a request body for the permissions
-        const permissionsToPost: {id: string, permissions: readonly CommandPermission[]}[] = createdCommands
+        const permissionsToPost: GuildApplicationCommandPermissionData[] = createdCommands
             .filter(cmd => permissionizedCommands.find(pCmd => pCmd.name === cmd.name))
-            .map(cmd => ({id: cmd.id, permissions: permissionizedCommands.find(pCmd => pCmd.name === cmd.name)!.permissions!}));
+            .map(cmd => ({
+                id: cmd.id,
+                permissions: permissionizedCommands.find(pCmd => pCmd.name === cmd.name)!.permissions! as Mutable<CommandPermission>[]
+            }));
 
         // Batch Edit Application Command Permissions
-        await rest.put(Routes.guildApplicationCommandsPermissions(clientId, guildId), {
-            body: permissionsToPost
+        await guild.commands.permissions.set({
+            fullPermissions: permissionsToPost
         });
     }
     catch(err) {

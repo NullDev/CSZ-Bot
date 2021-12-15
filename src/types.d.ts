@@ -8,6 +8,8 @@ export type CommandResult = string | void;
 
 export type CommandFunction = (client: Client, message: Message, args: Array<string>) => Promise<CommandResult>;
 
+export type Mutable<T> = { -readonly [P in keyof T ]: T[P] };
+
 export interface GitHubContributor {
     login: string,
     id: number,
