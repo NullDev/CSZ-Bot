@@ -25,7 +25,7 @@ const isMessageAlreadyQuoted = (messageQuoter: readonly GuildMember[], client: C
 const hasMessageEnoughQuotes = (messageQuoter: readonly GuildMember[]): boolean => {
     return messageQuoter.reduce((prev, curr) => isTrusted(curr) ? prev + 2 : prev + 1, 0) >= quoteThreshold;
 };
-const isQuoterQuotingHimself = (quoter: User, messageAuthor: User) => quoter.id === messageAuthor.id;
+const isQuoterQuotingHimself = (quoter: GuildMember, messageAuthor: GuildMember) => quoter.id === messageAuthor.id;
 const generateRandomColor = () => Math.floor(Math.random() * 16777215);
 
 const getTargetChannel = (sourceChannelId: string, client: Client) => {
@@ -113,6 +113,11 @@ export const quoteReactionHandler = async(event: MessageReaction, user: User, cl
     const quotingMembers = (await getMessageQuoter(quotedMessage));
     const quotingMembersAllowed = quotingMembers.filter(member => isMemberAllowedToQuote(member));
 
+    if (!quotedUser || !quoter) {
+        log.error("Something bad happend, there is something missing that shouldn't be missing");
+        return;
+    }
+
     if (!isMemberAllowedToQuote(quoter) || !isSourceChannelAllowed(quotedMessage.channelId) || isMessageAlreadyQuoted(quotingMembers, client)) {
         await event.users.remove(quoter);
 
@@ -123,7 +128,7 @@ export const quoteReactionHandler = async(event: MessageReaction, user: User, cl
         return;
     }
 
-    if(isQuoterQuotingHimself(quoter.user, quotedUser!.user)) {
+    if(isQuoterQuotingHimself(quoter, quotedUser)) {
         const hauptchat = await client.channels.fetch(hauptchatId) as TextChannel;
         await hauptchat.send(`<@${quoter.id}> der Lellek hat gerade versucht sich, selbst zu quoten. Was für ein Opfer!`);
 
