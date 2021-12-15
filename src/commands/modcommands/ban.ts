@@ -134,6 +134,7 @@ export class BanCommand implements ApplicationCommand, MessageCommand {
         return new SlashCommandBuilder()
             .setName(this.name)
             .setDescription(this.description)
+            .setDefaultPermission(false)
             .addUserOption(new SlashCommandUserOption()
                 .setRequired(true)
                 .setName("user")
