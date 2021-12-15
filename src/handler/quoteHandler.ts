@@ -118,6 +118,8 @@ export const quoteReactionHandler = async(event: MessageReaction, user: User, cl
         return;
     }
 
+    log.debug(`[Quote] User tried to ${quoter.displayName} (${quoter.id}) quote user ${quotedUser.displayName} (${quotedUser.id}) on message ${quotedMessage.id}`);
+
     if (!isMemberAllowedToQuote(quoter) || !isSourceChannelAllowed(quotedMessage.channelId) || isMessageAlreadyQuoted(quotingMembers, client)) {
         await event.users.remove(quoter);
 
