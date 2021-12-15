@@ -81,23 +81,28 @@ export const registerAllApplicationCommandsAsGuildCommands = async() => {
         })
     );
 
-    // Bulk Overwrite Guild Application Commands
-    const createdCommands = await rest.put(Routes.applicationGuildCommands(clientId, guildId), {
-        body: commandData
-    }) as {id: string, name: string}[];
+    try {
+        // Bulk Overwrite Guild Application Commands
+        const createdCommands = await rest.put(Routes.applicationGuildCommands(clientId, guildId), {
+            body: commandData
+        }) as {id: string, name: string}[];
 
-    // Get commands that have permissions
-    const permissionizedCommands = applicationCommands.filter((cmd) => cmd.permissions && cmd.permissions.length > 0);
+        // Get commands that have permissions
+        const permissionizedCommands = applicationCommands.filter((cmd) => cmd.permissions && cmd.permissions.length > 0);
 
-    // Create a request body for the permissions
-    const permissionsToPost: {id: string, permissions: readonly CommandPermission[]}[] = createdCommands
-        .filter(cmd => permissionizedCommands.find(pCmd => pCmd.name === cmd.name))
-        .map(cmd => ({id: cmd.id, permissions: permissionizedCommands.find(pCmd => pCmd.name === cmd.name)!.permissions!}));
+        // Create a request body for the permissions
+        const permissionsToPost: {id: string, permissions: readonly CommandPermission[]}[] = createdCommands
+            .filter(cmd => permissionizedCommands.find(pCmd => pCmd.name === cmd.name))
+            .map(cmd => ({id: cmd.id, permissions: permissionizedCommands.find(pCmd => pCmd.name === cmd.name)!.permissions!}));
 
-    // Batch Edit Application Command Permissions
-    await rest.put(Routes.guildApplicationCommandsPermissions(clientId, guildId), {
-        body: permissionsToPost
-    });
+        // Batch Edit Application Command Permissions
+        await rest.put(Routes.guildApplicationCommandsPermissions(clientId, guildId), {
+            body: permissionsToPost
+        });
+    }
+    catch(err) {
+        log.error(`Could not register the application commands, because: ${err}`);
+    }
 };
 
 /**
