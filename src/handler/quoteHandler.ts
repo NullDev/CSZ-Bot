@@ -54,7 +54,7 @@ const createQuote = (
             }
             : {
                 name: user.displayName,
-                icon_url: user.user.displayAvatarURL()
+                icon_url: user.displayAvatarURL()
             };
     };
 
