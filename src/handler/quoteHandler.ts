@@ -161,5 +161,4 @@ export const quoteReactionHandler = async(event: MessageReaction, user: User, cl
     }
 
     await quotedMessage.react(event.emoji);
-    await event.users.remove(quoter);
 };
