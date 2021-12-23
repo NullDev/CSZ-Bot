@@ -236,6 +236,8 @@ export const importPolls = async() => {
  * @param {import("discord.js").Client} client
  */
 export const startCron = (client) => {
+    log.info("Scheduling Poll Cronjob...");
+
     cron.schedule("* * * * *", async() => {
         const currentDate = new Date();
         const pollsToFinish = delayedPolls.filter(delayedPoll => currentDate >= delayedPoll.finishesAt);

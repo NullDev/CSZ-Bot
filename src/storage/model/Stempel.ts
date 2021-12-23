@@ -4,6 +4,7 @@
 import type { Snowflake } from "discord.js";
 import { Sequelize, Model, DataTypes, Optional } from "sequelize";
 import { v4 as uuidv4 } from "uuid";
+import * as log from "../../utils/logger";
 
 export interface StempelAttributes {
     id: string;
@@ -22,6 +23,7 @@ export default class Stempel extends Model<StempelAttributes, StempelCreationAtt
      * @returns true/false depending if the invitedMember is already in the database
      */
     static async insertStempel(invitator: Snowflake, invitedMember: Snowflake): Promise<boolean> {
+        log.debug(`Inserting Stempel into Database with ${invitator} invitator and ${invitedMember} as invited member`);
         try {
             await Stempel.create({
                 invitator,
@@ -30,6 +32,7 @@ export default class Stempel extends Model<StempelAttributes, StempelCreationAtt
             return true;
         }
         catch {
+            log.debug("Stempel does already exist");
             return false;
         }
     }

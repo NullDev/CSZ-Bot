@@ -110,6 +110,7 @@ export const registerAllApplicationCommandsAsGuildCommands = async(client: Clien
     }
     catch(err) {
         log.error(`Could not register the application commands, because: ${err}`);
+        throw(err);
     }
 };
 
@@ -127,7 +128,13 @@ const commandInteractionHandler = async(
         (cmd) => cmd.name === command.commandName
     );
     if (matchingCommand) {
-        return matchingCommand.handleInteraction(command, client);
+        log.debug(`Found a matching command ${matchingCommand.name}`);
+        try {
+            return matchingCommand.handleInteraction(command, client);
+        }
+        catch(err) {
+            log.error(`Error executing command ${matchingCommand.name} on command interaction ${command.id}`);
+        }
     }
 
     throw new Error(
@@ -136,9 +143,14 @@ const commandInteractionHandler = async(
 };
 
 const checkPermissions = (member: GuildMember, permissions: ReadonlyArray<CommandPermission>): boolean => {
+    log.debug(`Checking member ${member.id} permissions on permissionSet: ${JSON.stringify(permissions)}`);
+
+    // No permissions, no problem
     if(permissions.length === 0) {
         return true;
     }
+
+    // First evaluating user permissions, if the user is allowed to use the command, then use it
     const userPermission = permissions
         .find(perm => perm.type === "USER" && perm.id === member.id)?.permission ?? false;
 
@@ -146,11 +158,13 @@ const checkPermissions = (member: GuildMember, permissions: ReadonlyArray<Comman
         return true;
     }
 
+    // Next up find the highest role a user has and permissions are defined for
     const highestMatchingRole = member.roles.cache
         .filter(role => permissions.find(perm => perm.type === "ROLE" && perm.id === role.id) !== undefined)
         .sort((a, b) => a.position - b.position)
         .first();
 
+    // No matching role -> too bad for you
     if(highestMatchingRole === undefined) {
         return false;
     }
@@ -248,10 +262,22 @@ export const messageCommandHandler = async(
     ) {
         const cmdString = message.content.split(/\s+/)[0].slice(1);
         if (cmdString) {
-            return commandMessageHandler(cmdString, message, client);
+            try {
+                return commandMessageHandler(cmdString, message, client);
+            }
+            catch(err) {
+                log.error(`Error executing command ${cmdString} on message ${message.id}`);
+                throw(err);
+            }
         }
         return;
     }
 
-    return specialCommandHandler(message, client);
+    try {
+        return specialCommandHandler(message, client);
+    }
+    catch(err) {
+        log.error(`Error executing special command on message ${message.id}`);
+        throw(err);
+    }
 };

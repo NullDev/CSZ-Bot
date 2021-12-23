@@ -13,6 +13,7 @@ const config = getConfig();
 // #region Banned User Role Assignment
 
 const assignBannedRoles = async(user: GuildMember): Promise<boolean> => {
+    log.debug(`Assigning ban role to user ${user.id}`);
     let defaultRole = user.guild.roles.cache.find(role => role.id === config.ids.default_role_id);
     let bannedRole = user.guild.roles.cache.find(role => role.id === config.ids.banned_role_id);
 
@@ -37,6 +38,7 @@ const assignBannedRoles = async(user: GuildMember): Promise<boolean> => {
 };
 
 export const restoreRoles = async(user: GuildMember): Promise<boolean> => {
+    log.debug(`Restoring roles from user ${user.id}`);
     let defaultRole = user.guild.roles.cache.find(role => role.id === config.ids.default_role_id);
     let bannedRole = user.guild.roles.cache.find(role => role.id === config.ids.banned_role_id);
 
@@ -63,6 +65,7 @@ export const restoreRoles = async(user: GuildMember): Promise<boolean> => {
 // #endregion
 
 export const startCron = (client: Client) => {
+    log.info("Scheduling Ban Cronjob...");
     cron.schedule("* * * * *", async() => {
         const now = new Date();
 
@@ -70,9 +73,11 @@ export const startCron = (client: Client) => {
             const expiredBans = await Ban.findExpiredBans(now);
 
             for (const expiredBan of expiredBans) {
+                log.debug(`Expired Ban found by user ${expiredBan.userId}. Expired on ${expiredBan.bannedUntil}`);
                 await expiredBan.destroy();
 
                 const user = client.guilds.cache.get(config.ids.guild_id)?.members.cache.get(expiredBan.userId);
+                // No user, no problem
                 if (!user) continue;
 
                 restoreRoles(user);
@@ -91,6 +96,9 @@ export const startCron = (client: Client) => {
 };
 
 export const ban = async(client: Client, member: GuildMember, banInvoker: GuildMember | User, reason: string, isSelfBan: boolean, duration?: number): Promise<string | undefined> => {
+    log.debug(`Banning ${member.id} by ${banInvoker.id} because of ${reason} for ${duration}.`);
+
+    // No Shadow ban :(
     if (member.id === "371724846205239326" || member.id === client.user!.id) return "Fick dich bitte.";
 
     const existingBan = await Ban.findExisting(member.user);
@@ -204,7 +212,6 @@ export class BanCommand implements ApplicationCommand, MessageCommand {
         // If we have a reference the first mention is in the reference and the reason is therefore
         // the whole message except the command itself
         const messageAfterCommand = message.content.substr(message.content.indexOf(this.name) + this.name.length).trim();
-        console.log(messageAfterCommand);
         let reason = "Willkür";
         if(message.reference) {
             if(messageAfterCommand.trim().length > 0) {

@@ -9,13 +9,18 @@ import FadingMessage from "./model/FadingMessage";
 import GuildRagequit from "./model/GuildRagequit";
 import Stempel from "./model/Stempel";
 import Ban from "./model/Ban";
+import * as log from "../utils/logger";
 
 export async function initialize() {
     const sequelize = new Sequelize({
         dialect: "sqlite",
         storage: path.resolve(__dirname, "..", "..", "storage.db"),
-        logging: false
+        logging: (sql, timing) => {
+            log.debug(`Exected query "${sql}" at ${timing}`);
+        }
     });
+
+    log.debug("Initializing Database Schemas...");
 
     FadingMessage.initialize(sequelize);
     AdditionalMessageData.initialize(sequelize);

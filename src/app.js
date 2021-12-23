@@ -115,10 +115,13 @@ function scheduleTimezoneFixedCronjob(cronString) {
 }
 
 let firstRun = true;
-client.on("ready", async() => {
+client.on("ready", async(_client) => {
     log.info("Running...");
     log.info(`Got ${client.users.cache.size} users, in ${client.channels.cache.size} channels of ${client.guilds.cache.size} guilds`);
     client.user.setActivity(config.bot_settings.status);
+
+    // When the application is ready, slash commands should be registered
+    registerAllApplicationCommandsAsGuildCommands(client);
 
     const bday = new BdayHandler(client);
     const aoc = new AoCHandler(client);
@@ -129,9 +132,11 @@ client.on("ready", async() => {
         const newCronString = timezone.getCronjobStringForHydrate(Date.now());
         scheduleTimezoneFixedCronjob(newCronString);
 
+        log.info("Scheduling Birthday Cronjob...");
         cron.schedule("1 0 * * *", async() => await bday.checkBdays(), { timezone: "Europe/Vienna" });
         await bday.checkBdays();
 
+        log.info("Scheduling Advent of Code Cronjob...");
         cron.schedule("0 20 1-25 12 *", async() => await aoc.publishLeaderBoard(), { timezone: "Europe/Vienna" });
     }
 
@@ -143,12 +148,6 @@ client.on("ready", async() => {
     fadingMessageHandler.startLoop(client);
 });
 
-/**
- * When the application is ready, slash commands should be registered
- */
-client.on("ready", async() => {
-    registerAllApplicationCommandsAsGuildCommands(client);
-});
 
 /**
  * This is an additional Message handler, that we use as a replacement

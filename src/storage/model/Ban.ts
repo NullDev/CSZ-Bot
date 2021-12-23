@@ -4,6 +4,7 @@
 import type { User, GuildMember } from "discord.js";
 import { Model, DataTypes, Sequelize, Optional, Op } from "sequelize";
 import { v4 as uuidv4 } from "uuid";
+import * as log from "../../utils/logger";
 
 export interface BanAttributes {
     id: string;
@@ -26,6 +27,7 @@ export default class Ban extends Model<BanAttributes, BanCreationAttributes> imp
     readonly updatedAt!: Date;
 
     static persistOrUpdate = (user: GuildMember, until: Date | null, isSelfBan: boolean, reason: string | null = null): Promise<void> => {
+        log.debug(`Saving Ban for user ${user} until ${until} (Selfban: ${isSelfBan}, Reason: ${reason})`);
         return Ban.upsert({
             userId: user.id,
             reason,
