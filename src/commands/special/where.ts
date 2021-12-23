@@ -1,7 +1,6 @@
 import { Message, Client, Util } from "discord.js";
 import { createCanvas, loadImage, registerFont } from "canvas";
 import { SpecialCommand } from "../command";
-import * as log from "../../utils/logger";
 
 
 if (process.env.NODE_ENV === "production") {
@@ -22,19 +21,14 @@ export class WhereCommand implements SpecialCommand {
     async handleSpecialMessage(message: Message, client: Client<boolean>) {
         const subject = Util.cleanContent(message.content.trim().toUpperCase(), message.channel);
 
-        try {
-            const whereMemeBuffer = await WhereCommand.createWhereMeme(subject);
+        const whereMemeBuffer = await WhereCommand.createWhereMeme(subject);
 
-            await message.channel.send({
-                files: [{
-                    attachment: whereMemeBuffer,
-                    name: subject + ".png"
-                }]
-            });
-        }
-        catch (err) {
-            log.error(`Could not create where meme: ${err}`);
-        }
+        await message.channel.send({
+            files: [{
+                attachment: whereMemeBuffer,
+                name: subject + ".png"
+            }]
+        });
     }
 
     static async createWhereMeme(text: string): Promise<Buffer> {

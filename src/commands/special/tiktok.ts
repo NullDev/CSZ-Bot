@@ -6,7 +6,6 @@ import { Message } from "discord.js";
 import { SpecialCommand } from "../command";
 import fetch from "node-fetch";
 import * as TikTokScraper from "tiktok-scraper";
-import * as log from "../../utils/logger";
 
 const tiktokOptions = {
     number: 50,
@@ -40,26 +39,21 @@ export class TikTokLink implements SpecialCommand {
         const uri = message.content.match(/(https?:\/\/[^ ]*)/)?.[1] || "";
         if (!uri) return;
 
-        try {
-            const videoMeta = await TikTokScraper.getVideoMeta(uri, tiktokOptions);
+        const videoMeta = await TikTokScraper.getVideoMeta(uri, tiktokOptions);
 
-            let res = await fetch(videoMeta.collector[0].videoUrl, {
-                headers: videoMeta.headers as any
-            });
-            let buf = await res.buffer();
+        let res = await fetch(videoMeta.collector[0].videoUrl, {
+            headers: videoMeta.headers as any
+        });
+        let buf = await res.buffer();
 
-            await message.reply({
-                content: (videoMeta.collector[0].text || "Dein TikTok du Hund:"),
-                files: [{
-                    attachment: buf,
-                    name: `${videoMeta.collector[0].id}.mp4`
-                }]
-            });
+        await message.reply({
+            content: (videoMeta.collector[0].text || "Dein TikTok du Hund:"),
+            files: [{
+                attachment: buf,
+                name: `${videoMeta.collector[0].id}.mp4`
+            }]
+        });
 
-            await message.suppressEmbeds(true);
-        }
-        catch (error){
-            log.error(error);
-        }
+        await message.suppressEmbeds(true);
     }
 }
