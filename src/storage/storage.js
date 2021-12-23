@@ -15,7 +15,7 @@ import Penis from "./model/Penis";
 export async function initialize() {
     const sequelize = new Sequelize({
         dialect: "sqlite",
-        storage: path.resolve(__dirname, "..", "..", "storage.db"),
+        storage: path.resolve(__dirname, "..", "..", "storage.db")
         // currently way too noisy because of the fading messages
         /* logging: (sql) => {
             log.debug(`Exected query "${sql}"`);
