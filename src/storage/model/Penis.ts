@@ -2,7 +2,8 @@
 /* eslint-disable new-cap */
 
 import { User } from "discord.js";
-import { Model, DataTypes, Sequelize, Optional } from "sequelize";
+import moment from "moment";
+import { Model, DataTypes, Sequelize, Optional, Op } from "sequelize";
 import { v4 as uuidv4 } from "uuid";
 import * as log from "../../utils/logger";
 
@@ -23,6 +24,30 @@ export default class Penis extends Model<PenisAttributes, PenisCreationAttribute
 
     readonly createdAt!: Date;
     readonly updatedAt!: Date;
+
+    static fetchRecentMeasurement = (user: User): Promise<Penis | null> => {
+        const startToday = moment().startOf("days");
+        const startTomorrow = moment().add(1, "days").startOf("days");
+
+        return Penis.findOne({
+            where: {
+                userId: user.id,
+                measuredAt: {
+                    [Op.gte]: startToday.toDate(),
+                    [Op.lt]: startTomorrow.toDate()
+                }
+            }
+        });
+    };
+
+    static insertMeasurement = (user: User, size: number, measuredAt: Date = new Date()): Promise<Penis> => {
+        log.debug(`Saving Penis Measurement for user ${user.id} with size ${size} from ${measuredAt}`);
+        return Penis.create({
+            userId: user.id,
+            measuredAt,
+            size
+        });
+    };
 
     static initialize(sequelize: Sequelize) {
         this.init({
