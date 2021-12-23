@@ -26,7 +26,7 @@ export class PenisCommand implements MessageCommand {
     /**
      * Replies to the message with a random penis length
      */
-    async handleMessage(message: Message, client: Client): Promise<unknown> {
+    async handleMessage(message: Message, _client: Client): Promise<unknown> {
         const { author } = message;
 
         const recentMeasurement = await Penis.fetchRecentMeasurement(author);

@@ -10,6 +10,7 @@ import GuildRagequit from "./model/GuildRagequit";
 import Stempel from "./model/Stempel";
 import Ban from "./model/Ban";
 import * as log from "../utils/logger";
+import Penis from "./model/Penis";
 
 export async function initialize() {
     const sequelize = new Sequelize({
@@ -28,6 +29,7 @@ export async function initialize() {
     Stempel.initialize(sequelize);
     Birthday.initialize(sequelize);
     Ban.initialize(sequelize);
+    Penis.initialize(sequelize);
 
     await sequelize.sync();
 }
