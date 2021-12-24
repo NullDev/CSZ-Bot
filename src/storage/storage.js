@@ -16,11 +16,12 @@ export async function initialize() {
     const sequelize = new Sequelize({
         dialect: "sqlite",
         storage: path.resolve(__dirname, "..", "..", "storage.db"),
-        logging: false
-        // currently way too noisy because of the fading messages
-        /* logging: (sql) => {
-            log.debug(`Exected query "${sql}"`);
-        }*/
+        logging: (sql) => {
+            // currently way too noisy because of the fading messages
+            if(!sql.includes(FadingMessage.tableName)) {
+                log.debug(`Exected query "${sql}"`);
+            }
+        }
     });
 
     log.debug("Initializing Database Schemas...");
