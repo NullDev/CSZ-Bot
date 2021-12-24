@@ -74,10 +74,6 @@ export default class Penis extends Model<PenisAttributes, PenisCreationAttribute
             sequelize,
             indexes: [
                 {
-                    unique: true,
-                    fields: ["userId"]
-                },
-                {
                     using: "BTREE",
                     fields: [
                         {
