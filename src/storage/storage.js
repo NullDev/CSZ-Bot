@@ -16,6 +16,7 @@ export async function initialize() {
     const sequelize = new Sequelize({
         dialect: "sqlite",
         storage: path.resolve(__dirname, "..", "..", "storage.db"),
+        logQueryParameters: true,
         logging: (sql) => {
             // currently way too noisy because of the fading messages
             if(!sql.includes(FadingMessage.tableName)) {
