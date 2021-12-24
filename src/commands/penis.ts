@@ -2,6 +2,7 @@
 import { Client, Message, User } from "discord.js";
 import Penis from "../storage/model/Penis";
 import { MessageCommand } from "./command";
+import * as log from "../utils/logger";
 
 const PENIS_MAX = 30;
 
@@ -28,11 +29,16 @@ export class PenisCommand implements MessageCommand {
      */
     async handleMessage(message: Message, _client: Client): Promise<unknown> {
         const { author } = message;
-        const userToMeasure = message.mentions.users.first() ?? author;
+        const mention = message.mentions.users.first();
+        const userToMeasure = mention !== undefined ? mention : author;
+
+        log.debug(`${author.id} wants to measure penis of user ${userToMeasure.id}`);
 
         const recentMeasurement = await Penis.fetchRecentMeasurement(userToMeasure);
 
         if(recentMeasurement === null) {
+            log.debug(`No recent measuring of ${userToMeasure.id} found. Creating Measurement`);
+
             const size = Math.floor(Math.random() * PENIS_MAX);
             return Promise.all([
                 Penis.insertMeasurement(userToMeasure, size),
