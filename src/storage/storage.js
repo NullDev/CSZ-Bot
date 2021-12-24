@@ -20,7 +20,7 @@ export async function initialize() {
         logging: (sql) => {
             // currently way too noisy because of the fading messages
             if(!sql.includes(FadingMessage.tableName)) {
-                log.debug(`Exected query "${sql}"`);
+                log.debug(sql);
             }
         }
     });
