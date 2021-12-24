@@ -155,10 +155,22 @@ client.on("ready", async(_client) => {
  * and still use the possility to use the commands textual. Win-Win :cooldoge:
  */
 client.on("messageCreate", async(message) => {
-    messageCommandHandler(message, client);
+    try {
+        await messageCommandHandler(message, client);
+    }
+    catch(err) {
+        log.error(`Error executing command ${cmdString} on message ${message.id}`);
+    }
 });
 
-client.on("interactionCreate", async(interaction) => handleInteractionEvent(interaction, client));
+client.on("interactionCreate", async(interaction) => {
+    try {
+        await handleInteractionEvent(interaction, client);
+    }
+    catch(err) {
+        log.error(`Error executing command ${matchingCommand.name} on command interaction ${command.id}`);
+    }
+});
 
 client.on("guildCreate", guild => log.info(`New guild joined: ${guild.name} (id: ${guild.id}) with ${guild.memberCount} members`));
 

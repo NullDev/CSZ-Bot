@@ -129,12 +129,7 @@ const commandInteractionHandler = async(
     );
     if (matchingCommand) {
         log.debug(`Found a matching command ${matchingCommand.name}`);
-        try {
-            return matchingCommand.handleInteraction(command, client);
-        }
-        catch(err) {
-            log.error(`Error executing command ${matchingCommand.name} on command interaction ${command.id}`);
-        }
+        return matchingCommand.handleInteraction(command, client);
     }
 
     throw new Error(
@@ -262,22 +257,10 @@ export const messageCommandHandler = async(
     ) {
         const cmdString = message.content.split(/\s+/)[0].slice(1);
         if (cmdString) {
-            try {
-                return commandMessageHandler(cmdString, message, client);
-            }
-            catch(err) {
-                log.error(`Error executing command ${cmdString} on message ${message.id}`);
-                throw(err);
-            }
+            return commandMessageHandler(cmdString, message, client);
         }
         return;
     }
 
-    try {
-        return specialCommandHandler(message, client);
-    }
-    catch(err) {
-        log.error(`Error executing special command on message ${message.id}`);
-        throw(err);
-    }
+    return specialCommandHandler(message, client);
 };
