@@ -33,8 +33,10 @@ export default class Penis extends Model<PenisAttributes, PenisCreationAttribute
             where: {
                 userId: user.id,
                 measuredAt: {
-                    [Op.gte]: startToday.toDate(),
-                    [Op.lt]: startTomorrow.toDate()
+                    [Op.or]: {
+                        [Op.gte]: startToday.toDate(),
+                        [Op.lt]: startTomorrow.toDate()
+                    }
                 }
             }
         });
