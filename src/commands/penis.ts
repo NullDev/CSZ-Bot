@@ -1,11 +1,11 @@
 // @ts-ignore
-import { Client, Message } from "discord.js";
+import { Client, Message, User } from "discord.js";
 import Penis from "../storage/model/Penis";
 import { MessageCommand } from "./command";
 
 const PENIS_MAX = 30;
 
-const sendPenis = async(message: Message, size: number, measurement: Date = new Date()): Promise<Message<boolean>> => {
+const sendPenis = async(user: User, message: Message, size: number, measurement: Date = new Date()): Promise<Message<boolean>> => {
     const penis = `8${"=".repeat(size)}D`;
     const measuredAt = new Intl.DateTimeFormat("de-DE", {
         hour: "2-digit",
@@ -13,7 +13,7 @@ const sendPenis = async(message: Message, size: number, measurement: Date = new 
         second: "2-digit",
         hour12: false
     }).format(measurement);
-    return message.reply(`${penis}\n(Gemessen um ${measuredAt})`);
+    return message.reply(`Pimmel von <@${user.id}>: ${penis}\n(Gemessen um ${measuredAt})`);
 };
 
 /**
@@ -28,17 +28,18 @@ export class PenisCommand implements MessageCommand {
      */
     async handleMessage(message: Message, _client: Client): Promise<unknown> {
         const { author } = message;
+        const userToMeasure = message.mentions.users.first() ?? author;
 
-        const recentMeasurement = await Penis.fetchRecentMeasurement(author);
+        const recentMeasurement = await Penis.fetchRecentMeasurement(userToMeasure);
 
         if(recentMeasurement === null) {
             const size = Math.floor(Math.random() * PENIS_MAX);
             return Promise.all([
-                Penis.insertMeasurement(author, size),
-                sendPenis(message, size)
+                Penis.insertMeasurement(userToMeasure, size),
+                sendPenis(userToMeasure, message, size)
             ]);
         }
 
-        return sendPenis(message, recentMeasurement.size, recentMeasurement.measuredAt);
+        return sendPenis(userToMeasure, message, recentMeasurement.size, recentMeasurement.measuredAt);
     }
 }
