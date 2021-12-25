@@ -35,6 +35,7 @@ import { PenisCommand } from "../commands/penis";
 import { BonkCommand } from "../commands/bonk";
 import {GoogleCommand} from "../commands/google";
 import { Mutable } from "../types";
+import {NischdaaaCommand} from "../commands/special/nischdaaa";
 
 const config = getConfig();
 
@@ -53,7 +54,8 @@ export const commands: readonly Command[] = [
     new UnbanCommand(),
     new PenisCommand(),
     new BonkCommand(),
-    new GoogleCommand()
+    new GoogleCommand(),
+    new NischdaaaCommand()
 ];
 export const applicationCommands: Array<ApplicationCommand> =
     commands.filter<ApplicationCommand>(isApplicationCommand);
