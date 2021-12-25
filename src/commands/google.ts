@@ -14,13 +14,13 @@ const repliesWithUser = [
 ];
 
 
-const buildEmbed = async(user: GuildMember | null, reply: string, avatarUrl?: string): Promise<MessageEmbedOptions> => {
+const buildEmbed = async(member: GuildMember, reply: string): Promise<MessageEmbedOptions> => {
     return {
         color: 2007432,
         description: reply,
         author: {
-            name: user?.nickname ?? user?.displayName,
-            icon_url: avatarUrl
+            name: member.nickname ?? member.displayName,
+            icon_url: member.user.displayAvatarURL()
         }
     };
 };
@@ -42,16 +42,14 @@ export class GoogleCommand implements ApplicationCommand {
     }
 
     async handleInteraction(command: CommandInteraction, client: Client<boolean>): Promise<unknown> {
-        const user = command.guild?.members.cache.find(m => m.id === command.user.id) ?? null;
+        const user = command.guild?.members.cache.find(m => m.id === command.user.id)!;
         const dau = command.guild?.members.cache.find(m => m.id === command.options.getUser("dau", false)?.id) ?? null;
-
         const swd = command.options.getString("searchword", true);
-        if (!swd.trim()) {
-            return command.reply("Nichtmal n Parameter angeben kannst du ");
-        }
+
         const link = `[${swd}](https://www.google.com/search?q=${swd.replaceAll(" ", "+")})`;
+
         let reply;
-        if (dau === null) {
+        if (!dau) {
             reply = replies[Math.floor(Math.random() * replies.length)].replace("{0}", link);
         }
         else {
@@ -59,7 +57,8 @@ export class GoogleCommand implements ApplicationCommand {
                 .replace("{0}", link)
                 .replace("{1}", `${dau?.nickname ?? dau?.displayName}`);
         }
-        const embed = await buildEmbed(user, reply, client.user?.avatarURL() ?? undefined);
+
+        const embed = await buildEmbed(user!, reply);
         return command.reply({
             embeds: [embed],
             ephemeral: false
