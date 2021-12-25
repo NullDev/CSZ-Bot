@@ -8,7 +8,7 @@ export class YepYepCommand implements SpecialCommand {
     randomness = 1;
     cooldownTime = 0;
 
-    async handleSpecialMessage(message: Message, _client: Client<boolean>): Promise<unknown> {
+    handleSpecialMessage(message: Message, _client: Client<boolean>): Promise<unknown> {
         const yepEmote = message.guild?.emojis.cache.find(e => e.name === "YEP");
         if (yepEmote){
             return message.channel.send(`${yepEmote}${yepEmote}`);

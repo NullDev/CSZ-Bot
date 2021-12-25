@@ -8,7 +8,7 @@ export class NischdaaaCommand implements SpecialCommand {
     randomness = 0.005;
 
 
-    async handleSpecialMessage(message: Message, _client: Client<boolean>): Promise<unknown> {
+    handleSpecialMessage(message: Message, _client: Client<boolean>): Promise<unknown> {
         return message.reply({
             content: "Nischdaaaa"
         });

@@ -14,7 +14,7 @@ const repliesWithUser = [
 ];
 
 
-const buildEmbed = async(member: GuildMember, reply: string): Promise<MessageEmbedOptions> => {
+const buildEmbed = (member: GuildMember, reply: string): MessageEmbedOptions => {
     return {
         color: 2007432,
         description: reply,
@@ -41,7 +41,7 @@ export class GoogleCommand implements ApplicationCommand {
             .addUserOption(new SlashCommandUserOption().setName("dau").setRequired(false).setDescription("Der User, der nichtmal googln kann"));
     }
 
-    async handleInteraction(command: CommandInteraction, client: Client<boolean>): Promise<unknown> {
+    handleInteraction(command: CommandInteraction, client: Client<boolean>): Promise<unknown> {
         const user = command.guild?.members.cache.find(m => m.id === command.user.id)!;
         const dau = command.guild?.members.cache.find(m => m.id === command.options.getUser("dau", false)?.id) ?? null;
         const swd = command.options.getString("searchword", true);
@@ -58,7 +58,7 @@ export class GoogleCommand implements ApplicationCommand {
                 .replace("{1}", `${dau?.nickname ?? dau?.displayName}`);
         }
 
-        const embed = await buildEmbed(user!, reply);
+        const embed = buildEmbed(user!, reply);
         return command.reply({
             embeds: [embed],
             ephemeral: false

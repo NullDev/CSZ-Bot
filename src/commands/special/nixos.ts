@@ -8,7 +8,7 @@ export class NixOsCommand implements SpecialCommand {
     randomness = 0.4;
     cooldownTime = 300000;
 
-    async handleSpecialMessage(message: Message, _client: Client<boolean>): Promise<unknown> {
+    handleSpecialMessage(message: Message, _client: Client<boolean>): Promise<unknown> {
         const nixEmote = message.guild?.emojis.cache.find(e => e.name === "nixos");
         if(nixEmote) {
             return message.react(nixEmote);

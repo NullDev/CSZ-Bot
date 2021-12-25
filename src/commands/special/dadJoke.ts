@@ -7,7 +7,7 @@ export class DadJokeCommand implements SpecialCommand {
     pattern: RegExp = /^ich bin\s+(.){3,}/i;
     randomness = 0.1;
 
-    async handleSpecialMessage(message: Message, _client: Client<boolean>): Promise<unknown> {
+    handleSpecialMessage(message: Message, _client: Client<boolean>): Promise<unknown> {
         const idx = message.content.toLowerCase().lastIndexOf("ich bin ");
         if(idx < (message.content.length - 1)) {
             // Get index of the first terminator character after trigger
@@ -33,5 +33,6 @@ export class DadJokeCommand implements SpecialCommand {
                 }
             }
         }
+        return Promise.resolve();
     }
 }
