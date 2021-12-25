@@ -34,7 +34,6 @@ import { UnbanCommand } from "../commands/modcommands/unban";
 import { PenisCommand } from "../commands/penis";
 import { BonkCommand } from "../commands/bonk";
 import {GoogleCommand} from "../commands/google";
-import {Voteban} from "../commands/voteban";
 import {NischdaaaCommand} from "../commands/special/nischdaaa";
 
 const config = getConfig();
