@@ -17,6 +17,11 @@ const sendPenis = async(user: User, message: Message, size: number, measurement:
     return message.reply(`Pimmel von <@${user.id}>: ${penis}\n(Gemessen um ${measuredAt})`);
 };
 
+const isNewLongestDick = async(size: number): Promise<boolean> => {
+    const oldLongest = await Penis.longestRecentMeasurement();
+    return (oldLongest ?? -1) < size;
+};
+
 /**
  * Penis command. Displays the users penis length
  */
@@ -40,6 +45,11 @@ export class PenisCommand implements MessageCommand {
             log.debug(`No recent measuring of ${userToMeasure.id} found. Creating Measurement`);
 
             const size = Math.floor(Math.random() * PENIS_MAX);
+
+            if(await isNewLongestDick(size)) {
+                log.debug(`${userToMeasure} has the new longest dick with size ${size}`);
+            }
+
             return Promise.all([
                 Penis.insertMeasurement(userToMeasure, size),
                 sendPenis(userToMeasure, message, size)

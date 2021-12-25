@@ -25,6 +25,22 @@ export default class Penis extends Model<PenisAttributes, PenisCreationAttribute
     readonly createdAt!: Date;
     readonly updatedAt!: Date;
 
+    static longestRecentMeasurement = (): Promise<Penis | null> => {
+        const startToday = moment().startOf("days");
+        const startTomorrow = moment().add(1, "days").startOf("days");
+
+        return Penis.max("size", {
+            where: {
+                measuredAt: {
+                    [Op.and]: {
+                        [Op.gte]: startToday.toDate(),
+                        [Op.lt]: startTomorrow.toDate()
+                    }
+                }
+            }
+        });
+    };
+
     static fetchRecentMeasurement = (user: User): Promise<Penis | null> => {
         const startToday = moment().startOf("days");
         const startTomorrow = moment().add(1, "days").startOf("days");
