@@ -131,7 +131,7 @@ const commandInteractionHandler = async(
     );
     if (matchingCommand) {
         log.debug(`Found a matching command ${matchingCommand.name}`);
-        return matchingCommand.handleInteraction(command, client);
+        return await matchingCommand.handleInteraction(command, client);
     }
 
     throw new Error(
@@ -219,7 +219,7 @@ const specialCommandHandler = async(message: Message, client: Client) => {
     const commandCandidates = specialCommands.filter((p) =>
         p.pattern.test(message.content)
     );
-    return Promise.all(
+    return await Promise.all(
         commandCandidates
             .filter((c) => Math.random() <= c.randomness)
             .filter((c) => isCooledDown(c))
@@ -233,7 +233,7 @@ const specialCommandHandler = async(message: Message, client: Client) => {
     );
 };
 
-export const handleInteractionEvent = async(
+export const handleInteractionEvent = (
     interaction: Interaction,
     client: Client
 ) => {
@@ -245,7 +245,7 @@ export const handleInteractionEvent = async(
     }
 };
 
-export const messageCommandHandler = async(
+export const messageCommandHandler = (
     message: Message,
     client: Client
 ) => {
