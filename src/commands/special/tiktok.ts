@@ -46,7 +46,7 @@ export class TikTokLink implements SpecialCommand {
         });
         let buf = await res.buffer();
 
-        return Promise.all([
+        return await Promise.all([
             message.reply({
                 content: (videoMeta.collector[0].text || "Dein TikTok du Hund:"),
                 files: [{
