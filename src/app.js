@@ -159,7 +159,7 @@ client.on("messageCreate", async(message) => {
         await messageCommandHandler(message, client);
     }
     catch(err) {
-        log.error(`Error executing command ${cmdString} on message ${message.id}`);
+        log.error(`Error executing command ${cmdString} on message ${message.id}. Cause: ${err}`);
     }
 });
 
@@ -168,7 +168,7 @@ client.on("interactionCreate", async(interaction) => {
         await handleInteractionEvent(interaction, client);
     }
     catch(err) {
-        log.error(`Error executing command ${matchingCommand.name} on command interaction ${command.id}`);
+        log.error(`Error executing command ${matchingCommand.name} on command interaction ${command.id}. Cause: ${err}`);
     }
 });
 
