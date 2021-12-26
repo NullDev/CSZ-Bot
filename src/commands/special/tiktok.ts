@@ -8,22 +8,12 @@ import fetch from "node-fetch";
 import * as TikTokScraper from "tiktok-scraper";
 
 const tiktokOptions = {
-    number: 50,
-    proxy: "",
-    by_user_id: false,
     asyncDownload: 1,
     asyncScraping: 1,
     filepath: "/tmp/",
     fileName: "tiktok",
     filetype: "na",
-    randomUa: false,
-    noWaterMark: false,
-    hdVideo: false,
-    headers: {
-        "user-agent": "Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101 Firefox/81.0",
-        referer: "https://www.tiktok.com/",
-        cookie: "tt_webid_v2=csz"
-    }
+    randomUa: true
 } as const;
 
 export class TikTokLink implements SpecialCommand {
