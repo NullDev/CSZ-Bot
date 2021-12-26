@@ -70,7 +70,7 @@ let lastSpecialCommands: Record<string, number> = specialCommands.reduce((acc, c
  * Registers all defined applicationCommands as guild commands
  * We're overwriting ALL, therefore no deletion is necessary
  */
-export const registerAllApplicationCommandsAsGuildCommands = async(client: Client) => {
+export const registerAllApplicationCommandsAsGuildCommands = async(client: Client): Promise<void> => {
     const guildId = config.ids.guild_id;
     const clientId = config.auth.client_id;
     const token = config.auth.bot_token;
@@ -122,21 +122,21 @@ export const registerAllApplicationCommandsAsGuildCommands = async(client: Clien
  * @param client client
  * @returns the handled command or an error if no matching command was found.
  */
-const commandInteractionHandler = async(
+const commandInteractionHandler = (
     command: CommandInteraction,
     client: Client
-) => {
+): Promise<unknown> => {
     const matchingCommand = applicationCommands.find(
         (cmd) => cmd.name === command.commandName
     );
     if (matchingCommand) {
         log.debug(`Found a matching command ${matchingCommand.name}`);
-        return await matchingCommand.handleInteraction(command, client);
+        return matchingCommand.handleInteraction(command, client);
     }
 
-    throw new Error(
+    return Promise.reject(new Error(
         `Application Command ${command.commandName} with ID ${command.id} invoked, but not availabe`
-    );
+    ));
 };
 
 const checkPermissions = (member: GuildMember, permissions: ReadonlyArray<CommandPermission>): boolean => {
@@ -178,11 +178,11 @@ const checkPermissions = (member: GuildMember, permissions: ReadonlyArray<Comman
  * was found or an error if the command would be a mod command but the
  * invoking user is not a mod
  */
-const commandMessageHandler = async(
+const commandMessageHandler = (
     commandString: String,
     message: Message,
     client: Client
-) => {
+): Promise<unknown> => {
     const matchingCommand = messageCommands.find(
         (cmd) => cmd.name === commandString
     );
@@ -190,16 +190,17 @@ const commandMessageHandler = async(
         if (matchingCommand.permissions) {
             const member = message.guild?.members.cache.get(message.author.id);
             if (member && !checkPermissions(member, matchingCommand.permissions)) {
-                await ban(client, member, client.user!, "Lol", false, 0.08);
-                message.reply({
-                    content: `Tut mir leid, ${message.author}. Du hast nicht genügend Rechte um dieses Command zu verwenden, dafür gibt's erstmal mit dem Willkürhammer einen auf den Deckel.`
-                });
-                return;
+                return Promise.all([
+                    ban(client, member, client.user!, "Lol", false, 0.08),
+                    message.reply({
+                        content: `Tut mir leid, ${message.author}. Du hast nicht genügend Rechte um dieses Command zu verwenden, dafür gibt's erstmal mit dem Willkürhammer einen auf den Deckel.`
+                    })
+                ]);
             }
         }
         return matchingCommand.handleMessage(message, client);
     }
-    return;
+    return Promise.reject(new Error(`No matching command found for command "${commandString}"`));
 };
 
 const isCooledDown = (command: SpecialCommand) => {
@@ -215,11 +216,11 @@ const isCooledDown = (command: SpecialCommand) => {
     return Math.random() < diff / cooldownTime;
 };
 
-const specialCommandHandler = async(message: Message, client: Client) => {
+const specialCommandHandler = (message: Message, client: Client): Promise<unknown> => {
     const commandCandidates = specialCommands.filter((p) =>
         p.pattern.test(message.content)
     );
-    return await Promise.all(
+    return Promise.all(
         commandCandidates
             .filter((c) => Math.random() <= c.randomness)
             .filter((c) => isCooledDown(c))
@@ -236,19 +237,20 @@ const specialCommandHandler = async(message: Message, client: Client) => {
 export const handleInteractionEvent = (
     interaction: Interaction,
     client: Client
-) => {
+): Promise<unknown> => {
     if (interaction.isCommand()) {
         return commandInteractionHandler(
             interaction as CommandInteraction,
             client
         );
     }
+    return Promise.reject(new Error("Interaction is not a command"));
 };
 
 export const messageCommandHandler = (
     message: Message,
     client: Client
-) => {
+): Promise<unknown> => {
     // TODO: The Prefix is now completly irrelevant, since the commands itself define
     // their permission.
     const plebPrefix = config.bot_settings.prefix.command_prefix;
@@ -261,7 +263,6 @@ export const messageCommandHandler = (
         if (cmdString) {
             return commandMessageHandler(cmdString, message, client);
         }
-        return;
     }
 
     return specialCommandHandler(message, client);
