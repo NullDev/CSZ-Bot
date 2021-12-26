@@ -33,7 +33,7 @@ export class TikTokLink implements SpecialCommand {
     randomness = 1;
     cooldownTime = 0;
 
-    async handleSpecialMessage(message: Message): Promise<void> {
+    async handleSpecialMessage(message: Message): Promise<unknown> {
         await message.channel.sendTyping();
 
         const uri = message.content.match(/(https?:\/\/[^ ]*)/)?.[1] || "";
@@ -46,14 +46,15 @@ export class TikTokLink implements SpecialCommand {
         });
         let buf = await res.buffer();
 
-        await message.reply({
-            content: (videoMeta.collector[0].text || "Dein TikTok du Hund:"),
-            files: [{
-                attachment: buf,
-                name: `${videoMeta.collector[0].id}.mp4`
-            }]
-        });
-
-        await message.suppressEmbeds(true);
+        return Promise.all([
+            message.reply({
+                content: (videoMeta.collector[0].text || "Dein TikTok du Hund:"),
+                files: [{
+                    attachment: buf,
+                    name: `${videoMeta.collector[0].id}.mp4`
+                }]
+            }),
+            message.suppressEmbeds(true)
+        ]);
     }
 }
