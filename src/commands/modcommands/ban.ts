@@ -3,7 +3,7 @@ import { CommandInteraction, GuildMember, User } from "discord.js";
 import { Message, Client } from "discord.js";
 import Ban from "../../storage/model/Ban";
 import { getConfig } from "../../utils/configHandler";
-import { ApplicationCommand, CommandPermission, MessageCommand } from "../command";
+import { ApplicationCommand, CommandPermission, CommandResult, MessageCommand } from "../command";
 import * as cron from "node-cron";
 import * as log from "../../utils/logger";
 import moment from "moment";
@@ -191,18 +191,20 @@ export class BanCommand implements ApplicationCommand, MessageCommand {
             content: `Ok Bruder, ich hab <@${user.id}> wegen ${reason} ${ duration > 0 ? `für ${humanReadableDuration}` : ""} gebannt`
         });
     }
-    async handleMessage(message: Message, client: Client<boolean>): Promise<unknown> {
+    async handleMessage(message: Message, client: Client<boolean>): Promise<CommandResult> {
         const user = message.mentions.users.first();
         const invokingUser = message.author;
 
         if(!user) {
-            return message.reply("Bruder, gib doch einen User an.");
+            await message.reply("Bruder, gib doch einen User an.");
+            return;
         }
 
         const userAsGuildMember = message.guild?.members.resolve(user);
 
         if(!userAsGuildMember) {
-            return message.reply("Bruder, der ist nicht auf diesem Server.");
+            await message.reply("Bruder, der ist nicht auf diesem Server.");
+            return;
         }
 
         // Extracting the reason in the text-based commmands is kinda tricky ...
@@ -230,12 +232,13 @@ export class BanCommand implements ApplicationCommand, MessageCommand {
         const err = await ban(client, userAsGuildMember, invokingUser, reason, false);
 
         if(err) {
-            return message.reply({
+            await message.reply({
                 content: err
             });
+            return;
         }
 
-        return message.reply({
+        await message.reply({
             content: `Ok Bruder, ich hab <@${user.id}> wegen ${reason} gebannt`
         });
     }

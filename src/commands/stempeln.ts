@@ -1,7 +1,7 @@
 import { SlashCommandBuilder, SlashCommandUserOption } from "@discordjs/builders";
 import { CommandInteraction, Client, GuildMember } from "discord.js";
 import Stempel from "../storage/model/Stempel";
-import { ApplicationCommand } from "./command";
+import { ApplicationCommand, CommandResult } from "./command";
 
 const stempelUser = async(invitator: GuildMember, invitedMember: GuildMember): Promise<boolean> => {
     return Stempel.insertStempel(invitator.id, invitedMember.id);
@@ -30,7 +30,7 @@ export class StempelCommand implements ApplicationCommand {
                 .setName("inviter")
                 .setDescription("Derjeniche, der dich invited hat"));
     }
-    async handleInteraction(command: CommandInteraction, client: Client<boolean>): Promise<unknown> {
+    async handleInteraction(command: CommandInteraction, client: Client<boolean>): Promise<CommandResult> {
         const invitator = command.guild?.members.cache.find(m => m.id === command.options.getUser("inviter", true).id);
         const invitedUser = command.guild?.members.cache.find(m => m.id === command.user.id);
         if(!invitator || !invitedUser) {

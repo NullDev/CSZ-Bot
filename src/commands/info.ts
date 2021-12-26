@@ -2,7 +2,7 @@ import { SlashCommandBuilder } from "@discordjs/builders";
 // @ts-ignore
 import fetch from "node-fetch";
 import { Client, CommandInteraction, Guild, Message, MessageActionRow, MessageButton, MessageEmbedOptions } from "discord.js";
-import { ApplicationCommand, MessageCommand } from "./command";
+import { ApplicationCommand, CommandResult, MessageCommand } from "./command";
 import { GitHubContributor } from "../types";
 
 const buildMessageActionsRow = (): MessageActionRow[] => {
@@ -139,7 +139,7 @@ export class InfoCommand implements ApplicationCommand, MessageCommand {
      * @param client client
      * @returns info reply
      */
-    async handleInteraction(command: CommandInteraction, client: Client): Promise<unknown> {
+    async handleInteraction(command: CommandInteraction, client: Client): Promise<CommandResult> {
         const embed: MessageEmbedOptions = await buildEmbed(command.guild, client.user?.avatarURL() ?? undefined);
         return command.reply({
             embeds: [embed],
@@ -154,13 +154,13 @@ export class InfoCommand implements ApplicationCommand, MessageCommand {
      * @param client client
      * @returns reply and reaction
      */
-    async handleMessage(message: Message, client: Client): Promise<unknown> {
+    async handleMessage(message: Message, client: Client): Promise<CommandResult> {
         const embed: MessageEmbedOptions = await buildEmbed(message.guild, client.user?.avatarURL() ?? undefined);
 
         const reply = message.reply({
             embeds: [embed]
         });
         const reaction = message.react("⚙️");
-        return Promise.all([reply, reaction]);
+        await Promise.all([reply, reaction]);
     }
 }

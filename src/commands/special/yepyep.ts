@@ -1,5 +1,5 @@
 import { Message, Client } from "discord.js";
-import { SpecialCommand } from "../command";
+import { SpecialCommand, CommandResult} from "../command";
 
 export class YepYepCommand implements SpecialCommand {
     name: string = "YEPYEP";
@@ -8,10 +8,11 @@ export class YepYepCommand implements SpecialCommand {
     randomness = 1;
     cooldownTime = 0;
 
-    handleSpecialMessage(message: Message, _client: Client<boolean>): Promise<unknown> {
+    async handleSpecialMessage(message: Message, _client: Client<boolean>): Promise<CommandResult> {
         const yepEmote = message.guild?.emojis.cache.find(e => e.name === "YEP");
         if (yepEmote){
-            return message.channel.send(`${yepEmote}${yepEmote}`);
+            await message.channel.send(`${yepEmote}${yepEmote}`);
+            return;
         }
 
         throw new Error("Could not find YEP emote :sadge:");

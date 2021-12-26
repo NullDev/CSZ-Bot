@@ -1,5 +1,5 @@
 import { Message, Client, Util } from "discord.js";
-import { SpecialCommand } from "../command";
+import { SpecialCommand, CommandResult } from "../command";
 
 export class DadJokeCommand implements SpecialCommand {
     name: string = "Dad Joke";
@@ -7,7 +7,7 @@ export class DadJokeCommand implements SpecialCommand {
     pattern: RegExp = /^ich bin\s+(.){3,}/i;
     randomness = 0.1;
 
-    handleSpecialMessage(message: Message, _client: Client<boolean>): Promise<unknown> {
+    async handleSpecialMessage(message: Message, _client: Client<boolean>): Promise<CommandResult> {
         const idx = message.content.toLowerCase().lastIndexOf("ich bin ");
         if(idx < (message.content.length - 1)) {
             // Get index of the first terminator character after trigger
@@ -18,21 +18,22 @@ export class DadJokeCommand implements SpecialCommand {
             const randomUwe = Math.random() < 0.01;
 
             if(randomUwe) {
-                return message.reply({
+                await message.reply({
                     content: "Und ich bin der Uwe, ich bin auch dabei"
                 });
+                return;
             }
 
 
             if(trimmedWords.length > 0 && trimmedWords.length <= 10) {
                 const whoIs = Util.cleanContent(trimmedWords.join(" "), message.channel).trim();
                 if(whoIs.length > 0) {
-                    return message.reply({
+                    await message.reply({
                         content: `Hallo ${whoIs}, ich bin Shitpost Bot.`
                     });
+                    return;
                 }
             }
         }
-        return Promise.resolve();
     }
 }

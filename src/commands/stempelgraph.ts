@@ -8,7 +8,7 @@ import Stempel from "../storage/model/Stempel";
 import * as log from "../utils/logger";
 import { isMod } from "../utils/userUtils";
 import { SlashCommandBuilder, SlashCommandStringOption } from "@discordjs/builders";
-import { ApplicationCommand } from "./command";
+import { ApplicationCommand, CommandResult } from "./command";
 
 const config = getConfig();
 
@@ -202,7 +202,7 @@ export class StempelgraphCommand implements ApplicationCommand {
             );
     }
 
-    async handleInteraction(command: CommandInteraction, _client: Client<boolean>): Promise<void> {
+    async handleInteraction(command: CommandInteraction, _client: Client<boolean>): Promise<CommandResult> {
         const members = command.guild?.members.cache;
         if (!members) {
             log.debug(`No Members found within guild ${command.guild}`);

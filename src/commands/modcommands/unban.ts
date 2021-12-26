@@ -3,7 +3,7 @@ import { CommandInteraction, GuildMember } from "discord.js";
 import { Message, Client } from "discord.js";
 import Ban from "../../storage/model/Ban";
 import { getConfig } from "../../utils/configHandler";
-import { ApplicationCommand, CommandPermission, MessageCommand } from "../command";
+import { ApplicationCommand, CommandPermission, CommandResult, MessageCommand } from "../command";
 import { restoreRoles } from "./ban";
 
 const config = getConfig();
@@ -35,7 +35,7 @@ export class UnbanCommand implements ApplicationCommand, MessageCommand {
                 .setDescription("Der, der gebannt werden soll"));
     }
 
-    async handleInteraction(command: CommandInteraction, _client: Client<boolean>): Promise<void> {
+    async handleInteraction(command: CommandInteraction, _client: Client<boolean>): Promise<CommandResult> {
         const user = command.options.getUser("user", true);
 
         const userAsGuildMember = command.guild?.members.resolve(user);
@@ -59,27 +59,30 @@ export class UnbanCommand implements ApplicationCommand, MessageCommand {
             content: "Yo bruder, hab ihn entbannt"
         });
     }
-    async handleMessage(message: Message, _client: Client<boolean>): Promise<unknown> {
+    async handleMessage(message: Message, _client: Client<boolean>): Promise<CommandResult> {
         const user = message.mentions.users.first();
 
         if(!user) {
-            return message.reply("Bruder, gib doch einen User an.");
+            await message.reply("Bruder, gib doch einen User an.");
+            return;
         }
 
         const userAsGuildMember = message.guild?.members.resolve(user);
 
         if(!userAsGuildMember) {
-            return message.reply("Bruder, der ist nicht auf diesem Server.");
+            await message.reply("Bruder, der ist nicht auf diesem Server.");
+            return;
         }
 
         const err = await unban(userAsGuildMember);
 
         if(err) {
-            return message.reply({
+            await message.reply({
                 content: err
             });
+            return;
         }
 
-        return message.reply("Yo bruder, hab ihn entbannt");
+        await message.reply("Yo bruder, hab ihn entbannt");
     }
 }

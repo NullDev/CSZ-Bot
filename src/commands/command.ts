@@ -20,18 +20,21 @@ export interface CommandBase {
     readonly permissions?: ReadonlyArray<CommandPermission>;
 }
 
+// For the sake of simplicty, at the moment every command returns void
+export type CommandResult = void;
+
 // For ApplicationCommands we require a SlashCommandBuilder object to create the command and a handler method
 interface AppCommand {
     applicationCommand: Pick<SlashCommandBuilder, "toJSON">;
     handleInteraction(
         command: CommandInteraction,
         client: Client
-    ): Promise<unknown>;
+    ): Promise<CommandResult>;
 }
 
 // For a MessageCommand we require an additional modCommand property and a handler method
 interface MsgCommand {
-    handleMessage(message: Message, client: Client): Promise<unknown>;
+    handleMessage(message: Message, client: Client): Promise<CommandResult>;
 }
 
 // For SpecialCommands we require a pattern and a randomenss (<= 1)
@@ -39,7 +42,7 @@ interface SpcalCommand {
     pattern: RegExp;
     randomness: number;
     cooldownTime?: number;
-    handleSpecialMessage(message: Message, client: Client): Promise<unknown>;
+    handleSpecialMessage(message: Message, client: Client): Promise<CommandResult>;
 }
 
 export function isApplicationCommand(cmd: Command): cmd is ApplicationCommand {

@@ -1,7 +1,7 @@
 // @ts-ignore
 import { Client, Message, User } from "discord.js";
 import Penis from "../storage/model/Penis";
-import { MessageCommand } from "./command";
+import { CommandResult, MessageCommand } from "./command";
 import * as log from "../utils/logger";
 
 const PENIS_MAX = 30;
@@ -32,7 +32,7 @@ export class PenisCommand implements MessageCommand {
     /**
      * Replies to the message with a random penis length
      */
-    async handleMessage(message: Message, _client: Client): Promise<unknown> {
+    async handleMessage(message: Message, _client: Client): Promise<CommandResult> {
         const { author } = message;
         const mention = message.mentions.users.first();
         const userToMeasure = mention !== undefined ? mention : author;
@@ -50,12 +50,13 @@ export class PenisCommand implements MessageCommand {
                 log.debug(`${userToMeasure} has the new longest dick with size ${size}`);
             }
 
-            return Promise.all([
+            await Promise.all([
                 Penis.insertMeasurement(userToMeasure, size),
                 sendPenis(userToMeasure, message, size)
             ]);
+            return;
         }
 
-        return sendPenis(userToMeasure, message, recentMeasurement.size, recentMeasurement.measuredAt);
+        await sendPenis(userToMeasure, message, recentMeasurement.size, recentMeasurement.measuredAt);
     }
 }

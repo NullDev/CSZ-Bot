@@ -3,7 +3,7 @@
 // ========================= //
 
 import { Message } from "discord.js";
-import { SpecialCommand } from "../command";
+import { SpecialCommand, CommandResult } from "../command";
 import fetch from "node-fetch";
 import * as TikTokScraper from "tiktok-scraper";
 
@@ -33,7 +33,7 @@ export class TikTokLink implements SpecialCommand {
     randomness = 1;
     cooldownTime = 0;
 
-    async handleSpecialMessage(message: Message): Promise<unknown> {
+    async handleSpecialMessage(message: Message): Promise<CommandResult> {
         await message.channel.sendTyping();
 
         const uri = message.content.match(/(https?:\/\/[^ ]*)/)?.[1] || "";
@@ -46,15 +46,13 @@ export class TikTokLink implements SpecialCommand {
         });
         let buf = await res.buffer();
 
-        return await Promise.all([
-            message.reply({
-                content: (videoMeta.collector[0].text || "Dein TikTok du Hund:"),
-                files: [{
-                    attachment: buf,
-                    name: `${videoMeta.collector[0].id}.mp4`
-                }]
-            }),
-            message.suppressEmbeds(true)
-        ]);
+        await message.reply({
+            content: (videoMeta.collector[0].text || "Dein TikTok du Hund:"),
+            files: [{
+                attachment: buf,
+                name: `${videoMeta.collector[0].id}.mp4`
+            }]
+        });
+        await message.suppressEmbeds(true);
     }
 }

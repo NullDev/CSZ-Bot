@@ -1,5 +1,5 @@
 import { Message, Client } from "discord.js";
-import { MessageCommand } from "./command";
+import { CommandResult, MessageCommand } from "./command";
 import Jimp from "jimp";
 import path from "path";
 import * as fs from "fs";
@@ -31,7 +31,7 @@ Usage: ${config.bot_settings.prefix.command_prefix}bonk
        ${config.bot_settings.prefix.command_prefix}bonk @ShadowByte#1337
        Oder auf eine Nachricht mit ${config.bot_settings.prefix.command_prefix}bonk antworten.`;
 
-    async handleMessage(message: Message, client: Client<boolean>): Promise<unknown> {
+    async handleMessage(message: Message, client: Client<boolean>): Promise<CommandResult> {
         const messageRef = message.reference?.messageId;
         const messagePing = message.mentions?.users.first();
         let toBeBonked;
@@ -61,7 +61,7 @@ Usage: ${config.bot_settings.prefix.command_prefix}bonk
             log.error(`Could not create where meme: ${err}`);
         }
         finally {
-            return await fs.promises.unlink(meme);
+            return fs.promises.unlink(meme);
         }
     }
 }

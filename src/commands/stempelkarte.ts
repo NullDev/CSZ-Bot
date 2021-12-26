@@ -4,7 +4,7 @@ import { AllowedImageSize, Client, CommandInteraction, GuildMember, Snowflake } 
 
 import Stempel from "../storage/model/Stempel";
 import * as log from "../utils/logger";
-import { ApplicationCommand } from "./command";
+import { ApplicationCommand, CommandResult } from "./command";
 import { SlashCommandBuilder, SlashCommandUserOption } from "@discordjs/builders";
 
 const stempelLocations = [
@@ -114,7 +114,7 @@ export class StempelkarteCommand implements ApplicationCommand {
             .setDescription("Derjeniche, von dem du die Stempelkarte sehen möchtest")
         );
 
-    async handleInteraction(command: CommandInteraction, _client: Client<boolean>): Promise<void> {
+    async handleInteraction(command: CommandInteraction, _client: Client<boolean>): Promise<CommandResult> {
         const userOption = command.options.getUser("user") ?? command.user;
 
         const ofMember = command.guild?.members.cache.find(m => m.id === userOption.id);

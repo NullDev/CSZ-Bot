@@ -1,5 +1,5 @@
 import { Message, Client } from "discord.js";
-import { SpecialCommand } from "../command";
+import { SpecialCommand, CommandResult } from "../command";
 
 export class WatCommand implements SpecialCommand {
     name: string = "wat";
@@ -8,19 +8,21 @@ export class WatCommand implements SpecialCommand {
     randomness = 0.3;
     cooldownTime = 300000;
 
-    async handleSpecialMessage(message: Message, _client: Client<boolean>): Promise<unknown> {
+    async handleSpecialMessage(message: Message, _client: Client<boolean>): Promise<CommandResult> {
         const watEmote = message.guild?.emojis.cache.find(e => e.name === "wat");
         if(watEmote) {
             const messageRef = message.reference?.messageId;
             // If reply to message
             if(messageRef) {
                 const quotedMessage = await message.channel.messages.fetch(messageRef);
-                return quotedMessage.react(watEmote);
+                await quotedMessage.react(watEmote);
+                return;
             }
 
             // react to the last message
             const lastMessage = (await message.channel.messages.fetch({ limit: 2 })).last();
-            return lastMessage?.react(watEmote);
+            await lastMessage?.react(watEmote);
+            return;
         }
         throw new Error("Wat Emoote not found");
     }

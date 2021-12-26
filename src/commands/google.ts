@@ -1,6 +1,6 @@
 import {SlashCommandBuilder, SlashCommandStringOption, SlashCommandUserOption} from "@discordjs/builders";
 import {Client, CommandInteraction, GuildMember, MessageEmbedOptions} from "discord.js";
-import {ApplicationCommand} from "./command";
+import {ApplicationCommand, CommandResult} from "./command";
 
 
 const replies = [
@@ -41,7 +41,7 @@ export class GoogleCommand implements ApplicationCommand {
             .addUserOption(new SlashCommandUserOption().setName("dau").setRequired(false).setDescription("Der User, der nichtmal googln kann"));
     }
 
-    handleInteraction(command: CommandInteraction, client: Client<boolean>): Promise<unknown> {
+    async handleInteraction(command: CommandInteraction, client: Client<boolean>): Promise<CommandResult> {
         const user = command.guild?.members.cache.find(m => m.id === command.user.id)!;
         const dau = command.guild?.members.cache.find(m => m.id === command.options.getUser("dau", false)?.id) ?? null;
         const swd = command.options.getString("searchword", true);
