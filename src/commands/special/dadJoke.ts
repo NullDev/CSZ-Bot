@@ -1,11 +1,17 @@
 import { Message, Client, Util } from "discord.js";
-import { SpecialCommand, CommandResult } from "../command";
+import { SpecialCommand, CommandResult, CommandPermission } from "../command";
 
 export class DadJokeCommand implements SpecialCommand {
+    permissions?: readonly CommandPermission[] | undefined;
+    cooldownTime?: number | undefined;
     name: string = "Dad Joke";
     description: string = "Macht bei der passenden Gelegenheit einen Dad Joke";
-    pattern: RegExp = /^ich bin\s+(.){3,}/i;
     randomness = 0.1;
+
+
+    matches(message: Message<boolean>): boolean {
+        return /^ich bin\s+(.){3,}/i.test(message.content);
+    }
 
     async handleSpecialMessage(message: Message, _client: Client<boolean>): Promise<CommandResult> {
         const idx = message.content.toLowerCase().lastIndexOf("ich bin ");

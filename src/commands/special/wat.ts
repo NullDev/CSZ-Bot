@@ -8,6 +8,10 @@ export class WatCommand implements SpecialCommand {
     randomness = 0.3;
     cooldownTime = 300000;
 
+    matches(message: Message<boolean>): boolean {
+        return message.content.toLowerCase().includes("wat");
+    }
+
     async handleSpecialMessage(message: Message, _client: Client<boolean>): Promise<CommandResult> {
         const watEmote = message.guild?.emojis.cache.find(e => e.name === "wat");
         if(watEmote) {

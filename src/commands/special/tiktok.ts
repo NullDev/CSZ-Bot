@@ -19,9 +19,13 @@ const tiktokOptions = {
 export class TikTokLink implements SpecialCommand {
     name: string = "Tiktok";
     description: string = "Embedded TikTok Links";
-    pattern: RegExp = /(www\.tiktok\.com)|(vm\.tiktok\.com)/i;
     randomness = 1;
     cooldownTime = 0;
+
+    matches(message: Message<boolean>): boolean {
+        const pattern = /(www\.tiktok\.com)|(vm\.tiktok\.com)/i;
+        return pattern.test(message.content);
+    }
 
     async handleSpecialMessage(message: Message): Promise<CommandResult> {
         await message.channel.sendTyping();

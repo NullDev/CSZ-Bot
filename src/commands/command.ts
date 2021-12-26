@@ -39,10 +39,10 @@ interface MsgCommand {
 
 // For SpecialCommands we require a pattern and a randomenss (<= 1)
 interface SpcalCommand {
-    pattern: RegExp;
     randomness: number;
     cooldownTime?: number;
     handleSpecialMessage(message: Message, client: Client): Promise<CommandResult>;
+    matches(message: Message): boolean;
 }
 
 export function isApplicationCommand(cmd: Command): cmd is ApplicationCommand {

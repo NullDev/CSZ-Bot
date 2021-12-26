@@ -217,9 +217,7 @@ const isCooledDown = (command: SpecialCommand) => {
 };
 
 const specialCommandHandler = (message: Message, client: Client): Promise<unknown> => {
-    const commandCandidates = specialCommands.filter((p) =>
-        p.pattern.test(message.content)
-    );
+    const commandCandidates = specialCommands.filter((p) => p.matches(message));
     return Promise.all(
         commandCandidates
             .filter((c) => Math.random() <= c.randomness)

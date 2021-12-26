@@ -14,9 +14,13 @@ if (process.env.NODE_ENV === "production") {
 export class WhereCommand implements SpecialCommand {
     name: string = "Where";
     description: string = "Macht ein Ape-Meme";
-    pattern: RegExp = /^wo(\s+\S+){1,3}\S[^?]$/i;
     randomness = 0.4;
     cooldownTime = 300000;
+
+    matches(message: Message<boolean>): boolean {
+        const pattern = /^wo(\s+\S+){1,3}\S[^?]$/i;
+        return pattern.test(message.content);
+    }
 
     async handleSpecialMessage(message: Message, client: Client<boolean>) {
         const subject = Util.cleanContent(message.content.trim().toUpperCase(), message.channel);
