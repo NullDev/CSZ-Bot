@@ -159,7 +159,7 @@ client.on("messageCreate", async(message) => {
         await messageCommandHandler(message, client);
     }
     catch(err) {
-        log.error(`Error executing command ${cmdString} on message ${message.id}. Cause: ${err}`);
+        log.error(`[messageCreate] Error on message ${message.id}. Cause: ${err}`);
     }
 });
 
@@ -168,7 +168,7 @@ client.on("interactionCreate", async(interaction) => {
         await handleInteractionEvent(interaction, client);
     }
     catch(err) {
-        log.error(`Error executing command ${matchingCommand.name} on command interaction ${command.id}. Cause: ${err}`);
+        log.error(`[interactionCreate] Error on interaction ${interaction.id}. Cause: ${err}`);
     }
 });
 
@@ -200,11 +200,25 @@ client.on("guildMemberRemove", (member) => {
     GuildRagequit.incrementRagequit(member.guild.id, member.id);
 });
 
-client.on("messageCreate", (message) => messageHandler(message, client));
+client.on("messageCreate", async(message) => {
+    try {
+        await messageHandler(message, client);
+    }
+    catch(err) {
+        log.error(`[messageCreate] Error on message ${message.id}. Cause: ${err}`);
+    }
+});
 
 client.on("messageDelete", (message) => messageDeleteHandler(message, client));
 
-client.on("messageUpdate", (_, newMessage) => messageHandler(/** @type {import("discord.js").Message} */ (newMessage), client));
+client.on("messageUpdate", async(_, newMessage) => {
+    try {
+        await messageHandler(/** @type {import("discord.js").Message} */ (newMessage), client);
+    }
+    catch(err) {
+        log.error(`[messageUpdate] Error on message ${newMessage.id}. Cause: ${err}`);
+    }
+});
 
 client.on("error", log.error);
 
