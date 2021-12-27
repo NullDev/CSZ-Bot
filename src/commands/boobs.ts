@@ -7,7 +7,7 @@ interface BoobArray {
     [key: string]: string;
 }
 
-/* eslint-disable quote-props */
+
 const categorys: BoobArray = {
     "Knöpfe": ". .",
     "Toffifee": "○ ○",
