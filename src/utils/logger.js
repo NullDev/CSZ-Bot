@@ -17,8 +17,8 @@ logger.add(new winston.transports.Console({
     format: winston.format.combine(
         winston.format.colorize(),
         winston.format.timestamp(),
-        winston.format.printf(info => `${info.timestamp} [${info.level}] ${info.message}`),
-    ),
+        winston.format.printf(info => `${info.timestamp} [${info.level}] ${info.message}`)
+    )
 }));
 // }
 
