@@ -53,6 +53,7 @@ const sendBoob = async( message: Message ): Promise<Message<boolean>> => {
 
 export class BoobCommand implements MessageCommand {
     name = "boob";
+    aliases = ["boobs", "boobie", "titte","titten"];
     description = "Zeigt dir die deine Boobs mit Größe an";
 
     async handleMessage(message: Message, _client: Client): Promise<CommandResult> {
