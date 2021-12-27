@@ -9,7 +9,7 @@ import * as Discord from "discord.js";
 import * as cron from "node-cron";
 
 import * as conf from "./utils/configHandler";
-import * as log from "./utils/logger";
+import log from "./utils/logger";
 import * as timezone from "./utils/timezone";
 
 // Handler

@@ -1,4 +1,4 @@
-import * as log from "../utils/logger";
+import log from "../utils/logger";
 import FadingMessage from "../storage/model/FadingMessage";
 
 let isLooping = false;

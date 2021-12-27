@@ -24,7 +24,7 @@ import { WhereCommand } from "../commands/special/where";
 import { DadJokeCommand } from "../commands/special/dadJoke";
 import { WatCommand } from "../commands/special/wat";
 import { TikTokLink } from "../commands/special/tiktok";
-import * as log from "../utils/logger";
+import log from "../utils/logger";
 import { StempelCommand } from "../commands/stempeln";
 import { StempelgraphCommand } from "../commands/stempelgraph";
 import { StempelkarteCommand } from "../commands/stempelkarte";

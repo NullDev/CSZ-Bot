@@ -1,6 +1,6 @@
 import {Client, GuildMember, Message, MessageReaction, User, TextBasedChannels, TextChannel, GuildEmoji, ReactionEmoji} from "discord.js";
 import {getConfig} from "../utils/configHandler";
-import * as log from "../utils/logger";
+import log from "../utils/logger";
 import { isNerd, isTrusted } from "../utils/userUtils";
 
 const hauptchatId = getConfig().ids.hauptchat_id;

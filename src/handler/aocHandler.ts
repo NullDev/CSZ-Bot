@@ -8,7 +8,7 @@ import { getConfig } from "../utils/configHandler";
 import * as path from "path";
 import * as fs from "fs";
 import fetch from "node-fetch";
-import * as log from "../utils/logger";
+import log from "../utils/logger";
 
 const aocConfigPath = path.resolve("aoc.config.json");
 
