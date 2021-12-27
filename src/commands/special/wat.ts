@@ -9,7 +9,7 @@ export class WatCommand implements SpecialCommand {
     cooldownTime = 300000;
 
     matches(message: Message<boolean>): boolean {
-        return message.content.toLowerCase().includes("wat");
+        return message.content.toLowerCase() === "wat";
     }
 
     async handleSpecialMessage(message: Message, _client: Client<boolean>): Promise<CommandResult> {
