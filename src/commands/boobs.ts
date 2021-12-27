@@ -1,5 +1,5 @@
 // @ts-ignore
-import { Client, Message, User } from "discord.js";
+import { Client, Message } from "discord.js";
 import { CommandResult, MessageCommand } from "./command";
 import * as log from "../utils/logger";
 
@@ -7,29 +7,30 @@ interface BoobArray {
     [key: string]: string;
 }
 
+/* eslint-disable quote-props */
 const categorys: BoobArray = {
-    "Knöpfe":". .",
-    "Toffifee":"○ ○",
-    "Zwergtittchen":"◯ ◯",
-    "Wird langsam was":"(Y)",
-    "Kann man mit arbeiten":"(.Y.)",
-    "Hand voll glück":"(.)(.)",
-    "Booba":"( . )( . )",
-    "Tellernippel":"⊚⊚",
-    "Schläuche":"UU",
-    "Mega Schläuche":`
+    "Knöpfe": ". .",
+    "Toffifee": "○ ○",
+    "Zwergtittchen": "◯ ◯",
+    "Wird langsam was": "(Y)",
+    "Kann man mit arbeiten": "(.Y.)",
+    "Hand voll glück": "(.)(.)",
+    "Booba": "( . )( . )",
+    "Tellernippel": "⊚⊚",
+    "Schläuche": "UU",
+    "Mega Schläuche": `
     | |  | |
     | |  | |
     |\\_|  |\\_|
     `,
-    "Mommys Milkers":"（。 ㅅ  。）",
-    "Milchtüten":"( • )( • )",
-    "Richtig dicke Titten":"(  .  )(  .  )",
-    "Brachiale Euter":"(   .  )(   .   )",
-    "Ach du dickes Erbgut":"(    .    )(    .    )",
-    "Tod durch Booba":"(     .     )(     .     )",
-    "Ich bin im Himmel":"(      .      )(      .      )",
-    "Gamb":`
+    "Mommys Milkers": "（。 ㅅ  。）",
+    "Milchtüten": "( • )( • )",
+    "Richtig dicke Titten": "(  .  )(  .  )",
+    "Brachiale Euter": "(   .  )(   .   )",
+    "Ach du dickes Erbgut": "(    .    )(    .    )",
+    "Tod durch Booba": "(     .     )(     .     )",
+    "Ich bin im Himmel": "(      .      )(      .      )",
+    "Gamb": `
     ⣿⣿⣿⢃⣿⣿⢟⣿⣿⣿⣿⣿⣮⢫⣿⣿⣿⣿⣿⣟⢿⠃⠄⢻⣿⣿
     ⣿⣿⡿⣸⠟⣵⣿⣿⣿⣿⣿⣿⣿⣾⣿⣿⣿⣿⣿⣿⣷⣄⢰⡄⢿⣿
     ⣿⣿⡇⠏⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⠹⡎⣿
@@ -37,8 +38,8 @@ const categorys: BoobArray = {
     ⡆⠄⣤⠈⢣⣈⣠⣿⣿⣿⣿⣿⠏⣄⠻⣿⣿⣿⣿⣿⣆⣈⣴⠃⣿⣿
     ⢿⠄⣿⡇⠄⠙⠿⣿⡿⠿⢋⣥⣾⣿⣷⣌⠻⢿⣿⣿⡿⠟⣡⣾⣿⣿
     `
-
-}
+};
+/* eslint-enable quote-props */
 
 const sendBoob = async( message: Message ): Promise<Message<boolean>> => {
     const category = Object.keys(categorys)[Math.floor(Math.random() * Object.keys(categorys).length)];

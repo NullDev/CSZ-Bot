@@ -187,7 +187,7 @@ const commandMessageHandler = (
 ): Promise<unknown> => {
     const matchingCommand = messageCommands.find(
         (cmd) => {
-            return cmd.name === commandString || cmd.aliases?.includes(commandString)
+            return cmd.name === commandString || cmd.aliases?.includes(commandString);
         }
     );
     if (matchingCommand) {
