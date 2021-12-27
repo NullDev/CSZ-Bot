@@ -20,7 +20,7 @@ const categorys: BoobArray = {
     "Mega Schläuche":`
     | |  | |
     | |  | |
-    |_|  |_|
+    |\\_|  |\\_|
     `,
     "Mommys Milkers":"（。 ㅅ  。）",
     "Milchtüten":"( • )( • )",
@@ -41,14 +41,11 @@ const categorys: BoobArray = {
 }
 
 const sendBoob = async( message: Message ): Promise<Message<boolean>> => {
-    
     const category = Object.keys(categorys)[Math.floor(Math.random() * Object.keys(categorys).length)];
     const boob = categorys[category];
 
-    return message.reply(category +"\n"+ boob);
-
+    return message.reply(category + "\n" + boob);
 };
-
 
 
 export class BoobCommand implements MessageCommand {
@@ -63,9 +60,7 @@ export class BoobCommand implements MessageCommand {
 
         log.debug(`${author.id} wants to measure boob of user ${userToMeasure.id}`);
 
-        
         await sendBoob(message);
         return;
-        
     }
 }
