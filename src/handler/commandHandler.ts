@@ -186,25 +186,25 @@ const commandMessageHandler = (
     client: Client
 ): Promise<unknown> => {
     const matchingCommand = messageCommands.find(
-        (cmd) => {
-            return cmd.name === commandString || cmd.aliases?.includes(commandString);
-        }
+        cmd => cmd.name === commandString || cmd.aliases?.includes(commandString)
     );
-    if (matchingCommand) {
-        if (matchingCommand.permissions) {
-            const member = message.guild?.members.cache.get(message.author.id);
-            if (member && !checkPermissions(member, matchingCommand.permissions)) {
-                return Promise.all([
-                    ban(client, member, client.user!, "Lol", false, 0.08),
-                    message.reply({
-                        content: `Tut mir leid, ${message.author}. Du hast nicht genügend Rechte um dieses Command zu verwenden, dafür gibt's erstmal mit dem Willkürhammer einen auf den Deckel.`
-                    })
-                ]);
-            }
-        }
-        return matchingCommand.handleMessage(message, client);
+
+    if (!matchingCommand) {
+        return Promise.reject(new Error(`No matching command found for command "${commandString}"`));
     }
-    return Promise.reject(new Error(`No matching command found for command "${commandString}"`));
+
+    if (matchingCommand.permissions) {
+        const member = message.guild?.members.cache.get(message.author.id);
+        if (member && !checkPermissions(member, matchingCommand.permissions)) {
+            return Promise.all([
+                ban(client, member, client.user!, "Lol", false, 0.08),
+                message.reply({
+                    content: `Tut mir leid, ${message.author}. Du hast nicht genügend Rechte um dieses Command zu verwenden, dafür gibt's erstmal mit dem Willkürhammer einen auf den Deckel.`
+                })
+            ]);
+        }
+    }
+    return matchingCommand.handleMessage(message, client);
 };
 
 const isCooledDown = (command: SpecialCommand) => {
