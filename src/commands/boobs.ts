@@ -15,7 +15,13 @@ const categorys: BoobArray = {
     "Kann man mit arbeiten":"(.Y.)",
     "Hand voll glück":"(.)(.)",
     "Booba":"( . )( . )",
+    "Tellernippel":"⊚⊚",
     "Schläuche":"UU",
+    "Mega Schläuche":`
+    | |  | |
+    | |  | |
+    |_|  |_|
+    `,
     "Mommys Milkers":"（。 ㅅ  。）",
     "Milchtüten":"( • )( • )",
     "Richtig dicke Titten":"(  .  )(  .  )",
