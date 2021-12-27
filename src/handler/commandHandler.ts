@@ -32,6 +32,7 @@ import { GuildMember } from "discord.js";
 import { ban, BanCommand } from "../commands/modcommands/ban";
 import { UnbanCommand } from "../commands/modcommands/unban";
 import { PenisCommand } from "../commands/penis";
+import { BoobCommand } from "../commands/boobs";
 import { BonkCommand } from "../commands/bonk";
 import {GoogleCommand} from "../commands/google";
 import { Mutable } from "../types";
@@ -53,6 +54,7 @@ export const commands: readonly Command[] = [
     new BanCommand(),
     new UnbanCommand(),
     new PenisCommand(),
+    new BoobCommand(),
     new BonkCommand(),
     new GoogleCommand(),
     new NischdaaaCommand()
