@@ -1,73 +1,25 @@
-// ========================= //
-// = Copyright (c) NullDev = //
-// ========================= //
+import * as winston from "winston";
 
-/**
- * Formats the current time
- *
- * @returns {String} Time
- */
-let getDate = function() {
-    const date = new Date();
-    let hourData = date.getHours();
-    let minData = date.getMinutes();
-    let secData = date.getSeconds();
+// This is pretty much the default config taken from:
+// https://www.npmjs.com/package/winston
 
-    let hour = (hourData < 10 ? "0" : "") + hourData;
-    let min = (minData < 10 ? "0" : "") + minData;
-    let sec = (secData < 10 ? "0" : "") + secData;
+const logger = winston.createLogger({
+    level: "info",
+    format: winston.format.json(),
+    transports: [
+        new winston.transports.File({ filename: "error.log", level: "error" }),
+        new winston.transports.File({ filename: "combined.log" })
+    ]
+});
 
-    return "[" + hour + ":" + min + ":" + sec + "]";
-};
+// if (process.env.NODE_ENV !== "production") {
+logger.add(new winston.transports.Console({
+    format: winston.format.combine(
+        winston.format.colorize(),
+        winston.format.timestamp(),
+        winston.format.printf(info => `${info.timestamp} [${info.level}] ${info.message}`),
+    ),
+}));
+// }
 
-/**
- * Get the StackTrace of the calee function
- *
- * @returns {String} StackTrace
- */
-let getTrace = function() {
-    let err = new Error();
-
-    // Parse the whole stacktrace
-    let callerLine = err.stack.split("\n");
-
-    // Get everything after the third line
-    let splitArr = callerLine.filter((_, index) => index > 1);
-    let cleanArr = "";
-
-    for (let element of splitArr) {
-        // We want to end the trace once we reach the stack comming from dependencies
-        if (element.match(/(node_modules)/gi)) break;
-
-        // If it isn't the first line, pad the string according to our logger structure
-        cleanArr += cleanArr.length ? "                 " : "";
-
-        // remove the "at xyz" string and terminate the line
-        cleanArr += element.replace(/(    at )/gi, "") + "\n";
-    }
-
-    // Remove last occurrence of a new line character in order to continue logging seamlessly
-    return cleanArr.substring(0, cleanArr.lastIndexOf("\n")) + cleanArr.substring(cleanArr.lastIndexOf("\n") + 1);
-};
-
-export const error = (input) => {
-    console.log(
-        " \x1b[41m\x1b[315m x \x1b[0m\x1b[31m [ERROR] " + getDate() + " - " + input + "\n" +
-        "     StackTrace: " + getTrace() + "\x1b[0m"
-    );
-};
-export const warn = (input) => {
-    console.log(" \x1b[43m\x1b[30m ! \x1b[0m\x1b[33m [WARN]  " + getDate() + " - " + input + "\x1b[0m");
-};
-
-export const info = (input) => {
-    console.log(" \x1b[44m\x1b[30m i \x1b[0m\x1b[36m [INFO]  " + getDate() + " - " + input + "\x1b[0m");
-};
-
-export const done = (input) => {
-    console.log(" \x1b[42m\x1b[30m ✓ \x1b[0m\x1b[32m [DONE]  " + getDate() + " - " + input + "\x1b[0m");
-};
-
-export const debug = (input) => {
-    console.log(" \x1b[45m\x1b[30m 🐛 \x1b[0m\x1b[35m [DEBUG]  " + getDate() + " - " + input + "\x1b[0m");
-};
+export default logger;

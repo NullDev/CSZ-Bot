@@ -38,7 +38,8 @@
     "tiktok-scraper": "^1.4.36",
     "unirest": "^0.6.0",
     "uuid": "^8.3.2",
-    "viz.js": "^2.1.2"
+    "viz.js": "^2.1.2",
+    "winston": "^3.3.3"
   },
   "devDependencies": {
     "@types/minimist": "^1.2.2",
