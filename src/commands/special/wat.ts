@@ -4,7 +4,6 @@ import { SpecialCommand, CommandResult } from "../command";
 export class WatCommand implements SpecialCommand {
     name: string = "wat";
     description: string = "Reagiert mit wat emote sobald jemand wat schreibt";
-    pattern: RegExp = /^wat$/i;
     randomness = 0.3;
     cooldownTime = 300000;
 

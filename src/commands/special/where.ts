@@ -18,8 +18,9 @@ export class WhereCommand implements SpecialCommand {
     cooldownTime = 300000;
 
     matches(message: Message<boolean>): boolean {
-        const pattern = /^wo(\s+\S+){1,3}\S[^?]$/i;
-        return pattern.test(message.content);
+        const msg = message.content.toLowerCase();
+
+        return msg.startsWith("wo") && countWords(substringAfter(msg, "wo")) <= 3;
     }
 
     async handleSpecialMessage(message: Message, client: Client<boolean>) {

@@ -10,7 +10,9 @@ export class DadJokeCommand implements SpecialCommand {
 
 
     matches(message: Message<boolean>): boolean {
-        return /^ich bin\s+(.){3,}/i.test(message.content);
+        const msg = message.content.toLowerCase();
+
+        return msg.startsWith("ich bin") && substringAfter(msg, "ich bin").length > 3;
     }
 
     async handleSpecialMessage(message: Message, _client: Client<boolean>): Promise<CommandResult> {
