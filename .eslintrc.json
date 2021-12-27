@@ -16,6 +16,7 @@
     },
     "ignorePatterns": [                     // Ignore dist folders and dependencies
         "dist",
+        "built",
         "node_modules"
     ],
     "rules": {
