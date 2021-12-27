@@ -3,7 +3,11 @@ import { Client, Message, User } from "discord.js";
 import { CommandResult, MessageCommand } from "./command";
 import * as log from "../utils/logger";
 
-const categorys = {
+interface BoobArray {
+    [key: string]: string;
+}
+
+const categorys: BoobArray = {
     "Knöpfe":". .",
     "Toffifee":"○ ○",
     "Zwergtittchen":"◯ ◯",
