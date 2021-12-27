@@ -186,7 +186,9 @@ const commandMessageHandler = (
     client: Client
 ): Promise<unknown> => {
     const matchingCommand = messageCommands.find(
-        (cmd) => cmd.name === commandString
+        (cmd) => {
+            return cmd.name === commandString || cmd.aliases?.includes(commandString)
+        }
     );
     if (matchingCommand) {
         if (matchingCommand.permissions) {

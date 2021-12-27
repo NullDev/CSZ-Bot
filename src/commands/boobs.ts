@@ -15,7 +15,13 @@ const categorys: BoobArray = {
     "Kann man mit arbeiten":"(.Y.)",
     "Hand voll glück":"(.)(.)",
     "Booba":"( . )( . )",
+    "Tellernippel":"⊚⊚",
     "Schläuche":"UU",
+    "Mega Schläuche":`
+    | |  | |
+    | |  | |
+    |_|  |_|
+    `,
     "Mommys Milkers":"（。 ㅅ  。）",
     "Milchtüten":"( • )( • )",
     "Richtig dicke Titten":"(  .  )(  .  )",
@@ -47,6 +53,7 @@ const sendBoob = async( message: Message ): Promise<Message<boolean>> => {
 
 export class BoobCommand implements MessageCommand {
     name = "boob";
+    aliases = ["booba", "boobas", "boobs", "boobie", "titte", "titten"];
     description = "Zeigt dir die deine Boobs mit Größe an";
 
     async handleMessage(message: Message, _client: Client): Promise<CommandResult> {

@@ -16,6 +16,7 @@ export interface CommandPermission {
 
 export interface CommandBase {
     readonly name: string,
+    readonly aliases?: String[],
     readonly description: string;
     readonly permissions?: ReadonlyArray<CommandPermission>;
 }
