@@ -253,7 +253,8 @@ export const messageCommandHandler = (
     message: Message,
     client: Client
 ): Promise<unknown> => {
-    if(message.author.id === client.user?.id) {
+    // Bots shall not be able to perform commands. High Security
+    if(message.author.bot) {
         return Promise.resolve();
     }
     // TODO: The Prefix is now completly irrelevant, since the commands itself define
