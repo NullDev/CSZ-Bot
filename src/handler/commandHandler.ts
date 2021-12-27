@@ -254,7 +254,7 @@ export const messageCommandHandler = (
     client: Client
 ): Promise<unknown> => {
     if(message.author.id === client.user?.id) {
-        return;
+        return Promise.resolve();
     }
     // TODO: The Prefix is now completly irrelevant, since the commands itself define
     // their permission.
