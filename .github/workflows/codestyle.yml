@@ -27,7 +27,6 @@ jobs:
         key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
         restore-keys: |
           ${{ runner.os }}-node-
-    - run: |
-        npm install --save-dev eslint typescript @typescript-eslint/parser @typescript-eslint/eslint-plugin
+    - run: npm ci
     - name: Run Lint
       run: npm run lint
