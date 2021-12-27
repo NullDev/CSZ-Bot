@@ -253,6 +253,9 @@ export const messageCommandHandler = (
     message: Message,
     client: Client
 ): Promise<unknown> => {
+    if(message.author.id === client.user?.id) {
+        return;
+    }
     // TODO: The Prefix is now completly irrelevant, since the commands itself define
     // their permission.
     const plebPrefix = config.bot_settings.prefix.command_prefix;
