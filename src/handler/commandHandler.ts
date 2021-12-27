@@ -181,7 +181,7 @@ const checkPermissions = (member: GuildMember, permissions: ReadonlyArray<Comman
  * invoking user is not a mod
  */
 const commandMessageHandler = (
-    commandString: String,
+    commandString: string,
     message: Message,
     client: Client
 ): Promise<unknown> => {
