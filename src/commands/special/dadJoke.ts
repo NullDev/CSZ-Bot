@@ -1,4 +1,5 @@
 import { Message, Client, Util } from "discord.js";
+import { substringAfter } from "../../utils/stringUtils";
 import { SpecialCommand, CommandResult, CommandPermission } from "../command";
 
 export class DadJokeCommand implements SpecialCommand {

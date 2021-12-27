@@ -1,6 +1,7 @@
 import { Message, Client, Util } from "discord.js";
 import { createCanvas, loadImage, registerFont } from "canvas";
 import { SpecialCommand } from "../command";
+import { countWords, substringAfter } from "../../utils/stringUtils";
 
 
 if (process.env.NODE_ENV === "production") {

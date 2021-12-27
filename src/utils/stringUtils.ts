@@ -3,7 +3,9 @@
  * @param str string
  * @returns number of words
  */
-const countWords = (str: string): number => str.split(" ").filter(s => s.trim().length > 0).length;
+export function countWords(str: string): number {
+    return str.split(" ").filter(s => s.trim().length > 0).length;
+}
 
 /**
  * Get a substring after the first occurence of s
@@ -11,4 +13,6 @@ const countWords = (str: string): number => str.split(" ").filter(s => s.trim().
  * @param s search
  * @returns substring (untrimmed!)
  */
-const substringAfter = (str: string, s: string): string => str.substring(str.indexOf(s) + s.length);
+export function substringAfter(str: string, s: string): string{
+    return str.substring(str.indexOf(s) + s.length);
+}
