@@ -37,6 +37,7 @@ import { BonkCommand } from "../commands/bonk";
 import {GoogleCommand} from "../commands/google";
 import { Mutable } from "../types";
 import {NischdaaaCommand} from "../commands/special/nischdaaa";
+import { SdmCommand } from "../commands/sdm";
 
 const config = getConfig();
 
@@ -57,7 +58,8 @@ export const commands: readonly Command[] = [
     new BoobCommand(),
     new BonkCommand(),
     new GoogleCommand(),
-    new NischdaaaCommand()
+    new NischdaaaCommand(),
+    new SdmCommand()
 ];
 export const applicationCommands: Array<ApplicationCommand> =
     commands.filter<ApplicationCommand>(isApplicationCommand);
@@ -186,7 +188,7 @@ const commandMessageHandler = (
     client: Client
 ): Promise<unknown> => {
     const matchingCommand = messageCommands.find(
-        cmd => cmd.name === commandString || cmd.aliases?.includes(commandString)
+        cmd => cmd.name.toLowerCase() === commandString.toLowerCase() || cmd.aliases?.includes(commandString.toLowerCase())
     );
 
     if (!matchingCommand) {
@@ -253,6 +255,10 @@ export const messageCommandHandler = (
     message: Message,
     client: Client
 ): Promise<unknown> => {
+    // Bots shall not be able to perform commands. High Security
+    if(message.author.bot) {
+        return Promise.resolve();
+    }
     // TODO: The Prefix is now completly irrelevant, since the commands itself define
     // their permission.
     const plebPrefix = config.bot_settings.prefix.command_prefix;

@@ -26,6 +26,7 @@ const createBonkMeme = async(author: any): Promise<string> => {
 
 export class BonkCommand implements MessageCommand {
     name: string = "bonk";
+    aliases = ["bong"];
     description: string = `Bonkt einen Nutzer und ersetzt den rechten gelben Hund mit dem Avatar des Nutzers.
 Usage: ${config.bot_settings.prefix.command_prefix}bonk
        ${config.bot_settings.prefix.command_prefix}bonk @ShadowByte#1337

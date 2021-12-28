@@ -20,6 +20,8 @@ const config = getConfig();
  * @returns {import("../types").CommandResult}
  */
 export default async function(message, client, isModCommand) {
+    if(message.author.bot) return;
+
     let cmdPrefix = isModCommand
         ? config.bot_settings.prefix.mod_prefix
         : config.bot_settings.prefix.command_prefix;

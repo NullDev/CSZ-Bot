@@ -4,12 +4,11 @@ import { SpecialCommand, CommandResult } from "../command";
 export class WatCommand implements SpecialCommand {
     name: string = "wat";
     description: string = "Reagiert mit wat emote sobald jemand wat schreibt";
-    pattern: RegExp = /^wat$/i;
     randomness = 0.3;
     cooldownTime = 300000;
 
     matches(message: Message<boolean>): boolean {
-        return message.content.toLowerCase().includes("wat");
+        return message.content.toLowerCase() === "wat";
     }
 
     async handleSpecialMessage(message: Message, _client: Client<boolean>): Promise<CommandResult> {

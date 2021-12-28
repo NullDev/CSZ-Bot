@@ -5,7 +5,7 @@
 import { Util } from "discord.js";
 
 import log from "../utils/logger";
-import { isMod } from "../utils/userUtils";
+import { isMod, isWoisGang } from "../utils/userUtils";
 
 import { getConfig } from "../utils/configHandler";
 
@@ -16,6 +16,26 @@ const pendingMessagePrefix = "*(Pending-Woisgang-Ping, bitte zustimmen)*";
 // Internal storage, no need to save this persistent
 let lastPing = 0;
 
+/**
+ *
+ * @param {import("discord.js").TextChannel} channel
+ * @param {import("discord.js").User} pinger
+ * @param {string} reason
+ * @param {import("discord.js").User[]=} usersVotedYes
+ * @returns {Promise<import("discord.js").Message<boolean>>}
+ */
+const sendWoisping = (channel, pinger, reason, usersVotedYes) => {
+    return channel.send({
+        content: `<@&${config.ids.woisgang_role_id}> <@!${pinger.id}> hat Bock auf Wois. ${reason ? `Grund dafür ist ${reason}` : ""}\n${usersVotedYes?.length > 0 ? `${usersVotedYes.map(u => `<@!${u}>`).join(",")} sind auch dabei` : ""}`,
+        allowedMentions: {
+            roles: [ config.ids.woisgang_role_id ],
+            users: [
+                pinger.id,
+                ...usersVotedYes?.map(u => u.id)
+            ]
+        }
+    });
+};
 
 /**
  * Allows usage of @Woisgang mention for people having that role assigned
@@ -25,7 +45,7 @@ let lastPing = 0;
 export const run = async(client, message, args) => {
     const isModMessage = isMod(message.member);
 
-    if (!isModMessage && !message.member.roles.cache.has(config.ids.woisgang_role_id)){
+    if (!isModMessage && !isWoisGang(message.member)){
         log.warn(`User "${message.author.tag}" (${message.author}) tried command "${config.bot_settings.prefix.command_prefix}woisping" and was denied`);
 
         return `Tut mir leid, ${message.author}. Du hast nicht genügend Rechte um diesen Command zu verwenden =(`;
@@ -37,14 +57,19 @@ export const run = async(client, message, args) => {
         return "Piss dich und spam nicht.";
     }
 
-    const reason = `${Util.removeMentions(Util.cleanContent(args.join(" "), message))} (von ${message.member})`;
+    const reason = `${Util.cleanContent(args.join(" "), message)} (von ${message.member})`;
 
     if (isModMessage) {
         lastPing = now;
-        await message.channel.send(`<@&${config.ids.woisgang_role_id}> ${reason}`);
+        await sendWoisping(message.channel, message.author, reason);
     }
     else {
-        const msg = await message.channel.send(`${pendingMessagePrefix} ${reason}`);
+        const msg = await message.channel.send({
+            content: `${pendingMessagePrefix} <@!${pinger.id}> hat Bock auf Wois. ${reason ? `Grund dafür ist ${reason}` : ""}. Biste dabei?`,
+            allowedMentions: {
+                users: [ pinger.id ]
+            }
+        });
         await msg.react("👍");
 
         // we don't set lastPing here to allow multiple concurrent requests
@@ -83,7 +108,7 @@ export const reactionHandler = async(reactionEvent, user, client, message) => {
 
     const isModMessage = isMod(member);
 
-    if (!isModMessage && !member.roles.cache.has(config.ids.woisgang_role_id)){
+    if (!isModMessage && !isWoisGang(member)){
         reaction.users.remove(member.id);
         member.send("Sorry, du bist leider kein Woisgang-Mitglied und darfst nicht abstimmen.");
         return true;
@@ -97,10 +122,13 @@ export const reactionHandler = async(reactionEvent, user, client, message) => {
         const reason = message.content.substr(pendingMessagePrefix.length + 1);
 
         const {channel} = message;
+        const pinger = message.mentions.users.first();
+        // I don't know if this spreading is necessary
+        const usersVotedYes = [ ...message.reactions.cache.filter(f => f.emoji.name === "👍").first().users.cache ];
         await message.delete();
 
         lastPing = now;
-        channel.send(`<@&${config.ids.woisgang_role_id}> ${reason}`);
+        await sendWoisping(channel, pinger, reason, usersVotedYes);
     }
     else if (!couldPing) {
         reaction.users.remove(member.id);
