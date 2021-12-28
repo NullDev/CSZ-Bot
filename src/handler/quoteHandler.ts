@@ -128,7 +128,12 @@ export const quoteReactionHandler = async(event: MessageReaction, user: User, cl
 
     if(isQuoterQuotingHimself(quoter, quotedUser)) {
         const hauptchat = await client.channels.fetch(hauptchatId) as TextChannel;
-        await hauptchat.send(`<@${quoter.id}> der Lellek hat gerade versucht sich, selbst zu quoten. Was für ein Opfer!`);
+        await hauptchat.send({
+            content: `<@${quoter.id}> der Lellek hat gerade versucht sich, selbst zu quoten. Was für ein Opfer!`,
+            allowedMentions: {
+                users: [ quoter.id ]
+            }
+        });
 
         await event.users.remove(quoter);
         return;

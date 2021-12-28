@@ -36,3 +36,7 @@ export function isNerd(member: GuildMember): boolean {
 export function isTrusted(member: GuildMember): boolean {
     return hasRoleById(member, config.ids.trusted_role_id);
 }
+
+export function isWoisGang(member: GuildMember): boolean {
+    return hasRoleById(member, config.ids.woisgang_role_id);
+}
