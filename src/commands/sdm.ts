@@ -127,7 +127,7 @@ export class SdmCommand implements MessageCommand, ApplicationCommand {
     }
 
     async handleMessage(message: Message<boolean>, client: Client<boolean>): Promise<CommandResult> {
-        const args = substringAfter(message.content, this.name).trim().split(/\s+/g);
+        const args = substringAfter(message.content, this.name).trim().split(/\s+/g).filter(s => !!s);
 
         if (!args.length) {
             await message.reply("Bruder da ist keine Frage :c");
@@ -139,12 +139,15 @@ export class SdmCommand implements MessageCommand, ApplicationCommand {
 
         if(options.length > 1) {
             question = options.reduce((p, c, i, a) => (`${p}${i === a.length - 1 ? " oder " : ", "}${c}`));
+            const msg = createSecureDecisionMessage(question, message.member!, options);
+            await message.reply(msg);
+            await message.delete();
+            return;
         }
 
-        const msg = createSecureDecisionMessage(question, message.member!, options);
-        await message.reply(
-            msg
-        );
+        const msg = createSecureDecisionMessage(question, message.member!);
+        await message.reply(msg);
+        await message.delete();
         return;
     }
 
