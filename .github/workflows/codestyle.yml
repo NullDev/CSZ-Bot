@@ -30,7 +30,7 @@ jobs:
     - run: npm ci
     - name: Run Lint
       run: npm run lint
-    - name: Run Lint \#2
+    - name: "Run Lint #2"
       run: npx eslint -c .eslintrc.json src/**
     - name: Run ls
       run: ls -lah
