@@ -5,7 +5,7 @@
 import FadingMessage from "../storage/model/FadingMessage";
 import AdditionalMessageData from "../storage/model/AdditionalMessageData";
 
-import * as log from "../utils/logger";
+import log from "../utils/logger";
 import * as poll from "../commands/poll";
 import * as woisping from "../commands/woisping";
 

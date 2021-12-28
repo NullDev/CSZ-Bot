@@ -2,7 +2,7 @@
 // = Copyright (c) NullDev = //
 // ========================= //
 
-import * as log from "../../utils/logger";
+import log from "../../utils/logger";
 import { getConfig } from "../../utils/configHandler";
 const config = getConfig();
 

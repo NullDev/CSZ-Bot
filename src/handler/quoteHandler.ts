@@ -1,6 +1,6 @@
-import {Client, GuildMember, Message, MessageReaction, User, TextBasedChannels, TextChannel, GuildEmoji, ReactionEmoji} from "discord.js";
-import {getConfig} from "../utils/configHandler";
-import * as log from "../utils/logger";
+import { Client, GuildMember, Message, MessageReaction, User, TextBasedChannel, TextChannel, GuildEmoji, ReactionEmoji } from "discord.js";
+import { getConfig } from "../utils/configHandler";
+import log from "../utils/logger";
 import { isNerd, isTrusted } from "../utils/userUtils";
 
 const hauptchatId = getConfig().ids.hauptchat_id;
@@ -105,7 +105,7 @@ export const quoteReactionHandler = async(event: MessageReaction, user: User, cl
 
     const guild = client.guilds.cache.get(event.message.guildId)!;
     const quoter = guild.members.cache.get(user.id)!;
-    const sourceChannel = <TextBasedChannels>client.channels.cache.get(event.message.channelId)!;
+    const sourceChannel = client.channels.cache.get(event.message.channelId)! as TextBasedChannel;
     const quotedMessage = await sourceChannel.messages.fetch(event.message.id);
     const referencedMessage = quotedMessage.reference ? await sourceChannel.messages.fetch(quotedMessage.reference?.messageId!) : undefined;
     const quotedUser = quotedMessage.member;
@@ -159,7 +159,7 @@ export const quoteReactionHandler = async(event: MessageReaction, user: User, cl
         return;
     }
 
-    // There is a small possiblity that quotes will be quoted multiple times
+    // There is a small possibility that quotes will be quoted multiple times
     // This comes from the fact, that we're checking the preconditions at the start
     // of this function, then perform rather time-consuming tasks. In the meantime
     // another quote event could sneak in and performing a quote itself.
@@ -169,11 +169,11 @@ export const quoteReactionHandler = async(event: MessageReaction, user: User, cl
     // introduce some proper synchronization. Should work good enough for us.
     if(!isMessageAlreadyQuoted(quotingMembers, client)) {
         if (reference !== undefined) {
-            const quoteMessage = await (<TextBasedChannels>targetChannel).send(reference);
+            const quoteMessage = await (targetChannel as TextBasedChannel).send(reference);
             await quoteMessage.reply(quote);
         }
         else {
-            await (<TextBasedChannels>targetChannel).send(quote);
+            await (targetChannel as TextBasedChannel).send(quote);
         }
 
         await quotedMessage.react(event.emoji);

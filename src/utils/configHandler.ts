@@ -6,7 +6,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { Config } from "../types";
 
-import * as log from "../utils/logger";
+import log from "../utils/logger";
 
 const packagefile = require(path.resolve("package.json"));
 const configPath = path.resolve("config.json");

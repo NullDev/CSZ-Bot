@@ -3,7 +3,7 @@ import { CommandResult, MessageCommand } from "./command";
 import Jimp from "jimp";
 import path from "path";
 import * as fs from "fs";
-import * as log from "../utils/logger";
+import log from "../utils/logger";
 import { getConfig } from "../utils/configHandler";
 const config = getConfig();
 

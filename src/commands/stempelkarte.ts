@@ -3,7 +3,7 @@ import { promises as fs } from "fs";
 import { AllowedImageSize, Client, CommandInteraction, GuildMember, Snowflake } from "discord.js";
 
 import Stempel from "../storage/model/Stempel";
-import * as log from "../utils/logger";
+import log from "../utils/logger";
 import { ApplicationCommand, CommandResult } from "./command";
 import { SlashCommandBuilder, SlashCommandUserOption } from "@discordjs/builders";
 
