@@ -3,12 +3,15 @@ import * as winston from "winston";
 // This is pretty much the default config taken from:
 // https://www.npmjs.com/package/winston
 
+// Could be loaded via process.env, but honestly: who cares?
+const loggingDir = "logs";
+
 const logger = winston.createLogger({
     level: "info",
     format: winston.format.json(),
     transports: [
-        new winston.transports.File({ filename: "error.log", level: "error" }),
-        new winston.transports.File({ filename: "combined.log" })
+        new winston.transports.File({ filename: `${loggingDir}/error.log`, level: "error" }),
+        new winston.transports.File({ loggingDir, filename: `${loggingDir}/combined.log` })
     ]
 });
 
