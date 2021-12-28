@@ -20,13 +20,16 @@ const convertToWebLink = async(uri: string): Promise<string> => {
     // Get Redirect of vm.tiktok urls
     if (uri.includes("vm.tiktok.com")) {
         const res = await fetch(uri, {
-            follow: 0
+            redirect: "manual"
         });
-        const redirectUri = res.headers.get("Location");
-        if(redirectUri === null) {
-            throw new Error(`No redirect URI found under ${uri}`);
+        if(res.status === 301) {
+            const redirectUri = res.headers.get("Location");
+            if(redirectUri === null) {
+                throw new Error(`No redirect URI found under ${uri}`);
+            }
+            return redirectUri;
         }
-        return redirectUri;
+        throw new Error(`No redirect found under ${uri}`);
     }
     // If normal Tiktok link just return it. May fail, but should work in most of the cases
     else if (uri.includes("www.tiktok.com")) {
