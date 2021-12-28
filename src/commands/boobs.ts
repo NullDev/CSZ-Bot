@@ -3,22 +3,20 @@ import { Client, Message } from "discord.js";
 import { CommandResult, MessageCommand } from "./command";
 import * as log from "../utils/logger";
 
-interface BoobArray {
-    [key: string]: string;
-}
-
 /* eslint-disable quote-props */
-const categorys: BoobArray = {
+const categorys: Record<string, string> = {
     "Knöpfe": ". .",
     "Toffifee": "○ ○",
     "Zwergtittchen": "◯ ◯",
     "Wird langsam was": "(Y)",
-    "Kann man mit arbeiten": "(.Y.)",
+    "Süßtittchen": "(.Y.)",
+    // "Igelschnäuzchen": "",
+    // "gemeiner Spitztitterich": "",
     "Hand voll glück": "(.)(.)",
     "Booba": "( . )( . )",
     "Tellernippel": "⊚⊚",
-    "Schläuche": "UU",
-    "Mega Schläuche": `
+    "Schlöpse": "UU",
+    "Mega Schlöpse": `
     | |  | |
     | |  | |
     |\\_|  |\\_|
@@ -26,7 +24,7 @@ const categorys: BoobArray = {
     "Mommys Milkers": "（。 ㅅ  。）",
     "Milchtüten": "( • )( • )",
     "Richtig dicke Titten": "(  .  )(  .  )",
-    "Brachiale Euter": "(   .  )(   .   )",
+    "Brachiale Ultramelonen": "(   .  )(   .   )",
     "Ach du dickes Erbgut": "(    .    )(    .    )",
     "Tod durch Booba": "(     .     )(     .     )",
     "Ich bin im Himmel": "(      .      )(      .      )",
