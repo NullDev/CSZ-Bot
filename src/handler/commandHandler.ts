@@ -37,6 +37,7 @@ import { BonkCommand } from "../commands/bonk";
 import {GoogleCommand} from "../commands/google";
 import { Mutable } from "../types";
 import {NischdaaaCommand} from "../commands/special/nischdaaa";
+import { SdmCommand } from "../commands/sdm";
 
 const config = getConfig();
 
@@ -57,7 +58,8 @@ export const commands: readonly Command[] = [
     new BoobCommand(),
     new BonkCommand(),
     new GoogleCommand(),
-    new NischdaaaCommand()
+    new NischdaaaCommand(),
+    new SdmCommand()
 ];
 export const applicationCommands: Array<ApplicationCommand> =
     commands.filter<ApplicationCommand>(isApplicationCommand);
