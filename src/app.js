@@ -41,7 +41,7 @@ console.log(
     ` Copyright (c) ${(new Date()).getFullYear()} ${devname}\n`
 );
 
-log.done("Started.");
+log.info("Started.");
 
 const config = conf.getConfig();
 const client = new Discord.Client({
@@ -233,7 +233,7 @@ client.on("messageReactionAdd", async(event, user) => quoteReactionHandler(event
 client.on("messageReactionRemove", async(event, user) => reactionHandler(event, user, client, true));
 
 client.login(config.auth.bot_token).then(() => {
-    log.done("Token login was successful!");
+    log.info("Token login was successful!");
 }, (err) => {
     log.error(`Token login was not successful: "${err}"`);
     log.error("Shutting down due to incorrect token...\n\n");
