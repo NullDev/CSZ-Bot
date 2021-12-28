@@ -48,7 +48,15 @@ export class StempelCommand implements ApplicationCommand {
             const reply = replies[Math.floor(Math.random() * replies.length)]
                 .replace("{0}", `<@${invitator.id}>`)
                 .replace("{1}", `<@${invitedUser.id}>`);
-            return command.reply(reply);
+            return command.reply({
+                content: reply,
+                allowedMentions: {
+                    users: [
+                        invitator.id,
+                        invitedUser.id
+                    ]
+                }
+            });
         }
         return command.reply("Alla du hast schonmal gestempelt");
     }

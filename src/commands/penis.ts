@@ -14,7 +14,7 @@ const sendPenis = async(user: User, message: Message, size: number, measurement:
         second: "2-digit",
         hour12: false
     }).format(measurement);
-    return message.reply(`Pimmel von <@${user.id}>: ${penis}\n(Gemessen um ${measuredAt})`);
+    return message.reply(`Pimmel von <@${user.id}>:\n${penis}\n(Gemessen um ${measuredAt})`);
 };
 
 const isNewLongestDick = async(size: number): Promise<boolean> => {
@@ -27,6 +27,7 @@ const isNewLongestDick = async(size: number): Promise<boolean> => {
  */
 export class PenisCommand implements MessageCommand {
     name = "penis";
+    aliases = ["pimmel", "benis", "dick", "schwanz", "schlong", "cock", "prügel", "pimmelchen", "pfahl"];
     description = "Zeigt dir die Schwanzlänge eines Nutzers an.";
 
     /**

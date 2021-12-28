@@ -50,10 +50,10 @@ const client = new Discord.Client({
         "REACTION",
         "USER"
     ],
-    allowedMentions: {
+    /* allowedMentions: {
         parse: ["users", "roles"],
         repliedUser: true
-    },
+    }, */
     intents: ["DIRECT_MESSAGES",
         "GUILDS",
         "GUILD_BANS",
@@ -182,9 +182,15 @@ client.on("guildMemberAdd", async member => {
         if(member.guild.roles.cache.has(config.ids.shame_role_id)) {
             member.roles.add(member.guild.roles.cache.get(config.ids.shame_role_id));
 
+            /** @type {import("discord.js").TextChannel} */
             const hauptchat = member.guild.channels.cache.get(config.ids.hauptchat_id);
             if(hauptchat) {
-                hauptchat.send(`Haha, schau mal einer guck wer wieder hergekommen ist! <@${member.id}> hast es aber nicht lange ohne uns ausgehalten. ${numRagequits > 1 ? "Und das schon zum " + numRagequits + ". mal" : ""}`);
+                hauptchat.send({
+                    content: `Haha, schau mal einer guck wer wieder hergekommen ist! <@${member.id}> hast es aber nicht lange ohne uns ausgehalten. ${numRagequits > 1 ? "Und das schon zum " + numRagequits + ". mal" : ""}`,
+                    allowedMentions: {
+                        users: [ member.id ]
+                    }
+                });
             }
             else {
                 log.error("Hauptchat nicht gefunden");
