@@ -16,7 +16,7 @@ export class DadJokeCommand implements SpecialCommand {
         return msg.startsWith("ich bin") && substringAfter(msg, "ich bin").length > 3;
     }
 
-    async handleSpecialMessage(message: Message, _client: Client<boolean>): Promise<CommandResult> {
+    async handleSpecialMessage(message: Message, client: Client<boolean>): Promise<CommandResult> {
         const idx = message.content.toLowerCase().lastIndexOf("ich bin ");
         if(idx < (message.content.length - 1)) {
             // Get index of the first terminator character after trigger
@@ -33,12 +33,11 @@ export class DadJokeCommand implements SpecialCommand {
                 return;
             }
 
-
             if(trimmedWords.length > 0 && trimmedWords.length <= 10) {
                 const whoIs = Util.cleanContent(trimmedWords.join(" "), message.channel).trim();
                 if(whoIs.length > 0) {
                     await message.reply({
-                        content: `Hallo ${whoIs}, ich bin Shitpost Bot.`
+                        content: `Hallo ${whoIs}, ich bin ${client.user?.username}.`
                     });
                     return;
                 }
