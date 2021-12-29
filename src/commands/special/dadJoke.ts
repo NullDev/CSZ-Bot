@@ -1,6 +1,21 @@
 import { Message, Client, Util } from "discord.js";
+import { getConfig } from "../../utils/configHandler";
 import { substringAfter } from "../../utils/stringUtils";
 import { SpecialCommand, CommandResult, CommandPermission } from "../command";
+
+const config = getConfig();
+
+const getBotName = (client: Client): string => {
+    const guild = client.guilds.cache.get(config.ids.guild_id);
+    const { user } = client;
+
+    if(guild === undefined) throw new Error(`No Guild with id ${config.ids.guild_id} found`);
+    if(user === null) throw new Error("User is not present");
+
+    const member = guild.members.cache.get(user.id);
+    if(member === undefined) return user.username;
+    return member.displayName;
+};
 
 export class DadJokeCommand implements SpecialCommand {
     permissions?: readonly CommandPermission[] | undefined;
@@ -35,9 +50,11 @@ export class DadJokeCommand implements SpecialCommand {
 
             if(trimmedWords.length > 0 && trimmedWords.length <= 10) {
                 const whoIs = Util.cleanContent(trimmedWords.join(" "), message.channel).trim();
+                const name = getBotName(client);
+
                 if(whoIs.length > 0) {
                     await message.reply({
-                        content: `Hallo ${whoIs}, ich bin ${client.user?.username}.`
+                        content: `Hallo ${whoIs}, ich bin ${name}.`
                     });
                     return;
                 }
