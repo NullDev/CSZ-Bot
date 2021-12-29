@@ -6,7 +6,7 @@
  * @typedef {import("discord.js").TextChannel} TC
  */
 
-import * as log from "../utils/logger";
+import log from "../utils/logger";
 import { getConfig } from "../utils/configHandler";
 import * as poll from "./poll";
 

@@ -9,7 +9,7 @@ import FadingMessage from "./model/FadingMessage";
 import GuildRagequit from "./model/GuildRagequit";
 import Stempel from "./model/Stempel";
 import Ban from "./model/Ban";
-import * as log from "../utils/logger";
+import log from "../utils/logger";
 import Penis from "./model/Penis";
 
 export async function initialize() {

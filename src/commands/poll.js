@@ -6,7 +6,7 @@ import moment from "moment";
 import parseOptions from "minimist";
 import * as cron from "node-cron";
 
-import * as log from "../utils/logger";
+import log from "../utils/logger";
 import AdditionalMessageData from "../storage/model/AdditionalMessageData";
 import { getConfig } from "../utils/configHandler";
 import { Util } from "discord.js";

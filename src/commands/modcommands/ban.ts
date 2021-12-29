@@ -5,7 +5,7 @@ import Ban from "../../storage/model/Ban";
 import { getConfig } from "../../utils/configHandler";
 import { ApplicationCommand, CommandPermission, CommandResult, MessageCommand } from "../command";
 import * as cron from "node-cron";
-import * as log from "../../utils/logger";
+import log from "../../utils/logger";
 import moment from "moment";
 
 const config = getConfig();

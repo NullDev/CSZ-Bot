@@ -4,7 +4,7 @@
 import type { Snowflake } from "discord.js";
 import { Sequelize, Model, DataTypes, Optional } from "sequelize";
 import { v4 as uuidv4 } from "uuid";
-import * as log from "../../utils/logger";
+import log from "../../utils/logger";
 
 export interface StempelAttributes {
     id: string;

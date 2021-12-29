@@ -5,7 +5,7 @@ import { User } from "discord.js";
 import moment from "moment";
 import { Model, DataTypes, Sequelize, Optional, Op } from "sequelize";
 import { v4 as uuidv4 } from "uuid";
-import * as log from "../../utils/logger";
+import log from "../../utils/logger";
 
 export interface PenisAttributes {
     id: string;
