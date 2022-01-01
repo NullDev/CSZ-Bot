@@ -38,6 +38,7 @@ import {GoogleCommand} from "../commands/google";
 import { Mutable } from "../types";
 import {NischdaaaCommand} from "../commands/special/nischdaaa";
 import { SdmCommand } from "../commands/sdm";
+import {NicknameCommand} from "../commands/NicknameCommand";
 
 const config = getConfig();
 
@@ -58,9 +59,11 @@ export const commands: readonly Command[] = [
     new BoobCommand(),
     new BonkCommand(),
     new GoogleCommand(),
+    new NicknameCommand(),
     new NischdaaaCommand(),
     new SdmCommand()
 ];
+
 export const applicationCommands: Array<ApplicationCommand> =
     commands.filter<ApplicationCommand>(isApplicationCommand);
 export const messageCommands: Array<MessageCommand> =
