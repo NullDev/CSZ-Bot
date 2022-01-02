@@ -39,6 +39,7 @@ import { Mutable } from "../types";
 import {NischdaaaCommand} from "../commands/special/nischdaaa";
 import { SdmCommand } from "../commands/sdm";
 import {NicknameCommand} from "../commands/NicknameCommand";
+import { NopNopCommand } from "../commands/special/nopnop";
 
 const config = getConfig();
 
@@ -61,7 +62,8 @@ export const commands: readonly Command[] = [
     new GoogleCommand(),
     new NicknameCommand(),
     new NischdaaaCommand(),
-    new SdmCommand()
+    new SdmCommand(),
+    new NopNopCommand()
 ];
 
 export const applicationCommands: Array<ApplicationCommand> =
