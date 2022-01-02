@@ -16,6 +16,28 @@ const tiktokOptions = {
     randomUa: true
 } as const;
 
+const convertToWebLink = async(uri: string): Promise<string> => {
+    // Get Redirect of vm.tiktok urls
+    if (uri.includes("vm.tiktok.com")) {
+        const res = await fetch(uri, {
+            redirect: "manual"
+        });
+        if(res.status === 301) {
+            const redirectUri = res.headers.get("Location");
+            if(redirectUri === null) {
+                throw new Error(`No redirect URI found under ${uri}`);
+            }
+            return redirectUri;
+        }
+        throw new Error(`No redirect found under ${uri}`);
+    }
+    // If normal Tiktok link just return it. May fail, but should work in most of the cases
+    else if (uri.includes("www.tiktok.com")) {
+        return uri;
+    }
+    throw new Error(`Unsupported URI: ${uri}`);
+};
+
 export class TikTokLink implements SpecialCommand {
     name: string = "Tiktok";
     description: string = "Embedded TikTok Links";
@@ -33,7 +55,8 @@ export class TikTokLink implements SpecialCommand {
         const uri = message.content.match(/(https?:\/\/[^ ]*)/)?.[1] || "";
         if (!uri) return;
 
-        const videoMeta = await TikTokScraper.getVideoMeta(uri, tiktokOptions);
+        const webUri = await convertToWebLink(uri);
+        const videoMeta = await TikTokScraper.getVideoMeta(webUri, tiktokOptions);
 
         let res = await fetch(videoMeta.collector[0].videoUrl, {
             headers: videoMeta.headers as any

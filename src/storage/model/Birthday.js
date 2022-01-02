@@ -4,7 +4,7 @@
 import { Model, DataTypes, Op } from "sequelize";
 import {v4 as uuidv4} from "uuid";
 import moment from "moment";
-import * as log from "../../utils/logger";
+import log from "../../utils/logger";
 
 
 export default class Birthday extends Model {

@@ -141,13 +141,15 @@ export class SdmCommand implements MessageCommand, ApplicationCommand {
             question = options.reduce((p, c, i, a) => (`${p}${i === a.length - 1 ? " oder " : ", "}${c}`));
             const msg = createSecureDecisionMessage(question, message.member!, options);
             await message.reply(msg);
-            await message.delete();
+            // Don't delete as it would trigger the messageDeleteHandler
+            // await message.delete();
             return;
         }
 
         const msg = createSecureDecisionMessage(question, message.member!);
         await message.reply(msg);
-        await message.delete();
+        // Don't delete as it would trigger the messageDeleteHandler
+        // await message.delete();
         return;
     }
 

@@ -9,7 +9,7 @@ import * as Discord from "discord.js";
 import * as cron from "node-cron";
 
 import * as conf from "./utils/configHandler";
-import * as log from "./utils/logger";
+import log from "./utils/logger";
 import * as timezone from "./utils/timezone";
 
 // Handler
@@ -25,8 +25,13 @@ import * as ban from "./commands/modcommands/ban";
 import * as poll from "./commands/poll";
 import GuildRagequit from "./storage/model/GuildRagequit";
 import reactionHandler from "./handler/reactionHandler";
-import { handleInteractionEvent, messageCommandHandler, registerAllApplicationCommandsAsGuildCommands } from "./handler/commandHandler";
+import {
+    handleInteractionEvent,
+    messageCommandHandler,
+    registerAllApplicationCommandsAsGuildCommands
+} from "./handler/commandHandler";
 import {quoteReactionHandler} from "./handler/quoteHandler";
+import NicknameHandler from "./handler/nicknameHandler";
 
 let version = conf.getVersion();
 let appname = conf.getName();
@@ -41,7 +46,7 @@ console.log(
     ` Copyright (c) ${(new Date()).getFullYear()} ${devname}\n`
 );
 
-log.done("Started.");
+log.info("Started.");
 
 const config = conf.getConfig();
 const client = new Discord.Client({
@@ -99,7 +104,7 @@ function scheduleTimezoneFixedCronjob(cronString) {
         });
 
         log.info(`Auto-kick: ${cnt} members kicked.`);
-        if(cnt > 0){
+        if (cnt > 0) {
             csz.channels.cache.get(config.ids.hauptchat_id).send(`Hab grad ${cnt} Jockel*innen gekickt ${dabEmote}`);
         }
         else {
@@ -115,6 +120,7 @@ function scheduleTimezoneFixedCronjob(cronString) {
 }
 
 let firstRun = true;
+
 client.on("ready", async(_client) => {
     log.info("Running...");
     log.info(`Got ${client.users.cache.size} users, in ${client.channels.cache.size} channels of ${client.guilds.cache.size} guilds`);
@@ -125,7 +131,9 @@ client.on("ready", async(_client) => {
 
     const bday = new BdayHandler(client);
     const aoc = new AoCHandler(client);
-    if (firstRun){
+    log.info("Starting Nicknamehandler ");
+    let nicknameHandler = new NicknameHandler(client);
+    if (firstRun) {
         await storage.initialize();
         firstRun = false; // Hacky deadlock ...
 
@@ -137,7 +145,11 @@ client.on("ready", async(_client) => {
         await bday.checkBdays();
 
         log.info("Scheduling Advent of Code Cronjob...");
-        cron.schedule("0 20 1-25 12 *", async() => await aoc.publishLeaderBoard(), { timezone: "Europe/Vienna" });
+        cron.schedule("0 20 1-25 12 *", async() => await aoc.publishLeaderBoard(), {timezone: "Europe/Vienna"});
+
+
+        log.info("Scheduling Nickname Cronjob");
+        cron.schedule("* * * * 0", async() => await nicknameHandler.rerollNicknames(), {timezone: "Europe/Vienna"});
     }
 
     ban.startCron(client);
@@ -178,17 +190,17 @@ client.on("guildDelete", guild => log.info(`Deleted from guild: ${guild.name} (i
 
 client.on("guildMemberAdd", async member => {
     const numRagequits = await GuildRagequit.getNumRagequits(member.guild.id, member.id);
-    if(numRagequits > 0 && !member.roles.cache.has(config.ids.shame_role_id)) {
-        if(member.guild.roles.cache.has(config.ids.shame_role_id)) {
+    if (numRagequits > 0 && !member.roles.cache.has(config.ids.shame_role_id)) {
+        if (member.guild.roles.cache.has(config.ids.shame_role_id)) {
             member.roles.add(member.guild.roles.cache.get(config.ids.shame_role_id));
 
             /** @type {import("discord.js").TextChannel} */
             const hauptchat = member.guild.channels.cache.get(config.ids.hauptchat_id);
-            if(hauptchat) {
+            if (hauptchat) {
                 hauptchat.send({
                     content: `Haha, schau mal einer guck wer wieder hergekommen ist! <@${member.id}> hast es aber nicht lange ohne uns ausgehalten. ${numRagequits > 1 ? "Und das schon zum " + numRagequits + ". mal" : ""}`,
                     allowedMentions: {
-                        users: [ member.id ]
+                        users: [member.id]
                     }
                 });
             }
@@ -210,7 +222,7 @@ client.on("messageCreate", async(message) => {
     try {
         await messageHandler(message, client);
     }
-    catch(err) {
+    catch (err) {
         log.error(`[messageCreate] Error on message ${message.id}. Cause: ${err}`);
     }
 });
@@ -221,7 +233,7 @@ client.on("messageUpdate", async(_, newMessage) => {
     try {
         await messageHandler(/** @type {import("discord.js").Message} */ (newMessage), client);
     }
-    catch(err) {
+    catch (err) {
         log.error(`[messageUpdate] Error on message ${newMessage.id}. Cause: ${err}`);
     }
 });
@@ -233,7 +245,7 @@ client.on("messageReactionAdd", async(event, user) => quoteReactionHandler(event
 client.on("messageReactionRemove", async(event, user) => reactionHandler(event, user, client, true));
 
 client.login(config.auth.bot_token).then(() => {
-    log.done("Token login was successful!");
+    log.info("Token login was successful!");
 }, (err) => {
     log.error(`Token login was not successful: "${err}"`);
     log.error("Shutting down due to incorrect token...\n\n");

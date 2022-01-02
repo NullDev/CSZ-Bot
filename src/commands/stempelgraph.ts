@@ -5,7 +5,7 @@ import { svg2png } from "svg-png-converter";
 
 import { getConfig } from "../utils/configHandler";
 import Stempel from "../storage/model/Stempel";
-import * as log from "../utils/logger";
+import log from "../utils/logger";
 import { isMod } from "../utils/userUtils";
 import { SlashCommandBuilder, SlashCommandStringOption } from "@discordjs/builders";
 import { ApplicationCommand, CommandResult } from "./command";

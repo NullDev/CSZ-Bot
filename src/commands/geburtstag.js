@@ -2,7 +2,7 @@ import Birthday from "../storage/model/Birthday";
 import { getConfig } from "../utils/configHandler";
 import moment from "moment";
 
-import * as log from "../utils/logger";
+import log from "../utils/logger";
 
 const config = getConfig();
 

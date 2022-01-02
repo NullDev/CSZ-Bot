@@ -2,7 +2,7 @@
 import { Client, Message, User } from "discord.js";
 import Penis from "../storage/model/Penis";
 import { CommandResult, MessageCommand } from "./command";
-import * as log from "../utils/logger";
+import log from "../utils/logger";
 
 const PENIS_MAX = 30;
 

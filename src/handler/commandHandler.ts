@@ -24,7 +24,7 @@ import { WhereCommand } from "../commands/special/where";
 import { DadJokeCommand } from "../commands/special/dadJoke";
 import { WatCommand } from "../commands/special/wat";
 import { TikTokLink } from "../commands/special/tiktok";
-import * as log from "../utils/logger";
+import log from "../utils/logger";
 import { StempelCommand } from "../commands/stempeln";
 import { StempelgraphCommand } from "../commands/stempelgraph";
 import { StempelkarteCommand } from "../commands/stempelkarte";
@@ -38,6 +38,8 @@ import {GoogleCommand} from "../commands/google";
 import { Mutable } from "../types";
 import {NischdaaaCommand} from "../commands/special/nischdaaa";
 import { SdmCommand } from "../commands/sdm";
+import {NicknameCommand} from "../commands/NicknameCommand";
+import { NopNopCommand } from "../commands/special/nopnop";
 
 const config = getConfig();
 
@@ -58,9 +60,12 @@ export const commands: readonly Command[] = [
     new BoobCommand(),
     new BonkCommand(),
     new GoogleCommand(),
+    new NicknameCommand(),
     new NischdaaaCommand(),
-    new SdmCommand()
+    new SdmCommand(),
+    new NopNopCommand()
 ];
+
 export const applicationCommands: Array<ApplicationCommand> =
     commands.filter<ApplicationCommand>(isApplicationCommand);
 export const messageCommands: Array<MessageCommand> =

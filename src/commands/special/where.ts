@@ -21,7 +21,7 @@ export class WhereCommand implements SpecialCommand {
     matches(message: Message<boolean>): boolean {
         const msg = message.content.toLowerCase();
 
-        return msg.startsWith("wo") && countWords(substringAfter(msg, "wo")) <= 3;
+        return msg.startsWith("wo ") && countWords(substringAfter(msg, "wo ")) <= 3;
     }
 
     async handleSpecialMessage(message: Message, client: Client<boolean>) {

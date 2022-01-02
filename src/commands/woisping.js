@@ -4,7 +4,7 @@
 
 import { Util } from "discord.js";
 
-import * as log from "../utils/logger";
+import log from "../utils/logger";
 import { isMod, isWoisGang } from "../utils/userUtils";
 
 import { getConfig } from "../utils/configHandler";

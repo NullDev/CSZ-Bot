@@ -1,7 +1,7 @@
 // @ts-ignore
 import { Client, Message } from "discord.js";
 import { CommandResult, MessageCommand } from "./command";
-import * as log from "../utils/logger";
+import log from "../utils/logger";
 
 /* eslint-disable quote-props */
 const categorys: Record<string, string> = {
