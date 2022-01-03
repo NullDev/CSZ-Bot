@@ -33,7 +33,7 @@ const convertToWebLink = async(uri: string): Promise<string> => {
     }
     // If normal Tiktok link just return it. May fail, but should work in most of the cases
     else if (uri.includes("www.tiktok.com")) {
-        return uri;
+        return uri.split("?")[0];
     }
     throw new Error(`Unsupported URI: ${uri}`);
 };
