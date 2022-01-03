@@ -43,9 +43,7 @@ export default class BdayHandler {
             .filter(m => !todaysBirthdaysAsMembers.some(tm => tm.id === m.id));
 
         if(todaysBirthdaysAsMembers.length > 0) {
-            todaysBirthdaysAsMembers.forEach(async(member) => {
-                await member.roles?.add(this.bdayRole);
-            });
+            await Promise.all(todaysBirthdaysAsMembers.map((member) => member.roles?.add(this.bdayRole)));
             await this.sendBirthdayMessage(todaysBirthdaysAsMembers);
         }
 
