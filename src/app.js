@@ -122,42 +122,47 @@ function scheduleTimezoneFixedCronjob(cronString) {
 let firstRun = true;
 
 client.on("ready", async(_client) => {
-    log.info("Running...");
-    log.info(`Got ${client.users.cache.size} users, in ${client.channels.cache.size} channels of ${client.guilds.cache.size} guilds`);
-    client.user.setActivity(config.bot_settings.status);
+    try {
+        log.info("Running...");
+        log.info(`Got ${client.users.cache.size} users, in ${client.channels.cache.size} channels of ${client.guilds.cache.size} guilds`);
+        client.user.setActivity(config.bot_settings.status);
 
-    // When the application is ready, slash commands should be registered
-    registerAllApplicationCommandsAsGuildCommands(client);
+        // When the application is ready, slash commands should be registered
+        registerAllApplicationCommandsAsGuildCommands(client);
 
-    const bday = new BdayHandler(client);
-    const aoc = new AoCHandler(client);
-    log.info("Starting Nicknamehandler ");
-    let nicknameHandler = new NicknameHandler(client);
-    if (firstRun) {
-        await storage.initialize();
-        firstRun = false; // Hacky deadlock ...
+        const bday = new BdayHandler(client);
+        const aoc = new AoCHandler(client);
+        log.info("Starting Nicknamehandler ");
+        let nicknameHandler = new NicknameHandler(client);
+        if (firstRun) {
+            await storage.initialize();
+            firstRun = false; // Hacky deadlock ...
 
-        const newCronString = timezone.getCronjobStringForHydrate(Date.now());
-        scheduleTimezoneFixedCronjob(newCronString);
+            const newCronString = timezone.getCronjobStringForHydrate(Date.now());
+            scheduleTimezoneFixedCronjob(newCronString);
 
-        log.info("Scheduling Birthday Cronjob...");
-        cron.schedule("1 0 * * *", async() => await bday.checkBdays(), { timezone: "Europe/Vienna" });
-        await bday.checkBdays();
+            log.info("Scheduling Birthday Cronjob...");
+            cron.schedule("1 0 * * *", async() => await bday.checkBdays(), { timezone: "Europe/Vienna" });
+            await bday.checkBdays();
 
-        log.info("Scheduling Advent of Code Cronjob...");
-        cron.schedule("0 20 1-25 12 *", async() => await aoc.publishLeaderBoard(), {timezone: "Europe/Vienna"});
+            log.info("Scheduling Advent of Code Cronjob...");
+            cron.schedule("0 20 1-25 12 *", async() => await aoc.publishLeaderBoard(), {timezone: "Europe/Vienna"});
 
 
-        log.info("Scheduling Nickname Cronjob");
-        cron.schedule("* * * * 0", async() => await nicknameHandler.rerollNicknames(), {timezone: "Europe/Vienna"});
+            log.info("Scheduling Nickname Cronjob");
+            cron.schedule("* * * * 0", async() => await nicknameHandler.rerollNicknames(), {timezone: "Europe/Vienna"});
+        }
+
+        ban.startCron(client);
+
+        await poll.importPolls();
+        poll.startCron(client);
+
+        fadingMessageHandler.startLoop(client);
     }
-
-    ban.startCron(client);
-
-    await poll.importPolls();
-    poll.startCron(client);
-
-    fadingMessageHandler.startLoop(client);
+    catch(err) {
+        log.error(`Error in Ready handler: ${err}`);
+    }
 });
 
 
