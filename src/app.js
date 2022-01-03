@@ -150,7 +150,7 @@ client.on("ready", async(_client) => {
 
 
             log.info("Scheduling Nickname Cronjob");
-            cron.schedule("* * * * 0", async() => await nicknameHandler.rerollNicknames(), {timezone: "Europe/Vienna"});
+            cron.schedule("0 0 * * 0", async() => await nicknameHandler.rerollNicknames(), {timezone: "Europe/Vienna"});
         }
 
         ban.startCron(client);
