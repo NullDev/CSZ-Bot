@@ -64,6 +64,7 @@ export const run: CommandFunction = async(client, message, args) => {
     else {
         await message.channel.send("Bruder, es gibt genau eine Option und die heißt -e! Versuch gar nicht erst, mich zu verarschen!");
     }
+    await message.delete();
 };
 
 export const description = "Weist freundlich darauf hin, keine Metafragen zu stellen. -e für englischsprachige Hurensöhne.";
