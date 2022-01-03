@@ -20,7 +20,10 @@ const convertToWebLink = async(uri: string): Promise<string> => {
     // Get Redirect of vm.tiktok urls
     if (uri.includes("vm.tiktok.com")) {
         const res = await fetch(uri, {
-            redirect: "manual"
+            redirect: "manual",
+            headers: {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:95.0) Gecko/20100101 Firefox/95.0"
+            }
         });
         if(res.status === 301) {
             const redirectUri = res.headers.get("Location");
