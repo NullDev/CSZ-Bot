@@ -42,8 +42,39 @@ export default class BdayHandler {
         });
 
         const todaysBirthdays = await Birthday.getTodaysBirthdays();
-        todaysBirthdays.forEach(e=>{
-            this.client.guilds.cache.get(this.config.ids.guild_id).members.cache.get(e.userId)?.roles?.add(this.bdayRole);
-        });
+        const todaysBirthdaysAsMembers = todaysBirthdays
+            .map(b => this.client.guilds.cache.get(this.config.ids.guild_id).members.cache.get(b.userId))
+            .filter(b => b);
+        if(todaysBirthdaysAsMembers.length > 0) {
+            todaysBirthdaysAsMembers.forEach(async(member) => await member.roles?.add(this.bdayRole));
+            await this.sendBirthdayMessage(todaysBirthdaysAsMembers);
+        }
+    }
+
+    /**
+     * Sends a birthday message
+     * @param {import("discord.js").User[]} users
+     * @returns {Promise<import("discord.js").Message<boolean>>}
+     */
+    sendBirthdayMessage(users) {
+        const channel = this.client.guilds.cache.get(this.config.ids.guild_id).channels.cache.get(this.config.ids.hauptchat_id);
+        const plural = users.length > 1;
+        return channel.send(`
+            Heute kann es regnen,
+            stürmen oder schneien,
+            denn ${plural ? ihr : du} ${plural ? strahlt : strahlst} ja selber
+            wie der Sonnenschein.
+            Heut ist ${plural ? dein : euer} Geburtstag,
+            darum feiern wir,
+            alle deine Freunde
+            freuen sich mit ${plural ? euch : dir}
+
+            Wie schön dass ${plural ? ihr : du} geboren ${plural ? seid : bist},
+            wir hätten ${plural ? euch : dich} sonst sehr vermisst.
+            wie schön dass wir beisammen sind,
+            wir gratulieren ${plural ? euch : dir}, <@&${this.bdayRole.id}>!
+
+            ${users.map(u => `<@${u.id}>`).join()}
+        `);
     }
 }
