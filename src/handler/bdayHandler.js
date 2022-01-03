@@ -66,8 +66,7 @@ export default class BdayHandler {
     sendBirthdayMessage(users) {
         const channel = this.client.guilds.cache.get(this.config.ids.guild_id).channels.cache.get(this.config.ids.hauptchat_id);
         const plural = users.length > 1;
-        return channel.send(`
-        Heute kann es regnen,
+        return channel.send(`Heute kann es regnen,
         stürmen oder schneien,
         denn ${plural ? "ihr" : "du"} ${plural ? "strahlt" : "strahlst"} ja selber
         wie der Sonnenschein.
