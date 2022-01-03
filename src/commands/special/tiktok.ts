@@ -27,13 +27,13 @@ const convertToWebLink = async(uri: string): Promise<string> => {
             if(redirectUri === null) {
                 throw new Error(`No redirect URI found under ${uri}`);
             }
-            return redirectUri.split("?")[0];
+            return redirectUri.split(/(\.html)?\?/)[0];
         }
         throw new Error(`No redirect found under ${uri}`);
     }
     // If normal Tiktok link just return it. May fail, but should work in most of the cases
     else if (uri.includes("www.tiktok.com")) {
-        return uri.split("?")[0];
+        return uri.split(/(\.html)?\?/)[0];
     }
     throw new Error(`Unsupported URI: ${uri}`);
 };
