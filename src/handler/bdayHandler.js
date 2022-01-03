@@ -47,7 +47,7 @@ export default class BdayHandler {
             await this.sendBirthdayMessage(todaysBirthdaysAsMembers);
         }
 
-        memberWithRoleThatDontHaveBirthday.forEach(member => {
+        memberWithRoleThatDontHaveBirthday.forEach(async(member) => {
             if (!member.roles.cache.find(t => t.id === this.config.ids.bday_role_id)) return;
             try {
                 await member.roles.remove(this.bdayRole);
