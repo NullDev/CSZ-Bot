@@ -44,7 +44,9 @@ export default class BdayHandler {
         const todaysBirthdays = await Birthday.getTodaysBirthdays();
         const todaysBirthdaysAsMembers = todaysBirthdays
             .map(b => this.client.guilds.cache.get(this.config.ids.guild_id).members.cache.get(b.userId))
-            .filter(b => b);
+            .filter(b => b !== undefined)
+            .filter(b => b.roles.cache.get(this.bdayRole) === undefined);
+
         if(todaysBirthdaysAsMembers.length > 0) {
             todaysBirthdaysAsMembers.forEach(async(member) => await member.roles?.add(this.bdayRole));
             await this.sendBirthdayMessage(todaysBirthdaysAsMembers);
