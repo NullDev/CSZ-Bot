@@ -27,7 +27,7 @@ const convertToWebLink = async(uri: string): Promise<string> => {
             if(redirectUri === null) {
                 throw new Error(`No redirect URI found under ${uri}`);
             }
-            return redirectUri;
+            return redirectUri.split("?")[0];
         }
         throw new Error(`No redirect found under ${uri}`);
     }
@@ -45,7 +45,7 @@ export class TikTokLink implements SpecialCommand {
     cooldownTime = 0;
 
     matches(message: Message<boolean>): boolean {
-        const pattern = /(www\.tiktok\.com)|(vm\.tiktok\.com)/i;
+        const pattern = /((www|m\.)?tiktok\.com)|(vm\.tiktok\.com)/i;
         return pattern.test(message.content);
     }
 
