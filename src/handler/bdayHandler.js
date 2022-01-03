@@ -64,17 +64,17 @@ export default class BdayHandler {
         return channel.send(`
             Heute kann es regnen,
             stürmen oder schneien,
-            denn ${plural ? ihr : du} ${plural ? strahlt : strahlst} ja selber
+            denn ${plural ? "ihr" : "du"} ${plural ? "strahlt" : "strahlst"} ja selber
             wie der Sonnenschein.
-            Heut ist ${plural ? dein : euer} Geburtstag,
+            Heut ist ${plural ? "dein" : "euer"} Geburtstag,
             darum feiern wir,
             alle deine Freunde
-            freuen sich mit ${plural ? euch : dir}
+            freuen sich mit ${plural ? "euch" : "dir"}
 
-            Wie schön dass ${plural ? ihr : du} geboren ${plural ? seid : bist},
-            wir hätten ${plural ? euch : dich} sonst sehr vermisst.
+            Wie schön dass ${plural ? "ihr" : "du"} geboren ${plural ? "seid" : "bist"},
+            wir hätten ${plural ? "euch" : "dich"} sonst sehr vermisst.
             wie schön dass wir beisammen sind,
-            wir gratulieren ${plural ? euch : dir}, <@&${this.bdayRole.id}>!
+            wir gratulieren ${plural ? "euch" : "dir"}, <@&${this.bdayRole.id}>!
 
             ${users.map(u => `<@${u.id}>`).join()}
         `);
