@@ -30,27 +30,32 @@ export default class BdayHandler {
      *
      * @memberof BdayHandler
      */
-    async checkBdays(){
-        this.client.guilds.cache.get(this.config.ids.guild_id).members.cache.forEach(member => {
-            if (!member.roles.cache.find(t => t.id === this.config.ids.bday_role_id)) return;
-            try {
-                member.roles.remove(this.bdayRole);
-            }
-            catch (e) {
-                log.error("Konnte rolle nicht entfernen: " + e);
-            }
-        });
-
+    async checkBdays() {
         const todaysBirthdays = await Birthday.getTodaysBirthdays();
+        const guild = this.client.guilds.cache.get(this.config.ids.guild_id);
+
         const todaysBirthdaysAsMembers = todaysBirthdays
-            .map(b => this.client.guilds.cache.get(this.config.ids.guild_id).members.cache.get(b.userId))
+            .map(b => guild.members.cache.get(b.userId))
             .filter(b => b !== undefined)
             .filter(b => b.roles.cache.get(this.bdayRole.id) === undefined);
+        const memberWithRoleThatDontHaveBirthday = guild.members.cache
+            .filter(m => m.roles.cache.get(this.bdayRole.id) !== undefined)
+            .filter(m => !todaysBirthdaysAsMembers.some(tm => tm.id === m.id));
 
         if(todaysBirthdaysAsMembers.length > 0) {
             todaysBirthdaysAsMembers.forEach(async(member) => await member.roles?.add(this.bdayRole));
             await this.sendBirthdayMessage(todaysBirthdaysAsMembers);
         }
+
+        memberWithRoleThatDontHaveBirthday.forEach(member => {
+            if (!member.roles.cache.find(t => t.id === this.config.ids.bday_role_id)) return;
+            try {
+                await member.roles.remove(this.bdayRole);
+            }
+            catch (e) {
+                log.error("Konnte rolle nicht entfernen: " + e);
+            }
+        });
     }
 
     /**
