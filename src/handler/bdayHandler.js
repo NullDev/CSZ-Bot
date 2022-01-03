@@ -40,7 +40,7 @@ export default class BdayHandler {
             .filter(b => b.roles.cache.get(this.bdayRole.id) === undefined);
         const memberWithRoleThatDontHaveBirthday = guild.members.cache
             .filter(m => m.roles.cache.get(this.bdayRole.id) !== undefined)
-            .filter(m => !todaysBirthdaysAsMembers.some(tm => tm.id === m.id));
+            .filter(m => !todaysBirthdays.some(b => b.userId === m.id));
 
         if(todaysBirthdaysAsMembers.length > 0) {
             await Promise.all(todaysBirthdaysAsMembers.map((member) => member.roles?.add(this.bdayRole)));
