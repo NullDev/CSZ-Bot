@@ -5,12 +5,15 @@
   "description": "Offizieller Bot der Coding Shitpost Zentrale",
   "main": "built/app.js",
   "scripts": {
-    "start": "nodemon built/app.js",
+    "start": "node built/app.js",
     "test": "tsc --noEmit",
-    "watch": "tsc --watch",
     "compile": "tsc --sourceMap false",
     "lint": "eslint -c .eslintrc.json src/**",
-    "dev": "npm run lint && npm start"
+    "dev": "npm run lint && npm run watch",
+    "watch-node": "nodemon built/app.js",
+    "watch-ts": "tsc -w",
+    "watch-lint": "esw -c .eslintrc.json src/** -w",
+    "watch": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node,EsLint\" -c \"cyan.bold,green.bold,yellow.bold\" \"npm run watch-ts\" \"npm run watch-node\" \"npm run watch-lint\""
   },
   "repository": {
     "type": "git",
@@ -52,7 +55,9 @@
     "@types/viz.js": "^2.1.2",
     "@typescript-eslint/eslint-plugin": "^5.8.1",
     "@typescript-eslint/parser": "^5.8.1",
+    "concurrently": "^7.0.0",
     "eslint": "^8.5.0",
+    "eslint-watch": "^8.0.0",
     "nodemon": "^2.0.15",
     "typescript": "^4.5.4"
   },
