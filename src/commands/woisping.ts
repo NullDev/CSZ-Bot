@@ -3,7 +3,7 @@
 // ================================= //
 
 import { Util } from "discord.js";
-import { Client, Message,Channel, MessageReaction } from "discord.js";
+import { Client, Message,Channel, MessageReaction, User } from "discord.js";
 import { CommandResult, MessageCommand } from "./command";
 import log from "../utils/logger";
 
@@ -27,7 +27,7 @@ let lastPing = 0;
  * @param {import("discord.js").User[]=} usersVotedYes
  * @returns {Promise<import("discord.js").Message<boolean>>}
  */
-const sendWoisping = (channel: Channel, pinger: Client, reason: string, usersVotedYes?: Client[]) => {
+const sendWoisping = (channel: Channel, pinger: User, reason: string, usersVotedYes?: User[]) => {
     let contentString = "";
     if ( usersVotedYes ) {
         contentString = `<@&${config.ids.woisgang_role_id}> <@!${pinger.id}> hat Bock auf Wois. ${reason ? `Grund dafür ist ${reason}` : ""}\n${usersVotedYes.length > 0 ? `${usersVotedYes.map(u => `<@!${u}>`).join(",")} sind auch dabei` : ""}`;
@@ -108,7 +108,7 @@ export class WoisCommand implements MessageCommand {
  * @param {import("discord.js").Message} message
  * @returns {Promise<boolean>}
  */
-export const reactionHandler = async(reactionEvent: MessageReaction, user: Client, client: Client, message: Message) => {
+export const reactionHandler = async(reactionEvent: MessageReaction, user: User, client: Client, message: Message) => {
     if (message.embeds.length !== 0
         || !message.content.startsWith(pendingMessagePrefix)
         || reactionEvent.emoji.name !== "👍") {
