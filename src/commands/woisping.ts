@@ -3,7 +3,7 @@
 // ================================= //
 
 import { Util } from "discord.js";
-import { Client, Message,Channel, MessageReaction, User } from "discord.js";
+import { Client, Message,TextChannel, MessageReaction, User } from "discord.js";
 import { CommandResult, MessageCommand } from "./command";
 import log from "../utils/logger";
 
@@ -20,7 +20,7 @@ const pendingMessagePrefix = "*(Pending-Woisgang-Ping, bitte zustimmen)*";
 let lastPing = 0;
 
 
-const sendWoisping = (channel: Channel, pinger: User, reason: string, usersVotedYes?: User[]) => {
+const sendWoisping = (channel: TextChannel, pinger: User, reason: string, usersVotedYes?: User[]): Promise<any> => {
     let contentString = "";
     if ( usersVotedYes ) {
         contentString = `<@&${config.ids.woisgang_role_id}> <@!${pinger.id}> hat Bock auf Wois. ${reason ? `Grund dafür ist ${reason}` : ""}\n${usersVotedYes.length > 0 ? `${usersVotedYes.map(u => `<@!${u}>`).join(",")} sind auch dabei` : ""}`;
@@ -45,7 +45,7 @@ export class WoisCommand implements MessageCommand {
     name = "woisping";
     description = "Pingt die ganze Woisgang";
 
-    async handleMessage(message: Message, _client: Client) {
+    async handleMessage(message: Message, _client: Client): Promise<CommandResult>  {
         // remove first word of message and store the remaning elements into an array
         const args = message.content.split(" ").slice(1);
     
@@ -88,7 +88,7 @@ export class WoisCommand implements MessageCommand {
     
 }
 
-export const reactionHandler = async(reactionEvent: MessageReaction, user: User, client: Client, message: Message) => {
+export const reactionHandler = async(reactionEvent: MessageReaction, user: User, client: Client, message: Message): Promise<any> => {
     if (message.embeds.length !== 0
         || !message.content.startsWith(pendingMessagePrefix)
         || reactionEvent.emoji.name !== "👍") {
