@@ -19,14 +19,7 @@ const pendingMessagePrefix = "*(Pending-Woisgang-Ping, bitte zustimmen)*";
 // Internal storage, no need to save this persistent
 let lastPing = 0;
 
-/**
- *
- * @param {import("discord.js").TextChannel} channel
- * @param {import("discord.js").User} pinger
- * @param {string} reason
- * @param {import("discord.js").User[]=} usersVotedYes
- * @returns {Promise<import("discord.js").Message<boolean>>}
- */
+
 const sendWoisping = (channel: Channel, pinger: User, reason: string, usersVotedYes?: User[]) => {
     let contentString = "";
     if ( usersVotedYes ) {
@@ -47,11 +40,6 @@ const sendWoisping = (channel: Channel, pinger: User, reason: string, usersVoted
     });
 };
 
-/**
- * Allows usage of @Woisgang mention for people having that role assigned
- *
- * @type {import("../types").CommandFunction}
- */
 
 export class WoisCommand implements MessageCommand {
     name = "woisping";
@@ -99,15 +87,7 @@ export class WoisCommand implements MessageCommand {
     };
     
 }
-/**
- * Handles changes on reactions specific to this command
- *
- * @param {import("discord.js").MessageReaction} reactionEvent
- * @param {import("discord.js").User} user
- * @param {import("discord.js").Client} client
- * @param {import("discord.js").Message} message
- * @returns {Promise<boolean>}
- */
+
 export const reactionHandler = async(reactionEvent: MessageReaction, user: User, client: Client, message: Message) => {
     if (message.embeds.length !== 0
         || !message.content.startsWith(pendingMessagePrefix)
