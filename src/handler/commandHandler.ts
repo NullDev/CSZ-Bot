@@ -40,6 +40,7 @@ import {NischdaaaCommand} from "../commands/special/nischdaaa";
 import { SdmCommand } from "../commands/sdm";
 import {NicknameCommand} from "../commands/NicknameCommand";
 import { NopNopCommand } from "../commands/special/nopnop";
+import { WoisCommand } from "../commands/woisping";
 
 const config = getConfig();
 
@@ -63,7 +64,8 @@ export const commands: readonly Command[] = [
     new NicknameCommand(),
     new NischdaaaCommand(),
     new SdmCommand(),
-    new NopNopCommand()
+    new NopNopCommand(),
+    new WoisCommand()
 ];
 
 export const applicationCommands: Array<ApplicationCommand> =

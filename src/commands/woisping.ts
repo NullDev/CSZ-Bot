@@ -3,8 +3,11 @@
 // ================================= //
 
 import { Util } from "discord.js";
-
+import { Client, Message,Channel, MessageReaction } from "discord.js";
+import { CommandResult, MessageCommand } from "./command";
 import log from "../utils/logger";
+
+
 import { isMod, isWoisGang } from "../utils/userUtils";
 
 import { getConfig } from "../utils/configHandler";
@@ -24,9 +27,16 @@ let lastPing = 0;
  * @param {import("discord.js").User[]=} usersVotedYes
  * @returns {Promise<import("discord.js").Message<boolean>>}
  */
-const sendWoisping = (channel, pinger, reason, usersVotedYes) => {
+const sendWoisping = (channel: Channel, pinger: Client, reason: string, usersVotedYes?: Client[]) => {
+    let contentString = "";
+    if ( usersVotedYes ) {
+        contentString = `<@&${config.ids.woisgang_role_id}> <@!${pinger.id}> hat Bock auf Wois. ${reason ? `Grund dafür ist ${reason}` : ""}\n${usersVotedYes.length > 0 ? `${usersVotedYes.map(u => `<@!${u}>`).join(",")} sind auch dabei` : ""}`;
+    } else {
+        contentString = `<@&${config.ids.woisgang_role_id}> <@!${pinger.id}> hat Bock auf Wois. ${reason ? `Grund dafür ist ${reason}` : ""}`;
+    }
+
     return channel.send({
-        content: `<@&${config.ids.woisgang_role_id}> <@!${pinger.id}> hat Bock auf Wois. ${reason ? `Grund dafür ist ${reason}` : ""}\n${usersVotedYes?.length > 0 ? `${usersVotedYes.map(u => `<@!${u}>`).join(",")} sind auch dabei` : ""}`,
+        content: contentString,
         allowedMentions: {
             roles: [ config.ids.woisgang_role_id ],
             users: [
@@ -42,41 +52,53 @@ const sendWoisping = (channel, pinger, reason, usersVotedYes) => {
  *
  * @type {import("../types").CommandFunction}
  */
-export const run = async(client, message, args) => {
-    const isModMessage = isMod(message.member);
 
-    if (!isModMessage && !isWoisGang(message.member)){
-        log.warn(`User "${message.author.tag}" (${message.author}) tried command "${config.bot_settings.prefix.command_prefix}woisping" and was denied`);
+export class WoisCommand implements MessageCommand {
+    name = "woisping";
+    description = "Pingt die ganze Woisgang";
 
-        return `Tut mir leid, ${message.author}. Du hast nicht genügend Rechte um diesen Command zu verwenden =(`;
-    }
+    async handleMessage(message: Message, _client: Client) {
+        // remove first word of message and store the remaning elements into an array
+        const args = message.content.split(" ").slice(1);
+    
+        const { author } = message;
+        const pinger  = author;
 
-    const now = Date.now();
+        const isModMessage = isMod(message.member);
 
-    if (!isModMessage && lastPing + config.bot_settings.woisping_limit * 1000 > now) {
-        return "Piss dich und spam nicht.";
-    }
+        if (!isModMessage && !isWoisGang(message.member)){
+            log.warn(`User "${message.author.tag}" (${message.author}) tried command "${config.bot_settings.prefix.command_prefix}woisping" and was denied`);
 
-    const reason = `${Util.cleanContent(args.join(" "), message)} (von ${message.member})`;
+            return `Tut mir leid, ${message.author}. Du hast nicht genügend Rechte um diesen Command zu verwenden =(`;
+        }
 
-    if (isModMessage) {
-        lastPing = now;
-        await sendWoisping(message.channel, message.author, reason);
-    }
-    else {
-        const msg = await message.channel.send({
-            content: `${pendingMessagePrefix} <@!${pinger.id}> hat Bock auf Wois. ${reason ? `Grund dafür ist ${reason}` : ""}. Biste dabei?`,
-            allowedMentions: {
-                users: [ pinger.id ]
-            }
-        });
-        await msg.react("👍");
+        const now = Date.now();
 
-        // we don't set lastPing here to allow multiple concurrent requests
-        // let the most liked reason win...
-    }
-};
+        if (!isModMessage && lastPing + config.bot_settings.woisping_limit * 1000 > now) {
+            return "Piss dich und spam nicht.";
+        }
 
+        const reason = `${Util.cleanContent(args.join(" "), message)} (von ${message.member})`;
+
+        if (isModMessage) {
+            lastPing = now;
+            await sendWoisping(message.channel, message.author, reason);
+        }
+        else {
+            const msg = await message.channel.send({
+                content: `${pendingMessagePrefix} <@!${pinger.id}> hat Bock auf Wois. ${reason ? `Grund dafür ist ${reason}` : ""}. Biste dabei?`,
+                allowedMentions: {
+                    users: [ pinger.id ]
+                }
+            });
+            await msg.react("👍");
+
+            // we don't set lastPing here to allow multiple concurrent requests
+            // let the most liked reason win...
+        }
+    };
+    
+}
 /**
  * Handles changes on reactions specific to this command
  *
@@ -86,7 +108,7 @@ export const run = async(client, message, args) => {
  * @param {import("discord.js").Message} message
  * @returns {Promise<boolean>}
  */
-export const reactionHandler = async(reactionEvent, user, client, message) => {
+export const reactionHandler = async(reactionEvent: MessageReaction, user: Client, client: Client, message: Message) => {
     if (message.embeds.length !== 0
         || !message.content.startsWith(pendingMessagePrefix)
         || reactionEvent.emoji.name !== "👍") {
