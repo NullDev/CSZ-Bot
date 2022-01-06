@@ -2,8 +2,8 @@
 // = Copyright (c) diewellenlaenge = //
 // ================================= //
 
-import { Util } from "discord.js";
-import { Client, Message,TextChannel, MessageReaction, User } from "discord.js";
+import { TextBasedChannel, Util } from "discord.js";
+import { Client, Message, MessageReaction, User } from "discord.js";
 import { CommandResult, MessageCommand } from "./command";
 import log from "../utils/logger";
 
@@ -20,11 +20,12 @@ const pendingMessagePrefix = "*(Pending-Woisgang-Ping, bitte zustimmen)*";
 let lastPing = 0;
 
 
-const sendWoisping = (channel: TextChannel, pinger: User, reason: string, usersVotedYes?: User[]): Promise<any> => {
+const sendWoisping = (channel: TextBasedChannel, pinger: User, reason: string, usersVotedYes: User[] = []): Promise<any> => {
     let contentString = "";
     if ( usersVotedYes ) {
         contentString = `<@&${config.ids.woisgang_role_id}> <@!${pinger.id}> hat Bock auf Wois. ${reason ? `Grund dafür ist ${reason}` : ""}\n${usersVotedYes.length > 0 ? `${usersVotedYes.map(u => `<@!${u}>`).join(",")} sind auch dabei` : ""}`;
-    } else {
+    }
+    else {
         contentString = `<@&${config.ids.woisgang_role_id}> <@!${pinger.id}> hat Bock auf Wois. ${reason ? `Grund dafür ist ${reason}` : ""}`;
     }
 
@@ -48,25 +49,32 @@ export class WoisCommand implements MessageCommand {
     async handleMessage(message: Message, _client: Client): Promise<CommandResult>  {
         // remove first word of message and store the remaning elements into an array
         const args = message.content.split(" ").slice(1);
-    
-        const { author } = message;
+
+        const { author, member } = message;
         const pinger  = author;
 
-        const isModMessage = isMod(message.member);
+        if(!member) {
+            throw new Error("Member is not defined");
+        }
 
-        if (!isModMessage && !isWoisGang(message.member)){
+        const isModMessage = isMod(member);
+
+        if (!isModMessage && !isWoisGang(member)){
             log.warn(`User "${message.author.tag}" (${message.author}) tried command "${config.bot_settings.prefix.command_prefix}woisping" and was denied`);
 
-            return `Tut mir leid, ${message.author}. Du hast nicht genügend Rechte um diesen Command zu verwenden =(`;
+            await message.reply(`Tut mir leid, ${message.author}. Du hast nicht genügend Rechte um diesen Command zu verwenden =(`);
+
+            return;
         }
 
         const now = Date.now();
 
         if (!isModMessage && lastPing + config.bot_settings.woisping_limit * 1000 > now) {
-            return "Piss dich und spam nicht.";
+            await message.reply("Piss dich und spam nicht.");
+            return;
         }
 
-        const reason = `${Util.cleanContent(args.join(" "), message)} (von ${message.member})`;
+        const reason = `${Util.cleanContent(args.join(" "), message.channel)} (von ${message.member})`;
 
         if (isModMessage) {
             lastPing = now;
@@ -84,8 +92,7 @@ export class WoisCommand implements MessageCommand {
             // we don't set lastPing here to allow multiple concurrent requests
             // let the most liked reason win...
         }
-    };
-    
+    }
 }
 
 export const reactionHandler = async(reactionEvent: MessageReaction, user: User, client: Client, message: Message): Promise<any> => {
@@ -99,12 +106,14 @@ export const reactionHandler = async(reactionEvent: MessageReaction, user: User,
 
     // shouldn't happen
     if (!reaction) {
+        log.debug("Reaction not found");
         return true;
     }
 
-    const member = client.guilds.cache.get(config.ids.guild_id).members.cache.get(user.id);
+    const member = client.guilds.cache.get(config.ids.guild_id)!.members.cache.get(user.id);
 
     if (!member) {
+        log.debug("Member not found");
         return true;
     }
 
@@ -125,8 +134,15 @@ export const reactionHandler = async(reactionEvent: MessageReaction, user: User,
 
         const {channel} = message;
         const pinger = message.mentions.users.first();
+
+        // shouldn't happen
+        if (!pinger) {
+            log.debug("Pinger not found");
+            return true;
+        }
+
         // I don't know if this spreading is necessary
-        const usersVotedYes = [ ...message.reactions.cache.filter(f => f.emoji.name === "👍").first().users.cache ];
+        const usersVotedYes = [ ...reaction.users.cache.values() ];
         await message.delete();
 
         lastPing = now;
