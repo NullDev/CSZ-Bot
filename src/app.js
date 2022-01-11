@@ -169,7 +169,7 @@ client.on("ready", async(_client) => {
 /**
  * This is an additional Message handler, that we use as a replacement
  * for the "old commands". This way we can easily migrate commands to slash commands
- * and still use the possility to use the commands textual. Win-Win :cooldoge:
+ * and still have the option to use the textual commands. Win-Win :cooldoge:
  */
 client.on("messageCreate", async(message) => {
     try {
