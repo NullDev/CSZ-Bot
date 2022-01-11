@@ -41,6 +41,7 @@ import { SdmCommand } from "../commands/sdm";
 import { NicknameCommand } from "../commands/NicknameCommand";
 import { NopNopCommand } from "../commands/special/nopnop";
 import { WoisCommand } from "../commands/woisping";
+import { FicktabelleCommand } from "../commands/ficktabelle";
 
 const config = getConfig();
 
@@ -65,7 +66,8 @@ export const commands: readonly Command[] = [
     new NischdaaaCommand(),
     new SdmCommand(),
     new NopNopCommand(),
-    new WoisCommand()
+    new WoisCommand(),
+    new FicktabelleCommand()
 ];
 
 export const applicationCommands: Array<ApplicationCommand> =
