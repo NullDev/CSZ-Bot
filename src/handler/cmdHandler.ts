@@ -60,12 +60,11 @@ export default async function(message: Message, client: Client, isModCommand: bo
      * try to invoke the run method, which is ofc not present - or at least it should
      * not be present. Therefore we need to check for the method.
      */
-    if(!usedCommand.run) {
-        return;
-    }
+    if (!usedCommand.run) return;
+
+    if (!message.member) return;
 
     if (
-        message.member &&
         isModCommand &&
         !message.member.roles.cache.some((r) =>
             config.bot_settings.moderator_roles.includes(r.name)
