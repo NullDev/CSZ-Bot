@@ -1,7 +1,7 @@
 import {SlashCommandBuilder, SlashCommandStringOption, SlashCommandUserOption} from "@discordjs/builders";
 import {CommandInteraction, Client, GuildMember} from "discord.js";
 
-import {ApplicationCommand, CommandResult} from "./command";
+import {ApplicationCommand, CommandPermission, CommandResult} from "./command";
 import {getConfig} from "../utils/configHandler";
 import Nicknames from "../storage/model/Nicknames";
 
@@ -11,6 +11,11 @@ export class NicknameCommand implements ApplicationCommand {
     modCommand: boolean = false;
     name: string = "nickname";
     description: string = "Setzt Nicknames für einen User";
+    permissions: readonly CommandPermission[] = [{
+        id: config.bot_settings.moderator_id,
+        permission: true,
+        type: "ROLE"
+    }];
 
     get applicationCommand(): Pick<SlashCommandBuilder, "toJSON"> {
         return new SlashCommandBuilder()

@@ -65,10 +65,7 @@ $ `npm ci`<br><br>
         - Trusted-Gebannt-Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L41)) - CSZ Default: B&-Trusted
         - Woisgang-Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L36)) - CSZ Default: woisgang<br><br>
 8. Das Script starten <br>
-Zuerst<br>
 $ `npm run watch`<br>
-im Projektverzeichnis ausführen. Anschließend<br>
-$ `npm start`<br>
-in einem separaten Terminal ebenfalls im Projekverzeichnis aufrufen.<br><br>
+<br><br>
 
 <img height=auto width=100% src="https://repository-images.githubusercontent.com/231836048/9d94c400-2f6b-11ea-95d8-f9e72ddf020f">

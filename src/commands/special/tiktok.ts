@@ -20,20 +20,23 @@ const convertToWebLink = async(uri: string): Promise<string> => {
     // Get Redirect of vm.tiktok urls
     if (uri.includes("vm.tiktok.com")) {
         const res = await fetch(uri, {
-            redirect: "manual"
+            redirect: "manual",
+            headers: {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:95.0) Gecko/20100101 Firefox/95.0"
+            }
         });
         if(res.status === 301) {
             const redirectUri = res.headers.get("Location");
             if(redirectUri === null) {
                 throw new Error(`No redirect URI found under ${uri}`);
             }
-            return redirectUri;
+            return redirectUri.split(/(\.html)?\?/)[0].replace("https://m.", "https://");
         }
         throw new Error(`No redirect found under ${uri}`);
     }
     // If normal Tiktok link just return it. May fail, but should work in most of the cases
     else if (uri.includes("www.tiktok.com")) {
-        return uri;
+        return uri.split(/(\.html)?\?/)[0].replace("https://m.", "https://");
     }
     throw new Error(`Unsupported URI: ${uri}`);
 };
@@ -45,7 +48,7 @@ export class TikTokLink implements SpecialCommand {
     cooldownTime = 0;
 
     matches(message: Message<boolean>): boolean {
-        const pattern = /(www\.tiktok\.com)|(vm\.tiktok\.com)/i;
+        const pattern = /((www|m\.)?tiktok\.com)|(vm\.tiktok\.com)/i;
         return pattern.test(message.content);
     }
 
