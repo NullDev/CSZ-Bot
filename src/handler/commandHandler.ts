@@ -42,6 +42,7 @@ import { NicknameCommand } from "../commands/NicknameCommand";
 import { NopNopCommand } from "../commands/special/nopnop";
 import { WoisCommand } from "../commands/woisping";
 import { FicktabelleCommand } from "../commands/ficktabelle";
+import { InviteCommand } from "../commands/invite";
 
 const config = getConfig();
 
@@ -67,7 +68,8 @@ export const commands: readonly Command[] = [
     new SdmCommand(),
     new NopNopCommand(),
     new WoisCommand(),
-    new FicktabelleCommand()
+    new FicktabelleCommand(),
+    new InviteCommand()
 ];
 
 export const applicationCommands: Array<ApplicationCommand> =
