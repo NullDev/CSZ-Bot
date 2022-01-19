@@ -59,7 +59,8 @@ export const run = async(client, message, args) => {
         : momentDuration.locale("de").humanize();
 
     if (tilt) {
-        await message.channel.send(`:alarm: User ${invokingUser} ist getilted und gönnt sich eine kurze Auszeit für ${durationHumanized}. :alarm:`);
+        const alarmEmote = message.guild?.emojis.cache.find(e => e.name === "alarm");
+        await message.channel.send(`${alarmEmote} User ${invokingUser} ist getilted und gönnt sich eine kurze Auszeit für ${durationHumanized}. ${alarmEmote}`);
     }
     else {
         await message.channel.send(`User ${invokingUser} hat sich selber gebannt!\nEntbannen in: ${durationHumanized}`);
