@@ -18,7 +18,14 @@ const config = getConfig();
  * @type {import("../types").CommandFunction}
  */
 export const run = async(client, message, args) => {
-    const durationArg = Number(args?.[0]?.trim() ?? "8");
+    const input = args?.[0]?.trim() ?? "8";
+    const tilt = (input === "tilt");
+
+    if (tilt) {
+        input = 0.25;
+    }
+
+    const durationArg = Number(input);
 
     if (Number.isNaN(durationArg) || !Number.isFinite(durationArg)) {
         return "Gib ne Zahl ein, du Lellek.";
@@ -51,7 +58,11 @@ export const run = async(client, message, args) => {
         ? "manuell durch Moderader"
         : momentDuration.locale("de").humanize();
 
-    await message.channel.send(`User ${invokingUser} hat sich selber gebannt!\nEntbannen in: ${durationHumanized}`);
+    if (tilt) {
+        await message.channel.send(`:alarm: User ${invokingUser} ist getilted und gönnt sich eine kurze Auszeit für ${durationHumanized}. :alarm:`);
+    } else {
+        await message.channel.send(`User ${invokingUser} hat sich selber gebannt!\nEntbannen in: ${durationHumanized}`);
+    }
 
     await message.author.send(`Du hast dich selber von der Coding Shitpost Zentrale gebannt!
 Du wirst entbannt in: ${durationHumanized}
@@ -61,4 +72,4 @@ Haddi & xD™`
     );
 };
 
-export const description = `Bannt den ausführenden User indem er ihn von allen Channels ausschließt.\nBenutzung: ${config.bot_settings.prefix.command_prefix}selfban [Dauer in Stunden = 8; 0 = manuelle Entbannung durch Moderader nötig]`;
+export const description = `Bannt den ausführenden User indem er ihn von allen Channels ausschließt.\nBenutzung: ${config.bot_settings.prefix.command_prefix}selfban [Dauer in Stunden = 8; tilt; 0 = manuelle Entbannung durch Moderader nötig]`;
