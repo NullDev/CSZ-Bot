@@ -33,8 +33,8 @@ export const run = async(client, message, args) => {
 
     const momentDuration = moment.duration(durationInMinutes, "minutes");
 
-    if (durationInHours < 1 || !momentDuration.isValid()) {
-        return "Bitte eine gültige Dauer Δₜ in Stunden angeben; Δₜ ∈ [1, ∞) ∩ ℝ";
+    if (durationInHours < 1.0 / 60.0 || !momentDuration.isValid()) {
+        return "Bitte eine gültige Dauer Δₜ in Stunden angeben; Δₜ ∈ [0.016, ∞) ∩ ℝ+floats";
     }
 
     const invokingUser = message.member;
