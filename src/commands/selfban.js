@@ -18,7 +18,7 @@ const config = getConfig();
  * @type {import("../types").CommandFunction}
  */
 export const run = async(client, message, args) => {
-    const input = args?.[0]?.trim() ?? "8";
+    let input = args?.[0]?.trim() ?? "8";
     const tilt = (input === "tilt");
 
     if (tilt) {
@@ -60,7 +60,8 @@ export const run = async(client, message, args) => {
 
     if (tilt) {
         await message.channel.send(`:alarm: User ${invokingUser} ist getilted und gönnt sich eine kurze Auszeit für ${durationHumanized}. :alarm:`);
-    } else {
+    }
+    else {
         await message.channel.send(`User ${invokingUser} hat sich selber gebannt!\nEntbannen in: ${durationHumanized}`);
     }
 
