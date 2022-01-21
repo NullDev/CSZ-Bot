@@ -11,11 +11,6 @@ export class NicknameCommand implements ApplicationCommand {
     modCommand: boolean = false;
     name: string = "nickname";
     description: string = "Setzt Nicknames für einen User";
-    permissions: readonly CommandPermission[] = [{
-        id: config.bot_settings.moderator_id,
-        permission: true,
-        type: "ROLE"
-    }];
 
     get applicationCommand(): Pick<SlashCommandBuilder, "toJSON"> {
         return new SlashCommandBuilder()
@@ -65,7 +60,6 @@ export class NicknameCommand implements ApplicationCommand {
             }
             if (option === "add") {
                 await Nicknames.insertNickname(userToUse!.id, nickname);
-                await this.updateNickName(userToUse!, nickname);
                 return command.reply(`Ok Brudi. Hab für ${userToUse?.user} ${nickname} hinzugefügt`);
             }
             if (option === "delete") {
