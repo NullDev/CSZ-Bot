@@ -194,12 +194,38 @@ const commandMessageHandler = (
     message: Message,
     client: Client
 ): Promise<unknown> => {
+    const replaceLeet = (cmd: string): string => {
+        const alphabets: {[key: string]: string} = {
+            4: "a",
+            8: "b",
+            3: "e",
+            6: "g",
+            1: "i",
+            0: "o",
+            9: "p",
+            5: "s",
+            7: "t",
+            2: "z"
+        };
+
+        let out = cmd;
+        for (let i = 0; i < cmd.length; i++) {
+            const c = cmd[i];
+            if (c in alphabets) {
+                out = out.replaceAll(c, alphabets[c]);
+            }
+        }
+
+        return out;
+    };
+
+    const nonLeetCommandString = replaceLeet(commandString.toLowerCase());
     const matchingCommand = messageCommands.find(
-        cmd => cmd.name.toLowerCase() === commandString.toLowerCase() || cmd.aliases?.includes(commandString.toLowerCase())
+        cmd => cmd.name.toLowerCase() === nonLeetCommandString || cmd.aliases?.includes(nonLeetCommandString)
     );
 
     if (!matchingCommand) {
-        return Promise.reject(new Error(`No matching command found for command "${commandString}"`));
+        return Promise.reject(new Error(`No matching command found for command "${commandString}" with non leet command "${nonLeetCommandString}"`));
     }
 
     if (matchingCommand.permissions) {
