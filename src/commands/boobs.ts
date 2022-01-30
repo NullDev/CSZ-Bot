@@ -62,7 +62,22 @@ const isNewBiggestBoobs = async(size: number): Promise<boolean> => {
 
 export class BoobCommand implements MessageCommand {
     name = "boob";
-    aliases = ["booba", "boobas", "boobs", "boobie", "titte", "titten", "boobies", "glocken", "euter", "milchtüten", "brüste", "melonen"];
+    aliases = [
+        "booba",
+        "boobas",
+        "boobs",
+        "boobie",
+        "titte",
+        "titten",
+        "boobies",
+        "glocken",
+        "euter",
+        "milchtüten",
+        "brüste",
+        "melonen",
+        "vorbau",
+        "balkon"
+    ];
     description = "Zeigt dir die deine Boobs mit Größe an";
 
     async handleMessage(message: Message, _client: Client): Promise<CommandResult> {
