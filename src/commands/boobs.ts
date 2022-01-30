@@ -1,10 +1,11 @@
 // @ts-ignore
-import { Client, Message } from "discord.js";
+import {Client, Message, User} from "discord.js";
+import Boob from "../storage/model/Boob";
 import { CommandResult, MessageCommand } from "./command";
 import log from "../utils/logger";
 
 /* eslint-disable quote-props */
-const categorys: Record<string, string> = {
+const sizes: Record<string, string> = {
     "Knöpfe": ". .",
     "Toffifee": "○ ○",
     "Zwergtittchen": "◯ ◯",
@@ -39,11 +40,23 @@ const categorys: Record<string, string> = {
 };
 /* eslint-enable quote-props */
 
-const sendBoob = async( message: Message ): Promise<Message<boolean>> => {
-    const category = Object.keys(categorys)[Math.floor(Math.random() * Object.keys(categorys).length)];
-    const boob = categorys[category];
+const sendBoob = async(user: User, message: Message, size: number, measurement: Date = new Date()): Promise<Message<boolean>> => {
+    const sizeName = Object.keys(sizes)[size];
+    const sizeContent = sizes[sizeName];
+    const measuredAt = new Intl.DateTimeFormat("de-DE", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false
+    }).format(measurement);
 
-    return message.reply(category + "\n" + boob);
+    return message.reply(`${sizeName} von <@${user.id}>:\n${sizeContent}\n(Gemessen um ${measuredAt})`);
+};
+
+
+const isNewBiggestBoobs = async(size: number): Promise<boolean> => {
+    const oldLongest = await Boob.longestRecentMeasurement();
+    return (oldLongest ?? -1) < size;
 };
 
 
@@ -59,7 +72,25 @@ export class BoobCommand implements MessageCommand {
 
         log.debug(`${author.id} wants to measure boob of user ${userToMeasure.id}`);
 
-        await sendBoob(message);
+        const recentMeasurement = await Boob.fetchRecentMeasurement(userToMeasure);
+
+        if(recentMeasurement === null) {
+            log.debug(`No recent boob measuring of ${userToMeasure.id} found. Creating Measurement`);
+
+            const size = Math.floor(Math.random() * Object.keys(sizes).length);
+
+            if(await isNewBiggestBoobs(size)) {
+                log.debug(`${userToMeasure} has the new biggest boobs with size ${size}`);
+            }
+
+            await Promise.all([
+                Boob.insertMeasurement(userToMeasure, size),
+                sendBoob(userToMeasure, message, size)
+            ]);
+            return;
+        }
+
+        await sendBoob(userToMeasure, message, recentMeasurement.size, recentMeasurement.measuredAt);
         return;
     }
 }
