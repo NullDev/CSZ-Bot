@@ -27,7 +27,51 @@ const isNewLongestDick = async(size: number): Promise<boolean> => {
  */
 export class PenisCommand implements MessageCommand {
     name = "penis";
-    aliases = ["pimmel", "benis", "dick", "schwanz", "schlong", "cock", "prügel", "pimmelchen", "pfahl"];
+    aliases = [
+        "glied",
+        "phallus",
+        "schniepel",
+        "zumpferl",
+        "johannes",
+        "jonny",
+        "latte",
+        "lümmel",
+        "nudel",
+        "rohr",
+        "schwanz",
+        "zebedäus",
+        "spatz",
+        "zipfel",
+        "gurke",
+        "hammer",
+        "knüppel",
+        "kolben",
+        "nille",
+        "pfeife",
+        "pinsel",
+        "prügel",
+        "riemen",
+        "rüssel",
+        "rute",
+        "männlichkeit",
+        "zauberstab",
+        "wunderhorn",
+        "schniedel",
+        "schniedelwutz",
+        "ding",
+        "pimmel",
+        "dödel",
+        "piepel",
+        "pint",
+        "gemächt",
+        "piephahn",
+        "benis",
+        "dick",
+        "schlong",
+        "cock",
+        "pimmelchen",
+        "pfahl"
+    ];
     description = "Zeigt dir die Schwanzlänge eines Nutzers an.";
 
     /**
