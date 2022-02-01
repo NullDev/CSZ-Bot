@@ -42,7 +42,7 @@ Dann in den Ordner navigieren.<br><br>
 3. Dependencies installieren: <br>
 $ `npm ci`<br><br>
 4. Das Config-Template [config.template.json](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json) kopieren und als `config.json` einfügen. <br><br>
-6. Die frisch kopierte Config-Datei ausfüllen: <br>
+5. Die frisch kopierte Config-Datei ausfüllen: <br>
     - Um einen Bot zum Testen anzulegen, einfach den Instruktionen im [Discord Developer Portal](https://discord.com/developers/applications) folgen.
         - Die Applikation muss als "Bot" gesetzt werden.
         - Es müssen beide [Gateway Intents](https://discordjs.guide/popular-topics/intents.html#gateway-intents) eingeschalten werden.
@@ -64,8 +64,12 @@ $ `npm ci`<br><br>
         - Gründerväter-Gebannt-Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L39)) - CSZ Default: B&-Gründerväter
         - Trusted-Gebannt-Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L41)) - CSZ Default: B&-Trusted
         - Woisgang-Rolle ([ID der Rolle](https://github.com/NullDev/CSC-Bot/blob/master/config.template.json#L36)) - CSZ Default: woisgang<br><br>
-8. Das Script starten <br>
+6. Das Script starten <br>
 $ `npm run watch`<br>
 <br><br>
+## ❄ Nix
+Entweder via `nix-shell` oder `nix develop` letzteres benötigt Nix-Flake support.
+Nix-Flakes nutzen ohne diese eingeschaltet zu haben geht via:
+`nix --extra-experimental-features "flakes nix-command" develop`
 
 <img height=auto width=100% src="https://repository-images.githubusercontent.com/231836048/9d94c400-2f6b-11ea-95d8-f9e72ddf020f">
