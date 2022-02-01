@@ -25,6 +25,12 @@
             "blacklisted_channel_ids": [],
             "target_channel_overrides": [],
             "default_target_channel_id": ""
+        },
+        "forbidden_games": {
+            "names": [
+                "league of legends"
+            ],
+            "threshold": 10
         }
     },
     "ids": {

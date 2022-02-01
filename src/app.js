@@ -32,6 +32,7 @@ import {
 } from "./handler/commandHandler";
 import {quoteReactionHandler} from "./handler/quoteHandler";
 import NicknameHandler from "./handler/nicknameHandler";
+import GameHandler from "./handler/gameHandler";
 
 let version = conf.getVersion();
 let appname = conf.getName();
@@ -256,3 +257,6 @@ client.login(config.auth.bot_token).then(() => {
     log.error("Shutting down due to incorrect token...\n\n");
     process.exit(1);
 });
+
+let gameHandler = new GameHandler(client);
+client.on("presenceUpdate", (...e) => gameHandler.onPresenceUpdate(...e));

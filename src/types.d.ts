@@ -43,6 +43,10 @@ export interface Config {
             default_target_channel_id: Snowflake,
             emoji_name: string,
         }
+        forbidden_games: {
+            names: Array<string>,
+            threshold: number,
+        }
     },
     ids: Record<string, Snowflake>
 }
