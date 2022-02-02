@@ -1,11 +1,13 @@
-with import <nixpkgs> {};
-
-stdenv.mkDerivation {
-  name = "csz-bot";
-  buildInputs = [
-    nodejs-16_x
-  ];
-  shellHook = ''
-    export PATH="$PWD/node_modules/.bin/:$PATH"
-  '';
-}
+(import
+  (
+    let
+      lock = builtins.fromJSON (builtins.readFile ./flake.lock);
+    in
+    fetchTarball {
+      url = "https://github.com/edolstra/flake-compat/archive/${lock.nodes.flake-compat.locked.rev}.tar.gz";
+      sha256 = lock.nodes.flake-compat.locked.narHash;
+    }
+  )
+  {
+    src = ./.;
+  }).shellNix
