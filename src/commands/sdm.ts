@@ -127,7 +127,7 @@ export class SdmCommand implements MessageCommand, ApplicationCommand {
     }
 
     async handleMessage(message: Message<boolean>, client: Client<boolean>): Promise<CommandResult> {
-        const args = substringAfter(message.content, this.name).trim().split(/\s+/g).filter(s => !!s);
+        const args = substringAfter(message.cleanContent, this.name).trim().split(/\s+/g).filter(s => !!s);
 
         if (!args.length) {
             await message.reply("Bruder da ist keine Frage :c");
