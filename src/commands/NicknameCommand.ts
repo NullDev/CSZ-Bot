@@ -86,7 +86,6 @@ export class NicknameCommand implements ApplicationCommand {
             }
             if (option === "add") {
                 await Nicknames.insertNickname(userToUse!.id, nickname);
-                await this.updateNickName(userToUse!, nickname);
                 return command.reply(`Ok Brudi. Hab für ${userToUse?.user} ${nickname} hinzugefügt`);
             }
             if (option === "delete") {
