@@ -128,7 +128,7 @@ client.on("ready", async(_client) => {
         client.user.setActivity(config.bot_settings.status);
 
         // When the application is ready, slash commands should be registered
-        registerAllApplicationCommandsAsGuildCommands(client);
+        await registerAllApplicationCommandsAsGuildCommands(client);
 
         const bday = new BdayHandler(client);
         const aoc = new AoCHandler(client);
