@@ -1,4 +1,4 @@
-import {SlashCommandBuilder, SlashCommandStringOption, SlashCommandUserOption} from "@discordjs/builders";
+import {SlashCommandBuilder, SlashCommandStringOption, SlashCommandSubcommandBuilder, SlashCommandUserOption} from "@discordjs/builders";
 import {CommandInteraction, Client, GuildMember} from "discord.js";
 
 import {ApplicationCommand, CommandPermission, CommandResult} from "./command";
@@ -11,35 +11,61 @@ export class NicknameCommand implements ApplicationCommand {
     modCommand: boolean = false;
     name: string = "nickname";
     description: string = "Setzt Nicknames für einen User";
+    permissions: readonly CommandPermission[] = [
+        {
+            id: config.bot_settings.moderator_id,
+            permission: true,
+            type: "ROLE"
+        },
+        {
+            id: config.ids.trusted_role_id,
+            permission: true,
+            type: "ROLE"
+        }];
 
     get applicationCommand(): Pick<SlashCommandBuilder, "toJSON"> {
         return new SlashCommandBuilder()
             .setName(this.name)
             .setDescription(this.description)
-            .addStringOption(new SlashCommandStringOption()
-                .setRequired(true)
-                .setName("option")
-                .setDescription("Was du tun willst")
-                .addChoice("add", "add")
-                .addChoice("delete", "delete")
-                .addChoice("deleteAll", "deleteAll")
-            )
-            .addUserOption(new SlashCommandUserOption()
-                .setRequired(false)
-                .setName("user")
-                .setDescription("Was du tun willst")
-            )
-            .addStringOption(
-                new SlashCommandStringOption()
-                    .setRequired(false)
-                    .setName("nickname")
-                    .setDescription("Was du tun willst")
-            );
+            .addSubcommand(
+                new SlashCommandSubcommandBuilder()
+                    .setName("add")
+                    .setDescription("Fügt einen nickname hinzu brudi")
+                    .addUserOption(new SlashCommandUserOption()
+                        .setRequired(true)
+                        .setName("user")
+                        .setDescription("Wem du tun willst"))
+                    .addStringOption(new SlashCommandStringOption()
+                        .setRequired(true)
+                        .setName("nickname")
+                        .setDescription("Was du tun willst")
+                    ))
+            .addSubcommand(
+                new SlashCommandSubcommandBuilder()
+                    .setName("delete")
+                    .setDescription("Entfernt einen nickname brudi")
+                    .addUserOption(new SlashCommandUserOption()
+                        .setRequired(true)
+                        .setName("user")
+                        .setDescription("Wem du tun willst"))
+                    .addStringOption(new SlashCommandStringOption()
+                        .setRequired(true)
+                        .setName("nickname")
+                        .setDescription("Was du tun willst")
+                    ))
+            .addSubcommand(
+                new SlashCommandSubcommandBuilder()
+                    .setName("deleteAll")
+                    .setDescription("Entfernt alle nickname brudi")
+                    .addUserOption(new SlashCommandUserOption()
+                        .setRequired(true)
+                        .setName("user")
+                        .setDescription("Wem du tun willst")));
     }
 
     async handleInteraction(command: CommandInteraction, client: Client<boolean>): Promise<CommandResult> {
         try {
-            const option = command.options.getString("option", true);
+            const option = command.options.getSubcommand();
             const nickname = command.options.getString("nickname", false);
             const user = command.guild?.members.cache.find(m => m.id === command.options.getUser("user", true).id);
             const commandUser = command.guild?.members.cache.find(m => m.id === command.user.id);
@@ -60,6 +86,7 @@ export class NicknameCommand implements ApplicationCommand {
             }
             if (option === "add") {
                 await Nicknames.insertNickname(userToUse!.id, nickname);
+                await this.updateNickName(userToUse!, nickname);
                 return command.reply(`Ok Brudi. Hab für ${userToUse?.user} ${nickname} hinzugefügt`);
             }
             if (option === "delete") {
