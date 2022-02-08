@@ -55,7 +55,7 @@ export class NicknameCommand implements ApplicationCommand {
                     ))
             .addSubcommand(
                 new SlashCommandSubcommandBuilder()
-                    .setName("deleteAll")
+                    .setName("deleteall")
                     .setDescription("Entfernt alle nickname brudi")
                     .addUserOption(new SlashCommandUserOption()
                         .setRequired(true)
@@ -76,7 +76,7 @@ export class NicknameCommand implements ApplicationCommand {
             const userToUse = (user !== null) ? user : commandUser;
 
 
-            if (option === "deleteAll") {
+            if (option === "deleteall") {
                 Nicknames.deleteNickNames(userToUse?.id);
                 this.updateNickName(userToUse!, null);
                 return command.reply("Ok Brudi. Hab alles gelöscht");
