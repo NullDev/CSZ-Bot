@@ -26,7 +26,7 @@ export async function initialize() {
         }
     });
 
-    log.debug("Initializing Database Schemas...");
+    log.info("Initializing Database Schemas...");
 
     FadingMessage.initialize(sequelize);
     AdditionalMessageData.initialize(sequelize);

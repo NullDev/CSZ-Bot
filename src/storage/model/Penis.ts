@@ -92,7 +92,6 @@ export default class Penis extends Model<PenisAttributes, PenisCreationAttribute
             },
             diameter: {
                 type: DataTypes.INTEGER,
-                defaultValue: 2,
                 allowNull: false
             }
         }, {
