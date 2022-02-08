@@ -4,10 +4,19 @@ import Penis from "../storage/model/Penis";
 import { CommandResult, MessageCommand } from "./command";
 import log from "../utils/logger";
 
+export type Diameter = 1 | 2 | 3;
+
+const DIAMETER_CHARS: Record<Diameter, string> = {
+    1: "-",
+    2: "=",
+    3: "≡"
+};
+
 const PENIS_MAX = 30;
 
-const sendPenis = async(user: User, message: Message, size: number, measurement: Date = new Date()): Promise<Message<boolean>> => {
-    const penis = `8${"=".repeat(size)}D`;
+const sendPenis = async(user: User, message: Message, size: number, diameter: Diameter, measurement: Date = new Date()): Promise<Message<boolean>> => {
+    const diameterChar = DIAMETER_CHARS[diameter];
+    const penis = `8${diameterChar.repeat(size)}D`;
     const measuredAt = new Intl.DateTimeFormat("de-DE", {
         hour: "2-digit",
         minute: "2-digit",
@@ -90,18 +99,19 @@ export class PenisCommand implements MessageCommand {
             log.debug(`No recent measuring of ${userToMeasure.id} found. Creating Measurement`);
 
             const size = Math.floor(Math.random() * PENIS_MAX);
+            const diameter: Diameter = Math.floor(Math.random() * 3) + 1 as Diameter;
 
             if(await isNewLongestDick(size)) {
                 log.debug(`${userToMeasure} has the new longest dick with size ${size}`);
             }
 
             await Promise.all([
-                Penis.insertMeasurement(userToMeasure, size),
-                sendPenis(userToMeasure, message, size)
+                Penis.insertMeasurement(userToMeasure, size, diameter),
+                sendPenis(userToMeasure, message, size, diameter)
             ]);
             return;
         }
 
-        await sendPenis(userToMeasure, message, recentMeasurement.size, recentMeasurement.measuredAt);
+        await sendPenis(userToMeasure, message, recentMeasurement.size, recentMeasurement.diameter, recentMeasurement.measuredAt);
     }
 }
