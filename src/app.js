@@ -98,7 +98,7 @@ function scheduleTimezoneFixedCronjob(cronString) {
 
         const membersToKick = csz.members.cache
             .filter(m => m.roles.cache.filter(r => r.name !== "@everyone").size === 0)
-            .filter(m => m.joinedTimestamp >= 48 * 3_600_000);
+            .filter(m => Date.now() - m.joinedTimestamp >= 48 * 3_600_000);
 
         log.info(`Identified ${membersToKick.length} members that should be kicked.`);
 
