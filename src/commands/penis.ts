@@ -7,7 +7,7 @@ import log from "../utils/logger";
 export type Diameter = 1 | 2 | 3;
 
 const DIAMETER_CHARS: Record<Diameter, string> = {
-    1: "-",
+    1: "—",
     2: "=",
     3: "≡"
 };
@@ -17,7 +17,7 @@ const PENIS_MAX = 30;
 const sendPenis = async(user: User, message: Message, size: number, diameter: Diameter, measurement: Date = new Date()): Promise<Message<boolean>> => {
     const diameterChar = DIAMETER_CHARS[diameter];
     const penis = `8${diameterChar.repeat(size)}D`;
-    const bar = `┠${"─".repeat(size)}┫ ${size}cm`;
+    const bar = `┣${"─".repeat(size)}┫ ${size}cm`;
     const measuredAt = new Intl.DateTimeFormat("de-DE", {
         hour: "2-digit",
         minute: "2-digit",
