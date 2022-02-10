@@ -35,7 +35,7 @@
     "minimist": "^1.2.5",
     "moment": "^2.29.1",
     "node-cron": "^2.0.3",
-    "node-fetch": "^2.6.6",
+    "node-fetch": "^2.6.7",
     "sequelize": "^6.16.1",
     "sqlite3": "^5.0.2",
     "svg-png-converter": "^0.0.9",
