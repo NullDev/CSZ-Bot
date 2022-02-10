@@ -66,7 +66,7 @@ export class MockCommand implements MessageCommand, ApplicationCommand {
     async handleMessage(message: Message<boolean>, _client: Client<boolean>): Promise<void> {
         const author = message.guild?.members.resolve(message.author);
         const { channel } = message;
-        const isReply = message.reference !== undefined;
+        const isReply = message.reference?.messageId !== undefined;
         let content = message.content.slice(`${config.bot_settings.prefix.command_prefix}mock `.length);
         const hasContent = content.trim().length > 0;
         let replyMessage: Message<boolean> | null = null;
