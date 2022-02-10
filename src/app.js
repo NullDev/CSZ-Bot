@@ -32,6 +32,7 @@ import {
 } from "./handler/commandHandler";
 import {quoteReactionHandler} from "./handler/quoteHandler";
 import NicknameHandler from "./handler/nicknameHandler";
+import { assert } from "console";
 
 let version = conf.getVersion();
 let appname = conf.getName();
@@ -85,27 +86,34 @@ function scheduleTimezoneFixedCronjob(cronString) {
         timezoneFixedCronjobTask = null;
     }
 
-    timezoneFixedCronjobTask = cron.schedule(cronString, () => {
+    timezoneFixedCronjobTask = cron.schedule(cronString, async() => {
+        /** @type {Discord.Guild} */
         let csz = client.guilds.cache.get(config.ids.guild_id);
 
         /** @type {TC} */
-        (csz.channels.cache.get(config.ids.hauptchat_id)).send("Es ist `13:37` meine Kerle.\nBleibt hydriert! :grin: :sweat_drops:");
+        await (csz.channels.cache.get(config.ids.hauptchat_id)).send("Es ist `13:37` meine Kerle.\nBleibt hydriert! :grin: :sweat_drops:");
 
         // Auto-kick members
         const sadPinguEmote = csz.emojis.cache.find(e => e.name === "sadpingu");
         const dabEmote = csz.emojis.cache.find(e => e.name === "Dab");
-        let cnt = 0;
 
-        csz.members.cache.filter(m => {
-            return m && m.roles.cache.filter(r => r.name !== "@everyone").size === 0 && Date.now() - m.joinedTimestamp >= 48 * 3_600_000;
-        }).forEach(member => {
-            member.kick();
-            cnt++;
-        });
+        const membersToKick = csz.members.cache
+            .filter(m => m.roles.cache.filter(r => r.name !== "@everyone").size === 0)
+            .filter(m => Date.now() - m.joinedTimestamp >= 48 * 3_600_000);
 
-        log.info(`Auto-kick: ${cnt} members kicked.`);
-        if (cnt > 0) {
-            csz.channels.cache.get(config.ids.hauptchat_id).send(`Hab grad ${cnt} Jockel*innen gekickt ${dabEmote}`);
+        log.info(`Identified ${membersToKick.size} members that should be kicked.`);
+
+        if (membersToKick.size > 0) {
+            // I don't have trust in this code, so ensure that we don't kick any regular members :harold:
+            assert(false, membersToKick.some(m => m.roles.cache.some(r => r.name === "Nerd")));
+
+            await Promise.all([
+                ...membersToKick.map(member => member.kick())
+            ]);
+
+            csz.channels.cache.get(config.ids.hauptchat_id).send(`Hab grad ${membersToKick.size} Jockel*innen gekickt ${dabEmote}`);
+
+            log.info(`Auto-kick: ${membersToKick.size} members kicked.`);
         }
         else {
             csz.channels.cache.get(config.ids.hauptchat_id).send(`Heute leider keine Jockel*innen gekickt ${sadPinguEmote}`);
@@ -128,7 +136,7 @@ client.on("ready", async(_client) => {
         client.user.setActivity(config.bot_settings.status);
 
         // When the application is ready, slash commands should be registered
-        registerAllApplicationCommandsAsGuildCommands(client);
+        await registerAllApplicationCommandsAsGuildCommands(client);
 
         const bday = new BdayHandler(client);
         const aoc = new AoCHandler(client);

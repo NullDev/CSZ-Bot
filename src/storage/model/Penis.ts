@@ -5,6 +5,7 @@ import { User } from "discord.js";
 import moment from "moment";
 import { Model, DataTypes, Sequelize, Optional, Op } from "sequelize";
 import { v4 as uuidv4 } from "uuid";
+import { Radius } from "../../commands/penis";
 import log from "../../utils/logger";
 
 export interface PenisAttributes {
@@ -12,6 +13,7 @@ export interface PenisAttributes {
     userId: string;
     measuredAt: Date;
     size: number;
+    diameter: Radius;
 }
 
 export interface PenisCreationAttributes extends Optional<PenisAttributes, "id"> { }
@@ -21,6 +23,7 @@ export default class Penis extends Model<PenisAttributes, PenisCreationAttribute
     userId!: string;
     measuredAt!: Date;
     size!: number;
+    diameter!: Radius;
 
     readonly createdAt!: Date;
     readonly updatedAt!: Date;
@@ -58,12 +61,13 @@ export default class Penis extends Model<PenisAttributes, PenisCreationAttribute
         });
     };
 
-    static insertMeasurement = (user: User, size: number, measuredAt: Date = new Date()): Promise<Penis> => {
+    static insertMeasurement = (user: User, size: number, diameter: Radius, measuredAt: Date = new Date()): Promise<Penis> => {
         log.debug(`Saving Penis Measurement for user ${user.id} with size ${size} from ${measuredAt}`);
         return Penis.create({
             userId: user.id,
             measuredAt,
-            size
+            size,
+            diameter
         });
     };
 
@@ -83,6 +87,10 @@ export default class Penis extends Model<PenisAttributes, PenisCreationAttribute
                 allowNull: true
             },
             size: {
+                type: DataTypes.INTEGER,
+                allowNull: false
+            },
+            diameter: {
                 type: DataTypes.INTEGER,
                 allowNull: false
             }

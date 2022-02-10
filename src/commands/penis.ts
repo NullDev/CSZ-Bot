@@ -4,17 +4,27 @@ import Penis from "../storage/model/Penis";
 import { CommandResult, MessageCommand } from "./command";
 import log from "../utils/logger";
 
+export type Radius = 1 | 2 | 3;
+
+const DIAMETER_CHARS: Record<Radius, string> = {
+    1: "‒",
+    2: "=",
+    3: "≡"
+};
+
 const PENIS_MAX = 30;
 
-const sendPenis = async(user: User, message: Message, size: number, measurement: Date = new Date()): Promise<Message<boolean>> => {
-    const penis = `8${"=".repeat(size)}D`;
+const sendPenis = async(user: User, message: Message, size: number, radius: Radius, measurement: Date = new Date()): Promise<Message<boolean>> => {
+    const diameterChar = DIAMETER_CHARS[radius];
+    const penis = `8${diameterChar.repeat(size)}D`;
+    const circumfence = (Math.PI * radius * 2).toFixed(2);
     const measuredAt = new Intl.DateTimeFormat("de-DE", {
         hour: "2-digit",
         minute: "2-digit",
         second: "2-digit",
         hour12: false
     }).format(measurement);
-    return message.reply(`Pimmel von <@${user.id}>:\n${penis}\n(Gemessen um ${measuredAt})`);
+    return message.reply(`Pimmel von <@${user.id}>:\n${penis}\n(Länge: ${size} cm, Umfang: ${circumfence} cm, Gemessen um ${measuredAt})`);
 };
 
 const isNewLongestDick = async(size: number): Promise<boolean> => {
@@ -90,18 +100,19 @@ export class PenisCommand implements MessageCommand {
             log.debug(`No recent measuring of ${userToMeasure.id} found. Creating Measurement`);
 
             const size = Math.floor(Math.random() * PENIS_MAX);
+            const diameter: Radius = Math.floor(Math.random() * 3) + 1 as Radius;
 
             if(await isNewLongestDick(size)) {
                 log.debug(`${userToMeasure} has the new longest dick with size ${size}`);
             }
 
             await Promise.all([
-                Penis.insertMeasurement(userToMeasure, size),
-                sendPenis(userToMeasure, message, size)
+                Penis.insertMeasurement(userToMeasure, size, diameter),
+                sendPenis(userToMeasure, message, size, diameter)
             ]);
             return;
         }
 
-        await sendPenis(userToMeasure, message, recentMeasurement.size, recentMeasurement.measuredAt);
+        await sendPenis(userToMeasure, message, recentMeasurement.size, recentMeasurement.diameter, recentMeasurement.measuredAt);
     }
 }
