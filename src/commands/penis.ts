@@ -17,13 +17,14 @@ const PENIS_MAX = 30;
 const sendPenis = async(user: User, message: Message, size: number, diameter: Diameter, measurement: Date = new Date()): Promise<Message<boolean>> => {
     const diameterChar = DIAMETER_CHARS[diameter];
     const penis = `8${diameterChar.repeat(size)}D`;
+    const circumfence = (Math.PI * Math.pow((diameter / 2), 2)).toFixed(2);
     const measuredAt = new Intl.DateTimeFormat("de-DE", {
         hour: "2-digit",
         minute: "2-digit",
         second: "2-digit",
         hour12: false
     }).format(measurement);
-    return message.reply(`Pimmel von <@${user.id}>:\n${penis}\n(Länge: ${size} cm, Umfang: ${diameter} dm, Gemessen um ${measuredAt})`);
+    return message.reply(`Pimmel von <@${user.id}>:\n${penis}\n(Länge: ${size} cm, Umfang: ${circumfence} cm, Gemessen um ${measuredAt})`);
 };
 
 const isNewLongestDick = async(size: number): Promise<boolean> => {
