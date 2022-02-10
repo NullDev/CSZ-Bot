@@ -59,7 +59,7 @@ export class ErleuchtungCommand implements MessageCommand, ApplicationCommand {
             throw new Error("Couldn't resolve guild member");
         }
         const embed = await buildInspirationMessage(author);
-        await command.channel.send({
+        await command.reply({
             embeds: [embed]
         });
     }

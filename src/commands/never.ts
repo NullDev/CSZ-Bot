@@ -68,27 +68,26 @@ export class NeverCommand implements ApplicationCommand, MessageCommand {
         );
 
     async handleInteraction(command: CommandInteraction<CacheType>, _client: Client<boolean>): Promise<void> {
-        const { channel } = command;
         const author = command.guild?.members.resolve(command.user);
         const customInput = command.options.getString("prompt", false) || null;
 
-        if(!channel) {
-            throw new Error("Command was invoked without a channel in context");
-        }
         if(!author) {
             throw new Error("Couldn't resolve guild member");
         }
 
         const prompt = await getPrompt(customInput);
         const embed = buildEmbed(prompt, author);
-        const sentMessage = await channel.send({
+        const sentReply = await command.reply({
+            fetchReply: true,
             embeds: [embed]
         });
+        const sentMessage = (sentReply) as Message<boolean>;
         await Promise.all([
             sentMessage.react("🍻"),
             sentMessage.react("🚱")
         ]);
     }
+
     async handleMessage(message: Message<boolean>, _client: Client<boolean>): Promise<void> {
         const { channel } = message;
         const author = message.guild?.members.resolve(message.author);

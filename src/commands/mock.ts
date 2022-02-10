@@ -48,17 +48,13 @@ export class MockCommand implements MessageCommand, ApplicationCommand {
 
     async handleInteraction(command: CommandInteraction<CacheType>, client: Client<boolean>): Promise<void> {
         const author = command.guild?.members.resolve(command.user);
-        const { channel } = command;
         const text = command.options.getString("text")!;
-        if(!channel) {
-            throw new Error("Command was invoked without a channel in context");
-        }
         if(!author) {
             throw new Error("Couldn't resolve guild member");
         }
 
         const mockedEmbed = buildMock(author, text);
-        await channel.send({
+        await command.reply({
             embeds: [mockedEmbed]
         });
     }
