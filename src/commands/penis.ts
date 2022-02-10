@@ -16,7 +16,7 @@ const PENIS_MAX = 30;
 
 const sendPenis = async(user: User, message: Message, size: number, diameter: Diameter, measurement: Date = new Date()): Promise<Message<boolean>> => {
     const diameterChar = DIAMETER_CHARS[diameter];
-    const penis = `8${diameterChar.repeat(size)}D`;
+    const penis = `\`8${diameterChar.repeat(size)}D\``;
     const measuredAt = new Intl.DateTimeFormat("de-DE", {
         hour: "2-digit",
         minute: "2-digit",
