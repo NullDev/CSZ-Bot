@@ -46,9 +46,14 @@ export default async function(message, client) {
         // Unless you are a Marcel
         const shouldFlameUser = config.bot_settings.flame_trusted_user_on_bot_ping || !message.member.roles.cache.has(config.ids.trusted_role_id) || message.member.id === "209413133020823552";
         if (shouldFlameUser) {
-            message.reply({
-                content: "Was pingst du mich du Hurensohn :angry:"
-            });
+            const hasAlreadyReplied = message.channel.messages.cache
+                .filter(m => m.content.includes("Was pingst du mich du Hurensohn"))
+                .some(m => m.reference?.messageId === message.id);
+            if(!hasAlreadyReplied) {
+                message.reply({
+                    content: "Was pingst du mich du Hurensohn :angry:"
+                });
+            }
         }
     }
 
