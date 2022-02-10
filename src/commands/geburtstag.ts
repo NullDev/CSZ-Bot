@@ -16,11 +16,13 @@ export class GeburtstagCommand implements ApplicationCommand {
             .setMinValue(1)
             .setMaxValue(31)
             .setName("day")
+            .setDescription("Tag")
             .setRequired(true))
         .addIntegerOption(option => option
             .setMinValue(1)
             .setMaxValue(12)
             .setName("month")
+            .setDescription("Monat")
             .setRequired(true));
 
     async handleInteraction(command: CommandInteraction<CacheType>, client: Client<boolean>): Promise<void> {
