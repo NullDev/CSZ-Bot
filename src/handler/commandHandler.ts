@@ -46,6 +46,7 @@ import { InviteCommand } from "../commands/invite";
 import { ErleuchtungCommand } from "../commands/erleuchtung";
 import { MockCommand } from "../commands/mock";
 import { NeverCommand } from "../commands/never";
+import { GeburtstagCommand } from "../commands/geburtstag";
 
 const config = getConfig();
 
@@ -75,7 +76,8 @@ export const commands: readonly Command[] = [
     new InviteCommand(),
     new ErleuchtungCommand(),
     new MockCommand(),
-    new NeverCommand()
+    new NeverCommand(),
+    new GeburtstagCommand()
 ];
 
 export const applicationCommands: Array<ApplicationCommand> =
