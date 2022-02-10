@@ -3,7 +3,7 @@ import moment from "moment";
 
 import log from "../utils/logger";
 import { ApplicationCommand } from "./command";
-import { SlashCommandBuilder, SlashCommandIntegerOption } from "@discordjs/builders";
+import { SlashCommandBuilder } from "@discordjs/builders";
 import { CommandInteraction, CacheType, Client } from "discord.js";
 
 export class GeburtstagCommand implements ApplicationCommand {
@@ -12,12 +12,12 @@ export class GeburtstagCommand implements ApplicationCommand {
     applicationCommand = new SlashCommandBuilder()
         .setName(this.name)
         .setDescription(this.description)
-        .addIntegerOption(new SlashCommandIntegerOption()
+        .addIntegerOption(option => option
             .setMinValue(1)
             .setMaxValue(31)
             .setName("day")
             .setRequired(true))
-        .addIntegerOption(new SlashCommandIntegerOption()
+        .addIntegerOption(option => option
             .setMinValue(1)
             .setMaxValue(12)
             .setName("month")
