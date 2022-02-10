@@ -45,6 +45,7 @@ import { FicktabelleCommand } from "../commands/ficktabelle";
 import { InviteCommand } from "../commands/invite";
 import { ErleuchtungCommand } from "../commands/erleuchtung";
 import { MockCommand } from "../commands/mock";
+import { NeverCommand } from "../commands/never";
 
 const config = getConfig();
 
@@ -73,7 +74,8 @@ export const commands: readonly Command[] = [
     new FicktabelleCommand(),
     new InviteCommand(),
     new ErleuchtungCommand(),
-    new MockCommand()
+    new MockCommand(),
+    new NeverCommand()
 ];
 
 export const applicationCommands: Array<ApplicationCommand> =
