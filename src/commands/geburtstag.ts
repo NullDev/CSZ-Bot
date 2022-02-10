@@ -3,7 +3,7 @@ import moment from "moment";
 
 import log from "../utils/logger";
 import { ApplicationCommand } from "./command";
-import { SlashCommandBuilder, SlashCommandIntegerOption, SlashCommandNumberOption } from "@discordjs/builders";
+import { SlashCommandBuilder, SlashCommandIntegerOption } from "@discordjs/builders";
 import { CommandInteraction, CacheType, Client } from "discord.js";
 
 export class GeburtstagCommand implements ApplicationCommand {
@@ -12,20 +12,20 @@ export class GeburtstagCommand implements ApplicationCommand {
     applicationCommand = new SlashCommandBuilder()
         .setName(this.name)
         .setDescription(this.description)
-        .addNumberOption(new SlashCommandNumberOption()
+        .addIntegerOption(new SlashCommandIntegerOption()
             .setMinValue(1)
             .setMaxValue(31)
             .setName("day")
             .setRequired(true))
-        .addNumberOption(new SlashCommandNumberOption()
+        .addIntegerOption(new SlashCommandIntegerOption()
             .setMinValue(1)
             .setMaxValue(12)
             .setName("month")
             .setRequired(true));
 
     async handleInteraction(command: CommandInteraction<CacheType>, client: Client<boolean>): Promise<void> {
-        const day = command.options.getNumber("day", true);
-        const month = command.options.getNumber("month", true);
+        const day = command.options.getInteger("day", true);
+        const month = command.options.getInteger("month", true);
         const date = moment(`${month}-${day}`, "MM-DD");
 
         if(date.isValid()) {
