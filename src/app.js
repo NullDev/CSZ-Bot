@@ -100,7 +100,7 @@ function scheduleTimezoneFixedCronjob(cronString) {
             .filter(m => m.roles.cache.filter(r => r.name !== "@everyone").size === 0)
             .filter(m => Date.now() - m.joinedTimestamp >= 48 * 3_600_000);
 
-        log.info(`Identified ${membersToKick.length} members that should be kicked.`);
+        log.info(`Identified ${membersToKick.size} members that should be kicked.`);
 
         if (membersToKick.length > 0) {
             // I don't have trust in this code, so ensure that we don't kick any regular members :harold:
