@@ -23,7 +23,7 @@ const sendPenis = async(user: User, message: Message, size: number, diameter: Di
         second: "2-digit",
         hour12: false
     }).format(measurement);
-    return message.reply(`Pimmel von <@${user.id}>:\n${penis}\n(Länge: ${size} cm, Umfang: ${size} dm, Gemessen um ${measuredAt})`);
+    return message.reply(`Pimmel von <@${user.id}>:\n${penis}\n(Länge: ${size} cm, Umfang: ${diameter} dm, Gemessen um ${measuredAt})`);
 };
 
 const isNewLongestDick = async(size: number): Promise<boolean> => {
