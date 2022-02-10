@@ -18,13 +18,13 @@ import {
     MessageCommand,
     SpecialCommand
 } from "../commands/command";
+import log from "../utils/logger";
 import { YepYepCommand } from "../commands/special/yepyep";
 import { NixOsCommand } from "../commands/special/nixos";
 import { WhereCommand } from "../commands/special/where";
 import { DadJokeCommand } from "../commands/special/dadJoke";
 import { WatCommand } from "../commands/special/wat";
 import { TikTokLink } from "../commands/special/tiktok";
-import log from "../utils/logger";
 import { StempelCommand } from "../commands/stempeln";
 import { StempelgraphCommand } from "../commands/stempelgraph";
 import { StempelkarteCommand } from "../commands/stempelkarte";
@@ -34,13 +34,15 @@ import { UnbanCommand } from "../commands/modcommands/unban";
 import { PenisCommand } from "../commands/penis";
 import { BoobCommand } from "../commands/boobs";
 import { BonkCommand } from "../commands/bonk";
-import {GoogleCommand} from "../commands/google";
+import { GoogleCommand } from "../commands/google";
 import { Mutable } from "../types";
-import {NischdaaaCommand} from "../commands/special/nischdaaa";
+import { NischdaaaCommand } from "../commands/special/nischdaaa";
 import { SdmCommand } from "../commands/sdm";
-import {NicknameCommand} from "../commands/NicknameCommand";
+import { NicknameCommand } from "../commands/NicknameCommand";
 import { NopNopCommand } from "../commands/special/nopnop";
 import { WoisCommand } from "../commands/woisping";
+import { FicktabelleCommand } from "../commands/ficktabelle";
+import { InviteCommand } from "../commands/invite";
 
 const config = getConfig();
 
@@ -65,7 +67,9 @@ export const commands: readonly Command[] = [
     new NischdaaaCommand(),
     new SdmCommand(),
     new NopNopCommand(),
-    new WoisCommand()
+    new WoisCommand(),
+    new FicktabelleCommand(),
+    new InviteCommand()
 ];
 
 export const applicationCommands: Array<ApplicationCommand> =
