@@ -43,6 +43,7 @@ import { NopNopCommand } from "../commands/special/nopnop";
 import { WoisCommand } from "../commands/woisping";
 import { FicktabelleCommand } from "../commands/ficktabelle";
 import { InviteCommand } from "../commands/invite";
+import { ErleuchtungCommand } from "../commands/erleuchtung";
 
 const config = getConfig();
 
@@ -69,7 +70,8 @@ export const commands: readonly Command[] = [
     new NopNopCommand(),
     new WoisCommand(),
     new FicktabelleCommand(),
-    new InviteCommand()
+    new InviteCommand(),
+    new ErleuchtungCommand()
 ];
 
 export const applicationCommands: Array<ApplicationCommand> =
