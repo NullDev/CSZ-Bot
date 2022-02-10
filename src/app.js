@@ -87,6 +87,7 @@ function scheduleTimezoneFixedCronjob(cronString) {
     }
 
     timezoneFixedCronjobTask = cron.schedule(cronString, async() => {
+        /** @type {Discord.Guild} */
         let csz = client.guilds.cache.get(config.ids.guild_id);
 
         /** @type {TC} */
@@ -102,7 +103,7 @@ function scheduleTimezoneFixedCronjob(cronString) {
 
         log.info(`Identified ${membersToKick.size} members that should be kicked.`);
 
-        if (membersToKick.length > 0) {
+        if (membersToKick.size > 0) {
             // I don't have trust in this code, so ensure that we don't kick any regular members :harold:
             assert(false, membersToKick.some(m => m.roles.cache.some(r => r.name === "Nerd")));
 
@@ -110,9 +111,9 @@ function scheduleTimezoneFixedCronjob(cronString) {
                 ...membersToKick.map(member => member.kick())
             ]);
 
-            csz.channels.cache.get(config.ids.hauptchat_id).send(`Hab grad ${membersToKick.length} Jockel*innen gekickt ${dabEmote}`);
+            csz.channels.cache.get(config.ids.hauptchat_id).send(`Hab grad ${membersToKick.size} Jockel*innen gekickt ${dabEmote}`);
 
-            log.info(`Auto-kick: ${membersToKick.length} members kicked.`);
+            log.info(`Auto-kick: ${membersToKick.size} members kicked.`);
         }
         else {
             csz.channels.cache.get(config.ids.hauptchat_id).send(`Heute leider keine Jockel*innen gekickt ${sadPinguEmote}`);
