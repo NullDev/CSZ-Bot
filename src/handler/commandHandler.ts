@@ -44,6 +44,7 @@ import { WoisCommand } from "../commands/woisping";
 import { FicktabelleCommand } from "../commands/ficktabelle";
 import { InviteCommand } from "../commands/invite";
 import { ErleuchtungCommand } from "../commands/erleuchtung";
+import { MockCommand } from "../commands/mock";
 
 const config = getConfig();
 
@@ -71,7 +72,8 @@ export const commands: readonly Command[] = [
     new WoisCommand(),
     new FicktabelleCommand(),
     new InviteCommand(),
-    new ErleuchtungCommand()
+    new ErleuchtungCommand(),
+    new MockCommand()
 ];
 
 export const applicationCommands: Array<ApplicationCommand> =
