@@ -12,6 +12,7 @@ import Ban from "./model/Ban";
 import log from "../utils/logger";
 import Penis from "./model/Penis";
 import Nicknames from "./model/Nicknames";
+import Boob from "./model/Boob";
 
 export async function initialize() {
     const sequelize = new Sequelize({
@@ -35,6 +36,7 @@ export async function initialize() {
     Birthday.initialize(sequelize);
     Ban.initialize(sequelize);
     Penis.initialize(sequelize);
+    Boob.initialize(sequelize);
     Nicknames.initialize(sequelize);
 
     await sequelize.sync();
