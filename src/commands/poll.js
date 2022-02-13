@@ -116,7 +116,7 @@ export const run = async(client, message, args) => {
 
 
     if (!pollOptions.length) return "Bruder da sind keine Antwortmöglichkeiten :c";
-    else if (pollOptions.length < 2 && !isExtendable) return "Bruder du musst schon mehr als eine Antwortmöglichkeit geben 🙄";
+    else if (pollOptions.length < 1 && !isExtendable) return "Bruder du musst schon mehr als eine Antwortmöglichkeit geben 🙄";
     else if (pollOptions.length > OPTION_LIMIT) return `Bitte gib nicht mehr als ${OPTION_LIMIT} Antwortmöglichkeiten an!`;
     else if (pollOptionsTextLength > TEXT_LIMIT) return "Bruder deine Umfrage ist zu lang!";
 
