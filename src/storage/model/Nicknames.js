@@ -41,7 +41,7 @@ export default class Nicknames extends Model {
                 userId,
                 nickname
             }
-        }) === null;
+        }) !== null;
     }
 
 
