@@ -6,6 +6,7 @@ import { SlashCommandBuilder, SlashCommandStringOption } from "@discordjs/builde
 import { CacheType, Client, CommandInteraction, GuildMember, Message, MessageEmbed } from "discord.js";
 import { getConfig } from "../utils/configHandler";
 import { ApplicationCommand, MessageCommand } from "./command";
+import log from "../utils/logger";
 const config = getConfig();
 
 /**
@@ -63,8 +64,8 @@ export class MockCommand implements MessageCommand, ApplicationCommand {
         const author = message.guild?.members.resolve(message.author);
         const { channel } = message;
         const isReply = message.reference?.messageId !== undefined;
-        let content = message.content.slice(`${config.bot_settings.prefix.command_prefix}mock `.length);
-        const hasContent = content.trim().length > 0;
+        let content = message.content.slice(`${config.bot_settings.prefix.command_prefix}${this.name} `.length);
+        const hasContent = !!content && content.trim().length > 0;
         let replyMessage: Message<boolean> | null = null;
 
         if(!author) {
@@ -75,6 +76,8 @@ export class MockCommand implements MessageCommand, ApplicationCommand {
             await message.channel.send("Brudi da ist nix, was ich mocken kann");
             return;
         }
+
+        log.debug(`Text to mock is '${content}'`);
 
         if(isReply && !hasContent) {
             replyMessage = await message.channel.messages.fetch(message.reference!.messageId!);
