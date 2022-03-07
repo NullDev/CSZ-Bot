@@ -74,46 +74,51 @@ export class NicknameCommand implements ApplicationCommand {
     async handleInteraction(command: CommandInteraction, client: Client<boolean>): Promise<CommandResult> {
         try {
             const option = command.options.getSubcommand();
-            const user = command.options.getUser("user", true);
-            // Remember, that the nickname option is not available within deleteAll and list subcommand
-            // However, we still get it as a required paraemter because we know what we are doing iksdee
-            const nickname = command.options.getString("nickname", true);
             const commandUser = command.guild?.members.cache.find(m => m.id === command.user.id)!;
+            // We know that the user option is in every subcommand.
+            const user = command.options.getUser("user", true);
 
             if (!commandUser.roles.cache.has(config.ids.trusted_role_id)) {
                 return command.reply("Hurensohn*in. Der Command ist nix für dich.");
             }
 
-            if(option !== "deleteall" && nickname === null) {
-                return command.reply("Du musst schon n Nickname angeben");
+            // Yes, we could use a switch-statement here. No, that wouldn't make the code more readable as we're than
+            // struggling with the nickname parameter which is mandatory only in "add" and "delete" commands.
+            // Yes, we could rearrange the code parts into separate functions. Feel free to do so.
+            // Yes, "else" is uneccessary as we're returning in every block. However, I find the semantics more clear.
+            if (option === "deleteall") {
+                await Nicknames.deleteNickNames(user.id);
+                const member = command.guild?.members.cache.get(user.id)!;
+                await this.updateNickName(member, null);
+                return command.reply("Ok Brudi*in. Hab alles gelöscht");
             }
-            switch (option) {
-                case "deleteall":
-                    await Nicknames.deleteNickNames(user.id);
-                    const member = command.guild?.members.cache.get(user.id)!;
-                    await this.updateNickName(member, null);
-                    return command.reply("Ok Brudi*in. Hab alles gelöscht");
-                case "list":
-                    const nicknames = await Nicknames.getNicknames(user.id);
-                    if(!nicknames || nicknames.length > 0) {
-                        return command.reply("Ne Brudi*in für den hab ich keine nicknames");
-                    }
-                    return command.reply(`Hab für den Brudi*in folgende Nicknames:\n${nicknames.join(",")}`);
-                case "add":
-                    try {
-                        await Nicknames.insertNickname(user.id, nickname);
-                    }
-                    catch (error) {
-                        return command.reply(`Würdest du Hurensohn*in aufpassen, wüsstest du, dass für ${user} '${nickname}' bereits existiert.`);
-                    }
+            else if (option === "list") {
+                const nicknames = await Nicknames.getNicknames(user.id);
+                if(!nicknames || nicknames.length > 0) {
+                    return command.reply("Ne Brudi*in für den hab ich keine nicknames");
+                }
+                return command.reply(`Hab für den Brudi*in folgende Nicknames:\n${nicknames.join(",")}`);
+            }
+            else if (option === "add") {
+                const nickname = command.options.getString("nickname", true);
+                try {
+                    await Nicknames.insertNickname(user.id, nickname);
+                }
+                catch (error) {
+                    return command.reply(`Würdest du Hurensohn*in aufpassen, wüsstest du, dass für ${user} '${nickname}' bereits existiert.`);
+                }
 
-                    return command.reply(`Ok Brudi*in. Hab für ${user} ${nickname} hinzugefügt`);
-                case "delete":
-                    await Nicknames.deleteNickName(user.id, nickname);
-                    return command.reply(`Ok Brudi*in. Hab für ${user} ${nickname} gelöscht`);
-                default:
-                    return command.reply("Das hätte nie passieren dürfen");
+                return command.reply(`Ok Brudi*in. Hab für ${user} ${nickname} hinzugefügt`);
             }
+            else if (option === "delete") {
+                // We don't violate the DRY principle, since we're referring to another subcommand object as in the "add" subcommand.
+                // Code is equal but knowledge differs.
+                const nickname = command.options.getString("nickname", true);
+                await Nicknames.deleteNickName(user.id, nickname);
+                return command.reply(`Ok Brudi*in. Hab für ${user} ${nickname} gelöscht`);
+            }
+
+            return command.reply("Das hätte nie passieren dürfen");
         }
         catch (e) {
             console.log(e);
