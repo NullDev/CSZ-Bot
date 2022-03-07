@@ -29,7 +29,7 @@ export default class Nickname extends Model {
         });
     }
 
-    static async getNicknames(userId: Snowflake): Promise<Nickname[] | null>{
+    static getNicknames(userId: Snowflake): Promise<Nickname[] | null>{
         return Nickname.findAll({
             where: {
                 userId
@@ -57,7 +57,7 @@ export default class Nickname extends Model {
         }), {} as Record<Snowflake, string[]>);
     }
 
-    static async deleteNickName(userId: Snowflake, nickname: string) {
+    static deleteNickName(userId: Snowflake, nickname: string): Promise<number> {
         return Nickname.destroy({
             where: {
                 userId,
@@ -66,7 +66,7 @@ export default class Nickname extends Model {
         });
     }
 
-    static async deleteNickNames(userId: Snowflake) {
+    static deleteNickNames(userId: Snowflake): Promise<number> {
         return Nickname.destroy({
             where: {
                 userId
