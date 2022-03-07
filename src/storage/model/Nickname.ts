@@ -10,7 +10,7 @@ import log from "../../utils/logger";
 export interface NicknameAttributes {
     id: string;
     userId: string;
-    nickname: string;
+    nickName: string;
 }
 
 export interface NicknameCreationAttributes extends Optional<NicknameAttributes, "id"> { }
@@ -18,7 +18,7 @@ export interface NicknameCreationAttributes extends Optional<NicknameAttributes,
 export default class Nickname extends Model {
     id!: string;
     userId!: string;
-    nickname!: string;
+    nickName!: string;
 
     static async insertNickname(userId: Snowflake, nickName: string): Promise<Nickname> {
         log.debug(`Inserting Nickname  for user ${userId}  Nickname: ${nickName}`);
@@ -41,7 +41,7 @@ export default class Nickname extends Model {
         return (await Nickname.findAll({
             where: {
                 userId,
-                nickname
+                nickName: nickname
             }
         })).length > 0;
     }
@@ -53,15 +53,15 @@ export default class Nickname extends Model {
         return nicknames.reduce((acc, cur) => ({ // Das ding
             ...acc, //                 VV
             [cur.userId]: [...(acc[cur.userId] ?? []),
-                cur.nickname]
+                cur.nickName]
         }), {} as Record<Snowflake, string[]>);
     }
 
-    static deleteNickName(userId: Snowflake, nickname: string): Promise<number> {
+    static deleteNickName(userId: Snowflake, nickName: string): Promise<number> {
         return Nickname.destroy({
             where: {
                 userId,
-                nickname
+                nickName
             }
         });
     }
