@@ -90,7 +90,7 @@ export default class Nickname extends Model {
             nickName: {
                 type: DataTypes.STRING(32),
                 allowNull: false,
-                unique: false
+                unique: true
             }
         },
         {
