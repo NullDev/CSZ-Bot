@@ -36,12 +36,12 @@ export default class Nicknames extends Model {
     }
 
     static async nickNameExist(userId, nickname) {
-        return await Nicknames.findAll({
+        return (await Nicknames.findAll({
             where: {
                 userId,
                 nickname
             }
-        }).length > 0;
+        })).length > 0;
     }
 
 

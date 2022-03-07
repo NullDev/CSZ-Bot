@@ -66,37 +66,37 @@ export class NicknameCommand implements ApplicationCommand {
     async handleInteraction(command: CommandInteraction, client: Client<boolean>): Promise<CommandResult> {
         try {
             const option = command.options.getSubcommand();
-            const nickname = command.options.getString("nickname", false);
-            const user = command.guild?.members.cache.find(m => m.id === command.options.getUser("user", true).id);
-            const commandUser = command.guild?.members.cache.find(m => m.id === command.user.id);
+            const user = command.options.getUser("user", true);
+            // Remember, that the nickname option is not available within deleteAll subcommand
+            // However, we still get it as a required paraemter because we know what we are doing iksdee
+            const nickname = command.options.getString("nickname", true);
+            const commandUser = command.guild?.members.cache.find(m => m.id === command.user.id)!;
 
-            if (!commandUser?.roles.cache.has(config.ids.trusted_role_id)) {
+            if (!commandUser.roles.cache.has(config.ids.trusted_role_id)) {
                 return command.reply("Hurensohn*in. Der Command ist nix für dich.");
             }
-            const userToUse = (user !== null) ? user : commandUser;
 
             if(option !== "deleteall" && nickname === null) {
                 return command.reply("Du musst schon n Nickname angeben");
             }
             switch (option) {
                 case "deleteall":
-                    Nicknames.deleteNickNames(userToUse?.id);
-                    this.updateNickName(userToUse!, null);
+                    Nicknames.deleteNickNames(user.id);
+                    const member = command.guild?.members.cache.get(user.id)!;
+                    this.updateNickName(member, null);
                     return command.reply("Ok Brudi*in. Hab alles gelöscht");
                 case "add":
                     try {
-                        if(nickname === null) {
-                            return command.reply("Nicht möglich.")
-                        }
-                        await Nicknames.insertNickname(userToUse!.id, nickname);
-                    } catch (error) {
-                        return command.reply(`Würdest du Hurensohn*in aufpassen, wüsstest du, dass für ${userToUse?.user} '${nickname}' bereits existiert.`);
+                        await Nicknames.insertNickname(user.id, nickname);
+                    }
+                    catch (error) {
+                        return command.reply(`Würdest du Hurensohn*in aufpassen, wüsstest du, dass für ${user} '${nickname}' bereits existiert.`);
                     }
 
-                    return command.reply(`Ok Brudi*in. Hab für ${userToUse?.user} ${nickname} hinzugefügt`);
+                    return command.reply(`Ok Brudi*in. Hab für ${user} ${nickname} hinzugefügt`);
                 case "delete":
-                    await Nicknames.deleteNickName(userToUse!.id, nickname);
-                    return command.reply(`Ok Brudi*in. Hab für ${userToUse?.user} ${nickname} gelöscht`);
+                    await Nicknames.deleteNickName(user.id, nickname);
+                    return command.reply(`Ok Brudi*in. Hab für ${user} ${nickname} gelöscht`);
                 default:
                     return command.reply("Das hätte nie passieren dürfen");
             }
