@@ -75,16 +75,19 @@ export class NicknameCommand implements ApplicationCommand {
             }
             const userToUse = (user !== null) ? user : commandUser;
 
-
+            if(option !== "deleteall" && nickname === null) {
+                return command.reply("Du musst schon n Nickname angeben");
+            }
             switch (option) {
                 case "deleteall":
                     Nicknames.deleteNickNames(userToUse?.id);
                     this.updateNickName(userToUse!, null);
                     return command.reply("Ok Brudi*in. Hab alles gelöscht");
-                case null:
-                    return command.reply("Du musst schon n Nickname angeben");
                 case "add":
                     try {
+                        if(nickname === null) {
+                            return command.reply("Nicht möglich.")
+                        }
                         await Nicknames.insertNickname(userToUse!.id, nickname);
                     } catch (error) {
                         return command.reply(`Würdest du Hurensohn*in aufpassen, wüsstest du, dass für ${userToUse?.user} '${nickname}' bereits existiert.`);
