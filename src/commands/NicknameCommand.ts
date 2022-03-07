@@ -60,6 +60,14 @@ export class NicknameCommand implements ApplicationCommand {
                     .addUserOption(new SlashCommandUserOption()
                         .setRequired(true)
                         .setName("user")
+                        .setDescription("Wem du tun willst")))
+            .addSubcommand(
+                new SlashCommandSubcommandBuilder()
+                    .setName("list")
+                    .setDescription("Zeigt alle nicknames brudi*in")
+                    .addUserOption(new SlashCommandUserOption()
+                        .setRequired(true)
+                        .setName("user")
                         .setDescription("Wem du tun willst")));
     }
 
@@ -67,7 +75,7 @@ export class NicknameCommand implements ApplicationCommand {
         try {
             const option = command.options.getSubcommand();
             const user = command.options.getUser("user", true);
-            // Remember, that the nickname option is not available within deleteAll subcommand
+            // Remember, that the nickname option is not available within deleteAll and list subcommand
             // However, we still get it as a required paraemter because we know what we are doing iksdee
             const nickname = command.options.getString("nickname", true);
             const commandUser = command.guild?.members.cache.find(m => m.id === command.user.id)!;
@@ -81,10 +89,16 @@ export class NicknameCommand implements ApplicationCommand {
             }
             switch (option) {
                 case "deleteall":
-                    Nicknames.deleteNickNames(user.id);
+                    await Nicknames.deleteNickNames(user.id);
                     const member = command.guild?.members.cache.get(user.id)!;
-                    this.updateNickName(member, null);
+                    await this.updateNickName(member, null);
                     return command.reply("Ok Brudi*in. Hab alles gelöscht");
+                case "list":
+                    const nicknames = await Nicknames.getNicknames(user.id);
+                    if(!nicknames || nicknames.length > 0) {
+                        return command.reply("Ne Brudi*in für den hab ich keine nicknames");
+                    }
+                    return command.reply(`Hab für den Brudi*in folgende Nicknames:\n${nicknames.join(",")}`);
                 case "add":
                     try {
                         await Nicknames.insertNickname(user.id, nickname);

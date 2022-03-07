@@ -25,7 +25,7 @@ export default class Nicknames extends Model {
 
     /**
      * @param {import("discord.js").Snowflake} userId
-     * @returns {Promise<Nicknames | null>}
+     * @returns {Promise<Nicknames[] | null>}
      */
     static async getNicknames(userId) {
         return Nicknames.findAll({
