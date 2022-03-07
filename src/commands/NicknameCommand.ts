@@ -1,8 +1,8 @@
-import {SlashCommandBuilder, SlashCommandStringOption, SlashCommandSubcommandBuilder, SlashCommandUserOption} from "@discordjs/builders";
-import {CommandInteraction, Client, GuildMember} from "discord.js";
+import { SlashCommandBuilder, SlashCommandStringOption, SlashCommandSubcommandBuilder, SlashCommandUserOption } from "@discordjs/builders";
+import { CommandInteraction, Client, GuildMember } from "discord.js";
 
-import {ApplicationCommand, CommandPermission, CommandResult} from "./command";
-import {getConfig} from "../utils/configHandler";
+import { ApplicationCommand, CommandPermission, CommandResult } from "./command";
+import { getConfig } from "../utils/configHandler";
 import Nicknames from "../storage/model/Nicknames";
 
 const config = getConfig();
@@ -56,7 +56,7 @@ export class NicknameCommand implements ApplicationCommand {
             .addSubcommand(
                 new SlashCommandSubcommandBuilder()
                     .setName("deleteall")
-                    .setDescription("Entfernt alle nickname brudi")
+                    .setDescription("Entfernt alle nicknames brudi*in")
                     .addUserOption(new SlashCommandUserOption()
                         .setRequired(true)
                         .setName("user")
@@ -71,28 +71,35 @@ export class NicknameCommand implements ApplicationCommand {
             const commandUser = command.guild?.members.cache.find(m => m.id === command.user.id);
 
             if (!commandUser?.roles.cache.has(config.ids.trusted_role_id)) {
-                return command.reply("Hurensohn. Der Command ist nix für dich.");
+                return command.reply("Hurensohn*in. Der Command ist nix für dich.");
             }
             const userToUse = (user !== null) ? user : commandUser;
 
-
-            if (option === "deleteall") {
-                Nicknames.deleteNickNames(userToUse?.id);
-                this.updateNickName(userToUse!, null);
-                return command.reply("Ok Brudi. Hab alles gelöscht");
-            }
-            if (nickname === null) {
+            if(option !== "deleteall" && nickname === null) {
                 return command.reply("Du musst schon n Nickname angeben");
             }
-            if (option === "add") {
-                await Nicknames.insertNickname(userToUse!.id, nickname);
-                return command.reply(`Ok Brudi. Hab für ${userToUse?.user} ${nickname} hinzugefügt`);
+            switch (option) {
+                case "deleteall":
+                    Nicknames.deleteNickNames(userToUse?.id);
+                    this.updateNickName(userToUse!, null);
+                    return command.reply("Ok Brudi*in. Hab alles gelöscht");
+                case "add":
+                    try {
+                        if(nickname === null) {
+                            return command.reply("Nicht möglich.")
+                        }
+                        await Nicknames.insertNickname(userToUse!.id, nickname);
+                    } catch (error) {
+                        return command.reply(`Würdest du Hurensohn*in aufpassen, wüsstest du, dass für ${userToUse?.user} '${nickname}' bereits existiert.`);
+                    }
+
+                    return command.reply(`Ok Brudi*in. Hab für ${userToUse?.user} ${nickname} hinzugefügt`);
+                case "delete":
+                    await Nicknames.deleteNickName(userToUse!.id, nickname);
+                    return command.reply(`Ok Brudi*in. Hab für ${userToUse?.user} ${nickname} gelöscht`);
+                default:
+                    return command.reply("Das hätte nie passieren dürfen");
             }
-            if (option === "delete") {
-                await Nicknames.deleteNickName(userToUse!.id, nickname);
-                return command.reply(`Ok Brudi. Hab für ${userToUse?.user} ${nickname} gelöscht`);
-            }
-            return command.reply("Das hätte nie passieren dürfen");
         }
         catch (e) {
             console.log(e);
