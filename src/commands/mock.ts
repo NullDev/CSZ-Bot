@@ -73,6 +73,7 @@ export class MockCommand implements MessageCommand, ApplicationCommand {
 
         if(!isReply && !hasContent) {
             await message.channel.send("Brudi da ist nix, was ich mocken kann");
+            return;
         }
 
         if(isReply && !hasContent) {
