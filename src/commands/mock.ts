@@ -6,7 +6,6 @@ import { SlashCommandBuilder, SlashCommandStringOption } from "@discordjs/builde
 import { CacheType, Client, CommandInteraction, GuildMember, Message, MessageEmbed } from "discord.js";
 import { getConfig } from "../utils/configHandler";
 import { ApplicationCommand, MessageCommand } from "./command";
-import log from "../utils/logger";
 const config = getConfig();
 
 /**
@@ -77,12 +76,12 @@ export class MockCommand implements MessageCommand, ApplicationCommand {
             return;
         }
 
-        log.debug(`Text to mock is '${content}'`);
-
-        if(isReply && !hasContent) {
+        if(isReply) {
             replyMessage = await message.channel.messages.fetch(message.reference!.messageId!);
-            // eslint-disable-next-line prefer-destructuring
-            content = replyMessage.content;
+            if(!hasContent) {
+                // eslint-disable-next-line prefer-destructuring
+                content = replyMessage.content;
+            }
         }
 
         const mockedEmbed = buildMock(author, content);
