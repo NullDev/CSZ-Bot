@@ -6,6 +6,7 @@
 import * as discord from "discord.js";
 import Nicknames from "../storage/model/Nicknames";
 import {getConfig} from "../utils/configHandler";
+import log from "../utils/logger";
 
 const config = getConfig();
 export default class NicknameHandler {
@@ -27,7 +28,12 @@ export default class NicknameHandler {
     }
 
     async updateNickname(userid: string, nicknames: string[]) {
-        const user = this.client.guilds.cache.get(this.config.ids.guild_id)?.members.cache.find(m => m.id === userid);
-        await user?.setNickname(nicknames[Math.floor(Math.random() * nicknames.length)]);
+        try {
+            const user = this.client.guilds.cache.get(this.config.ids.guild_id)?.members.cache.find(m => m.id === userid);
+            await user?.setNickname(nicknames[Math.floor(Math.random() * nicknames.length)]);
+        }
+        catch(err) {
+            log.error(`Couldn't update user '${userid}' nickname. Cause ${err}`);
+        }
     }
 }
