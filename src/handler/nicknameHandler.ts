@@ -4,7 +4,7 @@
 // =============================== //
 
 import * as discord from "discord.js";
-import Nicknames from "../storage/model/Nicknames";
+import Nicknames from "../storage/model/Nickname";
 import {getConfig} from "../utils/configHandler";
 import log from "../utils/logger";
 

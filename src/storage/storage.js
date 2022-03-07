@@ -11,7 +11,7 @@ import Stempel from "./model/Stempel";
 import Ban from "./model/Ban";
 import log from "../utils/logger";
 import Penis from "./model/Penis";
-import Nicknames from "./model/Nicknames";
+import Nickname from "./model/Nickname";
 import Boob from "./model/Boob";
 
 export async function initialize() {
@@ -37,7 +37,7 @@ export async function initialize() {
     Ban.initialize(sequelize);
     Penis.initialize(sequelize);
     Boob.initialize(sequelize);
-    Nicknames.initialize(sequelize);
+    Nickname.initialize(sequelize);
 
     await sequelize.sync();
 }

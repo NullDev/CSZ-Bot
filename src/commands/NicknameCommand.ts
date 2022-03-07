@@ -3,7 +3,7 @@ import { CommandInteraction, Client, GuildMember } from "discord.js";
 
 import { ApplicationCommand, CommandPermission, CommandResult } from "./command";
 import { getConfig } from "../utils/configHandler";
-import Nicknames from "../storage/model/Nicknames";
+import Nicknames from "../storage/model/Nickname";
 
 const config = getConfig();
 
