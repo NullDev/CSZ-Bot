@@ -97,7 +97,7 @@ export class NicknameCommand implements ApplicationCommand {
                 if(!nicknames || nicknames.length === 0) {
                     return command.reply("Ne Brudi*in für den hab ich keine nicknames");
                 }
-                return command.reply(`Hab für den Brudi*in folgende Nicknames:\n${nicknames.join(",")}`);
+                return command.reply(`Hab für den Brudi*in folgende Nicknames:\n${nicknames.map(n => n.nickname).join(", ")}`);
             }
             else if (option === "add") {
                 const nickname = command.options.getString("nickname", true);
