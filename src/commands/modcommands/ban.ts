@@ -21,20 +21,25 @@ const assignBannedRoles = async(user: GuildMember): Promise<boolean> => {
         return false;
     }
 
-    await user.roles.remove(defaultRole);
-    await user.roles.add(bannedRole);
+    const banPromises = [
+        user.roles.remove(defaultRole),
+        user.roles.add(bannedRole)
+    ];
 
     if (user.roles.cache.find(r => r.id === config.ids.gruendervaeter_role_id)) {
-        await user.roles.remove(user.guild.roles.cache.find(role => role.id === config.ids.gruendervaeter_role_id)!);
-        await user.roles.add(user.guild.roles.cache.find(role => role.id === config.ids.gruendervaeter_banned_role_id)!);
+        const removeGruendervaeter = user.roles.remove(user.guild.roles.cache.find(role => role.id === config.ids.gruendervaeter_role_id)!);
+        const addGruendervaeterBanned = user.roles.add(user.guild.roles.cache.find(role => role.id === config.ids.gruendervaeter_banned_role_id)!);
+        banPromises.push(...[removeGruendervaeter, addGruendervaeterBanned]);
     }
 
     if (user.roles.cache.find(r => r.id === config.ids.trusted_role_id)) {
-        await user.roles.remove(user.guild.roles.cache.find(role => role.id === config.ids.trusted_role_id)!);
-        await user.roles.add(user.guild.roles.cache.find(role => role.id === config.ids.trusted_banned_role_id)!);
+        const removeTrusted = user.roles.remove(user.guild.roles.cache.find(role => role.id === config.ids.trusted_role_id)!);
+        const addTrustedBanned = user.roles.add(user.guild.roles.cache.find(role => role.id === config.ids.trusted_banned_role_id)!);
+        banPromises.push(removeTrusted, addTrustedBanned);
     }
 
-    return true;
+    return Promise.all(banPromises)
+        .then(() => true);
 };
 
 export const restoreRoles = async(user: GuildMember): Promise<boolean> => {
@@ -46,20 +51,25 @@ export const restoreRoles = async(user: GuildMember): Promise<boolean> => {
         return false;
     }
 
-    await user.roles.add(defaultRole);
-    await user.roles.remove(bannedRole);
+    const unbanPromises = [
+        user.roles.add(defaultRole),
+        user.roles.remove(bannedRole)
+    ];
 
     if (user.roles.cache.find(r => r.id === config.ids.gruendervaeter_banned_role_id)) {
-        await user.roles.remove(user.guild.roles.cache.find(role => role.id === config.ids.gruendervaeter_banned_role_id)!);
-        await user.roles.add(user.guild.roles.cache.find(role => role.id === config.ids.gruendervaeter_role_id)!);
+        const removeGruendervaeterBanned = user.roles.remove(user.guild.roles.cache.find(role => role.id === config.ids.gruendervaeter_banned_role_id)!);
+        const addGruendervaeter = user.roles.add(user.guild.roles.cache.find(role => role.id === config.ids.gruendervaeter_role_id)!);
+        unbanPromises.push(removeGruendervaeterBanned, addGruendervaeter);
     }
 
     if (user.roles.cache.find(r => r.id === config.ids.trusted_banned_role_id)) {
-        await user.roles.remove(user.guild.roles.cache.find(role => role.id === config.ids.trusted_banned_role_id)!);
-        await user.roles.add(user.guild.roles.cache.find(role => role.id === config.ids.trusted_role_id)!);
+        const removeTrustedBanned = user.roles.remove(user.guild.roles.cache.find(role => role.id === config.ids.trusted_banned_role_id)!);
+        const addTrusted = user.roles.add(user.guild.roles.cache.find(role => role.id === config.ids.trusted_role_id)!);
+        unbanPromises.push(removeTrustedBanned, addTrusted);
     }
 
-    return true;
+    return Promise.all(unbanPromises)
+        .then(() => true);
 };
 
 // #endregion
