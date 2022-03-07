@@ -29,7 +29,7 @@ export default class Nickname extends Model {
         });
     }
 
-    static getNicknames(userId: Snowflake): Promise<Nickname[] | null>{
+    static getNicknames(userId: Snowflake): Promise<Nickname[]>{
         return Nickname.findAll({
             where: {
                 userId
