@@ -46,7 +46,7 @@ export async function connectAndPlaySaufen(client: Client) {
     if (wois.members.size > 0) {
         const files = await readdir(soundDir);
         const randomSound = files[Math.floor(Math.random() * files.length)];
-        const file = path.resolve(__dirname, "..", "..", "sounds", randomSound);
+        const file = path.resolve(soundDir, randomSound);
         try {
             const duration = (await gad.getAudioDurationInSeconds(file)) * 1000;
             await playSaufen(file, duration);
