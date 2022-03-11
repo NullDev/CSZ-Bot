@@ -33,6 +33,7 @@ import {
 import {quoteReactionHandler} from "./handler/quoteHandler";
 import NicknameHandler from "./handler/nicknameHandler";
 import { assert } from "console";
+import voiceHandler from "./handler/voiceHandler";
 
 let version = conf.getVersion();
 let appname = conf.getName();
@@ -248,6 +249,15 @@ client.on("messageUpdate", async(_, newMessage) => {
     }
     catch (err) {
         log.error(`[messageUpdate] Error on message ${newMessage.id}. Cause: ${err}`);
+    }
+});
+
+client.on("voiceStateUpdate", (oldState, newState) => {
+    try {
+        await voiceHandler(oldState, newState, client);
+    }
+    catch (err) {
+        log.error(`[voiceStateUpdate] Error on Voice State Thing. Cause: ${err}`);
     }
 });
 
