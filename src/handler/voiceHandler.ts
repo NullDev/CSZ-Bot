@@ -1,5 +1,6 @@
 import { AudioPlayer, AudioPlayerStatus, createAudioPlayer, createAudioResource, entersState, joinVoiceChannel, StreamType, VoiceConnection, VoiceConnectionStatus } from "@discordjs/voice";
 import { Client, VoiceChannel } from "discord.js";
+import Ffmpeg from "fluent-ffmpeg";
 import { setTimeout } from "timers/promises";
 import { getConfig } from "../utils/configHandler";
 import logger from "../utils/logger";
@@ -24,13 +25,13 @@ async function connectToHauptwois(woisChannel: VoiceChannel): Promise<VoiceConne
     }
 }
 
-async function playSaufen(): Promise<AudioPlayer> {
-    const resource = createAudioResource("https://cdn.discordapp.com/attachments/674749256225128488/951923836641738812/wochenendesaufengeil.mp3", {
+async function playSaufen(soundFile: string, duration: number): Promise<AudioPlayer> {
+    const resource = createAudioResource(soundFile, {
         inputType: StreamType.Arbitrary
     });
     player.play(resource);
 
-    return entersState(player, AudioPlayerStatus.Playing, 5_000);
+    return entersState(player, AudioPlayerStatus.Playing, duration);
 }
 
 export async function connectAndPlaySaufen(client: Client) {
@@ -40,11 +41,16 @@ export async function connectAndPlaySaufen(client: Client) {
     const wois = csz.channels.cache.get(woisId) as VoiceChannel;
 
     if (wois.members.size > 0) {
-        await playSaufen();
-        const connection = await connectToHauptwois(wois);
-        connection.subscribe(player);
+        const randomSound = config.saufen_files[Math.floor(Math.random() * config.saufen_files.length)];
+        Ffmpeg.ffprobe(randomSound, async(err, metadata) => {
+            if(!err) {
+                await playSaufen(randomSound, metadata.format.duration ?? 10_000);
+                const connection = await connectToHauptwois(wois);
+                connection.subscribe(player);
 
-        await setTimeout(6_000);
-        connection.disconnect();
+                await setTimeout(6_000);
+                connection.disconnect();
+            }
+        });
     }
 }

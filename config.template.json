@@ -27,6 +27,9 @@
             "default_target_channel_id": ""
         }
     },
+    "saufen_files": [
+
+    ],
     "ids": {
         "guild_id": "",
         "hauptchat_id": "",
