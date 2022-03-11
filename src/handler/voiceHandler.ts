@@ -1,6 +1,7 @@
 import { AudioPlayer, AudioPlayerStatus, createAudioPlayer, createAudioResource, entersState, joinVoiceChannel, StreamType, VoiceConnection, VoiceConnectionStatus } from "@discordjs/voice";
 import { Client, VoiceChannel } from "discord.js";
 import Ffmpeg from "fluent-ffmpeg";
+import path from "path";
 import { setTimeout } from "timers/promises";
 import { getConfig } from "../utils/configHandler";
 import logger from "../utils/logger";
@@ -25,8 +26,9 @@ async function connectToHauptwois(woisChannel: VoiceChannel): Promise<VoiceConne
     }
 }
 
-async function playSaufen(soundFile: string, duration: number): Promise<AudioPlayer> {
-    const resource = createAudioResource(soundFile, {
+async function playSaufen(sound: string, duration: number): Promise<AudioPlayer> {
+    const file = path.resolve(__dirname, "..", "..", sound);
+    const resource = createAudioResource(file, {
         inputType: StreamType.Arbitrary
     });
     player.play(resource);
