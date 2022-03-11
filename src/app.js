@@ -33,7 +33,6 @@ import {
 import {quoteReactionHandler} from "./handler/quoteHandler";
 import NicknameHandler from "./handler/nicknameHandler";
 import { assert } from "console";
-import voiceHandler from "./handler/voiceHandler";
 
 let version = conf.getVersion();
 let appname = conf.getName();
