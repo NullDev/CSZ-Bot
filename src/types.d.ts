@@ -23,7 +23,6 @@ export interface Config {
         bot_token: string,
         client_id: string
     },
-    saufen_files: string[],
     bot_settings: {
         status: string,
         prefix: {

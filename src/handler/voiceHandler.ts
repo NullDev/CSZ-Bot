@@ -5,6 +5,7 @@ import { setTimeout } from "timers/promises";
 import { getConfig } from "../utils/configHandler";
 import logger from "../utils/logger";
 import * as gad from "get-audio-duration";
+import { readdir } from "fs/promises";
 
 const config = getConfig();
 const player = createAudioPlayer();
@@ -42,13 +43,11 @@ export async function connectAndPlaySaufen(client: Client) {
     const wois = csz.channels.cache.get(woisId) as VoiceChannel;
 
     if (wois.members.size > 0) {
-        const randomSound = config.saufen_files[Math.floor(Math.random() * config.saufen_files.length)];
-        logger.debug(`Random sound is: ${randomSound}`);
+        const files = await readdir(path.resolve(__dirname, "..", "..", "sounds"));
+        const randomSound = files[Math.floor(Math.random() * files.length)];
         const file = path.resolve(__dirname, "..", "..", "sounds", randomSound);
-        logger.debug(`File is: ${file}`);
         try {
             const duration = (await gad.getAudioDurationInSeconds(file)) * 1000;
-            logger.debug(`Duration is: ${duration}`);
             await playSaufen(file, duration);
             const connection = await connectToHauptwois(wois);
             connection.subscribe(player);
