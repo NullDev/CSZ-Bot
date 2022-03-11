@@ -44,13 +44,17 @@ export async function connectAndPlaySaufen(client: Client) {
     if (wois.members.size > 0) {
         const randomSound = config.saufen_files[Math.floor(Math.random() * config.saufen_files.length)];
         const file = path.resolve(__dirname, "..", "..", "sounds", randomSound);
-        const duration = (await gad.getAudioDurationInSeconds(file)) * 1000;
+        try {
+            const duration = (await gad.getAudioDurationInSeconds(file)) * 1000;
+            await playSaufen(file, duration);
+            const connection = await connectToHauptwois(wois);
+            connection.subscribe(player);
 
-        await playSaufen(file, duration);
-        const connection = await connectToHauptwois(wois);
-        connection.subscribe(player);
-
-        await setTimeout(duration);
-        connection.disconnect();
+            await setTimeout(duration);
+            connection.disconnect();
+        }
+        catch(err) {
+            logger.error("Could not play saufen", err);
+        }
     }
 }
