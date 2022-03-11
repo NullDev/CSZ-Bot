@@ -26,8 +26,7 @@ async function connectToHauptwois(woisChannel: VoiceChannel): Promise<VoiceConne
     }
 }
 
-async function playSaufen(sound: string, duration: number): Promise<AudioPlayer> {
-    const file = path.resolve(__dirname, "..", "..", "sounds", sound);
+async function playSaufen(file: string, duration: number): Promise<AudioPlayer> {
     const resource = createAudioResource(file, {
         inputType: StreamType.Arbitrary
     });
@@ -44,14 +43,18 @@ export async function connectAndPlaySaufen(client: Client) {
 
     if (wois.members.size > 0) {
         const randomSound = config.saufen_files[Math.floor(Math.random() * config.saufen_files.length)];
-        Ffmpeg.ffprobe(randomSound, async(err, metadata) => {
+        const file = path.resolve(__dirname, "..", "..", "sounds", randomSound);
+        Ffmpeg.ffprobe(file, async(err, metadata) => {
             if(!err) {
-                await playSaufen(randomSound, metadata.format.duration ?? 10_000);
+                await playSaufen(file, metadata.format.duration ?? 10_000);
                 const connection = await connectToHauptwois(wois);
                 connection.subscribe(player);
 
                 await setTimeout(6_000);
                 connection.disconnect();
+            }
+            else {
+                logger.error("Couldn't read file", err);
             }
         });
     }
