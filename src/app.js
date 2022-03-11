@@ -162,7 +162,7 @@ client.on("ready", async(_client) => {
             cron.schedule("0 0 * * 0", async() => await nicknameHandler.rerollNicknames(), {timezone: "Europe/Vienna"});
 
             log.info("Scheduling Saufen Cronjob");
-            cron.schedule("33 0-23 * * 5-7", async() => await connectAndPlaySaufen(), {timezone: "Europe/Vienna"});
+            cron.schedule("36 0-23 * * 5-7", async() => await connectAndPlaySaufen(_client), {timezone: "Europe/Vienna"});
         }
 
         ban.startCron(client);
