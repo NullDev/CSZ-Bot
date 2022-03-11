@@ -9,6 +9,7 @@ import { readdir } from "fs/promises";
 
 const config = getConfig();
 const player = createAudioPlayer();
+export const soundDir = path.resolve(__dirname, "..", "..", "sounds");
 
 async function connectToHauptwois(woisChannel: VoiceChannel): Promise<VoiceConnection> {
     try {
@@ -43,7 +44,7 @@ export async function connectAndPlaySaufen(client: Client) {
     const wois = csz.channels.cache.get(woisId) as VoiceChannel;
 
     if (wois.members.size > 0) {
-        const files = await readdir(path.resolve(__dirname, "..", "..", "sounds"));
+        const files = await readdir(soundDir);
         const randomSound = files[Math.floor(Math.random() * files.length)];
         const file = path.resolve(__dirname, "..", "..", "sounds", randomSound);
         try {

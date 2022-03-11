@@ -1,8 +1,11 @@
-import { SlashCommandBuilder } from "@discordjs/builders";
+import { SlashCommandBuilder, SlashCommandStringOption, SlashCommandSubcommandBuilder } from "@discordjs/builders";
 import { CommandInteraction, CacheType, Client } from "discord.js";
-import { connectAndPlaySaufen } from "../handler/voiceHandler";
+import { connectAndPlaySaufen, soundDir } from "../handler/voiceHandler";
 import { getConfig } from "../utils/configHandler";
 import { ApplicationCommand, CommandPermission } from "./command";
+import fetch from "node-fetch";
+import path from "path";
+import { createWriteStream } from "fs";
 
 const config = getConfig();
 
@@ -16,12 +19,42 @@ export class Saufen implements ApplicationCommand {
     }];
     applicationCommand = new SlashCommandBuilder()
         .setName(this.name)
-        .setDescription(this.description);
+        .setDescription(this.description)
+        .addSubcommand(
+            new SlashCommandSubcommandBuilder()
+                .setName("los")
+                .setDescription("LOS JETZT"))
+        .addSubcommand(
+            new SlashCommandSubcommandBuilder()
+                .setName("add")
+                .setDescription("Fügt einen sound hinzu brudi")
+                .addStringOption(new SlashCommandStringOption()
+                    .setRequired(true)
+                    .setName("sound")
+                    .setDescription("Link zum File (Bitte nur audio files bro)")
+                ));
 
     async handleInteraction(command: CommandInteraction<CacheType>, client: Client<boolean>): Promise<void> {
-        await Promise.all([
-            connectAndPlaySaufen(client),
-            command.reply("WOCHENENDE!! SAUFEN!! GEIL")
-        ]);
+        const subcommand = command.options.getSubcommand();
+
+        if (subcommand === "los") {
+            await Promise.all([
+                connectAndPlaySaufen(client),
+                command.reply("WOCHENENDE!! SAUFEN!! GEIL")
+            ]);
+        }
+        else if (subcommand === "add") {
+            const soundUrl = new URL(command.options.getString("sound", true));
+            const targetPath = path.resolve(soundDir, path.basename(soundUrl.pathname));
+            const fileStream = createWriteStream(targetPath);
+            const res = await fetch(soundUrl, {
+                method: "GET"
+            });
+            await new Promise((resolve, reject) => {
+                res.body.pipe(fileStream);
+                res.body.on("error", reject);
+                fileStream.on("finish", resolve);
+            });
+        }
     }
 }
