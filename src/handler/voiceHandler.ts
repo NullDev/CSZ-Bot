@@ -1,5 +1,6 @@
 import { AudioPlayer, AudioPlayerStatus, createAudioPlayer, createAudioResource, entersState, joinVoiceChannel, StreamType, VoiceConnection, VoiceConnectionStatus } from "@discordjs/voice";
 import { Client } from "discord.js";
+import { setTimeout } from "timers/promises";
 import { getConfig } from "../utils/configHandler";
 import logger from "../utils/logger";
 
@@ -41,5 +42,7 @@ export async function connectAndPlaySaufen(client: Client) {
     await playSaufen();
     const connection = await connectToHauptwois(client);
     connection.subscribe(player);
+
+    await setTimeout(10_000);
     connection.disconnect();
 }
