@@ -27,7 +27,7 @@ async function connectToHauptwois(woisChannel: VoiceChannel): Promise<VoiceConne
 }
 
 async function playSaufen(sound: string, duration: number): Promise<AudioPlayer> {
-    const file = path.resolve(__dirname, "..", "..", sound);
+    const file = path.resolve(__dirname, "..", "..", "sounds", sound);
     const resource = createAudioResource(file, {
         inputType: StreamType.Arbitrary
     });
