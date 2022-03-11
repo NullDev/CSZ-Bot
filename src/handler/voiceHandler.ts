@@ -43,9 +43,12 @@ export async function connectAndPlaySaufen(client: Client) {
 
     if (wois.members.size > 0) {
         const randomSound = config.saufen_files[Math.floor(Math.random() * config.saufen_files.length)];
+        logger.debug(`Random sound is: ${randomSound}`);
         const file = path.resolve(__dirname, "..", "..", "sounds", randomSound);
+        logger.debug(`File is: ${file}`);
         try {
             const duration = (await gad.getAudioDurationInSeconds(file)) * 1000;
+            logger.debug(`Duration is: ${duration}`);
             await playSaufen(file, duration);
             const connection = await connectToHauptwois(wois);
             connection.subscribe(player);
