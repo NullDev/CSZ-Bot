@@ -1,10 +1,10 @@
 import { AudioPlayer, AudioPlayerStatus, createAudioPlayer, createAudioResource, entersState, joinVoiceChannel, StreamType, VoiceConnection, VoiceConnectionStatus } from "@discordjs/voice";
 import { Client, VoiceChannel } from "discord.js";
-import Ffmpeg from "fluent-ffmpeg";
 import path from "path";
 import { setTimeout } from "timers/promises";
 import { getConfig } from "../utils/configHandler";
 import logger from "../utils/logger";
+import * as gad from "get-audio-duration";
 
 const config = getConfig();
 const player = createAudioPlayer();
@@ -44,18 +44,13 @@ export async function connectAndPlaySaufen(client: Client) {
     if (wois.members.size > 0) {
         const randomSound = config.saufen_files[Math.floor(Math.random() * config.saufen_files.length)];
         const file = path.resolve(__dirname, "..", "..", "sounds", randomSound);
-        Ffmpeg.ffprobe(file, async(err, metadata) => {
-            if(!err) {
-                await playSaufen(file, metadata.format.duration ?? 10_000);
-                const connection = await connectToHauptwois(wois);
-                connection.subscribe(player);
+        const duration = (await gad.getAudioDurationInSeconds(file)) * 1000;
 
-                await setTimeout(6_000);
-                connection.disconnect();
-            }
-            else {
-                logger.error("Couldn't read file", err);
-            }
-        });
+        await playSaufen(file, duration);
+        const connection = await connectToHauptwois(wois);
+        connection.subscribe(player);
+
+        await setTimeout(duration);
+        connection.disconnect();
     }
 }
