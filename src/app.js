@@ -33,6 +33,7 @@ import {
 import {quoteReactionHandler} from "./handler/quoteHandler";
 import NicknameHandler from "./handler/nicknameHandler";
 import { assert } from "console";
+import { connectAndPlaySaufen } from "./handler/voiceHandler";
 
 let version = conf.getVersion();
 let appname = conf.getName();
@@ -159,6 +160,9 @@ client.on("ready", async(_client) => {
 
             log.info("Scheduling Nickname Cronjob");
             cron.schedule("0 0 * * 0", async() => await nicknameHandler.rerollNicknames(), {timezone: "Europe/Vienna"});
+
+            log.info("Scheduling Saufen Cronjob");
+            cron.schedule("33 0-23 * * 5-7", async() => await connectAndPlaySaufen(), {timezone: "Europe/Vienna"});
         }
 
         ban.startCron(client);
