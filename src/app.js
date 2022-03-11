@@ -252,15 +252,6 @@ client.on("messageUpdate", async(_, newMessage) => {
     }
 });
 
-client.on("voiceStateUpdate", (oldState, newState) => {
-    try {
-        await voiceHandler(oldState, newState, client);
-    }
-    catch (err) {
-        log.error(`[voiceStateUpdate] Error on Voice State Thing. Cause: ${err}`);
-    }
-});
-
 client.on("error", log.error);
 
 client.on("messageReactionAdd", async(event, user) => reactionHandler(event, user, client, false));
