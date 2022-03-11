@@ -44,7 +44,7 @@ export async function connectAndPlaySaufen(client: Client) {
         const connection = await connectToHauptwois(wois);
         connection.subscribe(player);
 
-        await setTimeout(10_000);
+        await setTimeout(6_000);
         connection.disconnect();
     }
 }

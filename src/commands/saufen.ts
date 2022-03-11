@@ -19,8 +19,9 @@ export class Saufen implements ApplicationCommand {
         .setDescription(this.description);
 
     async handleInteraction(command: CommandInteraction<CacheType>, client: Client<boolean>): Promise<void> {
-        await connectAndPlaySaufen(client);
-
-        command.reply("WOCHENENDE!! SAUFEN!! GEIL");
+        await Promise.all([
+            connectAndPlaySaufen(client),
+            command.reply("WOCHENENDE!! SAUFEN!! GEIL")
+        ]);
     }
 }
