@@ -36,8 +36,8 @@ async function playSaufen(): Promise<AudioPlayer> {
 }
 
 export async function connectAndPlaySaufen(client: Client) {
+    await playSaufen();
     const connection = await connectToHauptwois(client);
     connection.subscribe(player);
-    await playSaufen();
     connection.disconnect();
 }
