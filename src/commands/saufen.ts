@@ -50,11 +50,15 @@ export class Saufen implements ApplicationCommand {
             const res = await fetch(soundUrl, {
                 method: "GET"
             });
-            await new Promise((resolve, reject) => {
+            const savePromise = new Promise((resolve, reject) => {
                 res.body.pipe(fileStream);
                 res.body.on("error", reject);
                 fileStream.on("finish", resolve);
             });
+            await Promise.all([
+                savePromise,
+                command.reply("Jo, habs eingefügt")
+            ]);
         }
     }
 }
