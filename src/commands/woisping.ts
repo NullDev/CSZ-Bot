@@ -31,7 +31,18 @@ const sendWoisping = (channel: TextBasedChannel, pinger: User, reason: string, u
     }
 
     console.log("profidebugging12");
-    return channel.send({
+    const lol = {
+        content: contentString,
+        allowedMentions: {
+            roles: [ config.ids.woisgang_role_id ],
+            users: [
+                pinger.id,
+                ...usersVotedYes?.map(u => u.id)
+            ]
+        }
+    };
+    console.log(JSON.stringify(lol));
+    const lolwat = channel.send({
         content: contentString,
         allowedMentions: {
             roles: [ config.ids.woisgang_role_id ],
@@ -41,6 +52,8 @@ const sendWoisping = (channel: TextBasedChannel, pinger: User, reason: string, u
             ]
         }
     });
+    console.log("profidebugging10000");
+    return lolwat;
 };
 
 
