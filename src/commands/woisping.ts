@@ -33,11 +33,7 @@ const sendWoisping = (channel: TextBasedChannel, pinger: User, reason: string, u
         content: contentString,
         allowedMentions: {
             roles: [ config.ids.woisgang_role_id ],
-            users: [ ...new Set(
-                    pinger.id,
-                    ...usersVotedYes?.map(u => u.id)
-                )
-            ]
+            users: [ ...new Set([ pinger.id, ...usersVotedYes?.map(u => u.id) ]) ]
         }
     });
 };
