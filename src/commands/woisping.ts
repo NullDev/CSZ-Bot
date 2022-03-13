@@ -42,7 +42,7 @@ const sendWoisping = (channel: TextBasedChannel, pinger: User, reason: string, u
         }
     };
     console.log(JSON.stringify(lol));
-    const lolwat = channel.send({
+    const lolwat = await channel.send({
         content: "xd",
         allowedMentions: {
             roles: [ config.ids.woisgang_role_id ],
@@ -164,12 +164,13 @@ console.log("profidebugging2");
 
         // I don't know if this spreading is necessary
         const usersVotedYes = [ ...reaction.users.cache.values() ];
-        await message.delete();
 
         console.log("profidebugging8");
         lastPing = now;
         await sendWoisping(channel, pinger, reason, usersVotedYes);
         console.log("profidebugging9");
+        await message.delete();
+        console.log("profidebugging209");
     }
     else if (!couldPing) {
         reaction.users.remove(member.id);
