@@ -22,6 +22,7 @@ let lastPing = 0;
 
 const sendWoisping = (channel: TextBasedChannel, pinger: User, reason: string, usersVotedYes: User[] = []): Promise<any> => {
     let contentString = "";
+    console.log("profidebugging11");
     if ( usersVotedYes ) {
         contentString = `<@&${config.ids.woisgang_role_id}> <@!${pinger.id}> hat Bock auf Wois. ${reason ? `Grund dafür ist ${reason}` : ""}\n${usersVotedYes.length > 0 ? `${usersVotedYes.map(u => `<@!${u}>`).join(",")} sind auch dabei` : ""}`;
     }
@@ -29,6 +30,7 @@ const sendWoisping = (channel: TextBasedChannel, pinger: User, reason: string, u
         contentString = `<@&${config.ids.woisgang_role_id}> <@!${pinger.id}> hat Bock auf Wois. ${reason ? `Grund dafür ist ${reason}` : ""}`;
     }
 
+    console.log("profidebugging12");
     return channel.send({
         content: contentString,
         allowedMentions: {
@@ -103,13 +105,14 @@ export const reactionHandler = async(reactionEvent: MessageReaction, user: User,
     }
 
     const reaction = message.reactions.cache.get("👍");
+    console.log("profidebugging1");
 
     // shouldn't happen
     if (!reaction) {
         log.debug("Reaction not found");
         return true;
     }
-
+console.log("profidebugging2");
     const member = client.guilds.cache.get(config.ids.guild_id)!.members.cache.get(user.id);
 
     if (!member) {
@@ -117,6 +120,7 @@ export const reactionHandler = async(reactionEvent: MessageReaction, user: User,
         return true;
     }
 
+    console.log("profidebugging3");
     const isModMessage = isMod(member);
 
     if (!isModMessage && !isWoisGang(member)){
@@ -124,14 +128,17 @@ export const reactionHandler = async(reactionEvent: MessageReaction, user: User,
         member.send("Sorry, du bist leider kein Woisgang-Mitglied und darfst nicht abstimmen.");
         return true;
     }
+    console.log("profidebugging4");
 
     const amount = reaction.count - 1;
     const now = Date.now();
     const couldPing = lastPing + config.bot_settings.woisping_limit * 1000 <= now;
 
+    console.log("profidebugging5");
     if (isModMessage || (amount >= config.bot_settings.woisping_threshold && couldPing)) {
         const reason = message.content.substr(pendingMessagePrefix.length + 1);
 
+        console.log("profidebugging6");
         const {channel} = message;
         const pinger = message.mentions.users.first();
 
@@ -140,19 +147,23 @@ export const reactionHandler = async(reactionEvent: MessageReaction, user: User,
             log.debug("Pinger not found");
             return true;
         }
+        console.log("profidebugging7");
 
         // I don't know if this spreading is necessary
         const usersVotedYes = [ ...reaction.users.cache.values() ];
         await message.delete();
 
+        console.log("profidebugging8");
         lastPing = now;
         await sendWoisping(channel, pinger, reason, usersVotedYes);
+        console.log("profidebugging9");
     }
     else if (!couldPing) {
         reaction.users.remove(member.id);
         await member.send("Sorry, ich musste deine Zustimmung für den Woisgang-Ping entfernen, weil wir noch etwas warten müssen mit dem Ping.");
     }
 
+    console.log("profidebugging10");
     return true;
 };
 
