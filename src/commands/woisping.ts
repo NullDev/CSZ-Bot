@@ -43,7 +43,7 @@ const sendWoisping = (channel: TextBasedChannel, pinger: User, reason: string, u
     };
     console.log(JSON.stringify(lol));
     const lolwat = channel.send({
-        content: contentString,
+        content: "xd",
         allowedMentions: {
             roles: [ config.ids.woisgang_role_id ],
             users: [
