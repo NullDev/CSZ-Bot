@@ -167,7 +167,13 @@ console.log("profidebugging2");
 
         console.log("profidebugging8");
         lastPing = now;
-        await sendWoisping(channel, pinger, reason, usersVotedYes);
+        try {
+            await sendWoisping(channel, pinger, reason, usersVotedYes);
+        }
+        catch (e) {
+            console.log("BOOM!");
+            console.error(e);
+        }
         console.log("profidebugging9");
         await message.delete();
         console.log("profidebugging209");
