@@ -23,6 +23,11 @@ export class ErinnerungCommand implements MessageCommand {
                 locale: "de",
                 future: true
             });
+
+            if (isNaN(date.getTime())) {
+                throw new Error("Danke JS");
+            }
+
             const messageId = message.reference === null ? message.id : message.reference.messageId!;
             const refMessage = message.reference === null ? message : message.reference;
 
