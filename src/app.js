@@ -34,6 +34,7 @@ import {quoteReactionHandler} from "./handler/quoteHandler";
 import NicknameHandler from "./handler/nicknameHandler";
 import { assert } from "console";
 import { connectAndPlaySaufen } from "./handler/voiceHandler";
+import { reminderHandler } from "./commands/erinnerung";
 
 let version = conf.getVersion();
 let appname = conf.getName();
@@ -157,12 +158,14 @@ client.on("ready", async(_client) => {
             log.info("Scheduling Advent of Code Cronjob...");
             cron.schedule("0 20 1-25 12 *", async() => await aoc.publishLeaderBoard(), {timezone: "Europe/Vienna"});
 
-
             log.info("Scheduling Nickname Cronjob");
             cron.schedule("0 0 * * 0", async() => await nicknameHandler.rerollNicknames(), {timezone: "Europe/Vienna"});
 
             log.info("Scheduling Saufen Cronjob");
             cron.schedule("36 0-23 * * FRI-SAT,SUN", async() => await connectAndPlaySaufen(_client), {timezone: "Europe/Vienna"});
+
+            log.info("Scheduling Reminder Cronjob");
+            cron.schedule("* * * * *", async() => await reminderHandler(_client), {timezone: "Europe/Vienna"});
         }
 
         ban.startCron(client);
