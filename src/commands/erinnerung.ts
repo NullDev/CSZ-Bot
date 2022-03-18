@@ -20,7 +20,8 @@ export class ErinnerungCommand implements MessageCommand {
         }
         try {
             const date = Sugar.Date.create(param, {
-                locale: "de"
+                locale: "de",
+                future: true
             });
             const messageId = message.reference === null ? message.id : message.reference.messageId!;
             const refMessage = message.reference === null ? message : message.reference;
