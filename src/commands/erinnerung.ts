@@ -27,7 +27,7 @@ export class ErinnerungCommand implements MessageCommand {
             const refMessage = message.reference === null ? message : message.reference;
 
             await Reminder.insertReminder(message.member!.user, messageId, refMessage.channelId, refMessage.guildId!, date);
-            await message.reply("Ok brudi, werd dich dran erinnern. Außer ich kack ab lol");
+            await message.reply("Ok brudi, werd dich dran erinnern. Außer ich kack ab lol, dann mach ich das später");
         }
         catch (err) {
             logger.error(`Couldn't parse date from message ${message.content} due to ${err}`);
