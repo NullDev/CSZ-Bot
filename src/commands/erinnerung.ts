@@ -25,7 +25,7 @@ export class ErinnerungCommand implements MessageCommand {
             const messageId = message.reference === null ? message.id : message.reference.messageId!;
             const refMessage = message.reference === null ? message : message.reference;
 
-            await Reminder.insertReminder(message.member!.user, messageId, refMessage.channelId, refMessage.channelId, date);
+            await Reminder.insertReminder(message.member!.user, messageId, refMessage.channelId, refMessage.guildId!, date);
             await message.reply("Ok brudi, werd dich dran erinnern. Außer ich kack ab lol");
         }
         catch (err) {
