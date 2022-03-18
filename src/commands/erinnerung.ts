@@ -24,12 +24,17 @@ export class ErinnerungCommand implements MessageCommand {
                 future: true
             });
 
-            if (isNaN(date.getTime())) {
+            if (Number.isNaN(date.getTime())) {
                 throw new Error("Danke JS");
             }
 
-            const messageId = message.reference === null ? message.id : message.reference.messageId!;
-            const refMessage = message.reference === null ? message : message.reference;
+            if (date < new Date()) {
+                await message.reply("Brudi das sollte schon in der Zukunft liegen, bin ich Marty McFly oder wat?");
+                return;
+            }
+
+            const messageId = message.reference?.messageId ?? message.id;
+            const refMessage = message.reference ?? message;
 
             await Reminder.insertReminder(message.member!.user, messageId, refMessage.channelId, refMessage.guildId!, date);
             await message.reply("Ok brudi, werd dich dran erinnern. Außer ich kack ab lol, dann mach ich das später");
@@ -47,7 +52,8 @@ export const reminderHandler = async(client: Client) => {
     if (reminders === null) {
         return;
     }
-    reminders.forEach(async(reminder) => {
+
+    for (const reminder of reminders) {
         try {
             const guild = client.guilds.cache.get(reminder.guildId);
             if (guild === undefined) {
@@ -76,5 +82,5 @@ export const reminderHandler = async(client: Client) => {
             logger.error(`Couldn't send reminder due to ${err}. Removing it...`);
         }
         await Reminder.removeReminder(reminder.id);
-    });
+    }
 };
