@@ -69,7 +69,7 @@ export const reminderHandler = async(client: Client) => {
         }
         catch(err) {
             logger.error(`Couldn't send reminder due to ${err}. Removing it...`);
-            await Reminder.removeReminder(reminder.id);
         }
+        await Reminder.removeReminder(reminder.id);
     });
 };
