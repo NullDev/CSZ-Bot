@@ -19,15 +19,15 @@ export interface ReminderAttributes {
 export interface ReminderCreationAttributes extends Optional<ReminderAttributes, "id"> { }
 
 export default class Reminder extends Model<ReminderAttributes, ReminderCreationAttributes> implements ReminderAttributes {
-    id!: string;
-    userId!: string;
-    remindAt!: Date;
-    messageId!: string;
-    channelId!: string;
-    guildId!: string;
+    declare id: string;
+    declare userId: string;
+    declare remindAt: Date;
+    declare messageId: string;
+    declare channelId: string;
+    declare guildId: string;
 
-    readonly createdAt!: Date;
-    readonly updatedAt!: Date;
+    declare readonly createdAt: Date;
+    declare readonly updatedAt: Date;
 
     static insertReminder = (user: User, messageId: string, channelId: string, guildId: string, remindAt: Date): Promise<ReminderAttributes> => {
         log.debug(`Saving Reminder Measurement for user ${user.id} on message ${messageId} for ${remindAt}`);
