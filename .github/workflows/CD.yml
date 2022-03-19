@@ -11,7 +11,7 @@ jobs:
     name: Deploy
     runs-on: ubuntu-latest
     steps:
-    - name: Deploy CSC Bot
+    - name: Deploy CSZ Bot
       uses: appleboy/ssh-action@1a8b3784eaa665f677fa114edd5683bb6a6bfaa8
       with:
         host: ${{ secrets.SSH_HOST }}
