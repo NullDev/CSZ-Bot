@@ -17,14 +17,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/NullDev/CSC-Bot.git"
+    "url": "git+https://github.com/NullDev/CSZ-Bot.git"
   },
   "author": "NullDev",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/NullDev/CSC-Bot/issues"
+    "url": "https://github.com/NullDev/CSZ-Bot/issues"
   },
-  "homepage": "https://github.com/NullDev/CSC-Bot#readme",
+  "homepage": "https://github.com/NullDev/CSZ-Bot#readme",
   "dependencies": {
     "@discordjs/builders": "^0.12.0",
     "@discordjs/rest": "^0.3.0",

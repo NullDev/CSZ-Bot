@@ -1,4 +1,4 @@
-// fixes https://github.com/NullDev/CSC-Bot/issues/60
+// fixes https://github.com/NullDev/CSZ-Bot/issues/60
 // even better now with summer and winter time support!
 // this is the best fix possible. I did research the whole day
 // and couldn't come up with something better.
