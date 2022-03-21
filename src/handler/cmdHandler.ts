@@ -4,7 +4,7 @@
 
 import { promises as fs } from "fs";
 import * as path from "path";
-import { Client, Message } from "discord.js";
+import { Client, Guild, GuildMember, Message } from "discord.js";
 import { CommandFunction, CommandResult } from "../types";
 
 import log from "../utils/logger";
@@ -14,10 +14,23 @@ import * as ban from "../commands/modcommands/ban";
 const config = getConfig();
 
 /**
+ * A message that the bot can pass to command handlers.
+ * For example, it ensures that there is a member (and it's not a DM)
+ */
+export type ProcessableMessage = Message & {
+    member: GuildMember;
+    guild: Guild;
+};
+
+export function isProcessableMessage(message: Message): message is ProcessableMessage {
+    return !!message.member && !!message.guild;
+}
+
+/**
  * Passes commands to the correct executor
  *
  */
-export default async function(message: Message, client: Client, isModCommand: boolean): Promise<CommandResult> {
+export default async function (message: Message, client: Client, isModCommand: boolean): Promise<CommandResult> {
     if (message.author.bot) return;
 
     const cmdPrefix = isModCommand
@@ -62,7 +75,8 @@ export default async function(message: Message, client: Client, isModCommand: bo
      */
     if (!usedCommand.run) return;
 
-    if (!message.member) return;
+    // Ensures that every command always gets a message that fits certain criteria (for example, being a message originating from a server, not a DM)
+    if (!isProcessableMessage(message)) return;
 
     if (
         isModCommand &&
@@ -104,3 +118,4 @@ export default async function(message: Message, client: Client, isModCommand: bo
         return "Sorry, irgendwas ist schief gegangen! =(";
     }
 }
+

@@ -49,6 +49,7 @@ import { NeverCommand } from "../commands/never";
 import { GeburtstagCommand } from "../commands/geburtstag";
 import { Saufen } from "../commands/saufen";
 import { ErinnerungCommand } from "../commands/erinnerung";
+import { isProcessableMessage, ProcessableMessage } from "./cmdHandler";
 
 const config = getConfig();
 
@@ -145,7 +146,7 @@ export const registerAllApplicationCommandsAsGuildCommands = async(client: Clien
 
 /**
  * Handles command interactions.
- * @param command the recieved command interaction
+ * @param command the received command interaction
  * @param client client
  * @returns the handled command or an error if no matching command was found.
  */
@@ -205,9 +206,9 @@ const checkPermissions = (member: GuildMember, permissions: ReadonlyArray<Comman
  * was found or an error if the command would be a mod command but the
  * invoking user is not a mod
  */
-const commandMessageHandler = (
+const commandMessageHandler = async (
     commandString: string,
-    message: Message,
+    message: ProcessableMessage,
     client: Client
 ): Promise<unknown> => {
     const matchingCommand = messageCommands.find(
@@ -215,11 +216,11 @@ const commandMessageHandler = (
     );
 
     if (!matchingCommand) {
-        return Promise.reject(new Error(`No matching command found for command "${commandString}"`));
+        throw new Error(`No matching command found for command "${commandString}"`);
     }
 
     if (matchingCommand.permissions) {
-        const member = message.guild?.members.cache.get(message.author.id);
+        const member = message.guild.members.cache.get(message.author.id);
         if (member && !checkPermissions(member, matchingCommand.permissions)) {
             return Promise.all([
                 ban(client, member, client.user!, "Lol", false, 0.08),
@@ -245,7 +246,7 @@ const isCooledDown = (command: SpecialCommand) => {
     return Math.random() < diff / cooldownTime;
 };
 
-const specialCommandHandler = (message: Message, client: Client): Promise<unknown> => {
+const specialCommandHandler = (message: ProcessableMessage, client: Client): Promise<unknown> => {
     const commandCandidates = specialCommands.filter((p) => p.matches(message));
     return Promise.all(
         commandCandidates
@@ -274,15 +275,20 @@ export const handleInteractionEvent = (
     return Promise.reject(new Error("Interaction is not a command"));
 };
 
-export const messageCommandHandler = (
+export const messageCommandHandler = async (
     message: Message,
     client: Client
 ): Promise<unknown> => {
     // Bots shall not be able to perform commands. High Security
     if(message.author.bot) {
-        return Promise.resolve();
+        return;
     }
-    // TODO: The Prefix is now completly irrelevant, since the commands itself define
+
+    if (!isProcessableMessage(message)) {
+        return;
+    }
+
+    // TODO: The Prefix is now completely irrelevant, since the commands itself define
     // their permission.
     const plebPrefix = config.bot_settings.prefix.command_prefix;
     const modPrefix = config.bot_settings.prefix.mod_prefix;
