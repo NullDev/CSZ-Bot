@@ -1,9 +1,11 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 // @ts-ignore
 import fetch from "node-fetch";
-import { Client, CommandInteraction, Guild, Message, MessageActionRow, MessageButton, MessageEmbedOptions } from "discord.js";
+import { Client, CommandInteraction, Guild, MessageActionRow, MessageButton, MessageEmbedOptions } from "discord.js";
 import { ApplicationCommand, CommandResult, MessageCommand } from "./command";
 import { GitHubContributor } from "../types";
+import type { ProcessableMessage } from "../handler/cmdHandler";
+import { assertNever } from "../utils/typeUtils";
 
 const buildMessageActionsRow = (): MessageActionRow[] => {
     return [
@@ -47,24 +49,20 @@ const getSystemInfo = (): string => {
         `**Architecture\n** ${process.arch}`;
 };
 
+const getServerLevel = (guild: Guild) => {
+    switch(guild.premiumTier) {
+        case "NONE": return 0;
+        case "TIER_1": return 1;
+        case "TIER_2": return 2;
+        case "TIER_3": return 3;
+        default: return assertNever(guild.premiumTier);
+    }
+};
+
 const getServerInfo = (guild: Guild): string => {
     // eslint-disable-next-line new-cap
     const birthday = Intl.DateTimeFormat("de-DE").format(guild.joinedTimestamp);
-    let level = 0;
-
-    switch(guild.premiumTier) {
-        case "TIER_1":
-            level = 1;
-            break;
-        case "TIER_2":
-            level = 2;
-            break;
-        case "TIER_3":
-            level = 3;
-            break;
-        default:
-            break;
-    }
+    const level = getServerLevel(guild);
 
     return `**Mitglieder\n** ${guild.memberCount} / ${guild.maximumMembers} \n` +
         `**Oberbabo\n** <@!${guild.ownerId}> \n` +
@@ -74,7 +72,7 @@ const getServerInfo = (guild: Guild): string => {
 };
 
 const buildEmbed = async(guild: Guild | null, avatarUrl?: string): Promise<MessageEmbedOptions> => {
-    let embed = {
+    const embed = {
         color: 2007432,
         footer: {
             text: `${new Date().toDateString()} ${new Date().toLocaleTimeString()}`
@@ -154,7 +152,7 @@ export class InfoCommand implements ApplicationCommand, MessageCommand {
      * @param client client
      * @returns reply and reaction
      */
-    async handleMessage(message: Message, client: Client): Promise<CommandResult> {
+    async handleMessage(message: ProcessableMessage, client: Client): Promise<CommandResult> {
         const embed: MessageEmbedOptions = await buildEmbed(message.guild, client.user?.avatarURL() ?? undefined);
 
         const reply = message.reply({
