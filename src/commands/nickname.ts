@@ -4,13 +4,12 @@ import {
     SlashCommandSubcommandBuilder,
     SlashCommandUserOption
 } from "@discordjs/builders";
+
 import {
     CommandInteraction,
     Client,
     GuildMember,
-    MessageReaction,
     User,
-    Message,
     CacheType,
     MessageActionRow, MessageButton, MessageComponentInteraction
 } from "discord.js";
@@ -18,16 +17,31 @@ import {
 import {ApplicationCommand, CommandPermission, CommandResult, UserInteraction} from "./command";
 import {getConfig} from "../utils/configHandler";
 import Nicknames from "../storage/model/Nickname";
-import log from "../utils/logger";
-import {isMod, isTrusted} from "../utils/userUtils";
+import {isTrusted} from "../utils/userUtils";
 
 const config = getConfig();
 
-const ongoingSuggestions = new Map<string, Suggestion>();
-const idVoteMap = new Map<string, Map<string, UserVote>>();
+enum Vote {
+    YES,
+    NO
+}
+
+class UserVote {
+    readonly vote: Vote;
+    private trusted: boolean;
+
+    constructor(vote: Vote, trusted: boolean) {
+        this.vote = vote;
+        this.trusted = trusted;
+    }
+
+    getWeight(): number {
+        return this.trusted ? 2 : 1;
+    }
+}
+
 
 class Suggestion {
-
     readonly nicknameUserID: string;
     readonly nickname: string;
 
@@ -35,6 +49,19 @@ class Suggestion {
         this.nicknameUserID = nicknameUserID;
         this.nickname = nickname;
     }
+}
+
+const ongoingSuggestions = new Map<string, Suggestion>();
+const idVoteMap = new Map<string, Map<string, UserVote>>();
+
+function getUserVoteMap(messageid: string) {
+    let userVoteMap = idVoteMap.get(messageid);
+    if (userVoteMap === undefined) {
+        let map = new Map<string, UserVote>();
+        idVoteMap.set(messageid, map);
+        userVoteMap = map;
+    }
+    return userVoteMap;
 }
 
 export class Nickname implements ApplicationCommand {
@@ -158,7 +185,8 @@ export class Nickname implements ApplicationCommand {
             }
 
             return command.reply("Das hätte nie passieren dürfen");
-        } catch (e) {
+        }
+        catch (e) {
             console.log(e);
             return command.reply("Das hätte nie passieren dürfen");
         }
@@ -192,35 +220,6 @@ export class Nickname implements ApplicationCommand {
     }
 }
 
-enum Vote {
-    YES,
-    NO
-}
-
-class UserVote {
-    readonly vote: Vote;
-    private trusted: boolean;
-
-    constructor(vote: Vote, trusted: boolean) {
-        this.vote = vote;
-        this.trusted = trusted;
-    }
-
-    getWeight(): number {
-        return this.trusted ? 2 : 1;
-    }
-}
-
-
-function getUserVoteMap(messageid: string) {
-    let userVoteMap = idVoteMap.get(messageid);
-    if (userVoteMap === undefined) {
-        let map = new Map<string, UserVote>();
-        idVoteMap.set(messageid, map);
-        userVoteMap = map;
-    }
-    return userVoteMap;
-}
 
 export class NicknameButtonHandler implements UserInteraction {
     readonly ids = ["nicknameVoteYes", "nicknameVoteNo"];
@@ -231,7 +230,7 @@ export class NicknameButtonHandler implements UserInteraction {
     async handleInteraction(interaction: MessageComponentInteraction, client: Client): Promise<void> {
         let suggestion = ongoingSuggestions.get(interaction.message.id);
 
-        if (suggestion == undefined) {
+        if (suggestion === undefined) {
             return interaction.update({
                 content: "Ich find den Namensvorschlag nicht. Irgend ein Huso muss wohl den Bot neugestartet haben. Macht am besten ne Neue auf",
                 components: []
@@ -252,7 +251,7 @@ export class NicknameButtonHandler implements UserInteraction {
         else if (interaction.customId === "nicknameVoteNo") {
             userVoteMap.set(interaction.user.id, new UserVote(Vote.NO, isTrust));
         }
-        //evaluate the Uservotes
+        // evaluate the Uservotes
         let votes = Array.from(userVoteMap.values());
         if (votes.filter(vote => vote.vote === Vote.NO).reduce((sum, uservote) => sum + uservote.getWeight(), 0) >= this.threshold) {
             return interaction.update({
@@ -263,7 +262,8 @@ export class NicknameButtonHandler implements UserInteraction {
         if (votes.filter(vote => vote.vote === Vote.YES).reduce((sum, uservote) => sum + uservote.getWeight(), 0) >= this.threshold) {
             try {
                 await Nicknames.insertNickname(suggestion.nicknameUserID, suggestion.nickname);
-            } catch (error) {
+            }
+            catch (error) {
                 return interaction.update(`Würdet ihr Hurensöhne aufpassen, wüsstest ihr, dass für <@${suggestion.nicknameUserID}> \`${suggestion.nickname}\` bereits existiert.`);
             }
 
@@ -274,8 +274,6 @@ export class NicknameButtonHandler implements UserInteraction {
         }
         return interaction.reply({content: "Hast abgestimmt", ephemeral: true});
     }
-
-
 }
 
 

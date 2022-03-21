@@ -87,7 +87,7 @@ export const commands: readonly Command[] = [
     new GeburtstagCommand()
 ];
 export const interactions: readonly UserInteraction[] = [
-    new NicknameButtonHandler(),
+    new NicknameButtonHandler()
 ];
 
 
@@ -143,7 +143,8 @@ export const registerAllApplicationCommandsAsGuildCommands = async(client: Clien
         await guild.commands.permissions.set({
             fullPermissions: permissionsToPost
         });
-    } catch (err) {
+    }
+    catch (err) {
         log.error(`Could not register the application commands, because: ${err}`);
         throw(err);
     }
@@ -183,7 +184,7 @@ const messageComponentInteractionHandler = (
     client: Client
 ): Promise<unknown> => {
     const matchingInteraction = interactions.find(
-        (cmd) => cmd.ids.find(((id) => id === command.customId)
+        (cmd) => cmd.ids.find(id => id === command.customId
         ));
     if (matchingInteraction) {
         log.debug(`Found a matching interaction ${matchingInteraction.name}`);
@@ -295,19 +296,13 @@ export const handleInteractionEvent = (
     interaction: Interaction,
     client: Client
 ): Promise<unknown> => {
-
-
     if (interaction.isCommand()) {
         return commandInteractionHandler(
             interaction as CommandInteraction,
             client
         );
     }
-    else {
-        return messageComponentInteractionHandler(interaction as MessageComponentInteraction,
-            client);
-    }
-    return Promise.reject(new Error("Interaction is not a command"));
+    return messageComponentInteractionHandler(interaction as MessageComponentInteraction, client);
 };
 
 export const messageCommandHandler = (
