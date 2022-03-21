@@ -5,6 +5,7 @@
 import { TextBasedChannel, Util } from "discord.js";
 import { Client, Message, MessageReaction, User } from "discord.js";
 import { CommandResult, MessageCommand } from "./command";
+import type { ProcessableMessage } from "../handler/cmdHandler";
 import log from "../utils/logger";
 
 
@@ -39,7 +40,7 @@ export class WoisCommand implements MessageCommand {
     name = "woisping";
     description = "Pingt die ganze Woisgang";
 
-    async handleMessage(message: Message, _client: Client): Promise<CommandResult> {
+    async handleMessage(message: ProcessableMessage, _client: Client): Promise<CommandResult> {
         // remove first word of message and store the remaning elements into an array
         const args = message.content.split(" ").slice(1);
 
@@ -88,7 +89,7 @@ export class WoisCommand implements MessageCommand {
     }
 }
 
-export const reactionHandler = async (reactionEvent: MessageReaction, user: User, client: Client, message: Message): Promise<any> => {
+export const reactionHandler = async (reactionEvent: MessageReaction, user: User, client: Client, message: ProcessableMessage): Promise<any> => {
     if (message.embeds.length !== 0
         || !message.content.startsWith(pendingMessagePrefix)
         || reactionEvent.emoji.name !== "👍") {

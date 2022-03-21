@@ -1,12 +1,13 @@
 import { SlashCommandBuilder, SlashCommandIntegerOption, SlashCommandStringOption, SlashCommandUserOption } from "@discordjs/builders";
 import { CommandInteraction, GuildMember, User } from "discord.js";
-import { Message, Client } from "discord.js";
+import { Client } from "discord.js";
 import Ban from "../../storage/model/Ban";
 import { getConfig } from "../../utils/configHandler";
 import { ApplicationCommand, CommandPermission, CommandResult, MessageCommand } from "../command";
 import * as cron from "node-cron";
 import log from "../../utils/logger";
 import moment from "moment";
+import type { ProcessableMessage } from "../../handler/cmdHandler";
 
 const config = getConfig();
 
@@ -14,8 +15,8 @@ const config = getConfig();
 
 const assignBannedRoles = async(user: GuildMember): Promise<boolean> => {
     log.debug(`Assigning ban role to user ${user.id}`);
-    let defaultRole = user.guild.roles.cache.find(role => role.id === config.ids.default_role_id);
-    let bannedRole = user.guild.roles.cache.find(role => role.id === config.ids.banned_role_id);
+    const defaultRole = user.guild.roles.cache.find(role => role.id === config.ids.default_role_id);
+    const bannedRole = user.guild.roles.cache.find(role => role.id === config.ids.banned_role_id);
 
     if (!defaultRole || !bannedRole) {
         return false;
@@ -44,8 +45,8 @@ const assignBannedRoles = async(user: GuildMember): Promise<boolean> => {
 
 export const restoreRoles = async(user: GuildMember): Promise<boolean> => {
     log.debug(`Restoring roles from user ${user.id}`);
-    let defaultRole = user.guild.roles.cache.find(role => role.id === config.ids.default_role_id);
-    let bannedRole = user.guild.roles.cache.find(role => role.id === config.ids.banned_role_id);
+    const defaultRole = user.guild.roles.cache.find(role => role.id === config.ids.default_role_id);
+    const bannedRole = user.guild.roles.cache.find(role => role.id === config.ids.banned_role_id);
 
     if (!defaultRole || !bannedRole) {
         return false;
@@ -204,7 +205,7 @@ export class BanCommand implements ApplicationCommand, MessageCommand {
             content: `Ok Bruder, ich hab <@${user.id}> wegen ${reason} ${ duration > 0 ? `für ${humanReadableDuration}` : ""} gebannt`
         });
     }
-    async handleMessage(message: Message, client: Client<boolean>): Promise<CommandResult> {
+    async handleMessage(message: ProcessableMessage, client: Client<boolean>): Promise<CommandResult> {
         const user = message.mentions.users.first();
         const invokingUser = message.author;
 

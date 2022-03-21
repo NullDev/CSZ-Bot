@@ -4,6 +4,7 @@ import { MessageCommand } from "./command";
 import * as Sugar from "sugar";
 import logger from "../utils/logger";
 import Reminder from "../storage/model/Reminder";
+import type { ProcessableMessage } from "../handler/cmdHandler";
 
 const config = getConfig();
 require("sugar/locales/de");
@@ -12,7 +13,7 @@ export class ErinnerungCommand implements MessageCommand {
     name = "erinnerung";
     description = "Setzt eine Erinnerung für dich";
 
-    async handleMessage(message: Message<boolean>, client: Client<boolean>): Promise<void> {
+    async handleMessage(message: ProcessableMessage, client: Client<boolean>): Promise<void> {
         const param = message.content.split(`${config.bot_settings.prefix.command_prefix}${this.name} `)[1];
         if (!param) {
             await message.reply("Brudi ich muss schon wissen wann ich dich erinnern soll");

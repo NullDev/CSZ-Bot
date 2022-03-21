@@ -2,11 +2,12 @@
 // = Copyright (c) Ehrenvio der G = //
 // ================================ //
 
-import { Message, Client, MessageEmbed, GuildMember } from "discord.js";
+import {  Client, MessageEmbed, GuildMember } from "discord.js";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { CommandInteraction, CacheType } from "discord.js";
 import fetch from "node-fetch";
 import { ApplicationCommand, MessageCommand } from "./command";
+import type { ProcessableMessage } from "../handler/cmdHandler";
 
 const INSPIRATION_GENERATEAPI_URL = "https://inspirobot.me/api?generate=true";
 
@@ -39,11 +40,12 @@ export class ErleuchtungCommand implements MessageCommand, ApplicationCommand {
         .setName(this.name)
         .setDescription(this.description);
 
-    async handleMessage(message: Message<boolean>, _client: Client<boolean>): Promise<void> {
-        const author = message.guild?.members.resolve(message.author);
+    async handleMessage(message: ProcessableMessage, _client: Client<boolean>): Promise<void> {
+        const author = message.guild.members.resolve(message.author);
         if(!author) {
             throw new Error("Couldn't resolve guild member");
         }
+
         const embed = await buildInspirationMessage(author);
         await message.channel.send({
             embeds: [embed]

@@ -7,6 +7,7 @@ import { CacheType, CommandInteraction, Client, Message, MessageEmbed, GuildMemb
 import { ApplicationCommand, MessageCommand } from "./command";
 import { SlashCommandBuilder, SlashCommandStringOption } from "@discordjs/builders";
 import { getConfig } from "../utils/configHandler";
+import type { ProcessableMessage } from "../handler/cmdHandler";
 
 type Prompt = string;
 
@@ -88,7 +89,7 @@ export class NeverCommand implements ApplicationCommand, MessageCommand {
         ]);
     }
 
-    async handleMessage(message: Message<boolean>, _client: Client<boolean>): Promise<void> {
+    async handleMessage(message: ProcessableMessage, _client: Client<boolean>): Promise<void> {
         const { channel } = message;
         const author = message.guild?.members.resolve(message.author);
         const customInput = message.content.slice(`${config.bot_settings.prefix.command_prefix}mock `.length);
