@@ -16,9 +16,9 @@ export interface NicknameAttributes {
 export interface NicknameCreationAttributes extends Optional<NicknameAttributes, "id"> { }
 
 export default class Nickname extends Model {
-    id!: string;
-    userId!: string;
-    nickName!: string;
+    declare id: string;
+    declare userId: string;
+    declare nickName: string;
 
     static async insertNickname(userId: Snowflake, nickName: string): Promise<Nickname> {
         log.debug(`Inserting Nickname  for user ${userId}  Nickname: ${nickName}`);

@@ -19,14 +19,14 @@ export interface PenisAttributes {
 export interface PenisCreationAttributes extends Optional<PenisAttributes, "id"> { }
 
 export default class Penis extends Model<PenisAttributes, PenisCreationAttributes> implements PenisAttributes {
-    id!: string;
-    userId!: string;
-    measuredAt!: Date;
-    size!: number;
-    diameter!: Radius;
+    declare id: string;
+    declare userId: string;
+    declare measuredAt: Date;
+    declare size: number;
+    declare diameter: Radius;
 
-    readonly createdAt!: Date;
-    readonly updatedAt!: Date;
+    declare readonly createdAt: Date;
+    declare readonly updatedAt: Date;
 
     static longestRecentMeasurement = (): Promise<Penis | null> => {
         const startToday = moment().startOf("days");

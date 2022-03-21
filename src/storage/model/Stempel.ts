@@ -15,9 +15,9 @@ export interface StempelAttributes {
 export interface StempelCreationAttributes extends Optional<StempelAttributes, "id"> { }
 
 export default class Stempel extends Model<StempelAttributes, StempelCreationAttributes> implements StempelAttributes {
-    id!: string;
-    invitator!: Snowflake;
-    invitedMember!: Snowflake;
+    declare id: string;
+    declare invitator: Snowflake;
+    declare invitedMember: Snowflake;
 
     /**
      * @returns true/false depending if the invitedMember is already in the database

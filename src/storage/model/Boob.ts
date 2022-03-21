@@ -17,13 +17,13 @@ export interface BoobAttributes {
 export interface BoobCreationAttributes extends Optional<BoobAttributes, "id"> { }
 
 export default class Boob extends Model<BoobAttributes, BoobCreationAttributes> implements BoobAttributes {
-    id!: string;
-    userId!: string;
-    measuredAt!: Date;
-    size!: number;
+    declare id: string;
+    declare userId: string;
+    declare measuredAt: Date;
+    declare size: number;
 
-    readonly createdAt!: Date;
-    readonly updatedAt!: Date;
+    declare readonly createdAt: Date;
+    declare readonly updatedAt: Date;
 
     static longestRecentMeasurement = (): Promise<Boob | null> => {
         const startToday = moment().startOf("days");

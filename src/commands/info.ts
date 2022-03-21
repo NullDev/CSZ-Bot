@@ -10,7 +10,7 @@ const buildMessageActionsRow = (): MessageActionRow[] => {
         new MessageActionRow()
             .addComponents(
                 new MessageButton()
-                    .setURL("https://github.com/NullDev/CSC-Bot")
+                    .setURL("https://github.com/NullDev/CSZ-Bot")
                     .setLabel("GitHub")
                     .setStyle("LINK")
                     .setDisabled(false))
@@ -18,7 +18,7 @@ const buildMessageActionsRow = (): MessageActionRow[] => {
 };
 
 const fetchContributions = async(): Promise<Array<GitHubContributor>> => {
-    return fetch("https://api.github.com/repos/NullDev/CSC-Bot/contributors", {
+    return fetch("https://api.github.com/repos/NullDev/CSZ-Bot/contributors", {
         headers: { Accept: "application/vnd.github.v3+json" }
     }).then((res: any) => res.json());
 };
