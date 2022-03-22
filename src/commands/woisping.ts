@@ -88,7 +88,7 @@ export class WoisCommand implements MessageCommand {
     }
 }
 
-export const reactionHandler = async (reactionEvent: MessageReaction, user: User, client: Client, message: Message): Promise<any> => {
+export const reactionHandler = async(reactionEvent: MessageReaction, user: User, client: Client, message: Message): Promise<any> => {
     if (message.embeds.length !== 0
         || !message.content.startsWith(pendingMessagePrefix)
         || reactionEvent.emoji.name !== "👍") {
