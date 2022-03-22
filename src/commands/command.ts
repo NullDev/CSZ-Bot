@@ -1,6 +1,7 @@
 /* eslint-disable no-use-before-define */
 import { SlashCommandBuilder /* , SlashCommandOptionsOnlyBuilder, SlashCommandSubcommandsOnlyBuilder */ } from "@discordjs/builders";
 import type { ApplicationCommandPermissionType, Client, CommandInteraction, Message } from "discord.js";
+import {MessageComponentInteraction} from "discord.js";
 
 // A command can be an application command (slash command) or a message command or both
 export type Command = ApplicationCommand | MessageCommand | SpecialCommand;
@@ -19,6 +20,15 @@ export interface CommandBase {
     readonly aliases?: string[];
     readonly description: string;
     readonly permissions?: ReadonlyArray<CommandPermission>;
+}
+
+export interface UserInteraction{
+    readonly ids: string[];
+    readonly name: string;
+    handleInteraction(
+        command: MessageComponentInteraction,
+        client: Client
+    ): Promise<void>;
 }
 
 // For the sake of simplicty, at the moment every command returns void

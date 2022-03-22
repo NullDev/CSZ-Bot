@@ -3,11 +3,18 @@
  * message commands and relies on the "new commands"
  */
 
-import { InfoCommand } from "../commands/info";
-import { getConfig } from "../utils/configHandler";
-import { REST } from "@discordjs/rest";
-import { Routes } from "discord-api-types/v9";
-import { Client, CommandInteraction, GuildApplicationCommandPermissionData, Interaction, Message } from "discord.js";
+import {InfoCommand} from "../commands/info";
+import {getConfig} from "../utils/configHandler";
+import {REST} from "@discordjs/rest";
+import {Routes} from "discord-api-types/v9";
+import {
+    Client,
+    CommandInteraction,
+    GuildApplicationCommandPermissionData,
+    Interaction,
+    Message,
+    MessageComponentInteraction
+} from "discord.js";
 import {
     ApplicationCommand,
     Command,
@@ -16,7 +23,7 @@ import {
     isMessageCommand,
     isSpecialCommand,
     MessageCommand,
-    SpecialCommand
+    SpecialCommand, UserInteraction
 } from "../commands/command";
 import log from "../utils/logger";
 import { YepYepCommand } from "../commands/special/yepyep";
@@ -38,7 +45,7 @@ import { GoogleCommand } from "../commands/google";
 import { Mutable } from "../types";
 import { NischdaaaCommand } from "../commands/special/nischdaaa";
 import { SdmCommand } from "../commands/sdm";
-import { NicknameCommand } from "../commands/NicknameCommand";
+import { Nickname, NicknameButtonHandler } from "../commands/nickname";
 import { NopNopCommand } from "../commands/special/nopnop";
 import { WoisCommand } from "../commands/woisping";
 import { FicktabelleCommand } from "../commands/ficktabelle";
@@ -69,7 +76,7 @@ export const commands: readonly Command[] = [
     new BoobCommand(),
     new BonkCommand(),
     new GoogleCommand(),
-    new NicknameCommand(),
+    new Nickname(),
     new NischdaaaCommand(),
     new SdmCommand(),
     new NopNopCommand(),
@@ -83,6 +90,10 @@ export const commands: readonly Command[] = [
     new Saufen(),
     new ErinnerungCommand()
 ];
+export const interactions: readonly UserInteraction[] = [
+    new NicknameButtonHandler()
+];
+
 
 export const applicationCommands: Array<ApplicationCommand> =
     commands.filter<ApplicationCommand>(isApplicationCommand);
@@ -102,7 +113,7 @@ export const registerAllApplicationCommandsAsGuildCommands = async(client: Clien
     const clientId = config.auth.client_id;
     const token = config.auth.bot_token;
 
-    const rest = new REST({ version: "9" }).setToken(token);
+    const rest = new REST({version: "9"}).setToken(token);
 
     const commandData = applicationCommands.map((cmd) =>
         ({
@@ -119,7 +130,7 @@ export const registerAllApplicationCommandsAsGuildCommands = async(client: Clien
         // Bulk Overwrite Guild Application Commands
         const createdCommands = await rest.put(Routes.applicationGuildCommands(clientId, guildId), {
             body: commandData
-        }) as {id: string, name: string}[];
+        }) as { id: string, name: string }[];
 
         // Get commands that have permissions
         const permissionizedCommands = applicationCommands.filter((cmd) => cmd.permissions && cmd.permissions.length > 0);
@@ -137,7 +148,7 @@ export const registerAllApplicationCommandsAsGuildCommands = async(client: Clien
             fullPermissions: permissionsToPost
         });
     }
-    catch(err) {
+    catch (err) {
         log.error(`Could not register the application commands, because: ${err}`);
         throw(err);
     }
@@ -166,11 +177,35 @@ const commandInteractionHandler = (
     ));
 };
 
+/**
+ * Handles command interactions.
+ * @param command the recieved command interaction
+ * @param client client
+ * @returns the handled command or an error if no matching command was found.
+ */
+const messageComponentInteractionHandler = (
+    command: MessageComponentInteraction,
+    client: Client
+): Promise<unknown> => {
+    const matchingInteraction = interactions.find(
+        (cmd) => cmd.ids.find(id => id === command.customId
+        ));
+    if (matchingInteraction) {
+        log.debug(`Found a matching interaction ${matchingInteraction.name}`);
+        return matchingInteraction.handleInteraction(command, client);
+    }
+
+    return Promise.reject(new Error(
+        `Interaction ${command.customId} invoked, but not availabe`
+    ));
+};
+
+
 const checkPermissions = (member: GuildMember, permissions: ReadonlyArray<CommandPermission>): boolean => {
     log.debug(`Checking member ${member.id} permissions on permissionSet: ${JSON.stringify(permissions)}`);
 
     // No permissions, no problem
-    if(permissions.length === 0) {
+    if (permissions.length === 0) {
         return true;
     }
 
@@ -178,7 +213,7 @@ const checkPermissions = (member: GuildMember, permissions: ReadonlyArray<Comman
     const userPermission = permissions
         .find(perm => perm.type === "USER" && perm.id === member.id)?.permission ?? false;
 
-    if(userPermission === true) {
+    if (userPermission === true) {
         return true;
     }
 
@@ -189,7 +224,7 @@ const checkPermissions = (member: GuildMember, permissions: ReadonlyArray<Comman
         .first();
 
     // No matching role -> too bad for you
-    if(highestMatchingRole === undefined) {
+    if (highestMatchingRole === undefined) {
         return false;
     }
 
@@ -271,7 +306,10 @@ export const handleInteractionEvent = (
             client
         );
     }
-    return Promise.reject(new Error("Interaction is not a command"));
+    else if (interaction.isMessageComponent()) {
+        return messageComponentInteractionHandler(interaction as MessageComponentInteraction, client);
+    }
+    return Promise.reject(new Error("Not supported"));
 };
 
 export const messageCommandHandler = (
@@ -279,7 +317,7 @@ export const messageCommandHandler = (
     client: Client
 ): Promise<unknown> => {
     // Bots shall not be able to perform commands. High Security
-    if(message.author.bot) {
+    if (message.author.bot) {
         return Promise.resolve();
     }
     // TODO: The Prefix is now completly irrelevant, since the commands itself define
