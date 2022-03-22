@@ -21,64 +21,39 @@ import {isTrusted} from "../utils/userUtils";
 
 const config = getConfig();
 
-enum Vote {
-    YES,
-    NO
-}
+type Vote = "YES" | "NO";
 
-class UserVote {
+interface UserVote {
     readonly vote: Vote;
-    private trusted: boolean;
+    readonly trusted: boolean;
 
-    constructor(vote: Vote, trusted: boolean) {
-        this.vote = vote;
-        this.trusted = trusted;
-    }
-
-    getWeight(): number {
-        return this.trusted ? 2 : 1;
-    }
 }
 
+function getWeightOfUserVote(vote: UserVote): number {
+    return vote.trusted ? 2 : 1;
+}
 
-class Suggestion {
+interface Suggestion {
     readonly nicknameUserID: string;
     readonly nickname: string;
 
-    constructor(nicknameUserID: string, nickname: string) {
-        this.nicknameUserID = nicknameUserID;
-        this.nickname = nickname;
-    }
 }
 
-const ongoingSuggestions = new Map<string, Suggestion>();
-const idVoteMap = new Map<string, Map<string, UserVote>>();
+const ongoingSuggestions: Record<string, Suggestion> = {};
+const idVoteMap: Record<string, Record<string, UserVote>> = {};
 
 function getUserVoteMap(messageid: string) {
-    let userVoteMap = idVoteMap.get(messageid);
-    if (userVoteMap === undefined) {
-        let map = new Map<string, UserVote>();
-        idVoteMap.set(messageid, map);
-        userVoteMap = map;
+    if (idVoteMap[messageid] === undefined) {
+        idVoteMap[messageid] = {};
     }
-    return userVoteMap;
+    return idVoteMap[messageid];
 }
 
 export class Nickname implements ApplicationCommand {
     modCommand: boolean = false;
     name: string = "nickname";
     description: string = "Setzt Nicknames für einen User";
-    permissions: readonly CommandPermission[] = [
-        {
-            id: config.bot_settings.moderator_id,
-            permission: true,
-            type: "ROLE"
-        },
-        {
-            id: config.ids.trusted_role_id,
-            permission: true,
-            type: "ROLE"
-        }];
+    permissions: readonly CommandPermission[] = [];
 
     get applicationCommand(): Pick<SlashCommandBuilder, "toJSON"> {
         return new SlashCommandBuilder()
@@ -100,7 +75,7 @@ export class Nickname implements ApplicationCommand {
             .addSubcommand(
                 new SlashCommandSubcommandBuilder()
                     .setName("delete")
-                    .setDescription("Entfernt einen nickname brudi")
+                    .setDescription("Entfernt einen Nickname brudi")
                     .addUserOption(new SlashCommandUserOption()
                         .setRequired(true)
                         .setName("user")
@@ -135,7 +110,7 @@ export class Nickname implements ApplicationCommand {
             // We know that the user option is in every subcommand.
             const user = command.options.getUser("user", true);
             const isNotTrusted = !commandUser?.roles.cache.has(config.ids.trusted_role_id);
-            const userDiffersFromCommandUser = user.id !== commandUser.user.id;
+            const isDifferentUser = user.id !== commandUser.user.id;
 
 
             // Yes, we could use a switch-statement here. No, that wouldn't make the code more readable as we're than
@@ -143,7 +118,7 @@ export class Nickname implements ApplicationCommand {
             // Yes, we could rearrange the code parts into separate functions. Feel free to do so.
             // Yes, "else" is uneccessary as we're returning in every block. However, I find the semantics more clear.
             if (option === "deleteall") {
-                if (isNotTrusted && userDiffersFromCommandUser) {
+                if (isNotTrusted && isDifferentUser) {
                     return command.reply("Hurensohn. Der Command ist nix für dich.");
                 }
                 const member = command.guild?.members.cache.get(user.id)!;
@@ -154,7 +129,7 @@ export class Nickname implements ApplicationCommand {
             else if (option === "list") {
                 const nicknames = await Nicknames.getNicknames(user.id);
                 if (nicknames.length === 0) {
-                    return command.reply("Ne Brudi für den hab ich keine nicknames");
+                    return command.reply("Ne Brudi für den hab ich keine Nicknames");
                 }
                 return command.reply(`Hab für den Brudi folgende Nicknames:\n${nicknames.map(n => n.nickName).join(", ")}`);
             }
@@ -170,7 +145,7 @@ export class Nickname implements ApplicationCommand {
                 //    await this.addNickname(command, user);
             }
             else if (option === "delete") {
-                if (isNotTrusted && userDiffersFromCommandUser) {
+                if (isNotTrusted && isDifferentUser) {
                     return command.reply("Hurensohn. Der Command ist nix für dich.");
                 }
                 // We don't violate the DRY principle, since we're referring to another subcommand object as in the "add" subcommand.
@@ -209,8 +184,11 @@ export class Nickname implements ApplicationCommand {
             components: [row]
         });
         const message = await command.fetchReply();
-        ongoingSuggestions.set(message.id, new Suggestion(user.id, nickname));
-        getUserVoteMap(message.id).set(user.id, new UserVote(Vote.YES, isTrusted(command.guild?.members.cache.get(user.id)!)));
+        ongoingSuggestions[message.id] = {nicknameUserID: user.id, nickname};
+        getUserVoteMap(message.id)[user.id] = {
+            vote: "YES",
+            trusted: isTrusted(command.guild?.members.cache.get(user.id)!)
+        };
         return;
     }
 
@@ -228,7 +206,7 @@ export class NicknameButtonHandler implements UserInteraction {
 
 
     async handleInteraction(interaction: MessageComponentInteraction, client: Client): Promise<void> {
-        let suggestion = ongoingSuggestions.get(interaction.message.id);
+        let suggestion = ongoingSuggestions[interaction.message.id];
 
         if (suggestion === undefined) {
             return interaction.update({
@@ -246,20 +224,20 @@ export class NicknameButtonHandler implements UserInteraction {
             });
         }
         if (interaction.customId === "nicknameVoteYes") {
-            userVoteMap.set(interaction.user.id, new UserVote(Vote.YES, isTrust));
+            userVoteMap[interaction.user.id] = {vote: "YES", trusted: isTrust};
         }
         else if (interaction.customId === "nicknameVoteNo") {
-            userVoteMap.set(interaction.user.id, new UserVote(Vote.NO, isTrust));
+            userVoteMap[interaction.user.id] = {vote: "NO", trusted: isTrust};
         }
         // evaluate the Uservotes
-        let votes = Array.from(userVoteMap.values());
-        if (votes.filter(vote => vote.vote === Vote.NO).reduce((sum, uservote) => sum + uservote.getWeight(), 0) >= this.threshold) {
+        let votes = Object.values(userVoteMap);
+        if (votes.filter(userVote => userVote.vote === "NO").reduce((sum, uservote) => sum + getWeightOfUserVote(uservote), 0) >= this.threshold) {
             return interaction.update({
                 content: `Der Vorschlag: \`${suggestion.nickname}\` für <@${suggestion.nicknameUserID}> war echt nicht so geil`,
                 components: []
             });
         }
-        if (votes.filter(vote => vote.vote === Vote.YES).reduce((sum, uservote) => sum + uservote.getWeight(), 0) >= this.threshold) {
+        if (votes.filter(vote => vote.vote === "YES").reduce((sum, uservote) => sum + getWeightOfUserVote(uservote), 0) >= this.threshold) {
             try {
                 await Nicknames.insertNickname(suggestion.nicknameUserID, suggestion.nickname);
             }

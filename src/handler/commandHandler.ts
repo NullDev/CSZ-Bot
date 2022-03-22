@@ -302,7 +302,10 @@ export const handleInteractionEvent = (
             client
         );
     }
-    return messageComponentInteractionHandler(interaction as MessageComponentInteraction, client);
+    else if (interaction.isMessageComponent()) {
+        return messageComponentInteractionHandler(interaction as MessageComponentInteraction, client);
+    }
+    return Promise.reject(new Error("Not supported"));
 };
 
 export const messageCommandHandler = (
