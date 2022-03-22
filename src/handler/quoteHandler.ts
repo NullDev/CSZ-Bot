@@ -177,5 +177,8 @@ export const quoteReactionHandler = async(event: MessageReaction, user: User, cl
         }
 
         await quotedMessage.react(event.emoji);
+        if (quotedMessage.channel.isText() && quotedMessage.channel.type === "GUILD_TEXT") {
+            await quotedMessage.reply("Ihr quoted echt jeden Scheiß, oder?");
+        }
     }
 };

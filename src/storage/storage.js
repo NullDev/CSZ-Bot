@@ -13,6 +13,7 @@ import log from "../utils/logger";
 import Penis from "./model/Penis";
 import Nickname from "./model/Nickname";
 import Boob from "./model/Boob";
+import Reminder from "./model/Reminder";
 
 export async function initialize() {
     const sequelize = new Sequelize({
@@ -38,6 +39,7 @@ export async function initialize() {
     Penis.initialize(sequelize);
     Boob.initialize(sequelize);
     Nickname.initialize(sequelize);
+    Reminder.initialize(sequelize);
 
     await sequelize.sync();
 }

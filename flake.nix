@@ -1,6 +1,6 @@
 {
-  description = "CSC-Bot";
-  nixConfig.bash-prompt = "\[csc-bot\]$ ";
+  description = "CSZ-Bot";
+  nixConfig.bash-prompt = "\[csz-bot\]$ ";
 
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
   inputs.flake-utils.url = "github:numtide/flake-utils";

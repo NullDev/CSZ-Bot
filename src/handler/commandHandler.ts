@@ -26,34 +26,36 @@ import {
     SpecialCommand, UserInteraction
 } from "../commands/command";
 import log from "../utils/logger";
-import {YepYepCommand} from "../commands/special/yepyep";
-import {NixOsCommand} from "../commands/special/nixos";
-import {WhereCommand} from "../commands/special/where";
-import {DadJokeCommand} from "../commands/special/dadJoke";
-import {WatCommand} from "../commands/special/wat";
-import {TikTokLink} from "../commands/special/tiktok";
-import {StempelCommand} from "../commands/stempeln";
-import {StempelgraphCommand} from "../commands/stempelgraph";
-import {StempelkarteCommand} from "../commands/stempelkarte";
-import {GuildMember} from "discord.js";
-import {ban, BanCommand} from "../commands/modcommands/ban";
-import {UnbanCommand} from "../commands/modcommands/unban";
-import {PenisCommand} from "../commands/penis";
-import {BoobCommand} from "../commands/boobs";
-import {BonkCommand} from "../commands/bonk";
-import {GoogleCommand} from "../commands/google";
-import {Mutable} from "../types";
-import {NischdaaaCommand} from "../commands/special/nischdaaa";
-import {SdmCommand} from "../commands/sdm";
-import {Nickname, NicknameButtonHandler} from "../commands/nickname";
-import {NopNopCommand} from "../commands/special/nopnop";
-import {WoisCommand} from "../commands/woisping";
-import {FicktabelleCommand} from "../commands/ficktabelle";
-import {InviteCommand} from "../commands/invite";
-import {ErleuchtungCommand} from "../commands/erleuchtung";
-import {MockCommand} from "../commands/mock";
-import {NeverCommand} from "../commands/never";
-import {GeburtstagCommand} from "../commands/geburtstag";
+import { YepYepCommand } from "../commands/special/yepyep";
+import { NixOsCommand } from "../commands/special/nixos";
+import { WhereCommand } from "../commands/special/where";
+import { DadJokeCommand } from "../commands/special/dadJoke";
+import { WatCommand } from "../commands/special/wat";
+import { TikTokLink } from "../commands/special/tiktok";
+import { StempelCommand } from "../commands/stempeln";
+import { StempelgraphCommand } from "../commands/stempelgraph";
+import { StempelkarteCommand } from "../commands/stempelkarte";
+import { GuildMember } from "discord.js";
+import { ban, BanCommand } from "../commands/modcommands/ban";
+import { UnbanCommand } from "../commands/modcommands/unban";
+import { PenisCommand } from "../commands/penis";
+import { BoobCommand } from "../commands/boobs";
+import { BonkCommand } from "../commands/bonk";
+import { GoogleCommand } from "../commands/google";
+import { Mutable } from "../types";
+import { NischdaaaCommand } from "../commands/special/nischdaaa";
+import { SdmCommand } from "../commands/sdm";
+import { Nickname, NicknameButtonHandler } from "../commands/nickname";
+import { NopNopCommand } from "../commands/special/nopnop";
+import { WoisCommand } from "../commands/woisping";
+import { FicktabelleCommand } from "../commands/ficktabelle";
+import { InviteCommand } from "../commands/invite";
+import { ErleuchtungCommand } from "../commands/erleuchtung";
+import { MockCommand } from "../commands/mock";
+import { NeverCommand } from "../commands/never";
+import { GeburtstagCommand } from "../commands/geburtstag";
+import { Saufen } from "../commands/saufen";
+import { ErinnerungCommand } from "../commands/erinnerung";
 
 const config = getConfig();
 
@@ -84,7 +86,9 @@ export const commands: readonly Command[] = [
     new ErleuchtungCommand(),
     new MockCommand(),
     new NeverCommand(),
-    new GeburtstagCommand()
+    new GeburtstagCommand(),
+    new Saufen(),
+    new ErinnerungCommand()
 ];
 export const interactions: readonly UserInteraction[] = [
     new NicknameButtonHandler()

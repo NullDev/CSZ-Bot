@@ -17,14 +17,14 @@ export interface BanAttributes {
 export interface BanCreationAttributes extends Optional<BanAttributes, "id"> { }
 
 export default class Ban extends Model<BanAttributes, BanCreationAttributes> implements BanAttributes {
-    id!: string;
-    userId!: string;
-    reason!: string | null;
-    bannedUntil!: Date | null;
-    isSelfBan!: boolean;
+    declare id: string;
+    declare userId: string;
+    declare reason: string | null;
+    declare bannedUntil: Date | null;
+    declare isSelfBan: boolean;
 
-    readonly createdAt!: Date;
-    readonly updatedAt!: Date;
+    declare readonly createdAt: Date;
+    declare readonly updatedAt: Date;
 
     static persistOrUpdate = (user: GuildMember, until: Date | null, isSelfBan: boolean, reason: string | null = null): Promise<void> => {
         log.debug(`Saving Ban for user ${user} until ${until} (Selfban: ${isSelfBan}, Reason: ${reason})`);
