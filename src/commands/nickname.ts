@@ -42,12 +42,12 @@ interface Suggestion {
 const ongoingSuggestions: Record<string, Suggestion> = {};
 const idVoteMap: Record<string, Record<string, UserVote>> = {};
 
-function getUserVoteMap(messageid: string) {
+const getUserVoteMap = (messageid: string): Record<string, UserVote> => {
     if (idVoteMap[messageid] === undefined) {
         idVoteMap[messageid] = {};
     }
     return idVoteMap[messageid];
-}
+};
 
 export class Nickname implements ApplicationCommand {
     modCommand: boolean = false;
@@ -121,7 +121,7 @@ export class Nickname implements ApplicationCommand {
                 if (isNotTrusted && isDifferentUser) {
                     return command.reply("Hurensohn. Der Command ist nix für dich.");
                 }
-                const member = command.guild?.members.cache.get(user.id)!;
+                const member = command.guild?.members.cache.get(user.id);
                 await Nicknames.deleteNickNames(user.id);
                 await this.updateNickName(member!, null);
                 return command.reply("Ok Brudi. Hab alles gelöscht");
@@ -154,7 +154,7 @@ export class Nickname implements ApplicationCommand {
                 await Nicknames.deleteNickName(user.id, nickname);
                 const member = command.guild?.members.cache.get(user.id)!;
                 if (member.nickname === nickname) {
-                    await this.updateNickName(member!, null);
+                    await this.updateNickName(member, null);
                 }
                 return command.reply(`Ok Brudi. Hab für ${user} ${nickname} gelöscht`);
             }
@@ -230,14 +230,14 @@ export class NicknameButtonHandler implements UserInteraction {
             userVoteMap[interaction.user.id] = {vote: "NO", trusted: isTrust};
         }
         // evaluate the Uservotes
-        let votes = Object.values(userVoteMap);
-        if (votes.filter(userVote => userVote.vote === "NO").reduce((sum, uservote) => sum + getWeightOfUserVote(uservote), 0) >= this.threshold) {
+        let votes:UserVote[] = Object.values(userVoteMap);
+        if (this.hasEnoughVotes(votes, "NO")) {
             return interaction.update({
                 content: `Der Vorschlag: \`${suggestion.nickname}\` für <@${suggestion.nicknameUserID}> war echt nicht so geil`,
                 components: []
             });
         }
-        if (votes.filter(vote => vote.vote === "YES").reduce((sum, uservote) => sum + getWeightOfUserVote(uservote), 0) >= this.threshold) {
+        if (this.hasEnoughVotes(votes, "YES")) {
             try {
                 await Nicknames.insertNickname(suggestion.nicknameUserID, suggestion.nickname);
             }
@@ -251,6 +251,10 @@ export class NicknameButtonHandler implements UserInteraction {
             });
         }
         return interaction.reply({content: "Hast abgestimmt", ephemeral: true});
+    }
+
+    private hasEnoughVotes(votes:UserVote[], voteType:Vote) {
+        return votes.filter(vote => vote.vote === voteType).reduce((sum, uservote) => sum + getWeightOfUserVote(uservote), 0) >= this.threshold;
     }
 }
 
