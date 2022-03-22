@@ -21,10 +21,7 @@ import {isTrusted} from "../utils/userUtils";
 
 const config = getConfig();
 
-enum Vote {
-    YES,
-    NO
-}
+type Vote = "YES" | "NO";
 
 class UserVote {
     readonly vote: Vote;
