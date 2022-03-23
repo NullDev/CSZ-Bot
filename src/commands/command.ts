@@ -2,6 +2,7 @@
 import { SlashCommandBuilder /* , SlashCommandOptionsOnlyBuilder, SlashCommandSubcommandsOnlyBuilder */ } from "@discordjs/builders";
 import type { ApplicationCommandPermissionType, Client, CommandInteraction } from "discord.js";
 import type { ProcessableMessage } from "../handler/cmdHandler";
+import {MessageComponentInteraction} from "discord.js";
 
 // A command can be an application command (slash command) or a message command or both
 export type Command = ApplicationCommand | MessageCommand | SpecialCommand;
@@ -22,7 +23,16 @@ export interface CommandBase {
     readonly permissions?: ReadonlyArray<CommandPermission>;
 }
 
-// For the sake of simplicity, at the moment every command returns void
+export interface UserInteraction {
+    readonly ids: string[];
+    readonly name: string;
+    handleInteraction(
+        command: MessageComponentInteraction,
+        client: Client
+    ): Promise<void>;
+}
+
+// For the sake of simplicty, at the moment every command returns void
 export type CommandResult = void;
 
 // For ApplicationCommands we require a SlashCommandBuilder object to create the command and a handler method
