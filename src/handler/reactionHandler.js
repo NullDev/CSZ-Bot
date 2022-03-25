@@ -7,7 +7,6 @@ import AdditionalMessageData from "../storage/model/AdditionalMessageData";
 
 import log from "../utils/logger";
 import * as poll from "../commands/poll";
-import * as woisping from "../commands/woisping";
 import * as nickname from "../commands/nickname";
 
 const pollEmojis = poll.EMOJI;
@@ -51,9 +50,6 @@ export default async function(reactionEvent, user, client, removal) {
             return;
         }
 
-        if (await woisping.reactionHandler(reactionEvent, user, client, message)) {
-            return;
-        }
         if (await nickname.reactionHandler(reactionEvent, user, client, message)) {
             return;
         }

@@ -109,8 +109,8 @@ export class Nickname implements ApplicationCommand {
             const commandUser = command.guild?.members.cache.find(m => m.id === command.user.id)!;
             // We know that the user option is in every subcommand.
             const user = command.options.getUser("user", true);
-            const isTrusted = commandUser?.roles.cache.has(config.ids.trusted_role_id);
-            const isSameUser = user.id === commandUser.user.id;
+            const trusted = commandUser?.roles.cache.has(config.ids.trusted_role_id);
+            const sameuser = user.id === commandUser.user.id;
 
 
             // Yes, we could use a switch-statement here. No, that wouldn't make the code more readable as we're than
@@ -118,7 +118,7 @@ export class Nickname implements ApplicationCommand {
             // Yes, we could rearrange the code parts into separate functions. Feel free to do so.
             // Yes, "else" is uneccessary as we're returning in every block. However, I find the semantics more clear.
             if (option === "deleteall") {
-                if (!isTrusted && !isSameUser) {
+                if (!trusted && !sameuser) {
                     return command.reply("Hurensohn. Der Command ist nix für dich.");
                 }
                 const member = command.guild?.members.cache.get(user.id);
@@ -134,7 +134,7 @@ export class Nickname implements ApplicationCommand {
                 return command.reply(`Hab für den Brudi folgende Nicknames:\n${nicknames.map(n => n.nickName).join(", ")}`);
             }
             else if (option === "add") {
-                if (!isTrusted) {
+                if (!trusted) {
                     return command.reply("Hurensohn. Der Command ist nix für dich.");
                 }
                 let nickname = command.options.getString("nickname", true);
@@ -145,7 +145,7 @@ export class Nickname implements ApplicationCommand {
                 //    await this.addNickname(command, user);
             }
             else if (option === "delete") {
-                if (!isTrusted && !isSameUser) {
+                if (!trusted && !sameuser) {
                     return command.reply("Hurensohn. Der Command ist nix für dich.");
                 }
                 // We don't violate the DRY principle, since we're referring to another subcommand object as in the "add" subcommand.
@@ -202,7 +202,7 @@ export class Nickname implements ApplicationCommand {
 export class NicknameButtonHandler implements UserInteraction {
     readonly ids = ["nicknameVoteYes", "nicknameVoteNo"];
     readonly name = "NicknameButtonhandler";
-    readonly threshold = 5;
+    readonly threshold = 7;
 
 
     async handleInteraction(interaction: MessageComponentInteraction, client: Client): Promise<void> {
@@ -216,18 +216,12 @@ export class NicknameButtonHandler implements UserInteraction {
         }
         let userVoteMap = getUserVoteMap(interaction.message.id);
 
-        const trusted = isTrusted(interaction.guild?.members.cache.get(interaction.user.id)!);
-        if (!trusted) {
-            return interaction.reply({
-                content: "Neeeeee, du bist nicht cool genug. Ich hab dein Vote nicht gezählt",
-                ephemeral: true
-            });
-        }
+        const istrusted = isTrusted(interaction.guild?.members.cache.get(interaction.user.id)!);
         if (interaction.customId === "nicknameVoteYes") {
-            userVoteMap[interaction.user.id] = {vote: "YES", trusted: trusted};
+            userVoteMap[interaction.user.id] = {vote: "YES", trusted: istrusted};
         }
         else if (interaction.customId === "nicknameVoteNo") {
-            userVoteMap[interaction.user.id] = {vote: "NO", trusted: trusted};
+            userVoteMap[interaction.user.id] = {vote: "NO", trusted: istrusted};
         }
         // evaluate the Uservotes
         let votes:UserVote[] = Object.values(userVoteMap);
