@@ -7,7 +7,6 @@ import AdditionalMessageData from "../storage/model/AdditionalMessageData";
 
 import log from "../utils/logger";
 import * as poll from "../commands/poll";
-import * as woisping from "../commands/woisping";
 import * as nickname from "../commands/nickname";
 
 const pollEmojis = poll.EMOJI;

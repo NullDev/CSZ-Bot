@@ -3,14 +3,13 @@
 // ================================= //
 
 import {
-    CommandInteraction, GuildMember,
-    MessageActionRow,
+    CommandInteraction, MessageActionRow,
     MessageButton,
     MessageComponentInteraction,
     Util
 } from "discord.js";
-import {Client, Message, MessageReaction, User} from "discord.js";
-import {ApplicationCommand, CommandPermission, CommandResult, MessageCommand, UserInteraction} from "./command";
+import {Client} from "discord.js";
+import {ApplicationCommand, CommandPermission, CommandResult, UserInteraction} from "./command";
 import log from "../utils/logger";
 
 
@@ -18,7 +17,6 @@ import {isMod, isWoisGang} from "../utils/userUtils";
 
 import {getConfig} from "../utils/configHandler";
 import {SlashCommandBuilder, SlashCommandStringOption} from "@discordjs/builders";
-import {Array} from "sugar";
 
 const config = getConfig();
 
@@ -37,9 +35,7 @@ const getPingVoteMap = (messageid: string): Set<string> => {
 };
 
 const getMessage = (reason: string, usersVotedYes: string[] = []) => {
-
-    let content = usersVotedYes.length == 1 ?
-        `<@&${config.ids.woisgang_role_id}> <@!${usersVotedYes[0]}> hat Bock auf Wois. Grund dafür ist \`${reason}\`` :
+    let content = usersVotedYes.length === 1 ? `<@&${config.ids.woisgang_role_id}> <@!${usersVotedYes[0]}> hat Bock auf Wois. Grund dafür ist \`${reason}\`` :
         `<@&${config.ids.woisgang_role_id}> <@!${usersVotedYes.join(">,<@!")}> haben Bock auf Wois. Grund dafür ist \`${reason}\``;
     return {
         content: content.trim(),
@@ -87,26 +83,23 @@ export class WoisCommand implements ApplicationCommand {
             lastPing = now;
             return command.reply(getMessage(reason, [pinger.id]));
         }
-        else {
-            const row = new MessageActionRow()
-                .addComponents(
-                    new MessageButton()
-                        .setCustomId("woisbutton")
-                        .setLabel("Ich hab Bock")
-                        .setStyle("SUCCESS")
-                );
-            await command.reply({
-                content: `${pendingMessagePrefix} <@!${pinger.id}> hat Bock auf Wois. ${reason ? `Grund dafür ist \`${reason}\`` : ""}. Biste dabei?`,
-                allowedMentions: {
-                    users: [pinger.id]
-                },
-                components: [row]
-            });
-            const message = await command.fetchReply();
-            reasons[message.id] = reason;
-            let pingVoteMap = getPingVoteMap(message.id);
-            pingVoteMap.add(pinger.id);
-        }
+        const row = new MessageActionRow()
+            .addComponents(new MessageButton()
+                .setCustomId("woisbutton")
+                .setLabel("Ich hab Bock")
+                .setStyle("SUCCESS")
+            );
+        await command.reply({
+            content: `${pendingMessagePrefix} <@!${pinger.id}> hat Bock auf Wois. ${reason ? `Grund dafür ist \`${reason}\`` : ""}. Biste dabei?`,
+            allowedMentions: {
+                users: [pinger.id]
+            },
+            components: [row]
+        });
+        const message = await command.fetchReply();
+        reasons[message.id] = reason;
+        let pingVoteMap = getPingVoteMap(message.id);
+        pingVoteMap.add(pinger.id);
     }
 }
 
@@ -134,15 +127,11 @@ export class WoisButton implements UserInteraction {
             return command.update(getMessage(reason, [...pingVoteMap])
             );
         }
-        else {
-            return command.reply({
-                content: " Jetzt müssen nur die anderen Bock drauf haben.",
-                ephemeral: true
-            });
-        }
-
+        return command.reply({
+            content: " Jetzt müssen nur die anderen Bock drauf haben.",
+            ephemeral: true
+        });
     }
-
 }
 
 export const description = `Mitglieder der @Woisgang-Rolle können einen Ping an diese Gruppe absenden. Es müssen mindestens ${config.bot_settings.woisping_threshold} Woisgang-Mitglieder per Reaction zustimmen.\nUsage: ${config.bot_settings.prefix.command_prefix}woisping Text`;
