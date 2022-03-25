@@ -260,10 +260,10 @@ client.on("messageUpdate", async(_, newMessage) => {
     }
 });
 
-client.on("error", log.error);
-client.on("warn", log.warn);
-client.on("debug", log.debug);
-client.on("rateLimit", log.error);
+client.on("error", (e) => log.error(`Discord Client Error: ${e}`));
+client.on("warn", (w) => log.warn(`Discord Client Warning: ${w}`));
+client.on("debug", (d) => log.debug(`Discord Client Debug: ${d}`));
+client.on("rateLimit", (rateLimitData) => log.error(`Discord Client RateLimit Shit: ${rateLimitData}`));
 
 client.on("messageReactionAdd", async(event, user) => reactionHandler(event, user, client, false));
 client.on("messageReactionAdd", async(event, user) => quoteReactionHandler(event, user, client));
