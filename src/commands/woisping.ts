@@ -124,8 +124,7 @@ export class WoisButton implements UserInteraction {
         if (isModMessage || (amount >= config.bot_settings.woisping_threshold)) {
             const reason = reasons[command.message.id];
             lastPing = now;
-            await command.channel!.send(getMessage(reason, [...pingVoteMap]));
-            return command.update({content: " Woisping ist durch", components: []});
+            return command.update({content: " Woisping ist durch", components: [], allowedMentions: { roles: [ config.ids.woisgang_role_id ] } });
         }
         return command.reply({
             content: " Jetzt müssen nur die anderen Bock drauf haben.",
