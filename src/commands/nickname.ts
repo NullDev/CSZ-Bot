@@ -216,12 +216,12 @@ export class NicknameButtonHandler implements UserInteraction {
         }
         let userVoteMap = getUserVoteMap(interaction.message.id);
 
-        const trusted = isTrusted(interaction.guild?.members.cache.get(interaction.user.id)!);
+        const istrusted = isTrusted(interaction.guild?.members.cache.get(interaction.user.id)!);
         if (interaction.customId === "nicknameVoteYes") {
-            userVoteMap[interaction.user.id] = {vote: "YES", trusted};
+            userVoteMap[interaction.user.id] = {vote: "YES", trusted: istrusted};
         }
         else if (interaction.customId === "nicknameVoteNo") {
-            userVoteMap[interaction.user.id] = {vote: "NO", trusted};
+            userVoteMap[interaction.user.id] = {vote: "NO", trusted: istrusted};
         }
         // evaluate the Uservotes
         let votes:UserVote[] = Object.values(userVoteMap);
