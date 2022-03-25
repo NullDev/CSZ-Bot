@@ -107,7 +107,7 @@ export class WoisButton implements UserInteraction {
     readonly ids = ["woisbutton"];
     readonly name = "Woisbutton";
 
-    handleInteraction(command: MessageComponentInteraction, client: Client): Promise<void> {
+    async handleInteraction(command: MessageComponentInteraction, client: Client): Promise<void> {
         const member = command.guild?.members.cache.get(command.member!.user.id)!;
         const isModMessage = isMod(member);
         if (!isModMessage && !isWoisGang(member)) {
@@ -124,8 +124,8 @@ export class WoisButton implements UserInteraction {
         if (isModMessage || (amount >= config.bot_settings.woisping_threshold)) {
             const reason = reasons[command.message.id];
             lastPing = now;
-            return command.update(getMessage(reason, [...pingVoteMap])
-            );
+            await command.channel!.send(getMessage(reason, [...pingVoteMap]));
+            return command.update({content: " Woisping ist durch", components: []});
         }
         return command.reply({
             content: " Jetzt müssen nur die anderen Bock drauf haben.",
