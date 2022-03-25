@@ -47,7 +47,7 @@ import { NischdaaaCommand } from "../commands/special/nischdaaa";
 import { SdmCommand } from "../commands/sdm";
 import { Nickname, NicknameButtonHandler } from "../commands/nickname";
 import { NopNopCommand } from "../commands/special/nopnop";
-import { WoisCommand } from "../commands/woisping";
+import {WoisButton, WoisCommand} from "../commands/woisping";
 import { FicktabelleCommand } from "../commands/ficktabelle";
 import { InviteCommand } from "../commands/invite";
 import { ErleuchtungCommand } from "../commands/erleuchtung";
@@ -91,7 +91,8 @@ export const commands: readonly Command[] = [
     new ErinnerungCommand()
 ];
 export const interactions: readonly UserInteraction[] = [
-    new NicknameButtonHandler()
+    new NicknameButtonHandler(),
+    new WoisButton()
 ];
 
 

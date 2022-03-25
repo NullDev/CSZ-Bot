@@ -51,9 +51,6 @@ export default async function(reactionEvent, user, client, removal) {
             return;
         }
 
-        if (await woisping.reactionHandler(reactionEvent, user, client, message)) {
-            return;
-        }
         if (await nickname.reactionHandler(reactionEvent, user, client, message)) {
             return;
         }
