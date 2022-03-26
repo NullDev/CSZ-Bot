@@ -3,7 +3,7 @@ import { getConfig } from "../utils/configHandler";
 import { MessageCommand } from "./command";
 import * as Sugar from "sugar";
 import logger from "../utils/logger";
-import Reminder from "../storage/model/Reminder";
+import Reminder, { ReminderAttributes } from "../storage/model/Reminder";
 import type { ProcessableMessage } from "../handler/cmdHandler";
 
 const config = getConfig();
@@ -48,40 +48,49 @@ export class ErinnerungCommand implements MessageCommand {
     }
 }
 
-export const reminderHandler = async(client: Client) => {
-    const reminders = await Reminder.getCurrentReminders();
-    if (reminders === null) {
-        return;
+const sendReminder = async(reminder: ReminderAttributes, client: Client) => {
+    try {
+        const guild = client.guilds.cache.get(reminder.guildId);
+        if (guild === undefined) {
+            throw new Error(`Guild ${reminder.guildId} couldn't be found`);
+        }
+
+        const channel = guild.channels.cache.get(reminder.channelId);
+        if (channel === undefined) {
+            throw new Error(`Channel ${reminder.channelId} couldn't be found`);
+        }
+        if (!channel.isText()) {
+            throw new Error(`Channel ${reminder.channelId} is not a text channel`);
+        }
+        const message = await (channel as TextBasedChannel).messages.fetch(reminder.messageId);
+        const user = await guild.members.fetch(reminder.userId);
+
+        await message.reply({
+            content: `${user} du wolltest daran erinnern werden oder wat`,
+            allowedMentions: {
+                repliedUser: false,
+                users: [ user.id ]
+            }
+        });
     }
+    catch(err) {
+        logger.error(`Couldn't send reminder due to ${err}. Removing it...`);
+    }
+    await Reminder.removeReminder(reminder.id);
+};
 
-    for (const reminder of reminders) {
-        try {
-            const guild = client.guilds.cache.get(reminder.guildId);
-            if (guild === undefined) {
-                throw new Error(`Guild ${reminder.guildId} couldn't be found`);
-            }
-
-            const channel = guild.channels.cache.get(reminder.channelId);
-            if (channel === undefined) {
-                throw new Error(`Channel ${reminder.channelId} couldn't be found`);
-            }
-            if (!channel.isText()) {
-                throw new Error(`Channel ${reminder.channelId} is not a text channel`);
-            }
-            const message = await (channel as TextBasedChannel).messages.fetch(reminder.messageId);
-            const user = await guild.members.fetch(reminder.userId);
-
-            await message.reply({
-                content: `${user} du wolltest daran erinnern werden oder wat`,
-                allowedMentions: {
-                    repliedUser: false,
-                    users: [ user.id ]
-                }
-            });
+export const reminderHandler = async(client: Client) => {
+    try {
+        const reminders = await Reminder.getCurrentReminders();
+        if (reminders === null) {
+            return;
         }
-        catch(err) {
-            logger.error(`Couldn't send reminder due to ${err}. Removing it...`);
+
+        for (const reminder of reminders) {
+            await sendReminder(reminder, client);
         }
-        await Reminder.removeReminder(reminder.id);
+    }
+    catch(err) {
+        logger.error(`Couldn't retreive reminders because of ${err}`);
     }
 };

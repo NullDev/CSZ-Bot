@@ -79,6 +79,8 @@ const client = new Discord.Client({
 
 // @ts-ignore
 process.on("unhandledRejection", (err, promise) => log.error(`Unhandled rejection (promise: ${promise}, reason: ${err.stack})`));
+process.on("uncaughtException", (err, origin) => log.error(`Uncaught exception (origin: ${origin}, error: ${err})`));
+process.on("SIGTERM", (signal) => log.error(`Received Sigterm: ${signal}`));
 
 let timezoneFixedCronjobTask = null;
 
@@ -258,7 +260,10 @@ client.on("messageUpdate", async(_, newMessage) => {
     }
 });
 
-client.on("error", log.error);
+client.on("error", (e) => log.error(`Discord Client Error: ${e}`));
+client.on("warn", (w) => log.warn(`Discord Client Warning: ${w}`));
+client.on("debug", (d) => log.debug(`Discord Client Debug: ${d}`));
+client.on("rateLimit", (rateLimitData) => log.error(`Discord Client RateLimit Shit: ${JSON.stringify(rateLimitData)}`));
 
 client.on("messageReactionAdd", async(event, user) => reactionHandler(event, user, client, false));
 client.on("messageReactionAdd", async(event, user) => quoteReactionHandler(event, user, client));
