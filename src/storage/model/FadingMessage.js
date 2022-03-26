@@ -27,7 +27,7 @@ export default class FadingMessage extends Model {
      * @returns {Promise<this>}
      */
     static async newFadingMessage(message, deleteInMs) {
-        let fadingMessage = await FadingMessage.create();
+        const fadingMessage = await FadingMessage.create();
         await fadingMessage.startFadingMessage(message, deleteInMs);
     }
 
@@ -61,7 +61,7 @@ export default class FadingMessage extends Model {
             isActive: {
                 type: DataTypes.VIRTUAL,
                 get() {
-                    let currentTime = new Date();
+                    const currentTime = new Date();
                     return currentTime >= beginTime && currentTime < endTime;
                 },
                 set() {
@@ -71,7 +71,7 @@ export default class FadingMessage extends Model {
             isFinished: {
                 type: DataTypes.VIRTUAL,
                 get() {
-                    let currentTime = new Date();
+                    const currentTime = new Date();
                     return currentTime > endTime;
                 },
                 set() {

@@ -55,7 +55,7 @@ const errorHandling = function(amount, sides) {
  * @returns {Array} diceResult of the thrown dice
  */
 const diceResult = function(diceAmount, diceSides) {
-    let res = [];
+    const res = [];
     for(let i = 0; i < diceAmount; ++i) {
         res.push(pseudoRng(1, diceSides));
     }
@@ -94,9 +94,9 @@ export const run = async(_client, message, args) => {
         parsed = "0d0";
     }
 
-    let [amount, sides] = parsed.split("d");
+    const [amount, sides] = parsed.split("d");
 
-    let error = errorHandling(Number(amount), Number(sides));
+    const error = errorHandling(Number(amount), Number(sides));
 
     if(error) {
         return error;
@@ -104,7 +104,7 @@ export const run = async(_client, message, args) => {
 
     const maxHexCol = 16777214;
 
-    let embed = {
+    const embed = {
         title: Util.cleanContent(`${parsed}:`, message),
         timestamp: moment.utc().format(),
         author: {

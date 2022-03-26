@@ -21,7 +21,7 @@ export const run = async(client, message, args) => {
     if (!message.reference) return "Bruder schon mal was von der Replyfunktion gehört?";
     if (message.reference.guildId !== config.ids.guild_id || !message.reference.channelId) return "Bruder bleib mal hier auf'm Server.";
 
-    let channel = client.guilds.cache.get(config.ids.guild_id).channels.cache.get(message.reference.channelId);
+    const channel = client.guilds.cache.get(config.ids.guild_id).channels.cache.get(message.reference.channelId);
 
     if (!channel) return "Bruder der Channel existiert nicht? LOLWUT";
 
@@ -40,11 +40,11 @@ export const run = async(client, message, args) => {
     if (!replyMessage.editable) return "Bruder aus irgrndeinem Grund hat der Bot verkackt und kann die Umfrage nicht bearbeiten :<";
     if (replyMessage.embeds[0].color !== 3066993) return "Bruder die Umfrage ist nicht erweiterbar (ง'̀-'́)ง";
 
-    let oldPollOptions = replyMessage.embeds[0].description.split("\n");
+    const oldPollOptions = replyMessage.embeds[0].description.split("\n");
 
     if (oldPollOptions.length === poll.OPTION_LIMIT) return "Bruder die Umfrage ist leider schon voll (⚆ ͜ʖ⚆)";
 
-    let oldPollOptionsLength = replyMessage.embeds[0].description.length;
+    const oldPollOptionsLength = replyMessage.embeds[0].description.length;
     if (oldPollOptionsLength > poll.TEXT_LIMIT) return "Bruder die Umfrage ist leider schon voll (⚆ ͜ʖ⚆)";
 
     for (let i = 0; i < oldPollOptions.length; ++i) {
@@ -55,9 +55,9 @@ export const run = async(client, message, args) => {
 
     if (!args.length) return "Bruder da sind keine Antwortmöglichkeiten :c";
 
-    let additionalPollOptions = args.join(" ").split(";").map(e => e.trim()).filter(e => e.replace(/\s/g, "") !== "");
+    const additionalPollOptions = args.join(" ").split(";").map(e => e.trim()).filter(e => e.replace(/\s/g, "") !== "");
     let additionalPollOptionsLength = 0;
-    for (let additionalPollOption of additionalPollOptions) {
+    for (const additionalPollOption of additionalPollOptions) {
         additionalPollOptionsLength += additionalPollOption.length;
     }
 
@@ -65,10 +65,10 @@ export const run = async(client, message, args) => {
     if(oldPollOptionsLength + additionalPollOptionsLength > poll.TEXT_LIMIT) return "Bruder die Umfrage ist zu lang";
     if(oldPollOptions.length + additionalPollOptions.length > poll.OPTION_LIMIT) return `Bruder mit deinen Antwortmöglichkeiten wird das Limit von ${poll.OPTION_LIMIT} überschritten!`;
 
-    let originalAuthor = replyMessage.embeds[0].author.name.split(" ")[2];
-    let authorNote = originalAuthor !== message.author.username ? ` (von ${message.author.username})` : "";
+    const originalAuthor = replyMessage.embeds[0].author.name.split(" ")[2];
+    const authorNote = originalAuthor !== message.author.username ? ` (von ${message.author.username})` : "";
 
-    let embed = replyMessage.embeds[0];
+    const embed = replyMessage.embeds[0];
     embed.description += "\n";
     additionalPollOptions.forEach((e, i) => (embed.description += `${poll.LETTERS[oldPollOptions.length + i]} - ${e}${authorNote}\n`));
 
@@ -80,7 +80,7 @@ export const run = async(client, message, args) => {
     const msg = await replyMessage.edit({
         embeds: [embed]
     });
-    for (let i in additionalPollOptions) {
+    for (const i in additionalPollOptions) {
         await msg.react(poll.EMOJI[oldPollOptions.length + Number(i)]);
     }
     await message.delete();
