@@ -8,7 +8,7 @@
  * @type {import("../../types").CommandFunction}
  */
 export const run = async(client, message, args) => {
-    let roleNames = message.guild.roles.cache
+    const roleNames = message.guild.roles.cache
         .filter(element => String(element.name).toLowerCase() !== "@everyone")
         .map(element => element.name);
 

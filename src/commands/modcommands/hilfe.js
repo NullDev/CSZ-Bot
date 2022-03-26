@@ -14,8 +14,8 @@ const config = getConfig();
  * @type {import("../../types").CommandFunction}
  */
 export const run = async(client, message, args) => {
-    let commandObj = {};
-    let commandDir = __dirname;
+    const commandObj = {};
+    const commandDir = __dirname;
 
     const files = await fs.readdir(commandDir);
     for (const file of files) {
@@ -23,12 +23,12 @@ export const run = async(client, message, args) => {
             continue; // Skip source maps etc
         }
 
-        let cmdPath = path.resolve(commandDir, file);
-        let stats = await fs.stat(cmdPath);
+        const cmdPath = path.resolve(commandDir, file);
+        const stats = await fs.stat(cmdPath);
 
         if (!stats.isDirectory()) {
             // Prefix + Command name
-            let commandStr = config.bot_settings.prefix.mod_prefix + file.toLowerCase().replace(/\.js/gi, "");
+            const commandStr = config.bot_settings.prefix.mod_prefix + file.toLowerCase().replace(/\.js/gi, "");
 
             // commandStr is the key and the description of the command is the value
             const modulePath = path.join(commandDir, file);

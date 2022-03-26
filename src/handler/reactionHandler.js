@@ -79,12 +79,12 @@ export default async function(reactionEvent, user, client, removal) {
                 pollEmojis.includes(r.emoji.name)
             );
 
-            for (let r of reactions.values()) await r.users.remove(member.id).catch(log.error);
+            for (const r of reactions.values()) await r.users.remove(member.id).catch(log.error);
         }
         else if(isUmfrage) {
             if(isDelayedPoll) {
                 const delayedPollReactions = delayedPoll.reactions[voteEmojis.indexOf(reactionEvent.emoji.name)];
-                let hasVoted = delayedPollReactions.some(x => x === member.id);
+                const hasVoted = delayedPollReactions.some(x => x === member.id);
                 if(!hasVoted) {
                     delayedPollReactions.push(member.id);
                 }
@@ -92,7 +92,7 @@ export default async function(reactionEvent, user, client, removal) {
                     delayedPollReactions.splice(delayedPollReactions.indexOf(member.id), 1);
                 }
 
-                let msg = await message.channel.send(hasVoted ? "🗑 Deine Reaktion wurde gelöscht." : "💾 Deine Reaktion wurde gespeichert.");
+                const msg = await message.channel.send(hasVoted ? "🗑 Deine Reaktion wurde gelöscht." : "💾 Deine Reaktion wurde gespeichert.");
                 await FadingMessage.newFadingMessage(msg, 2500);
             }
         }
@@ -103,11 +103,11 @@ export default async function(reactionEvent, user, client, removal) {
                 r.users.cache.has(member.id) &&
                 pollEmojis.includes(r.emoji.name)
             );
-            for (let r of allUserReactions.values()) await r.users.remove(member.id).catch(log.error);
+            for (const r of allUserReactions.values()) await r.users.remove(member.id).catch(log.error);
         }
 
-        let additionalData = await AdditionalMessageData.fromMessage(message);
-        let newCustomData = additionalData.customData;
+        const additionalData = await AdditionalMessageData.fromMessage(message);
+        const newCustomData = additionalData.customData;
         newCustomData.delayedPollData = delayedPoll;
         additionalData.customData = newCustomData;
         await additionalData.save();

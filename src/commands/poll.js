@@ -83,7 +83,7 @@ export const delayedPolls = [];
  * @type {import("../types").CommandFunction}
  */
 export const run = async(client, message, args) => {
-    let options = parseOptions(args, {
+    const options = parseOptions(args, {
         "boolean": [
             "channel",
             "extendable",
@@ -100,17 +100,17 @@ export const run = async(client, message, args) => {
         }
     });
 
-    let parsedArgs = options._;
-    let delayTime = Number(options.delayed);
+    const parsedArgs = options._;
+    const delayTime = Number(options.delayed);
 
     if (!parsedArgs.length) return "Bruder da ist keine Umfrage :c";
 
-    let pollArray = parsedArgs.join(" ").split(";").map(e => e.trim()).filter(e => e.replace(/\s/g, "") !== "");
-    let pollOptions = pollArray.slice(1);
+    const pollArray = parsedArgs.join(" ").split(";").map(e => e.trim()).filter(e => e.replace(/\s/g, "") !== "");
+    const pollOptions = pollArray.slice(1);
     let pollOptionsTextLength = 0;
 
-    let isExtendable = options.extendable;
-    for (let pollOption of pollOptions) {
+    const isExtendable = options.extendable;
+    for (const pollOption of pollOptions) {
         pollOptionsTextLength += pollOption.length;
     }
 
@@ -123,7 +123,7 @@ export const run = async(client, message, args) => {
     let optionstext = "";
     pollOptions.forEach((e, i) => (optionstext += `${LETTERS[i]} - ${e}\n`));
 
-    let finishTime = new Date(new Date().valueOf() + (delayTime * 60 * 1000));
+    const finishTime = new Date(new Date().valueOf() + (delayTime * 60 * 1000));
     if (options.delayed) {
         if (isNaN(delayTime) || delayTime <= 0) {
             return "Bruder keine ungültigen Zeiten angeben 🙄";
@@ -145,8 +145,8 @@ export const run = async(client, message, args) => {
         }
     };
 
-    let footer = [];
-    let extendable = options.extendable && pollOptions.length < OPTION_LIMIT && pollOptionsTextLength < TEXT_LIMIT;
+    const footer = [];
+    const extendable = options.extendable && pollOptions.length < OPTION_LIMIT && pollOptionsTextLength < TEXT_LIMIT;
 
     if (extendable) {
         if (options.delayed) {
@@ -176,8 +176,8 @@ export const run = async(client, message, args) => {
         };
     }
 
-    let voteChannel = client.guilds.cache.get(config.ids.guild_id).channels.cache.get(config.ids.votes_channel_id);
-    let channel = options.channel ? voteChannel : message.channel;
+    const voteChannel = client.guilds.cache.get(config.ids.guild_id).channels.cache.get(config.ids.votes_channel_id);
+    const channel = options.channel ? voteChannel : message.channel;
     if (options.delayed && channel !== voteChannel) {
         return "Du kannst keine verzögerte Abstimmung außerhalb des Umfragenchannels machen!";
     }
@@ -186,7 +186,7 @@ export const run = async(client, message, args) => {
         embeds: [embed]
     });
     await message.delete();
-    for (let i in pollOptions) {
+    for (const i in pollOptions) {
         await pollMessage.react(EMOJI[i]);
     }
 
@@ -199,7 +199,7 @@ export const run = async(client, message, args) => {
             reactions[index] = [];
         });
 
-        let delayedPollData = {
+        const delayedPollData = {
             pollId: pollMessage.id,
             createdAt: new Date().valueOf(),
             finishesAt: finishTime.valueOf(),
@@ -207,8 +207,8 @@ export const run = async(client, message, args) => {
             reactionMap
         };
 
-        let additionalData = await AdditionalMessageData.fromMessage(pollMessage);
-        let newCustomData = additionalData.customData;
+        const additionalData = await AdditionalMessageData.fromMessage(pollMessage);
+        const newCustomData = additionalData.customData;
         newCustomData.delayedPollData = delayedPollData;
         additionalData.customData = newCustomData;
         await additionalData.save();
@@ -218,7 +218,7 @@ export const run = async(client, message, args) => {
 };
 
 export const importPolls = async() => {
-    let additionalDatas = await AdditionalMessageData.findAll();
+    const additionalDatas = await AdditionalMessageData.findAll();
     let count = 0;
     additionalDatas.forEach(additionalData => {
         if (!additionalData.customData.delayedPollData) {
@@ -248,7 +248,7 @@ export const startCron = (client) => {
             const delayedPoll = pollsToFinish[i];
             const message = await /** @type {import("discord.js").TextChannel} */ (channel).messages.fetch(delayedPoll.pollId);
 
-            let users = {};
+            const users = {};
             await Promise.all(delayedPoll.reactions
                 .flat()
                 .filter((x, uidi) => delayedPoll.reactions.indexOf(x) !== uidi)
@@ -256,7 +256,7 @@ export const startCron = (client) => {
                     users[uidToResolve] = await client.users.fetch(uidToResolve);
                 }));
 
-            let toSend = {
+            const toSend = {
                 title: `Zusammenfassung: ${message.embeds[0].title}`,
                 description: `${delayedPoll.reactions
                     .map(
@@ -286,8 +286,8 @@ ${x.map((uid) => users[uid]).join("\n")}\n\n`
             await message.react("✅");
             delayedPolls.splice(delayedPolls.indexOf(delayedPoll), 1);
 
-            let messageData = await AdditionalMessageData.fromMessage(message);
-            let { customData } = messageData;
+            const messageData = await AdditionalMessageData.fromMessage(message);
+            const { customData } = messageData;
             delete customData.delayedPollData;
             messageData.customData = customData;
             await messageData.save();

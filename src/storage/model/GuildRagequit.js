@@ -12,7 +12,7 @@ export default class GuildRagequit extends Model {
      * @returns {Promise<number>}
      */
     static async getNumRagequits(guildId, userId) {
-        let data = await GuildRagequit.findOne({
+        const data = await GuildRagequit.findOne({
             where: {
                 guildId,
                 userId
