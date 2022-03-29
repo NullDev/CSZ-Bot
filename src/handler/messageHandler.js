@@ -29,15 +29,15 @@ const getInlineReplies = function(messageRef, client) {
  * @returns
  */
 export default async function(message, client) {
-    let nonBiased = message.content
+    const nonBiased = message.content
         .replace(config.bot_settings.prefix.command_prefix, "")
         .replace(config.bot_settings.prefix.mod_prefix, "")
         .replace(/\s/g, "");
 
     if (message.author.bot || nonBiased === "" || message.channel.type === "dm") return;
 
-    let isNormalCommand = message.content.startsWith(config.bot_settings.prefix.command_prefix);
-    let isModCommand = message.content.startsWith(config.bot_settings.prefix.mod_prefix);
+    const isNormalCommand = message.content.startsWith(config.bot_settings.prefix.command_prefix);
+    const isModCommand = message.content.startsWith(config.bot_settings.prefix.mod_prefix);
     const isCommand = isNormalCommand || isModCommand;
 
     if (message.mentions.has(client.user.id) && !isCommand) {

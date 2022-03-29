@@ -28,7 +28,7 @@ export default class AdditionalMessageData extends Model {
      * @param {import("discord.js").Message} message
      */
     static async fromMessage(message) {
-        let objectData = {
+        const objectData = {
             guildId: message.guild.id,
             channelId: message.channel.id,
             messageId: message.id

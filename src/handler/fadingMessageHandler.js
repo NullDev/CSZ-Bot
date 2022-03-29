@@ -7,17 +7,17 @@ let isLooping = false;
  * @param {import("discord.js").Client} client
  */
 const fadingMessageDeleteLoop = async function(client) {
-    let fadingMessages = await FadingMessage.findAll();
-    for(let fadingMessage of fadingMessages) {
-        let currentTime = new Date();
+    const fadingMessages = await FadingMessage.findAll();
+    for(const fadingMessage of fadingMessages) {
+        const currentTime = new Date();
         if(currentTime < fadingMessage.endTime) {
             continue;
         }
 
         try {
-            let guild = await client.guilds.fetch(fadingMessage.guildId);
-            let channel = await guild.channels.cache.get(fadingMessage.channelId);
-            let message = await /** @type {import("discord.js").TextChannel} */ (channel).messages.fetch(fadingMessage.messageId);
+            const guild = await client.guilds.fetch(fadingMessage.guildId);
+            const channel = await guild.channels.cache.get(fadingMessage.channelId);
+            const message = await /** @type {import("discord.js").TextChannel} */ (channel).messages.fetch(fadingMessage.messageId);
 
             await message.delete();
         }

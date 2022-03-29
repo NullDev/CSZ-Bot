@@ -36,11 +36,11 @@ import { assert } from "console";
 import { connectAndPlaySaufen } from "./handler/voiceHandler";
 import { reminderHandler } from "./commands/erinnerung";
 
-let version = conf.getVersion();
-let appname = conf.getName();
-let devname = conf.getAuthor();
+const version = conf.getVersion();
+const appname = conf.getName();
+const devname = conf.getAuthor();
 
-let splashPadding = 12 + appname.length + version.toString().length;
+const splashPadding = 12 + appname.length + version.toString().length;
 
 console.log(
     `\n #${"-".repeat(splashPadding)}#\n` +
@@ -92,7 +92,7 @@ function scheduleTimezoneFixedCronjob(cronString) {
 
     timezoneFixedCronjobTask = cron.schedule(cronString, async() => {
         /** @type {Discord.Guild} */
-        let csz = client.guilds.cache.get(config.ids.guild_id);
+        const csz = client.guilds.cache.get(config.ids.guild_id);
 
         /** @type {TC} */
         await (csz.channels.cache.get(config.ids.hauptchat_id)).send("Es ist `13:37` meine Kerle.\nBleibt hydriert! :grin: :sweat_drops:");
@@ -145,7 +145,7 @@ client.on("ready", async(_client) => {
         const bday = new BdayHandler(client);
         const aoc = new AoCHandler(client);
         log.info("Starting Nicknamehandler ");
-        let nicknameHandler = new NicknameHandler(client);
+        const nicknameHandler = new NicknameHandler(client);
         if (firstRun) {
             await storage.initialize();
             firstRun = false; // Hacky deadlock ...

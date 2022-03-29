@@ -35,7 +35,7 @@
     "get-audio-duration": "^3.0.0",
     "jimp": "^0.16.1",
     "libsodium-wrappers": "^0.7.9",
-    "minimist": "^1.2.5",
+    "minimist": "^1.2.6",
     "moment": "^2.29.1",
     "node-cron": "^2.0.3",
     "node-fetch": "^2.6.7",

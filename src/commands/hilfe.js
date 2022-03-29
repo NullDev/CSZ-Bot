@@ -15,7 +15,7 @@ const config = getConfig();
  * @returns {Array<string>}
  */
 const getCommandMessageChunksMatchingLimit = (commands) => {
-    let chunk = [];
+    const chunk = [];
     let idx = 0;
 
     commands
@@ -42,7 +42,7 @@ const getCommandMessageChunksMatchingLimit = (commands) => {
  * @type {import("../types").CommandFunction}
  */
 export const run = async(client, message, args) => {
-    let commandObj = {};
+    const commandObj = {};
     const commandDir = __dirname;
 
     const files = await fs.readdir(commandDir);
@@ -51,8 +51,8 @@ export const run = async(client, message, args) => {
             continue; // Skip source maps etc
         }
 
-        let cmdPath = path.resolve(commandDir, file);
-        let stats = await fs.stat(cmdPath);
+        const cmdPath = path.resolve(commandDir, file);
+        const stats = await fs.stat(cmdPath);
 
         if (!stats.isDirectory()) {
             // commandStr is the key and the description of the command is the value
@@ -61,7 +61,7 @@ export const run = async(client, message, args) => {
 
             // Old file-based commands
             if(module.description) {
-                let commandStr = config.bot_settings.prefix.command_prefix + file.toLowerCase().replace(/\.js/gi, "");
+                const commandStr = config.bot_settings.prefix.command_prefix + file.toLowerCase().replace(/\.js/gi, "");
                 commandObj[commandStr] = module.description;
             }
         }
@@ -70,7 +70,7 @@ export const run = async(client, message, args) => {
         messageCommands
             .filter(cmd => !cmd.modCommand)
             .forEach(cmd => {
-                let commandStr = config.bot_settings.prefix.command_prefix + cmd.name;
+                const commandStr = config.bot_settings.prefix.command_prefix + cmd.name;
                 commandObj[commandStr] = cmd.description;
             });
     }
