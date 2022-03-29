@@ -154,20 +154,35 @@ client.on("ready", async(_client) => {
             scheduleTimezoneFixedCronjob(newCronString);
 
             log.info("Scheduling Birthday Cronjob...");
-            cron.schedule("1 0 * * *", async() => await bday.checkBdays(), { timezone: "Europe/Vienna" });
+            cron.schedule("1 0 * * *", async() => {
+                log.debug("Entered Birthday cronjob");
+                await bday.checkBdays();
+            }, { timezone: "Europe/Vienna" });
             await bday.checkBdays();
 
             log.info("Scheduling Advent of Code Cronjob...");
-            cron.schedule("0 20 1-25 12 *", async() => await aoc.publishLeaderBoard(), {timezone: "Europe/Vienna"});
+            cron.schedule("0 20 1-25 12 *", async() => {
+                log.debug("Entered AoC cronjob");
+                await aoc.publishLeaderBoard();
+            }, {timezone: "Europe/Vienna"});
 
             log.info("Scheduling Nickname Cronjob");
-            cron.schedule("0 0 * * 0", async() => await nicknameHandler.rerollNicknames(), {timezone: "Europe/Vienna"});
+            cron.schedule("0 0 * * 0", async() => {
+                log.debug("Entered Nickname cronjob");
+                await nicknameHandler.rerollNicknames();
+            }, {timezone: "Europe/Vienna"});
 
             log.info("Scheduling Saufen Cronjob");
-            cron.schedule("36 0-23 * * FRI-SAT,SUN", async() => await connectAndPlaySaufen(_client), {timezone: "Europe/Vienna"});
+            cron.schedule("36 0-23 * * FRI-SAT,SUN", async() => {
+                log.debug("Entered Saufen cronjob");
+                await connectAndPlaySaufen(_client);
+            }, {timezone: "Europe/Vienna"});
 
             log.info("Scheduling Reminder Cronjob");
-            cron.schedule("* * * * *", async() => await reminderHandler(_client), {timezone: "Europe/Vienna"});
+            cron.schedule("* * * * *", async() => {
+                log.debug("Entered reminder cronjob");
+                await reminderHandler(_client);
+            }, {timezone: "Europe/Vienna"});
         }
 
         ban.startCron(client);
@@ -262,7 +277,13 @@ client.on("messageUpdate", async(_, newMessage) => {
 
 client.on("error", (e) => log.error(`Discord Client Error: ${e}`));
 client.on("warn", (w) => log.warn(`Discord Client Warning: ${w}`));
-client.on("debug", (d) => log.debug(`Discord Client Debug: ${d}`));
+client.on("debug", (d) => {
+    if(d.includes("[HeartbeatTimer]" || d.includes("Heartbeat acknowledged"))) {
+        return;
+    }
+
+    log.debug(`Discord Client Debug: ${d}`);
+});
 client.on("rateLimit", (rateLimitData) => log.error(`Discord Client RateLimit Shit: ${JSON.stringify(rateLimitData)}`));
 
 client.on("messageReactionAdd", async(event, user) => reactionHandler(event, user, client, false));
