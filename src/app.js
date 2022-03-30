@@ -258,8 +258,13 @@ client.on("guildMemberAdd", async member => {
     }
 });
 
-client.on("guildMemberRemove", (member) => {
-    GuildRagequit.incrementRagequit(member.guild.id, member.id);
+client.on("guildMemberRemove", async(member) => {
+    try {
+        await GuildRagequit.incrementRagequit(member.guild.id, member.id);
+    }
+    catch (err) {
+        log.error(`[guildMemberRemove] Error on incrementing ragequit of ${member.id}. Cause: ${err}`);
+    }
 });
 
 client.on("messageCreate", async(message) => {
@@ -271,7 +276,14 @@ client.on("messageCreate", async(message) => {
     }
 });
 
-client.on("messageDelete", (message) => messageDeleteHandler(message, client));
+client.on("messageDelete", (message) => {
+    try {
+        messageDeleteHandler(message, client);
+    }
+    catch (err) {
+        log.error(`[messageDelete] Error for ${message.id}. Cause: ${err}`);
+    }
+});
 
 client.on("messageUpdate", async(_, newMessage) => {
     try {
