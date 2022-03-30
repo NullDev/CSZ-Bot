@@ -197,7 +197,7 @@ client.on("ready", async(_client) => {
         await poll.importPolls();
         poll.startCron(client);
 
-        // fadingMessageHandler.startLoop(client);
+        fadingMessageHandler.startLoop(client);
     }
     catch(err) {
         log.error(`Error in Ready handler: ${err}`);
