@@ -81,6 +81,13 @@ const client = new Discord.Client({
 process.on("unhandledRejection", (err, promise) => log.error(`Unhandled rejection (promise: ${promise}, reason: ${err.stack})`));
 process.on("uncaughtException", (err, origin) => log.error(`Uncaught exception (origin: ${origin}, error: ${err})`));
 process.on("SIGTERM", (signal) => log.error(`Received Sigterm: ${signal}`));
+process.on("beforeExit", code => {
+    log.warn(`Process will exit with code: ${code}`);
+    process.exit(code);
+});
+process.on("exit", code => {
+    log.warn(`Process exited with code: ${code}`);
+});
 
 let timezoneFixedCronjobTask = null;
 
