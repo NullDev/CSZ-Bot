@@ -8,11 +8,11 @@
     "start": "node built/app.js",
     "test": "tsc --noEmit",
     "compile": "tsc --sourceMap false",
-    "lint": "eslint -c .eslintrc.json 'src/**/*.{js,ts}'",
+    "lint": "eslint -c .eslintrc.json \"src/**/*.{js,ts}\"",
     "dev": "npm run lint && npm run watch",
     "watch-node": "nodemon built/app.js",
     "watch-ts": "tsc -w",
-    "watch-lint": "esw -c .eslintrc.json src/** -w",
+    "watch-lint": "esw -c .eslintrc.json \"src/**/*.{js,ts}\" -w",
     "watch": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node,EsLint\" -c \"cyan.bold,green.bold,yellow.bold\" \"npm run watch-ts\" \"npm run watch-node\" \"npm run watch-lint\""
   },
   "repository": {
