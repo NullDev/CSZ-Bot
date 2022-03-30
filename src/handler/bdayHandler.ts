@@ -51,7 +51,8 @@ export default class BdayHandler {
 
             try {
                 await member.roles.remove(birthdayRole);
-            } catch (e) {
+            }
+            catch (e) {
                 log.error(`Could not remove role "${birthdayRole}" from "${member}": "${e}"`);
             }
         }

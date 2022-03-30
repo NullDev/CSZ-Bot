@@ -65,7 +65,7 @@ export default class FadingMessage extends Model {
             endTime: {
                 type: DataTypes.DATE,
                 allowNull: true
-            },
+            }
         }, { sequelize });
     }
 }

@@ -9,7 +9,7 @@ const getInlineReplies = (messageRef: Message, clientUser: ClientUser) => {
     return messageRef.channel.messages.cache.filter(m => m.author.id === clientUser.id && m.reference?.messageId === messageRef.id);
 };
 
-export default async function (message: Message, client: Client) {
+export default async function(message: Message, client: Client) {
     const nonBiased = message.content
         .replace(config.bot_settings.prefix.command_prefix, "")
         .replace(config.bot_settings.prefix.mod_prefix, "")

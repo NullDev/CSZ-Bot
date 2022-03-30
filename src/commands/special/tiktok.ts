@@ -61,10 +61,10 @@ export class TikTokLink implements SpecialCommand {
         const webUri = await convertToWebLink(uri);
         const videoMeta = await TikTokScraper.getVideoMeta(webUri, tiktokOptions);
 
-        let res = await fetch(videoMeta.collector[0].videoUrl, {
+        const res = await fetch(videoMeta.collector[0].videoUrl, {
             headers: videoMeta.headers as any
         });
-        let buf = await res.buffer();
+        const buf = await res.buffer();
 
         await message.reply({
             content: (videoMeta.collector[0].text || "Dein TikTok du Hund:"),

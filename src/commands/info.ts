@@ -74,7 +74,7 @@ const getServerInfo = (guild: Guild): string => {
 };
 
 const buildEmbed = async(guild: Guild | null, avatarUrl?: string): Promise<MessageEmbedOptions> => {
-    let embed = {
+    const embed = {
         color: 2007432,
         footer: {
             text: `${new Date().toDateString()} ${new Date().toLocaleTimeString()}`

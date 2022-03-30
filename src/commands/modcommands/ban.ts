@@ -14,8 +14,8 @@ const config = getConfig();
 
 const assignBannedRoles = async(user: GuildMember): Promise<boolean> => {
     log.debug(`Assigning ban role to user ${user.id}`);
-    let defaultRole = user.guild.roles.cache.find(role => role.id === config.ids.default_role_id);
-    let bannedRole = user.guild.roles.cache.find(role => role.id === config.ids.banned_role_id);
+    const defaultRole = user.guild.roles.cache.find(role => role.id === config.ids.default_role_id);
+    const bannedRole = user.guild.roles.cache.find(role => role.id === config.ids.banned_role_id);
 
     if (!defaultRole || !bannedRole) {
         return false;
@@ -44,8 +44,8 @@ const assignBannedRoles = async(user: GuildMember): Promise<boolean> => {
 
 export const restoreRoles = async(user: GuildMember): Promise<boolean> => {
     log.debug(`Restoring roles from user ${user.id}`);
-    let defaultRole = user.guild.roles.cache.find(role => role.id === config.ids.default_role_id);
-    let bannedRole = user.guild.roles.cache.find(role => role.id === config.ids.banned_role_id);
+    const defaultRole = user.guild.roles.cache.find(role => role.id === config.ids.default_role_id);
+    const bannedRole = user.guild.roles.cache.find(role => role.id === config.ids.banned_role_id);
 
     if (!defaultRole || !bannedRole) {
         return false;

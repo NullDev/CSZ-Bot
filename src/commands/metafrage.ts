@@ -12,7 +12,7 @@ import parseOptions from "minimist";
  */
 export const run: CommandFunction = async(client, message, args) => {
     // parse options
-    let options = parseOptions(args, {
+    const options = parseOptions(args, {
         "boolean": [
             "english"
         ],
@@ -23,7 +23,7 @@ export const run: CommandFunction = async(client, message, args) => {
 
     if (args.length === 0 || (args.length === 1 && options.english)) {
         // insult collections, feel free to expand
-        let germanInsults: string[] = [
+        const germanInsults: string[] = [
             "du Sohn einer ranzigen Hafendirne!",
             "möge dich der Blitz beim scheißen treffen!",
             "du verdammter Troglodyt!",
@@ -31,7 +31,7 @@ export const run: CommandFunction = async(client, message, args) => {
             "dir bau ich gleich ein drittes Fickloch!",
             "dein Stammbaum ist ein Tetradekagon!"
         ];
-        let englishInsults: string[] = [
+        const englishInsults: string[] = [
             "you fucking imbecile!",
             "retard!",
             "you troglodyte!",

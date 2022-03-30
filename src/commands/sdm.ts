@@ -7,8 +7,8 @@ import { substringAfter } from "../utils/stringUtils";
 const randomSeed = "AQa0B7HK4vvrBOlaKKplMsKorGhN4gJvOCBWxw531P8uwpeIU3d39ODZ02fbvcxiImOwAOuOtR4eaiPDkyTCbSqzKnaJWqp4AqwxOTMgU2UCPWKIH4WXCQzVq8M7oqWBF32KEAdAoXvAm5o3Wvl4MOwdMJk1LleFjv7mQJizltVw3Y2Tan88uc3JxoJurDTKvxBzRt6H";
 
 const iocCalculator = function(s: string): number {
-    let bigrams = new Map();
-    let text = s.replace(/\s+/g, "");
+    const bigrams = new Map();
+    const text = s.replace(/\s+/g, "");
     [...text].forEach(c => (bigrams.has(c) ? bigrams.set(c, bigrams.get(c) + 1) : bigrams.set(c, 1)));
 
     let sum = 0;
@@ -17,9 +17,9 @@ const iocCalculator = function(s: string): number {
 };
 
 const rng = function(min: number, max: number, seed: number): number {
-    let sido = (seed * 9301 + 49297) % 233280;
+    const sido = (seed * 9301 + 49297) % 233280;
     let rnd = sido / 233280;
-    let disp = Math.abs(Math.sin(sido));
+    const disp = Math.abs(Math.sin(sido));
 
     rnd = rnd + disp - Math.floor(rnd + disp);
 
