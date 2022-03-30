@@ -1,17 +1,17 @@
 /* Disabled due to sequelize's DataTypes */
 /* eslint-disable new-cap */
 
-import { Model, DataTypes } from "sequelize";
+import type { Snowflake } from "discord.js";
+import { Model, DataTypes, type Sequelize } from "sequelize";
 import { v4 as uuidv4 } from "uuid";
 
 export default class GuildRagequit extends Model {
-    /**
-     *
-     * @param {BigInt} guildId
-     * @param {BigInt} userId
-     * @returns {Promise<number>}
-     */
-    static async getNumRagequits(guildId, userId) {
+    declare id: string;
+    declare guildId: Snowflake;
+    declare userId: Snowflake;
+    declare numRagequits: number;
+
+    static async getNumRagequits(guildId: Snowflake, userId: Snowflake) {
         const data = await GuildRagequit.findOne({
             where: {
                 guildId,
@@ -19,7 +19,7 @@ export default class GuildRagequit extends Model {
             }
         });
 
-        return data ? data.numRagequits : 0;
+        return data?.numRagequits ?? 0;
     }
 
     /**
@@ -27,28 +27,28 @@ export default class GuildRagequit extends Model {
      * @param {BigInt} guildId
      * @param {BigInt} userId
      */
-    static async incrementRagequit(guildId, userId) {
-        let data = await GuildRagequit.findOne({
+    static async incrementRagequit(guildId: Snowflake, userId: Snowflake) {
+        const data = await GuildRagequit.findOne({
             where: {
                 guildId,
                 userId
             }
         });
 
-        if(!data) {
-            data = await GuildRagequit.create({
+        if (!data) {
+            await GuildRagequit.create({
                 guildId,
                 userId,
                 numRagequits: 1
             });
+            return;
         }
-        else {
-            data.numRagequits += 1;
-            await data.save();
-        }
+
+        data.numRagequits += 1;
+        await data.save();
     }
 
-    static initialize(sequelize) {
+    static initialize(sequelize: Sequelize) {
         this.init({
             id: {
                 type: DataTypes.STRING(36),

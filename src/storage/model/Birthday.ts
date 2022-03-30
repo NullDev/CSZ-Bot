@@ -1,22 +1,30 @@
 /* Disabled due to sequelize's DataTypes */
 /* eslint-disable new-cap */
 
-import { Model, DataTypes, Op } from "sequelize";
-import {v4 as uuidv4} from "uuid";
+import type { Snowflake } from "discord.js";
+import { Model, DataTypes, Op, type Sequelize } from "sequelize";
+import { v4 as uuidv4 } from "uuid";
 import moment from "moment";
 import log from "../../utils/logger";
 
+export type OneBasedMonth = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
+export function isOneBasedMonth(v: unknown): v is OneBasedMonth {
+    return typeof v === "number"
+    && Number.isInteger(v)
+    && v >= 1
+    && v <= 12;
+}
 
 export default class Birthday extends Model {
-    /**
-     *
-     * @param {import("discord.js").Snowflake} userId
-     * @param {number} day
-     * @param {number} month
-     * @returns {Promise<Birthday>}
-     */
-    static async insertBirthday(userId, day, month) {
-        log.debug(`Inserting Birthday for user ${userId} on ${day}-${month} (DD-MM)`);
+    declare id: string;
+    declare userId: Snowflake;
+    declare day: number;
+    declare month: OneBasedMonth;
+
+    static async insertBirthday(userId: Snowflake, day: number, month: OneBasedMonth) {
+        const isoBirthdayStr = month.toString().padStart(2, "0") + "-" + day.toString().padStart(2, "0");
+
+        log.debug(`Inserting Birthday for user ${userId} on YYYY-${isoBirthdayStr} (YYYY-MM-DD)`);
 
         const item = await Birthday.getBirthday(userId);
 
@@ -29,15 +37,9 @@ export default class Birthday extends Model {
         });
     }
 
-    /**
-     * @param {import("discord.js").Snowflake} userId
-     * @returns {Promise<Birthday | null>}
-     */
-    static async getBirthday(userId) {
+    static async getBirthday(userId: Snowflake) {
         return Birthday.findOne({
-            where: {
-                userId
-            }
+            where: { userId }
         });
     }
 
@@ -55,7 +57,7 @@ export default class Birthday extends Model {
         });
     }
 
-    static initialize(sequelize) {
+    static initialize(sequelize: Sequelize) {
         this.init({
             id: {
                 type: DataTypes.STRING(36),
