@@ -5,11 +5,11 @@ import cmdHandler from "./cmdHandler";
 
 const config = getConfig();
 
-const getInlineReplies = function(messageRef: Message, client: Client) {
-    return messageRef.channel.messages.cache.filter(m => m.author.id === client.user!.id && m.reference?.messageId === messageRef.id);
+const getInlineReplies = (messageRef: Message, clientUser: ClientUser) => {
+    return messageRef.channel.messages.cache.filter(m => m.author.id === clientUser.id && m.reference?.messageId === messageRef.id);
 };
 
-export default async function(message: Message, client: Client) {
+export default async function (message: Message, client: Client) {
     const nonBiased = message.content
         .replace(config.bot_settings.prefix.command_prefix, "")
         .replace(config.bot_settings.prefix.mod_prefix, "")
@@ -21,7 +21,7 @@ export default async function(message: Message, client: Client) {
     const isModCommand = message.content.startsWith(config.bot_settings.prefix.mod_prefix);
     const isCommand = isNormalCommand || isModCommand;
 
-    if (message.mentions.has(client.user!.id) && !isCommand) {
+    if (client.user && message.mentions.has(client.user.id) && !isCommand) {
         if (message.member === null) {
             throw new Error("Member is null");
         }
@@ -29,7 +29,8 @@ export default async function(message: Message, client: Client) {
         // Trusted users should be familiar with the bot, they should know how to use it
         // Maybe, we don't want to flame them, since that can make the chat pretty noisy
         // Unless you are a Marcel
-        const shouldFlameUser = config.bot_settings.flame_trusted_user_on_bot_ping || !message.member.roles.cache.has(config.ids.trusted_role_id) || message.member.id === "209413133020823552";
+        // TODO: Remove message.member! assertion as soon as we have ProcessableMessage
+        const shouldFlameUser = config.bot_settings.flame_trusted_user_on_bot_ping || !message.member!.roles.cache.has(config.ids.trusted_role_id) || message.member!.id === "209413133020823552";
         if (shouldFlameUser) {
             const hasAlreadyReplied = message.channel.messages.cache
                 .filter(m => m.content.includes("Was pingst du mich du Hurensohn"))
