@@ -8,7 +8,7 @@
     "start": "node built/app.js",
     "test": "tsc --noEmit",
     "compile": "tsc --sourceMap false",
-    "lint": "eslint -c .eslintrc.json src/**",
+    "lint": "eslint -c .eslintrc.json src/**/*.{js,ts}",
     "dev": "npm run lint && npm run watch",
     "watch-node": "nodemon built/app.js",
     "watch-ts": "tsc -w",
