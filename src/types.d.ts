@@ -45,7 +45,8 @@ export interface Config {
             target_channel_overrides: { [key: string]: string },
             default_target_channel_id: Snowflake,
             emoji_name: string,
-        }
+        },
+        flame_trusted_user_on_bot_ping: boolean
     },
     ids: Record<string, Snowflake>
 }

@@ -17,7 +17,7 @@ import messageHandler from "./handler/messageHandler";
 import messageDeleteHandler from "./handler/messageDeleteHandler";
 import BdayHandler from "./handler/bdayHandler";
 import AoCHandler from "./handler/aocHandler";
-import * as fadingMessageHandler from "./handler/fadingMessageHandler";
+// import * as fadingMessageHandler from "./handler/fadingMessageHandler";
 import * as storage from "./storage/storage";
 
 // Other commands
@@ -81,6 +81,13 @@ const client = new Discord.Client({
 process.on("unhandledRejection", (err, promise) => log.error(`Unhandled rejection (promise: ${promise}, reason: ${err.stack})`));
 process.on("uncaughtException", (err, origin) => log.error(`Uncaught exception (origin: ${origin}, error: ${err})`));
 process.on("SIGTERM", (signal) => log.error(`Received Sigterm: ${signal}`));
+process.on("beforeExit", code => {
+    log.warn(`Process will exit with code: ${code}`);
+    process.exit(code);
+});
+process.on("exit", code => {
+    log.warn(`Process exited with code: ${code}`);
+});
 
 let timezoneFixedCronjobTask = null;
 
@@ -251,8 +258,13 @@ client.on("guildMemberAdd", async member => {
     }
 });
 
-client.on("guildMemberRemove", (member) => {
-    GuildRagequit.incrementRagequit(member.guild.id, member.id);
+client.on("guildMemberRemove", async(member) => {
+    try {
+        await GuildRagequit.incrementRagequit(member.guild.id, member.id);
+    }
+    catch (err) {
+        log.error(`[guildMemberRemove] Error on incrementing ragequit of ${member.id}. Cause: ${err}`);
+    }
 });
 
 client.on("messageCreate", async(message) => {
@@ -264,7 +276,14 @@ client.on("messageCreate", async(message) => {
     }
 });
 
-client.on("messageDelete", (message) => messageDeleteHandler(message, client));
+client.on("messageDelete", (message) => {
+    try {
+        messageDeleteHandler(message, client);
+    }
+    catch (err) {
+        log.error(`[messageDelete] Error for ${message.id}. Cause: ${err}`);
+    }
+});
 
 client.on("messageUpdate", async(_, newMessage) => {
     try {
@@ -278,13 +297,14 @@ client.on("messageUpdate", async(_, newMessage) => {
 client.on("error", (e) => log.error(`Discord Client Error: ${e}`));
 client.on("warn", (w) => log.warn(`Discord Client Warning: ${w}`));
 client.on("debug", (d) => {
-    if(d.includes("[HeartbeatTimer]" || d.includes("Heartbeat acknowledged"))) {
+    if(d.includes("Heartbeat")) {
         return;
     }
 
     log.debug(`Discord Client Debug: ${d}`);
 });
 client.on("rateLimit", (rateLimitData) => log.error(`Discord Client RateLimit Shit: ${JSON.stringify(rateLimitData)}`));
+client.on("invalidated", () => log.debug("Client invalidated"));
 
 client.on("messageReactionAdd", async(event, user) => reactionHandler(event, user, client, false));
 client.on("messageReactionAdd", async(event, user) => quoteReactionHandler(event, user, client));
