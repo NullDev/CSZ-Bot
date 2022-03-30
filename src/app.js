@@ -17,7 +17,7 @@ import messageHandler from "./handler/messageHandler";
 import messageDeleteHandler from "./handler/messageDeleteHandler";
 import BdayHandler from "./handler/bdayHandler";
 import AoCHandler from "./handler/aocHandler";
-import * as fadingMessageHandler from "./handler/fadingMessageHandler";
+// import * as fadingMessageHandler from "./handler/fadingMessageHandler";
 import * as storage from "./storage/storage";
 
 // Other commands
@@ -190,7 +190,7 @@ client.on("ready", async(_client) => {
         await poll.importPolls();
         poll.startCron(client);
 
-        fadingMessageHandler.startLoop(client);
+        // fadingMessageHandler.startLoop(client);
     }
     catch(err) {
         log.error(`Error in Ready handler: ${err}`);
