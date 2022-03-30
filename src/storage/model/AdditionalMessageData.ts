@@ -56,10 +56,8 @@ export default class AdditionalMessageData extends Model {
             messageId: message.id
         };
 
-        const data = await AdditionalMessageData.findOne({ where: objectData });
-        return data
-            ? data
-            : await AdditionalMessageData.create(objectData);
+        const existingMessageData = await AdditionalMessageData.findOne({ where: objectData });
+        return existingMessageData ?? await AdditionalMessageData.create(objectData);
     }
 
     static initialize(sequelize: Sequelize) {
