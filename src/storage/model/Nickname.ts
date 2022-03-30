@@ -48,7 +48,7 @@ export default class Nickname extends Model {
 
 
     static async allUsersAndNames() {
-        let nicknames = await Nickname.findAll();
+        const nicknames = await Nickname.findAll();
 
         return nicknames.reduce((acc, cur) => ({ // Das ding
             ...acc, //                 VV

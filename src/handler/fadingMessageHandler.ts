@@ -4,7 +4,7 @@ import type { Client, TextChannel } from "discord.js";
 
 let isLooping = false;
 
-const fadingMessageDeleteLoop = async (client: Client) => {
+const fadingMessageDeleteLoop = async(client: Client) => {
     const fadingMessages = await FadingMessage.findAll();
     for (const fadingMessage of fadingMessages) {
         const currentTime = new Date();
@@ -28,7 +28,7 @@ const fadingMessageDeleteLoop = async (client: Client) => {
     }
 };
 
-const loopWrapper = async (client: Client) => {
+const loopWrapper = async(client: Client) => {
     isLooping = true;
     await fadingMessageDeleteLoop(client);
     isLooping = false;
