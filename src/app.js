@@ -35,6 +35,7 @@ import NicknameHandler from "./handler/nicknameHandler";
 import { assert } from "console";
 import { connectAndPlaySaufen } from "./handler/voiceHandler";
 import { reminderHandler } from "./commands/erinnerung";
+import { endAprilFools, startAprilFools } from "./handler/aprilFoolsHandler";
 
 const version = conf.getVersion();
 const appname = conf.getName();
@@ -189,6 +190,16 @@ client.on("ready", async(_client) => {
             cron.schedule("* * * * *", async() => {
                 log.debug("Entered reminder cronjob");
                 await reminderHandler(_client);
+            }, {timezone: "Europe/Vienna"});
+
+            log.info("Scheduling April Fools Start Cronjob");
+            cron.schedule("0 0 1 4 *", async() => {
+                await startAprilFools(client);
+            }, {timezone: "Europe/Vienna"});
+
+            log.info("Scheduling April Fools Stop Cronjob");
+            cron.schedule("0 0 2 4 *", async() => {
+                await endAprilFools();
             }, {timezone: "Europe/Vienna"});
         }
 
