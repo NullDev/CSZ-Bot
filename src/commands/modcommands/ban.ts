@@ -4,9 +4,9 @@ import { Message, Client } from "discord.js";
 import Ban from "../../storage/model/Ban";
 import { getConfig } from "../../utils/configHandler";
 import { ApplicationCommand, CommandPermission, CommandResult, MessageCommand } from "../command";
-import * as cron from "node-cron";
 import log from "../../utils/logger";
 import moment from "moment";
+import Cron from "croner";
 
 const config = getConfig();
 
@@ -76,7 +76,9 @@ export const restoreRoles = async(user: GuildMember): Promise<boolean> => {
 
 export const startCron = (client: Client) => {
     log.info("Scheduling Ban Cronjob...");
-    cron.schedule("* * * * *", async() => {
+
+    // eslint-disable-next-line no-unused-vars
+    const banCron = new Cron("* * * * *", async() => {
         const now = new Date();
 
         try {

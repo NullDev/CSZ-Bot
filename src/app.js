@@ -6,7 +6,7 @@
 
 // Dependencies
 import * as Discord from "discord.js";
-import * as cron from "node-cron";
+import { Cron } from "croner";
 
 import * as conf from "./utils/configHandler";
 import log from "./utils/logger";
@@ -97,7 +97,7 @@ function scheduleTimezoneFixedCronjob(cronString) {
         timezoneFixedCronjobTask = null;
     }
 
-    timezoneFixedCronjobTask = cron.schedule(cronString, async() => {
+    timezoneFixedCronjobTask = new Cron(cronString, async() => {
         /** @type {Discord.Guild} */
         const csz = client.guilds.cache.get(config.ids.guild_id);
 
@@ -134,7 +134,7 @@ function scheduleTimezoneFixedCronjob(cronString) {
         const newCronString = timezone.getCronjobStringForHydrate(tomorrow);
         scheduleTimezoneFixedCronjob(newCronString);
     }, {
-        timezone: "Europe/Vienna"
+        timezone: "Europe/Berlin"
     });
 }
 
@@ -161,35 +161,40 @@ client.on("ready", async(_client) => {
             scheduleTimezoneFixedCronjob(newCronString);
 
             log.info("Scheduling Birthday Cronjob...");
-            cron.schedule("1 0 * * *", async() => {
+            // eslint-disable-next-line no-unused-vars
+            const bDayJob = new Cron("1 0 * * *", async() => {
                 log.debug("Entered Birthday cronjob");
                 await bday.checkBdays();
-            }, { timezone: "Europe/Vienna" });
+            }, { timezone: "Europe/Berlin" });
             await bday.checkBdays();
 
             log.info("Scheduling Advent of Code Cronjob...");
-            cron.schedule("0 20 1-25 12 *", async() => {
+            // eslint-disable-next-line no-unused-vars
+            const aocJob = new Cron("0 20 1-25 12 *", async() => {
                 log.debug("Entered AoC cronjob");
                 await aoc.publishLeaderBoard();
-            }, {timezone: "Europe/Vienna"});
+            }, {timezone: "Europe/Berlin"});
 
             log.info("Scheduling Nickname Cronjob");
-            cron.schedule("0 0 * * 0", async() => {
+            // eslint-disable-next-line no-unused-vars
+            const nicknameJob = new Cron("0 0 * * 0", async() => {
                 log.debug("Entered Nickname cronjob");
                 await nicknameHandler.rerollNicknames();
-            }, {timezone: "Europe/Vienna"});
+            }, {timezone: "Europe/Berlin"});
 
             log.info("Scheduling Saufen Cronjob");
-            cron.schedule("36 0-23 * * FRI-SAT,SUN", async() => {
+            // eslint-disable-next-line no-unused-vars
+            const saufenJob = new Cron("36 0-23 * * FRI-SAT,SUN", async() => {
                 log.debug("Entered Saufen cronjob");
                 await connectAndPlaySaufen(_client);
-            }, {timezone: "Europe/Vienna"});
+            }, {timezone: "Europe/Berlin"});
 
             log.info("Scheduling Reminder Cronjob");
-            cron.schedule("* * * * *", async() => {
+            // eslint-disable-next-line no-unused-vars
+            const reminderJob = new Cron("* * * * *", async() => {
                 log.debug("Entered reminder cronjob");
                 await reminderHandler(_client);
-            }, {timezone: "Europe/Vienna"});
+            }, {timezone: "Europe/Berlin"});
         }
 
         ban.startCron(client);
