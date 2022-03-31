@@ -17,7 +17,7 @@ import messageHandler from "./handler/messageHandler";
 import messageDeleteHandler from "./handler/messageDeleteHandler";
 import BdayHandler from "./handler/bdayHandler";
 import AoCHandler from "./handler/aocHandler";
-// import * as fadingMessageHandler from "./handler/fadingMessageHandler";
+import * as fadingMessageHandler from "./handler/fadingMessageHandler";
 import * as storage from "./storage/storage";
 
 // Other commands
