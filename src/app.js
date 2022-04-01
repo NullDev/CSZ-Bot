@@ -10,7 +10,6 @@ import { Cron } from "croner";
 
 import * as conf from "./utils/configHandler";
 import log from "./utils/logger";
-import * as timezone from "./utils/timezone";
 
 // Handler
 import messageHandler from "./handler/messageHandler";
@@ -90,54 +89,39 @@ process.on("exit", code => {
     log.warn(`Process exited with code: ${code}`);
 });
 
-let timezoneFixedCronjobTask = null;
+const leetTask = async() => {
+    /** @type {Discord.Guild} */
+    const csz = client.guilds.cache.get(config.ids.guild_id);
 
-function scheduleTimezoneFixedCronjob(cronString) {
-    if (timezoneFixedCronjobTask) {
-        timezoneFixedCronjobTask.destroy();
-        timezoneFixedCronjobTask = null;
+    /** @type {TC} */
+    await (csz.channels.cache.get(config.ids.hauptchat_id)).send("Es ist `13:37` meine Kerle.\nBleibt hydriert! :grin: :sweat_drops:");
+
+    // Auto-kick members
+    const sadPinguEmote = csz.emojis.cache.find(e => e.name === "sadpingu");
+    const dabEmote = csz.emojis.cache.find(e => e.name === "Dab");
+
+    const membersToKick = csz.members.cache
+        .filter(m => m.roles.cache.filter(r => r.name !== "@everyone").size === 0)
+        .filter(m => Date.now() - m.joinedTimestamp >= 48 * 3_600_000);
+
+    log.info(`Identified ${membersToKick.size} members that should be kicked.`);
+
+    if (membersToKick.size > 0) {
+        // I don't have trust in this code, so ensure that we don't kick any regular members :harold:
+        assert(false, membersToKick.some(m => m.roles.cache.some(r => r.name === "Nerd")));
+
+        await Promise.all([
+            ...membersToKick.map(member => member.kick())
+        ]);
+
+        csz.channels.cache.get(config.ids.hauptchat_id).send(`Hab grad ${membersToKick.size} Jockel*innen gekickt ${dabEmote}`);
+
+        log.info(`Auto-kick: ${membersToKick.size} members kicked.`);
     }
-
-    timezoneFixedCronjobTask = new Cron(cronString, async() => {
-        /** @type {Discord.Guild} */
-        const csz = client.guilds.cache.get(config.ids.guild_id);
-
-        /** @type {TC} */
-        await (csz.channels.cache.get(config.ids.hauptchat_id)).send("Es ist `13:37` meine Kerle.\nBleibt hydriert! :grin: :sweat_drops:");
-
-        // Auto-kick members
-        const sadPinguEmote = csz.emojis.cache.find(e => e.name === "sadpingu");
-        const dabEmote = csz.emojis.cache.find(e => e.name === "Dab");
-
-        const membersToKick = csz.members.cache
-            .filter(m => m.roles.cache.filter(r => r.name !== "@everyone").size === 0)
-            .filter(m => Date.now() - m.joinedTimestamp >= 48 * 3_600_000);
-
-        log.info(`Identified ${membersToKick.size} members that should be kicked.`);
-
-        if (membersToKick.size > 0) {
-            // I don't have trust in this code, so ensure that we don't kick any regular members :harold:
-            assert(false, membersToKick.some(m => m.roles.cache.some(r => r.name === "Nerd")));
-
-            await Promise.all([
-                ...membersToKick.map(member => member.kick())
-            ]);
-
-            csz.channels.cache.get(config.ids.hauptchat_id).send(`Hab grad ${membersToKick.size} Jockel*innen gekickt ${dabEmote}`);
-
-            log.info(`Auto-kick: ${membersToKick.size} members kicked.`);
-        }
-        else {
-            csz.channels.cache.get(config.ids.hauptchat_id).send(`Heute leider keine Jockel*innen gekickt ${sadPinguEmote}`);
-        }
-
-        const tomorrow = Date.now() + 60/* s*/ * 1000/* ms*/ * 60/* m*/ * 24/* h*/;
-        const newCronString = timezone.getCronjobStringForHydrate(tomorrow);
-        scheduleTimezoneFixedCronjob(newCronString);
-    }, {
-        timezone: "Europe/Berlin"
-    });
-}
+    else {
+        csz.channels.cache.get(config.ids.hauptchat_id).send(`Heute leider keine Jockel*innen gekickt ${sadPinguEmote}`);
+    }
+};
 
 let firstRun = true;
 
@@ -158,8 +142,9 @@ client.on("ready", async(_client) => {
             await storage.initialize();
             firstRun = false; // Hacky deadlock ...
 
-            const newCronString = timezone.getCronjobStringForHydrate(Date.now());
-            scheduleTimezoneFixedCronjob(newCronString);
+            log.info("Scheduling 1338 Cronjob...");
+            // eslint-disable-next-line no-unused-vars
+            const l33tJob = new Cron("37 13 * * *", leetTask, { timezone: "Europe/Berlin" });
 
             log.info("Scheduling Birthday Cronjob...");
             // eslint-disable-next-line no-unused-vars
