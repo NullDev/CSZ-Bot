@@ -7,7 +7,7 @@ import * as winston from "winston";
 const loggingDir = "logs";
 
 const logger = winston.createLogger({
-    level: "debug",
+    level: process.env.LOG_LEVEL ?? "debug",
     format: winston.format.json(),
     transports: [
         new winston.transports.File({ filename: `${loggingDir}/error.log`, level: "error" }),
