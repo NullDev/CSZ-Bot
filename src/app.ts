@@ -85,8 +85,7 @@ const client = new Discord.Client({
     ]
 });
 
-// @ts-ignore
-process.on("unhandledRejection", (err, promise) => log.error(`Unhandled rejection (promise: ${promise}, reason: ${err.stack})`));
+process.on("unhandledRejection", (err: any, promise) => log.error(`Unhandled rejection (promise: ${promise}, reason: ${err.stack})`));
 process.on("uncaughtException", (err, origin) => log.error(`Uncaught exception (origin: ${origin}, error: ${err})`));
 process.on("SIGTERM", (signal) => log.error(`Received Sigterm: ${signal}`));
 process.on("beforeExit", code => {
@@ -255,31 +254,14 @@ client.on("guildMemberAdd", async member => {
         return;
     }
 
-    if (member.roles.cache.has(config.ids.shame_role_id)) {
+    if (member.roles.cache.has(botContext.roles.shame.id)) {
         log.debug(`Member "${member.id}" already has the shame role, skipping`);
         return;
     }
 
-    const shameRole = member.guild.roles.cache.get(config.ids.shame_role_id);
-    if (!shameRole) {
-        log.error(`Shame role not found: "${config.ids.shame_role_id}"`);
-        return;
-    }
+    await member.roles.add(botContext.roles.shame);
 
-    member.roles.add(shameRole);
-
-    const hauptchat = member.guild.channels.cache.get(config.ids.hauptchat_id);
-    if (!hauptchat) {
-        log.error(`Could not find hauptChat. Fix your stuff. Looked or guild with it: "${config.ids.hauptchat_id}"`);
-        return;
-    }
-
-    if (hauptchat.type !== "GUILD_TEXT") {
-        log.error(`Hauptchat is of unsupported type "${hauptchat.type}"`);
-        return;
-    }
-
-    hauptchat.send({
+    await botContext.mainChannel.send({
         content: `Haha, schau mal einer guck wer wieder hergekommen ist! <@${member.id}> hast es aber nicht lange ohne uns ausgehalten. ${numRagequits > 1 ? "Und das schon zum " + numRagequits + ". mal" : ""}`,
         allowedMentions: {
             users: [member.id]

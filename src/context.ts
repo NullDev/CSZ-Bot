@@ -1,4 +1,4 @@
-import type { Client, Guild, TextBasedChannel, VoiceChannel } from "discord.js";
+import type { Client, Guild, Role, TextBasedChannel, VoiceChannel } from "discord.js";
 import { getConfig } from "./utils/configHandler";
 import type { Config } from "./types";
 
@@ -17,6 +17,9 @@ export interface BotContext {
     prefix: {
         command: string;
         modCommand: string;
+    };
+    roles: {
+        shame: Role;
     };
 
     // TODO: Add some user assertions like isMod and isTrusted
@@ -46,6 +49,12 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
         throw new Error(`Main channel is not a text channel. "${mainVoiceChannel.id}" is "${mainVoiceChannel.type}"`);
     }
 
+    // TODO: Automate this and use a proper type mapping for all roles
+    const shameRole = guild.roles.cache.get(config.ids.shame_role_id);
+    if (!shameRole) {
+        throw new Error(`Shame role not found: "${config.ids.shame_role_id}"`);
+    }
+
     return {
         client,
         rawConfig: config,
@@ -55,6 +64,9 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
         prefix: {
             command: config.bot_settings.prefix.command_prefix,
             modCommand: config.bot_settings.prefix.mod_prefix
+        },
+        roles: {
+            shame: shameRole
         }
     };
 }
