@@ -17,7 +17,7 @@ const config = getConfig();
  * @param {number} max
  * @returns {number} A pseudo randomly generated number
  */
-const pseudoRng = function (min: number, max: number): number {
+const pseudoRng = function(min: number, max: number): number {
     return Math.floor(Math.random() * max + min);
 };
 
@@ -29,7 +29,7 @@ const pseudoRng = function (min: number, max: number): number {
  *
  * @returns the error string
  */
-const checkParams = function (amount: number, sides: number): string | undefined {
+const checkParams = function(amount: number, sides: number): string | undefined {
     if (!Number.isSafeInteger(amount) || !Number.isSafeInteger(sides)) {
         return "Bruder nimm ma bitte nur natürliche Zahlen (>0).";
     }
@@ -57,7 +57,7 @@ const checkParams = function (amount: number, sides: number): string | undefined
  *
  * @returns diceResult of the thrown dice
  */
-const diceResult = function (diceAmount: number, diceSides: number): number[] {
+const diceResult = function(diceAmount: number, diceSides: number): number[] {
     const res = [];
     for (let i = 0; i < diceAmount; ++i) {
         res.push(pseudoRng(1, diceSides));
@@ -73,7 +73,7 @@ const diceResult = function (diceAmount: number, diceSides: number): number[] {
  *
  * @returns {string} the constructed result
  */
-const constructResultStr = function (rolls: readonly number[]): string {
+const constructResultStr = function(rolls: readonly number[]): string {
     let res = "";
 
     for (let i = 0; i < rolls.length; ++i) {
@@ -86,7 +86,7 @@ const constructResultStr = function (rolls: readonly number[]): string {
 /**
  * Creates a dice throw (sequqnce)
  */
-export const run: CommandFunction = async (_client, message, args) => {
+export const run: CommandFunction = async(_client, message, args) => {
     let parsed = args[0]?.toLowerCase();
 
     // god i hate myself

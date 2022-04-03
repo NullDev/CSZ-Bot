@@ -10,7 +10,7 @@ const config = getConfig();
 /**
  * Extends an existing poll or strawpoll
  */
-export const run: CommandFunction = async (client, message, args) => {
+export const run: CommandFunction = async(client, message, args) => {
     if (!message.reference) return "Bruder schon mal was von der Replyfunktion gehört?";
     if (message.reference.guildId !== config.ids.guild_id || !message.reference.channelId) return "Bruder bleib mal hier auf'm Server.";
 

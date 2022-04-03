@@ -3,7 +3,7 @@ import type { CommandFunction } from "../../types";
 /**
  * Lists all server roles
  */
-export const run: CommandFunction = async (client, message, args) => {
+export const run: CommandFunction = async(client, message, args) => {
     if (!message.guild) return "Keine Guild-Message, lel"; // TODO: Remove as soon as we have ProcessableMessage as base
 
     const roleNames = message.guild.roles.cache

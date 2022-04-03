@@ -8,7 +8,7 @@ const config = getConfig();
 /**
  * Enlists all mod-commands with descriptions
  */
-export const run: CommandFunction = async (client, message, args) => {
+export const run: CommandFunction = async(client, message, args) => {
     const commandObj: Record<string, string> = {};
     const commandDir = __dirname;
 

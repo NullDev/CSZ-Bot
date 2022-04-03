@@ -90,7 +90,7 @@ process.on("exit", code => {
     log.warn(`Process exited with code: ${code}`);
 });
 
-const leetTask = async () => {
+const leetTask = async() => {
     const csz = client.guilds.cache.get(config.ids.guild_id);
     if (!csz) {
         log.error(`Could not find CSZ. Fix your stuff. Looked or guild with it: "${config.ids.guild_id}"`);
@@ -139,7 +139,7 @@ const leetTask = async () => {
 
 let firstRun = true;
 
-client.on("ready", async (_client) => {
+client.on("ready", async(_client) => {
     try {
         log.info("Running...");
         log.info(`Got ${client.users.cache.size} users, in ${client.channels.cache.size} channels of ${client.guilds.cache.size} guilds`);
@@ -166,7 +166,7 @@ client.on("ready", async (_client) => {
 
             log.info("Scheduling Birthday Cronjob...");
             // eslint-disable-next-line no-unused-vars
-            const bDayJob = new Cron("1 0 * * *", async () => {
+            const bDayJob = new Cron("1 0 * * *", async() => {
                 log.debug("Entered Birthday cronjob");
                 await bday.checkBdays();
             }, cronOptions);
@@ -174,40 +174,40 @@ client.on("ready", async (_client) => {
 
             log.info("Scheduling Advent of Code Cronjob...");
             // eslint-disable-next-line no-unused-vars
-            const aocJob = new Cron("0 20 1-25 12 *", async () => {
+            const aocJob = new Cron("0 20 1-25 12 *", async() => {
                 log.debug("Entered AoC cronjob");
                 await aoc.publishLeaderBoard();
             }, cronOptions);
 
             log.info("Scheduling Nickname Cronjob");
             // eslint-disable-next-line no-unused-vars
-            const nicknameJob = new Cron("0 0 * * 0", async () => {
+            const nicknameJob = new Cron("0 0 * * 0", async() => {
                 log.debug("Entered Nickname cronjob");
                 await nicknameHandler.rerollNicknames();
             }, cronOptions);
 
             log.info("Scheduling Saufen Cronjob");
             // eslint-disable-next-line no-unused-vars
-            const saufenJob = new Cron("36 0-23 * * FRI-SAT,SUN", async () => {
+            const saufenJob = new Cron("36 0-23 * * FRI-SAT,SUN", async() => {
                 log.debug("Entered Saufen cronjob");
                 await connectAndPlaySaufen(_client);
             }, cronOptions);
 
             log.info("Scheduling Reminder Cronjob");
             // eslint-disable-next-line no-unused-vars
-            const reminderJob = new Cron("* * * * *", async () => {
+            const reminderJob = new Cron("* * * * *", async() => {
                 log.debug("Entered reminder cronjob");
                 await reminderHandler(_client);
             }, cronOptions);
 
             // eslint-disable-next-line no-unused-vars
-            const startAprilFoolsJob = new Cron("2022-04-01T00:00:00", async () => {
+            const startAprilFoolsJob = new Cron("2022-04-01T00:00:00", async() => {
                 log.debug("Entered start april fools cronjob");
                 await startAprilFools(client);
             }, cronOptions);
 
             // eslint-disable-next-line no-unused-vars
-            const stopAprilFoolsJob = new Cron("2022-04-02T00:00:00", async () => {
+            const stopAprilFoolsJob = new Cron("2022-04-02T00:00:00", async() => {
                 log.debug("Entered end april fools cronjob");
                 await endAprilFools(client);
             }, cronOptions);
@@ -231,7 +231,7 @@ client.on("ready", async (_client) => {
  * for the "old commands". This way we can easily migrate commands to slash commands
  * and still have the option to use the textual commands. Win-Win :cooldoge:
  */
-client.on("messageCreate", async (message) => {
+client.on("messageCreate", async(message) => {
     try {
         await messageCommandHandler(message, client);
     }
@@ -240,7 +240,7 @@ client.on("messageCreate", async (message) => {
     }
 });
 
-client.on("interactionCreate", async (interaction) => {
+client.on("interactionCreate", async(interaction) => {
     try {
         await handleInteractionEvent(interaction, client);
     }
@@ -291,7 +291,7 @@ client.on("guildMemberAdd", async member => {
     });
 });
 
-client.on("guildMemberRemove", async (member) => {
+client.on("guildMemberRemove", async(member) => {
     try {
         await GuildRagequit.incrementRagequit(member.guild.id, member.id);
     }
@@ -300,7 +300,7 @@ client.on("guildMemberRemove", async (member) => {
     }
 });
 
-client.on("messageCreate", async (message) => {
+client.on("messageCreate", async(message) => {
     try {
         await messageHandler(message, client);
     }
@@ -318,7 +318,7 @@ client.on("messageDelete", (message) => {
     }
 });
 
-client.on("messageUpdate", async (_, newMessage) => {
+client.on("messageUpdate", async(_, newMessage) => {
     try {
         await messageHandler(newMessage as Message, client);
     }
@@ -339,9 +339,9 @@ client.on("debug", d => {
 client.on("rateLimit", rateLimitData => void log.error(`Discord Client RateLimit Shit: ${JSON.stringify(rateLimitData)}`));
 client.on("invalidated", () => void log.debug("Client invalidated"));
 
-client.on("messageReactionAdd", async (event, user) => reactionHandler(event as MessageReaction, user as User, client, false));
-client.on("messageReactionAdd", async (event, user) => quoteReactionHandler(event as MessageReaction, user as User, client));
-client.on("messageReactionRemove", async (event, user) => reactionHandler(event as MessageReaction, user as User, client, true));
+client.on("messageReactionAdd", async(event, user) => reactionHandler(event as MessageReaction, user as User, client, false));
+client.on("messageReactionAdd", async(event, user) => quoteReactionHandler(event as MessageReaction, user as User, client));
+client.on("messageReactionRemove", async(event, user) => reactionHandler(event as MessageReaction, user as User, client, true));
 
 client.login(config.auth.bot_token).then(() => {
     log.info("Token login was successful!");
