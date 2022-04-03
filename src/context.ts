@@ -2,8 +2,11 @@ import type { Client, Guild, TextBasedChannel, VoiceChannel } from "discord.js";
 import { getConfig } from "./utils/configHandler";
 import type { Config } from "./types";
 
-
+/**
+ * Object that's passed to every executed command to make it easier to access common channels without repeatedly retrieving stuff via IDs.
+ */
 export interface BotContext {
+    /** Avoid using the raw config. If the value must be ensured before (for example, the existence of a channel), consider adding it to the context. */
     rawConfig: Config;
     guild: Guild;
     mainChannel: TextBasedChannel;
@@ -21,7 +24,7 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
     const config = getConfig();
 
     const guild = client.guilds.cache.get(config.ids.guild_id);
-    if(!guild) {
+    if (!guild) {
         throw new Error(`Cannot find configured guild "${config.ids.guild_id}"`);
     }
 
