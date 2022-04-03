@@ -1,5 +1,6 @@
 /* eslint-disable camelcase */
 import type { Snowflake, Client } from "discord.js";
+import type { BotContext } from "./context";
 import type { ProcessableMessage } from "./handler/cmdHandler";
 
 /**
@@ -7,7 +8,7 @@ import type { ProcessableMessage } from "./handler/cmdHandler";
  */
 export type CommandResult = string | void;
 
-export type CommandFunction = (client: Client, message: ProcessableMessage, args: Array<string>) => Promise<CommandResult>;
+export type CommandFunction = (client: Client, message: ProcessableMessage, args: Array<string>, context: BotContext) => Promise<CommandResult>;
 
 export type Mutable<T> = { -readonly [P in keyof T]: T[P] };
 

@@ -10,6 +10,7 @@ import { CommandFunction, CommandResult } from "../types";
 import log from "../utils/logger";
 import { getConfig } from "../utils/configHandler";
 import * as ban from "../commands/modcommands/ban";
+import type { BotContext } from "../context";
 
 const config = getConfig();
 
@@ -30,7 +31,7 @@ export function isProcessableMessage(message: Message): message is ProcessableMe
  * Passes commands to the correct executor
  *
  */
-export default async function(message: Message, client: Client, isModCommand: boolean): Promise<CommandResult> {
+export default async function(message: Message, client: Client, isModCommand: boolean, context: BotContext): Promise<CommandResult> {
     if (message.author.bot) return;
 
     const cmdPrefix = isModCommand
@@ -107,7 +108,7 @@ export default async function(message: Message, client: Client, isModCommand: bo
     );
 
     try {
-        const response = await usedCommand.run(client, message, args);
+        const response = await usedCommand.run(client, message, args, context);
 
         // Non-Exception Error returned by the command (e.g.: Missing Argument)
         return response;

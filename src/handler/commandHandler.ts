@@ -57,6 +57,7 @@ import { GeburtstagCommand } from "../commands/geburtstag";
 import { Saufen } from "../commands/saufen";
 import { ErinnerungCommand } from "../commands/erinnerung";
 import { isProcessableMessage, ProcessableMessage } from "./cmdHandler";
+import type { BotContext } from "../context";
 
 const config = getConfig();
 
@@ -164,14 +165,15 @@ export const registerAllApplicationCommandsAsGuildCommands = async(client: Clien
  */
 const commandInteractionHandler = (
     command: CommandInteraction,
-    client: Client
+    client: Client,
+    context: BotContext
 ): Promise<unknown> => {
     const matchingCommand = applicationCommands.find(
         (cmd) => cmd.name === command.commandName
     );
     if (matchingCommand) {
         log.debug(`Found a matching command ${matchingCommand.name}`);
-        return matchingCommand.handleInteraction(command, client);
+        return matchingCommand.handleInteraction(command, client, context);
     }
 
     return Promise.reject(new Error(
@@ -187,14 +189,15 @@ const commandInteractionHandler = (
  */
 const messageComponentInteractionHandler = (
     command: MessageComponentInteraction,
-    client: Client
+    client: Client,
+    context: BotContext
 ): Promise<unknown> => {
     const matchingInteraction = interactions.find(
         (cmd) => cmd.ids.find(id => id === command.customId
         ));
     if (matchingInteraction) {
         log.debug(`Found a matching interaction ${matchingInteraction.name}`);
-        return matchingInteraction.handleInteraction(command, client);
+        return matchingInteraction.handleInteraction(command, client, context);
     }
 
     return Promise.reject(new Error(
@@ -245,7 +248,8 @@ const checkPermissions = (member: GuildMember, permissions: ReadonlyArray<Comman
 const commandMessageHandler = async(
     commandString: string,
     message: ProcessableMessage,
-    client: Client
+    client: Client,
+    context: BotContext
 ): Promise<unknown> => {
     const matchingCommand = messageCommands.find(
         cmd => cmd.name.toLowerCase() === commandString.toLowerCase() || cmd.aliases?.includes(commandString.toLowerCase())
@@ -266,7 +270,7 @@ const commandMessageHandler = async(
             ]);
         }
     }
-    return matchingCommand.handleMessage(message, client);
+    return matchingCommand.handleMessage(message, client, context);
 };
 
 const isCooledDown = (command: SpecialCommand) => {
@@ -282,8 +286,8 @@ const isCooledDown = (command: SpecialCommand) => {
     return Math.random() < diff / cooldownTime;
 };
 
-const specialCommandHandler = (message: ProcessableMessage, client: Client): Promise<unknown> => {
-    const commandCandidates = specialCommands.filter((p) => p.matches(message));
+const specialCommandHandler = (message: ProcessableMessage, client: Client, context: BotContext): Promise<unknown> => {
+    const commandCandidates = specialCommands.filter((p) => p.matches(message, context));
     return Promise.all(
         commandCandidates
             .filter((c) => Math.random() <= c.randomness)
@@ -293,30 +297,34 @@ const specialCommandHandler = (message: ProcessableMessage, client: Client): Pro
                     `User "${message.author.tag}" (${message.author}) performed special command: ${c.name}`
                 );
                 lastSpecialCommands[c.name] = Date.now();
-                return c.handleSpecialMessage(message, client);
+                return c.handleSpecialMessage(message, client, context);
             })
     );
 };
 
 export const handleInteractionEvent = (
     interaction: Interaction,
-    client: Client
+    client: Client,
+    context: BotContext
 ): Promise<unknown> => {
     if (interaction.isCommand()) {
         return commandInteractionHandler(
             interaction as CommandInteraction,
-            client
+            client,
+            context
         );
     }
-    else if (interaction.isMessageComponent()) {
-        return messageComponentInteractionHandler(interaction as MessageComponentInteraction, client);
+
+    if (interaction.isMessageComponent()) {
+        return messageComponentInteractionHandler(interaction as MessageComponentInteraction, client, context);
     }
     return Promise.reject(new Error("Not supported"));
 };
 
 export const messageCommandHandler = async(
     message: Message,
-    client: Client
+    client: Client,
+    context: BotContext
 ): Promise<unknown> => {
     // Bots shall not be able to perform commands. High Security
     if(message.author.bot) {
@@ -337,9 +345,9 @@ export const messageCommandHandler = async(
     ) {
         const cmdString = message.content.split(/\s+/)[0].slice(1);
         if (cmdString) {
-            return commandMessageHandler(cmdString, message, client);
+            return commandMessageHandler(cmdString, message, client, context);
         }
     }
 
-    return specialCommandHandler(message, client);
+    return specialCommandHandler(message, client, context);
 };

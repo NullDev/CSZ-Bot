@@ -228,7 +228,7 @@ client.on("ready", async(initializedClient) => {
  */
 client.on("messageCreate", async(message) => {
     try {
-        await messageCommandHandler(message, client);
+        await messageCommandHandler(message, client, botContext);
     }
     catch (err) {
         log.error(`[messageCreate] Error on message ${message.id}. Cause: ${err}`);
@@ -237,7 +237,7 @@ client.on("messageCreate", async(message) => {
 
 client.on("interactionCreate", async(interaction) => {
     try {
-        await handleInteractionEvent(interaction, client);
+        await handleInteractionEvent(interaction, client, botContext);
     }
     catch (err) {
         log.error(`[interactionCreate] Error on interaction ${interaction.id}. Cause: ${err}`);
@@ -269,7 +269,7 @@ client.on("guildMemberAdd", async member => {
     });
 });
 
-client.on("guildMemberRemove", async(member) => {
+client.on("guildMemberRemove", async member => {
     try {
         await GuildRagequit.incrementRagequit(member.guild.id, member.id);
     }
@@ -278,16 +278,16 @@ client.on("guildMemberRemove", async(member) => {
     }
 });
 
-client.on("messageCreate", async(message) => {
+client.on("messageCreate", async message => {
     try {
-        await messageHandler(message, client);
+        await messageHandler(message, client, botContext);
     }
     catch (err) {
         log.error(`[messageCreate] Error on message ${message.id}. Cause: ${err}`);
     }
 });
 
-client.on("messageDelete", (message) => {
+client.on("messageDelete", message => {
     try {
         messageDeleteHandler(message as Message, client);
     }
@@ -298,7 +298,7 @@ client.on("messageDelete", (message) => {
 
 client.on("messageUpdate", async(_, newMessage) => {
     try {
-        await messageHandler(newMessage as Message, client);
+        await messageHandler(newMessage as Message, client, botContext);
     }
     catch (err) {
         log.error(`[messageUpdate] Error on message ${newMessage.id}. Cause: ${err}`);
