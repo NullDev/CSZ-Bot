@@ -92,6 +92,6 @@ export const reminderHandler = async(client: Client) => {
         }
     }
     catch(err) {
-        logger.error(`Couldn't retreive reminders because of ${err}`);
+        logger.error(`Couldn't retrieve reminders because of ${err}`);
     }
 };
