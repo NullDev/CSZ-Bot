@@ -4,6 +4,8 @@
 
 import { Util } from "discord.js";
 
+import type { CommandFunction } from "../types";
+
 import { getConfig } from "../utils/configHandler";
 const config = getConfig();
 
@@ -14,48 +16,49 @@ const config = getConfig();
  * @param {number} max
  * @returns {number} A pseudo randomly generated number
  */
-const pseudoRng = function(min, max) {
+const pseudoRng = function(min: number, max: number): number {
     return Math.floor(Math.random() * max + min);
 };
 
 /**
  * Return an error string if an error exists.
  *
- * @param {number} amount
- * @param {number} sides
+ * @param amount
+ * @param sides
  *
- * @returns {string} the error string
+ * @returns the error string
  */
-const errorHandling = function(amount, sides) {
-    if(!Number.isInteger(amount) || !Number.isInteger(sides)) {
+const checkParams = function(amount: number, sides: number): string | undefined {
+    if (!Number.isSafeInteger(amount) || !Number.isSafeInteger(sides)) {
         return "Bruder nimm ma bitte nur natürliche Zahlen (>0).";
     }
 
-    if(amount <= 0 || sides <= 0 || Number.isNaN(amount) || Number.isNaN(sides)) {
+    if (amount <= 0 || sides <= 0 || Number.isNaN(amount) || Number.isNaN(sides)) {
         return "Du brauchst schon ein valides Argument...";
     }
 
-    if(amount > 10) {
+    if (amount > 10) {
         return "Wieso brauchst du denn mehr als 10 Würfe?!";
     }
-    if(sides > 100) {
+
+    if (sides > 100) {
         return "Selbst ein 100-seitiger Würfel ist schon Overkill.";
     }
 
-    return "";
+    return undefined;
 };
 
 /**
  * Creates the dice throws based on a simple rng
  *
- * @param {number} diceAmount
- * @param {number} diceSides
+ * @param diceAmount
+ * @param diceSides
  *
- * @returns {Array} diceResult of the thrown dice
+ * @returns diceResult of the thrown dice
  */
-const diceResult = function(diceAmount, diceSides) {
+const diceResult = function(diceAmount: number, diceSides: number): number[] {
     const res = [];
-    for(let i = 0; i < diceAmount; ++i) {
+    for (let i = 0; i < diceAmount; ++i) {
         res.push(pseudoRng(1, diceSides));
     }
 
@@ -69,10 +72,10 @@ const diceResult = function(diceAmount, diceSides) {
  *
  * @returns {string} the constructed result
  */
-const constructResultStr = function(rolls) {
+const constructResultStr = function(rolls: readonly number[]): string {
     let res = "";
 
-    for(let i = 0; i < rolls.length; ++i) {
+    for (let i = 0; i < rolls.length; ++i) {
         res += `Würfel #${i + 1}: ${rolls[i]}\n`;
     }
 
@@ -81,30 +84,28 @@ const constructResultStr = function(rolls) {
 
 /**
  * Creates a dice throw (sequqnce)
- *
- * @type {import("../types").CommandFunction}
  */
-export const run = async(_client, message, args) => {
+export const run: CommandFunction = async(_client, message, args) => {
     let parsed = args[0]?.toLowerCase();
 
     // god i hate myself
     // there must be a better way of handling this
-    if(!parsed) {
+    if (!parsed) {
         parsed = "0d0";
     }
 
-    const [amount, sides] = parsed.split("d");
+    const [amountStr, sidesStr] = parsed.split("d");
+    const [amount, sides] = [Number(amountStr), Number(sidesStr)];
 
-    const error = errorHandling(Number(amount), Number(sides));
-
-    if(error) {
+    const error = checkParams(amount, sides);
+    if (error) {
         return error;
     }
 
     const maxHexCol = 16777214;
 
     const embed = {
-        title: Util.cleanContent(`${parsed}:`, message),
+        title: Util.cleanContent(`${parsed}:`, message.channel),
         timestamp: new Date(),
         author: {
             name: `Würfel Resultat für ${message.author.username}`,
@@ -120,7 +121,8 @@ export const run = async(_client, message, args) => {
     await message.delete();
 };
 
-export const description =
-`Wirft x beliebig viele Würfel mit y vielen Seiten.
+export const description = `
+Wirft x beliebig viele Würfel mit y vielen Seiten.
 Usage: ${config.bot_settings.prefix.command_prefix}roll xdy
-Mit x als die Anzahl der Würfel (<11) und y als die Menge der Seiten der Würfel (<=100)`;
+Mit x als die Anzahl der Würfel (<11) und y als die Menge der Seiten der Würfel (<=100)
+`.trim();
