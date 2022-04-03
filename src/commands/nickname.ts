@@ -137,7 +137,7 @@ export class Nickname implements ApplicationCommand {
                 if (!trusted) {
                     return command.reply("Hurensohn. Der Command ist nix für dich.");
                 }
-                let nickname = command.options.getString("nickname", true);
+                const nickname = command.options.getString("nickname", true);
                 if (await Nicknames.nickNameExist(user.id, nickname)) {
                     return command.reply(`Würdest du Hurensohn aufpassen, wüsstest du, dass für ${user} '${nickname}' bereits existiert.`);
                 }
@@ -206,7 +206,7 @@ export class NicknameButtonHandler implements UserInteraction {
 
 
     async handleInteraction(interaction: MessageComponentInteraction, client: Client): Promise<void> {
-        let suggestion = ongoingSuggestions[interaction.message.id];
+        const suggestion = ongoingSuggestions[interaction.message.id];
 
         if (suggestion === undefined) {
             return interaction.update({
@@ -214,7 +214,7 @@ export class NicknameButtonHandler implements UserInteraction {
                 components: []
             });
         }
-        let userVoteMap = getUserVoteMap(interaction.message.id);
+        const userVoteMap = getUserVoteMap(interaction.message.id);
 
         const istrusted = isTrusted(interaction.guild?.members.cache.get(interaction.user.id)!);
         if (interaction.customId === "nicknameVoteYes") {
@@ -224,7 +224,7 @@ export class NicknameButtonHandler implements UserInteraction {
             userVoteMap[interaction.user.id] = {vote: "NO", trusted: istrusted};
         }
         // evaluate the Uservotes
-        let votes:UserVote[] = Object.values(userVoteMap);
+        const votes:UserVote[] = Object.values(userVoteMap);
         if (this.hasEnoughVotes(votes, "NO")) {
             return interaction.update({
                 content: `Der Vorschlag: \`${suggestion.nickname}\` für <@${suggestion.nicknameUserID}> war echt nicht so geil`,

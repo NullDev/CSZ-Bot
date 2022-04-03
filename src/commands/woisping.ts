@@ -35,7 +35,7 @@ const getPingVoteMap = (messageid: string): Set<string> => {
 };
 
 const getMessage = (reason: string, usersVotedYes: string[] = []) => {
-    let content = usersVotedYes.length === 1 ? `<@&${config.ids.woisgang_role_id}> <@!${usersVotedYes[0]}> hat Bock auf Wois. Grund dafür ist \`${reason}\`` :
+    const content = usersVotedYes.length === 1 ? `<@&${config.ids.woisgang_role_id}> <@!${usersVotedYes[0]}> hat Bock auf Wois. Grund dafür ist \`${reason}\`` :
         `<@&${config.ids.woisgang_role_id}> <@!${usersVotedYes.join(">,<@!")}> haben Bock auf Wois. Grund dafür ist \`${reason}\``;
     return {
         content: content.trim(),
@@ -98,7 +98,7 @@ export class WoisCommand implements ApplicationCommand {
         });
         const message = await command.fetchReply();
         reasons[message.id] = reason;
-        let pingVoteMap = getPingVoteMap(message.id);
+        const pingVoteMap = getPingVoteMap(message.id);
         pingVoteMap.add(pinger.id);
     }
 }
@@ -117,7 +117,7 @@ export class WoisButton implements UserInteraction {
             });
         }
 
-        let pingVoteMap = getPingVoteMap(command.message.id);
+        const pingVoteMap = getPingVoteMap(command.message.id);
         pingVoteMap.add(member.id);
         const amount = pingVoteMap.size;
         const now = Date.now();

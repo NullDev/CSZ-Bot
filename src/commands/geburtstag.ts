@@ -1,4 +1,4 @@
-import Birthday from "../storage/model/Birthday";
+import Birthday, { isOneBasedMonth } from "../storage/model/Birthday";
 import moment from "moment";
 
 import log from "../utils/logger";
@@ -28,6 +28,9 @@ export class GeburtstagCommand implements ApplicationCommand {
     async handleInteraction(command: CommandInteraction<CacheType>, client: Client<boolean>): Promise<void> {
         const day = command.options.getInteger("day", true);
         const month = command.options.getInteger("month", true);
+
+        if(!isOneBasedMonth(month)) return;
+
         const date = moment(`${month}-${day}`, "MM-DD");
 
         if(date.isValid()) {

@@ -18,7 +18,7 @@ export default class NicknameHandler {
 
     async rerollNicknames() {
         console.log("rerolling nicknames");
-        let allUsersAndNames = Object.entries(await Nicknames.allUsersAndNames());
+        const allUsersAndNames = Object.entries(await Nicknames.allUsersAndNames());
         this.config = config;
 
 

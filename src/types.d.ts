@@ -9,7 +9,7 @@ export type CommandResult = string | void;
 
 export type CommandFunction = (client: Client, message: ProcessableMessage, args: Array<string>) => Promise<CommandResult>;
 
-export type Mutable<T> = { -readonly [P in keyof T ]: T[P] };
+export type Mutable<T> = { -readonly [P in keyof T]: T[P] };
 
 export interface GitHubContributor {
     login: string,
@@ -30,6 +30,9 @@ export interface Config {
             command_prefix: string,
             mod_prefix: string
         },
+
+        flame_trusted_user_on_bot_ping?: boolean;
+
         moderator_id: Snowflake,
         ban_reason_channel_id: Snowflake,
         moderator_roles: Array<string>,
@@ -43,7 +46,12 @@ export interface Config {
             target_channel_overrides: { [key: string]: string },
             default_target_channel_id: Snowflake,
             emoji_name: string,
-        }
+        },
+        flame_trusted_user_on_bot_ping: boolean
     },
     ids: Record<string, Snowflake>
 }
+
+// eslint-disable-next-line no-use-before-define
+export type JsonValue = JsonObject | JsonValue[] | boolean | number | string | null;
+export type JsonObject = Record<string, JsonValue>;

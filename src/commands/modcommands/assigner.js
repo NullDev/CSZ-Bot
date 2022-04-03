@@ -14,7 +14,7 @@ const config = getConfig();
 export const run = async(client, message, args) => {
     if (!args.length) return "Keine Rollen angegeben.";
 
-    let roleNames = message.guild.roles.cache
+    const roleNames = message.guild.roles.cache
         .filter(element => String(element.name).toLowerCase() !== "@everyone")
         .map(element => element.name);
 
@@ -22,7 +22,7 @@ export const run = async(client, message, args) => {
 
     await message.delete().catch(log.error);
 
-    let validRoles = args.filter(value => roleNames.includes(value));
+    const validRoles = args.filter(value => roleNames.includes(value));
 
     for(const validRole of validRoles) {
         const roleMessage = await message.channel.send(validRole);

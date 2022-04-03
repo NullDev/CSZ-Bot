@@ -6,11 +6,10 @@
 
 // Dependencies
 import * as Discord from "discord.js";
-import * as cron from "node-cron";
+import { Cron } from "croner";
 
 import * as conf from "./utils/configHandler";
 import log from "./utils/logger";
-import * as timezone from "./utils/timezone";
 
 // Handler
 import messageHandler from "./handler/messageHandler";
@@ -35,12 +34,13 @@ import NicknameHandler from "./handler/nicknameHandler";
 import { assert } from "console";
 import { connectAndPlaySaufen } from "./handler/voiceHandler";
 import { reminderHandler } from "./commands/erinnerung";
+import { endAprilFools, startAprilFools } from "./handler/aprilFoolsHandler";
 
-let version = conf.getVersion();
-let appname = conf.getName();
-let devname = conf.getAuthor();
+const version = conf.getVersion();
+const appname = conf.getName();
+const devname = conf.getAuthor();
 
-let splashPadding = 12 + appname.length + version.toString().length;
+const splashPadding = 12 + appname.length + version.toString().length;
 
 console.log(
     `\n #${"-".repeat(splashPadding)}#\n` +
@@ -81,55 +81,47 @@ const client = new Discord.Client({
 process.on("unhandledRejection", (err, promise) => log.error(`Unhandled rejection (promise: ${promise}, reason: ${err.stack})`));
 process.on("uncaughtException", (err, origin) => log.error(`Uncaught exception (origin: ${origin}, error: ${err})`));
 process.on("SIGTERM", (signal) => log.error(`Received Sigterm: ${signal}`));
+process.on("beforeExit", code => {
+    log.warn(`Process will exit with code: ${code}`);
+    process.exit(code);
+});
+process.on("exit", code => {
+    log.warn(`Process exited with code: ${code}`);
+});
 
-let timezoneFixedCronjobTask = null;
+const leetTask = async() => {
+    /** @type {Discord.Guild} */
+    const csz = client.guilds.cache.get(config.ids.guild_id);
 
-function scheduleTimezoneFixedCronjob(cronString) {
-    if (timezoneFixedCronjobTask) {
-        timezoneFixedCronjobTask.destroy();
-        timezoneFixedCronjobTask = null;
+    /** @type {TC} */
+    await (csz.channels.cache.get(config.ids.hauptchat_id)).send("Es ist `13:37` meine Kerle.\nBleibt hydriert! :grin: :sweat_drops:");
+
+    // Auto-kick members
+    const sadPinguEmote = csz.emojis.cache.find(e => e.name === "sadpingu");
+    const dabEmote = csz.emojis.cache.find(e => e.name === "Dab");
+
+    const membersToKick = csz.members.cache
+        .filter(m => m.roles.cache.filter(r => r.name !== "@everyone").size === 0)
+        .filter(m => Date.now() - m.joinedTimestamp >= 48 * 3_600_000);
+
+    log.info(`Identified ${membersToKick.size} members that should be kicked.`);
+
+    if (membersToKick.size > 0) {
+        // I don't have trust in this code, so ensure that we don't kick any regular members :harold:
+        assert(false, membersToKick.some(m => m.roles.cache.some(r => r.name === "Nerd")));
+
+        await Promise.all([
+            ...membersToKick.map(member => member.kick())
+        ]);
+
+        csz.channels.cache.get(config.ids.hauptchat_id).send(`Hab grad ${membersToKick.size} Jockel*innen gekickt ${dabEmote}`);
+
+        log.info(`Auto-kick: ${membersToKick.size} members kicked.`);
     }
-
-    timezoneFixedCronjobTask = cron.schedule(cronString, async() => {
-        /** @type {Discord.Guild} */
-        let csz = client.guilds.cache.get(config.ids.guild_id);
-
-        /** @type {TC} */
-        await (csz.channels.cache.get(config.ids.hauptchat_id)).send("Es ist `13:37` meine Kerle.\nBleibt hydriert! :grin: :sweat_drops:");
-
-        // Auto-kick members
-        const sadPinguEmote = csz.emojis.cache.find(e => e.name === "sadpingu");
-        const dabEmote = csz.emojis.cache.find(e => e.name === "Dab");
-
-        const membersToKick = csz.members.cache
-            .filter(m => m.roles.cache.filter(r => r.name !== "@everyone").size === 0)
-            .filter(m => Date.now() - m.joinedTimestamp >= 48 * 3_600_000);
-
-        log.info(`Identified ${membersToKick.size} members that should be kicked.`);
-
-        if (membersToKick.size > 0) {
-            // I don't have trust in this code, so ensure that we don't kick any regular members :harold:
-            assert(false, membersToKick.some(m => m.roles.cache.some(r => r.name === "Nerd")));
-
-            await Promise.all([
-                ...membersToKick.map(member => member.kick())
-            ]);
-
-            csz.channels.cache.get(config.ids.hauptchat_id).send(`Hab grad ${membersToKick.size} Jockel*innen gekickt ${dabEmote}`);
-
-            log.info(`Auto-kick: ${membersToKick.size} members kicked.`);
-        }
-        else {
-            csz.channels.cache.get(config.ids.hauptchat_id).send(`Heute leider keine Jockel*innen gekickt ${sadPinguEmote}`);
-        }
-
-        const tomorrow = Date.now() + 60/* s*/ * 1000/* ms*/ * 60/* m*/ * 24/* h*/;
-        const newCronString = timezone.getCronjobStringForHydrate(tomorrow);
-        scheduleTimezoneFixedCronjob(newCronString);
-    }, {
-        timezone: "Europe/Vienna"
-    });
-}
+    else {
+        csz.channels.cache.get(config.ids.hauptchat_id).send(`Heute leider keine Jockel*innen gekickt ${sadPinguEmote}`);
+    }
+};
 
 let firstRun = true;
 
@@ -145,29 +137,62 @@ client.on("ready", async(_client) => {
         const bday = new BdayHandler(client);
         const aoc = new AoCHandler(client);
         log.info("Starting Nicknamehandler ");
-        let nicknameHandler = new NicknameHandler(client);
+        const nicknameHandler = new NicknameHandler(client);
         if (firstRun) {
             await storage.initialize();
             firstRun = false; // Hacky deadlock ...
 
-            const newCronString = timezone.getCronjobStringForHydrate(Date.now());
-            scheduleTimezoneFixedCronjob(newCronString);
+            log.info("Scheduling 1338 Cronjob...");
+            // eslint-disable-next-line no-unused-vars
+            const l33tJob = new Cron("37 13 * * *", leetTask, { timezone: "Europe/Berlin" });
 
             log.info("Scheduling Birthday Cronjob...");
-            cron.schedule("1 0 * * *", async() => await bday.checkBdays(), { timezone: "Europe/Vienna" });
+            // eslint-disable-next-line no-unused-vars
+            const bDayJob = new Cron("1 0 * * *", async() => {
+                log.debug("Entered Birthday cronjob");
+                await bday.checkBdays();
+            }, { timezone: "Europe/Berlin" });
             await bday.checkBdays();
 
             log.info("Scheduling Advent of Code Cronjob...");
-            cron.schedule("0 20 1-25 12 *", async() => await aoc.publishLeaderBoard(), {timezone: "Europe/Vienna"});
+            // eslint-disable-next-line no-unused-vars
+            const aocJob = new Cron("0 20 1-25 12 *", async() => {
+                log.debug("Entered AoC cronjob");
+                await aoc.publishLeaderBoard();
+            }, {timezone: "Europe/Berlin"});
 
             log.info("Scheduling Nickname Cronjob");
-            cron.schedule("0 0 * * 0", async() => await nicknameHandler.rerollNicknames(), {timezone: "Europe/Vienna"});
+            // eslint-disable-next-line no-unused-vars
+            const nicknameJob = new Cron("0 0 * * 0", async() => {
+                log.debug("Entered Nickname cronjob");
+                await nicknameHandler.rerollNicknames();
+            }, {timezone: "Europe/Berlin"});
 
             log.info("Scheduling Saufen Cronjob");
-            cron.schedule("36 0-23 * * FRI-SAT,SUN", async() => await connectAndPlaySaufen(_client), {timezone: "Europe/Vienna"});
+            // eslint-disable-next-line no-unused-vars
+            const saufenJob = new Cron("36 0-23 * * FRI-SAT,SUN", async() => {
+                log.debug("Entered Saufen cronjob");
+                await connectAndPlaySaufen(_client);
+            }, {timezone: "Europe/Berlin"});
 
             log.info("Scheduling Reminder Cronjob");
-            cron.schedule("* * * * *", async() => await reminderHandler(_client), {timezone: "Europe/Vienna"});
+            // eslint-disable-next-line no-unused-vars
+            const reminderJob = new Cron("* * * * *", async() => {
+                log.debug("Entered reminder cronjob");
+                await reminderHandler(_client);
+            }, {timezone: "Europe/Berlin"});
+
+            // eslint-disable-next-line no-unused-vars
+            const startAprilFoolsJob = new Cron("2022-04-01T00:00:00", async() => {
+                log.debug("Entered start april fools cronjob");
+                await startAprilFools(client);
+            }, {timezone: "Europe/Berlin"});
+
+            // eslint-disable-next-line no-unused-vars
+            const stopAprilFoolsJob = new Cron("2022-04-02T00:00:00", async() => {
+                log.debug("Entered end april fools cronjob");
+                await endAprilFools(client);
+            }, {timezone: "Europe/Berlin"});
         }
 
         ban.startCron(client);
@@ -236,8 +261,13 @@ client.on("guildMemberAdd", async member => {
     }
 });
 
-client.on("guildMemberRemove", (member) => {
-    GuildRagequit.incrementRagequit(member.guild.id, member.id);
+client.on("guildMemberRemove", async(member) => {
+    try {
+        await GuildRagequit.incrementRagequit(member.guild.id, member.id);
+    }
+    catch (err) {
+        log.error(`[guildMemberRemove] Error on incrementing ragequit of ${member.id}. Cause: ${err}`);
+    }
 });
 
 client.on("messageCreate", async(message) => {
@@ -249,7 +279,14 @@ client.on("messageCreate", async(message) => {
     }
 });
 
-client.on("messageDelete", (message) => messageDeleteHandler(message, client));
+client.on("messageDelete", (message) => {
+    try {
+        messageDeleteHandler(message, client);
+    }
+    catch (err) {
+        log.error(`[messageDelete] Error for ${message.id}. Cause: ${err}`);
+    }
+});
 
 client.on("messageUpdate", async(_, newMessage) => {
     try {
@@ -262,8 +299,15 @@ client.on("messageUpdate", async(_, newMessage) => {
 
 client.on("error", (e) => log.error(`Discord Client Error: ${e}`));
 client.on("warn", (w) => log.warn(`Discord Client Warning: ${w}`));
-client.on("debug", (d) => log.debug(`Discord Client Debug: ${d}`));
+client.on("debug", (d) => {
+    if(d.includes("Heartbeat")) {
+        return;
+    }
+
+    log.debug(`Discord Client Debug: ${d}`);
+});
 client.on("rateLimit", (rateLimitData) => log.error(`Discord Client RateLimit Shit: ${JSON.stringify(rateLimitData)}`));
+client.on("invalidated", () => log.debug("Client invalidated"));
 
 client.on("messageReactionAdd", async(event, user) => reactionHandler(event, user, client, false));
 client.on("messageReactionAdd", async(event, user) => quoteReactionHandler(event, user, client));

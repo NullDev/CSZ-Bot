@@ -12,7 +12,7 @@ const config = getConfig();
 /**
  * Randomly capitalize letters
  */
-let transform = function(c: string): string {
+const transform = function(c: string): string {
     if (c === "ß" || c === "ẞ") return c;
     return Math.random() < 0.5 ? c.toLowerCase() : c.toUpperCase();
 };

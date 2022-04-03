@@ -88,8 +88,8 @@ const drawStempelkarteBackside = async(subjectAvatarUrl: string | undefined, ava
 
 function chunkArray<T>(array: T[], chunkSize: number): T[][] {
     let index = 0;
-    let arrayLength = array.length;
-    let tempArray = [];
+    const arrayLength = array.length;
+    const tempArray = [];
 
     for (index = 0; index < arrayLength; index += chunkSize) {
         const myChunk = array.slice(index, index + chunkSize);

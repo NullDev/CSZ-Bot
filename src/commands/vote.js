@@ -16,7 +16,7 @@ const config = getConfig();
  * @type {import("../types").CommandFunction}
  */
 export const run = async(client, message, args) => {
-    let options = parseOptions(args, {
+    const options = parseOptions(args, {
         "boolean": [
             "channel"
         ],
@@ -25,7 +25,7 @@ export const run = async(client, message, args) => {
         }
     });
 
-    let parsedArgs = options._;
+    const parsedArgs = options._;
 
     if (!parsedArgs.length) return "Bruder da ist keine Frage :c";
 

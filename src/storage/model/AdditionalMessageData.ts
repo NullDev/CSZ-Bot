@@ -1,49 +1,66 @@
 /* Disabled due to sequelize's DataTypes */
 /* eslint-disable new-cap */
 
-import { Model, DataTypes } from "sequelize";
+import type { Client, Snowflake, Message } from "discord.js";
+import { Model, Sequelize, DataTypes } from "sequelize";
 import { v4 as uuidv4 } from "uuid";
+import type { JsonObject } from "../../types";
 
 import log from "../../utils/logger";
 
 export default class AdditionalMessageData extends Model {
+    declare id: string;
+    declare messageId: Snowflake;
+    declare channelId: Snowflake;
+    declare guildId: Snowflake;
+    declare customData: JsonObject;
+
     /**
-     * Fetches the discord message associated with this data
-     * @param {import("discord.js").Client} client
+     * Fetches the discord message associated with this data.
      */
-    async fetchMessage(client) {
+    async fetchMessage(client: Client): Promise<Message | undefined> {
         try {
-            return (await client.guilds.fetch(this.guildId))
-                .channels.cache.get(this.channelId)
-                .messages.cache.get(message.id);
+            const guild = await client.guilds.fetch(this.guildId);
+            const channel = guild.channels.cache.get(this.channelId);
+
+            if (!channel) {
+                log.error(`Tried to retrieve message with id "${this.messageId}" from channel with id "${this.channelId}" from guild with id "${this.guildId}", but discord returned none. That message might be deleted or something.`);
+                return undefined;
+            }
+
+            const textChannel = "GUILD_TEXT";
+            if (channel.type !== textChannel) {
+                log.error(`Tried to retrieve text message from channel of type "${channel.type}". Only ${textChannel} is currently supported`);
+                return undefined;
+            }
+
+            return channel.messages.cache.get(this.messageId);
         }
-        catch(err) {
+        catch (err: any) {
             log.error(`Failed to fetch message from additional data [${JSON.stringify(this)}]: ${err.message}`);
         }
-        return null;
+        return undefined;
     }
 
     /**
      * Fetches the additional data associated with a certain message
-     * @param {import("discord.js").Message} message
      */
-    static async fromMessage(message) {
-        let objectData = {
+    static async fromMessage(message: Message): Promise<AdditionalMessageData> {
+        if (!message.guild) {
+            throw new Error("Cannot associate data with message outside of a guild");
+        }
+
+        const objectData = {
             guildId: message.guild.id,
             channelId: message.channel.id,
             messageId: message.id
         };
 
-        let data = await AdditionalMessageData.findOne({where: objectData});
-
-        if(!data) {
-            data = await AdditionalMessageData.create(objectData);
-        }
-
-        return data;
+        const existingMessageData = await AdditionalMessageData.findOne({ where: objectData });
+        return existingMessageData ?? await AdditionalMessageData.create(objectData);
     }
 
-    static initialize(sequelize) {
+    static initialize(sequelize: Sequelize) {
         this.init({
             id: {
                 type: DataTypes.STRING(36),
