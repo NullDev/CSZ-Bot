@@ -186,14 +186,14 @@ client.on("ready", async(initializedClient) => {
             // eslint-disable-next-line no-unused-vars
             const saufenJob = new Cron("36 0-23 * * FRI-SAT,SUN", async() => {
                 log.debug("Entered Saufen cronjob");
-                await connectAndPlaySaufen(_client);
+                await connectAndPlaySaufen(initializedClient);
             }, cronOptions);
 
             log.info("Scheduling Reminder Cronjob");
             // eslint-disable-next-line no-unused-vars
             const reminderJob = new Cron("* * * * *", async() => {
                 log.debug("Entered reminder cronjob");
-                await reminderHandler(_client);
+                await reminderHandler(initializedClient);
             }, cronOptions);
 
             // eslint-disable-next-line no-unused-vars
