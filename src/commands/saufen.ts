@@ -6,8 +6,11 @@ import { ApplicationCommand, CommandPermission } from "./command";
 import fetch from "node-fetch";
 import path from "path";
 import { createWriteStream } from "fs";
+import { assertNever } from "../utils/typeUtils";
 
 const config = getConfig();
+
+type SubCommand = "los" | "add";
 
 export class Saufen implements ApplicationCommand {
     name = "saufen";
@@ -35,30 +38,36 @@ export class Saufen implements ApplicationCommand {
                 ));
 
     async handleInteraction(command: CommandInteraction<CacheType>, client: Client<boolean>): Promise<void> {
-        const subcommand = command.options.getSubcommand();
+        const subCommand = command.options.getSubcommand() as SubCommand;
 
-        if (subcommand === "los") {
-            await Promise.all([
-                connectAndPlaySaufen(client),
-                command.reply("WOCHENENDE!! SAUFEN!! GEIL")
-            ]);
-        }
-        else if (subcommand === "add") {
-            const soundUrl = new URL(command.options.getString("sound", true));
-            const targetPath = path.resolve(soundDir, path.basename(soundUrl.pathname));
-            const fileStream = createWriteStream(targetPath);
-            const res = await fetch(soundUrl, {
-                method: "GET"
-            });
-            const savePromise = new Promise((resolve, reject) => {
-                res.body.pipe(fileStream);
-                res.body.on("error", reject);
-                fileStream.on("finish", resolve);
-            });
-            await Promise.all([
-                savePromise,
-                command.reply("Jo, habs eingefügt")
-            ]);
+        switch (subCommand) {
+            case "los": {
+                await Promise.all([
+                    connectAndPlaySaufen(client),
+                    command.reply("WOCHENENDE!! SAUFEN!! GEIL")
+                ]);
+                return;
+            }
+            case "add": {
+                const soundUrl = new URL(command.options.getString("sound", true));
+                const targetPath = path.resolve(soundDir, path.basename(soundUrl.pathname));
+                const fileStream = createWriteStream(targetPath);
+                const res = await fetch(soundUrl, {
+                    method: "GET"
+                });
+                const savePromise = new Promise((resolve, reject) => {
+                    res.body.pipe(fileStream);
+                    res.body.on("error", reject);
+                    fileStream.on("finish", resolve);
+                });
+                await Promise.all([
+                    savePromise,
+                    command.reply("Jo, habs eingefügt")
+                ]);
+                return;
+            }
+            default:
+                return assertNever(subCommand);
         }
     }
 }
