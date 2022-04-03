@@ -35,6 +35,7 @@ import { assert } from "console";
 import { connectAndPlaySaufen } from "./handler/voiceHandler";
 import { reminderHandler } from "./commands/erinnerung";
 import { endAprilFools, startAprilFools } from "./handler/aprilFoolsHandler";
+import { createBotContext } from "./context";
 
 const version = conf.getVersion();
 const appname = conf.getName();
@@ -48,6 +49,9 @@ console.log(
     ` #${"-".repeat(splashPadding)}#\n\n` +
     ` Copyright (c) ${(new Date()).getFullYear()} ${devname}\n`
 );
+
+/** @type {BotContext} */
+let botContext;
 
 log.info("Started.");
 
@@ -125,11 +129,14 @@ const leetTask = async() => {
 
 let firstRun = true;
 
-client.on("ready", async(_client) => {
+client.on("ready", async(initializedClient) => {
     try {
         log.info("Running...");
         log.info(`Got ${client.users.cache.size} users, in ${client.channels.cache.size} channels of ${client.guilds.cache.size} guilds`);
         client.user.setActivity(config.bot_settings.status);
+
+        botContext = await createBotContext(initializedClient);
+        console.assert(!!botContext); // TODO: Remove once botContext is used
 
         // When the application is ready, slash commands should be registered
         await registerAllApplicationCommandsAsGuildCommands(client);
