@@ -19,6 +19,23 @@ export interface GitHubContributor {
     contributions: number
 }
 
+export type ConfigRoleName =
+    | "banned_channel_id"
+    | "banned_role_id"
+    | "bday_role_id"
+    | "bot_log_channel_id"
+    | "default_role_id"
+    | "gruendervaeter_banned_role_id"
+    | "gruendervaeter_role_id"
+    | "guild_id"
+    | "haupt_woischat_id"
+    | "hauptchat_id"
+    | "shame_role_id"
+    | "trusted_banned_role_id"
+    | "trusted_role_id"
+    | "votes_channel_id"
+    | "woisgang_role_id";
+
 export interface Config {
     auth: {
         bot_token: string,
@@ -49,7 +66,7 @@ export interface Config {
         },
         flame_trusted_user_on_bot_ping: boolean
     },
-    ids: Record<string, Snowflake>
+    ids: Record<ConfigRoleName, Snowflake>
 }
 
 // eslint-disable-next-line no-use-before-define
