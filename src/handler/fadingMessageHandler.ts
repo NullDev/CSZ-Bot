@@ -6,8 +6,8 @@ let isLooping = false;
 
 const fadingMessageDeleteLoop = async(client: Client) => {
     const fadingMessages = await FadingMessage.findAll();
+    const currentTime = new Date();
     for (const fadingMessage of fadingMessages) {
-        const currentTime = new Date();
         if (currentTime < fadingMessage.endTime) {
             continue;
         }

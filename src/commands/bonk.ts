@@ -50,8 +50,8 @@ Usage: ${config.bot_settings.prefix.command_prefix}bonk
         else {
             toBeBonked = message.author;
         }
-        const meme = await createBonkMeme(toBeBonked);
 
+        const meme = await createBonkMeme(toBeBonked);
         try {
             await message.channel.send({
                 files: [{

@@ -43,21 +43,23 @@ export async function connectAndPlaySaufen(client: Client) {
     const csz = client.guilds.cache.get(cszId)!;
     const wois = csz.channels.cache.get(woisId) as VoiceChannel;
 
-    if (wois.members.size > 0) {
-        const files = await readdir(soundDir);
-        const randomSound = files[Math.floor(Math.random() * files.length)];
-        const file = path.resolve(soundDir, randomSound);
-        try {
-            const duration = (await gad.getAudioDurationInSeconds(file)) * 1000;
-            await playSaufen(file, duration);
-            const connection = await connectToHauptwois(wois);
-            connection.subscribe(player);
+    if (wois.members.size <= 0) {
+        return;
+    }
 
-            await setTimeout(duration);
-            connection.disconnect();
-        }
-        catch(err) {
-            logger.error("Could not play saufen", err);
-        }
+    const files = await readdir(soundDir);
+    const randomSound = files[Math.floor(Math.random() * files.length)];
+    const file = path.resolve(soundDir, randomSound);
+    try {
+        const duration = (await gad.getAudioDurationInSeconds(file)) * 1000;
+        await playSaufen(file, duration);
+        const connection = await connectToHauptwois(wois);
+        connection.subscribe(player);
+
+        await setTimeout(duration);
+        connection.disconnect();
+    }
+    catch(err) {
+        logger.error("Could not play saufen", err);
     }
 }

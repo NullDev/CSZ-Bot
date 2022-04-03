@@ -19,6 +19,7 @@ export class ErinnerungCommand implements MessageCommand {
             await message.reply("Brudi ich muss schon wissen wann ich dich erinnern soll");
             return;
         }
+
         try {
             const date = Sugar.Date.create(param, {
                 locale: "de",

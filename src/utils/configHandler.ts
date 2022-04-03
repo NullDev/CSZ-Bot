@@ -27,7 +27,7 @@ export const getConfig = function(): Config {
         process.exit(1);
     }
 
-    let jsondata = "";
+    let jsondata;
     try {
         jsondata = fs.readFileSync(configPath, "utf8");
     }
