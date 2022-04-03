@@ -3,7 +3,7 @@
 // ================================ //
 
 
-import { Message, Client } from "discord.js";
+import { Client } from "discord.js";
 import moment from "moment";
 import { getConfig } from "../utils/configHandler";
 import { MessageCommand } from "./command";

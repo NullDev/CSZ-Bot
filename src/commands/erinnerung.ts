@@ -1,4 +1,4 @@
-import { Client, Message, TextBasedChannel } from "discord.js";
+import { Client, TextBasedChannel } from "discord.js";
 import { getConfig } from "../utils/configHandler";
 import { MessageCommand } from "./command";
 import * as Sugar from "sugar";

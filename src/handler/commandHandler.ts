@@ -242,7 +242,7 @@ const checkPermissions = (member: GuildMember, permissions: ReadonlyArray<Comman
  * was found or an error if the command would be a mod command but the
  * invoking user is not a mod
  */
-const commandMessageHandler = async (
+const commandMessageHandler = async(
     commandString: string,
     message: ProcessableMessage,
     client: Client
@@ -314,7 +314,7 @@ export const handleInteractionEvent = (
     return Promise.reject(new Error("Not supported"));
 };
 
-export const messageCommandHandler = async (
+export const messageCommandHandler = async(
     message: Message,
     client: Client
 ): Promise<unknown> => {
