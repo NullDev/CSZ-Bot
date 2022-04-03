@@ -62,11 +62,14 @@ const client = new Discord.Client({
         "REACTION",
         "USER"
     ],
-    /* allowedMentions: {
+    /*
+    allowedMentions: {
         parse: ["users", "roles"],
         repliedUser: true
-    }, */
-    intents: ["DIRECT_MESSAGES",
+    },
+    */
+    intents: [
+        "DIRECT_MESSAGES",
         "GUILDS",
         "GUILD_BANS",
         "GUILD_EMOJIS_AND_STICKERS",
@@ -78,7 +81,8 @@ const client = new Discord.Client({
         "GUILD_MESSAGE_TYPING",
         "GUILD_PRESENCES",
         "GUILD_VOICE_STATES",
-        "GUILD_WEBHOOKS"]
+        "GUILD_WEBHOOKS"
+    ]
 });
 
 // @ts-ignore
