@@ -1,6 +1,11 @@
 import type { Client, Guild, Role, TextBasedChannel, VoiceChannel } from "discord.js";
 import { getConfig } from "./utils/configHandler";
-import type { Config } from "./types";
+import type { Config, ConfigRoleKey } from "./types";
+
+/** Removes the _id from entries in the config on type-level */
+export type ConfigRoleName = ConfigRoleKey extends `${infer T}_id`
+    ? T
+    : never;
 
 /**
  * Object that's passed to every executed command to make it easier to access common channels without repeatedly retrieving stuff via IDs.
@@ -18,10 +23,7 @@ export interface BotContext {
         command: string;
         modCommand: string;
     };
-    roles: {
-        shame: Role;
-    };
-
+    roles: Record<ConfigRoleName, Role>;
     // TODO: Add some user assertions like isMod and isTrusted
 }
 
@@ -49,10 +51,16 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
         throw new Error(`Main channel is not a text channel. "${mainVoiceChannel.id}" is "${mainVoiceChannel.type}"`);
     }
 
-    // TODO: Automate this and use a proper type mapping for all roles
-    const shameRole = guild.roles.cache.get(config.ids.shame_role_id);
-    if (!shameRole) {
-        throw new Error(`Shame role not found: "${config.ids.shame_role_id}"`);
+    const roles: Partial<Record<ConfigRoleName, Role>> = {};
+    for (const [roleKey, id] of Object.entries(config.ids)) {
+        const roleName = roleKey.slice(0, 0 - "_id".length) as ConfigRoleName;
+
+        const roleObject = guild.roles.cache.get(id);
+        if (!roleObject) {
+            throw new Error(`Role "${roleName}" not found by id: "${id}" in guild "${guild.id}"`);
+        }
+
+        roles[roleName] = roleObject;
     }
 
     return {
@@ -65,8 +73,6 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
             command: config.bot_settings.prefix.command_prefix,
             modCommand: config.bot_settings.prefix.mod_prefix
         },
-        roles: {
-            shame: shameRole
-        }
+        roles: roles as Record<ConfigRoleName, Role>
     };
 }

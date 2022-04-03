@@ -19,7 +19,7 @@ export interface GitHubContributor {
     contributions: number
 }
 
-export type ConfigRoleName =
+export type ConfigRoleKey =
     | "banned_channel_id"
     | "banned_role_id"
     | "bday_role_id"
@@ -66,7 +66,7 @@ export interface Config {
         },
         flame_trusted_user_on_bot_ping: boolean
     },
-    ids: Record<ConfigRoleName, Snowflake>
+    ids: Record<ConfigRoleKey, Snowflake>
 }
 
 // eslint-disable-next-line no-use-before-define

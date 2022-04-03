@@ -254,12 +254,12 @@ client.on("guildMemberAdd", async member => {
         return;
     }
 
-    if (member.roles.cache.has(botContext.roles.shame.id)) {
+    if (member.roles.cache.has(botContext.roles.shame_role.id)) {
         log.debug(`Member "${member.id}" already has the shame role, skipping`);
         return;
     }
 
-    await member.roles.add(botContext.roles.shame);
+    await member.roles.add(botContext.roles.shame_role);
 
     await botContext.mainChannel.send({
         content: `Haha, schau mal einer guck wer wieder hergekommen ist! <@${member.id}> hast es aber nicht lange ohne uns ausgehalten. ${numRagequits > 1 ? "Und das schon zum " + numRagequits + ". mal" : ""}`,
