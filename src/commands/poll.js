@@ -4,12 +4,12 @@
 
 import moment from "moment";
 import parseOptions from "minimist";
-import * as cron from "node-cron";
 
 import log from "../utils/logger";
 import AdditionalMessageData from "../storage/model/AdditionalMessageData";
 import { getConfig } from "../utils/configHandler";
 import { Util } from "discord.js";
+import Cron from "croner";
 
 const config = getConfig();
 
@@ -238,7 +238,8 @@ export const importPolls = async() => {
 export const startCron = (client) => {
     log.info("Scheduling Poll Cronjob...");
 
-    cron.schedule("* * * * *", async() => {
+    // eslint-disable-next-line no-unused-vars
+    const pollCron = new Cron("* * * * *", async() => {
         const currentDate = new Date();
         const pollsToFinish = delayedPolls.filter(delayedPoll => currentDate >= delayedPoll.finishesAt);
         /** @type {import("discord.js").GuildChannel} */

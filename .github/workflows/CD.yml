@@ -4,7 +4,13 @@ on:
   workflow_dispatch:
   push:
     branches:
-    - master
+      - master
+    paths-ignore:
+      - './github/**'
+      - './devcontainer/**'
+      - README.md
+      - CONTRIBUTING.md
+      - LICENSE
 
 jobs:
   deploy:
