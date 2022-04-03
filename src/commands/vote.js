@@ -2,8 +2,6 @@
 // = Copyright (c) NullDev = //
 // ========================= //
 
-// Dependencies
-import moment from "moment";
 import parseOptions from "minimist";
 import { Util } from "discord.js";
 
@@ -31,7 +29,7 @@ export const run = async(client, message, args) => {
 
     const embed = {
         title: `**${Util.cleanContent(parsedArgs.join(" "), message.channel)}**`,
-        timestamp: moment.utc().format(),
+        timestamp: new Date(),
         color: 0x9400D3,
         author: {
             name: `Umfrage von ${message.author.username}`,
