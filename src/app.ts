@@ -36,7 +36,7 @@ import { assert } from "console";
 import { connectAndPlaySaufen } from "./handler/voiceHandler";
 import { reminderHandler } from "./commands/erinnerung";
 import { endAprilFools, startAprilFools } from "./handler/aprilFoolsHandler";
-import { createBotContext } from "./context";
+import { createBotContext, type BotContext } from "./context";
 
 const version = conf.getVersion();
 const appname = conf.getName();
@@ -51,8 +51,7 @@ console.log(
     ` Copyright (c) ${(new Date()).getFullYear()} ${devname}\n`
 );
 
-/** @type {BotContext} */
-let botContext;
+let botContext: BotContext;
 
 log.info("Started.");
 
@@ -99,22 +98,8 @@ process.on("exit", code => {
 });
 
 const leetTask = async() => {
-    const csz = client.guilds.cache.get(config.ids.guild_id);
-    if (!csz) {
-        log.error(`Could not find CSZ. Fix your stuff. Looked or guild with it: "${config.ids.guild_id}"`);
-        return;
-    }
-
-    const hauptchat = csz.channels.cache.get(config.ids.hauptchat_id);
-    if (!hauptchat) {
-        log.error(`Could not find hauptChat. Fix your stuff. Looked or guild with it: "${config.ids.hauptchat_id}"`);
-        return;
-    }
-
-    if (hauptchat.type !== "GUILD_TEXT") {
-        log.error(`Hauptchat is of unsupported type "${hauptchat.type}"`);
-        return;
-    }
+    const hauptchat = botContext.mainChannel;
+    const csz = botContext.guild;
 
     await hauptchat.send("Es ist `13:37` meine Kerle.\nBleibt hydriert! :grin: :sweat_drops:");
 
@@ -128,21 +113,21 @@ const leetTask = async() => {
 
     log.info(`Identified ${membersToKick.size} members that should be kicked.`);
 
-    if (membersToKick.size > 0) {
-        // I don't have trust in this code, so ensure that we don't kick any regular members :harold:
-        assert(false, membersToKick.some(m => m.roles.cache.some(r => r.name === "Nerd")));
-
-        await Promise.all([
-            ...membersToKick.map(member => member.kick())
-        ]);
-
-        hauptchat.send(`Hab grad ${membersToKick.size} Jockel*innen gekickt ${dabEmote}`);
-
-        log.info(`Auto-kick: ${membersToKick.size} members kicked.`);
+    if (membersToKick.size === 0) {
+        await hauptchat.send(`Heute leider keine Jockel*innen gekickt ${sadPinguEmote}`);
+        return;
     }
-    else {
-        hauptchat.send(`Heute leider keine Jockel*innen gekickt ${sadPinguEmote}`);
-    }
+
+    // I don't have trust in this code, so ensure that we don't kick any regular members :harold:
+    assert(false, membersToKick.some(m => m.roles.cache.some(r => r.name === "Nerd")));
+
+    await Promise.all([
+        ...membersToKick.map(member => member.kick())
+    ]);
+
+    await hauptchat.send(`Hab grad ${membersToKick.size} Jockel*innen gekickt ${dabEmote}`);
+
+    log.info(`Auto-kick: ${membersToKick.size} members kicked.`);
 };
 
 let firstRun = true;
