@@ -1,20 +1,15 @@
-// ========================= //
-// = Copyright (c) NullDev = //
-// ========================= //
-
 import { promises as fs } from "fs";
 import * as path from "path";
 
+import type { CommandFunction } from "../../types";
 import { getConfig } from "../../utils/configHandler";
 const config = getConfig();
 
 /**
  * Enlists all mod-commands with descriptions
- *
- * @type {import("../../types").CommandFunction}
  */
-export const run = async(client, message, args) => {
-    const commandObj = {};
+export const run: CommandFunction = async (client, message, args) => {
+    const commandObj: Record<string, string> = {};
     const commandDir = __dirname;
 
     const files = await fs.readdir(commandDir);
