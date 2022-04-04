@@ -1,11 +1,7 @@
-import type { Client, Guild, Role, TextBasedChannel, VoiceChannel } from "discord.js";
+import type { Client, Guild, Role, TextChannel, VoiceChannel } from "discord.js";
 import { getConfig } from "./utils/configHandler";
-import type { Config, ConfigRoleKey } from "./types";
-
-/** Removes the _id from entries in the config on type-level */
-export type ConfigRoleName = ConfigRoleKey extends `${infer T}_id`
-    ? T
-    : never;
+import { Config, ConfigTextChannelId, ConfigVoiceChannelId, ConfigRoleId } from "./types";
+import { RemoveOptionalSuffix, type RemoveSuffix } from "./utils/typeUtils";
 
 /**
  * Object that's passed to every executed command to make it easier to access common channels without repeatedly retrieving stuff via IDs.
@@ -16,16 +12,66 @@ export interface BotContext {
     /** Avoid using the raw config. If the value must be ensured before (for example, the existence of a channel), consider adding it to the context. */
     rawConfig: Config;
     guild: Guild;
-    mainChannel: TextBasedChannel;
-    mainVoiceChannel: VoiceChannel;
 
     prefix: {
         command: string;
         modCommand: string;
     };
-    roles: Record<ConfigRoleName, Role>;
+    roles: Record<RemoveSuffix<ConfigRoleId, "_role_id">, Role>;
+
+    // This type is rather "complex"
+    // That's due to the channel IDs in the config not being named consistent (sometimes ends with _channel_id, sometimes with _id only)
+    // and we're not able to rename these entries.
+    // We remove all instances of "_id" suffixes and - if present - the "_channel" suffix.
+    textChannels: Record<
+        RemoveOptionalSuffix<
+            RemoveSuffix<ConfigTextChannelId, "_id">,
+            "_channel"
+        >,
+        TextChannel
+    >;
+    voiceChannels: Record<
+        RemoveOptionalSuffix<
+            RemoveSuffix<ConfigVoiceChannelId, "_id">,
+            "_channel"
+        >,
+        VoiceChannel
+    >;
     // TODO: Add some user assertions like isMod and isTrusted
 }
+
+// #region Ensure Channels
+
+function ensureRole<T extends ConfigRoleId>(config: Config, guild: Guild, roleIdName: T): Role {
+    const roleId = config.ids[roleIdName];
+    const role = guild.roles.cache.get(roleId);
+
+    if (!role) throw new Error(`Role "${roleIdName}" not found by id: "${roleId}" in guild "${guild.id}"`);
+
+    return role;
+}
+function ensureTextChannel<T extends ConfigTextChannelId>(config: Config, guild: Guild, channelIdName: T): TextChannel {
+    const channelId = config.ids[channelIdName];
+
+    const channel = guild.channels.cache.get(channelId);
+
+    if (!channel) throw new Error(`Could not find main channel with id "${channelId}" on guild "${guild.id}"`);
+    if (channel.type !== "GUILD_TEXT") throw new Error(`Main channel is not a text channel. "${channel.id}" is "${channel.type}"`);
+
+    return channel;
+}
+function ensureVoiceChannel<T extends ConfigVoiceChannelId>(config: Config, guild: Guild, channelIdName: T): VoiceChannel {
+    const channelId = config.ids[channelIdName];
+
+    const channel = guild.channels.cache.get(channelId);
+
+    if (!channel) throw new Error(`Could not find main channel with id "${channelId}" on guild "${guild.id}"`);
+    if (channel.type !== "GUILD_VOICE") throw new Error(`Main channel is not a voice channel. "${channel.id}" is "${channel.type}"`);
+
+    return channel;
+}
+
+// #endregion
 
 export async function createBotContext(client: Client<true>): Promise<BotContext> {
     const config = getConfig();
@@ -35,44 +81,34 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
         throw new Error(`Cannot find configured guild "${config.ids.guild_id}"`);
     }
 
-    const mainChannel = guild.channels.cache.get(config.ids.hauptchat_id);
-    if (!mainChannel) {
-        throw new Error(`Could not find main channel with id "${config.ids.hauptchat_id}" on guild "${guild.id}"`);
-    }
-    if (mainChannel.type !== "GUILD_TEXT") {
-        throw new Error(`Main channel is not a text channel. "${mainChannel.id}" is "${mainChannel.type}"`);
-    }
-
-    const mainVoiceChannel = guild.channels.cache.get(config.ids.haupt_woischat_id);
-    if (!mainVoiceChannel) {
-        throw new Error(`Could not find main voice channel with id "${config.ids.haupt_woischat_id}" on guild "${guild.id}"`);
-    }
-    if (mainVoiceChannel.type !== "GUILD_VOICE") {
-        throw new Error(`Main channel is not a text channel. "${mainVoiceChannel.id}" is "${mainVoiceChannel.type}"`);
-    }
-
-    const roles: Partial<Record<ConfigRoleName, Role>> = {};
-    for (const [roleKey, id] of Object.entries(config.ids)) {
-        const roleName = roleKey.slice(0, 0 - "_id".length) as ConfigRoleName;
-
-        const roleObject = guild.roles.cache.get(id);
-        if (!roleObject) {
-            throw new Error(`Role "${roleName}" not found by id: "${id}" in guild "${guild.id}"`);
-        }
-
-        roles[roleName] = roleObject;
-    }
-
     return {
         client,
         rawConfig: config,
         guild,
-        mainChannel,
-        mainVoiceChannel,
         prefix: {
             command: config.bot_settings.prefix.command_prefix,
             modCommand: config.bot_settings.prefix.mod_prefix
         },
-        roles: roles as Record<ConfigRoleName, Role>
+        roles: {
+            // TODO: Make this prettier (splitting up the IDs by type in the config would make this much easier)
+            banned: ensureRole(config, guild, "banned_role_id"),
+            bday: ensureRole(config, guild, "bday_role_id"),
+            "default": ensureRole(config, guild, "default_role_id"),
+            gruendervaeter_banned: ensureRole(config, guild, "gruendervaeter_banned_role_id"),
+            gruendervaeter: ensureRole(config, guild, "gruendervaeter_role_id"),
+            shame: ensureRole(config, guild, "shame_role_id"),
+            trusted_banned: ensureRole(config, guild, "trusted_banned_role_id"),
+            trusted: ensureRole(config, guild, "trusted_role_id"),
+            woisgang: ensureRole(config, guild, "woisgang_role_id")
+        },
+        textChannels: {
+            banned: ensureTextChannel(config, guild, "banned_channel_id"),
+            bot_log: ensureTextChannel(config, guild, "bot_log_channel_id"),
+            hauptchat: ensureTextChannel(config, guild, "hauptchat_id"),
+            votes: ensureTextChannel(config, guild, "votes_channel_id")
+        },
+        voiceChannels: {
+            haupt_woischat: ensureVoiceChannel(config, guild, "haupt_woischat_id")
+        }
     };
 }

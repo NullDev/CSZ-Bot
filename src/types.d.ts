@@ -20,7 +20,7 @@ export interface GitHubContributor {
     contributions: number
 }
 
-export type ConfigRoleIdKey =
+export type ConfigRoleId =
     | "banned_role_id"
     | "bday_role_id"
     | "default_role_id"
@@ -31,17 +31,17 @@ export type ConfigRoleIdKey =
     | "trusted_role_id"
     | "woisgang_role_id";
 
-export type ConfigChannelIdKey =
+export type ConfigTextChannelId =
     | "banned_channel_id"
     | "bot_log_channel_id"
-    | "guild_id"
-    | "haupt_woischat_id"
     | "hauptchat_id"
     | "votes_channel_id";
 
-export type ConfigGuildIdKey = "guild_id";
+export type ConfigVoiceChannelId = "haupt_woischat_id";
 
-export type ConfigId = ConfigRoleIdKey | ConfigChannelIdKey | ConfigGuildIdKey;
+export type ConfigGuildId = "guild_id";
+
+export type ConfigId = ConfigRoleId | ConfigTextChannelId | ConfigGuildId | ConfigVoiceChannelId;
 
 export interface Config {
     auth: {

@@ -97,7 +97,7 @@ process.on("exit", code => {
 });
 
 const leetTask = async() => {
-    const hauptchat = botContext.mainChannel;
+    const { hauptchat } = botContext.textChannels;
     const csz = botContext.guild;
 
     await hauptchat.send("Es ist `13:37` meine Kerle.\nBleibt hydriert! :grin: :sweat_drops:");
@@ -256,14 +256,14 @@ client.on("guildMemberAdd", async member => {
         return;
     }
 
-    if (member.roles.cache.has(botContext.roles.shame_role.id)) {
+    if (member.roles.cache.has(botContext.roles.shame.id)) {
         log.debug(`Member "${member.id}" already has the shame role, skipping`);
         return;
     }
 
-    await member.roles.add(botContext.roles.shame_role);
+    await member.roles.add(botContext.roles.shame);
 
-    await botContext.mainChannel.send({
+    await botContext.textChannels.hauptchat.send({
         content: `Haha, schau mal einer guck wer wieder hergekommen ist! <@${member.id}> hast es aber nicht lange ohne uns ausgehalten. ${numRagequits > 1 ? "Und das schon zum " + numRagequits + ". mal" : ""}`,
         allowedMentions: {
             users: [member.id]
