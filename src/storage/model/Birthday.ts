@@ -4,7 +4,6 @@
 import type { Snowflake } from "discord.js";
 import { Model, DataTypes, Op, type Sequelize } from "sequelize";
 import { v4 as uuidv4 } from "uuid";
-import moment from "moment";
 import log from "../../utils/logger";
 
 export type OneBasedMonth = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
@@ -44,14 +43,15 @@ export default class Birthday extends Model {
     }
 
     static async getTodaysBirthdays() {
-        const today = moment();
+        const today = new Date(); // TODO: Rewrite to Temporal API after it is available
+        const zeroBasedMonth = today.getMonth();
         return Birthday.findAll({
             where: {
                 day: {
-                    [Op.eq]: today.date()
+                    [Op.eq]: today.getDate()
                 },
                 month: {
-                    [Op.eq]: today.month() + 1
+                    [Op.eq]: zeroBasedMonth + 1
                 }
             }
         });
