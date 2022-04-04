@@ -16,6 +16,7 @@ export interface CommandPermission {
 }
 
 export interface CommandBase {
+    readonly modCommand?: boolean;
     readonly name: string;
     readonly aliases?: string[];
     readonly description: string;

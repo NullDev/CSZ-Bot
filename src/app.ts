@@ -29,12 +29,13 @@ import {
     messageCommandHandler,
     registerAllApplicationCommandsAsGuildCommands
 } from "./handler/commandHandler";
-import {quoteReactionHandler} from "./handler/quoteHandler";
+import { quoteReactionHandler } from "./handler/quoteHandler";
 import NicknameHandler from "./handler/nicknameHandler";
 import { assert } from "console";
 import { connectAndPlaySaufen } from "./handler/voiceHandler";
 import { reminderHandler } from "./commands/erinnerung";
 import { endAprilFools, startAprilFools } from "./handler/aprilFoolsHandler";
+import { Message, MessageReaction, User } from "discord.js";
 
 const version = conf.getVersion();
 const appname = conf.getName();
@@ -90,11 +91,24 @@ process.on("exit", code => {
 });
 
 const leetTask = async() => {
-    /** @type {Discord.Guild} */
     const csz = client.guilds.cache.get(config.ids.guild_id);
+    if (!csz) {
+        log.error(`Could not find CSZ. Fix your stuff. Looked or guild with it: "${config.ids.guild_id}"`);
+        return;
+    }
 
-    /** @type {TC} */
-    await (csz.channels.cache.get(config.ids.hauptchat_id)).send("Es ist `13:37` meine Kerle.\nBleibt hydriert! :grin: :sweat_drops:");
+    const hauptchat = csz.channels.cache.get(config.ids.hauptchat_id);
+    if (!hauptchat) {
+        log.error(`Could not find hauptChat. Fix your stuff. Looked or guild with it: "${config.ids.hauptchat_id}"`);
+        return;
+    }
+
+    if (hauptchat.type !== "GUILD_TEXT") {
+        log.error(`Hauptchat is of unsupported type "${hauptchat.type}"`);
+        return;
+    }
+
+    await hauptchat.send("Es ist `13:37` meine Kerle.\nBleibt hydriert! :grin: :sweat_drops:");
 
     // Auto-kick members
     const sadPinguEmote = csz.emojis.cache.find(e => e.name === "sadpingu");
@@ -102,7 +116,7 @@ const leetTask = async() => {
 
     const membersToKick = csz.members.cache
         .filter(m => m.roles.cache.filter(r => r.name !== "@everyone").size === 0)
-        .filter(m => Date.now() - m.joinedTimestamp >= 48 * 3_600_000);
+        .filter(m => m.joinedTimestamp !== null && (Date.now() - m.joinedTimestamp >= 48 * 3_600_000));
 
     log.info(`Identified ${membersToKick.size} members that should be kicked.`);
 
@@ -114,12 +128,12 @@ const leetTask = async() => {
             ...membersToKick.map(member => member.kick())
         ]);
 
-        csz.channels.cache.get(config.ids.hauptchat_id).send(`Hab grad ${membersToKick.size} Jockel*innen gekickt ${dabEmote}`);
+        hauptchat.send(`Hab grad ${membersToKick.size} Jockel*innen gekickt ${dabEmote}`);
 
         log.info(`Auto-kick: ${membersToKick.size} members kicked.`);
     }
     else {
-        csz.channels.cache.get(config.ids.hauptchat_id).send(`Heute leider keine Jockel*innen gekickt ${sadPinguEmote}`);
+        hauptchat.send(`Heute leider keine Jockel*innen gekickt ${sadPinguEmote}`);
     }
 };
 
@@ -129,10 +143,14 @@ client.on("ready", async(_client) => {
     try {
         log.info("Running...");
         log.info(`Got ${client.users.cache.size} users, in ${client.channels.cache.size} channels of ${client.guilds.cache.size} guilds`);
-        client.user.setActivity(config.bot_settings.status);
+        client.user!.setActivity(config.bot_settings.status);
 
         // When the application is ready, slash commands should be registered
         await registerAllApplicationCommandsAsGuildCommands(client);
+
+        const cronOptions = {
+            timezone: "Europe/Berlin"
+        } as const;
 
         const bday = new BdayHandler(client);
         const aoc = new AoCHandler(client);
@@ -144,14 +162,14 @@ client.on("ready", async(_client) => {
 
             log.info("Scheduling 1338 Cronjob...");
             // eslint-disable-next-line no-unused-vars
-            const l33tJob = new Cron("37 13 * * *", leetTask, { timezone: "Europe/Berlin" });
+            const l33tJob = new Cron("37 13 * * *", leetTask, cronOptions);
 
             log.info("Scheduling Birthday Cronjob...");
             // eslint-disable-next-line no-unused-vars
             const bDayJob = new Cron("1 0 * * *", async() => {
                 log.debug("Entered Birthday cronjob");
                 await bday.checkBdays();
-            }, { timezone: "Europe/Berlin" });
+            }, cronOptions);
             await bday.checkBdays();
 
             log.info("Scheduling Advent of Code Cronjob...");
@@ -159,40 +177,40 @@ client.on("ready", async(_client) => {
             const aocJob = new Cron("0 20 1-25 12 *", async() => {
                 log.debug("Entered AoC cronjob");
                 await aoc.publishLeaderBoard();
-            }, {timezone: "Europe/Berlin"});
+            }, cronOptions);
 
             log.info("Scheduling Nickname Cronjob");
             // eslint-disable-next-line no-unused-vars
             const nicknameJob = new Cron("0 0 * * 0", async() => {
                 log.debug("Entered Nickname cronjob");
                 await nicknameHandler.rerollNicknames();
-            }, {timezone: "Europe/Berlin"});
+            }, cronOptions);
 
             log.info("Scheduling Saufen Cronjob");
             // eslint-disable-next-line no-unused-vars
             const saufenJob = new Cron("36 0-23 * * FRI-SAT,SUN", async() => {
                 log.debug("Entered Saufen cronjob");
                 await connectAndPlaySaufen(_client);
-            }, {timezone: "Europe/Berlin"});
+            }, cronOptions);
 
             log.info("Scheduling Reminder Cronjob");
             // eslint-disable-next-line no-unused-vars
             const reminderJob = new Cron("* * * * *", async() => {
                 log.debug("Entered reminder cronjob");
                 await reminderHandler(_client);
-            }, {timezone: "Europe/Berlin"});
+            }, cronOptions);
 
             // eslint-disable-next-line no-unused-vars
             const startAprilFoolsJob = new Cron("2022-04-01T00:00:00", async() => {
                 log.debug("Entered start april fools cronjob");
                 await startAprilFools(client);
-            }, {timezone: "Europe/Berlin"});
+            }, cronOptions);
 
             // eslint-disable-next-line no-unused-vars
             const stopAprilFoolsJob = new Cron("2022-04-02T00:00:00", async() => {
                 log.debug("Entered end april fools cronjob");
                 await endAprilFools(client);
-            }, {timezone: "Europe/Berlin"});
+            }, cronOptions);
         }
 
         ban.startCron(client);
@@ -202,7 +220,7 @@ client.on("ready", async(_client) => {
 
         fadingMessageHandler.startLoop(client);
     }
-    catch(err) {
+    catch (err) {
         log.error(`Error in Ready handler: ${err}`);
     }
 });
@@ -217,7 +235,7 @@ client.on("messageCreate", async(message) => {
     try {
         await messageCommandHandler(message, client);
     }
-    catch(err) {
+    catch (err) {
         log.error(`[messageCreate] Error on message ${message.id}. Cause: ${err}`);
     }
 });
@@ -226,39 +244,51 @@ client.on("interactionCreate", async(interaction) => {
     try {
         await handleInteractionEvent(interaction, client);
     }
-    catch(err) {
+    catch (err) {
         log.error(`[interactionCreate] Error on interaction ${interaction.id}. Cause: ${err}`);
     }
 });
 
-client.on("guildCreate", guild => log.info(`New guild joined: ${guild.name} (id: ${guild.id}) with ${guild.memberCount} members`));
+client.on("guildCreate", guild => void log.info(`New guild joined: ${guild.name} (id: ${guild.id}) with ${guild.memberCount} members`));
 
-client.on("guildDelete", guild => log.info(`Deleted from guild: ${guild.name} (id: ${guild.id}).`));
+client.on("guildDelete", guild => void log.info(`Deleted from guild: ${guild.name} (id: ${guild.id}).`));
 
 client.on("guildMemberAdd", async member => {
     const numRagequits = await GuildRagequit.getNumRagequits(member.guild.id, member.id);
-    if (numRagequits > 0 && !member.roles.cache.has(config.ids.shame_role_id)) {
-        if (member.guild.roles.cache.has(config.ids.shame_role_id)) {
-            member.roles.add(member.guild.roles.cache.get(config.ids.shame_role_id));
-
-            /** @type {import("discord.js").TextChannel} */
-            const hauptchat = member.guild.channels.cache.get(config.ids.hauptchat_id);
-            if (hauptchat) {
-                hauptchat.send({
-                    content: `Haha, schau mal einer guck wer wieder hergekommen ist! <@${member.id}> hast es aber nicht lange ohne uns ausgehalten. ${numRagequits > 1 ? "Und das schon zum " + numRagequits + ". mal" : ""}`,
-                    allowedMentions: {
-                        users: [member.id]
-                    }
-                });
-            }
-            else {
-                log.error("Hauptchat nicht gefunden");
-            }
-        }
-        else {
-            log.error("No Shame role found");
-        }
+    if (numRagequits === 0) {
+        return;
     }
+
+    if (member.roles.cache.has(config.ids.shame_role_id)) {
+        log.debug(`Member "${member.id}" already has the shame role, skipping`);
+        return;
+    }
+
+    const shameRole = member.guild.roles.cache.get(config.ids.shame_role_id);
+    if (!shameRole) {
+        log.error(`Shame role not found: "${config.ids.shame_role_id}"`);
+        return;
+    }
+
+    member.roles.add(shameRole);
+
+    const hauptchat = member.guild.channels.cache.get(config.ids.hauptchat_id);
+    if (!hauptchat) {
+        log.error(`Could not find hauptChat. Fix your stuff. Looked or guild with it: "${config.ids.hauptchat_id}"`);
+        return;
+    }
+
+    if (hauptchat.type !== "GUILD_TEXT") {
+        log.error(`Hauptchat is of unsupported type "${hauptchat.type}"`);
+        return;
+    }
+
+    hauptchat.send({
+        content: `Haha, schau mal einer guck wer wieder hergekommen ist! <@${member.id}> hast es aber nicht lange ohne uns ausgehalten. ${numRagequits > 1 ? "Und das schon zum " + numRagequits + ". mal" : ""}`,
+        allowedMentions: {
+            users: [member.id]
+        }
+    });
 });
 
 client.on("guildMemberRemove", async(member) => {
@@ -281,7 +311,7 @@ client.on("messageCreate", async(message) => {
 
 client.on("messageDelete", (message) => {
     try {
-        messageDeleteHandler(message, client);
+        messageDeleteHandler(message as Message, client);
     }
     catch (err) {
         log.error(`[messageDelete] Error for ${message.id}. Cause: ${err}`);
@@ -290,32 +320,32 @@ client.on("messageDelete", (message) => {
 
 client.on("messageUpdate", async(_, newMessage) => {
     try {
-        await messageHandler(/** @type {import("discord.js").Message} */ (newMessage), client);
+        await messageHandler(newMessage as Message, client);
     }
     catch (err) {
         log.error(`[messageUpdate] Error on message ${newMessage.id}. Cause: ${err}`);
     }
 });
 
-client.on("error", (e) => log.error(`Discord Client Error: ${e}`));
-client.on("warn", (w) => log.warn(`Discord Client Warning: ${w}`));
-client.on("debug", (d) => {
-    if(d.includes("Heartbeat")) {
+client.on("error", e => void log.error(`Discord Client Error: ${e}`));
+client.on("warn", w => void log.warn(`Discord Client Warning: ${w}`));
+client.on("debug", d => {
+    if (d.includes("Heartbeat")) {
         return;
     }
 
     log.debug(`Discord Client Debug: ${d}`);
 });
-client.on("rateLimit", (rateLimitData) => log.error(`Discord Client RateLimit Shit: ${JSON.stringify(rateLimitData)}`));
-client.on("invalidated", () => log.debug("Client invalidated"));
+client.on("rateLimit", rateLimitData => void log.error(`Discord Client RateLimit Shit: ${JSON.stringify(rateLimitData)}`));
+client.on("invalidated", () => void log.debug("Client invalidated"));
 
-client.on("messageReactionAdd", async(event, user) => reactionHandler(event, user, client, false));
-client.on("messageReactionAdd", async(event, user) => quoteReactionHandler(event, user, client));
-client.on("messageReactionRemove", async(event, user) => reactionHandler(event, user, client, true));
+client.on("messageReactionAdd", async(event, user) => reactionHandler(event as MessageReaction, user as User, client, false));
+client.on("messageReactionAdd", async(event, user) => quoteReactionHandler(event as MessageReaction, user as User, client));
+client.on("messageReactionRemove", async(event, user) => reactionHandler(event as MessageReaction, user as User, client, true));
 
 client.login(config.auth.bot_token).then(() => {
     log.info("Token login was successful!");
-}, (err) => {
+}, err => {
     log.error(`Token login was not successful: "${err}"`);
     log.error("Shutting down due to incorrect token...\n\n");
     process.exit(1);
