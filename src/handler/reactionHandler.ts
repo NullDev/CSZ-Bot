@@ -8,6 +8,7 @@ import AdditionalMessageData from "../storage/model/AdditionalMessageData";
 import log from "../utils/logger";
 import * as poll from "../commands/poll";
 import { Client, MessageReaction, User } from "discord.js";
+import type { ProcessableMessage } from "./cmdHandler";
 
 const pollEmojis = poll.EMOJI;
 const voteEmojis = ["👍", "👎"];
@@ -107,7 +108,7 @@ export default async function(reactionEvent: MessageReaction, user: User, client
                 }
 
                 const msg = await message.channel.send(hasVoted ? "🗑 Deine Reaktion wurde gelöscht." : "💾 Deine Reaktion wurde gespeichert.");
-                await FadingMessage.newFadingMessage(msg, 2500);
+                await FadingMessage.newFadingMessage(msg as ProcessableMessage, 2500);
             }
         }
 

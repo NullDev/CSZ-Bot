@@ -3,10 +3,10 @@
  * message commands and relies on the "new commands"
  */
 
-import {InfoCommand} from "../commands/info";
-import {getConfig} from "../utils/configHandler";
-import {REST} from "@discordjs/rest";
-import {Routes} from "discord-api-types/v9";
+import { InfoCommand } from "../commands/info";
+import { getConfig } from "../utils/configHandler";
+import { REST } from "@discordjs/rest";
+import { Routes } from "discord-api-types/v9";
 import {
     Client,
     CommandInteraction,
@@ -47,7 +47,7 @@ import { NischdaaaCommand } from "../commands/special/nischdaaa";
 import { SdmCommand } from "../commands/sdm";
 import { Nickname, NicknameButtonHandler } from "../commands/nickname";
 import { NopNopCommand } from "../commands/special/nopnop";
-import {WoisButton, WoisCommand} from "../commands/woisping";
+import { WoisButton, WoisCommand } from "../commands/woisping";
 import { FicktabelleCommand } from "../commands/ficktabelle";
 import { InviteCommand } from "../commands/invite";
 import { ErleuchtungCommand } from "../commands/erleuchtung";
@@ -104,7 +104,7 @@ export const messageCommands: Array<MessageCommand> =
 export const specialCommands: Array<SpecialCommand> =
     commands.filter<SpecialCommand>(isSpecialCommand);
 
-const lastSpecialCommands: Record<string, number> = specialCommands.reduce((acc, cmd) => ({...acc, [cmd.name]: 0}), {});
+const lastSpecialCommands: Record<string, number> = specialCommands.reduce((acc, cmd) => ({ ...acc, [cmd.name]: 0 }), {});
 
 /**
  * Registers all defined applicationCommands as guild commands
@@ -115,7 +115,7 @@ export const registerAllApplicationCommandsAsGuildCommands = async(client: Clien
     const clientId = config.auth.client_id;
     const token = config.auth.bot_token;
 
-    const rest = new REST({version: "9"}).setToken(token);
+    const rest = new REST({ version: "9" }).setToken(token);
 
     const commandData = applicationCommands.map((cmd) =>
         ({
@@ -152,7 +152,7 @@ export const registerAllApplicationCommandsAsGuildCommands = async(client: Clien
     }
     catch (err) {
         log.error(`Could not register the application commands, because: ${err}`);
-        throw(err);
+        throw (err);
     }
 };
 
@@ -319,10 +319,11 @@ export const messageCommandHandler = async(
     client: Client
 ): Promise<unknown> => {
     // Bots shall not be able to perform commands. High Security
-    if(message.author.bot) {
+    if (message.author.bot) {
         return;
     }
 
+    // Ensures that every command always gets a message that fits certain criteria (for example, being a message originating from a server, not a DM)
     if (!isProcessableMessage(message)) {
         return;
     }
