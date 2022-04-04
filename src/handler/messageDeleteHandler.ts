@@ -17,11 +17,7 @@ const deleteInlineRepliesFromBot = (
             .map((m) => m.delete())
     );
 
-/**
- * @param {import("discord.js").Message} message message
- * @param {import("discord.js").Client} client client
- */
-export default function(message: Message, client: Client) {
+export default async function(message: Message, client: Client) {
     if (message.author && message.author.id !== client.user!.id) {
         if (message.content) {
             const isNormalCommand =
@@ -33,7 +29,7 @@ export default function(message: Message, client: Client) {
                 );
 
             if (isNormalCommand) {
-                deleteInlineRepliesFromBot(message, client);
+                await deleteInlineRepliesFromBot(message, client);
             }
         }
     }

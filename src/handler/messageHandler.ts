@@ -36,7 +36,7 @@ export default async function(message: Message, client: Client) {
                 .filter(m => m.content.includes("Was pingst du mich du Hurensohn"))
                 .some(m => m.reference?.messageId === message.id);
             if (!hasAlreadyReplied) {
-                message.reply({
+                await message.reply({
                     content: "Was pingst du mich du Hurensohn :angry:"
                 });
             }
@@ -50,7 +50,7 @@ export default async function(message: Message, client: Client) {
     const response = await cmdHandler(message, client, isModCommand);
 
     // Get all inline replies to the message and delete them. Ignore errors, since cached is used and previously deleted messages are contained as well
-    getInlineReplies(message, client.user!).forEach(msg => msg.delete().catch(() => { return; }));
+    getInlineReplies(message, client.user!).forEach(msg => void msg.delete().then(() => {}, () => {}));
 
     if (!response) {
         return;

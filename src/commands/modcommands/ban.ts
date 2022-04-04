@@ -93,7 +93,7 @@ export const startCron = (client: Client) => {
                 // No user, no problem
                 if (!user) continue;
 
-                restoreRoles(user);
+                await restoreRoles(user);
 
                 const msg = expiredBan.isSelfBan
                     ? "Glückwunsch! Dein selbst auferlegter Bann in der Coding Shitpost Zentrale ist beendet."
@@ -130,7 +130,7 @@ export const ban = async(client: Client, member: GuildMember, banInvoker: GuildM
 
     const banReasonChannel = member.guild.channels.resolve(config.ids.bot_log_channel_id);
     if (banReasonChannel && banReasonChannel.isText()) {
-        banReasonChannel.send({
+        await banReasonChannel.send({
             content: `<@${member.id}> ${isSelfBan ? "hat sich selbst" : `wurde von ${banInvoker}`} ${humanReadableDuration ? `für ${humanReadableDuration}` : "bis auf unbestimmte Zeit"} gebannt. \nGrund: ${reason}`,
             allowedMentions: {
                 users: []

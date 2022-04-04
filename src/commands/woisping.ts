@@ -111,7 +111,7 @@ export class WoisButton implements UserInteraction {
         const member = command.guild?.members.cache.get(command.member!.user.id)!;
         const isModMessage = isMod(member);
         if (!isModMessage && !isWoisGang(member)) {
-            command.reply({
+            await command.reply({
                 content: "Sorry, du bist leider kein Woisgang-Mitglied und darfst nicht abstimmen.",
                 ephemeral: true
             });
