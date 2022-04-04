@@ -4,7 +4,7 @@
 
 import { promises as fs } from "fs";
 import * as path from "path";
-import { Channel, Client, Guild, GuildMember, Message } from "discord.js";
+import { Client, Guild, GuildMember, Message } from "discord.js";
 import { CommandFunction, CommandResult } from "../types";
 
 import log from "../utils/logger";

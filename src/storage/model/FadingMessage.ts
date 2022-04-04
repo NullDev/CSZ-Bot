@@ -1,7 +1,7 @@
 /* Disabled due to sequelize's DataTypes */
 /* eslint-disable new-cap */
 
-import type { Message, Snowflake, TextChannel } from "discord.js";
+import type { Snowflake } from "discord.js";
 import { Model, DataTypes, type Sequelize } from "sequelize";
 import { v4 as uuidv4 } from "uuid";
 import type { ProcessableMessage } from "../../handler/cmdHandler";
@@ -25,7 +25,7 @@ export default class FadingMessage extends Model {
         this.endTime = this.endTime || new Date(this.beginTime.valueOf() + deleteInMs);
         this.messageId = message.id;
         this.channelId = message.channel.id;
-        this.guildId = message.channel.guild.id;
+        this.guildId = message.guild.id;
         return this.save();
     }
 
