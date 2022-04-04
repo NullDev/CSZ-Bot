@@ -52,7 +52,8 @@ export const run = async(client, message, args) => {
     const existingBan = await Ban.findExisting(invokingUser);
     if (existingBan) return "Du bist bereits gebannt";
 
-    if (!ban.ban(client, invokingUser, invokingUser, "Selbstauferlegt", true, durationInHours)) return "Eine der angegebenen Rollen für das Bannen existiert nich.";
+    const success = await ban.ban(client, invokingUser, invokingUser, "Selbstauferlegt", true, durationInHours);
+    if (!success) return "Eine der angegebenen Rollen für das Bannen existiert nich.";
 
     const durationHumanized = durationInMinutes === 0
         ? "manuell durch Moderader"

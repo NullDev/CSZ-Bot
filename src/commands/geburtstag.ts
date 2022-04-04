@@ -33,18 +33,18 @@ export class GeburtstagCommand implements ApplicationCommand {
 
         const date = moment(`${month}-${day}`, "MM-DD");
 
-        if(!date.isValid()) {
+        if (!date.isValid()) {
             await command.reply("Ach komm, für wie blöd hältst du mich?");
             return;
         }
 
         try {
             await Birthday.insertBirthday(command.user.id, day, month);
-            command.reply("Danke mein G, ich hab dein Geburtstag eingetragen!");
+            await command.reply("Danke mein G, ich hab dein Geburtstag eingetragen!");
         }
         catch(err) {
             log.error(err);
-            command.reply("Shit, da ist was schief gegangen - hast du deinen Geburtstag schon eingetragen und bist so dumm das jetzt nochmal zu machen? Piss dich.");
+            await command.reply("Shit, da ist was schief gegangen - hast du deinen Geburtstag schon eingetragen und bist so dumm das jetzt nochmal zu machen? Piss dich.");
         }
     }
 }

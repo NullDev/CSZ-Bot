@@ -213,7 +213,9 @@ client.on("ready", async(initializedClient) => {
         await poll.importPolls();
         poll.startCron(client);
 
-        fadingMessageHandler.startLoop(client);
+        // Not awaiting this promise because it's basically an infinite loop (that can be cancelled)
+        // Possible TODO: Refactor this to a cron job
+        void fadingMessageHandler.startLoop(client);
     }
     catch (err) {
         log.error(`Error in Ready handler: ${err}`);
@@ -287,9 +289,9 @@ client.on("messageCreate", async message => {
     }
 });
 
-client.on("messageDelete", message => {
+client.on("messageDelete", async(message) => {
     try {
-        messageDeleteHandler(message as Message, client);
+        await messageDeleteHandler(message as Message, client);
     }
     catch (err) {
         log.error(`[messageDelete] Error for ${message.id}. Cause: ${err}`);

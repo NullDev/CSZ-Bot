@@ -12,7 +12,8 @@
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
         "ecmaVersion": 12,                  // set highest possible version
-        "requireConfigFile": false          // make babel not look for config
+        "requireConfigFile": false,         // make babel not look for config
+        "project": ["./tsconfig.json"]
     },
     "ignorePatterns": [                     // Ignore dist folders and dependencies
         "dist",
@@ -20,9 +21,6 @@
         "node_modules"
     ],
     "rules": {
-        /**
-         * Strict mode
-         */
         "strict": [2, "never"],            // As we compile using TS, strict mode will always be emitted
         /**
          * ES6
@@ -49,6 +47,8 @@
         /**
          * Possible errors
          */
+        "@typescript-eslint/no-floating-promises": "error", // https://mikebifulco.com/posts/eslint-no-floating-promises
+        "@typescript-eslint/no-misused-promises": "error",
         "comma-dangle": [2, "never"],       // http://eslint.org/docs/rules/comma-dangle
         "no-cond-assign": [2, "always"],    // http://eslint.org/docs/rules/no-cond-assign
         "no-console": 0,                    // http://eslint.org/docs/rules/no-console
