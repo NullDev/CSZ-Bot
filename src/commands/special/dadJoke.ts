@@ -1,4 +1,5 @@
-import { Message, Client, Util } from "discord.js";
+import {  Client, Util } from "discord.js";
+import type { ProcessableMessage } from "../../handler/cmdHandler";
 import { substringAfter } from "../../utils/stringUtils";
 import { SpecialCommand, CommandResult, CommandPermission } from "../command";
 
@@ -10,13 +11,13 @@ export class DadJokeCommand implements SpecialCommand {
     randomness = 0.1;
 
 
-    matches(message: Message<boolean>): boolean {
+    matches(message: ProcessableMessage): boolean {
         const msg = message.content.toLowerCase();
 
         return msg.startsWith("ich bin") && substringAfter(msg, "ich bin").length > 3;
     }
 
-    async handleSpecialMessage(message: Message, client: Client<boolean>): Promise<CommandResult> {
+    async handleSpecialMessage(message: ProcessableMessage, client: Client<boolean>): Promise<CommandResult> {
         const idx = message.content.toLowerCase().lastIndexOf("ich bin ");
         if(idx < (message.content.length - 1)) {
             // Get index of the first terminator character after trigger

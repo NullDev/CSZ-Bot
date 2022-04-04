@@ -1,6 +1,7 @@
 /* eslint-disable no-use-before-define */
 import { SlashCommandBuilder /* , SlashCommandOptionsOnlyBuilder, SlashCommandSubcommandsOnlyBuilder */ } from "@discordjs/builders";
-import type { ApplicationCommandPermissionType, Client, CommandInteraction, Message } from "discord.js";
+import type { ApplicationCommandPermissionType, Client, CommandInteraction } from "discord.js";
+import type { ProcessableMessage } from "../handler/cmdHandler";
 import {MessageComponentInteraction} from "discord.js";
 
 // A command can be an application command (slash command) or a message command or both
@@ -23,7 +24,7 @@ export interface CommandBase {
     readonly permissions?: ReadonlyArray<CommandPermission>;
 }
 
-export interface UserInteraction{
+export interface UserInteraction {
     readonly ids: string[];
     readonly name: string;
     handleInteraction(
@@ -46,15 +47,15 @@ interface AppCommand {
 
 // For a MessageCommand we require an additional modCommand property and a handler method
 interface MsgCommand {
-    handleMessage(message: Message, client: Client): Promise<CommandResult>;
+    handleMessage(message: ProcessableMessage, client: Client): Promise<CommandResult>;
 }
 
-// For SpecialCommands we require a pattern and a randomenss (<= 1)
+// For SpecialCommands we require a pattern and a randomness (<= 1)
 interface SpcalCommand {
     randomness: number;
     cooldownTime?: number;
-    handleSpecialMessage(message: Message, client: Client): Promise<CommandResult>;
-    matches(message: Message): boolean;
+    handleSpecialMessage(message: ProcessableMessage, client: Client): Promise<CommandResult>;
+    matches(message: ProcessableMessage): boolean;
 }
 
 export function isApplicationCommand(cmd: Command): cmd is ApplicationCommand {

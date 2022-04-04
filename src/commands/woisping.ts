@@ -8,8 +8,8 @@ import {
     MessageComponentInteraction,
     Util
 } from "discord.js";
-import {Client} from "discord.js";
-import {ApplicationCommand, CommandPermission, CommandResult, UserInteraction} from "./command";
+import { Client } from "discord.js";
+import { ApplicationCommand, CommandPermission, CommandResult, UserInteraction } from "./command";
 import log from "../utils/logger";
 
 

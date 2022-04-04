@@ -1,12 +1,13 @@
 /* eslint-disable camelcase */
-import type { Snowflake, Message, Client } from "discord.js";
+import type { Snowflake, Client } from "discord.js";
+import type { ProcessableMessage } from "./handler/cmdHandler";
 
 /**
  * A string denotes the response to the message (for example a business error).
  */
 export type CommandResult = string | void;
 
-export type CommandFunction = (client: Client, message: Message, args: Array<string>) => Promise<CommandResult>;
+export type CommandFunction = (client: Client, message: ProcessableMessage, args: Array<string>) => Promise<CommandResult>;
 
 export type Mutable<T> = { -readonly [P in keyof T]: T[P] };
 

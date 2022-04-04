@@ -4,6 +4,7 @@
 
 import { SlashCommandBuilder, SlashCommandStringOption } from "@discordjs/builders";
 import { CacheType, Client, CommandInteraction, GuildMember, Message, MessageEmbed } from "discord.js";
+import type { ProcessableMessage } from "../handler/cmdHandler";
 import { getConfig } from "../utils/configHandler";
 import { ApplicationCommand, MessageCommand } from "./command";
 const config = getConfig();
@@ -59,13 +60,13 @@ export class MockCommand implements MessageCommand, ApplicationCommand {
         });
     }
 
-    async handleMessage(message: Message<boolean>, _client: Client<boolean>): Promise<void> {
-        const author = message.guild?.members.resolve(message.author);
+    async handleMessage(message: ProcessableMessage, _client: Client<boolean>): Promise<void> {
+        const author = message.guild.members.resolve(message.author);
         const { channel } = message;
+
         const isReply = message.reference?.messageId !== undefined;
         let content = message.content.slice(`${config.bot_settings.prefix.command_prefix}${this.name} `.length);
         const hasContent = !!content && content.trim().length > 0;
-        let replyMessage: Message<boolean> | null = null;
 
         if(!author) {
             throw new Error("Couldn't resolve guild member");
@@ -76,6 +77,7 @@ export class MockCommand implements MessageCommand, ApplicationCommand {
             return;
         }
 
+        let replyMessage: Message<boolean> | null = null;
         if(isReply) {
             replyMessage = await message.channel.messages.fetch(message.reference!.messageId!);
             if(!hasContent) {
@@ -90,13 +92,16 @@ export class MockCommand implements MessageCommand, ApplicationCommand {
             await Promise.all([
                 replyMessage!.reply({
                     embeds: [mockedEmbed]
-                }), message.delete()]);
+                }),
+                message.delete()
+            ]);
         }
         else {
             await Promise.all([
                 channel.send({
                     embeds: [mockedEmbed]
-                }), message.delete()
+                }),
+                message.delete()
             ]);
         }
     }

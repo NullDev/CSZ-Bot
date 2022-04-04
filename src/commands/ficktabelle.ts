@@ -3,10 +3,11 @@
 // ================================ //
 
 
-import { Message, Client } from "discord.js";
+import { Client } from "discord.js";
 import moment from "moment";
 import { getConfig } from "../utils/configHandler";
 import { MessageCommand } from "./command";
+import type { ProcessableMessage } from "../handler/cmdHandler";
 
 const config = getConfig();
 
@@ -33,7 +34,7 @@ export class FicktabelleCommand implements MessageCommand {
     name = "ficktabelle";
     description = `Sendet die Ficktabelle.\nBenutzung: ${config.bot_settings.prefix.command_prefix}ficktabelle`;
 
-    async handleMessage(message: Message<boolean>, client: Client<boolean>): Promise<void> {
+    async handleMessage(message: ProcessableMessage, client: Client<boolean>): Promise<void> {
         await message.channel.send({
             embeds: [
                 {

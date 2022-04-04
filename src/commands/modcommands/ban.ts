@@ -1,11 +1,12 @@
 import { SlashCommandBuilder, SlashCommandIntegerOption, SlashCommandStringOption, SlashCommandUserOption } from "@discordjs/builders";
 import { CommandInteraction, GuildMember, User } from "discord.js";
-import { Message, Client } from "discord.js";
+import { Client } from "discord.js";
 import Ban from "../../storage/model/Ban";
 import { getConfig } from "../../utils/configHandler";
 import { ApplicationCommand, CommandPermission, CommandResult, MessageCommand } from "../command";
 import log from "../../utils/logger";
 import moment from "moment";
+import type { ProcessableMessage } from "../../handler/cmdHandler";
 import Cron from "croner";
 
 const config = getConfig();
@@ -206,7 +207,7 @@ export class BanCommand implements ApplicationCommand, MessageCommand {
             content: `Ok Bruder, ich hab <@${user.id}> wegen ${reason} ${ duration > 0 ? `für ${humanReadableDuration}` : ""} gebannt`
         });
     }
-    async handleMessage(message: Message, client: Client<boolean>): Promise<CommandResult> {
+    async handleMessage(message: ProcessableMessage, client: Client<boolean>): Promise<CommandResult> {
         const user = message.mentions.users.first();
         const invokingUser = message.author;
 

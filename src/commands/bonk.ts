@@ -1,10 +1,12 @@
-import { Message, Client } from "discord.js";
+import { Client } from "discord.js";
 import { CommandResult, MessageCommand } from "./command";
 import Jimp from "jimp";
 import path from "path";
 import * as fs from "fs";
 import log from "../utils/logger";
 import { getConfig } from "../utils/configHandler";
+import type { ProcessableMessage } from "../handler/cmdHandler";
+
 const config = getConfig();
 
 const createBonkMeme = async(author: any): Promise<string> => {
@@ -32,7 +34,7 @@ Usage: ${config.bot_settings.prefix.command_prefix}bonk
        ${config.bot_settings.prefix.command_prefix}bonk @ShadowByte#1337
        Oder auf eine Nachricht mit ${config.bot_settings.prefix.command_prefix}bonk antworten.`;
 
-    async handleMessage(message: Message, client: Client<boolean>): Promise<CommandResult> {
+    async handleMessage(message: ProcessableMessage, client: Client<boolean>): Promise<CommandResult> {
         const messageRef = message.reference?.messageId;
         const messagePing = message.mentions?.users.first();
         let toBeBonked;
