@@ -45,35 +45,35 @@ export type ConfigId = ConfigRoleIdKey | ConfigChannelIdKey | ConfigGuildIdKey;
 
 export interface Config {
     auth: {
-        bot_token: string,
-        client_id: string
-    },
+        bot_token: string;
+        client_id: string;
+    };
+
     bot_settings: {
-        status: string,
+        status: string;
         prefix: {
-            command_prefix: string,
-            mod_prefix: string
-        },
+            command_prefix: string;
+            mod_prefix: string;
+        };
 
         flame_trusted_user_on_bot_ping?: boolean;
 
-        moderator_id: Snowflake,
-        ban_reason_channel_id: Snowflake,
-        moderator_roles: Array<string>,
-        woisping_limit: number,
-        woisping_threshold: number,
+        moderator_id: Snowflake;
+        ban_reason_channel_id: Snowflake;
+        moderator_roles: Array<string>;
+        woisping_limit: number;
+        woisping_threshold: number;
         quotes: {
-            allowed_group_ids: Array<Snowflake>,
-            anonymous_channel_ids: Array<Snowflake>,
-            quote_threshold: number,
-            blacklisted_channel_ids: Array<Snowflake>,
-            target_channel_overrides: { [key: string]: string },
-            default_target_channel_id: Snowflake,
-            emoji_name: string,
-        },
-        flame_trusted_user_on_bot_ping: boolean
-    },
-    ids: Record<ConfigRoleKey, Snowflake>
+            allowed_group_ids: Array<Snowflake>;
+            anonymous_channel_ids: Array<Snowflake>;
+            quote_threshold: number;
+            blacklisted_channel_ids: Array<Snowflake>;
+            target_channel_overrides: Record<string, string>;
+            default_target_channel_id: Snowflake;
+            emoji_name: string;
+        };
+    };
+    ids: Record<ConfigIdKey, Snowflake>;
 }
 
 // eslint-disable-next-line no-use-before-define
