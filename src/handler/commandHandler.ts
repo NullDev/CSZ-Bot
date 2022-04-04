@@ -118,7 +118,7 @@ export const registerAllApplicationCommandsAsGuildCommands = async(client: Clien
 
     const rest = new REST({version: "9"}).setToken(token);
 
-    const commandData = applicationCommands.map((cmd) =>
+    const commandData = applicationCommands.map(cmd =>
         ({
             ...cmd.applicationCommand.toJSON(),
             default_permission: cmd.permissions ? cmd.permissions.length === 0 : true
@@ -136,7 +136,7 @@ export const registerAllApplicationCommandsAsGuildCommands = async(client: Clien
         }) as { id: string, name: string }[];
 
         // Get commands that have permissions
-        const permissionizedCommands = applicationCommands.filter((cmd) => cmd.permissions && cmd.permissions.length > 0);
+        const permissionizedCommands = applicationCommands.filter(cmd => cmd.permissions && cmd.permissions.length > 0);
 
         // Create a request body for the permissions
         const permissionsToPost: GuildApplicationCommandPermissionData[] = createdCommands
@@ -169,7 +169,7 @@ const commandInteractionHandler = (
     context: BotContext
 ): Promise<unknown> => {
     const matchingCommand = applicationCommands.find(
-        (cmd) => cmd.name === command.commandName
+        cmd => cmd.name === command.commandName
     );
     if (matchingCommand) {
         log.debug(`Found a matching command ${matchingCommand.name}`);
@@ -193,7 +193,7 @@ const messageComponentInteractionHandler = (
     context: BotContext
 ): Promise<unknown> => {
     const matchingInteraction = interactions.find(
-        (cmd) => cmd.ids.find(id => id === command.customId
+        cmd => cmd.ids.find(id => id === command.customId
         ));
     if (matchingInteraction) {
         log.debug(`Found a matching interaction ${matchingInteraction.name}`);
@@ -287,12 +287,12 @@ const isCooledDown = (command: SpecialCommand) => {
 };
 
 const specialCommandHandler = (message: ProcessableMessage, client: Client, context: BotContext): Promise<unknown> => {
-    const commandCandidates = specialCommands.filter((p) => p.matches(message, context));
+    const commandCandidates = specialCommands.filter(p => p.matches(message, context));
     return Promise.all(
         commandCandidates
-            .filter((c) => Math.random() <= c.randomness)
-            .filter((c) => isCooledDown(c))
-            .map((c) => {
+            .filter(c => Math.random() <= c.randomness)
+            .filter(c => isCooledDown(c))
+            .map(c => {
                 log.info(
                     `User "${message.author.tag}" (${message.author}) performed special command: ${c.name}`
                 );

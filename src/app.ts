@@ -131,7 +131,7 @@ const leetTask = async() => {
 
 let firstRun = true;
 
-client.on("ready", async(initializedClient) => {
+client.on("ready", async initializedClient => {
     try {
         log.info("Running...");
         log.info(`Got ${client.users.cache.size} users, in ${client.channels.cache.size} channels of ${client.guilds.cache.size} guilds`);
@@ -228,7 +228,7 @@ client.on("ready", async(initializedClient) => {
  * for the "old commands". This way we can easily migrate commands to slash commands
  * and still have the option to use the textual commands. Win-Win :cooldoge:
  */
-client.on("messageCreate", async(message) => {
+client.on("messageCreate", async message => {
     try {
         await messageCommandHandler(message, client, botContext);
     }
@@ -237,7 +237,7 @@ client.on("messageCreate", async(message) => {
     }
 });
 
-client.on("interactionCreate", async(interaction) => {
+client.on("interactionCreate", async interaction => {
     try {
         await handleInteractionEvent(interaction, client, botContext);
     }
@@ -289,7 +289,7 @@ client.on("messageCreate", async message => {
     }
 });
 
-client.on("messageDelete", async(message) => {
+client.on("messageDelete", async message => {
     try {
         await messageDeleteHandler(message as Message, client);
     }

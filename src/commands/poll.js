@@ -234,7 +234,7 @@ export const importPolls = async() => {
  * Initialized crons for delayed polls
  * @param {import("discord.js").Client} client
  */
-export const startCron = (client) => {
+export const startCron = client => {
     log.info("Scheduling Poll Cronjob...");
 
     // eslint-disable-next-line no-unused-vars
@@ -263,7 +263,7 @@ export const startCron = (client) => {
                         (x, index) => `${LETTERS[index]} ${
                             delayedPoll.reactionMap[index]
                         } (${x.length}):
-${x.map((uid) => users[uid]).join("\n")}\n\n`
+${x.map(uid => users[uid]).join("\n")}\n\n`
                     )
                     .join("")}
 `,
@@ -274,7 +274,7 @@ ${x.map((uid) => users[uid]).join("\n")}\n\n`
                 },
                 footer: {
                     text: `Gesamtabstimmungen: ${delayedPoll.reactions
-                        .map((x) => x.length)
+                        .map(x => x.length)
                         .reduce((a, b) => a + b)}`
                 }
             };

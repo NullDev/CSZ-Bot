@@ -81,7 +81,7 @@ export default async function(message: Message, client: Client, isModCommand: bo
 
     if (
         isModCommand &&
-        !message.member.roles.cache.some((r) =>
+        !message.member.roles.cache.some(r =>
             config.bot_settings.moderator_roles.includes(r.name)
         )
     ) {
@@ -91,7 +91,7 @@ export default async function(message: Message, client: Client, isModCommand: bo
 
         if (
             message.member.roles.cache.some(
-                (r) => r.id === config.ids.banned_role_id
+                r => r.id === config.ids.banned_role_id
             )
         ) {
             return "Da haste aber Schwein gehabt";
