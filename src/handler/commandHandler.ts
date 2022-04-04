@@ -3,10 +3,10 @@
  * message commands and relies on the "new commands"
  */
 
-import {InfoCommand} from "../commands/info";
-import {getConfig} from "../utils/configHandler";
-import {REST} from "@discordjs/rest";
-import {Routes} from "discord-api-types/v9";
+import { InfoCommand } from "../commands/info";
+import { getConfig } from "../utils/configHandler";
+import { REST } from "@discordjs/rest";
+import { Routes } from "discord-api-types/v9";
 import {
     Client,
     CommandInteraction,
@@ -47,7 +47,7 @@ import { NischdaaaCommand } from "../commands/special/nischdaaa";
 import { SdmCommand } from "../commands/sdm";
 import { Nickname, NicknameButtonHandler } from "../commands/nickname";
 import { NopNopCommand } from "../commands/special/nopnop";
-import {WoisButton, WoisCommand} from "../commands/woisping";
+import { WoisButton, WoisCommand } from "../commands/woisping";
 import { FicktabelleCommand } from "../commands/ficktabelle";
 import { InviteCommand } from "../commands/invite";
 import { ErleuchtungCommand } from "../commands/erleuchtung";
@@ -104,24 +104,24 @@ export const messageCommands: Array<MessageCommand> =
 export const specialCommands: Array<SpecialCommand> =
     commands.filter<SpecialCommand>(isSpecialCommand);
 
-const lastSpecialCommands: Record<string, number> = specialCommands.reduce((acc, cmd) => ({...acc, [cmd.name]: 0}), {});
+const lastSpecialCommands: Record<string, number> = specialCommands.reduce((acc, cmd) => ({ ...acc, [cmd.name]: 0 }), {});
 
 /**
  * Registers all defined applicationCommands as guild commands
  * We're overwriting ALL, therefore no deletion is necessary
  */
-export const registerAllApplicationCommandsAsGuildCommands = async(client: Client): Promise<void> => {
+export const registerAllApplicationCommandsAsGuildCommands = async (client: Client): Promise<void> => {
     const guildId = config.ids.guild_id;
     const clientId = config.auth.client_id;
     const token = config.auth.bot_token;
 
-    const rest = new REST({version: "9"}).setToken(token);
+    const rest = new REST({ version: "9" }).setToken(token);
 
     const commandData = applicationCommands.map((cmd) =>
-        ({
-            ...cmd.applicationCommand.toJSON(),
-            default_permission: cmd.permissions ? cmd.permissions.length === 0 : true
-        })
+    ({
+        ...cmd.applicationCommand.toJSON(),
+        default_permission: cmd.permissions ? cmd.permissions.length === 0 : true
+    })
     );
 
     try {
@@ -152,7 +152,7 @@ export const registerAllApplicationCommandsAsGuildCommands = async(client: Clien
     }
     catch (err) {
         log.error(`Could not register the application commands, because: ${err}`);
-        throw(err);
+        throw (err);
     }
 };
 
@@ -242,7 +242,7 @@ const checkPermissions = (member: GuildMember, permissions: ReadonlyArray<Comman
  * was found or an error if the command would be a mod command but the
  * invoking user is not a mod
  */
-const commandMessageHandler = async(
+const commandMessageHandler = async (
     commandString: string,
     message: ProcessableMessage,
     client: Client
@@ -314,15 +314,16 @@ export const handleInteractionEvent = (
     return Promise.reject(new Error("Not supported"));
 };
 
-export const messageCommandHandler = async(
+export const messageCommandHandler = async (
     message: Message,
     client: Client
 ): Promise<unknown> => {
     // Bots shall not be able to perform commands. High Security
-    if(message.author.bot) {
+    if (message.author.bot) {
         return;
     }
 
+    // Ensures that every command always gets a message that fits certain criteria (for example, being a message originating from a server, not a DM)
     if (!isProcessableMessage(message)) {
         return;
     }

@@ -4,7 +4,7 @@
 
 import { promises as fs } from "fs";
 import * as path from "path";
-import { Client, Guild, GuildMember, Message } from "discord.js";
+import { Channel, Client, Guild, GuildMember, Message } from "discord.js";
 import { CommandFunction, CommandResult } from "../types";
 
 import log from "../utils/logger";
@@ -30,7 +30,7 @@ export function isProcessableMessage(message: Message): message is ProcessableMe
  * Passes commands to the correct executor
  *
  */
-export default async function(message: Message, client: Client, isModCommand: boolean): Promise<CommandResult> {
+export default async function(message: ProcessableMessage, client: Client, isModCommand: boolean): Promise<CommandResult> {
     if (message.author.bot) return;
 
     const cmdPrefix = isModCommand
@@ -74,9 +74,6 @@ export default async function(message: Message, client: Client, isModCommand: bo
      * not be present. Therefore we need to check for the method.
      */
     if (!usedCommand.run) return;
-
-    // Ensures that every command always gets a message that fits certain criteria (for example, being a message originating from a server, not a DM)
-    if (!isProcessableMessage(message)) return;
 
     if (
         isModCommand &&
