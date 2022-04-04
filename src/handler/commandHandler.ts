@@ -110,7 +110,7 @@ const lastSpecialCommands: Record<string, number> = specialCommands.reduce((acc,
  * Registers all defined applicationCommands as guild commands
  * We're overwriting ALL, therefore no deletion is necessary
  */
-export const registerAllApplicationCommandsAsGuildCommands = async (client: Client): Promise<void> => {
+export const registerAllApplicationCommandsAsGuildCommands = async(client: Client): Promise<void> => {
     const guildId = config.ids.guild_id;
     const clientId = config.auth.client_id;
     const token = config.auth.bot_token;
@@ -118,10 +118,10 @@ export const registerAllApplicationCommandsAsGuildCommands = async (client: Clie
     const rest = new REST({ version: "9" }).setToken(token);
 
     const commandData = applicationCommands.map((cmd) =>
-    ({
-        ...cmd.applicationCommand.toJSON(),
-        default_permission: cmd.permissions ? cmd.permissions.length === 0 : true
-    })
+        ({
+            ...cmd.applicationCommand.toJSON(),
+            default_permission: cmd.permissions ? cmd.permissions.length === 0 : true
+        })
     );
 
     try {
@@ -242,7 +242,7 @@ const checkPermissions = (member: GuildMember, permissions: ReadonlyArray<Comman
  * was found or an error if the command would be a mod command but the
  * invoking user is not a mod
  */
-const commandMessageHandler = async (
+const commandMessageHandler = async(
     commandString: string,
     message: ProcessableMessage,
     client: Client
@@ -314,7 +314,7 @@ export const handleInteractionEvent = (
     return Promise.reject(new Error("Not supported"));
 };
 
-export const messageCommandHandler = async (
+export const messageCommandHandler = async(
     message: Message,
     client: Client
 ): Promise<unknown> => {
