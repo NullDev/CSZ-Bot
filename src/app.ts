@@ -128,12 +128,12 @@ const leetTask = async() => {
             ...membersToKick.map(member => member.kick())
         ]);
 
-        hauptchat.send(`Hab grad ${membersToKick.size} Jockel*innen gekickt ${dabEmote}`);
+        await hauptchat.send(`Hab grad ${membersToKick.size} Jockel*innen gekickt ${dabEmote}`);
 
         log.info(`Auto-kick: ${membersToKick.size} members kicked.`);
     }
     else {
-        hauptchat.send(`Heute leider keine Jockel*innen gekickt ${sadPinguEmote}`);
+        await hauptchat.send(`Heute leider keine Jockel*innen gekickt ${sadPinguEmote}`);
     }
 };
 
@@ -218,7 +218,9 @@ client.on("ready", async(_client) => {
         await poll.importPolls();
         poll.startCron(client);
 
-        fadingMessageHandler.startLoop(client);
+        // Not awaiting this promise because it's basically an infinite loop (that can be cancelled)
+        // Possible TODO: Refactor this to a cron job
+        void fadingMessageHandler.startLoop(client);
     }
     catch (err) {
         log.error(`Error in Ready handler: ${err}`);
@@ -270,7 +272,7 @@ client.on("guildMemberAdd", async member => {
         return;
     }
 
-    member.roles.add(shameRole);
+    await member.roles.add(shameRole);
 
     const hauptchat = member.guild.channels.cache.get(config.ids.hauptchat_id);
     if (!hauptchat) {
@@ -283,7 +285,7 @@ client.on("guildMemberAdd", async member => {
         return;
     }
 
-    hauptchat.send({
+    await hauptchat.send({
         content: `Haha, schau mal einer guck wer wieder hergekommen ist! <@${member.id}> hast es aber nicht lange ohne uns ausgehalten. ${numRagequits > 1 ? "Und das schon zum " + numRagequits + ". mal" : ""}`,
         allowedMentions: {
             users: [member.id]
@@ -309,9 +311,9 @@ client.on("messageCreate", async(message) => {
     }
 });
 
-client.on("messageDelete", (message) => {
+client.on("messageDelete", async(message) => {
     try {
-        messageDeleteHandler(message as Message, client);
+        await messageDeleteHandler(message as Message, client);
     }
     catch (err) {
         log.error(`[messageDelete] Error for ${message.id}. Cause: ${err}`);

@@ -1,6 +1,7 @@
 import log from "../utils/logger";
 import FadingMessage from "../storage/model/FadingMessage";
 import type { Client, TextChannel } from "discord.js";
+import { setInterval } from "timers/promises";
 
 let isLooping = false;
 
@@ -34,10 +35,10 @@ const loopWrapper = async(client: Client) => {
     isLooping = false;
 };
 
-export const startLoop = (client: Client) => {
-    setInterval(() => {
-        if (!isLooping) {
-            loopWrapper(client);
-        }
-    }, 1000);
+export const startLoop = async(client: Client) => {
+    // eslint-disable-next-line no-unused-vars
+    for await (const _ of setInterval(1000)) {
+        if(!isLooping) break;
+        await loopWrapper(client);
+    }
 };

@@ -46,7 +46,7 @@
         /**
          * Possible errors
          */
-        "@typescript-eslint/no-floating-promises": "warn", // https://mikebifulco.com/posts/eslint-no-floating-promises
+        "@typescript-eslint/no-floating-promises": "error", // https://mikebifulco.com/posts/eslint-no-floating-promises
         "@typescript-eslint/no-misused-promises": "error",
         "comma-dangle": [2, "never"],       // http://eslint.org/docs/rules/comma-dangle
         "no-cond-assign": [2, "always"],    // http://eslint.org/docs/rules/no-cond-assign

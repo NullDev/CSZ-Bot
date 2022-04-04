@@ -36,11 +36,11 @@ export class GeburtstagCommand implements ApplicationCommand {
         if(date.isValid()) {
             try {
                 await Birthday.insertBirthday(command.user.id, day, month);
-                command.reply("Danke mein G, ich hab dein Geburtstag eingetragen!");
+                await command.reply("Danke mein G, ich hab dein Geburtstag eingetragen!");
             }
             catch(err) {
                 log.error(err);
-                command.reply("Shit, da ist was schief gegangen - hast du deinen Geburtstag schon eingetragen und bist so dumm das jetzt nochmal zu machen? Piss dich.");
+                await command.reply("Shit, da ist was schief gegangen - hast du deinen Geburtstag schon eingetragen und bist so dumm das jetzt nochmal zu machen? Piss dich.");
             }
         }
         else {
