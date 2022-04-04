@@ -2,7 +2,6 @@
 // = Copyright (c) NullDev = //
 // ========================= //
 
-import moment from "moment";
 import parseOptions from "minimist";
 
 import log from "../utils/logger";
@@ -138,7 +137,7 @@ export const run = async(client, message, args) => {
     const embed = {
         title: Util.cleanContent(pollArray[0], message.channel),
         description: optionstext,
-        timestamp: moment.utc().format(),
+        timestamp: new Date(),
         author: {
             name: `${options.straw ? "Strawpoll" : "Umfrage"} von ${message.author.username}`,
             icon_url: message.author.displayAvatarURL()
@@ -268,7 +267,7 @@ ${x.map((uid) => users[uid]).join("\n")}\n\n`
                     )
                     .join("")}
 `,
-                timestamp: moment.utc().format(),
+                timestamp: new Date(),
                 author: {
                     name: `${message.embeds[0].author.name}`,
                     icon_url: message.embeds[0].author.iconURL

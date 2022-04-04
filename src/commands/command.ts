@@ -33,7 +33,7 @@ export interface UserInteraction {
     ): Promise<void>;
 }
 
-// For the sake of simplicty, at the moment every command returns void
+// For the sake of simplicity, at the moment every command returns void
 export type CommandResult = void;
 
 // For ApplicationCommands we require a SlashCommandBuilder object to create the command and a handler method

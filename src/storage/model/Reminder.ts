@@ -2,7 +2,6 @@
 /* eslint-disable new-cap */
 
 import { User } from "discord.js";
-import moment from "moment";
 import { Model, DataTypes, Sequelize, Optional, Op } from "sequelize";
 import { v4 as uuidv4 } from "uuid";
 import log from "../../utils/logger";
@@ -41,11 +40,10 @@ export default class Reminder extends Model<ReminderAttributes, ReminderCreation
     };
 
     static async getCurrentReminders(): Promise<ReminderAttributes[]> {
-        const now = moment();
         return Reminder.findAll({
             where: {
                 remindAt: {
-                    [Op.lte]: now.toDate()
+                    [Op.lte]: new Date()
                 }
             }
         });

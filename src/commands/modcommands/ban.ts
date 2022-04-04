@@ -129,7 +129,7 @@ export const ban = async(client: Client, member: GuildMember, banInvoker: GuildM
     const humanReadableDuration = duration ? moment.duration(duration, "hours").locale("de").humanize() : undefined;
 
     const banReasonChannel = member.guild.channels.resolve(config.ids.bot_log_channel_id);
-    if(banReasonChannel && banReasonChannel.isText()) {
+    if (banReasonChannel && banReasonChannel.isText()) {
         await banReasonChannel.send({
             content: `<@${member.id}> ${isSelfBan ? "hat sich selbst" : `wurde von ${banInvoker}`} ${humanReadableDuration ? `für ${humanReadableDuration}` : "bis auf unbestimmte Zeit"} gebannt. \nGrund: ${reason}`,
             allowedMentions: {
@@ -187,7 +187,7 @@ export class BanCommand implements ApplicationCommand, MessageCommand {
         const humanReadableDuration = moment.duration(duration, "hours").locale("de").humanize();
 
         const userAsGuildMember = command.guild?.members.resolve(user);
-        if(!userAsGuildMember) {
+        if (!userAsGuildMember) {
             return command.reply({
                 content: "Yo, der ist nicht auf dem Server",
                 ephemeral: true
@@ -196,7 +196,7 @@ export class BanCommand implements ApplicationCommand, MessageCommand {
 
         const err = await ban(client, userAsGuildMember, invokingUser, reason, false, duration ?? undefined);
 
-        if(err) {
+        if (err) {
             return command.reply({
                 content: err,
                 ephemeral: true
@@ -204,21 +204,22 @@ export class BanCommand implements ApplicationCommand, MessageCommand {
         }
 
         return command.reply({
-            content: `Ok Bruder, ich hab <@${user.id}> wegen ${reason} ${ duration > 0 ? `für ${humanReadableDuration}` : ""} gebannt`
+            content: `Ok Bruder, ich hab <@${user.id}> wegen ${reason} ${duration > 0 ? `für ${humanReadableDuration}` : ""} gebannt`
         });
     }
+
     async handleMessage(message: ProcessableMessage, client: Client<boolean>): Promise<CommandResult> {
         const user = message.mentions.users.first();
         const invokingUser = message.author;
 
-        if(!user) {
+        if (!user) {
             await message.reply("Bruder, gib doch einen User an.");
             return;
         }
 
         const userAsGuildMember = message.guild?.members.resolve(user);
 
-        if(!userAsGuildMember) {
+        if (!userAsGuildMember) {
             await message.reply("Bruder, der ist nicht auf diesem Server.");
             return;
         }
@@ -231,13 +232,13 @@ export class BanCommand implements ApplicationCommand, MessageCommand {
         // the whole message except the command itself
         const messageAfterCommand = message.content.substr(message.content.indexOf(this.name) + this.name.length).trim();
         let reason = "Willkür";
-        if(message.reference) {
-            if(messageAfterCommand.trim().length > 0) {
+        if (message.reference) {
+            if (messageAfterCommand.trim().length > 0) {
                 reason = messageAfterCommand;
             }
         }
-        // Otherwhise we would extract everything that is written AFTER the first mention
         else {
+            // Otherwise we would extract everything that is written AFTER the first mention
             const match = /\<@!?[0-9]+\> (.+)/.exec(messageAfterCommand);
             if (match && match[1]) {
                 reason = match[1];
@@ -247,7 +248,7 @@ export class BanCommand implements ApplicationCommand, MessageCommand {
 
         const err = await ban(client, userAsGuildMember, invokingUser, reason, false);
 
-        if(err) {
+        if (err) {
             await message.reply({
                 content: err
             });

@@ -4,7 +4,6 @@
 
 
 import { Client } from "discord.js";
-import moment from "moment";
 import { getConfig } from "../utils/configHandler";
 import { MessageCommand } from "./command";
 import type { ProcessableMessage } from "../handler/cmdHandler";
@@ -39,7 +38,7 @@ export class FicktabelleCommand implements MessageCommand {
             embeds: [
                 {
                     image: { url: FICKTABELLE_URL },
-                    timestamp: moment.utc().format(),
+                    timestamp: new Date(),
                     author: {
                         name: `${message.author.username} ${titles[Math.max(0, Math.floor(Math.random() * titles.length))]}`,
                         icon_url: message.author.displayAvatarURL()

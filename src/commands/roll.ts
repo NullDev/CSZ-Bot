@@ -2,7 +2,6 @@
 // = Copyright (c) s0LA1337 = //
 // ========================== //
 
-import moment from "moment";
 import { Util } from "discord.js";
 
 import type { CommandFunction } from "../types";
@@ -107,7 +106,7 @@ export const run: CommandFunction = async(_client, message, args) => {
 
     const embed = {
         title: Util.cleanContent(`${parsed}:`, message.channel),
-        timestamp: moment.utc().format(),
+        timestamp: new Date(),
         author: {
             name: `Würfel Resultat für ${message.author.username}`,
             icon_url: message.author.displayAvatarURL()
