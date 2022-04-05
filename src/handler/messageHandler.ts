@@ -2,7 +2,7 @@ import type { Client, ClientUser, Message } from "discord.js";
 import type { BotContext } from "../context";
 import { getConfig } from "../utils/configHandler";
 
-import cmdHandler from "./cmdHandler";
+import cmdHandler, { isProcessableMessage } from "./cmdHandler";
 
 const config = getConfig();
 
@@ -16,22 +16,24 @@ export default async function(message: Message, client: Client, context: BotCont
         .replace(config.bot_settings.prefix.mod_prefix, "")
         .replace(/\s/g, "");
 
+    // Maybe we can move some of these checks to `isProcessableMessage`, but we need to figure out how to represent this in a type
     if (message.author.bot || nonBiased === "" || message.channel.type === "DM") return;
+
+    // Ensures that every command always gets a message that fits certain criteria (for example, being a message originating from a server, not a DM)
+    if (!isProcessableMessage(message)) return;
 
     const isNormalCommand = message.content.startsWith(config.bot_settings.prefix.command_prefix);
     const isModCommand = message.content.startsWith(config.bot_settings.prefix.mod_prefix);
     const isCommand = isNormalCommand || isModCommand;
 
     if (client.user && message.mentions.has(client.user.id) && !isCommand) {
-        if (message.member === null) {
-            throw new Error("Member is null");
-        }
-
         // Trusted users should be familiar with the bot, they should know how to use it
         // Maybe, we don't want to flame them, since that can make the chat pretty noisy
         // Unless you are a Marcel
-        // TODO: Remove message.member! assertion as soon as we have ProcessableMessage
-        const shouldFlameUser = config.bot_settings.flame_trusted_user_on_bot_ping || !message.member!.roles.cache.has(config.ids.trusted_role_id) || message.member!.id === "209413133020823552";
+
+        const isMarcel = message.member.id === "209413133020823552";
+        const shouldFlameUser = config.bot_settings.flame_trusted_user_on_bot_ping || !message.member.roles.cache.has(config.ids.trusted_role_id) || isMarcel;
+
         if (shouldFlameUser) {
             const hasAlreadyReplied = message.channel.messages.cache
                 .filter(m => m.content.includes("Was pingst du mich du Hurensohn"))
