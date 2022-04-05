@@ -53,7 +53,7 @@ export const run = async(client, message, args) => {
     if (existingBan) return "Du bist bereits gebannt";
 
     const err = await ban.ban(client, invokingUser, invokingUser, "Selbstauferlegt", true, durationInHours);
-    if (!err) return err;
+    if (err) return err;
 
     const durationHumanized = durationInMinutes === 0
         ? "manuell durch Moderader"
