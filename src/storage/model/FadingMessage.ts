@@ -1,9 +1,10 @@
 /* Disabled due to sequelize's DataTypes */
 /* eslint-disable new-cap */
 
-import type { Message, Snowflake, TextChannel } from "discord.js";
+import type { Snowflake } from "discord.js";
 import { Model, DataTypes, type Sequelize } from "sequelize";
 import { v4 as uuidv4 } from "uuid";
+import type { ProcessableMessage } from "../../handler/cmdHandler";
 
 export default class FadingMessage extends Model {
     declare id: string;
@@ -19,12 +20,12 @@ export default class FadingMessage extends Model {
      * @param {Number} deleteInMs The time in milliseconds when the message should be deleted
      * @returns {Promise<this>}
      */
-    startFadingMessage(message: Message, deleteInMs: number) {
+    startFadingMessage(message: ProcessableMessage, deleteInMs: number) {
         this.beginTime = this.beginTime || new Date();
         this.endTime = this.endTime || new Date(this.beginTime.valueOf() + deleteInMs);
         this.messageId = message.id;
         this.channelId = message.channel.id;
-        this.guildId = (message.channel as TextChannel).guild.id; // TODO: Once we have ProcessableMessage, remote this assertion
+        this.guildId = message.guild.id;
         return this.save();
     }
 
@@ -34,7 +35,7 @@ export default class FadingMessage extends Model {
      * @param {number} deleteInMs The time in milliseconds when the message should be deleted
      * @returns {Promise<this>}
      */
-    static async newFadingMessage(message: Message, deleteInMs: number) {
+    static async newFadingMessage(message: ProcessableMessage, deleteInMs: number) {
         const fadingMessage = await FadingMessage.create();
         await fadingMessage.startFadingMessage(message, deleteInMs);
     }

@@ -108,7 +108,7 @@ export const startCron = (client: Client) => {
     });
 };
 
-export const ban = async(client: Client, member: GuildMember, banInvoker: GuildMember | User, reason: string, isSelfBan: boolean, duration?: number): Promise<string | undefined> => {
+export const ban = async(client: Client, member: GuildMember, banInvoker: GuildMember | User, reason: string, isSelfBan: boolean, duration?: number): Promise<string | void> => {
     log.debug(`Banning ${member.id} by ${banInvoker.id} because of ${reason} for ${duration}.`);
 
     // No Shadow ban :(
