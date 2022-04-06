@@ -83,12 +83,13 @@ const sendReminder = async(reminder: ReminderAttributes, client: Client) => {
 export const reminderHandler = async(client: Client) => {
     try {
         const reminders = await Reminder.getCurrentReminders();
-        if (reminders === null) {
-            return;
-        }
-
         for (const reminder of reminders) {
-            await sendReminder(reminder, client);
+            try {
+                await sendReminder(reminder, client);
+            }
+            catch (err) {
+                logger.error(`Couldn't send reminder ${reminder.id} because of ${err}`);
+            }
         }
     }
     catch (err) {
