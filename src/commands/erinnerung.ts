@@ -25,7 +25,7 @@ export class ErinnerungCommand implements MessageCommand {
                 future: true
             });
 
-            if (Number.isNaN(date.getTime())) {
+            if (Number.isNaN(date.getTime()) || !Number.isFinite(date.getTime())) {
                 throw new Error("Danke JS");
             }
 
