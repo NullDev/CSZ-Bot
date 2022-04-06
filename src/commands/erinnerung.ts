@@ -14,11 +14,13 @@ export class ErinnerungCommand implements MessageCommand {
     description = "Setzt eine Erinnerung für dich";
 
     async handleMessage(message: ProcessableMessage, client: Client<boolean>): Promise<void> {
+        // TODO: Create utility function that removes the command prefix for easier parsing
         const param = message.content.split(`${config.bot_settings.prefix.command_prefix}${this.name} `)[1];
         if (!param) {
             await message.reply("Brudi ich muss schon wissen wann ich dich erinnern soll");
             return;
         }
+
         try {
             const date = Sugar.Date.create(param, {
                 locale: "de",
@@ -43,7 +45,6 @@ export class ErinnerungCommand implements MessageCommand {
         catch (err) {
             logger.error(`Couldn't parse date from message ${message.content} due to ${err}`);
             await message.reply("Brudi was ist das denn für ne Datumsangabe? Gib was ordentliches an");
-            return;
         }
     }
 }
@@ -69,11 +70,11 @@ const sendReminder = async(reminder: ReminderAttributes, client: Client) => {
             content: `${user} du wolltest daran erinnern werden oder wat`,
             allowedMentions: {
                 repliedUser: false,
-                users: [ user.id ]
+                users: [user.id]
             }
         });
     }
-    catch(err) {
+    catch (err) {
         logger.error(`Couldn't send reminder due to ${err}. Removing it...`);
     }
     await Reminder.removeReminder(reminder.id);
@@ -90,7 +91,7 @@ export const reminderHandler = async(client: Client) => {
             await sendReminder(reminder, client);
         }
     }
-    catch(err) {
-        logger.error(`Couldn't retreive reminders because of ${err}`);
+    catch (err) {
+        logger.error(`Couldn't retrieve reminders because of ${err}`);
     }
 };
