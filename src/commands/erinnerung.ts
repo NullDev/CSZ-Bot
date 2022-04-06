@@ -14,18 +14,20 @@ export class ErinnerungCommand implements MessageCommand {
     description = "Setzt eine Erinnerung für dich";
 
     async handleMessage(message: ProcessableMessage, client: Client<boolean>): Promise<void> {
+        // TODO: Create utility function that removes the command prefix for easier parsing
         const param = message.content.split(`${config.bot_settings.prefix.command_prefix}${this.name} `)[1];
         if (!param) {
             await message.reply("Brudi ich muss schon wissen wann ich dich erinnern soll");
             return;
         }
+
         try {
             const date = Sugar.Date.create(param, {
                 locale: "de",
                 future: true
             });
 
-            if (Number.isNaN(date.getTime())) {
+            if (Number.isNaN(date.getTime()) || !Number.isFinite(date.getTime())) {
                 throw new Error("Danke JS");
             }
 
@@ -37,13 +39,12 @@ export class ErinnerungCommand implements MessageCommand {
             const messageId = message.reference?.messageId ?? message.id;
             const refMessage = message.reference ?? message;
 
-            await Reminder.insertReminder(message.member!.user, messageId, refMessage.channelId, refMessage.guildId!, date);
-            await message.reply("Ok brudi, werd dich dran erinnern. Außer ich kack ab lol, dann mach ich das später");
+            await Reminder.insertReminder(message.member.user, messageId, refMessage.channelId, refMessage.guildId!, date);
+            await message.reply(`Ok brudi, werd dich <t:${date.getTime() / 1000}:R> dran erinnern. Außer ich kack ab lol, dann mach ich das später (vielleicht)`);
         }
         catch (err) {
             logger.error(`Couldn't parse date from message ${message.content} due to ${err}`);
             await message.reply("Brudi was ist das denn für ne Datumsangabe? Gib was ordentliches an");
-            return;
         }
     }
 }
@@ -69,28 +70,24 @@ const sendReminder = async(reminder: ReminderAttributes, client: Client) => {
             content: `${user} du wolltest daran erinnern werden oder wat`,
             allowedMentions: {
                 repliedUser: false,
-                users: [ user.id ]
+                users: [user.id]
             }
         });
     }
-    catch(err) {
+    catch (err) {
         logger.error(`Couldn't send reminder due to ${err}. Removing it...`);
     }
     await Reminder.removeReminder(reminder.id);
 };
 
 export const reminderHandler = async(client: Client) => {
-    try {
-        const reminders = await Reminder.getCurrentReminders();
-        if (reminders === null) {
-            return;
-        }
-
-        for (const reminder of reminders) {
+    const reminders = await Reminder.getCurrentReminders();
+    for (const reminder of reminders) {
+        try {
             await sendReminder(reminder, client);
         }
-    }
-    catch(err) {
-        logger.error(`Couldn't retreive reminders because of ${err}`);
+        catch (err) {
+            logger.error(`Couldn't send reminder ${reminder.id} because of ${err}`);
+        }
     }
 };
