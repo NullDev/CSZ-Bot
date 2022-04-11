@@ -79,7 +79,7 @@ const buildEmbed = async(guild: Guild | null, avatarUrl?: string): Promise<Messa
         },
         author: {
             name: "Shitpost Bot",
-            url: "https://discordapp.com/users/663146938811547660/",
+            url: "chrome://restart",
             icon_url: avatarUrl
         },
         fields: [
@@ -96,11 +96,6 @@ const buildEmbed = async(guild: Guild | null, avatarUrl?: string): Promise<Messa
             {
                 name: "⚙️ System",
                 value: getSystemInfo(),
-                inline: true
-            },
-            {
-                name: "🚨 Restart Button",
-                value: "[Restart](chrome://restart/)",
                 inline: true
             }
         ]
