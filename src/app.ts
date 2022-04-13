@@ -31,7 +31,6 @@ import {
 } from "./handler/commandHandler";
 import { quoteReactionHandler } from "./handler/quoteHandler";
 import NicknameHandler from "./handler/nicknameHandler";
-import { assert } from "console";
 import { connectAndPlaySaufen } from "./handler/voiceHandler";
 import { reminderHandler } from "./commands/erinnerung";
 import { endAprilFools, startAprilFools } from "./handler/aprilFoolsHandler";
