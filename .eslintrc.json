@@ -74,7 +74,7 @@
         // Largely based on this post:
         // https://maximorlov.com/linting-rules-for-asynchronous-code-in-javascript
         "no-async-promise-executor": "error",
-        "no-await-in-loop": "error",
+        "no-await-in-loop": "warn",
         "no-promise-executor-return": "error",
         "require-atomic-updates": "warn",
         "max-nested-callbacks": "error",
