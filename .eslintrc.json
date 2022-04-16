@@ -1,5 +1,6 @@
 {                                           // NullDev-Style ESLint Config: https://github.com/NullDevCo/JavaScript-Styleguide
     "plugins": [
+        "eslint-plugin-node",
         "@typescript-eslint"
     ],
     "env": {                                // http://eslint.org/docs/user-guide/configuring.html#specifying-environments
