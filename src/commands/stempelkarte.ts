@@ -52,7 +52,11 @@ const drawStempelkarteBackside = async(subjectAvatarUrl: string | undefined, ava
     const canvas = createCanvas(backgroundImage.width, backgroundImage.height);
     const ctx = canvas.getContext("2d");
 
-    const avatarSourcesWithPlaceholders = avatars.map(url => url ? loadImage(url) : Promise.reject());
+    const avatarSourcesWithPlaceholders = avatars.map(
+        url => url
+            ? loadImage(url)
+            : Promise.reject(new Error("url is falsy"))
+    );
 
     const avatarResults = await Promise.allSettled(avatarSourcesWithPlaceholders);
 

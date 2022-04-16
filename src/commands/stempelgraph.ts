@@ -131,7 +131,7 @@ async function drawStempelgraph(stempels: StempelConnection[], engine: LayoutEng
     }`;
 
     const svgSrc = await viz.renderString(dotSrc);
-    return await svg2png({
+    return svg2png({
         input: svgSrc,
         encoding: "buffer",
         format: "png"
