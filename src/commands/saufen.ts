@@ -52,7 +52,7 @@ export class Saufen implements ApplicationCommand {
         const subcommand = command.options.getSubcommand();
 
         const reply = () => command.reply("WOCHENENDE!! SAUFEN!! GEIL");
-        if (subcommand === "random") {
+        if (subcommand === "los") {
             await Promise.all([
                 connectAndPlaySaufen(client),
                 reply()
