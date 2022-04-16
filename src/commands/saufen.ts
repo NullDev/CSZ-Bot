@@ -6,6 +6,7 @@ import { ApplicationCommand, CommandPermission } from "./command";
 import fetch from "node-fetch";
 import path from "path";
 import { createWriteStream } from "fs";
+import { readdir } from "fs/promises";
 
 const config = getConfig();
 
@@ -24,6 +25,10 @@ export class Saufen implements ApplicationCommand {
             new SlashCommandSubcommandBuilder()
                 .setName("los")
                 .setDescription("LOS JETZT"))
+        .addSubcommand(
+            new SlashCommandSubcommandBuilder()
+                .setName("list")
+                .setDescription("Listet alle Woismotivatoren"))
         .addSubcommand(
             new SlashCommandSubcommandBuilder()
                 .setName("add")
@@ -59,6 +64,10 @@ export class Saufen implements ApplicationCommand {
                 savePromise,
                 command.reply("Jo, habs eingefügt")
             ]);
+        }
+        else if (subcommand === "list") {
+            const files = await readdir(soundDir, { withFileTypes: true});
+            await command.reply(files.map(f => f.name).join("\n- "));
         }
     }
 }
