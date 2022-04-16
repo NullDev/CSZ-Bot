@@ -47,8 +47,6 @@
         /**
          * Possible errors
          */
-        "@typescript-eslint/no-floating-promises": "error", // https://mikebifulco.com/posts/eslint-no-floating-promises
-        "@typescript-eslint/no-misused-promises": "error",
         "comma-dangle": [2, "never"],       // http://eslint.org/docs/rules/comma-dangle
         "no-cond-assign": [2, "always"],    // http://eslint.org/docs/rules/no-cond-assign
         "no-console": 0,                    // http://eslint.org/docs/rules/no-console
@@ -72,6 +70,22 @@
         "use-isnan": 2,                     // http://eslint.org/docs/rules/use-isnan
         "block-scoped-var": 2,              // http://eslint.org/docs/rules/block-scoped-var
         "valid-typeof": 2,                  // http://eslint.org/docs/rules/valid-typeof
+
+        // Largely based on this post:
+        // https://maximorlov.com/linting-rules-for-asynchronous-code-in-javascript
+        "no-async-promise-executor": "error",
+        "no-await-in-loop": "error",
+        "no-promise-executor-return": "error",
+        "require-atomic-updates": "warn",
+        "max-nested-callbacks": "error",
+        "no-return-await": "error",
+        "prefer-promise-reject-errors": "error",
+        "node/handle-callback-err": "error",
+        "node/no-callback-literal": "error",
+        "@typescript-eslint/await-thenable": "error",
+        "@typescript-eslint/no-floating-promises": "error", // https://mikebifulco.com/posts/eslint-no-floating-promises
+        "@typescript-eslint/no-misused-promises": "error",
+
         /**
          * Best practices
          */
