@@ -44,7 +44,7 @@ export async function connectAndPlaySaufen(client: Client) {
     const wois = csz.channels.cache.get(woisId) as VoiceChannel;
 
     if (wois.members.size > 0) {
-        const files = await readdir(soundDir);
+        const files = await Promise.resolve().then(() => readdir(soundDir));
         const randomSound = files[Math.floor(Math.random() * files.length)];
         const file = path.resolve(soundDir, randomSound);
         try {
