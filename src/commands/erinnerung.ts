@@ -84,6 +84,8 @@ export const reminderHandler = async(client: Client) => {
     const reminders = await Reminder.getCurrentReminders();
     for (const reminder of reminders) {
         try {
+            // Disabling rule because the amount to reminders is unbound and we might hit a rate-limit
+            // eslint-disable-next-line no-await-in-loop
             await sendReminder(reminder, client);
         }
         catch (err) {
