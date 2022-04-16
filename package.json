@@ -37,7 +37,7 @@
     "jimp": "^0.16.1",
     "libsodium-wrappers": "^0.7.9",
     "minimist": "^1.2.6",
-    "moment": "^2.29.1",
+    "moment": "^2.29.2",
     "node-fetch": "^2.6.7",
     "sequelize": "^6.17.0",
     "sqlite3": "^5.0.2",
