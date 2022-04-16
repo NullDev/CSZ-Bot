@@ -56,17 +56,18 @@ export class Saufen implements ApplicationCommand {
         const subcommandGroup = command.options.getSubcommandGroup();
 
         if (subcommandGroup === "play") {
+            const reply = () => command.reply("WOCHENENDE!! SAUFEN!! GEIL");
             if (subcommand === "random") {
                 await Promise.all([
                     connectAndPlaySaufen(client),
-                    command.reply("WOCHENENDE!! SAUFEN!! GEIL")
+                    reply()
                 ]);
             }
             if(subcommand === "select") {
                 const toPlay = command.options.getString("sound", true);
                 await Promise.all([
                     connectAndPlaySaufen(client, toPlay),
-                    command.reply("WOCHENENDE!! SAUFEN!! GEIL")
+                    reply()
                 ]);
             }
         }
