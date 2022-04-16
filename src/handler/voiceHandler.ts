@@ -37,7 +37,7 @@ async function playSaufen(file: string, duration: number): Promise<AudioPlayer> 
     return entersState(player, AudioPlayerStatus.Playing, duration);
 }
 
-export async function connectAndPlaySaufen(client: Client) {
+export async function connectAndPlaySaufen(client: Client, filename?: string) {
     const cszId = config.ids.guild_id;
     const woisId = config.ids.haupt_woischat_id;
     const csz = client.guilds.cache.get(cszId)!;
@@ -45,8 +45,8 @@ export async function connectAndPlaySaufen(client: Client) {
 
     if (wois.members.size > 0) {
         const files = await Promise.resolve().then(() => readdir(soundDir));
-        const randomSound = files[Math.floor(Math.random() * files.length)];
-        const file = path.resolve(soundDir, randomSound);
+        const fileToPlay = filename ?? files[Math.floor(Math.random() * files.length)];
+        const file = path.resolve(soundDir, fileToPlay);
         try {
             const duration = (await gad.getAudioDurationInSeconds(file)) * 1000;
             await playSaufen(file, duration);

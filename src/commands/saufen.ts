@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, SlashCommandStringOption, SlashCommandSubcommandBuilder } from "@discordjs/builders";
+import { SlashCommandBuilder, SlashCommandStringOption, SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder } from "@discordjs/builders";
 import { CommandInteraction, CacheType, Client } from "discord.js";
 import { connectAndPlaySaufen, soundDir } from "../handler/voiceHandler";
 import { getConfig } from "../utils/configHandler";
@@ -21,10 +21,22 @@ export class Saufen implements ApplicationCommand {
     applicationCommand = new SlashCommandBuilder()
         .setName(this.name)
         .setDescription(this.description)
-        .addSubcommand(
-            new SlashCommandSubcommandBuilder()
-                .setName("los")
-                .setDescription("LOS JETZT"))
+        .addSubcommandGroup(new SlashCommandSubcommandGroupBuilder()
+            .setName("play")
+            .setDescription("Säuflingsmotivation abspielen")
+            .addSubcommand(
+                new SlashCommandSubcommandBuilder()
+                    .setName("random")
+                    .setDescription("LOS JETZT AUF GAR KEIN REDEN"))
+            .addSubcommand(
+                new SlashCommandSubcommandBuilder()
+                    .setName("select")
+                    .setDescription("LOS JETZT SPEZIFISCH")
+                    .addStringOption(
+                        new SlashCommandStringOption()
+                            .setRequired(true)
+                            .setName("sound")
+                            .setDescription("Soundfile. Bruder mach vorher list ja"))))
         .addSubcommand(
             new SlashCommandSubcommandBuilder()
                 .setName("list")
@@ -41,12 +53,22 @@ export class Saufen implements ApplicationCommand {
 
     async handleInteraction(command: CommandInteraction<CacheType>, client: Client<boolean>): Promise<void> {
         const subcommand = command.options.getSubcommand();
+        const subcommandGroup = command.options.getSubcommandGroup();
 
-        if (subcommand === "los") {
-            await Promise.all([
-                connectAndPlaySaufen(client),
-                command.reply("WOCHENENDE!! SAUFEN!! GEIL")
-            ]);
+        if (subcommandGroup === "play") {
+            if (subcommand === "random") {
+                await Promise.all([
+                    connectAndPlaySaufen(client),
+                    command.reply("WOCHENENDE!! SAUFEN!! GEIL")
+                ]);
+            }
+            if(subcommand === "select") {
+                const toPlay = command.options.getString("sound", true);
+                await Promise.all([
+                    connectAndPlaySaufen(client, toPlay),
+                    command.reply("WOCHENENDE!! SAUFEN!! GEIL")
+                ]);
+            }
         }
         else if (subcommand === "add") {
             const soundUrl = new URL(command.options.getString("sound", true));
