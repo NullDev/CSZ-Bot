@@ -1,4 +1,4 @@
-import { Client } from "discord.js";
+import { Client, GuildMember } from "discord.js";
 import { CommandResult, MessageCommand } from "./command";
 import Jimp from "jimp";
 import path from "path";
@@ -9,7 +9,7 @@ import type { ProcessableMessage } from "../handler/cmdHandler";
 
 const config = getConfig();
 
-const createBonkMeme = async(author: any): Promise<string> => {
+const createBonkMeme = async(author: GuildMember): Promise<string> => {
     const image = await Jimp.read("https://i.imgur.com/nav6WWX.png");
     const filename = `/tmp/bonk_meme_${Date.now()}.png`;
     const avatarURL = author.displayAvatarURL({ format: "png" });
@@ -37,18 +37,18 @@ Usage: ${config.bot_settings.prefix.command_prefix}bonk
     async handleMessage(message: ProcessableMessage, client: Client<boolean>): Promise<CommandResult> {
         const messageRef = message.reference?.messageId;
         const messagePing = message.mentions?.users.first();
-        let toBeBonked;
+        let toBeBonked: GuildMember = await message.guild.members.fetch(message.author);
 
         // If reply to message
         if(messageRef) {
             const msg = await message.channel.messages.fetch(messageRef);
-            toBeBonked = msg.author;
+            toBeBonked = await message.guild.members.fetch(msg.author);
         } // If a user is mentioned in the message
         else if (messagePing) {
-            toBeBonked = message.mentions.users.first();
-        } // If nothing from above applies, use the command sender
-        else {
-            toBeBonked = message.author;
+            const mentionedUser = message.mentions.users.first();
+            if (mentionedUser) {
+                toBeBonked = await message.guild.members.fetch(mentionedUser);
+            }
         }
 
         const meme = await createBonkMeme(toBeBonked);
