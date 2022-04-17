@@ -161,7 +161,7 @@ client.once("ready", async initializedClient => {
         const bday = new BdayHandler(botContext);
         const aoc = new AoCHandler(botContext);
         log.info("Starting Nicknamehandler ");
-        const nicknameHandler = new NicknameHandler(client);
+        const nicknameHandler = new NicknameHandler(botContext);
         if (firstRun) {
             await storage.initialize();
             firstRun = false; // Hacky deadlock ...
