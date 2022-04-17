@@ -203,7 +203,7 @@ client.once("ready", async initializedClient => {
             // eslint-disable-next-line no-unused-vars
             const reminderJob = new Cron("* * * * *", async() => {
                 log.debug("Entered reminder cronjob");
-                await reminderHandler(initializedClient);
+                await reminderHandler(botContext);
             }, cronOptions);
 
             // eslint-disable-next-line no-unused-vars
