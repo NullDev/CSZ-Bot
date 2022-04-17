@@ -142,7 +142,7 @@ const leetTask = async() => {
 
 let firstRun = true;
 
-client.on("ready", async initializedClient => {
+client.once("ready", async initializedClient => {
     try {
         log.info("Running...");
         log.info(`Got ${client.users.cache.size} users, in ${client.channels.cache.size} channels of ${client.guilds.cache.size} guilds`);
@@ -158,7 +158,7 @@ client.on("ready", async initializedClient => {
             timezone: "Europe/Berlin"
         } as const;
 
-        const bday = new BdayHandler(client);
+        const bday = new BdayHandler(botContext);
         const aoc = new AoCHandler(client);
         log.info("Starting Nicknamehandler ");
         const nicknameHandler = new NicknameHandler(client);
