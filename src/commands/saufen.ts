@@ -7,6 +7,7 @@ import fetch from "node-fetch";
 import path from "path";
 import { createWriteStream } from "fs";
 import { assertNever } from "../utils/typeUtils";
+import { readdir } from "fs/promises";
 
 const config = getConfig();
 
@@ -26,7 +27,20 @@ export class Saufen implements ApplicationCommand {
         .addSubcommand(
             new SlashCommandSubcommandBuilder()
                 .setName("los")
-                .setDescription("LOS JETZT"))
+                .setDescription("LOS JETZT AUF GAR KEIN REDEN"))
+        .addSubcommand(
+            new SlashCommandSubcommandBuilder()
+                .setName("select")
+                .setDescription("LOS JETZT SPEZIFISCH")
+                .addStringOption(
+                    new SlashCommandStringOption()
+                        .setRequired(true)
+                        .setName("sound")
+                        .setDescription("Soundfile. Bruder mach vorher list ja")))
+        .addSubcommand(
+            new SlashCommandSubcommandBuilder()
+                .setName("list")
+                .setDescription("Listet alle Woismotivatoren"))
         .addSubcommand(
             new SlashCommandSubcommandBuilder()
                 .setName("add")
@@ -48,6 +62,13 @@ export class Saufen implements ApplicationCommand {
                 ]);
                 return;
             }
+            case "select": {
+                const toPlay = command.options.getString("sound", true);
+                await Promise.all([
+                    connectAndPlaySaufen(client, toPlay),
+                    reply()
+                ]);
+            }
             case "add": {
                 const soundUrl = new URL(command.options.getString("sound", true));
                 const targetPath = path.resolve(soundDir, path.basename(soundUrl.pathname));
@@ -65,6 +86,10 @@ export class Saufen implements ApplicationCommand {
                     command.reply("Jo, habs eingefügt")
                 ]);
                 return;
+            }
+            case "list": {
+                const files = await readdir(soundDir, { withFileTypes: true});
+                await command.reply(files.map(f => f.name).join("\n- "));
             }
             default:
                 return assertNever(subCommand);

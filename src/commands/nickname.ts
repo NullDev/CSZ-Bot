@@ -240,7 +240,7 @@ export class NicknameButtonHandler implements UserInteraction {
             }
 
             return interaction.update({
-                content: `Für <@${suggestion.nicknameUserID}> ist jetzt  \`${suggestion.nickname}\` in der Rotation`,
+                content: `Für <@${suggestion.nicknameUserID}> ist jetzt \`${suggestion.nickname}\` in der Rotation`,
                 components: []
             });
         }
