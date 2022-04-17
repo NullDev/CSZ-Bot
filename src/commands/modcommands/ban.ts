@@ -8,6 +8,7 @@ import log from "../../utils/logger";
 import moment from "moment";
 import type { ProcessableMessage } from "../../handler/cmdHandler";
 import Cron from "croner";
+import type { BotContext } from "../../context";
 
 const config = getConfig();
 
@@ -75,7 +76,7 @@ export const restoreRoles = async(user: GuildMember): Promise<boolean> => {
 
 // #endregion
 
-export const startCron = (client: Client) => {
+export const startCron = (context: BotContext) => {
     log.info("Scheduling Ban Cronjob...");
 
     // eslint-disable-next-line no-unused-vars
@@ -89,7 +90,7 @@ export const startCron = (client: Client) => {
                 log.debug(`Expired Ban found by user ${expiredBan.userId}. Expired on ${expiredBan.bannedUntil}`);
                 await expiredBan.destroy();
 
-                const user = client.guilds.cache.get(config.ids.guild_id)?.members.cache.get(expiredBan.userId);
+                const user = context.guild.members.cache.get(expiredBan.userId);
                 // No user, no problem
                 if (!user) continue;
 

@@ -219,7 +219,7 @@ client.once("ready", async initializedClient => {
             }, cronOptions);
         }
 
-        ban.startCron(client);
+        ban.startCron(botContext);
 
         await poll.importPolls();
         poll.startCron(botContext);
