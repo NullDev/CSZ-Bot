@@ -11,7 +11,7 @@ import { readdir } from "fs/promises";
 
 const config = getConfig();
 
-type SubCommand = "los" | "add";
+type SubCommand = "los" | "add" | "list" | "select";
 
 export class Saufen implements ApplicationCommand {
     name = "saufen";
@@ -53,12 +53,13 @@ export class Saufen implements ApplicationCommand {
 
     async handleInteraction(command: CommandInteraction<CacheType>, client: Client<boolean>): Promise<void> {
         const subCommand = command.options.getSubcommand() as SubCommand;
+        const reply = () => command.reply("WOCHENENDE!! SAUFEN!! GEIL");
 
         switch (subCommand) {
             case "los": {
                 await Promise.all([
                     connectAndPlaySaufen(client),
-                    command.reply("WOCHENENDE!! SAUFEN!! GEIL")
+                    reply()
                 ]);
                 return;
             }
@@ -68,6 +69,7 @@ export class Saufen implements ApplicationCommand {
                     connectAndPlaySaufen(client, toPlay),
                     reply()
                 ]);
+                return;
             }
             case "add": {
                 const soundUrl = new URL(command.options.getString("sound", true));
@@ -90,6 +92,7 @@ export class Saufen implements ApplicationCommand {
             case "list": {
                 const files = await readdir(soundDir, { withFileTypes: true});
                 await command.reply(files.map(f => f.name).join("\n- "));
+                return;
             }
             default:
                 return assertNever(subCommand);
