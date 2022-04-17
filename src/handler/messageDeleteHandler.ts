@@ -10,11 +10,11 @@ const deleteInlineRepliesFromBot = (
     Promise.allSettled(
         messageRef.channel.messages.cache
             .filter(
-                (m) =>
+                m =>
                     m.author.id === client.user!.id &&
                     m.reference?.messageId === messageRef.id
             )
-            .map((m) => m.delete())
+            .map(m => m.delete())
     );
 
 export default async function(message: Message, client: Client) {

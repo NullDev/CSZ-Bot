@@ -1,8 +1,9 @@
 /* eslint-disable no-use-before-define */
+import { MessageComponentInteraction } from "discord.js";
 import { SlashCommandBuilder /* , SlashCommandOptionsOnlyBuilder, SlashCommandSubcommandsOnlyBuilder */ } from "@discordjs/builders";
 import type { ApplicationCommandPermissionType, Client, CommandInteraction } from "discord.js";
 import type { ProcessableMessage } from "../handler/cmdHandler";
-import {MessageComponentInteraction} from "discord.js";
+import type { BotContext } from "../context";
 
 // A command can be an application command (slash command) or a message command or both
 export type Command = ApplicationCommand | MessageCommand | SpecialCommand;
@@ -29,7 +30,8 @@ export interface UserInteraction {
     readonly name: string;
     handleInteraction(
         command: MessageComponentInteraction,
-        client: Client
+        client: Client,
+        context: BotContext
     ): Promise<void>;
 }
 
@@ -41,21 +43,22 @@ interface AppCommand {
     applicationCommand: Pick<SlashCommandBuilder, "toJSON">;
     handleInteraction(
         command: CommandInteraction,
-        client: Client
+        client: Client,
+        context: BotContext
     ): Promise<CommandResult>;
 }
 
 // For a MessageCommand we require an additional modCommand property and a handler method
 interface MsgCommand {
-    handleMessage(message: ProcessableMessage, client: Client): Promise<CommandResult>;
+    handleMessage(message: ProcessableMessage, client: Client, context: BotContext): Promise<CommandResult>;
 }
 
 // For SpecialCommands we require a pattern and a randomness (<= 1)
 interface SpcalCommand {
     randomness: number;
     cooldownTime?: number;
-    handleSpecialMessage(message: ProcessableMessage, client: Client): Promise<CommandResult>;
-    matches(message: ProcessableMessage): boolean;
+    handleSpecialMessage(message: ProcessableMessage, client: Client, context: BotContext): Promise<CommandResult>;
+    matches(message: ProcessableMessage, context: BotContext): boolean;
 }
 
 export function isApplicationCommand(cmd: Command): cmd is ApplicationCommand {
