@@ -8,7 +8,7 @@ export function countWords(str: string): number {
 }
 
 /**
- * Get a substring after the first occurence of s
+ * Get a substring after the first occurrence of s
  * @param str string to search in
  * @param s search
  * @returns substring (untrimmed!)

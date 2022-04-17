@@ -27,6 +27,7 @@
          */
         "no-var": 2,                        // http://eslint.org/docs/rules/no-var
         "prefer-const": "error",
+        "arrow-parens": ["warn", "as-needed"],
         "prefer-destructuring": [2, {       // http://eslint.org/docs/rules/prefer-destructuring
             "array": false,
             "object": true

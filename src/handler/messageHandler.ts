@@ -1,4 +1,5 @@
 import type { Client, ClientUser, Message } from "discord.js";
+import type { BotContext } from "../context";
 import { getConfig } from "../utils/configHandler";
 
 import cmdHandler, { isProcessableMessage } from "./cmdHandler";
@@ -9,7 +10,7 @@ const getInlineReplies = (messageRef: Message, clientUser: ClientUser) => {
     return messageRef.channel.messages.cache.filter(m => m.author.id === clientUser.id && m.reference?.messageId === messageRef.id);
 };
 
-export default async function(message: Message, client: Client) {
+export default async function(message: Message, client: Client, context: BotContext) {
     const nonBiased = message.content
         .replace(config.bot_settings.prefix.command_prefix, "")
         .replace(config.bot_settings.prefix.mod_prefix, "")
@@ -49,7 +50,7 @@ export default async function(message: Message, client: Client) {
         return;
     }
 
-    const response = await cmdHandler(message, client, isModCommand);
+    const response = await cmdHandler(message, client, isModCommand, context);
 
     // Get all inline replies to the message and delete them. Ignore errors, since cached is used and previously deleted messages are contained as well
     getInlineReplies(message, client.user!).forEach(msg => void msg.delete().then(() => {}, () => {}));

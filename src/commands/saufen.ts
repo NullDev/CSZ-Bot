@@ -6,9 +6,12 @@ import { ApplicationCommand, CommandPermission } from "./command";
 import fetch from "node-fetch";
 import path from "path";
 import { createWriteStream } from "fs";
+import { assertNever } from "../utils/typeUtils";
 import { readdir } from "fs/promises";
 
 const config = getConfig();
+
+type SubCommand = "los" | "add" | "list" | "select";
 
 export class Saufen implements ApplicationCommand {
     name = "saufen";
@@ -49,42 +52,50 @@ export class Saufen implements ApplicationCommand {
                 ));
 
     async handleInteraction(command: CommandInteraction<CacheType>, client: Client<boolean>): Promise<void> {
-        const subcommand = command.options.getSubcommand();
-
+        const subCommand = command.options.getSubcommand() as SubCommand;
         const reply = () => command.reply("WOCHENENDE!! SAUFEN!! GEIL");
-        if (subcommand === "los") {
-            await Promise.all([
-                connectAndPlaySaufen(client),
-                reply()
-            ]);
-        }
-        if(subcommand === "select") {
-            const toPlay = command.options.getString("sound", true);
-            await Promise.all([
-                connectAndPlaySaufen(client, toPlay),
-                reply()
-            ]);
-        }
-        else if (subcommand === "add") {
-            const soundUrl = new URL(command.options.getString("sound", true));
-            const targetPath = path.resolve(soundDir, path.basename(soundUrl.pathname));
-            const fileStream = createWriteStream(targetPath);
-            const res = await fetch(soundUrl, {
-                method: "GET"
-            });
-            const savePromise = new Promise((resolve, reject) => {
-                res.body.pipe(fileStream);
-                res.body.on("error", reject);
-                fileStream.on("finish", resolve);
-            });
-            await Promise.all([
-                savePromise,
-                command.reply("Jo, habs eingefügt")
-            ]);
-        }
-        else if (subcommand === "list") {
-            const files = await readdir(soundDir, { withFileTypes: true});
-            await command.reply(files.map(f => f.name).join("\n- "));
+
+        switch (subCommand) {
+            case "los": {
+                await Promise.all([
+                    connectAndPlaySaufen(client),
+                    reply()
+                ]);
+                return;
+            }
+            case "select": {
+                const toPlay = command.options.getString("sound", true);
+                await Promise.all([
+                    connectAndPlaySaufen(client, toPlay),
+                    reply()
+                ]);
+                return;
+            }
+            case "add": {
+                const soundUrl = new URL(command.options.getString("sound", true));
+                const targetPath = path.resolve(soundDir, path.basename(soundUrl.pathname));
+                const fileStream = createWriteStream(targetPath);
+                const res = await fetch(soundUrl, {
+                    method: "GET"
+                });
+                const savePromise = new Promise((resolve, reject) => {
+                    res.body.pipe(fileStream);
+                    res.body.on("error", reject);
+                    fileStream.on("finish", resolve);
+                });
+                await Promise.all([
+                    savePromise,
+                    command.reply("Jo, habs eingefügt")
+                ]);
+                return;
+            }
+            case "list": {
+                const files = await readdir(soundDir, { withFileTypes: true});
+                await command.reply(files.map(f => f.name).join("\n- "));
+                return;
+            }
+            default:
+                return assertNever(subCommand);
         }
     }
 }

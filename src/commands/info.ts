@@ -72,10 +72,11 @@ const getServerInfo = (guild: Guild): string => {
 };
 
 const buildEmbed = async(guild: Guild | null, avatarUrl?: string): Promise<MessageEmbedOptions> => {
+    const now = new Date();
     const embed = {
         color: 2007432,
         footer: {
-            text: `${new Date().toDateString()} ${new Date().toLocaleTimeString()}`
+            text: `${now.toDateString()} ${now.toLocaleTimeString()}`
         },
         author: {
             name: "Shitpost Bot",
