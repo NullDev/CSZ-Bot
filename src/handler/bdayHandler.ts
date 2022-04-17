@@ -10,7 +10,7 @@ export default class BdayHandler {
      * Iterates over the list of bdays and assigns a role to people having their cake day.
      */
     async checkBdays(): Promise<void> {
-        const birthdayRole= this.context.roles.bday;
+        const birthdayRole = this.context.roles.bday;
         const todaysBirthdays = await Birthday.getTodaysBirthdays();
 
         const todaysBirthdaysAsMembers = todaysBirthdays
