@@ -111,8 +111,7 @@ const lastSpecialCommands: Record<string, number> = specialCommands.reduce((acc,
  * Registers all defined applicationCommands as guild commands
  * We're overwriting ALL, therefore no deletion is necessary
  */
-export const registerAllApplicationCommandsAsGuildCommands = async(client: Client): Promise<void> => {
-    const guildId = config.ids.guild_id;
+export const registerAllApplicationCommandsAsGuildCommands = async(context: BotContext): Promise<void> => {
     const clientId = config.auth.client_id;
     const token = config.auth.bot_token;
 
@@ -126,12 +125,8 @@ export const registerAllApplicationCommandsAsGuildCommands = async(client: Clien
     );
 
     try {
-        const guild = client.guilds.cache.get(guildId);
-        if (!guild) {
-            throw new Error(`Guild with ID ${guildId} not found`);
-        }
         // Bulk Overwrite Guild Application Commands
-        const createdCommands = await rest.put(Routes.applicationGuildCommands(clientId, guildId), {
+        const createdCommands = await rest.put(Routes.applicationGuildCommands(clientId, context.guild.id), {
             body: commandData
         }) as { id: string, name: string }[];
 
@@ -147,7 +142,7 @@ export const registerAllApplicationCommandsAsGuildCommands = async(client: Clien
             }));
 
         // Batch Edit Application Command Permissions
-        await guild.commands.permissions.set({
+        await context.guild.commands.permissions.set({
             fullPermissions: permissionsToPost
         });
     }

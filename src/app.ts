@@ -152,7 +152,7 @@ client.once("ready", async initializedClient => {
         console.assert(!!botContext); // TODO: Remove once botContext is used
 
         // When the application is ready, slash commands should be registered
-        await registerAllApplicationCommandsAsGuildCommands(client);
+        await registerAllApplicationCommandsAsGuildCommands(botContext);
 
         const cronOptions = {
             timezone: "Europe/Berlin"
