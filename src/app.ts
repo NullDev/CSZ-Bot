@@ -209,13 +209,13 @@ client.once("ready", async initializedClient => {
             // eslint-disable-next-line no-unused-vars
             const startAprilFoolsJob = new Cron("2022-04-01T00:00:00", async() => {
                 log.debug("Entered start april fools cronjob");
-                await startAprilFools(client);
+                await startAprilFools(botContext);
             }, cronOptions);
 
             // eslint-disable-next-line no-unused-vars
             const stopAprilFoolsJob = new Cron("2022-04-02T00:00:00", async() => {
                 log.debug("Entered end april fools cronjob");
-                await endAprilFools(client);
+                await endAprilFools(botContext);
             }, cronOptions);
         }
 
@@ -323,7 +323,7 @@ client.on("rateLimit", rateLimitData => void log.error(`Discord Client RateLimit
 client.on("invalidated", () => void log.debug("Client invalidated"));
 
 client.on("messageReactionAdd", async(event, user) => reactionHandler(event as MessageReaction, user as User, client, false));
-client.on("messageReactionAdd", async(event, user) => quoteReactionHandler(event as MessageReaction, user as User, client));
+client.on("messageReactionAdd", async(event, user) => quoteReactionHandler(event as MessageReaction, user as User, botContext));
 client.on("messageReactionRemove", async(event, user) => reactionHandler(event as MessageReaction, user as User, client, true));
 
 client.login(config.auth.bot_token).then(() => {
