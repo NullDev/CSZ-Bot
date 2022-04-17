@@ -222,7 +222,7 @@ client.once("ready", async initializedClient => {
         ban.startCron(client);
 
         await poll.importPolls();
-        poll.startCron(client);
+        poll.startCron(botContext);
 
         // Not awaiting this promise because it's basically an infinite loop (that can be cancelled)
         // Possible TODO: Refactor this to a cron job
