@@ -1,4 +1,4 @@
-import type { Message, TextChannel } from "discord.js";
+import type { Message } from "discord.js";
 
 import log from "../utils/logger";
 import { getConfig } from "../utils/configHandler";

@@ -1,14 +1,12 @@
 import { AudioPlayer, AudioPlayerStatus, createAudioPlayer, createAudioResource, entersState, joinVoiceChannel, StreamType, VoiceConnection, VoiceConnectionStatus } from "@discordjs/voice";
-import { Client, VoiceChannel } from "discord.js";
+import type { VoiceChannel } from "discord.js";
 import path from "path";
 import { setTimeout } from "timers/promises";
-import { getConfig } from "../utils/configHandler";
 import logger from "../utils/logger";
 import * as gad from "get-audio-duration";
 import { readdir } from "fs/promises";
-import { BotContext } from "../context";
+import type { BotContext } from "../context";
 
-const config = getConfig();
 const player = createAudioPlayer();
 export const soundDir = path.resolve(__dirname, "..", "..", "sounds");
 
