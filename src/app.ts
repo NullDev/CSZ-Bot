@@ -196,7 +196,7 @@ client.once("ready", async initializedClient => {
             // eslint-disable-next-line no-unused-vars
             const saufenJob = new Cron("36 0-23 * * FRI-SAT,SUN", async() => {
                 log.debug("Entered Saufen cronjob");
-                await connectAndPlaySaufen(initializedClient);
+                await connectAndPlaySaufen(botContext);
             }, cronOptions);
 
             log.info("Scheduling Reminder Cronjob");
