@@ -1,5 +1,4 @@
 import { Client, TextBasedChannel } from "discord.js";
-import { getConfig } from "../utils/configHandler";
 import { MessageCommand } from "./command";
 import * as Sugar from "sugar";
 import logger from "../utils/logger";
@@ -7,16 +6,15 @@ import Reminder, { ReminderAttributes } from "../storage/model/Reminder";
 import type { ProcessableMessage } from "../handler/cmdHandler";
 import { BotContext } from "../context";
 
-const config = getConfig();
 require("sugar/locales/de");
 
 export class ErinnerungCommand implements MessageCommand {
     name = "erinnerung";
     description = "Setzt eine Erinnerung für dich";
 
-    async handleMessage(message: ProcessableMessage, client: Client<boolean>): Promise<void> {
+    async handleMessage(message: ProcessableMessage, client: Client<boolean>, context: BotContext): Promise<void> {
         // TODO: Create utility function that removes the command prefix for easier parsing
-        const param = message.content.split(`${config.bot_settings.prefix.command_prefix}${this.name} `)[1];
+        const param = message.content.split(`${context.rawConfig.bot_settings.prefix.command_prefix}${this.name} `)[1];
         if (!param) {
             await message.reply("Brudi ich muss schon wissen wann ich dich erinnern soll");
             return;

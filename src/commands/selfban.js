@@ -17,12 +17,12 @@ const config = getConfig();
  *
  * @type {import("../types").CommandFunction}
  */
-export const run = async(client, message, args) => {
+export const run = async(client, message, args, context) => {
     let input = args?.[0]?.trim() ?? "8";
     const tilt = (input === "tilt");
 
     if (tilt) {
-        input = 0.25;
+        input = "0.25";
     }
 
     const durationArg = Number(input);
@@ -47,7 +47,7 @@ export const run = async(client, message, args) => {
     const invokingUser = message.member;
     if (invokingUser.id === "371724846205239326") return "Aus Segurity lieber nicht dich bannen.";
 
-    if (invokingUser.roles.cache.some(r => r.id === config.ids.banned_role_id)) return "Du bist bereits gebannt du Kek.";
+    if (invokingUser.roles.cache.some(r => r.id === context.roles.banned.id)) return "Du bist bereits gebannt du Kek.";
 
     const existingBan = await Ban.findExisting(invokingUser);
     if (existingBan) return "Du bist bereits gebannt";
