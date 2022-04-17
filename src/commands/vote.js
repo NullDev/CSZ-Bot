@@ -1,19 +1,12 @@
-// ========================= //
-// = Copyright (c) NullDev = //
-// ========================= //
-
 import parseOptions from "minimist";
 import { Util } from "discord.js";
-
-import { getConfig } from "../utils/configHandler";
-const config = getConfig();
 
 /**
  * Creates a new poll (vote; yes/no)
  *
  * @type {import("../types").CommandFunction}
  */
-export const run = async(client, message, args) => {
+export const run = async(client, message, args, context) => {
     const options = parseOptions(args, {
         "boolean": [
             "channel"
@@ -39,7 +32,7 @@ export const run = async(client, message, args) => {
 
     /** @type {import("discord.js").TextChannel} */
     const channel = options.channel
-        ? client.guilds.cache.get(config.ids.guild_id).channels.cache.get(config.ids.votes_channel_id)
+        ? context.textChannels.votes
         : message.channel;
 
     const messageWithVoteContent = await channel.send( {
