@@ -239,23 +239,15 @@ client.on("ready", async initializedClient => {
  * for the "old commands". This way we can easily migrate commands to slash commands
  * and still have the option to use the textual commands. Win-Win :cooldoge:
  */
-client.on("messageCreate", async message => {
-    try {
-        await messageCommandHandler(message, client, botContext);
-    }
-    catch (err) {
-        log.error(`[messageCreate] Error on message ${message.id}. Cause: ${err}`);
-    }
-});
+client.on("messageCreate", async message =>
+    void messageCommandHandler(message, client, botContext)
+        .catch(err => log.error(`[messageCreate] Error on message ${message.id}. Cause: ${err}`))
+);
 
-client.on("interactionCreate", async interaction => {
-    try {
-        await handleInteractionEvent(interaction, client, botContext);
-    }
-    catch (err) {
-        log.error(`[interactionCreate] Error on interaction ${interaction.id}. Cause: ${err}`);
-    }
-});
+client.on("interactionCreate", interaction =>
+    void handleInteractionEvent(interaction, client, botContext)
+        .catch(err => log.error(`[interactionCreate] Error on interaction ${interaction.id}. Cause: ${err}`))
+);
 
 client.on("guildCreate", guild => void log.info(`New guild joined: ${guild.name} (id: ${guild.id}) with ${guild.memberCount} members`));
 
