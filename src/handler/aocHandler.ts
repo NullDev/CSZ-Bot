@@ -4,15 +4,13 @@
 // =============================== //
 
 import * as discord from "discord.js";
-import { getConfig } from "../utils/configHandler";
 import * as path from "path";
 import * as fs from "fs";
 import fetch from "node-fetch";
 import log from "../utils/logger";
+import { BotContext } from "../context";
 
 const aocConfigPath = path.resolve("aoc.config.json");
-
-const config = getConfig();
 
 type UserMapEntry = {
     displayName: string;
@@ -64,9 +62,7 @@ const getNameString = (member: AoCMember, userMap: Record<string, UserMapEntry>,
 };
 
 export default class AoCHandler {
-    readonly config: any;
-    constructor(private readonly client: discord.Client) {
-        this.config = config;
+    constructor(private readonly context: BotContext) {
     }
 
     async publishLeaderBoard() {
@@ -84,12 +80,7 @@ export default class AoCHandler {
 
         log.info(`[AoC] Retrieved Leaderboard with ${Object.keys(leaderBoard).length} Members`);
 
-        const guild = this.client.guilds.cache.get(this.config.ids.guild_id);
-        if (!guild) {
-            log.error(`Guild ${this.config.ids.guild_id} not found`);
-            return;
-        }
-        const targetChannel = guild.channels.cache.get(aocConfig.targetChannelId);
+        const targetChannel = this.context.guild.channels.cache.get(aocConfig.targetChannelId);
         if (!targetChannel) {
             log.error(`Target channel ${aocConfig.targetChannelId} not found`);
             return;

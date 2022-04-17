@@ -159,7 +159,7 @@ client.once("ready", async initializedClient => {
         } as const;
 
         const bday = new BdayHandler(botContext);
-        const aoc = new AoCHandler(client);
+        const aoc = new AoCHandler(botContext);
         log.info("Starting Nicknamehandler ");
         const nicknameHandler = new NicknameHandler(client);
         if (firstRun) {
