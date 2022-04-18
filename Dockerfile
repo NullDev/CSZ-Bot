@@ -18,7 +18,7 @@ FROM node:16-slim as runtime-dependencies
 FROM node:16-slim
     WORKDIR /app
     RUN apt update -yqq && \
-        apt install ffmpeg fonts-noto-color-emoji fontconfig fonts-liberation gcc -yqq && \
+        apt install ffmpeg fonts-noto-color-emoji fontconfig fonts-liberation gcc libc6-dev -yqq && \
         apt clean && \
         fc-cache -f -v
 
