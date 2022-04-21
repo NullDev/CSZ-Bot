@@ -30,6 +30,13 @@ export default class NicknameHandler {
     async updateNickname(userid: string, nicknames: string[]) {
         try {
             const user = this.client.guilds.cache.get(this.config.ids.guild_id)?.members.cache.find(m => m.id === userid);
+            if (user === undefined) {
+                throw new Error(`Could not find user with ID ${userid}`);
+            }
+            if (user.nickname === null) {
+                throw new Error(`User with ID ${userid} does not have a nickname`);
+            }
+            nicknames.push(user.nickname);
             await user?.setNickname(nicknames[Math.floor(Math.random() * nicknames.length)]);
         }
         catch(err) {
