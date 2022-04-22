@@ -86,6 +86,6 @@ export default class BdayHandler {
             wie schön dass wir beisammen sind,
             wir gratulieren ${plural ? "euch" : "dir"}, ${birthdayRole}
 
-            ${users.map(u => u).join()}`.replace(/\s+$/gm, ""));
+            ${users.map(u => u).join()}`.replaceAll(/\n\s+/g, "\n"));
     }
 }
