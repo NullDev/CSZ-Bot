@@ -147,8 +147,7 @@ export class StempelkarteCommand implements ApplicationCommand {
                 });
             }
             catch (err) {
-                log.error(`Could not create where meme: ${err}`);
-                log.error(err);
+                log.error("Could not create where meme", err);
             }
         }
     }

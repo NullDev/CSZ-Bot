@@ -85,12 +85,10 @@ const client = new Discord.Client({
 });
 
 process.on("unhandledRejection", (err: any, promise) => {
-    log.error(`Unhandled rejection (promise: ${promise}, reason: ${err})`)
-    log.error(err);
+    log.error(`Unhandled rejection (promise: ${promise})`, err);
 });
 process.on("uncaughtException", (err, origin) => {
-    log.error(`Uncaught exception (origin: ${origin}, error: ${err})`);
-    log.error(err);
+    log.error(`Uncaught exception (origin: ${origin}`, err);
 });
 process.on("SIGTERM", signal => log.error(`Received Sigterm: ${signal}`));
 process.on("beforeExit", code => {
@@ -235,8 +233,7 @@ client.on("ready", async initializedClient => {
         void fadingMessageHandler.startLoop(client);
     }
     catch (err) {
-        log.error(`Error in Ready handler: ${err}`);
-        log.error(err);
+        log.error("Error in Ready handler:", err);
     }
 });
 
@@ -251,8 +248,7 @@ client.on("messageCreate", async message => {
         await messageCommandHandler(message, client, botContext);
     }
     catch (err) {
-        log.error(`[messageCreate] Error on message ${message.id}. Cause: ${err}`);
-        log.error(err);
+        log.error(`[messageCreate] Error on message ${message.id}`, err);
     }
 });
 
@@ -261,8 +257,7 @@ client.on("interactionCreate", async interaction => {
         await handleInteractionEvent(interaction, client, botContext);
     }
     catch (err) {
-        log.error(`[interactionCreate] Error on interaction ${interaction.id}. Cause: ${err}`);
-        log.error(err);
+        log.error(`[interactionCreate] Error on interaction ${interaction.id}`, err);
     }
 });
 
@@ -296,8 +291,7 @@ client.on("guildMemberRemove", async member => {
         await GuildRagequit.incrementRagequit(member.guild.id, member.id);
     }
     catch (err) {
-        log.error(`[guildMemberRemove] Error on incrementing ragequit of ${member.id}. Cause: ${err}`);
-        log.error(err);
+        log.error(`[guildMemberRemove] Error on incrementing ragequit of ${member.id}`, err);
     }
 });
 
@@ -306,8 +300,7 @@ client.on("messageCreate", async message => {
         await messageHandler(message, client, botContext);
     }
     catch (err) {
-        log.error(`[messageCreate] Error on message ${message.id}. Cause: ${err}`);
-        log.error(err);
+        log.error(`[messageCreate] Error on message ${message.id}`, err);
     }
 });
 
@@ -316,8 +309,7 @@ client.on("messageDelete", async message => {
         await messageDeleteHandler(message as Message, client);
     }
     catch (err) {
-        log.error(`[messageDelete] Error for ${message.id}. Cause: ${err}`);
-        log.error(err);
+        log.error(`[messageDelete] Error for ${message.id}`, err);
     }
 });
 
@@ -326,8 +318,7 @@ client.on("messageUpdate", async(_, newMessage) => {
         await messageHandler(newMessage as Message, client, botContext);
     }
     catch (err) {
-        log.error(`[messageUpdate] Error on message ${newMessage.id}. Cause: ${err}`);
-        log.error(err);
+        log.error(`[messageUpdate] Error on message ${newMessage.id}`, err);
     }
 });
 
@@ -350,8 +341,7 @@ client.on("messageReactionRemove", async(event, user) => reactionHandler(event a
 client.login(config.auth.bot_token).then(() => {
     log.info("Token login was successful!");
 }, err => {
-    log.error(`Token login was not successful: "${err}"`);
-    log.error(err);
+    log.error("Token login was not successful", err);
     log.error("Shutting down due to incorrect token...\n\n");
     process.exit(1);
 });

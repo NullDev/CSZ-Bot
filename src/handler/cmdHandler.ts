@@ -112,7 +112,7 @@ export default async function(message: ProcessableMessage, client: Client, isMod
     }
     catch (err) {
         // Exception returned by the command handler
-        log.error(err);
+        log.error("Error", err);
         return "Sorry, irgendwas ist schief gegangen! =(";
     }
 }
