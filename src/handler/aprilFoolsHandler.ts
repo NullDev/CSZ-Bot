@@ -11,7 +11,7 @@ const tmpNicknameStore: Record<Snowflake, string> = {};
 
 const renameMember = (member: GuildMember, name: string | null): Promise<GuildMember> => member.setNickname(name, "April Fools")
     .catch(err => {
-        throw new Error(`Could not rename Member: ${member.id} to ${name} because of`, err);
+        throw new Error(`Could not rename Member: ${member.id} to ${name} because of ${err}`);
     });
 
 
