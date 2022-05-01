@@ -40,7 +40,7 @@
     "minimist": "^1.2.6",
     "moment": "^2.29.2",
     "node-fetch": "^2.6.7",
-    "sequelize": "~6.19.0",
+    "sequelize": "6.18.0",
     "sqlite3": "~5.0.4",
     "sugar": "^2.0.6",
     "svg-png-converter": "^0.0.9",
