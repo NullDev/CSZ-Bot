@@ -41,6 +41,7 @@ export default class NicknameHandler {
         }
         catch(err) {
             log.error(`Couldn't update user '${userid}' nickname. Cause ${err}`);
+            log.error(err);
         }
     }
 }

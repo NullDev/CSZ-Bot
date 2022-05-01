@@ -44,6 +44,7 @@ export class ErinnerungCommand implements MessageCommand {
         }
         catch (err) {
             logger.error(`Couldn't parse date from message ${message.content} due to ${err}`);
+            logger.error(err);
             await message.reply("Brudi was ist das denn für ne Datumsangabe? Gib was ordentliches an");
         }
     }
@@ -76,6 +77,7 @@ const sendReminder = async(reminder: ReminderAttributes, client: Client) => {
     }
     catch (err) {
         logger.error(`Couldn't send reminder due to ${err}. Removing it...`);
+        logger.error(err);
     }
     await Reminder.removeReminder(reminder.id);
 };
@@ -88,6 +90,7 @@ export const reminderHandler = async(client: Client) => {
         }
         catch (err) {
             logger.error(`Couldn't retrieve reminders because of ${err}`);
+            logger.error(err);
         }
     }
 };

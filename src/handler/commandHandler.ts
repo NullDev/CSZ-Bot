@@ -153,6 +153,7 @@ export const registerAllApplicationCommandsAsGuildCommands = async(client: Clien
     }
     catch (err) {
         log.error(`Could not register the application commands, because: ${err}`);
+        log.error(err);
         throw (err);
     }
 };

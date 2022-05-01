@@ -12,6 +12,7 @@ const tmpNicknameStore: Record<Snowflake, string> = {};
 const renameMember = (member: GuildMember, name: string | null): Promise<GuildMember> => member.setNickname(name, "April Fools")
     .catch(err => {
         throw new Error(`Could not rename Member: ${member.id} to ${name} because of: ${err}`);
+        logger.error(err);
     });
 
 
@@ -76,6 +77,7 @@ export const startAprilFools = async(client: Client): Promise<void> => {
     }
     catch(err) {
         logger.error(`Could not perform april fools joke: ${err}`);
+        logger.error(err);
     }
 };
 
@@ -86,5 +88,6 @@ export const endAprilFools = async(client: Client): Promise<void> => {
     }
     catch(err) {
         logger.error(`Could not end april fools joke: ${err}`);
+        logger.error(err);
     }
 };

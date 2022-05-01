@@ -104,6 +104,7 @@ export const startCron = (client: Client) => {
         }
         catch (err) {
             log.error(`Error in cron job: ${err}`);
+            log.error(err);
         }
     });
 };
