@@ -38,7 +38,10 @@ export default class Ban extends Model<BanAttributes, BanCreationAttributes> imp
 
     static remove = (user: User) => Ban.destroy({ where: { userId: user.id } });
 
-    static findExisting = (user: User) => Ban.findOne({ where: { userId: user.id } });
+    static findExisting = (user: User) => {
+        log.info(`Trying to find ban for user ${user.id}`);
+        return Ban.findOne({ where: { userId: user.id } });
+    };
 
     static findExpiredBans = (now: Date) => Ban.findAll({
         where: {
