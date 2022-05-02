@@ -138,18 +138,15 @@ export const registerAllApplicationCommandsAsGuildCommands = async(client: Clien
         // Get commands that have permissions
         const permissionizedCommands = applicationCommands.filter(cmd => cmd.permissions && cmd.permissions.length > 0);
 
-        // Create a request body for the permissions
-        const permissionsToPost: GuildApplicationCommandPermissionData[] = createdCommands
-            .filter(cmd => permissionizedCommands.find(pCmd => pCmd.name === cmd.name))
-            .map(cmd => ({
-                id: cmd.id,
-                permissions: permissionizedCommands.find(pCmd => pCmd.name === cmd.name)!.permissions! as Mutable<CommandPermission>[]
-            }));
-
-        // Batch Edit Application Command Permissions
-        await guild.commands.permissions.set({
-            fullPermissions: permissionsToPost
-        });
+        // Hacky atm because auf breaking change in discord API (Apr 27, 2022)
+        //   Disabled the batch editing endpoint (PUT /applications/{application.id}/guilds/{guild.id}/commands/permissions).
+        for (const permCommand of permissionizedCommands) {
+            const createdCommand = createdCommands.find(pCmd => pCmd.name === permCommand.name)
+            if(createdCommand !== undefined) {
+                const cmd = await guild.commands.fetch(createdCommand.id);
+                await cmd.permissions.add({ permissions: [...permCommand.permissions!] });
+            }
+        }
     }
     catch (err) {
         log.error("Could not register the application commands.", err);
