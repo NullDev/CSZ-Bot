@@ -125,7 +125,7 @@ export const registerAllApplicationCommandsAsGuildCommands = async(client: Clien
         const start = BigInt(0x0);
         let permSet = start;
         for(const str of strings) {
-            const permFlag = Permissions.resolve(str);
+            const permFlag = Permissions.FLAGS[str];
             if (permFlag === undefined) {
                 throw new Error(`Permission ${str} could not be resolved.`);
             }
