@@ -1,15 +1,12 @@
 import { SlashCommandBuilder, SlashCommandStringOption, SlashCommandSubcommandBuilder } from "@discordjs/builders";
 import { CommandInteraction, CacheType, Client } from "discord.js";
 import { connectAndPlaySaufen, soundDir } from "../handler/voiceHandler";
-import { getConfig } from "../utils/configHandler";
 import { ApplicationCommand } from "./command";
 import fetch from "node-fetch";
 import path from "path";
 import { createWriteStream } from "fs";
 import { assertNever } from "../utils/typeUtils";
 import { readdir } from "fs/promises";
-
-const config = getConfig();
 
 type SubCommand = "los" | "add" | "list" | "select";
 

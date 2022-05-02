@@ -6,7 +6,7 @@
 import { InfoCommand } from "../commands/info";
 import { getConfig } from "../utils/configHandler";
 import { REST } from "@discordjs/rest";
-import { APIApplicationCommand, PermissionFlagsBits, Routes } from "discord-api-types/v9";
+import { APIApplicationCommand, Routes } from "discord-api-types/v9";
 import {
     Client,
     CommandInteraction,
@@ -42,7 +42,6 @@ import { PenisCommand } from "../commands/penis";
 import { BoobCommand } from "../commands/boobs";
 import { BonkCommand } from "../commands/bonk";
 import { GoogleCommand } from "../commands/google";
-import { Mutable } from "../types";
 import { NischdaaaCommand } from "../commands/special/nischdaaa";
 import { SdmCommand } from "../commands/sdm";
 import { Nickname, NicknameButtonHandler } from "../commands/nickname";
@@ -117,7 +116,7 @@ export const registerAllApplicationCommandsAsGuildCommands = async(client: Clien
     const token = config.auth.bot_token;
 
     const rest = new REST({ version: "9" }).setToken(token);
-    
+
     const createPermissionSet = (strings: readonly PermissionString[] | undefined): bigint => {
         if(strings === undefined) {
             return BigInt(0x40); // Default to "SEND_MESSAGES"
@@ -130,10 +129,10 @@ export const registerAllApplicationCommandsAsGuildCommands = async(client: Clien
             if (permFlag === undefined) {
                 throw new Error(`Permission ${str} could not be resolved.`);
             }
-            permSet |= permFlag
+            permSet |= permFlag;
         }
         return permSet;
-    }
+    };
 
     const guild = client.guilds.cache.get(guildId);
     if (!guild) {
@@ -147,7 +146,7 @@ export const registerAllApplicationCommandsAsGuildCommands = async(client: Clien
                 dm_permission: false,
                 default_member_permissions: String(createPermissionSet(command.requiredPermissions))
             };
-    
+
             // eslint-disable-next-line no-unused-vars
             const createdCommand = await rest.post(Routes.applicationGuildCommands(clientId, guildId), {
                 body: commandCreationData
@@ -216,7 +215,7 @@ const checkPermissions = (member: GuildMember, permissions: ReadonlyArray<Permis
     if (permissions.length === 0) {
         return true;
     }
-    
+
     return member.permissions.has(permissions);
 };
 

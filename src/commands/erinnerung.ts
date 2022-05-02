@@ -75,7 +75,7 @@ const sendReminder = async(reminder: ReminderAttributes, client: Client) => {
         });
     }
     catch (err) {
-        logger.error(`Couldn't send reminder. Removing it...`, err);
+        logger.error("Couldn't send reminder. Removing it...", err);
     }
     await Reminder.removeReminder(reminder.id);
 };

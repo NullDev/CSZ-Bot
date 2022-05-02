@@ -1,7 +1,7 @@
 /* eslint-disable no-use-before-define */
-import { MessageComponentInteraction, PermissionFlags, PermissionString } from "discord.js";
+import { MessageComponentInteraction, PermissionString } from "discord.js";
 import { SlashCommandBuilder /* , SlashCommandOptionsOnlyBuilder, SlashCommandSubcommandsOnlyBuilder */ } from "@discordjs/builders";
-import type { ApplicationCommandPermissionType, Client, CommandInteraction } from "discord.js";
+import type { Client, CommandInteraction } from "discord.js";
 import type { ProcessableMessage } from "../handler/cmdHandler";
 import type { BotContext } from "../context";
 
