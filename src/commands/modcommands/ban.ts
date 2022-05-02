@@ -1,5 +1,5 @@
 import { SlashCommandBuilder, SlashCommandIntegerOption, SlashCommandStringOption, SlashCommandUserOption } from "@discordjs/builders";
-import { CommandInteraction, GuildMember, User } from "discord.js";
+import { CommandInteraction, GuildMember, PermissionString, User } from "discord.js";
 import { Client } from "discord.js";
 import Ban from "../../storage/model/Ban";
 import { getConfig } from "../../utils/configHandler";
@@ -149,7 +149,7 @@ Lg & xD™`);
 export class BanCommand implements ApplicationCommand, MessageCommand {
     name: string = "ban";
     description: string = "Joa, bannt halt einen ne?";
-    requiredPermissions?: readonly [
+    requiredPermissions: readonly PermissionString[] = [
         "BAN_MEMBERS"
     ];
     get applicationCommand(): Pick<SlashCommandBuilder, "toJSON"> {
