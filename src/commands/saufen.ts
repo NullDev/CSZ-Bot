@@ -1,5 +1,5 @@
 import { SlashCommandBuilder, SlashCommandStringOption, SlashCommandSubcommandBuilder } from "@discordjs/builders";
-import { CommandInteraction, CacheType, Client } from "discord.js";
+import { CommandInteraction, CacheType, Client, PermissionString } from "discord.js";
 import { connectAndPlaySaufen, soundDir } from "../handler/voiceHandler";
 import { ApplicationCommand } from "./command";
 import fetch from "node-fetch";
@@ -13,7 +13,7 @@ type SubCommand = "los" | "add" | "list" | "select";
 export class Saufen implements ApplicationCommand {
     name = "saufen";
     description = "Macht Stimmung in Wois";
-    requiredPermissions?: readonly [
+    requiredPermissions: readonly PermissionString[] = [
         "BAN_MEMBERS",
         "MANAGE_EVENTS"
     ];

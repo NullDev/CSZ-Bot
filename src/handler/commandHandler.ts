@@ -118,7 +118,6 @@ export const registerAllApplicationCommandsAsGuildCommands = async(client: Clien
     const rest = new REST({ version: "9" }).setToken(token);
 
     const createPermissionSet = (strings: readonly PermissionString[] | undefined): bigint => {
-        console.log(strings);
         if(strings === undefined) {
             return BigInt(0x40); // Default to "SEND_MESSAGES"
         }
@@ -142,7 +141,6 @@ export const registerAllApplicationCommandsAsGuildCommands = async(client: Clien
 
     for (const command of applicationCommands) {
         try {
-            console.log(command);
             const commandCreationData: APIApplicationCommand | { dm_permission: boolean, default_member_permissions: string } = {
                 ...command.applicationCommand.toJSON(),
                 dm_permission: false,
