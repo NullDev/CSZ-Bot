@@ -1,4 +1,4 @@
-import { AudioPlayer, AudioPlayerStatus, createAudioPlayer, createAudioResource, entersState, joinVoiceChannel, StreamType, VoiceConnection, VoiceConnectionStatus } from "@discordjs/voice";
+import { AudioPlayer, AudioPlayerStatus, createAudioPlayer, createAudioResource, DiscordGatewayAdapterCreator, entersState, joinVoiceChannel, StreamType, VoiceConnection, VoiceConnectionStatus } from "@discordjs/voice";
 import { Client, VoiceChannel } from "discord.js";
 import path from "path";
 import { setTimeout } from "timers/promises";
@@ -16,7 +16,7 @@ async function connectToHauptwois(woisChannel: VoiceChannel): Promise<VoiceConne
         const connection = joinVoiceChannel({
             channelId: woisChannel.id,
             guildId: woisChannel.guild.id,
-            adapterCreator: woisChannel.guild.voiceAdapterCreator
+            adapterCreator: woisChannel.guild.voiceAdapterCreator as DiscordGatewayAdapterCreator
         });
 
         await entersState(connection, VoiceConnectionStatus.Ready, 30_000);
