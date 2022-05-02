@@ -14,7 +14,7 @@ import {
     MessageActionRow, MessageButton, MessageComponentInteraction
 } from "discord.js";
 
-import {ApplicationCommand, CommandPermission, CommandResult, UserInteraction} from "./command";
+import {ApplicationCommand, CommandResult, UserInteraction} from "./command";
 import {getConfig} from "../utils/configHandler";
 import Nicknames from "../storage/model/Nickname";
 import {isTrusted} from "../utils/userUtils";
@@ -53,7 +53,6 @@ export class Nickname implements ApplicationCommand {
     modCommand: boolean = false;
     name: string = "nickname";
     description: string = "Setzt Nicknames für einen User";
-    permissions: readonly CommandPermission[] = [];
 
     get applicationCommand(): Pick<SlashCommandBuilder, "toJSON"> {
         return new SlashCommandBuilder()

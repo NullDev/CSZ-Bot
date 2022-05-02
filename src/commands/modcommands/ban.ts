@@ -1,9 +1,9 @@
 import { SlashCommandBuilder, SlashCommandIntegerOption, SlashCommandStringOption, SlashCommandUserOption } from "@discordjs/builders";
-import { CommandInteraction, GuildMember, User } from "discord.js";
+import { CommandInteraction, GuildMember, PermissionFlags, User } from "discord.js";
 import { Client } from "discord.js";
 import Ban from "../../storage/model/Ban";
 import { getConfig } from "../../utils/configHandler";
-import { ApplicationCommand, CommandPermission, CommandResult, MessageCommand } from "../command";
+import { ApplicationCommand, CommandResult, MessageCommand } from "../command";
 import log from "../../utils/logger";
 import moment from "moment";
 import type { ProcessableMessage } from "../../handler/cmdHandler";
@@ -149,11 +149,9 @@ Lg & xD™`);
 export class BanCommand implements ApplicationCommand, MessageCommand {
     name: string = "ban";
     description: string = "Joa, bannt halt einen ne?";
-    permissions?: readonly CommandPermission[] | undefined = [{
-        id: config.bot_settings.moderator_id,
-        permission: true,
-        type: "ROLE"
-    }];
+    requiredPermissions?: readonly [
+        "BAN_MEMBERS"
+    ];
     get applicationCommand(): Pick<SlashCommandBuilder, "toJSON"> {
         return new SlashCommandBuilder()
             .setName(this.name)

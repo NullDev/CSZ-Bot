@@ -6,19 +6,19 @@
 import { InfoCommand } from "../commands/info";
 import { getConfig } from "../utils/configHandler";
 import { REST } from "@discordjs/rest";
-import { Routes } from "discord-api-types/v9";
+import { APIApplicationCommand, PermissionFlagsBits, Routes } from "discord-api-types/v9";
 import {
     Client,
     CommandInteraction,
-    GuildApplicationCommandPermissionData,
     Interaction,
     Message,
-    MessageComponentInteraction
+    MessageComponentInteraction,
+    Permissions,
+    PermissionString
 } from "discord.js";
 import {
     ApplicationCommand,
     Command,
-    CommandPermission,
     isApplicationCommand,
     isMessageCommand,
     isSpecialCommand,
@@ -117,40 +117,46 @@ export const registerAllApplicationCommandsAsGuildCommands = async(client: Clien
     const token = config.auth.bot_token;
 
     const rest = new REST({ version: "9" }).setToken(token);
-
-    const commandData = applicationCommands.map(cmd =>
-        ({
-            ...cmd.applicationCommand.toJSON(),
-            default_permission: cmd.permissions ? cmd.permissions.length === 0 : true
-        })
-    );
-
-    try {
-        const guild = client.guilds.cache.get(guildId);
-        if (!guild) {
-            throw new Error(`Guild with ID ${guildId} not found`);
+    
+    const createPermissionSet = (strings: readonly PermissionString[] | undefined): bigint => {
+        if(strings === undefined) {
+            return BigInt(0x40); // Default to "SEND_MESSAGES"
         }
-        // Bulk Overwrite Guild Application Commands
-        const createdCommands = await rest.put(Routes.applicationGuildCommands(clientId, guildId), {
-            body: commandData
-        }) as { id: string, name: string }[];
 
-        // Get commands that have permissions
-        const permissionizedCommands = applicationCommands.filter(cmd => cmd.permissions && cmd.permissions.length > 0);
-
-        // Hacky atm because auf breaking change in discord API (Apr 27, 2022)
-        //   Disabled the batch editing endpoint (PUT /applications/{application.id}/guilds/{guild.id}/commands/permissions).
-        for (const permCommand of permissionizedCommands) {
-            const createdCommand = createdCommands.find(pCmd => pCmd.name === permCommand.name)
-            if(createdCommand !== undefined) {
-                const cmd = await guild.commands.fetch(createdCommand.id);
-                await cmd.permissions.add({ permissions: [...permCommand.permissions!] });
+        const start = BigInt(0x0);
+        let permSet = start;
+        for(const str of strings) {
+            const permFlag = Permissions.resolve(str);
+            if (permFlag === undefined) {
+                throw new Error(`Permission ${str} could not be resolved.`);
             }
+            permSet |= permFlag
         }
+        return permSet;
     }
-    catch (err) {
-        log.error("Could not register the application commands.", err);
-        throw (err);
+
+    const guild = client.guilds.cache.get(guildId);
+    if (!guild) {
+        throw new Error(`Guild with ID ${guildId} not found`);
+    }
+
+    for (const command of applicationCommands) {
+        try {
+            const commandCreationData: APIApplicationCommand | { dm_permission: boolean, default_member_permissions: string } = {
+                ...command.applicationCommand.toJSON(),
+                dm_permission: false,
+                default_member_permissions: String(createPermissionSet(command.requiredPermissions))
+            };
+    
+            // eslint-disable-next-line no-unused-vars
+            const createdCommand = await rest.post(Routes.applicationGuildCommands(clientId, guildId), {
+                body: commandCreationData
+            }) as { id: string, name: string };
+        }
+        catch (err) {
+            log.error(`Could not register the application command ${command.name}`, err);
+            throw (err);
+        }
     }
 };
 
@@ -203,34 +209,15 @@ const messageComponentInteractionHandler = (
 };
 
 
-const checkPermissions = (member: GuildMember, permissions: ReadonlyArray<CommandPermission>): boolean => {
+const checkPermissions = (member: GuildMember, permissions: ReadonlyArray<PermissionString>): boolean => {
     log.debug(`Checking member ${member.id} permissions on permissionSet: ${JSON.stringify(permissions)}`);
 
     // No permissions, no problem
     if (permissions.length === 0) {
         return true;
     }
-
-    // First evaluating user permissions, if the user is allowed to use the command, then use it
-    const userPermission = permissions
-        .find(perm => perm.type === "USER" && perm.id === member.id)?.permission ?? false;
-
-    if (userPermission === true) {
-        return true;
-    }
-
-    // Next up find the highest role a user has and permissions are defined for
-    const highestMatchingRole = member.roles.cache
-        .filter(role => permissions.find(perm => perm.type === "ROLE" && perm.id === role.id) !== undefined)
-        .sort((a, b) => a.position - b.position)
-        .first();
-
-    // No matching role -> too bad for you
-    if (highestMatchingRole === undefined) {
-        return false;
-    }
-
-    return permissions.find(perm => perm.id === highestMatchingRole.id)!.permission;
+    
+    return member.permissions.has(permissions);
 };
 
 /**
@@ -256,9 +243,9 @@ const commandMessageHandler = async(
         throw new Error(`No matching command found for command "${commandString}"`);
     }
 
-    if (matchingCommand.permissions) {
+    if (matchingCommand.requiredPermissions) {
         const member = message.guild.members.cache.get(message.author.id);
-        if (member && !checkPermissions(member, matchingCommand.permissions)) {
+        if (member && !checkPermissions(member, matchingCommand.requiredPermissions)) {
             return Promise.all([
                 ban(client, member, client.user!, "Lol", false, 0.08),
                 message.reply({
