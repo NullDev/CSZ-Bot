@@ -139,6 +139,7 @@ export const registerAllApplicationCommandsAsGuildCommands = async(client: Clien
         throw new Error(`Guild with ID ${guildId} not found`);
     }
 
+    // TODO: Reconsider using batch creation here. Ratelimit kicks in and takes round about 40 seconds to start the butt
     for (const command of applicationCommands) {
         try {
             const commandCreationData: APIApplicationCommand | { dm_permission: boolean, default_member_permissions: string } = {
