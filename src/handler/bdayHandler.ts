@@ -53,9 +53,8 @@ export default class BdayHandler {
             Wie schön dass ${plural ? "ihr" : "du"} geboren ${plural ? "seid" : "bist"},
             wir hätten ${plural ? "euch" : "dich"} sonst sehr vermisst.
             wie schön dass wir beisammen sind,
-            wir gratulieren ${plural ? "euch" : "dir"}, <@&${birthdayRole}>!
+            wir gratulieren ${plural ? "euch" : "dir"}, ${birthdayRole}
 
-            ${users.map(u => `<@${u.id}>`).join()}
-        `.trim());
+            ${users.map(u => u).join()}`.replaceAll(/\n\s+/g, "\n"));
     }
 }

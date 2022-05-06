@@ -197,7 +197,10 @@ export class StempelgraphCommand implements ApplicationCommand {
                 new SlashCommandStringOption()
                     .setDescription("Die layout-engine für GraphViz")
                     .setRequired(false)
-                    .addChoices(suportedLayoutEngines.map(e => [e, e]))
+                    .addChoices(...suportedLayoutEngines.map(e => ({
+                        name: e,
+                        value: e
+                    })))
                     .setName("engine")
             );
     }
@@ -245,7 +248,7 @@ export class StempelgraphCommand implements ApplicationCommand {
             });
         }
         catch (err) {
-            log.error(`Could not draw stempelgraph: ${err}`);
+            log.error("Could not draw stempelgraph", err);
         }
     }
 }

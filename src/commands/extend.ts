@@ -26,7 +26,7 @@ export const run: CommandFunction = async(client, message, args, context) => {
         replyMessage = await channel.messages.fetch(message.reference.messageId);
     }
     catch (err) {
-        log.error(err);
+        log.error("Could not fetch replys", err);
         return "Bruder irgendwas stimmt nicht mit deinem Reply ¯\\_(ツ)_/¯";
     }
 

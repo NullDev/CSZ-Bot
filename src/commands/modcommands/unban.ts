@@ -1,9 +1,9 @@
 import { SlashCommandBuilder, SlashCommandUserOption } from "@discordjs/builders";
-import { CommandInteraction, GuildMember } from "discord.js";
+import { CommandInteraction, GuildMember, PermissionString } from "discord.js";
 import { Message, Client } from "discord.js";
 import Ban from "../../storage/model/Ban";
 import { getConfig } from "../../utils/configHandler";
-import { ApplicationCommand, CommandPermission, CommandResult, MessageCommand } from "../command";
+import { ApplicationCommand, CommandResult, MessageCommand } from "../command";
 import { restoreRoles } from "./ban";
 
 const config = getConfig();
@@ -19,11 +19,9 @@ const unban = async(member: GuildMember) => {
 export class UnbanCommand implements ApplicationCommand, MessageCommand {
     name: string = "unban";
     description: string = "Joa, unbannt halt einen ne?";
-    permissions?: readonly CommandPermission[] | undefined = [{
-        id: config.bot_settings.moderator_id,
-        permission: true,
-        type: "ROLE"
-    }];
+    requiredPermissions: readonly PermissionString[] = [
+        "BAN_MEMBERS"
+    ];
     get applicationCommand(): Pick<SlashCommandBuilder, "toJSON"> {
         return new SlashCommandBuilder()
             .setName(this.name)

@@ -51,7 +51,6 @@ export class Nickname implements ApplicationCommand {
     modCommand: boolean = false;
     name: string = "nickname";
     description: string = "Setzt Nicknames für einen User";
-    permissions: readonly CommandPermission[] = [];
 
     get applicationCommand(): Pick<SlashCommandBuilder, "toJSON"> {
         return new SlashCommandBuilder()

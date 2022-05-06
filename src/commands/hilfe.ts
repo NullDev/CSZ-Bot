@@ -68,7 +68,7 @@ export const run: CommandFunction = async(client, message, args, context) => {
     await message.author.send(
         "Hallo, " + message.author.username + "!\n\n" +
         "Hier ist eine Liste mit Commands:\n\n" +
-        "Bei Fragen kannst du dich an @ShadowByte#1337 (<@!371724846205239326>) wenden!"
+        "Bei Fragen kannst du dich über den Kanal #czs-Bot (<#902960751222853702>) an uns wenden!"
     );
 
     const chunks = getCommandMessageChunksMatchingLimit(Object.entries(commandObj));

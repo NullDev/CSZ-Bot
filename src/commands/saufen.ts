@@ -1,8 +1,7 @@
 import { SlashCommandBuilder, SlashCommandStringOption, SlashCommandSubcommandBuilder } from "@discordjs/builders";
-import { CommandInteraction, CacheType, Client } from "discord.js";
+import { CommandInteraction, CacheType, Client, PermissionString } from "discord.js";
 import { connectAndPlaySaufen, soundDir } from "../handler/voiceHandler";
-import { getConfig } from "../utils/configHandler";
-import { ApplicationCommand, CommandPermission } from "./command";
+import { ApplicationCommand } from "./command";
 import fetch from "node-fetch";
 import path from "path";
 import { createWriteStream } from "fs";
@@ -10,18 +9,15 @@ import { assertNever } from "../utils/typeUtils";
 import { readdir } from "fs/promises";
 import type { BotContext } from "../context";
 
-const config = getConfig();
-
 type SubCommand = "los" | "add" | "list" | "select";
 
 export class Saufen implements ApplicationCommand {
     name = "saufen";
     description = "Macht Stimmung in Wois";
-    permissions?: readonly CommandPermission[] | undefined = [{
-        id: config.bot_settings.moderator_id,
-        permission: true,
-        type: "ROLE"
-    }];
+    requiredPermissions: readonly PermissionString[] = [
+        "BAN_MEMBERS",
+        "MANAGE_EVENTS"
+    ];
     applicationCommand = new SlashCommandBuilder()
         .setName(this.name)
         .setDescription(this.description)

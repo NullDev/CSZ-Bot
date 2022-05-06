@@ -6,19 +6,19 @@
 import { InfoCommand } from "../commands/info";
 import { getConfig } from "../utils/configHandler";
 import { REST } from "@discordjs/rest";
-import { Routes } from "discord-api-types/v9";
+import { APIApplicationCommand, Routes } from "discord-api-types/v9";
 import {
     Client,
     CommandInteraction,
-    GuildApplicationCommandPermissionData,
     Interaction,
     Message,
-    MessageComponentInteraction
+    MessageComponentInteraction,
+    Permissions,
+    PermissionString
 } from "discord.js";
 import {
     ApplicationCommand,
     Command,
-    CommandPermission,
     isApplicationCommand,
     isMessageCommand,
     isSpecialCommand,
@@ -42,7 +42,6 @@ import { PenisCommand } from "../commands/penis";
 import { BoobCommand } from "../commands/boobs";
 import { BonkCommand } from "../commands/bonk";
 import { GoogleCommand } from "../commands/google";
-import { Mutable } from "../types";
 import { NischdaaaCommand } from "../commands/special/nischdaaa";
 import { SdmCommand } from "../commands/sdm";
 import { Nickname, NicknameButtonHandler } from "../commands/nickname";
@@ -117,38 +116,40 @@ export const registerAllApplicationCommandsAsGuildCommands = async(context: BotC
 
     const rest = new REST({ version: "9" }).setToken(token);
 
-    const commandData = applicationCommands.map(cmd =>
-        ({
-            ...cmd.applicationCommand.toJSON(),
-            default_permission: cmd.permissions ? cmd.permissions.length === 0 : true
-        })
-    );
+    const createPermissionSet = (strings: readonly PermissionString[] | undefined): bigint => {
+        if(strings === undefined) {
+            return BigInt(0x40); // Default to "SEND_MESSAGES"
+        }
 
-    try {
-        // Bulk Overwrite Guild Application Commands
-        const createdCommands = await rest.put(Routes.applicationGuildCommands(clientId, context.guild.id), {
-            body: commandData
-        }) as { id: string, name: string }[];
+        const start = BigInt(0x0);
+        let permSet = start;
+        for(const str of strings) {
+            const permFlag = Permissions.FLAGS[str];
+            if (permFlag === undefined) {
+                throw new Error(`Permission ${str} could not be resolved.`);
+            }
+            permSet |= permFlag;
+        }
+        return permSet;
+    };
 
-        // Get commands that have permissions
-        const permissionizedCommands = applicationCommands.filter(cmd => cmd.permissions && cmd.permissions.length > 0);
+    // TODO: Reconsider using batch creation here. Ratelimit kicks in and takes round about 40 seconds to start the butt
+    for (const command of applicationCommands) {
+        try {
+            const commandCreationData: APIApplicationCommand | { dm_permission: boolean, default_member_permissions: string } = {
+                ...command.applicationCommand.toJSON(),
+                dm_permission: false,
+                default_member_permissions: String(createPermissionSet(command.requiredPermissions))
+            };
 
-        // Create a request body for the permissions
-        const permissionsToPost: GuildApplicationCommandPermissionData[] = createdCommands
-            .filter(cmd => permissionizedCommands.find(pCmd => pCmd.name === cmd.name))
-            .map(cmd => ({
-                id: cmd.id,
-                permissions: permissionizedCommands.find(pCmd => pCmd.name === cmd.name)!.permissions! as Mutable<CommandPermission>[]
-            }));
-
-        // Batch Edit Application Command Permissions
-        await context.guild.commands.permissions.set({
-            fullPermissions: permissionsToPost
-        });
-    }
-    catch (err) {
-        log.error(`Could not register the application commands, because: ${err}`);
-        throw (err);
+            // eslint-disable-next-line no-unused-vars
+            const createdCommand = await rest.post(Routes.applicationGuildCommands(clientId, guildId), {
+                body: commandCreationData
+            }) as { id: string, name: string };
+        }
+        catch (err) {
+            log.error(`Could not register the application command ${command.name}`, err);
+        }
     }
 };
 
@@ -201,7 +202,7 @@ const messageComponentInteractionHandler = (
 };
 
 
-const checkPermissions = (member: GuildMember, permissions: ReadonlyArray<CommandPermission>): boolean => {
+const checkPermissions = (member: GuildMember, permissions: ReadonlyArray<PermissionString>): boolean => {
     log.debug(`Checking member ${member.id} permissions on permissionSet: ${JSON.stringify(permissions)}`);
 
     // No permissions, no problem
@@ -209,26 +210,7 @@ const checkPermissions = (member: GuildMember, permissions: ReadonlyArray<Comman
         return true;
     }
 
-    // First evaluating user permissions, if the user is allowed to use the command, then use it
-    const userPermission = permissions
-        .find(perm => perm.type === "USER" && perm.id === member.id)?.permission ?? false;
-
-    if (userPermission === true) {
-        return true;
-    }
-
-    // Next up find the highest role a user has and permissions are defined for
-    const highestMatchingRole = member.roles.cache
-        .filter(role => permissions.find(perm => perm.type === "ROLE" && perm.id === role.id) !== undefined)
-        .sort((a, b) => a.position - b.position)
-        .first();
-
-    // No matching role -> too bad for you
-    if (highestMatchingRole === undefined) {
-        return false;
-    }
-
-    return permissions.find(perm => perm.id === highestMatchingRole.id)!.permission;
+    return member.permissions.has(permissions);
 };
 
 /**
@@ -254,9 +236,9 @@ const commandMessageHandler = async(
         throw new Error(`No matching command found for command "${commandString}"`);
     }
 
-    if (matchingCommand.permissions) {
+    if (matchingCommand.requiredPermissions) {
         const member = message.guild.members.cache.get(message.author.id);
-        if (member && !checkPermissions(member, matchingCommand.permissions)) {
+        if (member && !checkPermissions(member, matchingCommand.requiredPermissions)) {
             return Promise.all([
                 ban(client, member, client.user!, "Lol", false, 0.08),
                 message.reply({
