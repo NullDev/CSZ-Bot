@@ -143,7 +143,7 @@ export const registerAllApplicationCommandsAsGuildCommands = async(context: BotC
             };
 
             // eslint-disable-next-line no-unused-vars
-            const createdCommand = await rest.post(Routes.applicationGuildCommands(clientId, guildId), {
+            const createdCommand = await rest.post(Routes.applicationGuildCommands(clientId, context.guild.id), {
                 body: commandCreationData
             }) as { id: string, name: string };
         }
