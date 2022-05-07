@@ -25,7 +25,7 @@ export default class NicknameHandler {
             await user?.setNickname(nicknames[Math.floor(Math.random() * nicknames.length)]);
         }
         catch(err) {
-            log.error(`Couldn't update user '${userId}' nickname. Cause ${err}`);
+            log.error(`Couldn't update user '${userId}' nickname`, err);
         }
     }
 }
