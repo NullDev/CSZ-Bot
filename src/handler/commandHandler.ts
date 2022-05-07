@@ -110,8 +110,7 @@ const lastSpecialCommands: Record<string, number> = specialCommands.reduce((acc,
  * Registers all defined applicationCommands as guild commands
  * We're overwriting ALL, therefore no deletion is necessary
  */
-export const registerAllApplicationCommandsAsGuildCommands = async(client: Client): Promise<void> => {
-    const guildId = config.ids.guild_id;
+export const registerAllApplicationCommandsAsGuildCommands = async(context: BotContext): Promise<void> => {
     const clientId = config.auth.client_id;
     const token = config.auth.bot_token;
 
@@ -134,11 +133,6 @@ export const registerAllApplicationCommandsAsGuildCommands = async(client: Clien
         return permSet;
     };
 
-    const guild = client.guilds.cache.get(guildId);
-    if (!guild) {
-        throw new Error(`Guild with ID ${guildId} not found`);
-    }
-
     // TODO: Reconsider using batch creation here. Ratelimit kicks in and takes round about 40 seconds to start the butt
     for (const command of applicationCommands) {
         try {
@@ -149,7 +143,7 @@ export const registerAllApplicationCommandsAsGuildCommands = async(client: Clien
             };
 
             // eslint-disable-next-line no-unused-vars
-            const createdCommand = await rest.post(Routes.applicationGuildCommands(clientId, guildId), {
+            const createdCommand = await rest.post(Routes.applicationGuildCommands(clientId, context.guild.id), {
                 body: commandCreationData
             }) as { id: string, name: string };
         }

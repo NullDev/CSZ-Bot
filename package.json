@@ -9,7 +9,7 @@
     "test": "tsc --noEmit",
     "compile": "tsc --sourceMap false",
     "lint": "eslint -c .eslintrc.json \"src/**/*.{js,ts}\"",
-    "lint:fix": "eslint --fix -c .eslintrc.json \"src/**/*.{js,ts}\"",
+    "lint:fix": "npm run lint -- --fix",
     "dev": "npm run lint && npm run watch",
     "watch-node": "nodemon built/app.js",
     "watch-ts": "tsc -w",

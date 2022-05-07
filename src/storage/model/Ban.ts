@@ -36,9 +36,9 @@ export default class Ban extends Model<BanAttributes, BanCreationAttributes> imp
         }) as Promise<any>;
     };
 
-    static remove = (user: User) => Ban.destroy({ where: { userId: user.id } });
+    static remove = (user: User | GuildMember) => Ban.destroy({ where: { userId: user.id } });
 
-    static findExisting = (user: User) => Ban.findOne({ where: { userId: user.id } });
+    static findExisting = (user: User | GuildMember) => Ban.findOne({ where: { userId: user.id } });
 
     static findExpiredBans = (now: Date) => Ban.findAll({
         where: {

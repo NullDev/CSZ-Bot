@@ -7,6 +7,7 @@ import path from "path";
 import { createWriteStream } from "fs";
 import { assertNever } from "../utils/typeUtils";
 import { readdir } from "fs/promises";
+import type { BotContext } from "../context";
 
 type SubCommand = "los" | "add" | "list" | "select";
 
@@ -47,14 +48,14 @@ export class Saufen implements ApplicationCommand {
                     .setDescription("Link zum File (Bitte nur audio files bro)")
                 ));
 
-    async handleInteraction(command: CommandInteraction<CacheType>, client: Client<boolean>): Promise<void> {
+    async handleInteraction(command: CommandInteraction<CacheType>, client: Client<boolean>, context: BotContext): Promise<void> {
         const subCommand = command.options.getSubcommand() as SubCommand;
         const reply = () => command.reply("WOCHENENDE!! SAUFEN!! GEIL");
 
         switch (subCommand) {
             case "los": {
                 await Promise.all([
-                    connectAndPlaySaufen(client),
+                    connectAndPlaySaufen(context),
                     reply()
                 ]);
                 return;
@@ -62,7 +63,7 @@ export class Saufen implements ApplicationCommand {
             case "select": {
                 const toPlay = command.options.getString("sound", true);
                 await Promise.all([
-                    connectAndPlaySaufen(client, toPlay),
+                    connectAndPlaySaufen(context, toPlay),
                     reply()
                 ]);
                 return;

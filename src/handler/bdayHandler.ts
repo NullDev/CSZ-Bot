@@ -1,43 +1,23 @@
-import type { Client, GuildMember, Role } from "discord.js";
+import type { GuildMember, Role } from "discord.js";
 import log from "../utils/logger";
-import { getConfig } from "../utils/configHandler";
 import Birthday from "../storage/model/Birthday";
-import type { Config } from "../types";
-
-const config = getConfig();
+import type { BotContext } from "../context";
 
 export default class BdayHandler {
-    #config: Config;
-    #bdayRole: Role | undefined;
-
-    constructor(readonly client: Client) {
-        this.#config = config;
-        this.#bdayRole = client.guilds.cache.get(this.#config.ids.guild_id)?.roles.cache.find(role => role.id === this.#config.ids.bday_role_id);
-    }
+    constructor(readonly context: BotContext) { }
 
     /**
      * Iterates over the list of bdays and assigns a role to people having their cake day.
      */
     async checkBdays(): Promise<void> {
-        const birthdayRole = this.#bdayRole;
-        if (!birthdayRole) {
-            log.warn("No birthday role set, skipping role assignment");
-            return;
-        }
-
-        const guild = this.client.guilds.cache.get(this.#config.ids.guild_id);
-        if (!guild) {
-            log.warn(`Guild with id "${this.#config.ids.guild_id}" was not found in guild cache, skipping birthday role assignment`);
-            return;
-        }
-
+        const birthdayRole = this.context.roles.bday;
         const todaysBirthdays = await Birthday.getTodaysBirthdays();
 
         const todaysBirthdaysAsMembers = todaysBirthdays
-            .map(b => guild.members.cache.get(b.userId))
+            .map(b => this.context.guild.members.cache.get(b.userId))
             .filter(b => b !== undefined && b.roles.cache.get(birthdayRole.id) === undefined);
 
-        const memberWithRoleThatDontHaveBirthday = guild.members.cache
+        const memberWithRoleThatDontHaveBirthday = this.context.guild.members.cache
             .filter(m => m.roles.cache.get(birthdayRole.id) !== undefined)
             .filter(m => !todaysBirthdays.some(b => b.userId === m.id));
 
@@ -47,7 +27,7 @@ export default class BdayHandler {
         }
 
         for (const member of memberWithRoleThatDontHaveBirthday.values()) {
-            if (!member.roles.cache.find(t => t.id === this.#config.ids.bday_role_id)) continue;
+            if (!member.roles.cache.find(t => t.id === birthdayRole.id)) continue;
 
             try {
                 await member.roles.remove(birthdayRole);
@@ -59,19 +39,8 @@ export default class BdayHandler {
     }
 
     async sendBirthdayMessage(users: GuildMember[], birthdayRole: Role): Promise<void> {
-        const mainChannel = this.client.guilds.cache.get(this.#config.ids.guild_id)?.channels.cache.get(this.#config.ids.hauptchat_id);
-        if (!mainChannel) {
-            log.warn(`Could not find main channel with id "${this.#config.ids.guild_id}", not sending birthday chant`);
-            return;
-        }
-
-        if (mainChannel.type !== "GUILD_TEXT") {
-            log.warn(`Main channel is not a text channel: "${mainChannel.id}": "${mainChannel.type}"`);
-            return;
-        }
-
         const plural = users.length > 1;
-        await mainChannel.send(
+        await this.context.textChannels.hauptchat.send(
             `Heute kann es regnen,
             stürmen oder schneien,
             denn ${plural ? "ihr" : "du"} ${plural ? "strahlt" : "strahlst"} ja selber
