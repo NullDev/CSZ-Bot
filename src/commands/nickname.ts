@@ -14,7 +14,7 @@ import {
     MessageActionRow, MessageButton, MessageComponentInteraction
 } from "discord.js";
 
-import { ApplicationCommand, CommandPermission, CommandResult, UserInteraction } from "./command";
+import { ApplicationCommand, CommandResult, UserInteraction } from "./command";
 import Nicknames from "../storage/model/Nickname";
 import { isTrusted } from "../utils/userUtils";
 
