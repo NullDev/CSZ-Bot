@@ -1,5 +1,8 @@
 import parseOptions from "minimist";
 import { Util } from "discord.js";
+import { getConfig } from "../utils/configHandler";
+
+const config = getConfig();
 
 /**
  * Creates a new poll (vote; yes/no)
