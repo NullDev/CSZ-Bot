@@ -8,13 +8,14 @@ export class EmoteSenderCommand implements SpecialCommand {
     description: string = "Schreibt witizige Emotes wenn jemand was witziges schreibt";
     randomness = 1;
     cooldownTime = 0;
+    // eslint-disable-next-line quote-props
     emotes: Record<string, string[]> = {
         "nn": ["NOP", "NOP"],
         "yy": ["YEP", "YEP"],
         "yn": ["YEP", "NOP"],
         "ny": ["NOP", "YEP"],
         "kk": ["pepeOK", "pepeOK"]
-    }
+    };
     private trimMessage(message: Message) : string {
         return message.content.toLowerCase().trim();
     }
@@ -37,7 +38,7 @@ export class EmoteSenderCommand implements SpecialCommand {
             // Continue, it might not be crucial if only one emote is missing
             logger.warn(`Some emotes for content '${trimmedContent}' could not be resolved`);
         }
-        const emoteText = emotes.filter(emote => emote === undefined).join();
+        const emoteText = emotes.filter(emote => emote !== undefined).join();
         if(emoteText.length === 0) {
             // But if all are missing that doesn't make any sense
             throw new Error(`No emotes could be resolved for content '${trimmedContent}'`);
