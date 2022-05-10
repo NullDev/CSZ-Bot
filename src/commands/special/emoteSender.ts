@@ -8,7 +8,7 @@ export class EmoteSenderCommand implements SpecialCommand {
     description: string = "Schreibt witizige Emotes wenn jemand was witziges schreibt";
     randomness = 1;
     cooldownTime = 0;
-    // eslint-disable-next-line quote-props
+    /* eslint-disable quote-props */
     emotes: Record<string, string[]> = {
         "nn": ["NOP", "NOP"],
         "yy": ["YEP", "YEP"],
@@ -16,6 +16,7 @@ export class EmoteSenderCommand implements SpecialCommand {
         "ny": ["NOP", "YEP"],
         "kk": ["pepeOK", "pepeOK"]
     };
+    /* eslint-enable quote-props */
     private trimMessage(message: Message) : string {
         return message.content.toLowerCase().trim();
     }
@@ -29,7 +30,7 @@ export class EmoteSenderCommand implements SpecialCommand {
         const trimmedContent = this.trimMessage(message);
         const pickedEmotes: string[] | undefined  = this.emotes[trimmedContent];
         if (pickedEmotes === undefined) {
-            throw new Error(`Could not find emote collection for content: '${trimmedContent}'`)
+            throw new Error(`Could not find emote collection for content: '${trimmedContent}'`);
         }
 
         const emotes = pickedEmotes.map(emote => context.guild.emojis.cache.find(e => e.name === emote));
