@@ -39,7 +39,7 @@ export class EmoteSenderCommand implements SpecialCommand {
             // Continue, it might not be crucial if only one emote is missing
             logger.warn(`Some emotes for content '${trimmedContent}' could not be resolved`);
         }
-        const emoteText = emotes.filter(emote => emote !== undefined).join();
+        const emoteText = emotes.filter(emote => emote !== undefined).join("");
         if(emoteText.length === 0) {
             // But if all are missing that doesn't make any sense
             throw new Error(`No emotes could be resolved for content '${trimmedContent}'`);
