@@ -26,7 +26,6 @@ import {
     SpecialCommand, UserInteraction
 } from "../commands/command";
 import log from "../utils/logger";
-import { YepYepCommand } from "../commands/special/yepyep";
 import { NixOsCommand } from "../commands/special/nixos";
 import { WhereCommand } from "../commands/special/where";
 import { DadJokeCommand } from "../commands/special/dadJoke";
@@ -45,7 +44,6 @@ import { GoogleCommand } from "../commands/google";
 import { NischdaaaCommand } from "../commands/special/nischdaaa";
 import { SdmCommand } from "../commands/sdm";
 import { Nickname, NicknameButtonHandler } from "../commands/nickname";
-import { NopNopCommand } from "../commands/special/nopnop";
 import { WoisButton, WoisCommand } from "../commands/woisping";
 import { FicktabelleCommand } from "../commands/ficktabelle";
 import { InviteCommand } from "../commands/invite";
@@ -57,12 +55,12 @@ import { Saufen } from "../commands/saufen";
 import { ErinnerungCommand } from "../commands/erinnerung";
 import { isProcessableMessage, ProcessableMessage } from "./cmdHandler";
 import type { BotContext } from "../context";
+import { EmoteSenderCommand } from "../commands/special/emoteSender";
 
 const config = getConfig();
 
 export const commands: readonly Command[] = [
     new InfoCommand(),
-    new YepYepCommand(),
     new NixOsCommand(),
     new WhereCommand(),
     new DadJokeCommand(),
@@ -80,7 +78,6 @@ export const commands: readonly Command[] = [
     new Nickname(),
     new NischdaaaCommand(),
     new SdmCommand(),
-    new NopNopCommand(),
     new WoisCommand(),
     new FicktabelleCommand(),
     new InviteCommand(),
@@ -89,7 +86,8 @@ export const commands: readonly Command[] = [
     new NeverCommand(),
     new GeburtstagCommand(),
     new Saufen(),
-    new ErinnerungCommand()
+    new ErinnerungCommand(),
+    new EmoteSenderCommand()
 ];
 export const interactions: readonly UserInteraction[] = [
     new NicknameButtonHandler(),
