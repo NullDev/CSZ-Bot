@@ -3,9 +3,6 @@ import * as path from "path";
 import { messageCommands } from "../handler/commandHandler";
 import type { CommandFunction } from "../types";
 
-import { getConfig } from "../utils/configHandler";
-const config = getConfig();
-
 /**
  * Retrieves commands in chunks that doesn't affect message limit
  */
@@ -34,7 +31,7 @@ const getCommandMessageChunksMatchingLimit = (commands: Array<[string, string]>)
 /**
  * Enlists all user-commands with descriptions
  */
-export const run: CommandFunction = async(client, message, args) => {
+export const run: CommandFunction = async(client, message, args, context) => {
     const commandObj: Record<string, string> = {};
     const commandDir = __dirname;
 
@@ -54,7 +51,7 @@ export const run: CommandFunction = async(client, message, args) => {
 
             // Old file-based commands
             if (module.description) {
-                const commandStr = config.bot_settings.prefix.command_prefix + file.toLowerCase().replace(/\.js/gi, "");
+                const commandStr = context.rawConfig.bot_settings.prefix.command_prefix + file.toLowerCase().replace(/\.js/gi, "");
                 commandObj[commandStr] = module.description;
             }
         }
@@ -63,7 +60,7 @@ export const run: CommandFunction = async(client, message, args) => {
         messageCommands
             .filter(cmd => !cmd.modCommand)
             .forEach(cmd => {
-                const commandStr = config.bot_settings.prefix.command_prefix + cmd.name;
+                const commandStr = context.rawConfig.bot_settings.prefix.command_prefix + cmd.name;
                 commandObj[commandStr] = cmd.description;
             });
     }
@@ -71,7 +68,7 @@ export const run: CommandFunction = async(client, message, args) => {
     await message.author.send(
         "Hallo, " + message.author.username + "!\n\n" +
         "Hier ist eine Liste mit Commands:\n\n" +
-        "Bei Fragen kannst du dich an @ShadowByte#1337 (<@!371724846205239326>) wenden!"
+        "Bei Fragen kannst du dich über den Kanal #czs-Bot (<#902960751222853702>) an uns wenden!"
     );
 
     const chunks = getCommandMessageChunksMatchingLimit(Object.entries(commandObj));

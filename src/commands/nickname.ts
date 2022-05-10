@@ -14,12 +14,10 @@ import {
     MessageActionRow, MessageButton, MessageComponentInteraction
 } from "discord.js";
 
-import {ApplicationCommand, CommandPermission, CommandResult, UserInteraction} from "./command";
-import {getConfig} from "../utils/configHandler";
+import { ApplicationCommand, CommandResult, UserInteraction } from "./command";
 import Nicknames from "../storage/model/Nickname";
-import {isTrusted} from "../utils/userUtils";
+import { isTrusted } from "../utils/userUtils";
 
-const config = getConfig();
 
 type Vote = "YES" | "NO";
 
@@ -53,7 +51,6 @@ export class Nickname implements ApplicationCommand {
     modCommand: boolean = false;
     name: string = "nickname";
     description: string = "Setzt Nicknames für einen User";
-    permissions: readonly CommandPermission[] = [];
 
     get applicationCommand(): Pick<SlashCommandBuilder, "toJSON"> {
         return new SlashCommandBuilder()
@@ -109,7 +106,7 @@ export class Nickname implements ApplicationCommand {
             const commandUser = command.guild?.members.cache.find(m => m.id === command.user.id)!;
             // We know that the user option is in every subcommand.
             const user = command.options.getUser("user", true);
-            const trusted = commandUser?.roles.cache.has(config.ids.trusted_role_id);
+            const trusted = isTrusted(commandUser);
             const sameuser = user.id === commandUser.user.id;
 
 

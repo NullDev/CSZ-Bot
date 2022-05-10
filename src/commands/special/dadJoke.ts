@@ -1,11 +1,10 @@
 import {  Client, Util } from "discord.js";
 import type { ProcessableMessage } from "../../handler/cmdHandler";
 import { substringAfter } from "../../utils/stringUtils";
-import { SpecialCommand, CommandResult, CommandPermission } from "../command";
+import { SpecialCommand, CommandResult } from "../command";
 
 export class DadJokeCommand implements SpecialCommand {
-    permissions?: readonly CommandPermission[] | undefined;
-    cooldownTime?: number | undefined;
+    cooldownTime: number | undefined;
     name: string = "Dad Joke";
     description: string = "Macht bei der passenden Gelegenheit einen Dad Joke";
     randomness = 0.1;

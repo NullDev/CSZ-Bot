@@ -1,23 +1,20 @@
-import { Client, Collection, GuildMember, Snowflake } from "discord.js";
+import { Collection, GuildMember, Snowflake } from "discord.js";
+import type { BotContext } from "../context";
 import Boob from "../storage/model/Boob";
 import Penis from "../storage/model/Penis";
-import { getConfig } from "../utils/configHandler";
 import logger from "../utils/logger";
-
-const config = getConfig();
 
 // Store old usernames. Hope the bot doesn't crash lol
 const tmpNicknameStore: Record<Snowflake, string> = {};
 
 const renameMember = (member: GuildMember, name: string | null): Promise<GuildMember> => member.setNickname(name, "April Fools")
     .catch(err => {
-        throw new Error(`Could not rename Member: ${member.id} to ${name} because of: ${err}`);
+        throw new Error(`Could not rename Member: ${member.id} to ${name} because of ${err}`);
     });
 
 
-const resetAll = async(client: Client): Promise<PromiseSettledResult<GuildMember>[]> => {
-    const guild = client.guilds.cache.get(config.ids.guild_id)!;
-    const allMembers = await guild.members.fetch();
+const resetAll = async(context: BotContext): Promise<PromiseSettledResult<GuildMember>[]> => {
+    const allMembers = await context.guild.members.fetch();
     return Promise.allSettled(allMembers.map(member => renameMember(member, tmpNicknameStore[member.id] ?? null)));
 };
 
@@ -51,9 +48,8 @@ const createShuffledNicknames = async(members: Collection<Snowflake, GuildMember
     return shuffledNicknames;
 };
 
-const shuffleAllNicknames = async(client: Client): Promise<PromiseSettledResult<GuildMember>[]> => {
-    const guild = client.guilds.cache.get(config.ids.guild_id)!;
-    const allMembers = await guild.members.fetch();
+const shuffleAllNicknames = async(context: BotContext): Promise<PromiseSettledResult<GuildMember>[]> => {
+    const allMembers = await context.guild.members.fetch();
     const shuffledNicknames = await createShuffledNicknames(allMembers);
 
     return Promise.allSettled(allMembers.map(member => renameMember(member, shuffledNicknames[member.id])));
@@ -69,22 +65,22 @@ const logRenameResult = (result: PromiseSettledResult<GuildMember>[]) => {
     }
 };
 
-export const startAprilFools = async(client: Client): Promise<void> => {
+export const startAprilFools = async(context: BotContext): Promise<void> => {
     try {
-        const result = await shuffleAllNicknames(client);
+        const result = await shuffleAllNicknames(context);
         logRenameResult(result);
     }
     catch(err) {
-        logger.error(`Could not perform april fools joke: ${err}`);
+        logger.error("Could not perform april fools joke", err);
     }
 };
 
-export const endAprilFools = async(client: Client): Promise<void> => {
+export const endAprilFools = async(context: BotContext): Promise<void> => {
     try {
-        const result = await resetAll(client);
+        const result = await resetAll(context);
         logRenameResult(result);
     }
     catch(err) {
-        logger.error(`Could not end april fools joke: ${err}`);
+        logger.error("Could not end april fools joke", err);
     }
 };

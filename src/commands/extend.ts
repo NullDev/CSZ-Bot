@@ -1,4 +1,4 @@
-import type { Message, TextChannel } from "discord.js";
+import type { Message } from "discord.js";
 
 import log from "../utils/logger";
 import { getConfig } from "../utils/configHandler";
@@ -10,26 +10,24 @@ const config = getConfig();
 /**
  * Extends an existing poll or strawpoll
  */
-export const run: CommandFunction = async(client, message, args) => {
+export const run: CommandFunction = async(client, message, args, context) => {
     if (!message.reference) return "Bruder schon mal was von der Replyfunktion gehört?";
-    if (message.reference.guildId !== config.ids.guild_id || !message.reference.channelId) return "Bruder bleib mal hier auf'm Server.";
-
-    const guild = client.guilds.cache.get(config.ids.guild_id);
-    if (!guild) return `Konnte server mit ID "${config.ids.guild_id}" nicht finden.`;
+    if (message.reference.guildId !== context.guild.id || !message.reference.channelId) return "Bruder bleib mal hier auf'm Server.";
 
     if (!message.reference.messageId) return "Die Nachricht hat irgendwie keine reference-ID";
 
-    const channel = guild.channels.cache.get(message.reference.channelId);
+    const channel = context.guild.channels.cache.get(message.reference.channelId);
 
     if (!channel) return "Bruder der Channel existiert nicht? LOLWUT";
+    if (channel.type !== "GUILD_TEXT") return "Channel ist kein Text-Channel";
 
     let replyMessage: Message;
     try {
-        replyMessage = await (channel as TextChannel).messages.fetch(message.reference.messageId);
+        replyMessage = await channel.messages.fetch(message.reference.messageId);
     }
     catch (err) {
-        log.error(err);
-        return "Bruder irgendwas stimmt nicht mit deinem Reply ¯\_(ツ)_/¯";
+        log.error("Could not fetch replys", err);
+        return "Bruder irgendwas stimmt nicht mit deinem Reply ¯\\_(ツ)_/¯";
     }
 
     if (replyMessage.author.id !== client.user!.id || replyMessage.embeds.length !== 1) return "Bruder das ist keine Umfrage ಠ╭╮ಠ";

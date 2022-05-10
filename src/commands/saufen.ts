@@ -1,26 +1,23 @@
 import { SlashCommandBuilder, SlashCommandStringOption, SlashCommandSubcommandBuilder } from "@discordjs/builders";
-import { CommandInteraction, CacheType, Client } from "discord.js";
+import { CommandInteraction, CacheType, Client, PermissionString } from "discord.js";
 import { connectAndPlaySaufen, soundDir } from "../handler/voiceHandler";
-import { getConfig } from "../utils/configHandler";
-import { ApplicationCommand, CommandPermission } from "./command";
+import { ApplicationCommand } from "./command";
 import fetch from "node-fetch";
 import path from "path";
 import { createWriteStream } from "fs";
 import { assertNever } from "../utils/typeUtils";
 import { readdir } from "fs/promises";
-
-const config = getConfig();
+import type { BotContext } from "../context";
 
 type SubCommand = "los" | "add" | "list" | "select";
 
 export class Saufen implements ApplicationCommand {
     name = "saufen";
     description = "Macht Stimmung in Wois";
-    permissions?: readonly CommandPermission[] | undefined = [{
-        id: config.bot_settings.moderator_id,
-        permission: true,
-        type: "ROLE"
-    }];
+    requiredPermissions: readonly PermissionString[] = [
+        "BAN_MEMBERS",
+        "MANAGE_EVENTS"
+    ];
     applicationCommand = new SlashCommandBuilder()
         .setName(this.name)
         .setDescription(this.description)
@@ -51,14 +48,14 @@ export class Saufen implements ApplicationCommand {
                     .setDescription("Link zum File (Bitte nur audio files bro)")
                 ));
 
-    async handleInteraction(command: CommandInteraction<CacheType>, client: Client<boolean>): Promise<void> {
+    async handleInteraction(command: CommandInteraction<CacheType>, client: Client<boolean>, context: BotContext): Promise<void> {
         const subCommand = command.options.getSubcommand() as SubCommand;
         const reply = () => command.reply("WOCHENENDE!! SAUFEN!! GEIL");
 
         switch (subCommand) {
             case "los": {
                 await Promise.all([
-                    connectAndPlaySaufen(client),
+                    connectAndPlaySaufen(context),
                     reply()
                 ]);
                 return;
@@ -66,7 +63,7 @@ export class Saufen implements ApplicationCommand {
             case "select": {
                 const toPlay = command.options.getString("sound", true);
                 await Promise.all([
-                    connectAndPlaySaufen(client, toPlay),
+                    connectAndPlaySaufen(context, toPlay),
                     reply()
                 ]);
                 return;

@@ -84,8 +84,12 @@ const client = new Discord.Client({
     ]
 });
 
-process.on("unhandledRejection", (err: any, promise) => log.error(`Unhandled rejection (promise: ${promise}, reason: ${err.stack})`));
-process.on("uncaughtException", (err, origin) => log.error(`Uncaught exception (origin: ${origin}, error: ${err})`));
+process.on("unhandledRejection", (err: any, promise) => {
+    log.error(`Unhandled rejection (promise: ${promise})`, err);
+});
+process.on("uncaughtException", (err, origin) => {
+    log.error(`Uncaught exception (origin: ${origin}`, err);
+});
 process.on("SIGTERM", signal => log.error(`Received Sigterm: ${signal}`));
 process.on("beforeExit", code => {
     log.warn(`Process will exit with code: ${code}`);
@@ -142,7 +146,7 @@ const leetTask = async() => {
 
 let firstRun = true;
 
-client.on("ready", async initializedClient => {
+client.once("ready", async initializedClient => {
     try {
         log.info("Running...");
         log.info(`Got ${client.users.cache.size} users, in ${client.channels.cache.size} channels of ${client.guilds.cache.size} guilds`);
@@ -152,16 +156,16 @@ client.on("ready", async initializedClient => {
         console.assert(!!botContext); // TODO: Remove once botContext is used
 
         // When the application is ready, slash commands should be registered
-        await registerAllApplicationCommandsAsGuildCommands(client);
+        await registerAllApplicationCommandsAsGuildCommands(botContext);
 
         const cronOptions = {
             timezone: "Europe/Berlin"
         } as const;
 
-        const bday = new BdayHandler(client);
-        const aoc = new AoCHandler(client);
+        const bday = new BdayHandler(botContext);
+        const aoc = new AoCHandler(botContext);
         log.info("Starting Nicknamehandler ");
-        const nicknameHandler = new NicknameHandler(client);
+        const nicknameHandler = new NicknameHandler(botContext);
         if (firstRun) {
             await storage.initialize();
             firstRun = false; // Hacky deadlock ...
@@ -196,40 +200,40 @@ client.on("ready", async initializedClient => {
             // eslint-disable-next-line no-unused-vars
             const saufenJob = new Cron("36 0-23 * * FRI-SAT,SUN", async() => {
                 log.debug("Entered Saufen cronjob");
-                await connectAndPlaySaufen(initializedClient);
+                await connectAndPlaySaufen(botContext);
             }, cronOptions);
 
             log.info("Scheduling Reminder Cronjob");
             // eslint-disable-next-line no-unused-vars
             const reminderJob = new Cron("* * * * *", async() => {
                 log.debug("Entered reminder cronjob");
-                await reminderHandler(initializedClient);
+                await reminderHandler(botContext);
             }, cronOptions);
 
             // eslint-disable-next-line no-unused-vars
             const startAprilFoolsJob = new Cron("2022-04-01T00:00:00", async() => {
                 log.debug("Entered start april fools cronjob");
-                await startAprilFools(client);
+                await startAprilFools(botContext);
             }, cronOptions);
 
             // eslint-disable-next-line no-unused-vars
             const stopAprilFoolsJob = new Cron("2022-04-02T00:00:00", async() => {
                 log.debug("Entered end april fools cronjob");
-                await endAprilFools(client);
+                await endAprilFools(botContext);
             }, cronOptions);
         }
 
-        ban.startCron(client);
+        ban.startCron(botContext);
 
         await poll.importPolls();
-        poll.startCron(client);
+        poll.startCron(botContext);
 
         // Not awaiting this promise because it's basically an infinite loop (that can be cancelled)
         // Possible TODO: Refactor this to a cron job
         void fadingMessageHandler.startLoop(client);
     }
     catch (err) {
-        log.error(`Error in Ready handler: ${err}`);
+        log.error("Error in Ready handler:", err);
     }
 });
 
@@ -239,23 +243,15 @@ client.on("ready", async initializedClient => {
  * for the "old commands". This way we can easily migrate commands to slash commands
  * and still have the option to use the textual commands. Win-Win :cooldoge:
  */
-client.on("messageCreate", async message => {
-    try {
-        await messageCommandHandler(message, client, botContext);
-    }
-    catch (err) {
-        log.error(`[messageCreate] Error on message ${message.id}. Cause: ${err}`);
-    }
-});
+client.on("messageCreate", async message =>
+    void messageCommandHandler(message, client, botContext)
+        .catch(err => log.error(`[messageCreate] Error on message ${message.id}. Cause: ${err}`))
+);
 
-client.on("interactionCreate", async interaction => {
-    try {
-        await handleInteractionEvent(interaction, client, botContext);
-    }
-    catch (err) {
-        log.error(`[interactionCreate] Error on interaction ${interaction.id}. Cause: ${err}`);
-    }
-});
+client.on("interactionCreate", interaction =>
+    void handleInteractionEvent(interaction, client, botContext)
+        .catch(err => log.error(`[interactionCreate] Error on interaction ${interaction.id}. Cause: ${err}`))
+);
 
 client.on("guildCreate", guild => void log.info(`New guild joined: ${guild.name} (id: ${guild.id}) with ${guild.memberCount} members`));
 
@@ -287,7 +283,7 @@ client.on("guildMemberRemove", async member => {
         await GuildRagequit.incrementRagequit(member.guild.id, member.id);
     }
     catch (err) {
-        log.error(`[guildMemberRemove] Error on incrementing ragequit of ${member.id}. Cause: ${err}`);
+        log.error(`[guildMemberRemove] Error on incrementing ragequit of ${member.id}`, err);
     }
 });
 
@@ -296,7 +292,7 @@ client.on("messageCreate", async message => {
         await messageHandler(message, client, botContext);
     }
     catch (err) {
-        log.error(`[messageCreate] Error on message ${message.id}. Cause: ${err}`);
+        log.error(`[messageCreate] Error on message ${message.id}`, err);
     }
 });
 
@@ -305,7 +301,7 @@ client.on("messageDelete", async message => {
         await messageDeleteHandler(message as Message, client);
     }
     catch (err) {
-        log.error(`[messageDelete] Error for ${message.id}. Cause: ${err}`);
+        log.error(`[messageDelete] Error for ${message.id}`, err);
     }
 });
 
@@ -314,7 +310,7 @@ client.on("messageUpdate", async(_, newMessage) => {
         await messageHandler(newMessage as Message, client, botContext);
     }
     catch (err) {
-        log.error(`[messageUpdate] Error on message ${newMessage.id}. Cause: ${err}`);
+        log.error(`[messageUpdate] Error on message ${newMessage.id}`, err);
     }
 });
 
@@ -331,13 +327,13 @@ client.on("rateLimit", rateLimitData => void log.error(`Discord Client RateLimit
 client.on("invalidated", () => void log.debug("Client invalidated"));
 
 client.on("messageReactionAdd", async(event, user) => reactionHandler(event as MessageReaction, user as User, client, false));
-client.on("messageReactionAdd", async(event, user) => quoteReactionHandler(event as MessageReaction, user as User, client));
+client.on("messageReactionAdd", async(event, user) => quoteReactionHandler(event as MessageReaction, user as User, botContext));
 client.on("messageReactionRemove", async(event, user) => reactionHandler(event as MessageReaction, user as User, client, true));
 
 client.login(config.auth.bot_token).then(() => {
     log.info("Token login was successful!");
 }, err => {
-    log.error(`Token login was not successful: "${err}"`);
+    log.error("Token login was not successful", err);
     log.error("Shutting down due to incorrect token...\n\n");
     process.exit(1);
 });

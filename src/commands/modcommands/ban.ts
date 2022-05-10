@@ -1,13 +1,14 @@
 import { SlashCommandBuilder, SlashCommandIntegerOption, SlashCommandStringOption, SlashCommandUserOption } from "@discordjs/builders";
-import { CommandInteraction, GuildMember, User } from "discord.js";
+import { CommandInteraction, GuildMember, PermissionString, User } from "discord.js";
 import { Client } from "discord.js";
 import Ban from "../../storage/model/Ban";
 import { getConfig } from "../../utils/configHandler";
-import { ApplicationCommand, CommandPermission, CommandResult, MessageCommand } from "../command";
+import { ApplicationCommand, CommandResult, MessageCommand } from "../command";
 import log from "../../utils/logger";
 import moment from "moment";
 import type { ProcessableMessage } from "../../handler/cmdHandler";
 import Cron from "croner";
+import type { BotContext } from "../../context";
 
 const config = getConfig();
 
@@ -75,7 +76,7 @@ export const restoreRoles = async(user: GuildMember): Promise<boolean> => {
 
 // #endregion
 
-export const startCron = (client: Client) => {
+export const startCron = (context: BotContext) => {
     log.info("Scheduling Ban Cronjob...");
 
     // eslint-disable-next-line no-unused-vars
@@ -89,7 +90,7 @@ export const startCron = (client: Client) => {
                 log.debug(`Expired Ban found by user ${expiredBan.userId}. Expired on ${expiredBan.bannedUntil}`);
                 await expiredBan.destroy();
 
-                const user = client.guilds.cache.get(config.ids.guild_id)?.members.cache.get(expiredBan.userId);
+                const user = context.guild.members.cache.get(expiredBan.userId);
                 // No user, no problem
                 if (!user) continue;
 
@@ -103,7 +104,7 @@ export const startCron = (client: Client) => {
             }
         }
         catch (err) {
-            log.error(`Error in cron job: ${err}`);
+            log.error("Error in cron job", err);
         }
     });
 };
@@ -149,11 +150,9 @@ Lg & xD™`);
 export class BanCommand implements ApplicationCommand, MessageCommand {
     name: string = "ban";
     description: string = "Joa, bannt halt einen ne?";
-    permissions?: readonly CommandPermission[] | undefined = [{
-        id: config.bot_settings.moderator_id,
-        permission: true,
-        type: "ROLE"
-    }];
+    requiredPermissions: readonly PermissionString[] = [
+        "BAN_MEMBERS"
+    ];
     get applicationCommand(): Pick<SlashCommandBuilder, "toJSON"> {
         return new SlashCommandBuilder()
             .setName(this.name)

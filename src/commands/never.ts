@@ -6,8 +6,8 @@ import fetch from "node-fetch";
 import { CacheType, CommandInteraction, Client, Message, MessageEmbed, GuildMember } from "discord.js";
 import { ApplicationCommand, MessageCommand } from "./command";
 import { SlashCommandBuilder, SlashCommandStringOption } from "@discordjs/builders";
-import { getConfig } from "../utils/configHandler";
 import type { ProcessableMessage } from "../handler/cmdHandler";
+import type { BotContext } from "../context";
 
 type Prompt = string;
 
@@ -15,8 +15,6 @@ interface NeverPrompt {
     prompt: Prompt,
     level?: number
 }
-
-const config = getConfig();
 
 const NEVER_EVER_RANDOM_PROMPT_API_URL = "https://thepartyapp.xyz/api/games/neverever/getRandomPrompt";
 const QUESTION_LEVEL_EMOJI_MAP: Record<number, string> = {
@@ -89,10 +87,10 @@ export class NeverCommand implements ApplicationCommand, MessageCommand {
         ]);
     }
 
-    async handleMessage(message: ProcessableMessage, _client: Client<boolean>): Promise<void> {
+    async handleMessage(message: ProcessableMessage, _client: Client<boolean>, context: BotContext): Promise<void> {
         const { channel } = message;
         const author = message.guild?.members.resolve(message.author);
-        const customInput = message.content.slice(`${config.bot_settings.prefix.command_prefix}mock `.length);
+        const customInput = message.content.slice(`${context.rawConfig.bot_settings.prefix.command_prefix}mock `.length);
 
         if(!author) {
             throw new Error("Couldn't resolve guild member");

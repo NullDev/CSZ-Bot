@@ -9,7 +9,7 @@ import {
     Util
 } from "discord.js";
 import { Client } from "discord.js";
-import { ApplicationCommand, CommandPermission, CommandResult, UserInteraction } from "./command";
+import { ApplicationCommand, CommandResult, UserInteraction } from "./command";
 import log from "../utils/logger";
 
 
@@ -51,7 +51,6 @@ const getMessage = (reason: string, usersVotedYes: string[] = []) => {
 export class WoisCommand implements ApplicationCommand {
     name = "woisping";
     description = "Pingt die ganze Woisgang";
-    permissions: readonly CommandPermission[] = [];
 
     get applicationCommand(): Pick<SlashCommandBuilder, "toJSON"> {
         return new SlashCommandBuilder()

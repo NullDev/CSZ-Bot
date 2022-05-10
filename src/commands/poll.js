@@ -81,7 +81,7 @@ export const delayedPolls = [];
  *
  * @type {import("../types").CommandFunction}
  */
-export const run = async(client, message, args) => {
+export const run = async(client, message, args, context) => {
     const options = parseOptions(args, {
         "boolean": [
             "channel",
@@ -165,7 +165,7 @@ export const run = async(client, message, args) => {
         footer.push("Mehrfachauswahl");
     }
 
-    if(options.straw) {
+    if (options.straw) {
         footer.push("Einzelauswahl");
     }
 
@@ -175,15 +175,18 @@ export const run = async(client, message, args) => {
         };
     }
 
-    const voteChannel = client.guilds.cache.get(config.ids.guild_id).channels.cache.get(config.ids.votes_channel_id);
+    const voteChannel = context.textChannels.votes;
     const channel = options.channel ? voteChannel : message.channel;
     if (options.delayed && channel !== voteChannel) {
         return "Du kannst keine verzögerte Abstimmung außerhalb des Umfragenchannels machen!";
     }
 
-    const pollMessage = await (/** @type {import("discord.js").TextChannel} */ channel).send({
+    if (channel.type !== "GUILD_TEXT") return "Der Zielchannel ist irgenwie kein Text-Channel?";
+
+    const pollMessage = await channel.send({
         embeds: [embed]
     });
+
     await message.delete();
     for (const i in pollOptions) {
         await pollMessage.react(EMOJI[i]);
@@ -232,9 +235,9 @@ export const importPolls = async() => {
 
 /**
  * Initialized crons for delayed polls
- * @param {import("discord.js").Client} client
+ * @param {import("../context").BotContext} context
  */
-export const startCron = client => {
+export const startCron = context => {
     log.info("Scheduling Poll Cronjob...");
 
     // eslint-disable-next-line no-unused-vars
@@ -242,7 +245,8 @@ export const startCron = client => {
         const currentDate = new Date();
         const pollsToFinish = delayedPolls.filter(delayedPoll => currentDate >= delayedPoll.finishesAt);
         /** @type {import("discord.js").GuildChannel} */
-        const channel = client.guilds.cache.get(config.ids.guild_id).channels.cache.get(config.ids.votes_channel_id);
+
+        const channel = context.textChannels.votes;
 
         for (let i = 0; i < pollsToFinish.length; i++) {
             const delayedPoll = pollsToFinish[i];
@@ -253,7 +257,7 @@ export const startCron = client => {
                 .flat()
                 .filter((x, uidi) => delayedPoll.reactions.indexOf(x) !== uidi)
                 .map(async uidToResolve => {
-                    users[uidToResolve] = await client.users.fetch(uidToResolve);
+                    users[uidToResolve] = await context.client.users.fetch(uidToResolve);
                 }));
 
             const toSend = {
