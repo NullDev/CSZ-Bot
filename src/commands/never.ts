@@ -37,7 +37,7 @@ async function getPrompt(userPrompt: Prompt | null): Promise<NeverPrompt> {
     const promptResponse = await fetch(NEVER_EVER_RANDOM_PROMPT_API_URL, {
         method: "GET"
     });
-    return await promptResponse.json();
+    return promptResponse.json();
 }
 
 function buildEmbed(prompt: NeverPrompt, author: GuildMember): MessageEmbed {
