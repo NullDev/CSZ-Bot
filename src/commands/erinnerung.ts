@@ -5,6 +5,7 @@ import logger from "../utils/logger";
 import Reminder, { ReminderAttributes } from "../storage/model/Reminder";
 import type { ProcessableMessage } from "../handler/cmdHandler";
 import { BotContext } from "../context";
+import { ban } from "./modcommands/ban";
 
 require("sugar/locales/de");
 
@@ -30,9 +31,18 @@ export class ErinnerungCommand implements MessageCommand {
                 throw new Error("Danke JS");
             }
 
-            if (date < new Date()) {
+            const now = new Date();
+            if (date < now) {
                 await message.reply("Brudi das sollte schon in der Zukunft liegen, bin ich Marty McFly oder wat?");
                 return;
+            }
+
+            const diff = Math.round(date.getTime() - now.getTime());
+            if (diff < 60000) {
+                await Promise.all([
+                    message.reply("Ach komm halt doch dein Maul"),
+                    ban(client, message.member, client.user!, "Erinnerung Troll", false, 0.25)
+                ]);
             }
 
             const messageId = message.reference?.messageId ?? message.id;
