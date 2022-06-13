@@ -43,6 +43,7 @@ export class ErinnerungCommand implements MessageCommand {
                     message.reply("Ach komm halt doch dein Maul"),
                     ban(client, message.member, client.user!, "Erinnerung Troll", false, 0.25)
                 ]);
+                return;
             }
 
             const messageId = message.reference?.messageId ?? message.id;
