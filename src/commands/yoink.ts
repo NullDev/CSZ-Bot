@@ -5,7 +5,7 @@
 import type { CommandFunction } from "../types";
 // Dependencies
 import {Util} from "discord.js";
-import {isTrusted} from "../utils/userUtils";
+import {isEmotifizierer, isTrusted} from "../utils/userUtils";
 
 
 /**
@@ -14,7 +14,7 @@ import {isTrusted} from "../utils/userUtils";
 export const run: CommandFunction = async(client, message, args) => {
     // parse options
     const pinger = message.guild?.members.cache.get(message.member!.user.id)!;
-    if (!isTrusted(pinger)){
+    if (!isEmotifizierer(pinger)){
         await message.channel.send("Bist nicht cool genug");
     }
 
