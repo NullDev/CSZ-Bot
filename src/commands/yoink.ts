@@ -5,7 +5,7 @@
 import type { CommandFunction } from "../types";
 // Dependencies
 import {Util} from "discord.js";
-import {isEmotifizierer, isTrusted} from "../utils/userUtils";
+import {isEmotifizierer} from "../utils/userUtils";
 
 
 /**
