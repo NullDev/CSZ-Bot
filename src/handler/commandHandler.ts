@@ -53,6 +53,7 @@ import { NeverCommand } from "../commands/never";
 import { GeburtstagCommand } from "../commands/geburtstag";
 import { Saufen } from "../commands/saufen";
 import { ErinnerungCommand } from "../commands/erinnerung";
+import {YoinkCommand} from "../commands/yoink";
 import { isProcessableMessage, ProcessableMessage } from "./cmdHandler";
 import type { BotContext } from "../context";
 import { EmoteSenderCommand } from "../commands/special/emoteSender";
@@ -87,6 +88,7 @@ export const commands: readonly Command[] = [
     new GeburtstagCommand(),
     new Saufen(),
     new ErinnerungCommand(),
+    new YoinkCommand(),
     new EmoteSenderCommand()
 ];
 export const interactions: readonly UserInteraction[] = [
