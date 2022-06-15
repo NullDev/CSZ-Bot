@@ -88,7 +88,7 @@ export const commands: readonly Command[] = [
     new GeburtstagCommand(),
     new Saufen(),
     new ErinnerungCommand(),
-    new YoinkCommand()
+    new YoinkCommand(),
     new EmoteSenderCommand()
 ];
 export const interactions: readonly UserInteraction[] = [
