@@ -2,14 +2,13 @@
 // = Copyright (c) NullDev = //
 // ========================= //
 
-import moment from "moment";
 import parseOptions from "minimist";
-import * as cron from "node-cron";
 
 import log from "../utils/logger";
 import AdditionalMessageData from "../storage/model/AdditionalMessageData";
 import { getConfig } from "../utils/configHandler";
 import { Util } from "discord.js";
+import Cron from "croner";
 
 const config = getConfig();
 
@@ -82,8 +81,8 @@ export const delayedPolls = [];
  *
  * @type {import("../types").CommandFunction}
  */
-export const run = async(client, message, args) => {
-    let options = parseOptions(args, {
+export const run = async(client, message, args, context) => {
+    const options = parseOptions(args, {
         "boolean": [
             "channel",
             "extendable",
@@ -100,17 +99,17 @@ export const run = async(client, message, args) => {
         }
     });
 
-    let parsedArgs = options._;
-    let delayTime = Number(options.delayed);
+    const parsedArgs = options._;
+    const delayTime = Number(options.delayed);
 
     if (!parsedArgs.length) return "Bruder da ist keine Umfrage :c";
 
-    let pollArray = parsedArgs.join(" ").split(";").map(e => e.trim()).filter(e => e.replace(/\s/g, "") !== "");
-    let pollOptions = pollArray.slice(1);
+    const pollArray = parsedArgs.join(" ").split(";").map(e => e.trim()).filter(e => e.replace(/\s/g, "") !== "");
+    const pollOptions = pollArray.slice(1);
     let pollOptionsTextLength = 0;
 
-    let isExtendable = options.extendable;
-    for (let pollOption of pollOptions) {
+    const isExtendable = options.extendable;
+    for (const pollOption of pollOptions) {
         pollOptionsTextLength += pollOption.length;
     }
 
@@ -123,7 +122,7 @@ export const run = async(client, message, args) => {
     let optionstext = "";
     pollOptions.forEach((e, i) => (optionstext += `${LETTERS[i]} - ${e}\n`));
 
-    let finishTime = new Date(new Date().valueOf() + (delayTime * 60 * 1000));
+    const finishTime = new Date(new Date().valueOf() + (delayTime * 60 * 1000));
     if (options.delayed) {
         if (isNaN(delayTime) || delayTime <= 0) {
             return "Bruder keine ungültigen Zeiten angeben 🙄";
@@ -138,15 +137,15 @@ export const run = async(client, message, args) => {
     const embed = {
         title: Util.cleanContent(pollArray[0], message.channel),
         description: optionstext,
-        timestamp: moment.utc().format(),
+        timestamp: new Date(),
         author: {
             name: `${options.straw ? "Strawpoll" : "Umfrage"} von ${message.author.username}`,
             icon_url: message.author.displayAvatarURL()
         }
     };
 
-    let footer = [];
-    let extendable = options.extendable && pollOptions.length < OPTION_LIMIT && pollOptionsTextLength < TEXT_LIMIT;
+    const footer = [];
+    const extendable = options.extendable && pollOptions.length < OPTION_LIMIT && pollOptionsTextLength < TEXT_LIMIT;
 
     if (extendable) {
         if (options.delayed) {
@@ -166,7 +165,7 @@ export const run = async(client, message, args) => {
         footer.push("Mehrfachauswahl");
     }
 
-    if(options.straw) {
+    if (options.straw) {
         footer.push("Einzelauswahl");
     }
 
@@ -176,17 +175,20 @@ export const run = async(client, message, args) => {
         };
     }
 
-    let voteChannel = client.guilds.cache.get(config.ids.guild_id).channels.cache.get(config.ids.votes_channel_id);
-    let channel = options.channel ? voteChannel : message.channel;
+    const voteChannel = context.textChannels.votes;
+    const channel = options.channel ? voteChannel : message.channel;
     if (options.delayed && channel !== voteChannel) {
         return "Du kannst keine verzögerte Abstimmung außerhalb des Umfragenchannels machen!";
     }
 
-    const pollMessage = await (/** @type {import("discord.js").TextChannel} */ channel).send({
+    if (channel.type !== "GUILD_TEXT") return "Der Zielchannel ist irgenwie kein Text-Channel?";
+
+    const pollMessage = await channel.send({
         embeds: [embed]
     });
+
     await message.delete();
-    for (let i in pollOptions) {
+    for (const i in pollOptions) {
         await pollMessage.react(EMOJI[i]);
     }
 
@@ -199,7 +201,7 @@ export const run = async(client, message, args) => {
             reactions[index] = [];
         });
 
-        let delayedPollData = {
+        const delayedPollData = {
             pollId: pollMessage.id,
             createdAt: new Date().valueOf(),
             finishesAt: finishTime.valueOf(),
@@ -207,8 +209,8 @@ export const run = async(client, message, args) => {
             reactionMap
         };
 
-        let additionalData = await AdditionalMessageData.fromMessage(pollMessage);
-        let newCustomData = additionalData.customData;
+        const additionalData = await AdditionalMessageData.fromMessage(pollMessage);
+        const newCustomData = additionalData.customData;
         newCustomData.delayedPollData = delayedPollData;
         additionalData.customData = newCustomData;
         await additionalData.save();
@@ -218,7 +220,7 @@ export const run = async(client, message, args) => {
 };
 
 export const importPolls = async() => {
-    let additionalDatas = await AdditionalMessageData.findAll();
+    const additionalDatas = await AdditionalMessageData.findAll();
     let count = 0;
     additionalDatas.forEach(additionalData => {
         if (!additionalData.customData.delayedPollData) {
@@ -233,48 +235,50 @@ export const importPolls = async() => {
 
 /**
  * Initialized crons for delayed polls
- * @param {import("discord.js").Client} client
+ * @param {import("../context").BotContext} context
  */
-export const startCron = (client) => {
+export const startCron = context => {
     log.info("Scheduling Poll Cronjob...");
 
-    cron.schedule("* * * * *", async() => {
+    // eslint-disable-next-line no-unused-vars
+    const pollCron = new Cron("* * * * *", async() => {
         const currentDate = new Date();
         const pollsToFinish = delayedPolls.filter(delayedPoll => currentDate >= delayedPoll.finishesAt);
         /** @type {import("discord.js").GuildChannel} */
-        const channel = client.guilds.cache.get(config.ids.guild_id).channels.cache.get(config.ids.votes_channel_id);
+
+        const channel = context.textChannels.votes;
 
         for (let i = 0; i < pollsToFinish.length; i++) {
             const delayedPoll = pollsToFinish[i];
             const message = await /** @type {import("discord.js").TextChannel} */ (channel).messages.fetch(delayedPoll.pollId);
 
-            let users = {};
+            const users = {};
             await Promise.all(delayedPoll.reactions
                 .flat()
                 .filter((x, uidi) => delayedPoll.reactions.indexOf(x) !== uidi)
                 .map(async uidToResolve => {
-                    users[uidToResolve] = await client.users.fetch(uidToResolve);
+                    users[uidToResolve] = await context.client.users.fetch(uidToResolve);
                 }));
 
-            let toSend = {
+            const toSend = {
                 title: `Zusammenfassung: ${message.embeds[0].title}`,
                 description: `${delayedPoll.reactions
                     .map(
                         (x, index) => `${LETTERS[index]} ${
                             delayedPoll.reactionMap[index]
                         } (${x.length}):
-${x.map((uid) => users[uid]).join("\n")}\n\n`
+${x.map(uid => users[uid]).join("\n")}\n\n`
                     )
                     .join("")}
 `,
-                timestamp: moment.utc().format(),
+                timestamp: new Date(),
                 author: {
                     name: `${message.embeds[0].author.name}`,
                     icon_url: message.embeds[0].author.iconURL
                 },
                 footer: {
                     text: `Gesamtabstimmungen: ${delayedPoll.reactions
-                        .map((x) => x.length)
+                        .map(x => x.length)
                         .reduce((a, b) => a + b)}`
                 }
             };
@@ -286,8 +290,8 @@ ${x.map((uid) => users[uid]).join("\n")}\n\n`
             await message.react("✅");
             delayedPolls.splice(delayedPolls.indexOf(delayedPoll), 1);
 
-            let messageData = await AdditionalMessageData.fromMessage(message);
-            let { customData } = messageData;
+            const messageData = await AdditionalMessageData.fromMessage(message);
+            const { customData } = messageData;
             delete customData.delayedPollData;
             messageData.customData = customData;
             await messageData.save();

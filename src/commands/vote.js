@@ -1,13 +1,7 @@
-// ========================= //
-// = Copyright (c) NullDev = //
-// ========================= //
-
-// Dependencies
-import moment from "moment";
 import parseOptions from "minimist";
 import { Util } from "discord.js";
-
 import { getConfig } from "../utils/configHandler";
+
 const config = getConfig();
 
 /**
@@ -15,8 +9,8 @@ const config = getConfig();
  *
  * @type {import("../types").CommandFunction}
  */
-export const run = async(client, message, args) => {
-    let options = parseOptions(args, {
+export const run = async(client, message, args, context) => {
+    const options = parseOptions(args, {
         "boolean": [
             "channel"
         ],
@@ -25,13 +19,13 @@ export const run = async(client, message, args) => {
         }
     });
 
-    let parsedArgs = options._;
+    const parsedArgs = options._;
 
     if (!parsedArgs.length) return "Bruder da ist keine Frage :c";
 
     const embed = {
         title: `**${Util.cleanContent(parsedArgs.join(" "), message.channel)}**`,
-        timestamp: moment.utc().format(),
+        timestamp: new Date(),
         color: 0x9400D3,
         author: {
             name: `Umfrage von ${message.author.username}`,
@@ -41,7 +35,7 @@ export const run = async(client, message, args) => {
 
     /** @type {import("discord.js").TextChannel} */
     const channel = options.channel
-        ? client.guilds.cache.get(config.ids.guild_id).channels.cache.get(config.ids.votes_channel_id)
+        ? context.textChannels.votes
         : message.channel;
 
     const messageWithVoteContent = await channel.send( {

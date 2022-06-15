@@ -1,14 +1,10 @@
-// ========================= //
-// = Copyright (c) NullDev = //
-// ========================= //
+import type { CommandFunction } from "../../types";
 
 /**
  * Lists all server roles
- *
- * @type {import("../../types").CommandFunction}
  */
-export const run = async(client, message, args) => {
-    let roleNames = message.guild.roles.cache
+export const run: CommandFunction = async(client, message, args) => {
+    const roleNames = message.guild.roles.cache
         .filter(element => String(element.name).toLowerCase() !== "@everyone")
         .map(element => element.name);
 

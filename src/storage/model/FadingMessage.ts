@@ -1,37 +1,46 @@
 /* Disabled due to sequelize's DataTypes */
 /* eslint-disable new-cap */
 
-import { Model, DataTypes } from "sequelize";
+import type { Snowflake } from "discord.js";
+import { Model, DataTypes, type Sequelize } from "sequelize";
 import { v4 as uuidv4 } from "uuid";
+import type { ProcessableMessage } from "../../handler/cmdHandler";
 
 export default class FadingMessage extends Model {
+    declare id: string;
+    declare messageId: Snowflake;
+    declare channelId: Snowflake;
+    declare guildId: Snowflake;
+    declare beginTime: Date;
+    declare endTime: Date;
+
     /**
      * Starts a fading message object
      * @param {import("discord.js").Message} message
      * @param {Number} deleteInMs The time in milliseconds when the message should be deleted
      * @returns {Promise<this>}
      */
-    startFadingMessage(message, deleteInMs) {
+    startFadingMessage(message: ProcessableMessage, deleteInMs: number) {
         this.beginTime = this.beginTime || new Date();
         this.endTime = this.endTime || new Date(this.beginTime.valueOf() + deleteInMs);
         this.messageId = message.id;
         this.channelId = message.channel.id;
-        this.guildId = message.channel.guild.id;
+        this.guildId = message.guild.id;
         return this.save();
     }
 
     /**
      * Starts a fading message object
      * @param {import("discord.js").Message} message
-     * @param {Number} deleteInMs The time in milliseconds when the message should be deleted
+     * @param {number} deleteInMs The time in milliseconds when the message should be deleted
      * @returns {Promise<this>}
      */
-    static async newFadingMessage(message, deleteInMs) {
-        let fadingMessage = await FadingMessage.create();
+    static async newFadingMessage(message: ProcessableMessage, deleteInMs: number) {
+        const fadingMessage = await FadingMessage.create();
         await fadingMessage.startFadingMessage(message, deleteInMs);
     }
 
-    static initialize(sequelize) {
+    static initialize(sequelize: Sequelize) {
         this.init({
             id: {
                 type: DataTypes.STRING(36),
@@ -57,29 +66,7 @@ export default class FadingMessage extends Model {
             endTime: {
                 type: DataTypes.DATE,
                 allowNull: true
-            },
-            isActive: {
-                type: DataTypes.VIRTUAL,
-                get() {
-                    let currentTime = new Date();
-                    return currentTime >= beginTime && currentTime < endTime;
-                },
-                set() {
-                    throw new Error("Can't set isActive property of FadingMessage");
-                }
-            },
-            isFinished: {
-                type: DataTypes.VIRTUAL,
-                get() {
-                    let currentTime = new Date();
-                    return currentTime > endTime;
-                },
-                set() {
-                    throw new Error("Can't set isFinished property of FadingMessage");
-                }
             }
-        }, {
-            sequelize
-        });
+        }, { sequelize });
     }
 }

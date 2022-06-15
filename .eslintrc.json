@@ -1,5 +1,6 @@
 {                                           // NullDev-Style ESLint Config: https://github.com/NullDevCo/JavaScript-Styleguide
     "plugins": [
+        "eslint-plugin-node",
         "@typescript-eslint"
     ],
     "env": {                                // http://eslint.org/docs/user-guide/configuring.html#specifying-environments
@@ -12,7 +13,8 @@
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
         "ecmaVersion": 12,                  // set highest possible version
-        "requireConfigFile": false          // make babel not look for config
+        "requireConfigFile": false,         // make babel not look for config
+        "project": ["./tsconfig.json"]
     },
     "ignorePatterns": [                     // Ignore dist folders and dependencies
         "dist",
@@ -20,15 +22,13 @@
         "node_modules"
     ],
     "rules": {
-        /**
-         * Strict mode
-         */
         "strict": [2, "never"],            // As we compile using TS, strict mode will always be emitted
         /**
          * ES6
          */
         "no-var": 2,                        // http://eslint.org/docs/rules/no-var
-        "prefer-const": 0,                  // http://eslint.org/docs/rules/prefer-const
+        "prefer-const": "error",
+        "arrow-parens": ["warn", "as-needed"],
         "prefer-destructuring": [2, {       // http://eslint.org/docs/rules/prefer-destructuring
             "array": false,
             "object": true
@@ -71,6 +71,22 @@
         "use-isnan": 2,                     // http://eslint.org/docs/rules/use-isnan
         "block-scoped-var": 2,              // http://eslint.org/docs/rules/block-scoped-var
         "valid-typeof": 2,                  // http://eslint.org/docs/rules/valid-typeof
+
+        // Largely based on this post:
+        // https://maximorlov.com/linting-rules-for-asynchronous-code-in-javascript
+        "no-async-promise-executor": "error",
+        "no-await-in-loop": "warn",
+        "no-promise-executor-return": "error",
+        "require-atomic-updates": "warn",
+        "max-nested-callbacks": "error",
+        "no-return-await": "error",
+        "prefer-promise-reject-errors": "error",
+        "node/handle-callback-err": "error",
+        "node/no-callback-literal": "error",
+        "@typescript-eslint/await-thenable": "error",
+        "@typescript-eslint/no-floating-promises": "error", // https://mikebifulco.com/posts/eslint-no-floating-promises
+        "@typescript-eslint/no-misused-promises": "error",
+
         /**
          * Best practices
          */

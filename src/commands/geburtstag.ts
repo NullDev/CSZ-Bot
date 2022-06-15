@@ -1,4 +1,4 @@
-import Birthday from "../storage/model/Birthday";
+import Birthday, { isOneBasedMonth } from "../storage/model/Birthday";
 import moment from "moment";
 
 import log from "../utils/logger";
@@ -28,20 +28,23 @@ export class GeburtstagCommand implements ApplicationCommand {
     async handleInteraction(command: CommandInteraction<CacheType>, client: Client<boolean>): Promise<void> {
         const day = command.options.getInteger("day", true);
         const month = command.options.getInteger("month", true);
+
+        if(!isOneBasedMonth(month)) return;
+
         const date = moment(`${month}-${day}`, "MM-DD");
 
-        if(date.isValid()) {
-            try {
-                await Birthday.insertBirthday(command.user.id, day, month);
-                command.reply("Danke mein G, ich hab dein Geburtstag eingetragen!");
-            }
-            catch(err) {
-                log.error(err);
-                command.reply("Shit, da ist was schief gegangen - hast du deinen Geburtstag schon eingetragen und bist so dumm das jetzt nochmal zu machen? Piss dich.");
-            }
-        }
-        else {
+        if (!date.isValid()) {
             await command.reply("Ach komm, für wie blöd hältst du mich?");
+            return;
+        }
+
+        try {
+            await Birthday.insertBirthday(command.user.id, day, month);
+            await command.reply("Danke mein G, ich hab dein Geburtstag eingetragen!");
+        }
+        catch(err) {
+            log.error("Geburtstag ist schief gelaufen", err);
+            await command.reply("Shit, da ist was schief gegangen - hast du deinen Geburtstag schon eingetragen und bist so dumm das jetzt nochmal zu machen? Piss dich.");
         }
     }
 }

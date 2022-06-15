@@ -1,8 +1,6 @@
 import * as path from "path";
-
 import { Sequelize } from "sequelize";
 
-// Models
 import AdditionalMessageData from "./model/AdditionalMessageData";
 import Birthday from "./model/Birthday";
 import FadingMessage from "./model/FadingMessage";
@@ -20,10 +18,10 @@ export async function initialize() {
         dialect: "sqlite",
         storage: path.resolve(__dirname, "..", "..", "storage.db"),
         logQueryParameters: true,
-        logging: (sql) => {
+        logging: sql => {
             // currently way too noisy because of the fading messages
             if(!sql.includes(FadingMessage.tableName)) {
-                log.debug(sql);
+                log.verbose(sql);
             }
         }
     });

@@ -1,12 +1,14 @@
 import { SlashCommandBuilder, SlashCommandIntegerOption, SlashCommandStringOption, SlashCommandUserOption } from "@discordjs/builders";
-import { CommandInteraction, GuildMember, User } from "discord.js";
-import { Message, Client } from "discord.js";
+import { CommandInteraction, GuildMember, PermissionString, User } from "discord.js";
+import { Client } from "discord.js";
 import Ban from "../../storage/model/Ban";
 import { getConfig } from "../../utils/configHandler";
-import { ApplicationCommand, CommandPermission, CommandResult, MessageCommand } from "../command";
-import * as cron from "node-cron";
+import { ApplicationCommand, CommandResult, MessageCommand } from "../command";
 import log from "../../utils/logger";
 import moment from "moment";
+import type { ProcessableMessage } from "../../handler/cmdHandler";
+import Cron from "croner";
+import type { BotContext } from "../../context";
 
 const config = getConfig();
 
@@ -14,8 +16,8 @@ const config = getConfig();
 
 const assignBannedRoles = async(user: GuildMember): Promise<boolean> => {
     log.debug(`Assigning ban role to user ${user.id}`);
-    let defaultRole = user.guild.roles.cache.find(role => role.id === config.ids.default_role_id);
-    let bannedRole = user.guild.roles.cache.find(role => role.id === config.ids.banned_role_id);
+    const defaultRole = user.guild.roles.cache.find(role => role.id === config.ids.default_role_id);
+    const bannedRole = user.guild.roles.cache.find(role => role.id === config.ids.banned_role_id);
 
     if (!defaultRole || !bannedRole) {
         return false;
@@ -44,8 +46,8 @@ const assignBannedRoles = async(user: GuildMember): Promise<boolean> => {
 
 export const restoreRoles = async(user: GuildMember): Promise<boolean> => {
     log.debug(`Restoring roles from user ${user.id}`);
-    let defaultRole = user.guild.roles.cache.find(role => role.id === config.ids.default_role_id);
-    let bannedRole = user.guild.roles.cache.find(role => role.id === config.ids.banned_role_id);
+    const defaultRole = user.guild.roles.cache.find(role => role.id === config.ids.default_role_id);
+    const bannedRole = user.guild.roles.cache.find(role => role.id === config.ids.banned_role_id);
 
     if (!defaultRole || !bannedRole) {
         return false;
@@ -74,9 +76,11 @@ export const restoreRoles = async(user: GuildMember): Promise<boolean> => {
 
 // #endregion
 
-export const startCron = (client: Client) => {
+export const startCron = (context: BotContext) => {
     log.info("Scheduling Ban Cronjob...");
-    cron.schedule("* * * * *", async() => {
+
+    // eslint-disable-next-line no-unused-vars
+    const banCron = new Cron("* * * * *", async() => {
         const now = new Date();
 
         try {
@@ -86,11 +90,11 @@ export const startCron = (client: Client) => {
                 log.debug(`Expired Ban found by user ${expiredBan.userId}. Expired on ${expiredBan.bannedUntil}`);
                 await expiredBan.destroy();
 
-                const user = client.guilds.cache.get(config.ids.guild_id)?.members.cache.get(expiredBan.userId);
+                const user = context.guild.members.cache.get(expiredBan.userId);
                 // No user, no problem
                 if (!user) continue;
 
-                restoreRoles(user);
+                await restoreRoles(user);
 
                 const msg = expiredBan.isSelfBan
                     ? "Glückwunsch! Dein selbst auferlegter Bann in der Coding Shitpost Zentrale ist beendet."
@@ -100,12 +104,12 @@ export const startCron = (client: Client) => {
             }
         }
         catch (err) {
-            log.error(`Error in cron job: ${err}`);
+            log.error("Error in cron job", err);
         }
     });
 };
 
-export const ban = async(client: Client, member: GuildMember, banInvoker: GuildMember | User, reason: string, isSelfBan: boolean, duration?: number): Promise<string | undefined> => {
+export const ban = async(client: Client, member: GuildMember, banInvoker: GuildMember | User, reason: string, isSelfBan: boolean, duration?: number): Promise<string | void> => {
     log.debug(`Banning ${member.id} by ${banInvoker.id} because of ${reason} for ${duration}.`);
 
     // No Shadow ban :(
@@ -126,8 +130,8 @@ export const ban = async(client: Client, member: GuildMember, banInvoker: GuildM
     const humanReadableDuration = duration ? moment.duration(duration, "hours").locale("de").humanize() : undefined;
 
     const banReasonChannel = member.guild.channels.resolve(config.ids.bot_log_channel_id);
-    if(banReasonChannel && banReasonChannel.isText()) {
-        banReasonChannel.send({
+    if (banReasonChannel && banReasonChannel.isText()) {
+        await banReasonChannel.send({
             content: `<@${member.id}> ${isSelfBan ? "hat sich selbst" : `wurde von ${banInvoker}`} ${humanReadableDuration ? `für ${humanReadableDuration}` : "bis auf unbestimmte Zeit"} gebannt. \nGrund: ${reason}`,
             allowedMentions: {
                 users: []
@@ -146,11 +150,9 @@ Lg & xD™`);
 export class BanCommand implements ApplicationCommand, MessageCommand {
     name: string = "ban";
     description: string = "Joa, bannt halt einen ne?";
-    permissions?: readonly CommandPermission[] | undefined = [{
-        id: config.bot_settings.moderator_id,
-        permission: true,
-        type: "ROLE"
-    }];
+    requiredPermissions: readonly PermissionString[] = [
+        "BAN_MEMBERS"
+    ];
     get applicationCommand(): Pick<SlashCommandBuilder, "toJSON"> {
         return new SlashCommandBuilder()
             .setName(this.name)
@@ -184,7 +186,7 @@ export class BanCommand implements ApplicationCommand, MessageCommand {
         const humanReadableDuration = moment.duration(duration, "hours").locale("de").humanize();
 
         const userAsGuildMember = command.guild?.members.resolve(user);
-        if(!userAsGuildMember) {
+        if (!userAsGuildMember) {
             return command.reply({
                 content: "Yo, der ist nicht auf dem Server",
                 ephemeral: true
@@ -193,7 +195,7 @@ export class BanCommand implements ApplicationCommand, MessageCommand {
 
         const err = await ban(client, userAsGuildMember, invokingUser, reason, false, duration ?? undefined);
 
-        if(err) {
+        if (err) {
             return command.reply({
                 content: err,
                 ephemeral: true
@@ -201,21 +203,22 @@ export class BanCommand implements ApplicationCommand, MessageCommand {
         }
 
         return command.reply({
-            content: `Ok Bruder, ich hab <@${user.id}> wegen ${reason} ${ duration > 0 ? `für ${humanReadableDuration}` : ""} gebannt`
+            content: `Ok Bruder, ich hab <@${user.id}> wegen ${reason} ${duration > 0 ? `für ${humanReadableDuration}` : ""} gebannt`
         });
     }
-    async handleMessage(message: Message, client: Client<boolean>): Promise<CommandResult> {
+
+    async handleMessage(message: ProcessableMessage, client: Client<boolean>): Promise<CommandResult> {
         const user = message.mentions.users.first();
         const invokingUser = message.author;
 
-        if(!user) {
+        if (!user) {
             await message.reply("Bruder, gib doch einen User an.");
             return;
         }
 
         const userAsGuildMember = message.guild?.members.resolve(user);
 
-        if(!userAsGuildMember) {
+        if (!userAsGuildMember) {
             await message.reply("Bruder, der ist nicht auf diesem Server.");
             return;
         }
@@ -228,13 +231,13 @@ export class BanCommand implements ApplicationCommand, MessageCommand {
         // the whole message except the command itself
         const messageAfterCommand = message.content.substr(message.content.indexOf(this.name) + this.name.length).trim();
         let reason = "Willkür";
-        if(message.reference) {
-            if(messageAfterCommand.trim().length > 0) {
+        if (message.reference) {
+            if (messageAfterCommand.trim().length > 0) {
                 reason = messageAfterCommand;
             }
         }
-        // Otherwhise we would extract everything that is written AFTER the first mention
         else {
+            // Otherwise we would extract everything that is written AFTER the first mention
             const match = /\<@!?[0-9]+\> (.+)/.exec(messageAfterCommand);
             if (match && match[1]) {
                 reason = match[1];
@@ -244,7 +247,7 @@ export class BanCommand implements ApplicationCommand, MessageCommand {
 
         const err = await ban(client, userAsGuildMember, invokingUser, reason, false);
 
-        if(err) {
+        if (err) {
             await message.reply({
                 content: err
             });

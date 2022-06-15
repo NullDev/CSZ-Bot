@@ -1,48 +1,38 @@
-// ========================= //
-// = Copyright (c) NullDev = //
-// ========================= //
-
 import { promises as fs } from "fs";
 import * as path from "path";
 import { messageCommands } from "../handler/commandHandler";
-
-import { getConfig } from "../utils/configHandler";
-const config = getConfig();
+import type { CommandFunction } from "../types";
 
 /**
  * Retrieves commands in chunks that doesn't affect message limit
- * @param {Array<Record<string, string>>} commands
- * @returns {Array<string>}
  */
-const getCommandMessageChunksMatchingLimit = (commands) => {
-    let chunk = [];
-    let idx = 0;
+const getCommandMessageChunksMatchingLimit = (commands: Array<[string, string]>): string[] => {
+    const chunk: string[] = [];
+    let index = 0;
 
     commands
         .sort((a, b) => a[0].localeCompare(b[0]))
         .forEach(value => {
-            if (chunk[idx] && chunk[idx].length + (value[0].length + value[1].length + 10) > 2000) {
-                chunk[idx] += "```";
-                ++idx;
+            if (chunk[index] && chunk[index].length + (value[0].length + value[1].length + 10) > 2000) {
+                chunk[index] += "```";
+                ++index;
             }
-            if (!chunk[idx]) {
-                chunk[idx] = "```css\n";
+            if (!chunk[index]) {
+                chunk[index] = "```css\n";
             }
-            chunk[idx] += `${value[0]}: ${value[1]}\n\n`;
+            chunk[index] += `${value[0]}: ${value[1]}\n\n`;
         });
 
-    chunk[idx] += "```";
+    chunk[index] += "```";
 
     return chunk;
 };
 
 /**
  * Enlists all user-commands with descriptions
- *
- * @type {import("../types").CommandFunction}
  */
-export const run = async(client, message, args) => {
-    let commandObj = {};
+export const run: CommandFunction = async(client, message, args, context) => {
+    const commandObj: Record<string, string> = {};
     const commandDir = __dirname;
 
     const files = await fs.readdir(commandDir);
@@ -51,8 +41,8 @@ export const run = async(client, message, args) => {
             continue; // Skip source maps etc
         }
 
-        let cmdPath = path.resolve(commandDir, file);
-        let stats = await fs.stat(cmdPath);
+        const cmdPath = path.resolve(commandDir, file);
+        const stats = await fs.stat(cmdPath);
 
         if (!stats.isDirectory()) {
             // commandStr is the key and the description of the command is the value
@@ -60,8 +50,8 @@ export const run = async(client, message, args) => {
             const module = await import(modulePath);
 
             // Old file-based commands
-            if(module.description) {
-                let commandStr = config.bot_settings.prefix.command_prefix + file.toLowerCase().replace(/\.js/gi, "");
+            if (module.description) {
+                const commandStr = context.rawConfig.bot_settings.prefix.command_prefix + file.toLowerCase().replace(/\.js/gi, "");
                 commandObj[commandStr] = module.description;
             }
         }
@@ -70,7 +60,7 @@ export const run = async(client, message, args) => {
         messageCommands
             .filter(cmd => !cmd.modCommand)
             .forEach(cmd => {
-                let commandStr = config.bot_settings.prefix.command_prefix + cmd.name;
+                const commandStr = context.rawConfig.bot_settings.prefix.command_prefix + cmd.name;
                 commandObj[commandStr] = cmd.description;
             });
     }
@@ -78,7 +68,7 @@ export const run = async(client, message, args) => {
     await message.author.send(
         "Hallo, " + message.author.username + "!\n\n" +
         "Hier ist eine Liste mit Commands:\n\n" +
-        "Bei Fragen kannst du dich an @ShadowByte#1337 (<@!371724846205239326>) wenden!"
+        "Bei Fragen kannst du dich über den Kanal #czs-Bot (<#902960751222853702>) an uns wenden!"
     );
 
     const chunks = getCommandMessageChunksMatchingLimit(Object.entries(commandObj));

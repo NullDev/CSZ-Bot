@@ -1,8 +1,9 @@
 // @ts-ignore
-import { Client, Message, User } from "discord.js";
+import { Client, User } from "discord.js";
 import Penis from "../storage/model/Penis";
 import { CommandResult, MessageCommand } from "./command";
 import log from "../utils/logger";
+import type { ProcessableMessage } from "../handler/cmdHandler";
 
 export type Radius = 1 | 2 | 3;
 
@@ -14,17 +15,21 @@ const DIAMETER_CHARS: Record<Radius, string> = {
 
 const PENIS_MAX = 30;
 
-const sendPenis = async(user: User, message: Message, size: number, radius: Radius, measurement: Date = new Date()): Promise<Message<boolean>> => {
+
+const measurementTimeFormatter = new Intl.DateTimeFormat("de-DE", {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false
+});
+
+const sendPenis = async(user: User, message: ProcessableMessage, size: number, radius: Radius, measurement: Date = new Date()): Promise<void> => {
     const diameterChar = DIAMETER_CHARS[radius];
     const penis = `8${diameterChar.repeat(size)}D`;
-    const circumfence = (Math.PI * radius * 2).toFixed(2);
-    const measuredAt = new Intl.DateTimeFormat("de-DE", {
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-        hour12: false
-    }).format(measurement);
-    return message.reply(`Pimmel von <@${user.id}>:\n${penis}\n(Länge: ${size} cm, Umfang: ${circumfence} cm, Gemessen um ${measuredAt})`);
+    const circumference = (Math.PI * radius * 2).toFixed(2);
+    const measuredAt = measurementTimeFormatter.format(measurement);
+
+    await message.reply(`Pimmel von <@${user.id}>:\n${penis}\n(Länge: ${size} cm, Umfang: ${circumference} cm, Gemessen um ${measuredAt})`);
 };
 
 const isNewLongestDick = async(size: number): Promise<boolean> => {
@@ -81,14 +86,15 @@ export class PenisCommand implements MessageCommand {
         "cock",
         "pimmelchen",
         "pfahl",
-        "cocka"
+        "cocka",
+        "yarak"
     ];
     description = "Zeigt dir die Schwanzlänge eines Nutzers an.";
 
     /**
      * Replies to the message with a random penis length
      */
-    async handleMessage(message: Message, _client: Client): Promise<CommandResult> {
+    async handleMessage(message: ProcessableMessage, _client: Client): Promise<CommandResult> {
         const { author } = message;
         const mention = message.mentions.users.first();
         const userToMeasure = mention !== undefined ? mention : author;

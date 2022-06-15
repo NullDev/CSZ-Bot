@@ -2,7 +2,6 @@
 // = Copyright (c) NullDev = //
 // ========================= //
 
-import type {CommandFunction} from "../types";
 // Dependencies
 import {
     Client, CommandInteraction, Guild, Message,
@@ -33,14 +32,13 @@ export class YoinkCommand implements MessageCommand, ApplicationCommand {
     async handleInteraction(command: CommandInteraction, client: Client): Promise<void> {
         const author = command.guild?.members.cache.get(command.member!.user.id)!;
         if (!isEmotifizierer(author)) {
-            return command.reply("Bist nicht cool genug");
+            return await command.reply("Bist nicht cool genug");
 
         }
-        let emote = command.options.getString("emote", true);
-        let name = command.options.getString("name", false);
+        const emote = command.options.getString("emote", true);
+        const name = command.options.getString("name", false);
        let s = await this.createEmote(emote, command.channel!, name, command.guild!);
-        return command.reply(s);
-
+        return await command.reply(s);
     }
 
     async handleMessage(message: Message, client: Client): Promise<void> {
@@ -50,55 +48,30 @@ export class YoinkCommand implements MessageCommand, ApplicationCommand {
             await message.channel.send("Bist nicht cool genug");
             return;
         }
-        let args = message.content.split(" ");
+        const args = message.content.split(" ");
 
         if (args.length >= 1) {
-             message.channel.send(await this.createEmote(args[1], message.channel, args.length >= 2 ? args[1] : null, message.guild!));
+            await this.createEmote(args[1], message.channel, args.length >= 2 ? args[1] : null, message.guild);
         }
         else {
             await message.channel.send("Argumente musst du schon angeben, du Mongo");
             return;
         }
         await message.delete();
-        return;
     }
 
 
     async createEmote(emoji: string, channel: TextBasedChannel, name: string | null, guild: Guild):Promise<string> {
-        let parseEmoji = Util.parseEmoji(emoji);
+        const parseEmoji = Util.parseEmoji(emoji);
         if (parseEmoji === null) {
             return `Du Spast, ich kann dein Emote nicht parsen`;
         }
-        let extension = parseEmoji.animated ? ".gif" : ".png";
-        let emoteUrl = `https://cdn.discordapp.com/emojis/${parseEmoji.id}` + extension;
-        let emotename = name !== null ? name : parseEmoji.name;
-        let guildEmoji = await guild?.emojis.create(emoteUrl, emotename);
+        const extension = parseEmoji.animated ? ".gif" : ".png";
+        const emoteUrl = `https://cdn.discordapp.com/emojis/${parseEmoji.id}` + extension;
+        const emotename = name !== null ? name : parseEmoji.name;
+        const guildEmoji = await guild?.emojis.create(emoteUrl, emotename);
         return `Hab \<:${guildEmoji.name}:${guildEmoji.id}\> als \`${guildEmoji.name}\` hinzugefügt`;
     }
 }
-
-export const run: CommandFunction = async(client, message, args) => {
-    // parse options
-    const pinger = message.guild?.members.cache.get(message.member!.user.id)!;
-    if (!isEmotifizierer(pinger)) {
-        await message.channel.send("Bist nicht cool genug");
-        return;
-    }
-
-    if (args.length >= 1) {
-        const parseEmoji = Util.parseEmoji(args[0]);
-
-        if (parseEmoji !== null) {
-            let extension = parseEmoji.animated ? ".gif" : ".png";
-            let emoteUrl = `https://cdn.discordapp.com/emojis/${parseEmoji.id}` + extension;
-            let emotename = args.length >= 2 ? args[1] : parseEmoji.name;
-            message.guild?.emojis.create(emoteUrl, emotename).then((emote) => message.channel.send(`Hab \<:${emote.name}:${emote.id}\> als \`${emote.name}\` hinzugefügt`));
-        }
-    }
-    else {
-        await message.channel.send("Argumente musst du schon angeben, du Mongo");
-    }
-    await message.delete();
-};
 
 export const description = "Klaut emotes";

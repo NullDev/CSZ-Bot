@@ -4,20 +4,34 @@
 
 import { promises as fs } from "fs";
 import * as path from "path";
-import { Client, Message } from "discord.js";
+import { Client, Guild, GuildMember, Message } from "discord.js";
 import { CommandFunction, CommandResult } from "../types";
 
 import log from "../utils/logger";
 import { getConfig } from "../utils/configHandler";
 import * as ban from "../commands/modcommands/ban";
+import type { BotContext } from "../context";
 
 const config = getConfig();
+
+/**
+ * A message that the bot can pass to command handlers.
+ * For example, it ensures that there is a member (and it's not a DM)
+ */
+export type ProcessableMessage = Message & {
+    member: GuildMember;
+    guild: Guild;
+};
+
+export function isProcessableMessage(message: Message): message is ProcessableMessage {
+    return !!message.member && !!message.guild;
+}
 
 /**
  * Passes commands to the correct executor
  *
  */
-export default async function(message: Message, client: Client, isModCommand: boolean): Promise<CommandResult> {
+export default async function(message: ProcessableMessage, client: Client, isModCommand: boolean, context: BotContext): Promise<CommandResult> {
     if (message.author.bot) return;
 
     const cmdPrefix = isModCommand
@@ -62,11 +76,9 @@ export default async function(message: Message, client: Client, isModCommand: bo
      */
     if (!usedCommand.run) return;
 
-    if (!message.member) return;
-
     if (
         isModCommand &&
-        !message.member.roles.cache.some((r) =>
+        !message.member.roles.cache.some(r =>
             config.bot_settings.moderator_roles.includes(r.name)
         )
     ) {
@@ -76,7 +88,7 @@ export default async function(message: Message, client: Client, isModCommand: bo
 
         if (
             message.member.roles.cache.some(
-                (r) => r.id === config.ids.banned_role_id
+                r => r.id === config.ids.banned_role_id
             )
         ) {
             return "Da haste aber Schwein gehabt";
@@ -93,14 +105,15 @@ export default async function(message: Message, client: Client, isModCommand: bo
     );
 
     try {
-        const response = await usedCommand.run(client, message, args);
+        const response = await usedCommand.run(client, message, args, context);
 
         // Non-Exception Error returned by the command (e.g.: Missing Argument)
         return response;
     }
     catch (err) {
         // Exception returned by the command handler
-        log.error(err);
+        log.error("Error", err);
         return "Sorry, irgendwas ist schief gegangen! =(";
     }
 }
+
