@@ -82,6 +82,7 @@ export const run: CommandFunction = async(client, message, args) => {
     const pinger = message.guild?.members.cache.get(message.member!.user.id)!;
     if (!isEmotifizierer(pinger)) {
         await message.channel.send("Bist nicht cool genug");
+        return;
     }
 
     if (args.length >= 1) {
