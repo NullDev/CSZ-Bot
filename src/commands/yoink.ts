@@ -31,9 +31,8 @@ export class YoinkCommand implements MessageCommand, ApplicationCommand {
 
     async handleInteraction(command: CommandInteraction, client: Client): Promise<void> {
         const author = command.guild?.members.cache.get(command.member!.user.id)!;
-        if (!isEmotifizierer(author)||!isMod(author)) {
+        if (!isEmotifizierer(author) || !isMod(author)) {
             return await command.reply("Bist nicht cool genug");
-
         }
         const emote = command.options.getString("emote", true);
         const name = command.options.getString("name", false);
@@ -44,7 +43,7 @@ export class YoinkCommand implements MessageCommand, ApplicationCommand {
     async handleMessage(message: Message, client: Client): Promise<void> {
         // parse options
         const guildMember = message.guild?.members.cache.get(message.member!.user.id)!;
-        if (!isEmotifizierer(guildMember)||!isMod(guildMember)) {
+        if (!isEmotifizierer(guildMember) || !isMod(guildMember)) {
             await message.channel.send("Bist nicht cool genug");
             return;
         }
