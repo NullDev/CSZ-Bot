@@ -32,12 +32,12 @@ export class YoinkCommand implements MessageCommand, ApplicationCommand {
     async handleInteraction(command: CommandInteraction, client: Client): Promise<void> {
         const author = command.guild?.members.cache.get(command.member!.user.id)!;
         if (!isEmotifizierer(author) || !isMod(author)) {
-            return await command.reply("Bist nicht cool genug");
+            return command.reply("Bist nicht cool genug");
         }
         const emote = command.options.getString("emote", true);
         const name = command.options.getString("name", false);
-       let s = await this.createEmote(emote, command.channel!, name, command.guild!);
-        return await command.reply(s);
+        const s = await this.createEmote(emote, command.channel!, name, command.guild!);
+        return command.reply(s);
     }
 
     async handleMessage(message: Message, client: Client): Promise<void> {
@@ -63,7 +63,7 @@ export class YoinkCommand implements MessageCommand, ApplicationCommand {
     async createEmote(emoji: string, channel: TextBasedChannel, name: string | null, guild: Guild):Promise<string> {
         const parseEmoji = Util.parseEmoji(emoji);
         if (parseEmoji === null) {
-            return `Du Spast, ich kann dein Emote nicht parsen`;
+            return "Du Spast, ich kann dein Emote nicht parsen";
         }
         const extension = parseEmoji.animated ? ".gif" : ".png";
         const emoteUrl = `https://cdn.discordapp.com/emojis/${parseEmoji.id}` + extension;
