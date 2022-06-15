@@ -8,7 +8,7 @@ import {
     TextBasedChannel,
     Util
 } from "discord.js";
-import {isEmotifizierer} from "../utils/userUtils";
+import {isEmotifizierer, isMod} from "../utils/userUtils";
 import {ApplicationCommand, MessageCommand} from "./command";
 import {SlashCommandBuilder, SlashCommandStringOption} from "@discordjs/builders";
 /**
@@ -31,27 +31,26 @@ export class YoinkCommand implements MessageCommand, ApplicationCommand {
 
     async handleInteraction(command: CommandInteraction, client: Client): Promise<void> {
         const author = command.guild?.members.cache.get(command.member!.user.id)!;
-        if (!isEmotifizierer(author)) {
-            await command.channel!.send("Bist nicht cool genug");
-            return;
+        if (!isEmotifizierer(author) || !isMod(author)) {
+            return command.reply("Bist nicht cool genug");
         }
         const emote = command.options.getString("emote", true);
         const name = command.options.getString("name", false);
-
-        await this.createEmote(emote, command.channel!, name, command.guild);
+        const s = await this.createEmote(emote, command.channel!, name, command.guild!);
+        return command.reply(s);
     }
 
     async handleMessage(message: Message, client: Client): Promise<void> {
         // parse options
         const guildMember = message.guild?.members.cache.get(message.member!.user.id)!;
-        if (!isEmotifizierer(guildMember)) {
+        if (!isEmotifizierer(guildMember) || !isMod(guildMember)) {
             await message.channel.send("Bist nicht cool genug");
             return;
         }
         const args = message.content.split(" ");
 
         if (args.length >= 1) {
-            await this.createEmote(args[1], message.channel, args.length >= 2 ? args[1] : null, message.guild);
+            await this.createEmote(args[1], message.channel, args.length >= 2 ? args[1] : null, message.guild!);
         }
         else {
             await message.channel.send("Argumente musst du schon angeben, du Mongo");
@@ -61,16 +60,16 @@ export class YoinkCommand implements MessageCommand, ApplicationCommand {
     }
 
 
-    async createEmote(emoji: string, channel: TextBasedChannel, name: string | null, guild: Guild | null) {
+    async createEmote(emoji: string, channel: TextBasedChannel, name: string | null, guild: Guild):Promise<string> {
         const parseEmoji = Util.parseEmoji(emoji);
         if (parseEmoji === null) {
-            return;
+            return "Du Spast, ich kann dein Emote nicht parsen";
         }
         const extension = parseEmoji.animated ? ".gif" : ".png";
         const emoteUrl = `https://cdn.discordapp.com/emojis/${parseEmoji.id}` + extension;
         const emotename = name !== null ? name : parseEmoji.name;
-
-        await guild?.emojis.create(emoteUrl, emotename).then((emote) => channel.send(`Hab \<:${emote.name}:${emote.id}\> als \`${emote.name}\` hinzugefügt`));
+        const guildEmoji = await guild?.emojis.create(emoteUrl, emotename);
+        return `Hab \<:${guildEmoji.name}:${guildEmoji.id}\> als \`${guildEmoji.name}\` hinzugefügt`;
     }
 }
 
