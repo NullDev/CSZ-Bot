@@ -3,22 +3,22 @@
  * message commands and relies on the "new commands"
  */
 
-import {InfoCommand} from "../commands/info";
-import {getConfig} from "../utils/configHandler";
-import {REST} from "@discordjs/rest";
-import {Routes} from "discord-api-types/v9";
+import { InfoCommand } from "../commands/info";
+import { getConfig } from "../utils/configHandler";
+import { REST } from "@discordjs/rest";
+import { APIApplicationCommand, Routes } from "discord-api-types/v9";
 import {
     Client,
     CommandInteraction,
-    GuildApplicationCommandPermissionData,
     Interaction,
     Message,
-    MessageComponentInteraction
+    MessageComponentInteraction,
+    Permissions,
+    PermissionString
 } from "discord.js";
 import {
     ApplicationCommand,
     Command,
-    CommandPermission,
     isApplicationCommand,
     isMessageCommand,
     isSpecialCommand,
@@ -26,7 +26,6 @@ import {
     SpecialCommand, UserInteraction
 } from "../commands/command";
 import log from "../utils/logger";
-import { YepYepCommand } from "../commands/special/yepyep";
 import { NixOsCommand } from "../commands/special/nixos";
 import { WhereCommand } from "../commands/special/where";
 import { DadJokeCommand } from "../commands/special/dadJoke";
@@ -42,12 +41,10 @@ import { PenisCommand } from "../commands/penis";
 import { BoobCommand } from "../commands/boobs";
 import { BonkCommand } from "../commands/bonk";
 import { GoogleCommand } from "../commands/google";
-import { Mutable } from "../types";
 import { NischdaaaCommand } from "../commands/special/nischdaaa";
 import { SdmCommand } from "../commands/sdm";
 import { Nickname, NicknameButtonHandler } from "../commands/nickname";
-import { NopNopCommand } from "../commands/special/nopnop";
-import {WoisButton, WoisCommand} from "../commands/woisping";
+import { WoisButton, WoisCommand } from "../commands/woisping";
 import { FicktabelleCommand } from "../commands/ficktabelle";
 import { InviteCommand } from "../commands/invite";
 import { ErleuchtungCommand } from "../commands/erleuchtung";
@@ -57,12 +54,14 @@ import { GeburtstagCommand } from "../commands/geburtstag";
 import { Saufen } from "../commands/saufen";
 import { ErinnerungCommand } from "../commands/erinnerung";
 import {YoinkCommand} from "../commands/yoink";
+import { isProcessableMessage, ProcessableMessage } from "./cmdHandler";
+import type { BotContext } from "../context";
+import { EmoteSenderCommand } from "../commands/special/emoteSender";
 
 const config = getConfig();
 
 export const commands: readonly Command[] = [
     new InfoCommand(),
-    new YepYepCommand(),
     new NixOsCommand(),
     new WhereCommand(),
     new DadJokeCommand(),
@@ -80,7 +79,6 @@ export const commands: readonly Command[] = [
     new Nickname(),
     new NischdaaaCommand(),
     new SdmCommand(),
-    new NopNopCommand(),
     new WoisCommand(),
     new FicktabelleCommand(),
     new InviteCommand(),
@@ -91,6 +89,7 @@ export const commands: readonly Command[] = [
     new Saufen(),
     new ErinnerungCommand(),
     new YoinkCommand()
+    new EmoteSenderCommand()
 ];
 export const interactions: readonly UserInteraction[] = [
     new NicknameButtonHandler(),
@@ -105,74 +104,72 @@ export const messageCommands: Array<MessageCommand> =
 export const specialCommands: Array<SpecialCommand> =
     commands.filter<SpecialCommand>(isSpecialCommand);
 
-let lastSpecialCommands: Record<string, number> = specialCommands.reduce((acc, cmd) => ({...acc, [cmd.name]: 0}), {});
+const lastSpecialCommands: Record<string, number> = specialCommands.reduce((acc, cmd) => ({ ...acc, [cmd.name]: 0 }), {});
 
 /**
  * Registers all defined applicationCommands as guild commands
  * We're overwriting ALL, therefore no deletion is necessary
  */
-export const registerAllApplicationCommandsAsGuildCommands = async(client: Client): Promise<void> => {
-    const guildId = config.ids.guild_id;
+export const registerAllApplicationCommandsAsGuildCommands = async(context: BotContext): Promise<void> => {
     const clientId = config.auth.client_id;
     const token = config.auth.bot_token;
 
-    const rest = new REST({version: "9"}).setToken(token);
+    const rest = new REST({ version: "9" }).setToken(token);
 
-    const commandData = applicationCommands.map((cmd) =>
-        ({
-            ...cmd.applicationCommand.toJSON(),
-            default_permission: cmd.permissions ? cmd.permissions.length === 0 : true
-        })
-    );
-
-    try {
-        const guild = client.guilds.cache.get(guildId);
-        if (!guild) {
-            throw new Error(`Guild with ID ${guildId} not found`);
+    const createPermissionSet = (strings: readonly PermissionString[] | undefined): bigint => {
+        if(strings === undefined) {
+            return BigInt(0x40); // Default to "SEND_MESSAGES"
         }
-        // Bulk Overwrite Guild Application Commands
-        const createdCommands = await rest.put(Routes.applicationGuildCommands(clientId, guildId), {
-            body: commandData
-        }) as { id: string, name: string }[];
 
-        // Get commands that have permissions
-        const permissionizedCommands = applicationCommands.filter((cmd) => cmd.permissions && cmd.permissions.length > 0);
+        const start = BigInt(0x0);
+        let permSet = start;
+        for(const str of strings) {
+            const permFlag = Permissions.FLAGS[str];
+            if (permFlag === undefined) {
+                throw new Error(`Permission ${str} could not be resolved.`);
+            }
+            permSet |= permFlag;
+        }
+        return permSet;
+    };
 
-        // Create a request body for the permissions
-        const permissionsToPost: GuildApplicationCommandPermissionData[] = createdCommands
-            .filter(cmd => permissionizedCommands.find(pCmd => pCmd.name === cmd.name))
-            .map(cmd => ({
-                id: cmd.id,
-                permissions: permissionizedCommands.find(pCmd => pCmd.name === cmd.name)!.permissions! as Mutable<CommandPermission>[]
-            }));
+    // TODO: Reconsider using batch creation here. Ratelimit kicks in and takes round about 40 seconds to start the butt
+    for (const command of applicationCommands) {
+        try {
+            const commandCreationData: APIApplicationCommand | { dm_permission: boolean, default_member_permissions: string } = {
+                ...command.applicationCommand.toJSON(),
+                dm_permission: false,
+                default_member_permissions: String(createPermissionSet(command.requiredPermissions))
+            };
 
-        // Batch Edit Application Command Permissions
-        await guild.commands.permissions.set({
-            fullPermissions: permissionsToPost
-        });
-    }
-    catch (err) {
-        log.error(`Could not register the application commands, because: ${err}`);
-        throw(err);
+            // eslint-disable-next-line no-unused-vars
+            const createdCommand = await rest.post(Routes.applicationGuildCommands(clientId, context.guild.id), {
+                body: commandCreationData
+            }) as { id: string, name: string };
+        }
+        catch (err) {
+            log.error(`Could not register the application command ${command.name}`, err);
+        }
     }
 };
 
 /**
  * Handles command interactions.
- * @param command the recieved command interaction
+ * @param command the received command interaction
  * @param client client
  * @returns the handled command or an error if no matching command was found.
  */
 const commandInteractionHandler = (
     command: CommandInteraction,
-    client: Client
+    client: Client,
+    context: BotContext
 ): Promise<unknown> => {
     const matchingCommand = applicationCommands.find(
-        (cmd) => cmd.name === command.commandName
+        cmd => cmd.name === command.commandName
     );
     if (matchingCommand) {
         log.debug(`Found a matching command ${matchingCommand.name}`);
-        return matchingCommand.handleInteraction(command, client);
+        return matchingCommand.handleInteraction(command, client, context);
     }
 
     return Promise.reject(new Error(
@@ -188,14 +185,15 @@ const commandInteractionHandler = (
  */
 const messageComponentInteractionHandler = (
     command: MessageComponentInteraction,
-    client: Client
+    client: Client,
+    context: BotContext
 ): Promise<unknown> => {
     const matchingInteraction = interactions.find(
-        (cmd) => cmd.ids.find(id => id === command.customId
+        cmd => cmd.ids.find(id => id === command.customId
         ));
     if (matchingInteraction) {
         log.debug(`Found a matching interaction ${matchingInteraction.name}`);
-        return matchingInteraction.handleInteraction(command, client);
+        return matchingInteraction.handleInteraction(command, client, context);
     }
 
     return Promise.reject(new Error(
@@ -204,7 +202,7 @@ const messageComponentInteractionHandler = (
 };
 
 
-const checkPermissions = (member: GuildMember, permissions: ReadonlyArray<CommandPermission>): boolean => {
+const checkPermissions = (member: GuildMember, permissions: ReadonlyArray<PermissionString>): boolean => {
     log.debug(`Checking member ${member.id} permissions on permissionSet: ${JSON.stringify(permissions)}`);
 
     // No permissions, no problem
@@ -212,26 +210,7 @@ const checkPermissions = (member: GuildMember, permissions: ReadonlyArray<Comman
         return true;
     }
 
-    // First evaluating user permissions, if the user is allowed to use the command, then use it
-    const userPermission = permissions
-        .find(perm => perm.type === "USER" && perm.id === member.id)?.permission ?? false;
-
-    if (userPermission === true) {
-        return true;
-    }
-
-    // Next up find the highest role a user has and permissions are defined for
-    const highestMatchingRole = member.roles.cache
-        .filter(role => permissions.find(perm => perm.type === "ROLE" && perm.id === role.id) !== undefined)
-        .sort((a, b) => a.position - b.position)
-        .first();
-
-    // No matching role -> too bad for you
-    if (highestMatchingRole === undefined) {
-        return false;
-    }
-
-    return permissions.find(perm => perm.id === highestMatchingRole.id)!.permission;
+    return member.permissions.has(permissions);
 };
 
 /**
@@ -243,22 +222,23 @@ const checkPermissions = (member: GuildMember, permissions: ReadonlyArray<Comman
  * was found or an error if the command would be a mod command but the
  * invoking user is not a mod
  */
-const commandMessageHandler = (
+const commandMessageHandler = async(
     commandString: string,
-    message: Message,
-    client: Client
+    message: ProcessableMessage,
+    client: Client,
+    context: BotContext
 ): Promise<unknown> => {
     const matchingCommand = messageCommands.find(
         cmd => cmd.name.toLowerCase() === commandString.toLowerCase() || cmd.aliases?.includes(commandString.toLowerCase())
     );
 
     if (!matchingCommand) {
-        return Promise.reject(new Error(`No matching command found for command "${commandString}"`));
+        throw new Error(`No matching command found for command "${commandString}"`);
     }
 
-    if (matchingCommand.permissions) {
-        const member = message.guild?.members.cache.get(message.author.id);
-        if (member && !checkPermissions(member, matchingCommand.permissions)) {
+    if (matchingCommand.requiredPermissions) {
+        const member = message.guild.members.cache.get(message.author.id);
+        if (member && !checkPermissions(member, matchingCommand.requiredPermissions)) {
             return Promise.all([
                 ban(client, member, client.user!, "Lol", false, 0.08),
                 message.reply({
@@ -267,7 +247,7 @@ const commandMessageHandler = (
             ]);
         }
     }
-    return matchingCommand.handleMessage(message, client);
+    return matchingCommand.handleMessage(message, client, context);
 };
 
 const isCooledDown = (command: SpecialCommand) => {
@@ -283,47 +263,57 @@ const isCooledDown = (command: SpecialCommand) => {
     return Math.random() < diff / cooldownTime;
 };
 
-const specialCommandHandler = (message: Message, client: Client): Promise<unknown> => {
-    const commandCandidates = specialCommands.filter((p) => p.matches(message));
+const specialCommandHandler = (message: ProcessableMessage, client: Client, context: BotContext): Promise<unknown> => {
+    const commandCandidates = specialCommands.filter(p => p.matches(message, context));
     return Promise.all(
         commandCandidates
-            .filter((c) => Math.random() <= c.randomness)
-            .filter((c) => isCooledDown(c))
-            .map((c) => {
+            .filter(c => Math.random() <= c.randomness)
+            .filter(c => isCooledDown(c))
+            .map(c => {
                 log.info(
                     `User "${message.author.tag}" (${message.author}) performed special command: ${c.name}`
                 );
                 lastSpecialCommands[c.name] = Date.now();
-                return c.handleSpecialMessage(message, client);
+                return c.handleSpecialMessage(message, client, context);
             })
     );
 };
 
 export const handleInteractionEvent = (
     interaction: Interaction,
-    client: Client
+    client: Client,
+    context: BotContext
 ): Promise<unknown> => {
     if (interaction.isCommand()) {
         return commandInteractionHandler(
             interaction as CommandInteraction,
-            client
+            client,
+            context
         );
     }
-    else if (interaction.isMessageComponent()) {
-        return messageComponentInteractionHandler(interaction as MessageComponentInteraction, client);
+
+    if (interaction.isMessageComponent()) {
+        return messageComponentInteractionHandler(interaction as MessageComponentInteraction, client, context);
     }
     return Promise.reject(new Error("Not supported"));
 };
 
-export const messageCommandHandler = (
+export const messageCommandHandler = async(
     message: Message,
-    client: Client
+    client: Client,
+    context: BotContext
 ): Promise<unknown> => {
     // Bots shall not be able to perform commands. High Security
     if (message.author.bot) {
-        return Promise.resolve();
+        return;
     }
-    // TODO: The Prefix is now completly irrelevant, since the commands itself define
+
+    // Ensures that every command always gets a message that fits certain criteria (for example, being a message originating from a server, not a DM)
+    if (!isProcessableMessage(message)) {
+        return;
+    }
+
+    // TODO: The Prefix is now completely irrelevant, since the commands itself define
     // their permission.
     const plebPrefix = config.bot_settings.prefix.command_prefix;
     const modPrefix = config.bot_settings.prefix.mod_prefix;
@@ -333,9 +323,9 @@ export const messageCommandHandler = (
     ) {
         const cmdString = message.content.split(/\s+/)[0].slice(1);
         if (cmdString) {
-            return commandMessageHandler(cmdString, message, client);
+            return commandMessageHandler(cmdString, message, client, context);
         }
     }
 
-    return specialCommandHandler(message, client);
+    return specialCommandHandler(message, client, context);
 };

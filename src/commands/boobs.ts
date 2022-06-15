@@ -1,5 +1,6 @@
 // @ts-ignore
-import {Client, Message, User} from "discord.js";
+import {Client, User} from "discord.js";
+import type { ProcessableMessage } from "../handler/cmdHandler";
 import Boob from "../storage/model/Boob";
 import { CommandResult, MessageCommand } from "./command";
 import log from "../utils/logger";
@@ -96,19 +97,21 @@ const boobas: Record<number, Booba> = {
 };
 /* eslint-enable quote-props */
 
-const sendBoob = async(user: User, message: Message, size: number, measurement: Date = new Date()): Promise<Message<boolean>> => {
+const measurementTimeFormatter = new Intl.DateTimeFormat("de-DE", {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false
+});
+
+const sendBoob = async(user: User, message: ProcessableMessage, size: number, measurement: Date = new Date()): Promise<void> => {
     const booba = boobas[size];
     if(!booba) {
         throw new Error(`Booba with size ${size} not defined`);
     }
-    const measuredAt = new Intl.DateTimeFormat("de-DE", {
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-        hour12: false
-    }).format(measurement);
+    const measuredAt = measurementTimeFormatter.format(measurement);
 
-    return message.reply(`${booba.description} von <@${user.id}>:\n${booba.representation}\n(Gemessen um ${measuredAt})`);
+    await message.reply(`${booba.description} von <@${user.id}>:\n${booba.representation}\n(Gemessen um ${measuredAt})`);
 };
 
 
@@ -138,7 +141,7 @@ export class BoobCommand implements MessageCommand {
     ];
     description = "Zeigt dir die deine Boobs mit Größe an";
 
-    async handleMessage(message: Message, _client: Client): Promise<CommandResult> {
+    async handleMessage(message: ProcessableMessage, _client: Client): Promise<CommandResult> {
         const { author } = message;
         const mention = message.mentions.users.first();
         const userToMeasure = mention !== undefined ? mention : author;

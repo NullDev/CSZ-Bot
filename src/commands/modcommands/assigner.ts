@@ -1,20 +1,16 @@
-// ========================= //
-// = Copyright (c) NullDev = //
-// ========================= //
-
 import log from "../../utils/logger";
+import type { CommandFunction } from "../../types";
 import { getConfig } from "../../utils/configHandler";
 const config = getConfig();
 
 /**
  * Creates an assigner message
- *
- * @type {import("../../types").CommandFunction}
  */
-export const run = async(client, message, args) => {
+export const run: CommandFunction = async(client, message, args) => {
     if (!args.length) return "Keine Rollen angegeben.";
+    if (!message.guild) return "Keine Guild-Message, lel"; // TODO: Remove as soon as we have ProcessableMessage as base
 
-    let roleNames = message.guild.roles.cache
+    const roleNames = message.guild.roles.cache
         .filter(element => String(element.name).toLowerCase() !== "@everyone")
         .map(element => element.name);
 
@@ -22,9 +18,9 @@ export const run = async(client, message, args) => {
 
     await message.delete().catch(log.error);
 
-    let validRoles = args.filter(value => roleNames.includes(value));
+    const validRoles = args.filter(value => roleNames.includes(value));
 
-    for(const validRole of validRoles) {
+    for (const validRole of validRoles) {
         const roleMessage = await message.channel.send(validRole);
         await roleMessage.react("✅");
     }

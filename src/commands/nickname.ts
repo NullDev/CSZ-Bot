@@ -14,12 +14,10 @@ import {
     MessageActionRow, MessageButton, MessageComponentInteraction
 } from "discord.js";
 
-import {ApplicationCommand, CommandPermission, CommandResult, UserInteraction} from "./command";
-import {getConfig} from "../utils/configHandler";
+import { ApplicationCommand, CommandResult, UserInteraction } from "./command";
 import Nicknames from "../storage/model/Nickname";
-import {isTrusted} from "../utils/userUtils";
+import { isTrusted } from "../utils/userUtils";
 
-const config = getConfig();
 
 type Vote = "YES" | "NO";
 
@@ -53,7 +51,6 @@ export class Nickname implements ApplicationCommand {
     modCommand: boolean = false;
     name: string = "nickname";
     description: string = "Setzt Nicknames für einen User";
-    permissions: readonly CommandPermission[] = [];
 
     get applicationCommand(): Pick<SlashCommandBuilder, "toJSON"> {
         return new SlashCommandBuilder()
@@ -109,7 +106,7 @@ export class Nickname implements ApplicationCommand {
             const commandUser = command.guild?.members.cache.find(m => m.id === command.user.id)!;
             // We know that the user option is in every subcommand.
             const user = command.options.getUser("user", true);
-            const trusted = commandUser?.roles.cache.has(config.ids.trusted_role_id);
+            const trusted = isTrusted(commandUser);
             const sameuser = user.id === commandUser.user.id;
 
 
@@ -137,7 +134,7 @@ export class Nickname implements ApplicationCommand {
                 if (!trusted) {
                     return command.reply("Hurensohn. Der Command ist nix für dich.");
                 }
-                let nickname = command.options.getString("nickname", true);
+                const nickname = command.options.getString("nickname", true);
                 if (await Nicknames.nickNameExist(user.id, nickname)) {
                     return command.reply(`Würdest du Hurensohn aufpassen, wüsstest du, dass für ${user} '${nickname}' bereits existiert.`);
                 }
@@ -206,7 +203,7 @@ export class NicknameButtonHandler implements UserInteraction {
 
 
     async handleInteraction(interaction: MessageComponentInteraction, client: Client): Promise<void> {
-        let suggestion = ongoingSuggestions[interaction.message.id];
+        const suggestion = ongoingSuggestions[interaction.message.id];
 
         if (suggestion === undefined) {
             return interaction.update({
@@ -214,7 +211,7 @@ export class NicknameButtonHandler implements UserInteraction {
                 components: []
             });
         }
-        let userVoteMap = getUserVoteMap(interaction.message.id);
+        const userVoteMap = getUserVoteMap(interaction.message.id);
 
         const istrusted = isTrusted(interaction.guild?.members.cache.get(interaction.user.id)!);
         if (interaction.customId === "nicknameVoteYes") {
@@ -224,7 +221,7 @@ export class NicknameButtonHandler implements UserInteraction {
             userVoteMap[interaction.user.id] = {vote: "NO", trusted: istrusted};
         }
         // evaluate the Uservotes
-        let votes:UserVote[] = Object.values(userVoteMap);
+        const votes:UserVote[] = Object.values(userVoteMap);
         if (this.hasEnoughVotes(votes, "NO")) {
             return interaction.update({
                 content: `Der Vorschlag: \`${suggestion.nickname}\` für <@${suggestion.nicknameUserID}> war echt nicht so geil`,
@@ -240,7 +237,7 @@ export class NicknameButtonHandler implements UserInteraction {
             }
 
             return interaction.update({
-                content: `Für <@${suggestion.nicknameUserID}> ist jetzt  \`${suggestion.nickname}\` in der Rotation`,
+                content: `Für <@${suggestion.nicknameUserID}> ist jetzt \`${suggestion.nickname}\` in der Rotation`,
                 components: []
             });
         }

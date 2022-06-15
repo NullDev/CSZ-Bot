@@ -4,14 +4,14 @@
 
 import { SlashCommandBuilder, SlashCommandStringOption } from "@discordjs/builders";
 import { CacheType, Client, CommandInteraction, GuildMember, Message, MessageEmbed } from "discord.js";
-import { getConfig } from "../utils/configHandler";
+import { BotContext } from "../context";
+import type { ProcessableMessage } from "../handler/cmdHandler";
 import { ApplicationCommand, MessageCommand } from "./command";
-const config = getConfig();
 
 /**
  * Randomly capitalize letters
  */
-let transform = function(c: string): string {
+const transform = function(c: string): string {
     if (c === "ß" || c === "ẞ") return c;
     return Math.random() < 0.5 ? c.toLowerCase() : c.toUpperCase();
 };
@@ -46,7 +46,7 @@ export class MockCommand implements MessageCommand, ApplicationCommand {
             .setRequired(true)
         );
 
-    async handleInteraction(command: CommandInteraction<CacheType>, client: Client<boolean>): Promise<void> {
+    async handleInteraction(command: CommandInteraction<CacheType>, client: Client<boolean>, context: BotContext): Promise<void> {
         const author = command.guild?.members.resolve(command.user);
         const text = command.options.getString("text")!;
         if(!author) {
@@ -59,13 +59,13 @@ export class MockCommand implements MessageCommand, ApplicationCommand {
         });
     }
 
-    async handleMessage(message: Message<boolean>, _client: Client<boolean>): Promise<void> {
-        const author = message.guild?.members.resolve(message.author);
+    async handleMessage(message: ProcessableMessage, _client: Client<boolean>, context: BotContext): Promise<void> {
+        const author = message.guild.members.resolve(message.author);
         const { channel } = message;
+
         const isReply = message.reference?.messageId !== undefined;
-        let content = message.content.slice(`${config.bot_settings.prefix.command_prefix}${this.name} `.length);
+        let content = message.content.slice(`${context.rawConfig.bot_settings.prefix.command_prefix}${this.name} `.length);
         const hasContent = !!content && content.trim().length > 0;
-        let replyMessage: Message<boolean> | null = null;
 
         if(!author) {
             throw new Error("Couldn't resolve guild member");
@@ -76,6 +76,7 @@ export class MockCommand implements MessageCommand, ApplicationCommand {
             return;
         }
 
+        let replyMessage: Message<boolean> | null = null;
         if(isReply) {
             replyMessage = await message.channel.messages.fetch(message.reference!.messageId!);
             if(!hasContent) {
@@ -90,13 +91,16 @@ export class MockCommand implements MessageCommand, ApplicationCommand {
             await Promise.all([
                 replyMessage!.reply({
                     embeds: [mockedEmbed]
-                }), message.delete()]);
+                }),
+                message.delete()
+            ]);
         }
         else {
             await Promise.all([
                 channel.send({
                     embeds: [mockedEmbed]
-                }), message.delete()
+                }),
+                message.delete()
             ]);
         }
     }

@@ -52,7 +52,11 @@ const drawStempelkarteBackside = async(subjectAvatarUrl: string | undefined, ava
     const canvas = createCanvas(backgroundImage.width, backgroundImage.height);
     const ctx = canvas.getContext("2d");
 
-    const avatarSourcesWithPlaceholders = avatars.map(url => url ? loadImage(url) : Promise.reject());
+    const avatarSourcesWithPlaceholders = avatars.map(
+        url => url
+            ? loadImage(url)
+            : Promise.reject(new Error("url is falsy"))
+    );
 
     const avatarResults = await Promise.allSettled(avatarSourcesWithPlaceholders);
 
@@ -88,8 +92,8 @@ const drawStempelkarteBackside = async(subjectAvatarUrl: string | undefined, ava
 
 function chunkArray<T>(array: T[], chunkSize: number): T[][] {
     let index = 0;
-    let arrayLength = array.length;
-    let tempArray = [];
+    const arrayLength = array.length;
+    const tempArray = [];
 
     for (index = 0; index < arrayLength; index += chunkSize) {
         const myChunk = array.slice(index, index + chunkSize);
@@ -147,7 +151,7 @@ export class StempelkarteCommand implements ApplicationCommand {
                 });
             }
             catch (err) {
-                log.error(`Could not create where meme: ${err}`);
+                log.error("Could not create where meme", err);
             }
         }
     }

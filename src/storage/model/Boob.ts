@@ -25,6 +25,25 @@ export default class Boob extends Model<BoobAttributes, BoobCreationAttributes> 
     declare readonly createdAt: Date;
     declare readonly updatedAt: Date;
 
+    static getAverageBoobSizes = async(): Promise<Record<string, number>> => {
+        // Everything hacky, but I just want to implement it.
+        const averageObj: Record<string, number> = {};
+        // @ts-ignore
+        const result: ({ id: string, avgSize: number })[] = (await Boob.findAll({
+            attributes: [
+                "id",
+                [Sequelize.fn("AVG", Sequelize.col("size")), "avgSize"]
+            ],
+            group: [ "id" ]
+        }));
+
+        for(const res of result) {
+            averageObj[res.id] = res.avgSize;
+        }
+
+        return averageObj;
+    };
+
     static longestRecentMeasurement = (): Promise<Boob | null> => {
         const startToday = moment().startOf("days");
         const startTomorrow = moment().add(1, "days").startOf("days");

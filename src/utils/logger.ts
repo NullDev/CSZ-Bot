@@ -7,20 +7,21 @@ import * as winston from "winston";
 const loggingDir = "logs";
 
 const logger = winston.createLogger({
-    level: "info",
+    level: process.env.LOG_LEVEL ?? "info",
     format: winston.format.json(),
     transports: [
         new winston.transports.File({ filename: `${loggingDir}/error.log`, level: "error" }),
-        new winston.transports.File({ loggingDir, filename: `${loggingDir}/combined.log` })
+        new winston.transports.File({ filename: `${loggingDir}/combined.log` })
     ]
 });
 
 // if (process.env.NODE_ENV !== "production") {
 logger.add(new winston.transports.Console({
     format: winston.format.combine(
+        winston.format.errors({stack: true}),
         winston.format.colorize(),
         winston.format.timestamp(),
-        winston.format.printf(info => `${info.timestamp} [${info.level}] ${info.message}`)
+        winston.format.printf(info => `${info.timestamp} [${info.level}] ${info.message} ${info.stack || ""}`)
     )
 }));
 // }

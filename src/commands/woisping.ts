@@ -8,8 +8,8 @@ import {
     MessageComponentInteraction,
     Util
 } from "discord.js";
-import {Client} from "discord.js";
-import {ApplicationCommand, CommandPermission, CommandResult, UserInteraction} from "./command";
+import { Client } from "discord.js";
+import { ApplicationCommand, CommandResult, UserInteraction } from "./command";
 import log from "../utils/logger";
 
 
@@ -35,7 +35,7 @@ const getPingVoteMap = (messageid: string): Set<string> => {
 };
 
 const getMessage = (reason: string, usersVotedYes: string[] = []) => {
-    let content = usersVotedYes.length === 1 ? `<@&${config.ids.woisgang_role_id}> <@!${usersVotedYes[0]}> hat Bock auf Wois. Grund dafür ist \`${reason}\`` :
+    const content = usersVotedYes.length === 1 ? `<@&${config.ids.woisgang_role_id}> <@!${usersVotedYes[0]}> hat Bock auf Wois. Grund dafür ist \`${reason}\`` :
         `<@&${config.ids.woisgang_role_id}> <@!${usersVotedYes.join(">,<@!")}> haben Bock auf Wois. Grund dafür ist \`${reason}\``;
     return {
         content: content.trim(),
@@ -51,7 +51,6 @@ const getMessage = (reason: string, usersVotedYes: string[] = []) => {
 export class WoisCommand implements ApplicationCommand {
     name = "woisping";
     description = "Pingt die ganze Woisgang";
-    permissions: readonly CommandPermission[] = [];
 
     get applicationCommand(): Pick<SlashCommandBuilder, "toJSON"> {
         return new SlashCommandBuilder()
@@ -98,7 +97,7 @@ export class WoisCommand implements ApplicationCommand {
         });
         const message = await command.fetchReply();
         reasons[message.id] = reason;
-        let pingVoteMap = getPingVoteMap(message.id);
+        const pingVoteMap = getPingVoteMap(message.id);
         pingVoteMap.add(pinger.id);
     }
 }
@@ -111,20 +110,21 @@ export class WoisButton implements UserInteraction {
         const member = command.guild?.members.cache.get(command.member!.user.id)!;
         const isModMessage = isMod(member);
         if (!isModMessage && !isWoisGang(member)) {
-            command.reply({
+            return command.reply({
                 content: "Sorry, du bist leider kein Woisgang-Mitglied und darfst nicht abstimmen.",
                 ephemeral: true
             });
         }
 
-        let pingVoteMap = getPingVoteMap(command.message.id);
+        const pingVoteMap = getPingVoteMap(command.message.id);
         pingVoteMap.add(member.id);
         const amount = pingVoteMap.size;
         const now = Date.now();
         if (isModMessage || (amount >= config.bot_settings.woisping_threshold)) {
             const reason = reasons[command.message.id];
             lastPing = now;
-            return command.update({content: " Woisping ist durch", components: [], allowedMentions: { roles: [ config.ids.woisgang_role_id ] } });
+            await command.channel!.send(getMessage(reason, [...pingVoteMap]));
+            return command.update({content: " Woisping ist durch", components: []});
         }
         return command.reply({
             content: " Jetzt müssen nur die anderen Bock drauf haben.",
