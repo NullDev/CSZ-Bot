@@ -2,7 +2,6 @@
 // = Copyright (c) NullDev = //
 // ========================= //
 
-import type {CommandFunction} from "../types";
 // Dependencies
 import {
     Client, CommandInteraction, Guild, Message,
