@@ -51,7 +51,7 @@ export class YoinkCommand implements MessageCommand, ApplicationCommand {
         const args = message.content.split(" ");
 
         if (args.length >= 1) {
-            await this.createEmote(args[1], message.channel, args.length >= 2 ? args[1] : null, message.guild);
+            await this.createEmote(args[1], message.channel, args.length >= 2 ? args[1] : null, message.guild!);
         }
         else {
             await message.channel.send("Argumente musst du schon angeben, du Mongo");
