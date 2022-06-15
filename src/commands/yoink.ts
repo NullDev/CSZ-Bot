@@ -33,14 +33,14 @@ export class YoinkCommand implements MessageCommand, ApplicationCommand {
     async handleInteraction(command: CommandInteraction, client: Client): Promise<void> {
         const author = command.guild?.members.cache.get(command.member!.user.id)!;
         if (!isEmotifizierer(author)) {
-            await command.channel!.send("Bist nicht cool genug");
-            return;
+            return command.reply("Bist nicht cool genug");
+
         }
         let emote = command.options.getString("emote", true);
         let name = command.options.getString("name", false);
+       let s = await this.createEmote(emote, command.channel!, name, command.guild!);
+        return command.reply(s);
 
-        this.createEmote(emote, command.channel!, name, command.guild);
-        return;
     }
 
     async handleMessage(message: Message, client: Client): Promise<void> {
@@ -53,7 +53,7 @@ export class YoinkCommand implements MessageCommand, ApplicationCommand {
         let args = message.content.split(" ");
 
         if (args.length >= 1) {
-            this.createEmote(args[1], message.channel, args.length >= 2 ? args[1] : null, message.guild);
+             message.channel.send(await this.createEmote(args[1], message.channel, args.length >= 2 ? args[1] : null, message.guild!));
         }
         else {
             await message.channel.send("Argumente musst du schon angeben, du Mongo");
@@ -64,16 +64,16 @@ export class YoinkCommand implements MessageCommand, ApplicationCommand {
     }
 
 
-    createEmote(emoji: string, channel: TextBasedChannel, name: string | null, guild: Guild | null) {
+    async createEmote(emoji: string, channel: TextBasedChannel, name: string | null, guild: Guild):Promise<string> {
         let parseEmoji = Util.parseEmoji(emoji);
         if (parseEmoji === null) {
-            return;
+            return `Du Spast, ich kann dein Emote nicht parsen`;
         }
         let extension = parseEmoji.animated ? ".gif" : ".png";
         let emoteUrl = `https://cdn.discordapp.com/emojis/${parseEmoji.id}` + extension;
         let emotename = name !== null ? name : parseEmoji.name;
-
-        guild?.emojis.create(emoteUrl, emotename).then((emote) => channel.send(`Hab \<:${emote.name}:${emote.id}\> als \`${emote.name}\` hinzugefügt`));
+        let guildEmoji = await guild?.emojis.create(emoteUrl, emotename);
+        return `Hab \<:${guildEmoji.name}:${guildEmoji.id}\> als \`${guildEmoji.name}\` hinzugefügt`;
     }
 }
 
