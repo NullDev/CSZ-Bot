@@ -56,6 +56,7 @@ import { NeverCommand } from "../commands/never";
 import { GeburtstagCommand } from "../commands/geburtstag";
 import { Saufen } from "../commands/saufen";
 import { ErinnerungCommand } from "../commands/erinnerung";
+import {YoinkCommand} from "../commands/yoink";
 
 const config = getConfig();
 
@@ -88,7 +89,8 @@ export const commands: readonly Command[] = [
     new NeverCommand(),
     new GeburtstagCommand(),
     new Saufen(),
-    new ErinnerungCommand()
+    new ErinnerungCommand(),
+    new YoinkCommand()
 ];
 export const interactions: readonly UserInteraction[] = [
     new NicknameButtonHandler(),
