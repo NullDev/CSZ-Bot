@@ -60,9 +60,10 @@ export class DadJokeCommand implements SpecialCommand {
     }
 
     async handleSpecialMessage(message: ProcessableMessage, client: Client<boolean>): Promise<CommandResult> {
-        const phrase = Object.keys(this.matchPhrases).find(p => message.content.startsWith(p))!;
+        const msg = message.content.toLowerCase();
+        const phrase = Object.keys(this.matchPhrases).find(p => msg.startsWith(p))!;
         const attributes = this.matchPhrases[phrase];
-        const idx = message.content.toLowerCase().lastIndexOf(phrase);
+        const idx = msg.lastIndexOf(phrase);
 
         if(idx < (message.content.length - 1)) {
             // Get index of the first terminator character after trigger
