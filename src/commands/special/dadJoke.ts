@@ -37,7 +37,7 @@ export class DadJokeCommand implements SpecialCommand {
 
     private getRandomAnswer(config: PhraseConfig, slotConfig: Record<Slot, string>): string {
         const langArr = this.answers[config.lang];
-        const randomIdx = Math.random() * langArr.length;
+        const randomIdx = Math.floor(Math.random() * langArr.length);
         let randomMessage = langArr[randomIdx];
 
         if(randomMessage.includes("#")) {
