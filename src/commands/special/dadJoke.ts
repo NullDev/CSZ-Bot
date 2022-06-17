@@ -31,7 +31,7 @@ export class DadJokeCommand implements SpecialCommand {
         ],
         austrian: [
             "Und i bin da #BOTNAME# oida",
-            "Oida #WHOIS# was geht?"
+            "Oida #WHOIS#, was geht?"
         ]
     };
 
@@ -69,7 +69,7 @@ export class DadJokeCommand implements SpecialCommand {
             // Get index of the first terminator character after trigger
             const indexOfTerminator = message.content.search(/(?:(?![,])[\p{P}\p{S}\p{C}])/gu);
             // Extract the dad joke subject
-            const trimmedWords = message.content.substring(idx + 8, indexOfTerminator !== -1 ? indexOfTerminator : message.content.length).split(/\s+/).map(w => w.trim());
+            const trimmedWords = message.content.substring(idx + phrase.length + 1, indexOfTerminator !== -1 ? indexOfTerminator : message.content.length).split(/\s+/).map(w => w.trim());
             const whoIs = Util.cleanContent(trimmedWords.join(" "), message.channel).trim();
             const slots: Record<Slot, string> = {
                 WHOIS: whoIs,
