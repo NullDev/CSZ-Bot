@@ -16,7 +16,7 @@ export class DadJokeCommand implements SpecialCommand {
     cooldownTime: number | undefined;
     name: string = "Dad Joke";
     description: string = "Macht bei der passenden Gelegenheit einen Dad Joke";
-    randomness = 1.0;
+    randomness = 0.1;
 
     matchPhrases: Record<string, PhraseConfig> = {
         "ich bin": { lang: "german" },
