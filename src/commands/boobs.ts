@@ -49,11 +49,13 @@ const boobas: Record<number, Booba> = {
     },
     9: {
         description: "Mega Schlöpse",
+        /* eslint-disable */
         representation: `
         | |  | |
         | |  | |
         |\\_|  |\\_|
         `
+        /* eslint-enable */
     },
     10: {
         description: "Mommys Milkers",
