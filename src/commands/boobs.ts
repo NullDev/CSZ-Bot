@@ -50,8 +50,8 @@ const boobas: Record<number, Booba> = {
     9: {
         description: "Mega Schlöpse",
         representation: `
-        | |  | |
-        | |  | |
+        | |  | |
+        | |  | |
         |\\_|  |\\_|
         `
     },
