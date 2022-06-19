@@ -1,18 +1,16 @@
-FROM node:16-slim as build
+FROM node:16-slim as dependency-base
     WORKDIR /app
 
-    # Install dependencies (with dev-deps)
     COPY package*.json /app/
+
+FROM dependency-base as build
+    # Install dependencies (with dev-deps)
     RUN npm ci
 
     COPY . /app/
     RUN npm run compile
 
-FROM node:16-slim as runtime-dependencies
-    WORKDIR /app
-
-    # Install dependencies (runtime-deps only)
-    COPY package*.json /app/
+FROM dependency-base as runtime-dependencies
     RUN NODE_ENV=production npm ci
 
 FROM node:16-slim
