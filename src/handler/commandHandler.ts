@@ -57,6 +57,7 @@ import {YoinkCommand} from "../commands/yoink";
 import { isProcessableMessage, ProcessableMessage } from "./cmdHandler";
 import type { BotContext } from "../context";
 import { EmoteSenderCommand } from "../commands/special/emoteSender";
+import { InstagramLink } from "../commands/special/instagram";
 
 const config = getConfig();
 
@@ -89,7 +90,8 @@ export const commands: readonly Command[] = [
     new Saufen(),
     new ErinnerungCommand(),
     new YoinkCommand(),
-    new EmoteSenderCommand()
+    new EmoteSenderCommand(),
+    new InstagramLink()
 ];
 export const interactions: readonly UserInteraction[] = [
     new NicknameButtonHandler(),
