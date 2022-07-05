@@ -53,11 +53,12 @@ import { NeverCommand } from "../commands/never";
 import { GeburtstagCommand } from "../commands/geburtstag";
 import { Saufen } from "../commands/saufen";
 import { ErinnerungCommand } from "../commands/erinnerung";
-import {YoinkCommand} from "../commands/yoink";
+import { YoinkCommand } from "../commands/yoink";
 import { isProcessableMessage, ProcessableMessage } from "./cmdHandler";
 import type { BotContext } from "../context";
 import { EmoteSenderCommand } from "../commands/special/emoteSender";
 import { InstagramLink } from "../commands/special/instagram";
+import { OidaCommand } from "../commands/oida";
 
 const config = getConfig();
 
@@ -91,7 +92,8 @@ export const commands: readonly Command[] = [
     new ErinnerungCommand(),
     new YoinkCommand(),
     new EmoteSenderCommand(),
-    new InstagramLink()
+    new InstagramLink(),
+    new OidaCommand()
 ];
 export const interactions: readonly UserInteraction[] = [
     new NicknameButtonHandler(),
