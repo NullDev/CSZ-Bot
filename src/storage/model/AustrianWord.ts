@@ -2,7 +2,7 @@
 /* eslint-disable new-cap */
 
 import type { GuildMember, Snowflake } from "discord.js";
-import { DataTypes, Model, Optional, Sequelize } from "sequelize";
+import { DataTypes, Model, Op, Optional, Sequelize } from "sequelize";
 
 import log from "../../utils/logger";
 
@@ -36,6 +36,17 @@ export default class AustrianWord extends Model {
         });
         return result[0];
     };
+
+    static findTranslation(austrian: string): Promise<AustrianWord | null> {
+        return AustrianWord.findOne({
+            where: {
+                austrian: {
+                    // we want like to be case-insensitive, we don't need a placeholder
+                    [Op.like]: austrian.trim().toLowerCase()
+                }
+            }
+        });
+    }
 
     static initialize(sequelize: Sequelize) {
         this.init({
