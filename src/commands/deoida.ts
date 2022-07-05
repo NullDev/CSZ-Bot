@@ -22,23 +22,31 @@ const simpleRules: readonly Rule[] = [
 ];
 
 
-function deOida(value: string): Promise<string> {
+async function deOidaLine(line: string): Promise<string> {
     // We cannot just split all words using \s*. That could tear apart words or translations like "fescher bub"
     // Also, we need to take line breaks into account. We assume that tokens that are one translation unit
     // won't get torn apart by a line break.
     // This also reduces the number of combinations to check
-
     // TODO: Look up something in database
 
-    let result = value;
+    let result = line;
     for (const { pattern, translation } of simpleRules) {
         result = result.replaceAll(pattern, translation as string);
     }
-
-    return Promise.resolve(result);
+    return result;
 }
 
-export const run: CommandFunction = async(_client, message, args, _context) => {
+async function deOida(value: string): Promise<string> {
+    const lines = value.split("\n")
+        .map(s => s.trim())
+        .map(deOidaLine);
+
+    const translatedLines = await Promise.all(lines);
+
+    return translatedLines.join("\n");
+}
+
+export const run: CommandFunction = async (_client, message, args, _context) => {
     const messageToTranslate = message.reference?.messageId
         ? (await message.channel.messages.fetch(message.reference.messageId))
         : message;
