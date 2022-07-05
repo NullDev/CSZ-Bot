@@ -126,7 +126,7 @@ async function deOida(value: string): Promise<string> {
     return translatedLines.join("\n");
 }
 
-export const run: CommandFunction = async (_client, message, args, _context) => {
+export const run: CommandFunction = async(_client, message, args, _context) => {
     const messageToTranslate = message.reference?.messageId
         ? (await message.channel.messages.fetch(message.reference.messageId))
         : message;

@@ -26,7 +26,7 @@ export default class AustrianTranslation extends Model {
     declare readonly createdAt: Date;
     declare readonly updatedAt: Date;
 
-    static persistOrUpdate = async (addedBy: GuildMember, german: string, austrian: string, description: string | null): Promise<AustrianTranslation> => {
+    static persistOrUpdate = async(addedBy: GuildMember, german: string, austrian: string, description: string | null): Promise<AustrianTranslation> => {
         log.debug(`Saving austrian translation for user ${addedBy}. German: ${german}; Austrian: ${austrian}`);
         const result = await AustrianTranslation.upsert({
             addedByUserId: addedBy.id,
