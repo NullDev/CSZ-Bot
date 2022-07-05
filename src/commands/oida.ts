@@ -2,7 +2,7 @@ import { SlashCommandBuilder, SlashCommandStringOption } from "@discordjs/builde
 import type { Client, CommandInteraction } from "discord.js";
 
 import type { BotContext } from "../context";
-import AustrianWord from "../storage/model/AustrianWord";
+import AustrianTranslation from "../storage/model/AustrianTranslation";
 import type { ApplicationCommand } from "./command";
 
 export class OidaCommand implements ApplicationCommand {
@@ -51,7 +51,7 @@ export class OidaCommand implements ApplicationCommand {
         const german = command.options.getString("german")!; // assertion because it is required
         const description = command.options.getString("description") ?? null;
 
-        await AustrianWord.persistOrUpdate(
+        await AustrianTranslation.persistOrUpdate(
             addedBy,
             this.normalizeTranslation(german),
             this.normalizeTranslation(austrian),

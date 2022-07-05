@@ -12,7 +12,7 @@ import Penis from "./model/Penis";
 import Nickname from "./model/Nickname";
 import Boob from "./model/Boob";
 import Reminder from "./model/Reminder";
-import AustrianWord from "./model/AustrianWord";
+import AustrianTranslation from "./model/AustrianTranslation";
 
 export async function initialize() {
     const sequelize = new Sequelize({
@@ -39,7 +39,7 @@ export async function initialize() {
     Boob.initialize(sequelize);
     Nickname.initialize(sequelize);
     Reminder.initialize(sequelize);
-    AustrianWord.initialize(sequelize);
+    AustrianTranslation.initialize(sequelize);
 
     await sequelize.sync();
 }

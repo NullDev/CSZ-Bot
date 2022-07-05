@@ -6,7 +6,7 @@ import { DataTypes, Model, Op, Optional, Sequelize } from "sequelize";
 
 import log from "../../utils/logger";
 
-export interface AustrianWordAttributes {
+export interface AustrianTranslationAttributes {
     id: string;
     addedByUserId: string;
     austrian: string;
@@ -14,9 +14,9 @@ export interface AustrianWordAttributes {
     description: string | null;
 }
 
-export interface AustrianWordCreationAttributes extends Optional<AustrianWordAttributes, "id"> { }
+export interface AustrianTranslationCreationAttributes extends Optional<AustrianTranslationAttributes, "id"> { }
 
-export default class AustrianWord extends Model {
+export default class AustrianTranslation extends Model {
     declare id: number;
     declare addedByUserId: Snowflake;
     declare austrian: string;
@@ -26,9 +26,9 @@ export default class AustrianWord extends Model {
     declare readonly createdAt: Date;
     declare readonly updatedAt: Date;
 
-    static persistOrUpdate = async (addedBy: GuildMember, german: string, austrian: string, description: string | null): Promise<AustrianWord> => {
+    static persistOrUpdate = async (addedBy: GuildMember, german: string, austrian: string, description: string | null): Promise<AustrianTranslation> => {
         log.debug(`Saving austrian translation for user ${addedBy}. German: ${german}; Austrian: ${austrian}`);
-        const result = await AustrianWord.upsert({
+        const result = await AustrianTranslation.upsert({
             addedByUserId: addedBy.id,
             austrian,
             german,
@@ -37,8 +37,8 @@ export default class AustrianWord extends Model {
         return result[0];
     };
 
-    static findTranslation(austrian: string): Promise<AustrianWord | null> {
-        return AustrianWord.findOne({
+    static findTranslation(austrian: string): Promise<AustrianTranslation | null> {
+        return AustrianTranslation.findOne({
             where: {
                 austrian: {
                     // we want like to be case-insensitive, we don't need a placeholder
@@ -68,7 +68,7 @@ export default class AustrianWord extends Model {
         },
         {
             sequelize,
-            modelName: "AustrianWord",
+            modelName: "AustrianTranslation",
             indexes: [
                 {
                     unique: true,

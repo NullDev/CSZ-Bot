@@ -1,4 +1,4 @@
-import AustrianWord from "../storage/model/AustrianWord";
+import AustrianTranslation from "../storage/model/AustrianTranslation";
 import type { CommandFunction } from "../types";
 
 type Rule = {
@@ -49,7 +49,7 @@ async function deOidaLine(line: string): Promise<string> {
     // eslint-disable-next-line no-use-before-define
     for (const translationCandidate of enumerateAdjacentTokens(tokens)) {
         // eslint-disable-next-line no-await-in-loop
-        const germanTranslation = await AustrianWord.findTranslation(translationCandidate);
+        const germanTranslation = await AustrianTranslation.findTranslation(translationCandidate);
         if (germanTranslation) {
             // This is a rather dumb way of doing this.
             // Consider the example from above: "oida der fesche bursch han recht"
