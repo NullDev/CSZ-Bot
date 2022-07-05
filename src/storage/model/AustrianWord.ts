@@ -11,6 +11,7 @@ export interface AustrianWordAttributes {
     addedByUserId: string;
     austrian: string;
     german: string;
+    description: string | null;
 }
 
 export interface AustrianWordCreationAttributes extends Optional<AustrianWordAttributes, "id"> { }
@@ -20,16 +21,18 @@ export default class AustrianWord extends Model {
     declare addedByUserId: Snowflake;
     declare austrian: string;
     declare german: string;
+    declare description: string | null;
 
     declare readonly createdAt: Date;
     declare readonly updatedAt: Date;
 
-    static persistOrUpdate = async (addedBy: GuildMember, german: string, austrian: string): Promise<AustrianWord> => {
+    static persistOrUpdate = async (addedBy: GuildMember, german: string, austrian: string, description: string | null): Promise<AustrianWord> => {
         log.debug(`Saving austrian translation for user ${addedBy}. German: ${german}; Austrian: ${austrian}`);
         const result = await AustrianWord.upsert({
             addedByUserId: addedBy.id,
             austrian,
-            german
+            german,
+            description
         });
         return result[0];
     };
