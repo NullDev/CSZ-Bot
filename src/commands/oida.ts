@@ -37,17 +37,26 @@ export class OidaCommand implements ApplicationCommand {
             );
     }
 
+    normalizeTranslation(value: string) {
+        return value.replaceAll(/\s+/, " ").trim();
+    }
+
     async handleInteraction(command: CommandInteraction, client: Client, context: BotContext) {
         const addedBy = await context.guild.members.fetch(command.user);
         if (!addedBy) {
             return;
         }
 
-        const austrian = command.options.getString("austrian")!.trim();
-        const german = command.options.getString("german")!.trim();
-        const description = command.options.getString("description")?.trim() ?? null;
+        const austrian = command.options.getString("austrian")!; // assertion because it is required
+        const german = command.options.getString("german")!; // assertion because it is required
+        const description = command.options.getString("description") ?? null;
 
-        await AustrianWord.persistOrUpdate(addedBy, german, austrian, description);
+        await AustrianWord.persistOrUpdate(
+            addedBy,
+            this.normalizeTranslation(german),
+            this.normalizeTranslation(austrian),
+            description ? this.normalizeTranslation(description) : null
+        );
 
         await command.reply(`Daunkschei, I hab "${austrian}" hinzugefügt 🇦🇹`);
     }
