@@ -149,6 +149,6 @@ export const run: CommandFunction = async(_client, message, args, _context) => {
 };
 
 export const description = `
-Wendet super komplexes De-Oidering an.
-Usage: Mit dem Command auf eine veroiderte (🇦🇹) Nachricht antworten. Alternativ den zu de-oiderten Text übergeben.
+Wendet super komplexes De-Oidaring an.
+Usage: Mit dem Command auf eine veroidarte (🇦🇹) Nachricht antworten. Alternativ den zu de-oidarten Text übergeben.
 `.trim();
