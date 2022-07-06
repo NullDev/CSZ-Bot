@@ -1,5 +1,8 @@
+import type { Client } from "discord.js";
+import type { BotContext } from "../context";
+import type { ProcessableMessage } from "../handler/cmdHandler";
+import type { MessageCommand } from "./command";
 import AustrianTranslation from "../storage/model/AustrianTranslation";
-import type { CommandFunction } from "../types";
 
 type Rule = {
     pattern: RegExp;
@@ -126,29 +129,34 @@ async function deOida(value: string): Promise<string> {
     return translatedLines.join("\n");
 }
 
-export const run: CommandFunction = async(_client, message, args, _context) => {
-    const messageToTranslate = message.reference?.messageId
-        ? (await message.channel.messages.fetch(message.reference.messageId))
-        : message;
+export class DeOidaCommand implements MessageCommand {
+    name = "deoida";
+    description = `
+    Wendet super komplexes De-Oidaring an.
+    Usage: Mit dem Command auf eine veroidarte (🇦🇹) Nachricht antworten. Alternativ den zu de-oidarten Text übergeben.
+    `.trim();
 
-    if (!messageToTranslate) {
-        return "Nichts zum Übersetzen da :question:";
+    async handleMessage(message: ProcessableMessage, client: Client<boolean>, context: BotContext): Promise<void> {
+        const messageToTranslate = message.reference?.messageId
+            ? (await message.channel.messages.fetch(message.reference.messageId))
+            : message;
+
+        if (!messageToTranslate) {
+            await message.reply("Nichts zum Übersetzen da :question:");
+            return;
+        }
+
+        const textToTranslate = messageToTranslate === message
+            ? message.content.trim().substring(`${context.rawConfig.bot_settings.prefix.command_prefix}${this.name}`.length).trim()
+            : messageToTranslate.content;
+
+        if (!textToTranslate) {
+            await message.reply("Nichts zum Übersetzen da :question:");
+            return;
+        }
+
+        const translation = await deOida(textToTranslate);
+
+        await messageToTranslate.reply(`🇦🇹 -> 🇩🇪: ${translation}`);
     }
-
-    const textToTranslate = messageToTranslate === message
-        ? args.join(" ")
-        : messageToTranslate.content;
-
-    if (!textToTranslate) {
-        return "Nichts zum Übersetzen da :question:";
-    }
-
-    const translation = await deOida(textToTranslate);
-
-    await messageToTranslate.reply(`🇦🇹 -> 🇩🇪: ${translation}`);
-};
-
-export const description = `
-Wendet super komplexes De-Oidaring an.
-Usage: Mit dem Command auf eine veroidarte (🇦🇹) Nachricht antworten. Alternativ den zu de-oidarten Text übergeben.
-`.trim();
+}

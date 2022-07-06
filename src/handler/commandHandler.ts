@@ -25,6 +25,7 @@ import {
     MessageCommand,
     SpecialCommand, UserInteraction
 } from "../commands/command";
+import type { BotContext } from "../context";
 import log from "../utils/logger";
 import { NixOsCommand } from "../commands/special/nixos";
 import { WhereCommand } from "../commands/special/where";
@@ -55,10 +56,10 @@ import { Saufen } from "../commands/saufen";
 import { ErinnerungCommand } from "../commands/erinnerung";
 import { YoinkCommand } from "../commands/yoink";
 import { isProcessableMessage, ProcessableMessage } from "./cmdHandler";
-import type { BotContext } from "../context";
 import { EmoteSenderCommand } from "../commands/special/emoteSender";
 import { InstagramLink } from "../commands/special/instagram";
 import { OidaCommand } from "../commands/oida";
+import { DeOidaCommand } from "../commands/deoida";
 
 const config = getConfig();
 
@@ -93,7 +94,8 @@ export const commands: readonly Command[] = [
     new YoinkCommand(),
     new EmoteSenderCommand(),
     new InstagramLink(),
-    new OidaCommand()
+    new OidaCommand(),
+    new DeOidaCommand()
 ];
 export const interactions: readonly UserInteraction[] = [
     new NicknameButtonHandler(),
