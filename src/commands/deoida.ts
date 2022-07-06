@@ -47,9 +47,9 @@ async function deOidaLine(line: string): Promise<string> {
 
     for(const dbTranslation of aussieWordsToReplace) {
         const caseInsensitivePattern = new RegExp(dbTranslation.austrian, "ig");
-        result = result.replaceAll(caseInsensitivePattern, dbTranslation.german as string);
+        result = result.replaceAll(caseInsensitivePattern, dbTranslation.german);
     }
-    
+
     return result;
 }
 
