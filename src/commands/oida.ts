@@ -38,7 +38,7 @@ export class OidaCommand implements ApplicationCommand {
     }
 
     normalizeTranslation(value: string) {
-        return value.replaceAll(/\s+/, " ").trim();
+        return value.replaceAll(/\s+/g, " ").trim();
     }
 
     async handleInteraction(command: CommandInteraction, client: Client, context: BotContext) {

@@ -73,7 +73,7 @@ async function deOidaLine(line: string): Promise<string> {
     }
 
     for (const { pattern, translation } of simpleRules) {
-        result = result.replaceAll(pattern, translation as string);
+        result = result.replaceAll(new RegExp(pattern, "g"), translation as string);
     }
     return result;
 }
