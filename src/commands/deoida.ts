@@ -4,28 +4,6 @@ import type { ProcessableMessage } from "../handler/cmdHandler";
 import type { MessageCommand } from "./command";
 import AustrianTranslation from "../storage/model/AustrianTranslation";
 
-type Rule = {
-    pattern: RegExp;
-    /** Direct translation or a replacer function (see replaceAll) */
-    translation: string | ((substring: string, ...args: any[]) => string);
-}
-
-const simpleRules: readonly Rule[] = [
-    {
-        pattern: /(^|\s+)a(\s+|$)/,
-        translation: "ein"
-    },
-    {
-        pattern: /(^|\s+)i(\s+|$)/,
-        translation: "ich"
-    },
-    {
-        pattern: /(^|\s+)I(\s+|$)/,
-        translation: "Ich"
-    }
-];
-
-
 async function deOidaLine(line: string): Promise<string> {
     // We cannot just split all words using \s*. That could tear apart words or translations like "fescher bub"
     // Also, we need to take line breaks into account. We assume that tokens that are one translation unit
@@ -71,10 +49,7 @@ async function deOidaLine(line: string): Promise<string> {
         const caseInsensitivePattern = new RegExp(dbTranslation.austrian, "ig");
         result = result.replaceAll(caseInsensitivePattern, dbTranslation.german as string);
     }
-
-    for (const { pattern, translation } of simpleRules) {
-        result = result.replaceAll(new RegExp(pattern, "g"), translation as string);
-    }
+    
     return result;
 }
 
