@@ -61,12 +61,10 @@ const client = new Discord.Client({
         "REACTION",
         "USER"
     ],
-    /*
     allowedMentions: {
-        parse: ["users", "roles"],
+        parse: ["users"],
         repliedUser: true
     },
-    */
     intents: [
         "DIRECT_MESSAGES",
         "GUILDS",

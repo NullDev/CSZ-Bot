@@ -3,9 +3,10 @@
 // ================================= //
 
 import {
-    CommandInteraction, MessageActionRow,
+    CommandInteraction, InteractionReplyOptions, MessageActionRow,
     MessageButton,
     MessageComponentInteraction,
+    MessageOptions,
     Util
 } from "discord.js";
 import { Client } from "discord.js";
@@ -34,12 +35,13 @@ const getPingVoteMap = (messageid: string): Set<string> => {
     return pingvoteMap[messageid];
 };
 
-const getMessage = (reason: string, usersVotedYes: string[] = []) => {
+const getMessage = (reason: string, usersVotedYes: string[] = []) : InteractionReplyOptions | MessageOptions => {
     const content = usersVotedYes.length === 1 ? `<@&${config.ids.woisgang_role_id}> <@!${usersVotedYes[0]}> hat Bock auf Wois. Grund dafür ist \`${reason}\`` :
         `<@&${config.ids.woisgang_role_id}> <@!${usersVotedYes.join(">,<@!")}> haben Bock auf Wois. Grund dafür ist \`${reason}\``;
     return {
         content: content.trim(),
         allowedMentions: {
+            parse: ["users", "roles"],
             roles: [config.ids.woisgang_role_id],
             users: usersVotedYes
         },
