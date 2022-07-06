@@ -157,6 +157,11 @@ export class DeOidaCommand implements MessageCommand {
 
         const translation = await deOida(textToTranslate);
 
-        await messageToTranslate.reply(`🇦🇹 -> 🇩🇪: ${translation}`);
+        await messageToTranslate.reply({
+            content: `🇦🇹 -> 🇩🇪: ${translation}`,
+            allowedMentions: {
+                parse: []
+            }
+        });
     }
 }

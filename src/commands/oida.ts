@@ -58,6 +58,11 @@ export class OidaCommand implements ApplicationCommand {
             description ? this.normalizeTranslation(description) : null
         );
 
-        await command.reply(`Daunkschei, I hab "${austrian}" hinzugefügt 🇦🇹`);
+        await command.reply({
+            content: `Daunkschei, I hab "${austrian}" hinzugefügt 🇦🇹`,
+            allowedMentions: {
+                parse: []
+            }
+        });
     }
 }
