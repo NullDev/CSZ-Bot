@@ -35,7 +35,9 @@ export default async function(reactionEvent: MessageReaction, user: User, client
 
     if(reactionEvent.emoji.name === "✅") {
         if (member.id !== client.user!.id) {
-            const role = guild.roles.cache.find(r => r.name === message.content);
+            // Some roles, especially "C" are prefixed with a invisible whitespace to ensure they are not mentioned
+            // by accidence.
+            const role = guild.roles.cache.find(r => r.name.replace(/[\u200B-\u200D\uFEFF]/g, "") === message.content);
 
             if (role === undefined) {
                 throw new Error(`Could not find role ${role}`);
