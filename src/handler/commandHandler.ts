@@ -50,6 +50,7 @@ import { FicktabelleCommand } from "../commands/ficktabelle";
 import { InviteCommand } from "../commands/invite";
 import { ErleuchtungCommand } from "../commands/erleuchtung";
 import { MockCommand } from "../commands/mock";
+import { ClapCommand } from "../commands/clap";
 import { NeverCommand } from "../commands/never";
 import { GeburtstagCommand } from "../commands/geburtstag";
 import { Saufen } from "../commands/saufen";
@@ -87,6 +88,7 @@ export const commands: readonly Command[] = [
     new InviteCommand(),
     new ErleuchtungCommand(),
     new MockCommand(),
+    new ClapCommand(),
     new NeverCommand(),
     new GeburtstagCommand(),
     new Saufen(),
