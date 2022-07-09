@@ -10,9 +10,10 @@ export interface ReminderAttributes {
     id: string;
     userId: string;
     remindAt: Date;
-    messageId: string;
+    messageId: string | null;
     channelId: string;
     guildId: string;
+    reminderNote: string | null;
 }
 
 export interface ReminderCreationAttributes extends Optional<ReminderAttributes, "id"> { }
@@ -21,21 +22,35 @@ export default class Reminder extends Model<ReminderAttributes, ReminderCreation
     declare id: string;
     declare userId: string;
     declare remindAt: Date;
-    declare messageId: string;
+    declare messageId: string | null;
+    declare reminderNote: string | null;
     declare channelId: string;
     declare guildId: string;
 
     declare readonly createdAt: Date;
     declare readonly updatedAt: Date;
 
-    static insertReminder = (user: User, messageId: string, channelId: string, guildId: string, remindAt: Date): Promise<ReminderAttributes> => {
+    static insertStaticReminder = (user: User, channelId: string, guildId: string, remindAt: Date, reminderNote: string | null = null): Promise<ReminderAttributes> => {
+        log.debug(`Saving Reminder Measurement for user ${user.id} for ${remindAt}`);
+        return Reminder.create({
+            userId: user.id,
+            remindAt,
+            channelId,
+            guildId,
+            reminderNote,
+            messageId: null
+        });
+    };
+
+    static insertMessageReminder = (user: User, messageId: string, channelId: string, guildId: string, remindAt: Date): Promise<ReminderAttributes> => {
         log.debug(`Saving Reminder Measurement for user ${user.id} on message ${messageId} for ${remindAt}`);
         return Reminder.create({
             userId: user.id,
             remindAt,
             messageId,
             channelId,
-            guildId
+            guildId,
+            reminderNote: null
         });
     };
 
@@ -74,7 +89,7 @@ export default class Reminder extends Model<ReminderAttributes, ReminderCreation
             },
             messageId: {
                 type: DataTypes.STRING(32),
-                allowNull: false
+                allowNull: true
             },
             channelId: {
                 type: DataTypes.STRING(32),
@@ -83,6 +98,10 @@ export default class Reminder extends Model<ReminderAttributes, ReminderCreation
             guildId: {
                 type: DataTypes.STRING(32),
                 allowNull: false
+            },
+            reminderNote: {
+                type: DataTypes.STRING(32),
+                allowNull: true
             }
         }, {
             sequelize,
