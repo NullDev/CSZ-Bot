@@ -119,6 +119,7 @@ const sendReminder = async(reminder: ReminderAttributes, context: BotContext) =>
                     users: [user.id]
                 }
             });
+            await Reminder.removeReminder(reminder.id);
             return;
         }
 
