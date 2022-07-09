@@ -1,14 +1,29 @@
-import { CacheType, Client, CommandInteraction, PermissionString, TextBasedChannel } from "discord.js";
+import { CacheType, Client, CommandInteraction, TextBasedChannel } from "discord.js";
 import { MessageCommand, ApplicationCommand } from "./command";
-import * as chrono from 'chrono-node';
+import * as chrono from "chrono-node";
 import logger from "../utils/logger";
 import Reminder, { ReminderAttributes } from "../storage/model/Reminder";
 import type { ProcessableMessage } from "../handler/cmdHandler";
 import { BotContext } from "../context";
-import { ban } from "./modcommands/ban";
 import { SlashCommandBuilder, SlashCommandStringOption } from "@discordjs/builders";
 
-require("sugar/locales/de");
+const validateDate = (date: Date): true | string => {
+    if (Number.isNaN(date.getTime()) || !Number.isFinite(date.getTime())) {
+        throw new Error("Danke JS");
+    }
+
+    const now = new Date();
+    if (date < now) {
+        return "Brudi das sollte schon in der Zukunft liegen, bin ich Marty McFly oder wat?";
+    }
+
+    const diff = Math.round(date.getTime() - now.getTime());
+    if (diff < 60000) {
+        return "Ach komm halt doch dein Maul";
+    }
+
+    return true;
+};
 
 export class ErinnerungCommand implements MessageCommand, ApplicationCommand {
     name = "erinnerung";
@@ -32,7 +47,7 @@ export class ErinnerungCommand implements MessageCommand, ApplicationCommand {
         const note = command.options.getString("note");
 
         try {
-            const date = chrono.parseDate(time);
+            const date = chrono.de.parseDate(time);
             const valid = validateDate(date);
             if (valid !== true) {
                 await command.reply(valid);
@@ -41,12 +56,11 @@ export class ErinnerungCommand implements MessageCommand, ApplicationCommand {
 
             await Reminder.insertStaticReminder(command.user, command.channelId, command.guildId!, date, note);
             await command.reply(`Ok brudi, werd dich <t:${(date.getTime() / 1000) | 0}:R> dran erinnern. Außer ich kack ab lol, dann mach ich das später (vielleicht)`);
-
-        } catch (err) {
+        }
+        catch (err) {
             logger.error(`Couldn't parse date from message ${time} due to`, err);
             await command.reply("Brudi was ist das denn für ne Datumsangabe? Gib was ordentliches an");
         }
-
     }
 
     async handleMessage(message: ProcessableMessage, client: Client<boolean>, context: BotContext): Promise<void> {
@@ -58,7 +72,7 @@ export class ErinnerungCommand implements MessageCommand, ApplicationCommand {
         }
 
         try {
-            const date = chrono.parseDate(param);
+            const date = chrono.de.parseDate(param);
             const valid = validateDate(date);
             if (valid !== true) {
                 await message.reply(valid);
@@ -76,24 +90,6 @@ export class ErinnerungCommand implements MessageCommand, ApplicationCommand {
             await message.reply("Brudi was ist das denn für ne Datumsangabe? Gib was ordentliches an");
         }
     }
-}
-
-const validateDate = (date: Date): true | string => {
-    if (Number.isNaN(date.getTime()) || !Number.isFinite(date.getTime())) {
-        throw new Error("Danke JS");
-    }
-
-    const now = new Date();
-    if (date < now) {
-        return "Brudi das sollte schon in der Zukunft liegen, bin ich Marty McFly oder wat?";
-    }
-
-    const diff = Math.round(date.getTime() - now.getTime());
-    if (diff < 60000) {
-        return "Ach komm halt doch dein Maul";
-    }
-
-    return true;
 }
 
 
