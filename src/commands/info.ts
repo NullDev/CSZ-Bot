@@ -26,9 +26,10 @@ const fetchContributions = async(): Promise<Array<GitHubContributor>> => {
 };
 
 const fetchLanguages = async(): Promise<Array<string>> => {
-    return fetch("https://api.github.com/repos/NullDev/CSZ-Bot/languages", {
+    const res = fetch("https://api.github.com/repos/NullDev/CSZ-Bot/languages", {
         headers: { Accept: "application/vnd.github.v3+json" }
-    }).then((res: any) => res.json().keys());
+    }).then(r => r.json());
+    return Object.keys(res);
 };
 
 const getContributors = async(): Promise<string> => {
