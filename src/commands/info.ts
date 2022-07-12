@@ -25,6 +25,12 @@ const fetchContributions = async(): Promise<Array<GitHubContributor>> => {
     }).then((res: any) => res.json());
 };
 
+const fetchLanguages = async(): Promise<Array<string>> => {
+    return fetch("https://api.github.com/repos/NullDev/CSZ-Bot/languages", {
+        headers: { Accept: "application/vnd.github.v3+json" }
+    }).then((res: any) => res.json().keys());
+};
+
 const getContributors = async(): Promise<string> => {
     const contributors = await fetchContributions();
     return contributors
@@ -35,8 +41,8 @@ const getContributors = async(): Promise<string> => {
         }).join(", ");
 };
 
-const getTechStackInfo = (): string => {
-    return "**Programmiersprache\n** NodeJS \n" +
+const getTechStackInfo = async(): Promise<string> => {
+    return `**Programmiersprache\n** ${(await fetchLanguages()).join(",")} \n` +
         `**NodeJS Version\n** ${process.version} \n`;
 };
 
@@ -91,7 +97,7 @@ const buildEmbed = async(guild: Guild | null, avatarUrl?: string): Promise<Messa
             },
             {
                 name: "🧬 Tech-Stack",
-                value: getTechStackInfo(),
+                value: await getTechStackInfo(),
                 inline: true
             },
             {
