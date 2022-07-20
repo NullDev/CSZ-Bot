@@ -5,7 +5,7 @@ import { SpecialCommand, CommandResult } from "../command";
 export class NixOsCommand implements SpecialCommand {
     name: string = "NixOS";
     description: string = "Nix Command - NixOS, nix Problem";
-    randomness = 0.4;
+    randomness = 0.2;
     cooldownTime = 300000;
 
     matches(message: ProcessableMessage): boolean {
