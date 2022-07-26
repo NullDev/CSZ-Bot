@@ -3,10 +3,10 @@
  * message commands and relies on the "new commands"
  */
 
-import { InfoCommand } from "../commands/info";
-import { getConfig } from "../utils/configHandler";
-import { REST } from "@discordjs/rest";
-import { APIApplicationCommand, Routes } from "discord-api-types/v9";
+import {InfoCommand} from "../commands/info";
+import {getConfig} from "../utils/configHandler";
+import {REST} from "@discordjs/rest";
+import {APIApplicationCommand, Routes} from "discord-api-types/v9";
 import {
     Client,
     CommandInteraction,
@@ -25,41 +25,42 @@ import {
     MessageCommand,
     SpecialCommand, UserInteraction
 } from "../commands/command";
-import type { BotContext } from "../context";
+import type {BotContext} from "../context";
 import log from "../utils/logger";
-import { NixOsCommand } from "../commands/special/nixos";
-import { WhereCommand } from "../commands/special/where";
-import { DadJokeCommand } from "../commands/special/dadJoke";
-import { WatCommand } from "../commands/special/wat";
-import { TikTokLink } from "../commands/special/tiktok";
-import { StempelCommand } from "../commands/stempeln";
-import { StempelgraphCommand } from "../commands/stempelgraph";
-import { StempelkarteCommand } from "../commands/stempelkarte";
-import { GuildMember } from "discord.js";
-import { ban, BanCommand } from "../commands/modcommands/ban";
-import { UnbanCommand } from "../commands/modcommands/unban";
-import { PenisCommand } from "../commands/penis";
-import { BoobCommand } from "../commands/boobs";
-import { BonkCommand } from "../commands/bonk";
-import { GoogleCommand } from "../commands/google";
-import { NischdaaaCommand } from "../commands/special/nischdaaa";
-import { SdmCommand } from "../commands/sdm";
-import { Nickname, NicknameButtonHandler } from "../commands/nickname";
-import { WoisButton, WoisCommand } from "../commands/woisping";
-import { FicktabelleCommand } from "../commands/ficktabelle";
-import { InviteCommand } from "../commands/invite";
-import { ErleuchtungCommand } from "../commands/erleuchtung";
-import { MockCommand } from "../commands/mock";
-import { NeverCommand } from "../commands/never";
-import { GeburtstagCommand } from "../commands/geburtstag";
-import { Saufen } from "../commands/saufen";
-import { ErinnerungCommand } from "../commands/erinnerung";
-import { YoinkCommand } from "../commands/yoink";
-import { isProcessableMessage, ProcessableMessage } from "./cmdHandler";
-import { EmoteSenderCommand } from "../commands/special/emoteSender";
-import { InstagramLink } from "../commands/special/instagram";
-import { OidaCommand } from "../commands/oida";
-import { DeOidaCommand } from "../commands/deoida";
+import {NixOsCommand} from "../commands/special/nixos";
+import {WhereCommand} from "../commands/special/where";
+import {DadJokeCommand} from "../commands/special/dadJoke";
+import {WatCommand} from "../commands/special/wat";
+import {TikTokLink} from "../commands/special/tiktok";
+import {StempelCommand} from "../commands/stempeln";
+import {StempelgraphCommand} from "../commands/stempelgraph";
+import {StempelkarteCommand} from "../commands/stempelkarte";
+import {GuildMember} from "discord.js";
+import {ban, BanCommand} from "../commands/modcommands/ban";
+import {UnbanCommand} from "../commands/modcommands/unban";
+import {PenisCommand} from "../commands/penis";
+import {BoobCommand} from "../commands/boobs";
+import {BonkCommand} from "../commands/bonk";
+import {GoogleCommand} from "../commands/google";
+import {NischdaaaCommand} from "../commands/special/nischdaaa";
+import {SdmCommand} from "../commands/sdm";
+import {Nickname, NicknameButtonHandler} from "../commands/nickname";
+import {WoisButton, WoisCommand} from "../commands/woisping";
+import {FicktabelleCommand} from "../commands/ficktabelle";
+import {InviteCommand} from "../commands/invite";
+import {ErleuchtungCommand} from "../commands/erleuchtung";
+import {MockCommand} from "../commands/mock";
+import {NeverCommand} from "../commands/never";
+import {GeburtstagCommand} from "../commands/geburtstag";
+import {Saufen} from "../commands/saufen";
+import {ErinnerungCommand} from "../commands/erinnerung";
+import {YoinkCommand} from "../commands/yoink";
+import {isProcessableMessage, ProcessableMessage} from "./cmdHandler";
+import {EmoteSenderCommand} from "../commands/special/emoteSender";
+import {InstagramLink} from "../commands/special/instagram";
+import {OidaCommand} from "../commands/oida";
+import {DeOidaCommand} from "../commands/deoida";
+import {EhreCommand} from "../commands/ehre";
 
 const config = getConfig();
 
@@ -95,7 +96,8 @@ export const commands: readonly Command[] = [
     new EmoteSenderCommand(),
     new InstagramLink(),
     new OidaCommand(),
-    new DeOidaCommand()
+    new DeOidaCommand(),
+    new EhreCommand()
 ];
 export const interactions: readonly UserInteraction[] = [
     new NicknameButtonHandler(),
@@ -110,7 +112,7 @@ export const messageCommands: Array<MessageCommand> =
 export const specialCommands: Array<SpecialCommand> =
     commands.filter<SpecialCommand>(isSpecialCommand);
 
-const lastSpecialCommands: Record<string, number> = specialCommands.reduce((acc, cmd) => ({ ...acc, [cmd.name]: 0 }), {});
+const lastSpecialCommands: Record<string, number> = specialCommands.reduce((acc, cmd) => ({...acc, [cmd.name]: 0}), {});
 
 /**
  * Registers all defined applicationCommands as guild commands
@@ -120,16 +122,16 @@ export const registerAllApplicationCommandsAsGuildCommands = async(context: BotC
     const clientId = config.auth.client_id;
     const token = config.auth.bot_token;
 
-    const rest = new REST({ version: "9" }).setToken(token);
+    const rest = new REST({version: "9"}).setToken(token);
 
     const createPermissionSet = (strings: readonly PermissionString[] | undefined): bigint => {
-        if(strings === undefined) {
+        if (strings === undefined) {
             return BigInt(0x40); // Default to "SEND_MESSAGES"
         }
 
         const start = BigInt(0x0);
         let permSet = start;
-        for(const str of strings) {
+        for (const str of strings) {
             const permFlag = Permissions.FLAGS[str];
             if (permFlag === undefined) {
                 throw new Error(`Permission ${str} could not be resolved.`);
@@ -147,13 +149,13 @@ export const registerAllApplicationCommandsAsGuildCommands = async(context: BotC
                 dm_permission: false,
                 default_member_permissions: String(createPermissionSet(command.requiredPermissions))
             };
-
+            console.log("creating " + command.name + " ");
             // eslint-disable-next-line no-unused-vars
             const createdCommand = await rest.post(Routes.applicationGuildCommands(clientId, context.guild.id), {
                 body: commandCreationData
             }) as { id: string, name: string };
-        }
-        catch (err) {
+            console.log(command.name + " created");
+        } catch (err) {
             log.error(`Could not register the application command ${command.name}`, err);
         }
     }

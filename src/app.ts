@@ -6,8 +6,8 @@
 
 // Dependencies
 import * as Discord from "discord.js";
-import { Message, MessageReaction, User } from "discord.js";
-import { Cron } from "croner";
+import {Message, MessageReaction, User} from "discord.js";
+import {Cron} from "croner";
 
 import * as conf from "./utils/configHandler";
 import log from "./utils/logger";
@@ -30,12 +30,13 @@ import {
     messageCommandHandler,
     registerAllApplicationCommandsAsGuildCommands
 } from "./handler/commandHandler";
-import { quoteReactionHandler } from "./handler/quoteHandler";
+import {quoteReactionHandler} from "./handler/quoteHandler";
 import NicknameHandler from "./handler/nicknameHandler";
-import { connectAndPlaySaufen } from "./handler/voiceHandler";
-import { reminderHandler } from "./commands/erinnerung";
-import { endAprilFools, startAprilFools } from "./handler/aprilFoolsHandler";
-import { createBotContext, type BotContext } from "./context";
+import {connectAndPlaySaufen} from "./handler/voiceHandler";
+import {reminderHandler} from "./commands/erinnerung";
+import {endAprilFools, startAprilFools} from "./handler/aprilFoolsHandler";
+import {createBotContext, type BotContext} from "./context";
+import {EhrePoints, EhreVotes} from "./storage/model/Ehre";
 
 const version = conf.getVersion();
 const appname = conf.getName();
@@ -98,7 +99,7 @@ process.on("exit", code => {
 });
 
 const leetTask = async() => {
-    const { hauptchat } = botContext.textChannels;
+    const {hauptchat} = botContext.textChannels;
     const csz = botContext.guild;
 
     await hauptchat.send("Es ist `13:37` meine Kerle.\nBleibt hydriert! :grin: :sweat_drops:");
@@ -219,6 +220,12 @@ client.once("ready", async initializedClient => {
                 log.debug("Entered end april fools cronjob");
                 await endAprilFools(botContext);
             }, cronOptions);
+            // eslint-disable-next-line no-unused-vars
+            const ehreReset = new Cron("1 0 * * *", async() => {
+                log.debug("Entered start ehreReset cronjob");
+                await EhrePoints.deflation();
+                await EhreVotes.resetVotes();
+            }, cronOptions);
         }
 
         ban.startCron(botContext);
@@ -229,8 +236,7 @@ client.once("ready", async initializedClient => {
         // Not awaiting this promise because it's basically an infinite loop (that can be cancelled)
         // Possible TODO: Refactor this to a cron job
         void fadingMessageHandler.startLoop(client);
-    }
-    catch (err) {
+    } catch (err) {
         log.error("Error in Ready handler:", err);
     }
 });
@@ -279,8 +285,7 @@ client.on("guildMemberAdd", async member => {
 client.on("guildMemberRemove", async member => {
     try {
         await GuildRagequit.incrementRagequit(member.guild.id, member.id);
-    }
-    catch (err) {
+    } catch (err) {
         log.error(`[guildMemberRemove] Error on incrementing ragequit of ${member.id}`, err);
     }
 });
@@ -288,8 +293,7 @@ client.on("guildMemberRemove", async member => {
 client.on("messageCreate", async message => {
     try {
         await messageHandler(message, client, botContext);
-    }
-    catch (err) {
+    } catch (err) {
         log.error(`[messageCreate] Error on message ${message.id}`, err);
     }
 });
@@ -297,8 +301,7 @@ client.on("messageCreate", async message => {
 client.on("messageDelete", async message => {
     try {
         await messageDeleteHandler(message as Message, client);
-    }
-    catch (err) {
+    } catch (err) {
         log.error(`[messageDelete] Error for ${message.id}`, err);
     }
 });
@@ -306,8 +309,7 @@ client.on("messageDelete", async message => {
 client.on("messageUpdate", async(_, newMessage) => {
     try {
         await messageHandler(newMessage as Message, client, botContext);
-    }
-    catch (err) {
+    } catch (err) {
         log.error(`[messageUpdate] Error on message ${newMessage.id}`, err);
     }
 });
