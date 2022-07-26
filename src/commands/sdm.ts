@@ -128,11 +128,19 @@ export class SdmCommand implements MessageCommand, ApplicationCommand {
     }
 
     async handleMessage(message: ProcessableMessage, client: Client<boolean>): Promise<CommandResult> {
-        const args = substringAfter(message.cleanContent, this.name).trim().split(/\s+/g).filter(s => !!s);
+        const replyRef = message.reference?.messageId;
+        const isReply = replyRef !== undefined;
+        let args = substringAfter(message.cleanContent, this.name).trim().split(/\s+/g).filter(s => !!s);
 
-        if (!args.length) {
+        if (!args.length && !isReply) {
             await message.reply("Bruder da ist keine Frage :c");
             return;
+        }
+        
+        if (isReply) {
+            // throw in everything in a single line
+            // shadow style :D
+            args = substringAfter((await message.channel.messages.fetch(replyRef!)).content, this.name).trim().split(/\s+/g).filter(s => !!s);
         }
 
         let question = args.join(" ").replace(/\s\s+/g, " ");
