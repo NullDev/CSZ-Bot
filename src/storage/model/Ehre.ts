@@ -27,8 +27,8 @@ export class EhreVotes extends Model {
 
     static async insertVote(userId: Snowflake) {
         return EhreVotes.create({
-                userId
-            }
+            userId
+        }
         );
     }
 
@@ -40,21 +40,21 @@ export class EhreVotes extends Model {
 
     static initialize(sequelize: Sequelize) {
         this.init({
-                id: {
-                    type: DataTypes.STRING(36),
-                    defaultValue: () => uuidv4(),
-                    primaryKey: true
-                },
-                userId: {
-                    type: DataTypes.STRING(32),
-                    allowNull: false,
-                    unique: true
-                }
+            id: {
+                type: DataTypes.STRING(36),
+                defaultValue: () => uuidv4(),
+                primaryKey: true
             },
-            {
-                sequelize,
-                modelName: "EhreVotes"
-            });
+            userId: {
+                type: DataTypes.STRING(32),
+                allowNull: false,
+                unique: true
+            }
+        },
+        {
+            sequelize,
+            modelName: "EhreVotes"
+        });
     }
 }
 
@@ -67,9 +67,9 @@ export class EhrePoints extends Model {
         const storedpoints = await this.findPoints(userId);
         if (storedpoints === null) {
             return EhrePoints.create({
-                    userId,
-                    points: amount
-                }
+                userId,
+                points: amount
+            }
             );
         }
         return EhrePoints.update({
@@ -107,24 +107,24 @@ export class EhrePoints extends Model {
 
     static initialize(sequelize: Sequelize) {
         this.init({
-                id: {
-                    type: DataTypes.STRING(36),
-                    defaultValue: () => uuidv4(),
-                    primaryKey: true
-                },
-                userId: {
-                    type: DataTypes.STRING(32),
-                    allowNull: false,
-                    unique: true
-                },
-                points: {
-                    type: DataTypes.DOUBLE,
-                    allowNull: false
-                }
+            id: {
+                type: DataTypes.STRING(36),
+                defaultValue: () => uuidv4(),
+                primaryKey: true
             },
-            {
-                sequelize,
-                modelName: "EhrePoints"
-            });
+            userId: {
+                type: DataTypes.STRING(32),
+                allowNull: false,
+                unique: true
+            },
+            points: {
+                type: DataTypes.DOUBLE,
+                allowNull: false
+            }
+        },
+        {
+            sequelize,
+            modelName: "EhrePoints"
+        });
     }
 }
