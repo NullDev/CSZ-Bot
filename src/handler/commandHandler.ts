@@ -155,7 +155,8 @@ export const registerAllApplicationCommandsAsGuildCommands = async(context: BotC
                 body: commandCreationData
             }) as { id: string, name: string };
             console.log(command.name + " created");
-        } catch (err) {
+        }
+        catch (err) {
             log.error(`Could not register the application command ${command.name}`, err);
         }
     }

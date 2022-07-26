@@ -236,7 +236,8 @@ client.once("ready", async initializedClient => {
         // Not awaiting this promise because it's basically an infinite loop (that can be cancelled)
         // Possible TODO: Refactor this to a cron job
         void fadingMessageHandler.startLoop(client);
-    } catch (err) {
+    }
+    catch (err) {
         log.error("Error in Ready handler:", err);
     }
 });
@@ -285,7 +286,8 @@ client.on("guildMemberAdd", async member => {
 client.on("guildMemberRemove", async member => {
     try {
         await GuildRagequit.incrementRagequit(member.guild.id, member.id);
-    } catch (err) {
+    }
+    catch (err) {
         log.error(`[guildMemberRemove] Error on incrementing ragequit of ${member.id}`, err);
     }
 });
@@ -293,7 +295,8 @@ client.on("guildMemberRemove", async member => {
 client.on("messageCreate", async message => {
     try {
         await messageHandler(message, client, botContext);
-    } catch (err) {
+    }
+    catch (err) {
         log.error(`[messageCreate] Error on message ${message.id}`, err);
     }
 });
@@ -301,7 +304,8 @@ client.on("messageCreate", async message => {
 client.on("messageDelete", async message => {
     try {
         await messageDeleteHandler(message as Message, client);
-    } catch (err) {
+    }
+    catch (err) {
         log.error(`[messageDelete] Error for ${message.id}`, err);
     }
 });
@@ -309,7 +313,8 @@ client.on("messageDelete", async message => {
 client.on("messageUpdate", async(_, newMessage) => {
     try {
         await messageHandler(newMessage as Message, client, botContext);
-    } catch (err) {
+    }
+    catch (err) {
         log.error(`[messageUpdate] Error on message ${newMessage.id}`, err);
     }
 });
