@@ -139,9 +139,7 @@ export class SdmCommand implements MessageCommand, ApplicationCommand {
 
         let question = args.join(" ").replace(/\s\s+/g, " ");
         if (isReply) {
-            // in most situations, the substring matching won't happen
-            // however if, it might be good to trim it anyway
-            question = substringAfter((await message.channel.messages.fetch(replyRef!)).content, this.name).trim();
+            question = (await message.channel.messages.fetch(replyRef!)).content.trim();
         }
 
         const options = question.split(/,|;|\s+oder\s+/gi).map(s => s.trim()).filter(s => !!s);
