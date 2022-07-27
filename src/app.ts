@@ -6,8 +6,8 @@
 
 // Dependencies
 import * as Discord from "discord.js";
-import { Message, MessageReaction, User } from "discord.js";
-import { Cron } from "croner";
+import {Message, MessageReaction, User} from "discord.js";
+import {Cron} from "croner";
 
 import * as conf from "./utils/configHandler";
 import log from "./utils/logger";
@@ -30,12 +30,13 @@ import {
     messageCommandHandler,
     registerAllApplicationCommandsAsGuildCommands
 } from "./handler/commandHandler";
-import { quoteReactionHandler } from "./handler/quoteHandler";
+import {quoteReactionHandler} from "./handler/quoteHandler";
 import NicknameHandler from "./handler/nicknameHandler";
-import { connectAndPlaySaufen } from "./handler/voiceHandler";
-import { reminderHandler } from "./commands/erinnerung";
-import { endAprilFools, startAprilFools } from "./handler/aprilFoolsHandler";
-import { createBotContext, type BotContext } from "./context";
+import {connectAndPlaySaufen} from "./handler/voiceHandler";
+import {reminderHandler} from "./commands/erinnerung";
+import {endAprilFools, startAprilFools} from "./handler/aprilFoolsHandler";
+import {createBotContext, type BotContext} from "./context";
+import {EhrePoints, EhreVotes} from "./storage/model/Ehre";
 
 const version = conf.getVersion();
 const appname = conf.getName();
@@ -98,7 +99,7 @@ process.on("exit", code => {
 });
 
 const leetTask = async() => {
-    const { hauptchat } = botContext.textChannels;
+    const {hauptchat} = botContext.textChannels;
     const csz = botContext.guild;
 
     await hauptchat.send("Es ist `13:37` meine Kerle.\nBleibt hydriert! :grin: :sweat_drops:");
@@ -218,6 +219,11 @@ client.once("ready", async initializedClient => {
             const stopAprilFoolsJob = new Cron("2022-04-02T00:00:00", async() => {
                 log.debug("Entered end april fools cronjob");
                 await endAprilFools(botContext);
+            }, cronOptions);
+            // eslint-disable-next-line no-unused-vars
+            const ehreReset = new Cron("1 0 * * *", async() => {
+                log.debug("Entered start ehreReset cronjob");
+                await Promise.all([EhrePoints.deflation(), EhreVotes.resetVotes()]);
             }, cronOptions);
         }
 

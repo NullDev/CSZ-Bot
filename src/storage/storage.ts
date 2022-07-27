@@ -13,6 +13,7 @@ import Nickname from "./model/Nickname";
 import Boob from "./model/Boob";
 import Reminder from "./model/Reminder";
 import AustrianTranslation from "./model/AustrianTranslation";
+import {EhrePoints, EhreVotes} from "./model/Ehre";
 
 export async function initialize() {
     const sequelize = new Sequelize({
@@ -40,6 +41,7 @@ export async function initialize() {
     Nickname.initialize(sequelize);
     Reminder.initialize(sequelize);
     AustrianTranslation.initialize(sequelize);
-
+    EhrePoints.initialize(sequelize);
+    EhreVotes.initialize(sequelize);
     await sequelize.sync();
 }
