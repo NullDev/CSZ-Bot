@@ -27,40 +27,41 @@ import {
 } from "../commands/command";
 import type {BotContext} from "../context";
 import log from "../utils/logger";
-import {NixOsCommand} from "../commands/special/nixos";
-import {WhereCommand} from "../commands/special/where";
-import {DadJokeCommand} from "../commands/special/dadJoke";
-import {WatCommand} from "../commands/special/wat";
-import {TikTokLink} from "../commands/special/tiktok";
-import {StempelCommand} from "../commands/stempeln";
-import {StempelgraphCommand} from "../commands/stempelgraph";
-import {StempelkarteCommand} from "../commands/stempelkarte";
-import {GuildMember} from "discord.js";
-import {ban, BanCommand} from "../commands/modcommands/ban";
-import {UnbanCommand} from "../commands/modcommands/unban";
-import {PenisCommand} from "../commands/penis";
-import {BoobCommand} from "../commands/boobs";
-import {BonkCommand} from "../commands/bonk";
-import {GoogleCommand} from "../commands/google";
-import {NischdaaaCommand} from "../commands/special/nischdaaa";
-import {SdmCommand} from "../commands/sdm";
-import {Nickname, NicknameButtonHandler} from "../commands/nickname";
-import {WoisButton, WoisCommand} from "../commands/woisping";
-import {FicktabelleCommand} from "../commands/ficktabelle";
-import {InviteCommand} from "../commands/invite";
-import {ErleuchtungCommand} from "../commands/erleuchtung";
-import {MockCommand} from "../commands/mock";
-import {NeverCommand} from "../commands/never";
-import {GeburtstagCommand} from "../commands/geburtstag";
-import {Saufen} from "../commands/saufen";
-import {ErinnerungCommand} from "../commands/erinnerung";
-import {YoinkCommand} from "../commands/yoink";
-import {isProcessableMessage, ProcessableMessage} from "./cmdHandler";
-import {EmoteSenderCommand} from "../commands/special/emoteSender";
-import {InstagramLink} from "../commands/special/instagram";
-import {OidaCommand} from "../commands/oida";
-import {DeOidaCommand} from "../commands/deoida";
-import {EhreCommand} from "../commands/ehre";
+import { NixOsCommand } from "../commands/special/nixos";
+import { WhereCommand } from "../commands/special/where";
+import { DadJokeCommand } from "../commands/special/dadJoke";
+import { WatCommand } from "../commands/special/wat";
+import { TikTokLink } from "../commands/special/tiktok";
+import { StempelCommand } from "../commands/stempeln";
+import { StempelgraphCommand } from "../commands/stempelgraph";
+import { StempelkarteCommand } from "../commands/stempelkarte";
+import { GuildMember } from "discord.js";
+import { ban, BanCommand } from "../commands/modcommands/ban";
+import { UnbanCommand } from "../commands/modcommands/unban";
+import { PenisCommand } from "../commands/penis";
+import { BoobCommand } from "../commands/boobs";
+import { BonkCommand } from "../commands/bonk";
+import { GoogleCommand } from "../commands/google";
+import { NischdaaaCommand } from "../commands/special/nischdaaa";
+import { SdmCommand } from "../commands/sdm";
+import { Nickname, NicknameButtonHandler } from "../commands/nickname";
+import { WoisButton, WoisCommand } from "../commands/woisping";
+import { FicktabelleCommand } from "../commands/ficktabelle";
+import { InviteCommand } from "../commands/invite";
+import { ErleuchtungCommand } from "../commands/erleuchtung";
+import { MockCommand } from "../commands/mock";
+import { ClapCommand } from "../commands/clap";
+import { NeverCommand } from "../commands/never";
+import { GeburtstagCommand } from "../commands/geburtstag";
+import { Saufen } from "../commands/saufen";
+import { ErinnerungCommand } from "../commands/erinnerung";
+import { YoinkCommand } from "../commands/yoink";
+import { isProcessableMessage, ProcessableMessage } from "./cmdHandler";
+import { EmoteSenderCommand } from "../commands/special/emoteSender";
+import { InstagramLink } from "../commands/special/instagram";
+import { OidaCommand } from "../commands/oida";
+import { DeOidaCommand } from "../commands/deoida";
+import { EhreCommand } from "../commands/ehre";
 
 const config = getConfig();
 
@@ -88,6 +89,7 @@ export const commands: readonly Command[] = [
     new InviteCommand(),
     new ErleuchtungCommand(),
     new MockCommand(),
+    new ClapCommand(),
     new NeverCommand(),
     new GeburtstagCommand(),
     new Saufen(),
