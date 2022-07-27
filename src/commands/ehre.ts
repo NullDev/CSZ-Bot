@@ -12,8 +12,7 @@ async function createEhreTable(client: Client<boolean>): Promise<MessagePayload 
         embeds: [{
             color: 2007432,
             author: {
-                name: client.user?.username,
-                url: client.user?.avatar ?? undefined
+                name: client.user?.username
             },
             fields: [
                 userInGroups.best ? {
