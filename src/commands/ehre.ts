@@ -87,6 +87,11 @@ export class EhreCommand implements ApplicationCommand {
         const user = command.options.getUser("user", true);
         if (subcommand === "add") {
             if (command.user.id === user.id) {
+                await EhrePoints.destroy({
+                    where: {
+                        userId: user.id
+                    }
+                });
                 return command.reply("Willst dich selber ähren? Dreckiger Abschaum. Sowas verdient einfach kein Respekt!");
             }
             if (await EhreVotes.hasVoted(command.user.id)) {
