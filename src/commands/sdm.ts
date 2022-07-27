@@ -136,7 +136,7 @@ export class SdmCommand implements MessageCommand, ApplicationCommand {
             await message.reply("Bruder da ist keine Frage :c");
             return;
         }
-        
+
         if (isReply) {
             // throw in everything in a single line
             // shadow style :D
