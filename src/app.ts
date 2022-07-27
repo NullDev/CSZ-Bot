@@ -223,8 +223,7 @@ client.once("ready", async initializedClient => {
             // eslint-disable-next-line no-unused-vars
             const ehreReset = new Cron("1 0 * * *", async() => {
                 log.debug("Entered start ehreReset cronjob");
-                await EhrePoints.deflation();
-                await EhreVotes.resetVotes();
+                await Promise.all([EhrePoints.deflation(), EhreVotes.resetVotes()];
             }, cronOptions);
         }
 
