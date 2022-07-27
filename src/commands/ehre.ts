@@ -24,16 +24,16 @@ async function createEhreTable(): Promise<MessagePayload | InteractionReplyOptio
                     name: "Fangt an",
                     value: "Noch ist niemand geährt worden"
                 },
-                ...userInGroups.middle.length > 0 ? [{
+                ...(userInGroups.middle.length > 0 ? [{
                     name: "Ehrenbrudis",
                     value: userInGroups.middle.map(user => `<@${user}>`).join(","),
                     inline: false
-                }] : [],
-                ...userInGroups.bottom.length > 0 ? [{
+                }] : []),
+                ...(userInGroups.bottom.length > 0 ? [{
                     name: "Ehrenhafte User",
                     value: userInGroups.bottom.map(user => `<@${user}>`).join(","),
                     inline: false
-                }] : []
+                }] : [])
             ]
         }],
         ephemeral: false
