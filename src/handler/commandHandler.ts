@@ -151,12 +151,10 @@ export const registerAllApplicationCommandsAsGuildCommands = async(context: BotC
                 dm_permission: false,
                 default_member_permissions: String(createPermissionSet(command.requiredPermissions))
             };
-            console.log("creating " + command.name + " ");
             // eslint-disable-next-line no-unused-vars
-            const createdCommand = await rest.post(Routes.applicationGuildCommands(clientId, context.guild.id), {
+            await rest.post(Routes.applicationGuildCommands(clientId, context.guild.id), {
                 body: commandCreationData
             }) as { id: string, name: string };
-            console.log(command.name + " created");
         }
         catch (err) {
             log.error(`Could not register the application command ${command.name}`, err);
