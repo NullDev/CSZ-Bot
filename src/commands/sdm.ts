@@ -128,14 +128,22 @@ export class SdmCommand implements MessageCommand, ApplicationCommand {
     }
 
     async handleMessage(message: ProcessableMessage, client: Client<boolean>): Promise<CommandResult> {
+        const replyRef = message.reference?.messageId;
+        const isReply = replyRef !== undefined;
         const args = substringAfter(message.cleanContent, this.name).trim().split(/\s+/g).filter(s => !!s);
 
-        if (!args.length) {
+        if (!args.length && !isReply) {
             await message.reply("Bruder da ist keine Frage :c");
             return;
         }
 
         let question = args.join(" ").replace(/\s\s+/g, " ");
+        if (isReply) {
+            // in most situations, the substring matching won't happen
+            // however if, it might be good to trim it anyway
+            question = substringAfter((await message.channel.messages.fetch(replyRef!)).content, this.name).trim();
+        }
+
         const options = question.split(/,|;|\s+oder\s+/gi).map(s => s.trim()).filter(s => !!s);
 
         if (options.length > 1) {
