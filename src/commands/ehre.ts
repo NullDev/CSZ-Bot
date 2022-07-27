@@ -6,14 +6,14 @@ import {ApplicationCommand, CommandResult} from "./command";
 import {EhreGroups, EhrePoints, EhreVotes} from "../storage/model/Ehre";
 
 
-async function createEhreTable(): Promise<MessagePayload | InteractionReplyOptions> {
+async function createEhreTable(client: Client<boolean>): Promise<MessagePayload | InteractionReplyOptions> {
     const userInGroups = await EhrePoints.getUserInGroups();
     return {
         embeds: [{
             color: 2007432,
             author: {
-                name: "Shitpost Bot",
-                url: "https://discordapp.com/users/663146938811547660/"
+                name: client.user?.username,
+                url: client.user?.avatar ?? undefined
             },
             fields: [
                 userInGroups.best ? {
@@ -44,7 +44,9 @@ function getVote(userInGroups: EhreGroups, voter: string): number {
     if (userInGroups.best === voter) {
         return 5;
     }
-    else if (userInGroups.middle.includes(voter)) return 2;
+    else if (userInGroups.middle.includes(voter)) {
+        return 2;
+    }
     return 1;
 }
 
@@ -80,7 +82,7 @@ export class EhreCommand implements ApplicationCommand {
     async handleInteraction(command: CommandInteraction, client: Client<boolean>): Promise<CommandResult> {
         const subcommand = command.options.getSubcommand();
         if (subcommand === "tabelle") {
-            return command.reply(await createEhreTable());
+            return command.reply(await createEhreTable(client));
         }
         const user = command.options.getUser("user", true);
         if (subcommand === "add") {
