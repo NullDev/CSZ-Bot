@@ -10,7 +10,7 @@ Official Coding Shitpost Central Discord Bot
 
 ## :information_source: OwO wats dis?
 
-Please ignore this repo. This is just a management bot I made for my stupid [german coding discord server](https://discord.gg/csz)...
+Please ignore this repo. This is just a management bot I made for my stupid german coding discord server...
 
 German description of the Discord Server:
 
