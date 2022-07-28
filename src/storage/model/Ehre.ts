@@ -6,11 +6,6 @@ import {DataTypes, Model, Sequelize} from "sequelize";
 import {v4 as uuidv4} from "uuid";
 import {Snowflake} from "discord.js";
 
-export interface EhreGroups {
-    best: string | undefined;
-    middle: string[];
-    bottom: string[];
-}
 
 export class EhreVotes extends Model {
     declare id: string;
@@ -58,6 +53,7 @@ export class EhreVotes extends Model {
     }
 }
 
+
 export class EhrePoints extends Model {
     declare id: string;
     declare userId: string;
@@ -81,15 +77,17 @@ export class EhrePoints extends Model {
         });
     }
 
+
+    // eslint-disable-next-line no-use-before-define
     static async getUserInGroups(): Promise<EhreGroups> {
         const {rows, count} = await EhrePoints.findAndCountAll({
             order: [["points", "DESC"]]
         });
         const splitterIndex = (count - 1) * 0.2 + 1;
         return {
-            best: rows[0]?.userId,
-            middle: rows.slice(1, splitterIndex).map(el => el.userId),
-            bottom: rows.slice(splitterIndex).map(el => el.userId)
+            best: rows[0],
+            middle: rows.slice(1, splitterIndex),
+            bottom: rows.slice(splitterIndex)
         };
     }
 
@@ -127,4 +125,10 @@ export class EhrePoints extends Model {
             modelName: "EhrePoints"
         });
     }
+}
+
+export interface EhreGroups {
+    best: EhrePoints | undefined;
+    middle: EhrePoints[];
+    bottom: EhrePoints[];
 }
