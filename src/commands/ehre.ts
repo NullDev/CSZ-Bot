@@ -5,9 +5,13 @@ import {Client, CommandInteraction, InteractionReplyOptions, MessagePayload} fro
 import {ApplicationCommand, CommandResult} from "./command";
 import {EhreGroups, EhrePoints, EhreVotes} from "../storage/model/Ehre";
 
+function createUserPointString(e: EhrePoints) {
+    return `<@${e.userId}> : ${e.points}`;
+}
 
 async function createEhreTable(client: Client<boolean>): Promise<MessagePayload | InteractionReplyOptions> {
     const userInGroups = await EhrePoints.getUserInGroups();
+
     return {
         embeds: [{
             color: 2007432,
@@ -17,7 +21,7 @@ async function createEhreTable(client: Client<boolean>): Promise<MessagePayload 
             fields: [
                 userInGroups.best ? {
                     name: "Ehrenpate",
-                    value: userInGroups.best ? `<@${userInGroups.best}>` : "",
+                    value: userInGroups.best ? createUserPointString(userInGroups.best) : "",
                     inline: false
                 } : {
                     name: "Fangt an",
@@ -25,12 +29,12 @@ async function createEhreTable(client: Client<boolean>): Promise<MessagePayload 
                 },
                 ...(userInGroups.middle.length > 0 ? [{
                     name: "Ehrenbrudis",
-                    value: userInGroups.middle.map(user => `<@${user}>`).join(","),
+                    value: userInGroups.middle.map(user => createUserPointString(user)).join("\n"),
                     inline: false
                 }] : []),
                 ...(userInGroups.bottom.length > 0 ? [{
                     name: "Ehrenhafte User",
-                    value: userInGroups.bottom.map(user => `<@${user}>`).join(","),
+                    value: userInGroups.bottom.map(user => createUserPointString(user)).join("\n"),
                     inline: false
                 }] : [])
             ]
@@ -40,10 +44,10 @@ async function createEhreTable(client: Client<boolean>): Promise<MessagePayload 
 }
 
 function getVote(userInGroups: EhreGroups, voter: string): number {
-    if (userInGroups.best === voter) {
+    if (userInGroups.best?.userId === voter) {
         return 5;
     }
-    else if (userInGroups.middle.includes(voter)) {
+    else if (userInGroups.middle.map(u => u.userId).includes(voter)) {
         return 2;
     }
     return 1;
@@ -58,7 +62,7 @@ async function handleVote(voter: string, user: string) {
 export class EhreCommand implements ApplicationCommand {
     modCommand: boolean = false;
     name: string = "ehre";
-    description: string = "Fügt Ehre hinzu & Zeigt die tabelle an";
+    description: string = "Fügt Ehre hinzu & Zeigt die Tabelle an";
 
     get applicationCommand(): Pick<SlashCommandBuilder, "toJSON"> {
         return new SlashCommandBuilder()
@@ -67,7 +71,7 @@ export class EhreCommand implements ApplicationCommand {
             .addSubcommand(
                 new SlashCommandSubcommandBuilder()
                     .setName("add")
-                    .setDescription("test")
+                    .setDescription("Ehre einen User")
                     .addUserOption(new SlashCommandUserOption()
                         .setRequired(true)
                         .setName("user").setDescription("Dem ehrenhaften User")))
