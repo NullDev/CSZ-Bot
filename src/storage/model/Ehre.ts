@@ -100,7 +100,7 @@ export class EhrePoints extends Model {
     }
 
     static async deflation() {
-        return EhrePoints.update({field: Sequelize.literal("points * 0.98")}, {where: {}});
+        return EhrePoints.update({points: Sequelize.literal("points * 0.98")}, {where: {}});
     }
 
     static initialize(sequelize: Sequelize) {
