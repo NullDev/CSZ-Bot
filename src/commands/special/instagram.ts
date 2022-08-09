@@ -23,7 +23,7 @@ const readFromEmbedContent = (content: string): InstagramPost | null => {
     const dom = new JSDOM(content);
 
     // First try to get a video
-    const videoContent = dom.window.document.querySelector(".EmbedVideo video") as HTMLVideoElement | undefined;
+    const videoContent = dom.window.document.querySelector(".EmbedVideo,.EmbedSidecar video") as HTMLVideoElement | undefined;
     // Should return only one HTMLAnchorElement
     const embeddedElement = dom.window.document.querySelector(".EmbeddedMedia .EmbeddedMediaImage") as HTMLImageElement | undefined;
     const caption = dom.window.document.querySelector(".Caption .CaptionUsername") as HTMLAnchorElement | undefined;
