@@ -55,7 +55,7 @@ export class Saufen implements ApplicationCommand {
             if (today.getDay() === 0 || today.getDay() === 6) {
                 return true;
             }
-            if (today.getDay() === 5 || today.getHours() > 18) {
+            if (today.getDay() === 5 && today.getHours() > 18) {
                 return true;
             }
             return false;
