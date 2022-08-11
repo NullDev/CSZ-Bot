@@ -65,7 +65,7 @@ export class Saufen implements ApplicationCommand {
                 return command.reply("WOCHENENDE!! SAUFEN!! GEIL");
             }
             return command.reply("UNTER DER WOCHE!! SAUFEN!! GEIL");
-        }
+        };
 
         switch (subCommand) {
             case "los": {
