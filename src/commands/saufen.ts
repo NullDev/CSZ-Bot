@@ -50,7 +50,22 @@ export class Saufen implements ApplicationCommand {
 
     async handleInteraction(command: CommandInteraction<CacheType>, client: Client<boolean>, context: BotContext): Promise<void> {
         const subCommand = command.options.getSubcommand() as SubCommand;
-        const reply = () => command.reply("WOCHENENDE!! SAUFEN!! GEIL");
+        const isWeekend = (): boolean => {
+            const today = new Date();
+            if (today.getDay() === 0 || today.getDay() === 6) {
+                return true;
+            }
+            if (today.getDay() === 5 || today.getHours() > 18) {
+                return true;
+            }
+            return false;
+        };
+        const reply = () => {
+            if (isWeekend()) {
+                return command.reply("WOCHENENDE!! SAUFEN!! GEIL");
+            }
+            return command.reply("UNTER DER WOCHE!! SAUFEN!! GEIL");
+        }
 
         switch (subCommand) {
             case "los": {
@@ -87,7 +102,7 @@ export class Saufen implements ApplicationCommand {
                 return;
             }
             case "list": {
-                const files = await readdir(soundDir, { withFileTypes: true});
+                const files = await readdir(soundDir, { withFileTypes: true });
                 await command.reply(files.map(f => f.name).join("\n- "));
                 return;
             }
