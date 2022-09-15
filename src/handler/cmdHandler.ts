@@ -36,7 +36,7 @@ export function isProcessableMessage(message: Message): message is ProcessableMe
 export default async function(message: ProcessableMessage, client: Client, isModCommand: boolean, context: BotContext): Promise<CommandResult> {
     if (message.author.bot) return;
 
-    if (hasBotDenyRole(message.member) && isMessageInBotSpam(message)) {
+    if (hasBotDenyRole(message.member) && !isMessageInBotSpam(message)) {
         await message.member.send("Du hast dich scheinbar beschissen verhalten und darfst daher keine Befehle in diesem Channel ausführen!");
         return;
     }
