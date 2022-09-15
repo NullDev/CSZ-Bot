@@ -8,21 +8,27 @@ import type { ProcessableMessage } from "./handler/cmdHandler";
  */
 export type CommandResult = string | void;
 
-export type CommandFunction = (client: Client, message: ProcessableMessage, args: Array<string>, context: BotContext) => Promise<CommandResult>;
+export type CommandFunction = (
+    client: Client,
+    message: ProcessableMessage,
+    args: Array<string>,
+    context: BotContext
+) => Promise<CommandResult>;
 
 export type Mutable<T> = { -readonly [P in keyof T]: T[P] };
 
 export interface GitHubContributor {
-    login: string,
-    id: number,
-    html_url: string,
-    type: "User" | "Bot",
-    contributions: number
+    login: string;
+    id: number;
+    html_url: string;
+    type: "User" | "Bot";
+    contributions: number;
 }
 
 export type ConfigRoleId =
     | "banned_role_id"
     | "bday_role_id"
+    | "bot_deny_role_id"
     | "default_role_id"
     | "gruendervaeter_banned_role_id"
     | "gruendervaeter_role_id"
@@ -34,6 +40,7 @@ export type ConfigRoleId =
 export type ConfigTextChannelId =
     | "banned_channel_id"
     | "bot_log_channel_id"
+    | "bot_spam_channel_id"
     | "hauptchat_id"
     | "votes_channel_id";
 
@@ -41,7 +48,11 @@ export type ConfigVoiceChannelId = "haupt_woischat_id";
 
 export type ConfigGuildId = "guild_id";
 
-export type ConfigId = ConfigRoleId | ConfigTextChannelId | ConfigGuildId | ConfigVoiceChannelId;
+export type ConfigId =
+    | ConfigRoleId
+    | ConfigTextChannelId
+    | ConfigGuildId
+    | ConfigVoiceChannelId;
 
 export interface Config {
     auth: {
@@ -77,5 +88,11 @@ export interface Config {
 }
 
 // eslint-disable-next-line no-use-before-define
-export type JsonValue = JsonObject | JsonValue[] | boolean | number | string | null;
+export type JsonValue =
+    | JsonObject
+    | JsonValue[]
+    | boolean
+    | number
+    | string
+    | null;
 export type JsonObject = Record<string, JsonValue>;

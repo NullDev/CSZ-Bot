@@ -93,6 +93,7 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
             // TODO: Make this prettier (splitting up the IDs by type in the config would make this much easier)
             banned: ensureRole(config, guild, "banned_role_id"),
             bday: ensureRole(config, guild, "bday_role_id"),
+            bot_deny: ensureRole(config, guild, "bot_deny_role_id"),
             "default": ensureRole(config, guild, "default_role_id"),
             gruendervaeter_banned: ensureRole(config, guild, "gruendervaeter_banned_role_id"),
             gruendervaeter: ensureRole(config, guild, "gruendervaeter_role_id"),
@@ -105,7 +106,8 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
             banned: ensureTextChannel(config, guild, "banned_channel_id"),
             bot_log: ensureTextChannel(config, guild, "bot_log_channel_id"),
             hauptchat: ensureTextChannel(config, guild, "hauptchat_id"),
-            votes: ensureTextChannel(config, guild, "votes_channel_id")
+            votes: ensureTextChannel(config, guild, "votes_channel_id"),
+            bot_spam: ensureTextChannel(config, guild, "bot_spam_channel_id")
         },
         voiceChannels: {
             haupt_woischat: ensureVoiceChannel(config, guild, "haupt_woischat_id")

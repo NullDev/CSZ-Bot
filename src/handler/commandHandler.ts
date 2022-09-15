@@ -8,6 +8,7 @@ import {getConfig} from "../utils/configHandler";
 import {REST} from "@discordjs/rest";
 import {APIApplicationCommand, Routes} from "discord-api-types/v9";
 import {
+    ApplicationCommandPermissionData,
     Client,
     CommandInteraction,
     Interaction,
@@ -62,6 +63,8 @@ import { InstagramLink } from "../commands/special/instagram";
 import { OidaCommand } from "../commands/oida";
 import { DeOidaCommand } from "../commands/deoida";
 import { EhreCommand } from "../commands/ehre";
+import { hasBotDenyRole } from "../utils/userUtils";
+import { isMessageInBotSpam } from "../utils/channelUtils";
 
 const config = getConfig();
 
@@ -106,7 +109,6 @@ export const interactions: readonly UserInteraction[] = [
     new WoisButton()
 ];
 
-
 export const applicationCommands: Array<ApplicationCommand> =
     commands.filter<ApplicationCommand>(isApplicationCommand);
 export const messageCommands: Array<MessageCommand> =
@@ -114,19 +116,26 @@ export const messageCommands: Array<MessageCommand> =
 export const specialCommands: Array<SpecialCommand> =
     commands.filter<SpecialCommand>(isSpecialCommand);
 
-const lastSpecialCommands: Record<string, number> = specialCommands.reduce((acc, cmd) => ({...acc, [cmd.name]: 0}), {});
+const lastSpecialCommands: Record<string, number> = specialCommands.reduce(
+    (acc, cmd) => ({ ...acc, [cmd.name]: 0 }),
+    {}
+);
 
 /**
  * Registers all defined applicationCommands as guild commands
  * We're overwriting ALL, therefore no deletion is necessary
  */
-export const registerAllApplicationCommandsAsGuildCommands = async(context: BotContext): Promise<void> => {
+export const registerAllApplicationCommandsAsGuildCommands = async(
+    context: BotContext
+): Promise<void> => {
     const clientId = config.auth.client_id;
     const token = config.auth.bot_token;
 
-    const rest = new REST({version: "9"}).setToken(token);
+    const rest = new REST({ version: "9" }).setToken(token);
 
-    const createPermissionSet = (strings: readonly PermissionString[] | undefined): bigint => {
+    const createPermissionSet = (
+        strings: readonly PermissionString[] | undefined
+    ): bigint => {
         if (strings === undefined) {
             return BigInt(0x40); // Default to "SEND_MESSAGES"
         }
@@ -146,18 +155,39 @@ export const registerAllApplicationCommandsAsGuildCommands = async(context: BotC
     // TODO: Reconsider using batch creation here. Ratelimit kicks in and takes round about 40 seconds to start the butt
     for (const command of applicationCommands) {
         try {
-            const commandCreationData: APIApplicationCommand | { dm_permission: boolean, default_member_permissions: string } = {
-                ...command.applicationCommand.toJSON(),
-                dm_permission: false,
-                default_member_permissions: String(createPermissionSet(command.requiredPermissions))
-            };
+            const commandCreationData:
+                | APIApplicationCommand
+                | {
+                      dm_permission: boolean;
+                      default_member_permissions: string;
+                      permissions: ApplicationCommandPermissionData[];
+                  } = {
+                      ...command.applicationCommand.toJSON(),
+                      dm_permission: false,
+                      default_member_permissions: String(
+                          createPermissionSet(command.requiredPermissions)
+                      ),
+                      permissions: [
+                          {
+                              id: config.ids.bot_deny_role_id,
+                              type: "ROLE",
+                              permission: false
+                          }
+                      ]
+                  };
             // eslint-disable-next-line no-unused-vars
-            await rest.post(Routes.applicationGuildCommands(clientId, context.guild.id), {
-                body: commandCreationData
-            }) as { id: string, name: string };
+            (await rest.post(
+                Routes.applicationGuildCommands(clientId, context.guild.id),
+                {
+                    body: commandCreationData
+                }
+            )) as { id: string; name: string };
         }
         catch (err) {
-            log.error(`Could not register the application command ${command.name}`, err);
+            log.error(
+                `Could not register the application command ${command.name}`,
+                err
+            );
         }
     }
 };
@@ -182,7 +212,7 @@ const commandInteractionHandler = (
     }
 
     return Promise.reject(new Error(
-        `Application Command ${command.commandName} with ID ${command.id} invoked, but not availabe`
+            `Application Command ${command.commandName} with ID ${command.id} invoked, but not availabe`
     ));
 };
 
@@ -240,6 +270,13 @@ const commandMessageHandler = async(
     const matchingCommand = messageCommands.find(
         cmd => cmd.name.toLowerCase() === commandString.toLowerCase() || cmd.aliases?.includes(commandString.toLowerCase())
     );
+
+    if (hasBotDenyRole(message.member) && isMessageInBotSpam(message)) {
+        await message.member.send(
+            "Du hast dich scheinbar beschissen verhalten und darfst daher keine Befehle in diesem Channel ausführen!"
+        );
+        return;
+    }
 
     if (!matchingCommand) {
         throw new Error(`No matching command found for command "${commandString}"`);

@@ -43,3 +43,7 @@ export function isWoisGang(member: GuildMember): boolean {
 export function isEmotifizierer(member: GuildMember): boolean {
     return hasRoleById(member, config.ids.emotifizierer_role_id);
 }
+
+export function hasBotDenyRole(member: GuildMember): boolean {
+    return hasRoleById(member, config.ids.bot_deny_role_id);
+}
