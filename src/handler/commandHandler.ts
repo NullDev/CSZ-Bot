@@ -271,7 +271,7 @@ const commandMessageHandler = async(
         cmd => cmd.name.toLowerCase() === commandString.toLowerCase() || cmd.aliases?.includes(commandString.toLowerCase())
     );
 
-    if (hasBotDenyRole(message.member) && isMessageInBotSpam(message)) {
+    if (hasBotDenyRole(message.member) && !isMessageInBotSpam(message)) {
         await message.member.send(
             "Du hast dich scheinbar beschissen verhalten und darfst daher keine Befehle in diesem Channel ausführen!"
         );
