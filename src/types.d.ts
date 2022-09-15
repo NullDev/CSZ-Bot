@@ -87,7 +87,7 @@ export interface Config {
     ids: Record<ConfigIdKey, Snowflake>;
 }
 
-// eslint-disable-next-line no-use-before-define
+/* eslint-disable no-use-before-define */
 export type JsonValue =
     | JsonObject
     | JsonValue[]
@@ -95,4 +95,5 @@ export type JsonValue =
     | number
     | string
     | null;
+/* eslint-enable no-use-before-define */
 export type JsonObject = Record<string, JsonValue>;
