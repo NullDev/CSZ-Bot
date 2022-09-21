@@ -139,7 +139,9 @@ export class BoobCommand implements MessageCommand {
         "brüste",
         "melonen",
         "vorbau",
-        "balkon"
+        "balkon",
+        "hupe",
+        "hupen"
     ];
     description = "Zeigt dir die deine Boobs mit Größe an";
 
@@ -169,6 +171,5 @@ export class BoobCommand implements MessageCommand {
         }
 
         await sendBoob(userToMeasure, message, recentMeasurement.size, recentMeasurement.measuredAt);
-        return;
     }
 }
