@@ -1,19 +1,27 @@
 import type {  VoiceState } from "discord.js";
 import { BotContext } from "../context";
 import { getConfig } from "../utils/configHandler";
+// M
 
 const config = getConfig();
-export default async function(oldState: VoiceState, newState: VoiceState, botContext: BotContext) {
+
+interface VoiceUpdateEvent {
+    oldState: VoiceState;
+    newState: VoiceState;
+    created_at : Date;
+}
+
+
+export var latestEvents: VoiceUpdateEvent[] = [];
+
+export async function checkVoiceUpdate(oldState: VoiceState, newState: VoiceState, botContext: BotContext) {
     // User joined Channel
     if (oldState.channel === null && newState.channel !== null) {
         if (newState.channelId === config.ids.haupt_woischat) {
-            // send message into config.ids.woischat_text_id
-            botContext.client.channels.fetch(config.ids.woischat_text_id).then(channel => {
-                if (channel?.isText()) {
-                    channel.send(`${newState.member?.nickname} ist jetzt im Hauptwoischat`).catch(console.error);
-                }
-            }).catch(err => {
-                console.error(err);
+            latestEvents.push({
+                oldState,
+                newState,
+                created_at: new Date()
             });
         }
     }
@@ -21,13 +29,11 @@ export default async function(oldState: VoiceState, newState: VoiceState, botCon
     // user left channel
     if (oldState.channel !== null && newState.channel === null) {
         if (newState.channelId === config.ids.haupt_woischat) {
-            // send message into config.ids.woischat_text_id
-            botContext.client.channels.fetch(config.ids.woischat_text_id).then(channel => {
-                if (channel?.isText()) {
-                    channel.send(`${newState.member?.nickname} ist jetzt nicht mehr im Hauptwoischat`).catch(console.error);
-                }
-            }).catch(err => {
-                console.error(err);
+            // Add to latest events
+            latestEvents.push({
+                oldState,
+                newState,
+                created_at: new Date()
             });
         }
     }
