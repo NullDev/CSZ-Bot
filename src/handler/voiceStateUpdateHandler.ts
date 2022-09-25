@@ -10,7 +10,7 @@ export default async function(oldState: VoiceState, newState: VoiceState, botCon
             // send message into config.ids.woischat_text_id
             botContext.client.channels.fetch(config.ids.woischat_text_id).then(channel => {
                 if (channel?.isText()) {
-                    channel.send(`${newState.member?.nickname} ist jetzt im Hauptwoischat`).catch(err => {console.error(err)});
+                    channel.send(`${newState.member?.nickname} ist jetzt im Hauptwoischat`).catch(err => {console.error(err);});
                 }
             }).catch(err => {
                 console.error(err);
@@ -24,7 +24,7 @@ export default async function(oldState: VoiceState, newState: VoiceState, botCon
             // send message into config.ids.woischat_text_id
             botContext.client.channels.fetch(config.ids.woischat_text_id).then(channel => {
                 if (channel?.isText()) {
-                    channel.send(`${newState.member?.nickname} ist jetzt nicht mehr im Hauptwoischat`).catch(err => {console.error(err)});
+                    channel.send(`${newState.member?.nickname} ist jetzt nicht mehr im Hauptwoischat`).catch(err => {console.error(err);});
                 }
             }).catch(err => {
                 console.error(err);
