@@ -1,5 +1,4 @@
 // @ts-ignore
-import {Client} from "discord.js";
 import {WoisData } from "../handler/voiceStateUpdateHandler";
 import { ApplicationCommand } from "./command";
 import {
