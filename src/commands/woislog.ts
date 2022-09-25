@@ -25,22 +25,20 @@ export class WoisLog implements ApplicationCommand {
 
     async handleInteraction(command: CommandInteraction, client: Client, context: BotContext) :  Promise<CommandResult> {
         WoisData.latestEvents = WoisData.latestEvents.filter(event => {
-            return event.created_at.getTime() > Date.now() - 5 * 60 * 1000;
+            return event.createdAt.getTime() > Date.now() - 5 * 60 * 1000;
         });
 
         const latestEventsString = WoisData.latestEvents.map(event => {
-            const {oldState, newState, created_at} = event;
+            const {oldState, newState, createdAt} = event;
             const oldChannel = oldState.channel;
             const newChannel = newState.channel;
             const user = newState.member?.user;
             const oldChannelName = oldChannel ? oldChannel.name : "null";
             const newChannelName = newChannel ? newChannel.name : "null";
-            return `${created_at.toLocaleString()} ${user?.username} moved from ${oldChannelName} to ${newChannelName}`;
+            return `${createdAt.toLocaleString()} ${user?.username} moved from ${oldChannelName} to ${newChannelName}`;
         });
         // make string [] to string
         const latestEventsStringJoined = latestEventsString.join("\n");
         await command.reply({ content: latestEventsStringJoined, ephemeral: true });
     }
-
-
 }

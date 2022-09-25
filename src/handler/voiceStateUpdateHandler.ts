@@ -8,7 +8,7 @@ const config = getConfig();
 interface VoiceUpdateEvent {
     oldState: VoiceState;
     newState: VoiceState;
-    created_at : Date;
+    createdAt : Date;
 }
 
 export class WoisData {
@@ -22,7 +22,7 @@ export async function checkVoiceUpdate(oldState: VoiceState, newState: VoiceStat
             WoisData.latestEvents.push({
                 oldState,
                 newState,
-                created_at: new Date()
+                createdAt: new Date()
             });
         }
     }
@@ -34,7 +34,7 @@ export async function checkVoiceUpdate(oldState: VoiceState, newState: VoiceStat
             WoisData.latestEvents.push({
                 oldState,
                 newState,
-                created_at: new Date()
+                createdAt: new Date()
             });
         }
     }
