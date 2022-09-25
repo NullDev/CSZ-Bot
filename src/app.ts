@@ -334,7 +334,7 @@ client.on("invalidated", () => void log.debug("Client invalidated"));
 client.on("messageReactionAdd", async(event, user) => reactionHandler(event as MessageReaction, user as User, client, false));
 client.on("messageReactionAdd", async(event, user) => quoteReactionHandler(event as MessageReaction, user as User, botContext));
 client.on("messageReactionRemove", async(event, user) => reactionHandler(event as MessageReaction, user as User, client, true));
-client.on("voiceStateUpdate", async(oldState, newState) => voiceStateUpdateHandler(oldState as VoiceState, newState as VoiceState,botContext));
+client.on("voiceStateUpdate", async(oldState, newState) => voiceStateUpdateHandler(oldState as VoiceState, newState as VoiceState, botContext));
 
 client.login(config.auth.bot_token).then(() => {
     log.info("Token login was successful!");
