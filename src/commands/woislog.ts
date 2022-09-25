@@ -9,7 +9,7 @@ import { BotContext } from "../context";
 
 import {
     CommandInteraction,
-    Client,
+    Client
 } from "discord.js";
 
 
@@ -25,7 +25,7 @@ export class WoisLog implements ApplicationCommand {
 
     }
 
-    handleInteraction(command: CommandInteraction, client: Client, context: BotContext) {
+    async handleInteraction(command: CommandInteraction, client: Client, context: BotContext) :  Promise<CommandResult> {
         WoisData.latestEvents = WoisData.latestEvents.filter((event) => {
             return event.created_at.getTime() > Date.now() - 5 * 60 * 1000;
         });
@@ -34,13 +34,13 @@ export class WoisLog implements ApplicationCommand {
             const {oldState, newState, created_at} = event;
             const oldChannel = oldState.channel;
             const newChannel = newState.channel;
-            const user = newState.member.user;
+            const user = newState.member?.user;
             const oldChannelName = oldChannel ? oldChannel.name : "null";
             const newChannelName = newChannel ? newChannel.name : "null";
             return `${created_at.toLocaleString()} ${user.username} moved from ${oldChannelName} to ${newChannelName}`;
         });
 
-        return command.reply({ content: latestEventsString, ephemeral: true });
+        await command.reply({ content: latestEventsString, ephemeral: true });
     }
 
 
