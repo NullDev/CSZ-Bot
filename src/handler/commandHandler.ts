@@ -46,6 +46,7 @@ import { GoogleCommand } from "../commands/google";
 import { NischdaaaCommand } from "../commands/special/nischdaaa";
 import { SdmCommand } from "../commands/sdm";
 import { Nickname, NicknameButtonHandler } from "../commands/nickname";
+import { WoisLog } from "../commands/woislog";
 import { WoisButton, WoisCommand } from "../commands/woisping";
 import { FicktabelleCommand } from "../commands/ficktabelle";
 import { InviteCommand } from "../commands/invite";
@@ -85,6 +86,7 @@ export const commands: readonly Command[] = [
     new BonkCommand(),
     new GoogleCommand(),
     new Nickname(),
+    new WoisLog(),
     new NischdaaaCommand(),
     new SdmCommand(),
     new WoisCommand(),
