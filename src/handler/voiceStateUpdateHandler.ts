@@ -3,7 +3,7 @@ import { BotContext } from "../context";
 import { getConfig } from "../utils/configHandler";
 
 const config = getConfig();
-export default async function voiceStateUpdateHandler (oldState: VoiceState, newState: VoiceState, botContext: BotContext) => {
+export default async function (oldState: VoiceState, newState: VoiceState, botContext: BotContext) => {
     // User joined Channel
     if (oldState.channel === null && newState.channel !== null) {
         if (newState.channelId === config.ids.haupt_woischat) {
