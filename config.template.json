@@ -50,7 +50,6 @@
         "banned_channel_id": "",
         "votes_channel_id": "",
         "bot_log_channel_id": "",
-        "haupt_woischat_id": "",
-        "woischat_text_id": ""
+        "haupt_woischat_id": ""
     }
 }
