@@ -1,6 +1,6 @@
 // @ts-ignore
 import {WoisData } from "../handler/voiceStateUpdateHandler";
-import { ApplicationCommand } from "./command";
+import { ApplicationCommand, CommandResult } from "./command";
 import {
     SlashCommandBuilder,
 } from "@discordjs/builders";
@@ -36,10 +36,11 @@ export class WoisLog implements ApplicationCommand {
             const user = newState.member?.user;
             const oldChannelName = oldChannel ? oldChannel.name : "null";
             const newChannelName = newChannel ? newChannel.name : "null";
-            return `${created_at.toLocaleString()} ${user.username} moved from ${oldChannelName} to ${newChannelName}`;
+            return `${created_at.toLocaleString()} ${user?.username} moved from ${oldChannelName} to ${newChannelName}`;
         });
-
-        await command.reply({ content: latestEventsString, ephemeral: true });
+        // make string [] to string
+        const latestEventsStringJoined = latestEventsString.join("\n");
+        await command.reply({ content: latestEventsStringJoined, ephemeral: true });
     }
 
 
