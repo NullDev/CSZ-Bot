@@ -2,7 +2,7 @@
 import {WoisData } from "../handler/voiceStateUpdateHandler";
 import { ApplicationCommand, CommandResult } from "./command";
 import {
-    SlashCommandBuilder,
+    SlashCommandBuilder
 } from "@discordjs/builders";
 import { BotContext } from "../context";
 
@@ -20,16 +20,15 @@ export class WoisLog implements ApplicationCommand {
     get applicationCommand(): Pick<SlashCommandBuilder, "toJSON"> {
         return new SlashCommandBuilder()
             .setName(this.name)
-            .setDescription(this.description)
-
+            .setDescription(this.description);
     }
 
     async handleInteraction(command: CommandInteraction, client: Client, context: BotContext) :  Promise<CommandResult> {
-        WoisData.latestEvents = WoisData.latestEvents.filter((event) => {
+        WoisData.latestEvents = WoisData.latestEvents.filter(event => {
             return event.created_at.getTime() > Date.now() - 5 * 60 * 1000;
         });
 
-        const latestEventsString = WoisData.latestEvents.map((event) => {
+        const latestEventsString = WoisData.latestEvents.map(event => {
             const {oldState, newState, created_at} = event;
             const oldChannel = oldState.channel;
             const newChannel = newState.channel;
