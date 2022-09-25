@@ -53,6 +53,8 @@ $ `npm ci`<br><br>
         - Die ID für [den Hauptchat](https://github.com/NullDev/CSZ-Bot/blob/master/config.template.json#L32)
         - Die ID für [den Banned-Channel](https://github.com/NullDev/CSZ-Bot/blob/master/config.template.json#L44)
         - Die ID für [den Umfrage-Channel](https://github.com/NullDev/CSZ-Bot/blob/master/config.template.json#L45)
+        - Die ID für [den Wois-Channel](https://github.com/NullDev/CSZ-Bot/blob/master/config.template.json#L53)
+        - Die ID für [den Wois-Text-Channel](https://github.com/NullDev/CSZ-Bot/blob/master/config.template.json#L54)
     - Es müssen folgende Rollen am Server angelegt werden:
         - Moderator-Rolle ([Name der Rolle](https://github.com/NullDev/CSZ-Bot/blob/master/config.template.json#L12)) - CSZ Default: Moderader
         - Default Rolle ([ID der Rolle](https://github.com/NullDev/CSZ-Bot/blob/master/config.template.json#L33)) - CSZ Default: Nerd
