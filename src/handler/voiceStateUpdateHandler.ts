@@ -11,14 +11,15 @@ interface VoiceUpdateEvent {
     created_at : Date;
 }
 
-
-export var latestEvents: VoiceUpdateEvent[] = [];
+export class WoisData {
+    static latestEvents: VoiceUpdateEvent[] = [];
+}
 
 export async function checkVoiceUpdate(oldState: VoiceState, newState: VoiceState, botContext: BotContext) {
     // User joined Channel
     if (oldState.channel === null && newState.channel !== null) {
         if (newState.channelId === config.ids.haupt_woischat) {
-            latestEvents.push({
+            WoisData.latestEvents.push({
                 oldState,
                 newState,
                 created_at: new Date()
@@ -30,7 +31,7 @@ export async function checkVoiceUpdate(oldState: VoiceState, newState: VoiceStat
     if (oldState.channel !== null && newState.channel === null) {
         if (newState.channelId === config.ids.haupt_woischat) {
             // Add to latest events
-            latestEvents.push({
+            WoisData.latestEvents.push({
                 oldState,
                 newState,
                 created_at: new Date()
