@@ -24,11 +24,11 @@ export class WoisLog implements ApplicationCommand {
     }
 
     async handleInteraction(command: CommandInteraction, client: Client, context: BotContext) :  Promise<CommandResult> {
-        WoisData.latestEvents = WoisData.latestEvents.filter(event => {
+        WoisData.latestEvents = WoisData.latestEvents.filter((event: WoisData) => {
             return event.createdAt.getTime() > Date.now() - 2 * 60 * 1000;
         });
 
-        const latestEventsString = WoisData.latestEvents.map(event => {
+        const latestEventsString = WoisData.latestEvents.map((event: WoisData) => {
             const {oldState, newState, createdAt} = event;
             const oldChannel = oldState.channel;
             const newChannel = newState.channel;
