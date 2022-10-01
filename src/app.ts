@@ -34,7 +34,7 @@ import { reminderHandler } from "./commands/erinnerung.js";
 import { endAprilFools, startAprilFools } from "./handler/aprilFoolsHandler.js";
 import { createBotContext, type BotContext } from "./context.js";
 import { EhrePoints, EhreVotes } from "./storage/model/Ehre.js";
-
+import {WoisData } from "./handler/voiceStateUpdateHandler.js";
 const version = conf.getVersion();
 const appname = conf.getName();
 const devname = conf.getAuthor();
@@ -94,6 +94,13 @@ process.on("beforeExit", code => {
 process.on("exit", code => {
     log.warn(`Process exited with code: ${code}`);
 });
+
+
+const clearWoisLogTast = async() => {
+    WoisData.latestEvents = WoisData.latestEvents.filter(event => {
+        return event.createdAt.getTime() > Date.now() - 2 * 60 * 1000;
+    });
+}
 
 const leetTask = async() => {
     const {hauptchat} = botContext.textChannels;
@@ -169,7 +176,7 @@ client.once("ready", async initializedClient => {
             log.info("Scheduling 1338 Cronjob...");
             // eslint-disable-next-line no-unused-vars
             const l33tJob = new Cron("37 13 * * *", leetTask, cronOptions);
-
+            const clearWoisLogJob = new Cron("5 * * * *", clearWoisLogTast, cronOptions);
             log.info("Scheduling Birthday Cronjob...");
             // eslint-disable-next-line no-unused-vars
             const bDayJob = new Cron("1 0 * * *", async() => {
