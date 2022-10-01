@@ -4,7 +4,6 @@
   "version": "0.1.0",
   "description": "Offizieller Bot der Coding Shitpost Zentrale",
   "main": "built/app.js",
-  "type": "module",
   "scripts": {
     "start": "node built/app.js",
     "test": "tsc --noEmit",
