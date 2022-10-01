@@ -1,4 +1,4 @@
-import { createCanvas, loadImage } from "canvas";
+import nodeCanvas from "canvas";
 import { promises as fs } from "fs";
 import { AllowedImageSize, Client, CommandInteraction, GuildMember, Snowflake } from "discord.js";
 
@@ -6,6 +6,8 @@ import Stempel from "../storage/model/Stempel";
 import log from "../utils/logger";
 import { ApplicationCommand, CommandResult } from "./command";
 import { SlashCommandBuilder, SlashCommandUserOption } from "@discordjs/builders";
+
+const { createCanvas, loadImage } = nodeCanvas;
 
 const stempelLocations = [
     // 1-3
@@ -134,25 +136,32 @@ export class StempelkarteCommand implements ApplicationCommand {
 
         const inviteesChunked = chunkArray(allInvitees, 10);
 
+        const stempelkarten: Promise<Buffer>[] = [];
+
         for (const invitees of inviteesChunked) {
             const avatarUrls = invitees
                 .map(s => s.invitedMember)
                 .map(getUserById)
                 .map(member => getAvatarUrlForMember(member));
 
-            const stempelkarte = await drawStempelkarteBackside(subjectAvatarUrl, avatarUrls);
+            stempelkarten.push(drawStempelkarteBackside(subjectAvatarUrl, avatarUrls));
+        }
 
-            try {
-                await command.reply({
-                    files: [{
-                        attachment: stempelkarte,
-                        name: `stempelkarte-${ofMember.nickname}.png`
-                    }]
-                });
-            }
-            catch (err) {
-                log.error("Could not create where meme", err);
-            }
+        const results = (await Promise.allSettled(stempelkarten))
+            .filter(result => result.status === "fulfilled") as PromiseFulfilledResult<Buffer>[];
+
+        const attachements = results.map((result, index) => ({
+            name: `stempelkarte-${ofMember.nickname}-${index}.png`,
+            attachment: result.value
+        }));
+
+        try {
+            await command.reply({
+                files: attachements
+            });
+        }
+        catch (err) {
+            log.error("Could not send stempelkarten", err);
         }
     }
 }

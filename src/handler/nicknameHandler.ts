@@ -16,9 +16,8 @@ export default class NicknameHandler {
             await Nicknames.allUsersAndNames()
         );
 
-        for (const [key, value] of allUsersAndNames) {
-            await this.updateNickname(key, value as string[]);
-        }
+        const updateTasks = allUsersAndNames.map(([userId, nicknames]) => this.updateNickname(userId, nicknames));
+        await Promise.all(updateTasks);
     }
 
     async updateNickname(userId: string, storedNicknames: string[]) {

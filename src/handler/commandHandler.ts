@@ -28,7 +28,7 @@ import {
 } from "../commands/command";
 import type {BotContext} from "../context";
 import log from "../utils/logger";
-import { NixOsCommand } from "../commands/special/nixos";
+import { TriggerReactOnKeyword } from "../commands/special/keyword_react";
 import { WhereCommand } from "../commands/special/where";
 import { DadJokeCommand } from "../commands/special/dadJoke";
 import { WatCommand } from "../commands/special/wat";
@@ -71,7 +71,8 @@ const config = getConfig();
 
 export const commands: readonly Command[] = [
     new InfoCommand(),
-    new NixOsCommand(),
+    new TriggerReactOnKeyword("nix", "nixos"),
+    new TriggerReactOnKeyword("zig", "zig"),
     new WhereCommand(),
     new DadJokeCommand(),
     new WatCommand(),
@@ -213,9 +214,13 @@ const commandInteractionHandler = (
         return matchingCommand.handleInteraction(command, client, context);
     }
 
-    return Promise.reject(new Error(
-        `Application Command ${command.commandName} with ID ${command.id} invoked, but not availabe`
-    ));
+
+    return Promise.reject(
+        new Error(
+            `Application Command ${command.commandName} with ID ${command.id} invoked, but not availabe`
+        )
+    );
+
 };
 
 /**

@@ -54,12 +54,13 @@ export default async function(message: ProcessableMessage, client: Client, isMod
 
     const commandArr = [];
     const commandDir = isModCommand
-        ? path.join(__dirname, "..", "commands", "modcommands")
-        : path.join(__dirname, "..", "commands");
+        ? path.join(context.srcDir, "commands", "modcommands")
+        : path.join(context.srcDir, "commands");
 
     const files = await fs.readdir(commandDir);
     for (const file of files) {
         const cmdPath = path.resolve(commandDir, file);
+        // eslint-disable-next-line no-await-in-loop
         const stats = await fs.stat(cmdPath);
         if (!stats.isDirectory()) {
             commandArr.push(file.toLowerCase());

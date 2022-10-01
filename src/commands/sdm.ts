@@ -138,7 +138,7 @@ export class SdmCommand implements MessageCommand, ApplicationCommand {
         }
 
         let question = args.join(" ").replace(/\s\s+/g, " ");
-        if (isReply) {
+        if (isReply && !args.length) {
             question = (await message.channel.messages.fetch(replyRef!)).content.trim();
         }
 
