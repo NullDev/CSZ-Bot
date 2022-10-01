@@ -167,7 +167,7 @@ client.once("ready", async initializedClient => {
         const nicknameHandler = new NicknameHandler(botContext);
         if (firstRun) {
             firstRun = false; // Hacky deadlock ...
-            await storage.initialize();
+            await storage.initialize(botContext);
 
             log.info("Scheduling 1338 Cronjob...");
             // eslint-disable-next-line no-unused-vars
