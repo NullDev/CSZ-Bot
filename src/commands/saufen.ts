@@ -89,12 +89,12 @@ export class Saufen implements ApplicationCommand {
                 const soundUrl = new URL(command.options.getString("sound", true));
                 const targetPath = path.resolve(soundDir, path.basename(soundUrl.pathname));
                 const fileStream = createWriteStream(targetPath);
-                const res = await fetch(soundUrl, {
+                const res = await fetch(soundUrl.toString(), {
                     method: "GET"
                 });
                 const savePromise = new Promise((resolve, reject) => {
-                    res.body.pipe(fileStream);
-                    res.body.on("error", reject);
+                    res.body!.pipe(fileStream);
+                    res.body!.on("error", reject);
                     fileStream.on("finish", resolve);
                 });
                 await Promise.all([

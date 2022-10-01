@@ -1,6 +1,6 @@
 import * as Discord from "discord.js";
 import { Message, MessageReaction, User } from "discord.js";
-import { Cron } from "croner";
+import Cron from "croner";
 
 import * as conf from "./utils/configHandler.js";
 import log from "./utils/logger.js";
@@ -23,13 +23,13 @@ import {
     messageCommandHandler,
     registerAllApplicationCommandsAsGuildCommands
 } from "./handler/commandHandler.js";
-import {quoteReactionHandler} from "./handler/quoteHandler.js";
+import { quoteReactionHandler } from "./handler/quoteHandler.js";
 import NicknameHandler from "./handler/nicknameHandler.js";
-import {connectAndPlaySaufen} from "./handler/voiceHandler.js";
-import {reminderHandler} from "./commands/erinnerung.js";
-import {endAprilFools, startAprilFools} from "./handler/aprilFoolsHandler.js";
-import {createBotContext, type BotContext} from "./context.js";
-import {EhrePoints, EhreVotes} from "./storage/model/Ehre.js";
+import { connectAndPlaySaufen } from "./handler/voiceHandler.js";
+import { reminderHandler } from "./commands/erinnerung.js";
+import { endAprilFools, startAprilFools } from "./handler/aprilFoolsHandler.js";
+import { createBotContext, type BotContext } from "./context.js";
+import { EhrePoints, EhreVotes } from "./storage/model/Ehre.js";
 
 const version = conf.getVersion();
 const appname = conf.getName();
