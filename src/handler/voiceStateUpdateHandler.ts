@@ -5,10 +5,10 @@ import { getConfig } from "../utils/configHandler.js";
 
 const config = getConfig();
 
-interface VoiceUpdateEvent {
+export interface VoiceUpdateEvent {
     oldState: VoiceState;
     newState: VoiceState;
-    createdAt : Date;
+    createdAt: Date;
 }
 
 export class WoisData {

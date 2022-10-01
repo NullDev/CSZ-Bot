@@ -1,5 +1,5 @@
 // @ts-ignore
-import {WoisData } from "../handler/voiceStateUpdateHandler";
+import { WoisData } from "../handler/voiceStateUpdateHandler";
 import { ApplicationCommand, CommandResult } from "./command.js";
 import {
     SlashCommandBuilder
@@ -10,6 +10,7 @@ import {
     CommandInteraction,
     Client
 } from "discord.js";
+import { VoiceUpdateEvent } from "../handler/voiceStateUpdateHandler.js";
 
 
 export class WoisLog implements ApplicationCommand {
@@ -24,11 +25,11 @@ export class WoisLog implements ApplicationCommand {
     }
 
     async handleInteraction(command: CommandInteraction, client: Client, context: BotContext) :  Promise<CommandResult> {
-        WoisData.latestEvents = WoisData.latestEvents.filter((event: WoisData) => {
+        WoisData.latestEvents = WoisData.latestEvents.filter((event: VoiceUpdateEvent) => {
             return event.createdAt.getTime() > Date.now() - 2 * 60 * 1000;
         });
 
-        const latestEventsString = WoisData.latestEvents.map((event: WoisData) => {
+        const latestEventsString = WoisData.latestEvents.map((event: VoiceUpdateEvent) => {
             const {oldState, newState, createdAt} = event;
             const oldChannel = oldState.channel;
             const newChannel = newState.channel;
