@@ -3,10 +3,9 @@
 // ================================= //
 
 import {
-    CommandInteraction, InteractionReplyOptions, MessageActionRow,
+    CommandInteraction, MessageActionRow,
     MessageButton,
     MessageComponentInteraction,
-    MessageOptions,
     Util
 } from "discord.js";
 import { Client } from "discord.js";
@@ -14,10 +13,10 @@ import { ApplicationCommand, CommandResult, UserInteraction } from "./command";
 import log from "../utils/logger";
 
 
-import {isMod, isWoisGang} from "../utils/userUtils";
+import { isMod, isWoisGang } from "../utils/userUtils";
 
-import {getConfig} from "../utils/configHandler";
-import {SlashCommandBuilder, SlashCommandStringOption} from "@discordjs/builders";
+import { getConfig } from "../utils/configHandler";
+import { SlashCommandBuilder, SlashCommandStringOption } from "@discordjs/builders";
 
 const config = getConfig();
 
@@ -35,20 +34,11 @@ const getPingVoteMap = (messageid: string): Set<string> => {
     return pingvoteMap[messageid];
 };
 
-const getMessage = (reason: string, usersVotedYes: string[] = []) : InteractionReplyOptions | MessageOptions => {
-    const content = usersVotedYes.length === 1 ? `<@&${config.ids.woisgang_role_id}> <@!${usersVotedYes[0]}> hat Bock auf Wois. Grund dafür ist \`${reason}\`` :
-        `<@&${config.ids.woisgang_role_id}> <@!${usersVotedYes.join(">,<@!")}> haben Bock auf Wois. Grund dafür ist \`${reason}\``;
-    return {
-        content: content.trim(),
-        allowedMentions: {
-            parse: ["users", "roles"],
-            roles: [config.ids.woisgang_role_id],
-            users: usersVotedYes
-        },
-        components: []
-    };
+const getMessage = (reason: string, usersVotedYes: string[] = []) => {
+    return usersVotedYes.length === 1
+        ? `<@&${config.ids.woisgang_role_id}> <@!${usersVotedYes[0]}> hat Bock auf Wois. Grund dafür ist \`${reason}\``
+        : `<@&${config.ids.woisgang_role_id}> <@!${usersVotedYes.join(">,<@!")}> haben Bock auf Wois. Grund dafür ist \`${reason}\``;
 };
-
 
 export class WoisCommand implements ApplicationCommand {
     name = "woisping";
@@ -82,7 +72,19 @@ export class WoisCommand implements ApplicationCommand {
         const reason = `${Util.cleanContent(command.options.getString("grund", true), command.channel!)}`;
         if (isModMessage) {
             lastPing = now;
-            return command.reply(getMessage(reason, [pinger.id]));
+
+            const usersVotedYes = [pinger.id];
+            const content = getMessage(reason, usersVotedYes).trim();
+
+            return command.reply({
+                content,
+                allowedMentions: {
+                    parse: ["users", "roles"],
+                    roles: [config.ids.woisgang_role_id],
+                    users: usersVotedYes
+                },
+                components: []
+            });
         }
         const row = new MessageActionRow()
             .addComponents(new MessageButton()
@@ -109,7 +111,11 @@ export class WoisButton implements UserInteraction {
     readonly name = "Woisbutton";
 
     async handleInteraction(command: MessageComponentInteraction, client: Client): Promise<void> {
-        const member = command.guild?.members.cache.get(command.member!.user.id)!;
+        if (!command.channel || !command.guild || !command.member) {
+            return;
+        }
+
+        const member = command.guild.members.cache.get(command.member.user.id)!;
         const isModMessage = isMod(member);
         if (!isModMessage && !isWoisGang(member)) {
             return command.reply({
@@ -125,8 +131,21 @@ export class WoisButton implements UserInteraction {
         if (isModMessage || (amount >= config.bot_settings.woisping_threshold)) {
             const reason = reasons[command.message.id];
             lastPing = now;
-            await command.channel!.send(getMessage(reason, [...pingVoteMap]));
-            return command.update({content: " Woisping ist durch", components: []});
+
+            const usersVotedYes = [...pingVoteMap];
+            const content = getMessage(reason, usersVotedYes).trim();
+
+            await command.channel.send({
+                content,
+                allowedMentions: {
+                    parse: ["users", "roles"],
+                    roles: [config.ids.woisgang_role_id],
+                    users: usersVotedYes
+                },
+                components: []
+            });
+
+            return command.update({ content: " Woisping ist durch", components: [] });
         }
         return command.reply({
             content: " Jetzt müssen nur die anderen Bock drauf haben.",

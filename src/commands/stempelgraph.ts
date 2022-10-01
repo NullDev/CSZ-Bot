@@ -1,5 +1,4 @@
-import Viz from "viz.js";
-import { Module, render } from "viz.js/full.render.js";
+import graphviz from "graphviz-wasm";
 import { Client, CommandInteraction, Guild, GuildMember, Snowflake } from "discord.js";
 import { svg2png } from "svg-png-converter";
 
@@ -11,8 +10,6 @@ import { SlashCommandBuilder, SlashCommandStringOption } from "@discordjs/builde
 import { ApplicationCommand, CommandResult } from "./command";
 
 const config = getConfig();
-
-const viz = new Viz({ Module, render });
 
 const suportedLayoutEngines = ["circo", "dot", "fdp", "neato", "osage", "twopi"] as const;
 type LayoutEngine = (typeof suportedLayoutEngines)[number];
@@ -130,9 +127,10 @@ async function drawStempelgraph(stempels: StempelConnection[], engine: LayoutEng
         ${connections}
     }`;
 
-    const svgSrc = await viz.renderString(dotSrc);
+    await graphviz.loadWASM();
+    const svg = graphviz.layout(dotSrc, "svg", engine);
     return svg2png({
-        input: svgSrc,
+        input: svg,
         encoding: "buffer",
         format: "png"
     });
