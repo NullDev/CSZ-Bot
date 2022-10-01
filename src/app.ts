@@ -1,6 +1,6 @@
 import * as Discord from "discord.js";
 
-import { Message, MessageReaction, User } from "discord.js";
+import { Message, MessageReaction, User, VoiceState } from "discord.js";
 import Cron from "croner";
 
 
@@ -20,7 +20,7 @@ import * as ban from "./commands/modcommands/ban.js";
 import * as poll from "./commands/poll.js";
 import GuildRagequit from "./storage/model/GuildRagequit.js";
 import reactionHandler from "./handler/reactionHandler.js";
-import { checkVoiceUpdate } from "./handler/voiceStateUpdateHandler";
+import { checkVoiceUpdate } from "./handler/voiceStateUpdateHandler.js";
 
 import {
     handleInteractionEvent,
@@ -98,7 +98,7 @@ process.on("exit", code => {
 
 const clearWoisLogTask = async() => {
     WoisData.latestEvents = WoisData.latestEvents.filter(event => event.createdAt.getTime() > Date.now() - 2 * 60 * 1000);
-}
+};
 
 const leetTask = async() => {
     const {hauptchat} = botContext.textChannels;
@@ -174,7 +174,10 @@ client.once("ready", async initializedClient => {
             log.info("Scheduling 1338 Cronjob...");
             // eslint-disable-next-line no-unused-vars
             const l33tJob = new Cron("37 13 * * *", leetTask, cronOptions);
+
+            // eslint-disable-next-line no-unused-vars
             const clearWoisLogJob = new Cron("5 * * * *", clearWoisLogTask, cronOptions);
+
             log.info("Scheduling Birthday Cronjob...");
             // eslint-disable-next-line no-unused-vars
             const bDayJob = new Cron("1 0 * * *", async() => {

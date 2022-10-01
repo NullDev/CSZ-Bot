@@ -1,10 +1,10 @@
 // @ts-ignore
 import {WoisData } from "../handler/voiceStateUpdateHandler";
-import { ApplicationCommand, CommandResult } from "./command";
+import { ApplicationCommand, CommandResult } from "./command.js";
 import {
     SlashCommandBuilder
 } from "@discordjs/builders";
-import { BotContext } from "../context";
+import { BotContext } from "../context.js";
 
 import {
     CommandInteraction,

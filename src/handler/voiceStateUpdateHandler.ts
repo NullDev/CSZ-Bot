@@ -1,6 +1,6 @@
 import type {  VoiceState } from "discord.js";
-import { BotContext } from "../context";
-import { getConfig } from "../utils/configHandler";
+import { BotContext } from "../context.js";
+import { getConfig } from "../utils/configHandler.js";
 // M
 
 const config = getConfig();
