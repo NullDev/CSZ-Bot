@@ -117,7 +117,7 @@ const sendBoob = async(user: User, message: ProcessableMessage, size: number, me
 };
 
 
-const isNewBiggestBoobs = async (size: number): Promise<boolean> => {
+const isNewBiggestBoobs = async(size: number): Promise<boolean> => {
     const oldLongest = await Boob.longestRecentMeasurement();
     return (oldLongest ?? -1) < size;
 };
