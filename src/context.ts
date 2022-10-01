@@ -2,6 +2,7 @@ import type { Client, Guild, Role, TextChannel, VoiceChannel } from "discord.js"
 import { getConfig } from "./utils/configHandler";
 import { Config, ConfigTextChannelId, ConfigVoiceChannelId, ConfigRoleId } from "./types";
 import { RemoveOptionalSuffix, type RemoveSuffix } from "./utils/typeUtils";
+import path from "path";
 
 /**
  * Object that's passed to every executed command to make it easier to access common channels without repeatedly retrieving stuff via IDs.
@@ -37,6 +38,10 @@ export interface BotContext {
         >,
         VoiceChannel
     >;
+
+    rootDir: string;
+    srcDir: string;
+    databasePath: string;
     // TODO: Add some user assertions like isMod and isTrusted
 }
 
@@ -111,6 +116,9 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
         },
         voiceChannels: {
             haupt_woischat: ensureVoiceChannel(config, guild, "haupt_woischat_id")
-        }
+        },
+        rootDir: path.resolve(""),
+        srcDir: path.resolve("built"),
+        databasePath: path.resolve("storage.db")
     };
 }
