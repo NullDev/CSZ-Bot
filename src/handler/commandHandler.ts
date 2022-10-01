@@ -211,9 +211,11 @@ const commandInteractionHandler = (
         return matchingCommand.handleInteraction(command, client, context);
     }
 
-    return Promise.reject(new Error(
+    return Promise.reject(
+        new Error(
             `Application Command ${command.commandName} with ID ${command.id} invoked, but not availabe`
-    ));
+        )
+    );
 };
 
 /**

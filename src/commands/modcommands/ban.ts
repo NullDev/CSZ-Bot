@@ -9,6 +9,7 @@ import moment from "moment";
 import type { ProcessableMessage } from "../../handler/cmdHandler";
 import Cron from "croner";
 import type { BotContext } from "../../context";
+import { unban } from "./unban";
 
 const config = getConfig();
 
@@ -87,19 +88,21 @@ export const startCron = (context: BotContext) => {
             const expiredBans = await Ban.findExpiredBans(now);
 
             for (const expiredBan of expiredBans) {
-                log.debug(`Expired Ban found by user ${expiredBan.userId}. Expired on ${expiredBan.bannedUntil}`);
-                await expiredBan.destroy();
-
+                log.debug(
+                    `Expired Ban found by user ${expiredBan.userId}. Expired on ${expiredBan.bannedUntil}`
+                );
                 const user = context.guild.members.cache.get(expiredBan.userId);
                 // No user, no problem
                 if (!user) continue;
 
-                await restoreRoles(user);
+                // eslint-disable-next-line no-await-in-loop
+                await unban(user);
 
                 const msg = expiredBan.isSelfBan
                     ? "Glückwunsch! Dein selbst auferlegter Bann in der Coding Shitpost Zentrale ist beendet."
                     : "Glückwunsch! Dein Bann in der Coding Shitpost Zentrale ist beendet. Sei nächstes Mal einfach kein Hurensohn.";
 
+                // eslint-disable-next-line no-await-in-loop
                 await user.send(msg);
             }
         }
