@@ -34,7 +34,7 @@ import { reminderHandler } from "./commands/erinnerung.js";
 import { endAprilFools, startAprilFools } from "./handler/aprilFoolsHandler.js";
 import { createBotContext, type BotContext } from "./context.js";
 import { EhrePoints, EhreVotes } from "./storage/model/Ehre.js";
-import {WoisData } from "./handler/voiceStateUpdateHandler.js";
+import { WoisData } from "./handler/voiceStateUpdateHandler.js";
 const version = conf.getVersion();
 const appname = conf.getName();
 const devname = conf.getAuthor();
