@@ -77,7 +77,7 @@ export const commands: readonly Command[] = [
     new WatCommand(),
     new TikTokLink(),
     new StempelCommand(),
-    new StempelgraphCommand(),
+    // new StempelgraphCommand(),
     new StempelkarteCommand(),
     new BanCommand(),
     new UnbanCommand(),
@@ -103,7 +103,7 @@ export const commands: readonly Command[] = [
     new InstagramLink(),
     new OidaCommand(),
     new DeOidaCommand(),
-    new EhreCommand()
+    new EhreCommand(),
 ];
 export const interactions: readonly UserInteraction[] = [
     new NicknameButtonHandler(),
