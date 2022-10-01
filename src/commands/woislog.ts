@@ -1,5 +1,5 @@
 // @ts-ignore
-import { WoisData } from "../handler/voiceStateUpdateHandler";
+import { WoisData } from "../handler/voiceStateUpdateHandler.js";
 import { ApplicationCommand, CommandResult } from "./command.js";
 import {
     SlashCommandBuilder
@@ -10,7 +10,6 @@ import {
     CommandInteraction,
     Client
 } from "discord.js";
-import { VoiceUpdateEvent } from "../handler/voiceStateUpdateHandler.js";
 
 
 export class WoisLog implements ApplicationCommand {
@@ -25,11 +24,16 @@ export class WoisLog implements ApplicationCommand {
     }
 
     async handleInteraction(command: CommandInteraction, client: Client, context: BotContext) :  Promise<CommandResult> {
-        WoisData.latestEvents = WoisData.latestEvents.filter((event: VoiceUpdateEvent) => {
+        const latestEvents = WoisData.latestEvents.filter(event => {
             return event.createdAt.getTime() > Date.now() - 2 * 60 * 1000;
         });
 
-        const latestEventsString = WoisData.latestEvents.map((event: VoiceUpdateEvent) => {
+        if(latestEvents.length === 0) {
+            await command.reply({ content: "Es gab keine Aktivitäten in den letzten 2 Minuten", ephemeral: true });
+            return;
+        }
+
+        const latestEventsString = latestEvents.map(event => {
             const {oldState, newState, createdAt} = event;
             const oldChannel = oldState.channel;
             const newChannel = newState.channel;
