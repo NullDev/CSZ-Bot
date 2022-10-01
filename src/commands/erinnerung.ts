@@ -48,7 +48,7 @@ export class ErinnerungCommand implements MessageCommand, ApplicationCommand {
             // TODO: Solve this on a type level
             return;
         }
-                const time = command.options.getString("time")!;
+        const time = command.options.getString("time")!;
         const note = command.options.getString("note");
 
         try {
