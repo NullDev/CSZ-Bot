@@ -222,7 +222,6 @@ const commandInteractionHandler = (
             `Application Command ${command.commandName} with ID ${command.id} invoked, but not availabe`
         )
     );
-
 };
 
 /**
