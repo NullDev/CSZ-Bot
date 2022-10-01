@@ -1,4 +1,4 @@
-import { createCanvas, loadImage } from "canvas";
+import nodeCanvas from "canvas";
 import { promises as fs } from "fs";
 import { AllowedImageSize, Client, CommandInteraction, GuildMember, Snowflake } from "discord.js";
 
@@ -6,6 +6,8 @@ import Stempel from "../storage/model/Stempel";
 import log from "../utils/logger";
 import { ApplicationCommand, CommandResult } from "./command";
 import { SlashCommandBuilder, SlashCommandUserOption } from "@discordjs/builders";
+
+const { createCanvas, loadImage } = nodeCanvas;
 
 const stempelLocations = [
     // 1-3

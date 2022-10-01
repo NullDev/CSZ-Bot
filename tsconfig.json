@@ -2,7 +2,7 @@
   "compilerOptions": {
     "allowJs": true,
     "target": "es2019",
-    "module": "commonjs",                           /* Specify module code generation: 'none', 'commonjs', 'amd', 'system', 'umd', 'es2015', 'es2020', or 'ESNext'. */
+    "module": "esnext",
     "strict": true,                                 /* Enable all strict type-checking options. */
     "lib": [
       "ES2021.String"
@@ -22,6 +22,7 @@
     // "noUncheckedIndexedAccess": true,            /* Include 'undefined' in index signature results */
     // "noPropertyAccessFromIndexSignature": true,  /* Require undeclared properties from index signatures to use element accesses. */
 
+    "moduleResolution": "node",
     "outDir": "built",
     /* Module Resolution Options */
     // "moduleResolution": "node",                  /* Specify module resolution strategy: 'node' (Node.js) or 'classic' (TypeScript pre-1.6). */
