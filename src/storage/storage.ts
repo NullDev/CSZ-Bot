@@ -1,4 +1,3 @@
-import * as path from "path";
 import { Sequelize } from "sequelize";
 
 import AdditionalMessageData from "./model/AdditionalMessageData";
@@ -14,11 +13,12 @@ import Boob from "./model/Boob";
 import Reminder from "./model/Reminder";
 import AustrianTranslation from "./model/AustrianTranslation";
 import {EhrePoints, EhreVotes} from "./model/Ehre";
+import type { BotContext } from "../context";
 
-export async function initialize() {
+export async function initialize(botContext: BotContext) {
     const sequelize = new Sequelize({
         dialect: "sqlite",
-        storage: path.resolve(__dirname, "..", "..", "storage.db"),
+        storage: botContext.databasePath,
         logQueryParameters: true,
         logging: sql => {
             // currently way too noisy because of the fading messages

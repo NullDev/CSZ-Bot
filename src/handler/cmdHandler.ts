@@ -54,8 +54,8 @@ export default async function(message: ProcessableMessage, client: Client, isMod
 
     const commandArr = [];
     const commandDir = isModCommand
-        ? path.join(__dirname, "..", "commands", "modcommands")
-        : path.join(__dirname, "..", "commands");
+        ? path.join(context.srcDir, "commands", "modcommands")
+        : path.join(context.srcDir, "commands");
 
     const files = await fs.readdir(commandDir);
     for (const file of files) {
