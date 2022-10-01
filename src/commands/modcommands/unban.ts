@@ -1,14 +1,15 @@
 import { SlashCommandBuilder, SlashCommandUserOption } from "@discordjs/builders";
 import { CommandInteraction, GuildMember, PermissionString } from "discord.js";
 import { Message, Client } from "discord.js";
-import Ban from "../../storage/model/Ban";
-import { getConfig } from "../../utils/configHandler";
-import { ApplicationCommand, CommandResult, MessageCommand } from "../command";
-import { restoreRoles } from "./ban";
+
+import Ban from "../../storage/model/Ban.js";
+import { getConfig } from "../../utils/configHandler.js";
+import { ApplicationCommand, CommandResult, MessageCommand } from "../command.js";
+import { restoreRoles } from "./ban.js";
 
 const config = getConfig();
 
-const unban = async(member: GuildMember) => {
+export const unban = async(member: GuildMember) => {
     if (member.roles.cache.some(r => r.id === config.ids.default_role_id)) return "Dieser User ist nicht gebannt du kek.";
 
     await Ban.remove(member.user);

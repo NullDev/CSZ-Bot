@@ -1,42 +1,40 @@
-// ========================= //
-// = Copyright (c) NullDev = //
-// ========================= //
-
-/** @typedef {import("discord.js").TextChannel} TC */
-
-// Dependencies
 import * as Discord from "discord.js";
-import { Message, MessageReaction, User } from "discord.js";
-import { Cron } from "croner";
 
-import * as conf from "./utils/configHandler";
-import log from "./utils/logger";
+import { Message, MessageReaction, User, VoiceState } from "discord.js";
+import Cron from "croner";
+
+
+import * as conf from "./utils/configHandler.js";
+import log from "./utils/logger.js";
 
 // Handler
-import messageHandler from "./handler/messageHandler";
-import messageDeleteHandler from "./handler/messageDeleteHandler";
-import BdayHandler from "./handler/bdayHandler";
-import AoCHandler from "./handler/aocHandler";
-import * as fadingMessageHandler from "./handler/fadingMessageHandler";
-import * as storage from "./storage/storage";
+import messageHandler from "./handler/messageHandler.js";
+import messageDeleteHandler from "./handler/messageDeleteHandler.js";
+import BdayHandler from "./handler/bdayHandler.js";
+import AoCHandler from "./handler/aocHandler.js";
+import * as fadingMessageHandler from "./handler/fadingMessageHandler.js";
+import * as storage from "./storage/storage.js";
 
-// Other commands
-import * as ban from "./commands/modcommands/ban";
-import * as poll from "./commands/poll";
-import GuildRagequit from "./storage/model/GuildRagequit";
-import reactionHandler from "./handler/reactionHandler";
+
+import * as ban from "./commands/modcommands/ban.js";
+import * as poll from "./commands/poll.js";
+import GuildRagequit from "./storage/model/GuildRagequit.js";
+import reactionHandler from "./handler/reactionHandler.js";
+import { checkVoiceUpdate } from "./handler/voiceStateUpdateHandler.js";
+
 import {
     handleInteractionEvent,
     messageCommandHandler,
     registerAllApplicationCommandsAsGuildCommands
-} from "./handler/commandHandler";
-import { quoteReactionHandler } from "./handler/quoteHandler";
-import NicknameHandler from "./handler/nicknameHandler";
-import { connectAndPlaySaufen } from "./handler/voiceHandler";
-import { reminderHandler } from "./commands/erinnerung";
-import { endAprilFools, startAprilFools } from "./handler/aprilFoolsHandler";
-import { createBotContext, type BotContext } from "./context";
-
+} from "./handler/commandHandler.js";
+import { quoteReactionHandler } from "./handler/quoteHandler.js";
+import NicknameHandler from "./handler/nicknameHandler.js";
+import { connectAndPlaySaufen } from "./handler/voiceHandler.js";
+import { reminderHandler } from "./commands/erinnerung.js";
+import { endAprilFools, startAprilFools } from "./handler/aprilFoolsHandler.js";
+import { createBotContext, type BotContext } from "./context.js";
+import { EhrePoints, EhreVotes } from "./storage/model/Ehre.js";
+import { WoisData } from "./handler/voiceStateUpdateHandler.js";
 const version = conf.getVersion();
 const appname = conf.getName();
 const devname = conf.getAuthor();
@@ -61,12 +59,10 @@ const client = new Discord.Client({
         "REACTION",
         "USER"
     ],
-    /*
     allowedMentions: {
-        parse: ["users", "roles"],
+        parse: ["users"],
         repliedUser: true
     },
-    */
     intents: [
         "DIRECT_MESSAGES",
         "GUILDS",
@@ -99,8 +95,13 @@ process.on("exit", code => {
     log.warn(`Process exited with code: ${code}`);
 });
 
+
+const clearWoisLogTask = async() => {
+    WoisData.latestEvents = WoisData.latestEvents.filter(event => event.createdAt.getTime() > Date.now() - 2 * 60 * 1000);
+};
+
 const leetTask = async() => {
-    const { hauptchat } = botContext.textChannels;
+    const {hauptchat} = botContext.textChannels;
     const csz = botContext.guild;
 
     await hauptchat.send("Es ist `13:37` meine Kerle.\nBleibt hydriert! :grin: :sweat_drops:");
@@ -167,12 +168,15 @@ client.once("ready", async initializedClient => {
         log.info("Starting Nicknamehandler ");
         const nicknameHandler = new NicknameHandler(botContext);
         if (firstRun) {
-            await storage.initialize();
             firstRun = false; // Hacky deadlock ...
+            await storage.initialize(botContext);
 
             log.info("Scheduling 1338 Cronjob...");
             // eslint-disable-next-line no-unused-vars
             const l33tJob = new Cron("37 13 * * *", leetTask, cronOptions);
+
+            // eslint-disable-next-line no-unused-vars
+            const clearWoisLogJob = new Cron("5 * * * *", clearWoisLogTask, cronOptions);
 
             log.info("Scheduling Birthday Cronjob...");
             // eslint-disable-next-line no-unused-vars
@@ -220,6 +224,11 @@ client.once("ready", async initializedClient => {
             const stopAprilFoolsJob = new Cron("2022-04-02T00:00:00", async() => {
                 log.debug("Entered end april fools cronjob");
                 await endAprilFools(botContext);
+            }, cronOptions);
+            // eslint-disable-next-line no-unused-vars
+            const ehreReset = new Cron("1 0 * * *", async() => {
+                log.debug("Entered start ehreReset cronjob");
+                await Promise.all([EhrePoints.deflation(), EhreVotes.resetVotes()]);
             }, cronOptions);
         }
 
@@ -329,6 +338,7 @@ client.on("invalidated", () => void log.debug("Client invalidated"));
 client.on("messageReactionAdd", async(event, user) => reactionHandler(event as MessageReaction, user as User, client, false));
 client.on("messageReactionAdd", async(event, user) => quoteReactionHandler(event as MessageReaction, user as User, botContext));
 client.on("messageReactionRemove", async(event, user) => reactionHandler(event as MessageReaction, user as User, client, true));
+client.on("voiceStateUpdate", async(oldState, newState) => checkVoiceUpdate(oldState as VoiceState, newState as VoiceState, botContext));
 
 client.login(config.auth.bot_token).then(() => {
     log.info("Token login was successful!");

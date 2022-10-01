@@ -1,30 +1,34 @@
 /* eslint-disable camelcase */
-// =============================== //
-// = Nicht Copyright (c) NullDev = //
-// =============================== //
 
-import type { BotContext } from "../context";
-import Nicknames from "../storage/model/Nickname";
-import log from "../utils/logger";
+import Nicknames from "../storage/model/Nickname.js";
+import log from "../utils/logger.js";
+import type { BotContext } from "../context.js";
 
 export default class NicknameHandler {
-    constructor(private readonly context: BotContext) { }
+    constructor(private readonly context: BotContext) {}
 
     async rerollNicknames() {
         console.log("rerolling nicknames");
-        const allUsersAndNames = Object.entries(await Nicknames.allUsersAndNames());
+        const allUsersAndNames = Object.entries(
+            await Nicknames.allUsersAndNames()
+        );
 
-        for (const [key, value] of allUsersAndNames) {
-            await this.updateNickname(key, value as string[]);
-        }
+        const updateTasks = allUsersAndNames.map(([userId, nicknames]) => this.updateNickname(userId, nicknames));
+        await Promise.all(updateTasks);
     }
 
-    async updateNickname(userId: string, nicknames: string[]) {
+    async updateNickname(userId: string, storedNicknames: string[]) {
         try {
-            const user = this.context.guild.members.cache.find(m => m.id === userId);
-            await user?.setNickname(nicknames[Math.floor(Math.random() * nicknames.length)]);
+            const member = this.context.guild.members.cache.find(
+                m => m.id === userId
+            );
+            if (!member) return;
+            const nicknames = [member.user.username, ...storedNicknames];
+            const randomizedNickname =
+                nicknames[Math.floor(Math.random() * nicknames.length)];
+            await member.setNickname(randomizedNickname);
         }
-        catch(err) {
+        catch (err) {
             log.error(`Couldn't update user '${userId}' nickname`, err);
         }
     }

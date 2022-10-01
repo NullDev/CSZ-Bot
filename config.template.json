@@ -38,6 +38,9 @@
         "bday_role_id": "",
         "woisgang_role_id": "",
 
+        "bot_deny_role_id": "",
+        "bot_spam_channel_id": "",
+
         "gruendervaeter_role_id": "",
         "gruendervaeter_banned_role_id": "",
         "trusted_role_id": "",
@@ -47,6 +50,7 @@
         "banned_channel_id": "",
         "votes_channel_id": "",
         "bot_log_channel_id": "",
-        "haupt_woischat_id": ""
+        "haupt_woischat_id": "",
+        "woischat_text_id": ""
     }
 }

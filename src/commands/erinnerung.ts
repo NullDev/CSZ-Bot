@@ -1,17 +1,68 @@
-import { Client, TextBasedChannel } from "discord.js";
-import { MessageCommand } from "./command";
-import * as Sugar from "sugar";
-import logger from "../utils/logger";
-import Reminder, { ReminderAttributes } from "../storage/model/Reminder";
-import type { ProcessableMessage } from "../handler/cmdHandler";
-import { BotContext } from "../context";
-import { ban } from "./modcommands/ban";
+import { CacheType, Client, CommandInteraction, TextBasedChannel } from "discord.js";
+import { SlashCommandBuilder, SlashCommandStringOption } from "@discordjs/builders";
+import * as chrono from "chrono-node";
 
-require("sugar/locales/de");
+import { MessageCommand, ApplicationCommand } from "./command.js";
+import logger from "../utils/logger.js";
+import Reminder, { ReminderAttributes } from "../storage/model/Reminder.js";
+import type { ProcessableMessage } from "../handler/cmdHandler.js";
+import { BotContext } from "../context.js";
 
-export class ErinnerungCommand implements MessageCommand {
+const validateDate = (date: Date): true | string => {
+    if (Number.isNaN(date.getTime()) || !Number.isFinite(date.getTime())) {
+        throw new Error("Danke JS");
+    }
+
+    const now = new Date();
+    if (date < now) {
+        return "Brudi das sollte schon in der Zukunft liegen, bin ich Marty McFly oder wat?";
+    }
+
+    const diff = Math.round(date.getTime() - now.getTime());
+    if (diff < 60000) {
+        return "Ach komm halt doch dein Maul";
+    }
+
+    return true;
+};
+
+export class ErinnerungCommand implements MessageCommand, ApplicationCommand {
     name = "erinnerung";
     description = "Setzt eine Erinnerung für dich";
+    applicationCommand = new SlashCommandBuilder()
+        .setName(this.name)
+        .setDescription(this.description)
+        .addStringOption(new SlashCommandStringOption()
+            .setName("time")
+            .setDescription("Wann ich dich erinnern soll")
+            .setRequired(true)
+        )
+        .addStringOption(new SlashCommandStringOption()
+            .setName("note")
+            .setDescription("Woran ich dich erinnern soll")
+            .setRequired(false)
+        );
+
+    async handleInteraction(command: CommandInteraction<CacheType>, client: Client<boolean>, context: BotContext): Promise<void> {
+        const time = command.options.getString("time")!;
+        const note = command.options.getString("note");
+
+        try {
+            const date = chrono.de.parseDate(time);
+            const valid = validateDate(date);
+            if (valid !== true) {
+                await command.reply(valid);
+                return;
+            }
+
+            await Reminder.insertStaticReminder(command.user, command.channelId, command.guildId!, date, note);
+            await command.reply(`Ok brudi, werd dich <t:${(date.getTime() / 1000) | 0}:R> dran erinnern. Außer ich kack ab lol, dann mach ich das später (vielleicht)`);
+        }
+        catch (err) {
+            logger.error(`Couldn't parse date from message ${time} due to`, err);
+            await command.reply("Brudi was ist das denn für ne Datumsangabe? Gib was ordentliches an");
+        }
+    }
 
     async handleMessage(message: ProcessableMessage, client: Client<boolean>, context: BotContext): Promise<void> {
         // TODO: Create utility function that removes the command prefix for easier parsing
@@ -22,34 +73,17 @@ export class ErinnerungCommand implements MessageCommand {
         }
 
         try {
-            const date = Sugar.Date.create(param, {
-                locale: "de",
-                future: true
-            });
-
-            if (Number.isNaN(date.getTime()) || !Number.isFinite(date.getTime())) {
-                throw new Error("Danke JS");
-            }
-
-            const now = new Date();
-            if (date < now) {
-                await message.reply("Brudi das sollte schon in der Zukunft liegen, bin ich Marty McFly oder wat?");
-                return;
-            }
-
-            const diff = Math.round(date.getTime() - now.getTime());
-            if (diff < 60000) {
-                await Promise.all([
-                    message.reply("Ach komm halt doch dein Maul"),
-                    ban(client, message.member, client.user!, "Erinnerung Troll", false, 0.25)
-                ]);
+            const date = chrono.de.parseDate(param);
+            const valid = validateDate(date);
+            if (valid !== true) {
+                await message.reply(valid);
                 return;
             }
 
             const messageId = message.reference?.messageId ?? message.id;
             const refMessage = message.reference ?? message;
 
-            await Reminder.insertReminder(message.member.user, messageId, refMessage.channelId, refMessage.guildId!, date);
+            await Reminder.insertMessageReminder(message.member.user, messageId, refMessage.channelId, refMessage.guildId!, date);
             await message.reply(`Ok brudi, werd dich <t:${(date.getTime() / 1000) | 0}:R> dran erinnern. Außer ich kack ab lol, dann mach ich das später (vielleicht)`);
         }
         catch (err) {
@@ -58,6 +92,7 @@ export class ErinnerungCommand implements MessageCommand {
         }
     }
 }
+
 
 const sendReminder = async(reminder: ReminderAttributes, context: BotContext) => {
     try {
@@ -74,8 +109,23 @@ const sendReminder = async(reminder: ReminderAttributes, context: BotContext) =>
         if (!channel.isText()) {
             throw new Error(`Channel ${reminder.channelId} is not a text channel`);
         }
-        const message = await (channel as TextBasedChannel).messages.fetch(reminder.messageId);
+        const textChannel = channel as TextBasedChannel;
         const user = await guild.members.fetch(reminder.userId);
+        const note = reminder.reminderNote || "Lol du Vollidiot hast nichts angegeben";
+
+        if(!reminder.messageId) {
+            await textChannel.send({
+                content: `${user} du wolltest an etwas erinnert werden. Es ist: ${note}`,
+                allowedMentions: {
+                    users: [user.id]
+                }
+            });
+            await Reminder.removeReminder(reminder.id);
+            return;
+        }
+
+        const message = await textChannel.messages.fetch(reminder.messageId);
+
 
         await message.reply({
             content: `${user} du wolltest daran erinnern werden oder wat`,
@@ -93,12 +143,16 @@ const sendReminder = async(reminder: ReminderAttributes, context: BotContext) =>
 
 export const reminderHandler = async(context: BotContext) => {
     const reminders = await Reminder.getCurrentReminders();
-    for (const reminder of reminders) {
-        try {
-            await sendReminder(reminder, context);
-        }
-        catch (err) {
-            logger.error("Couldn't retrieve reminders because of", err);
-        }
+    const results = await Promise.allSettled(
+        reminders.map(reminder => sendReminder(reminder, context))
+    );
+    const rejections = results.filter(
+        result => result.status === "rejected"
+    ) as PromiseRejectedResult[];
+    for (const rejection of rejections) {
+        logger.error(
+            "Couldn't retrieve reminders because of",
+            rejection.reason
+        );
     }
 };

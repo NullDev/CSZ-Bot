@@ -1,11 +1,11 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-// @ts-ignore
-import fetch from "node-fetch";
 import { Client, CommandInteraction, Guild, MessageActionRow, MessageButton, MessageEmbedOptions } from "discord.js";
-import { ApplicationCommand, CommandResult, MessageCommand } from "./command";
-import { GitHubContributor } from "../types";
-import type { ProcessableMessage } from "../handler/cmdHandler";
-import { assertNever } from "../utils/typeUtils";
+import fetch from "node-fetch";
+
+import { ApplicationCommand, CommandResult, MessageCommand } from "./command.js";
+import { GitHubContributor } from "../types.js";
+import type { ProcessableMessage } from "../handler/cmdHandler.js";
+import { assertNever } from "../utils/typeUtils.js";
 
 const buildMessageActionsRow = (): MessageActionRow[] => {
     return [
@@ -25,6 +25,13 @@ const fetchContributions = async(): Promise<Array<GitHubContributor>> => {
     }).then((res: any) => res.json());
 };
 
+const fetchLanguages = async(): Promise<Array<string>> => {
+    const res = await fetch("https://api.github.com/repos/NullDev/CSZ-Bot/languages", {
+        headers: { Accept: "application/vnd.github.v3+json" }
+    });
+    return Object.keys(await res.json() as {});
+};
+
 const getContributors = async(): Promise<string> => {
     const contributors = await fetchContributions();
     return contributors
@@ -35,8 +42,8 @@ const getContributors = async(): Promise<string> => {
         }).join(", ");
 };
 
-const getTechStackInfo = (): string => {
-    return "**Programmiersprache\n** NodeJS \n" +
+const getTechStackInfo = async(): Promise<string> => {
+    return `**Programmiersprache\n** ${(await fetchLanguages()).join(",")} \n` +
         `**NodeJS Version\n** ${process.version} \n`;
 };
 
@@ -91,17 +98,12 @@ const buildEmbed = async(guild: Guild | null, avatarUrl?: string): Promise<Messa
             },
             {
                 name: "🧬 Tech-Stack",
-                value: getTechStackInfo(),
+                value: await getTechStackInfo(),
                 inline: true
             },
             {
                 name: "⚙️ System",
                 value: getSystemInfo(),
-                inline: true
-            },
-            {
-                name: "🚨 Restart Button",
-                value: "[Restart](chrome://restart/)",
                 inline: true
             }
         ]

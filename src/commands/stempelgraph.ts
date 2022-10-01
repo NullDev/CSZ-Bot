@@ -1,18 +1,15 @@
-import Viz from "viz.js";
-import { Module, render } from "viz.js/full.render.js";
+import graphviz from "graphviz-wasm";
 import { Client, CommandInteraction, Guild, GuildMember, Snowflake } from "discord.js";
+import { SlashCommandBuilder, SlashCommandStringOption } from "@discordjs/builders";
 import { svg2png } from "svg-png-converter";
 
-import { getConfig } from "../utils/configHandler";
-import Stempel from "../storage/model/Stempel";
-import log from "../utils/logger";
-import { isMod } from "../utils/userUtils";
-import { SlashCommandBuilder, SlashCommandStringOption } from "@discordjs/builders";
-import { ApplicationCommand, CommandResult } from "./command";
+import { getConfig } from "../utils/configHandler.js";
+import Stempel from "../storage/model/Stempel.js";
+import log from "../utils/logger.js";
+import { isMod } from "../utils/userUtils.js";
+import { ApplicationCommand, CommandResult } from "./command.js";
 
 const config = getConfig();
-
-const viz = new Viz({ Module, render });
 
 const suportedLayoutEngines = ["circo", "dot", "fdp", "neato", "osage", "twopi"] as const;
 type LayoutEngine = (typeof suportedLayoutEngines)[number];
@@ -130,9 +127,10 @@ async function drawStempelgraph(stempels: StempelConnection[], engine: LayoutEng
         ${connections}
     }`;
 
-    const svgSrc = await viz.renderString(dotSrc);
+    await graphviz.loadWASM();
+    const svg = graphviz.layout(dotSrc, "svg", engine);
     return svg2png({
-        input: svgSrc,
+        input: svg,
         encoding: "buffer",
         format: "png"
     });

@@ -1,10 +1,11 @@
 /* Disabled due to sequelize's DataTypes */
 /* eslint-disable new-cap */
 
-import type { Snowflake } from "discord.js";
 import { Sequelize, Model, DataTypes, Optional } from "sequelize";
 import { v4 as uuidv4 } from "uuid";
-import log from "../../utils/logger";
+import type { Snowflake } from "discord.js";
+
+import log from "../../utils/logger.js";
 
 export interface StempelAttributes {
     id: string;

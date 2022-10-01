@@ -1,10 +1,14 @@
-import log from "../utils/logger";
-import FadingMessage from "../storage/model/FadingMessage";
+import { setInterval } from "node:timers/promises";
+
 import type { Client, TextChannel } from "discord.js";
-import { setInterval } from "timers/promises";
+
+import log from "../utils/logger.js";
+import FadingMessage from "../storage/model/FadingMessage.js";
+
 
 let isLooping = false;
 
+/* eslint-disable no-await-in-loop */
 const fadingMessageDeleteLoop = async(client: Client) => {
     const fadingMessages = await FadingMessage.findAll();
     const currentTime = new Date();
@@ -28,6 +32,7 @@ const fadingMessageDeleteLoop = async(client: Client) => {
         }
     }
 };
+/* eslint-enable no-await-in-loop */
 
 const loopWrapper = async(client: Client) => {
     isLooping = true;

@@ -1,23 +1,13 @@
-// =========================================== //
-// = Copyright (c) NullDev & diewellenlaenge = //
-// =========================================== //
-
-// Dependencies
 import moment from "moment";
-import Ban from "../storage/model/Ban";
 
-import { getConfig } from "../utils/configHandler";
-
-import * as ban from "./modcommands/ban";
+import Ban from "../storage/model/Ban.js";
+import { getConfig } from "../utils/configHandler.js";
+import * as ban from "./modcommands/ban.js";
+import type { CommandFunction } from "../types.js";
 
 const config = getConfig();
 
-/**
- * Ban a given user
- *
- * @type {import("../types").CommandFunction}
- */
-export const run = async(client, message, args, context) => {
+export const run: CommandFunction = async(client, message, args, context) => {
     let input = args?.[0]?.trim() ?? "8";
     const tilt = (input === "tilt");
 

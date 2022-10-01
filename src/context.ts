@@ -1,7 +1,9 @@
+import path from "node:path";
 import type { Client, Guild, Role, TextChannel, VoiceChannel } from "discord.js";
-import { getConfig } from "./utils/configHandler";
-import { Config, ConfigTextChannelId, ConfigVoiceChannelId, ConfigRoleId } from "./types";
-import { RemoveOptionalSuffix, type RemoveSuffix } from "./utils/typeUtils";
+
+import { getConfig } from "./utils/configHandler.js";
+import { Config, ConfigTextChannelId, ConfigVoiceChannelId, ConfigRoleId } from "./types.js";
+import { RemoveOptionalSuffix, type RemoveSuffix } from "./utils/typeUtils.js";
 
 /**
  * Object that's passed to every executed command to make it easier to access common channels without repeatedly retrieving stuff via IDs.
@@ -37,6 +39,10 @@ export interface BotContext {
         >,
         VoiceChannel
     >;
+
+    rootDir: string;
+    srcDir: string;
+    databasePath: string;
     // TODO: Add some user assertions like isMod and isTrusted
 }
 
@@ -93,6 +99,7 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
             // TODO: Make this prettier (splitting up the IDs by type in the config would make this much easier)
             banned: ensureRole(config, guild, "banned_role_id"),
             bday: ensureRole(config, guild, "bday_role_id"),
+            bot_deny: ensureRole(config, guild, "bot_deny_role_id"),
             "default": ensureRole(config, guild, "default_role_id"),
             gruendervaeter_banned: ensureRole(config, guild, "gruendervaeter_banned_role_id"),
             gruendervaeter: ensureRole(config, guild, "gruendervaeter_role_id"),
@@ -105,10 +112,14 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
             banned: ensureTextChannel(config, guild, "banned_channel_id"),
             bot_log: ensureTextChannel(config, guild, "bot_log_channel_id"),
             hauptchat: ensureTextChannel(config, guild, "hauptchat_id"),
-            votes: ensureTextChannel(config, guild, "votes_channel_id")
+            votes: ensureTextChannel(config, guild, "votes_channel_id"),
+            bot_spam: ensureTextChannel(config, guild, "bot_spam_channel_id")
         },
         voiceChannels: {
             haupt_woischat: ensureVoiceChannel(config, guild, "haupt_woischat_id")
-        }
+        },
+        rootDir: path.resolve(""),
+        srcDir: path.resolve("built"),
+        databasePath: path.resolve("storage.db")
     };
 }

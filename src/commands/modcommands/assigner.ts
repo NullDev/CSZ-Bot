@@ -1,6 +1,6 @@
-import log from "../../utils/logger";
-import type { CommandFunction } from "../../types";
-import { getConfig } from "../../utils/configHandler";
+import log from "../../utils/logger.js";
+import type { CommandFunction } from "../../types.js";
+import { getConfig } from "../../utils/configHandler.js";
 const config = getConfig();
 
 /**
@@ -19,11 +19,11 @@ export const run: CommandFunction = async(client, message, args) => {
     await message.delete().catch(log.error);
 
     const validRoles = args.filter(value => roleNames.includes(value));
-
-    for (const validRole of validRoles) {
-        const roleMessage = await message.channel.send(validRole);
+    const drawRole = async(role: string) => {
+        const roleMessage = await message.channel.send(role);
         await roleMessage.react("✅");
-    }
+    };
+    await Promise.all(validRoles.map(drawRole));
 };
 
 export const description = `Startet den assigner mit gegebenen Rollen \nBenutzung: ${config.bot_settings.prefix.mod_prefix}assigner [rolle 1] [rolle 2] [...]`;

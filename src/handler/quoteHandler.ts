@@ -1,8 +1,9 @@
 import { GuildMember, Message, MessageReaction, User, TextBasedChannel, GuildEmoji, ReactionEmoji } from "discord.js";
-import { BotContext } from "../context";
-import { getConfig } from "../utils/configHandler";
-import log from "../utils/logger";
-import { isNerd, isTrusted } from "../utils/userUtils";
+
+import { BotContext } from "../context.js";
+import { getConfig } from "../utils/configHandler.js";
+import log from "../utils/logger.js";
+import { isNerd, isTrusted } from "../utils/userUtils.js";
 
 const quoteConfig = getConfig().bot_settings.quotes;
 const quoteThreshold = quoteConfig.quote_threshold;

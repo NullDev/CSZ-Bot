@@ -1,14 +1,10 @@
-// ========================= //
-// = Copyright (c) NullDev = //
-// ========================= //
+import * as fs from "node:fs";
+import * as path from "node:path";
 
-import * as fs from "fs";
-import * as path from "path";
-import type { Config } from "../types";
+import log from "../utils/logger.js";
+import type { Config } from "../types.js";
 
-import log from "../utils/logger";
-
-const packageFile = require(path.resolve("package.json"));
+const packageFile = JSON.parse(fs.readFileSync(path.resolve("package.json"), "utf-8"));
 const configPath = path.resolve("config.json");
 
 export const getConfig = () => {

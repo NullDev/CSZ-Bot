@@ -4,13 +4,13 @@
 [![CSZ Discord](https://img.shields.io/discord/618781839338897443?color=%237289DA&label=CSZ%20Discord&logo=discord&logoColor=white)](https://discord.gg/csz)
 
 <p align="center">
-<img height="150" width="auto" src="https://cdn.discordapp.com/icons/618781839338897443/a_a0f837d7d66b04363b814d2f80d807d4.gif?size=128" /><br>
+<img height="150" width="auto" src="https://cdn.discordapp.com/icons/618781839338897443/a_82f94d024985d290862ef86ada2f2ef1.gif?size=128" /><br>
 Official Coding Shitpost Central Discord Bot
 </p>
 
 ## :information_source: OwO wats dis?
 
-Please ignore this repo. This is just a management bot I made for my stupid [german coding discord server](https://discord.gg/csz)...
+Please ignore this repo. This is just a management bot I made for my stupid german coding discord server...
 
 German description of the Discord Server:
 
@@ -53,6 +53,8 @@ $ `npm ci`<br><br>
         - Die ID für [den Hauptchat](https://github.com/NullDev/CSZ-Bot/blob/master/config.template.json#L32)
         - Die ID für [den Banned-Channel](https://github.com/NullDev/CSZ-Bot/blob/master/config.template.json#L44)
         - Die ID für [den Umfrage-Channel](https://github.com/NullDev/CSZ-Bot/blob/master/config.template.json#L45)
+        - Die ID für [den Wois-Channel](https://github.com/NullDev/CSZ-Bot/blob/master/config.template.json#L53)
+        - Die ID für [den Wois-Text-Channel](https://github.com/NullDev/CSZ-Bot/blob/master/config.template.json#L54)
     - Es müssen folgende Rollen am Server angelegt werden:
         - Moderator-Rolle ([Name der Rolle](https://github.com/NullDev/CSZ-Bot/blob/master/config.template.json#L12)) - CSZ Default: Moderader
         - Default Rolle ([ID der Rolle](https://github.com/NullDev/CSZ-Bot/blob/master/config.template.json#L33)) - CSZ Default: Nerd

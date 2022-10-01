@@ -1,5 +1,6 @@
 import { GuildMember } from "discord.js";
-import { getConfig } from "./configHandler";
+
+import { getConfig } from "./configHandler.js";
 
 const config = getConfig();
 
@@ -42,4 +43,8 @@ export function isWoisGang(member: GuildMember): boolean {
 }
 export function isEmotifizierer(member: GuildMember): boolean {
     return hasRoleById(member, config.ids.emotifizierer_role_id);
+}
+
+export function hasBotDenyRole(member: GuildMember): boolean {
+    return hasRoleById(member, config.ids.bot_deny_role_id);
 }

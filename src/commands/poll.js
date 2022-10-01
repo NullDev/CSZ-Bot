@@ -1,14 +1,10 @@
-// ========================= //
-// = Copyright (c) NullDev = //
-// ========================= //
-
 import parseOptions from "minimist";
-
-import log from "../utils/logger";
-import AdditionalMessageData from "../storage/model/AdditionalMessageData";
-import { getConfig } from "../utils/configHandler";
-import { Util } from "discord.js";
 import Cron from "croner";
+import { Util } from "discord.js";
+
+import log from "../utils/logger.js";
+import AdditionalMessageData from "../storage/model/AdditionalMessageData.js";
+import { getConfig } from "../utils/configHandler.js";
 
 const config = getConfig();
 
@@ -188,9 +184,7 @@ export const run = async(client, message, args, context) => {
     });
 
     await message.delete();
-    for (const i in pollOptions) {
-        await pollMessage.react(EMOJI[i]);
-    }
+    await Promise.all(pollOptions.map((e, i) => pollMessage.react(EMOJI[i])));
 
     if (options.delayed) {
         const reactionMap = [];
@@ -240,6 +234,7 @@ export const importPolls = async() => {
 export const startCron = context => {
     log.info("Scheduling Poll Cronjob...");
 
+    /* eslint-disable no-await-in-loop */
     // eslint-disable-next-line no-unused-vars
     const pollCron = new Cron("* * * * *", async() => {
         const currentDate = new Date();
@@ -248,8 +243,8 @@ export const startCron = context => {
 
         const channel = context.textChannels.votes;
 
-        for (let i = 0; i < pollsToFinish.length; i++) {
-            const delayedPoll = pollsToFinish[i];
+        for (const element of pollsToFinish) {
+            const delayedPoll = element;
             const message = await /** @type {import("discord.js").TextChannel} */ (channel).messages.fetch(delayedPoll.pollId);
 
             const users = {};
@@ -297,6 +292,7 @@ ${x.map(uid => users[uid]).join("\n")}\n\n`
             await messageData.save();
         }
     });
+    /* eslint-enable no-await-in-loop */
 };
 
 export const description = `Erstellt eine Umfrage mit mehreren Antwortmöglichkeiten (standardmäßig mit Mehrfachauswahl) (maximal ${OPTION_LIMIT}).

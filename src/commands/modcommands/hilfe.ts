@@ -1,16 +1,16 @@
 import { promises as fs } from "fs";
 import * as path from "path";
 
-import type { CommandFunction } from "../../types";
-import { getConfig } from "../../utils/configHandler";
+import type { CommandFunction } from "../../types.js";
+import { getConfig } from "../../utils/configHandler.js";
 const config = getConfig();
 
 /**
  * Enlists all mod-commands with descriptions
  */
-export const run: CommandFunction = async(client, message, args) => {
+export const run: CommandFunction = async(client, message, args, context) => {
     const commandObj: Record<string, string> = {};
-    const commandDir = __dirname;
+    const commandDir = path.join(context.srcDir, "commands", "modcommands");
 
     const files = await fs.readdir(commandDir);
     for (const file of files) {

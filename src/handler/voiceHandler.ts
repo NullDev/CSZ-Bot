@@ -1,14 +1,16 @@
+import path from "node:path";
+import { setTimeout } from "node:timers/promises";
+import { readdir } from "node:fs/promises";
+
 import { AudioPlayer, AudioPlayerStatus, createAudioPlayer, createAudioResource, DiscordGatewayAdapterCreator, entersState, joinVoiceChannel, StreamType, VoiceConnection, VoiceConnectionStatus } from "@discordjs/voice";
 import type { VoiceChannel } from "discord.js";
-import path from "path";
-import { setTimeout } from "timers/promises";
-import logger from "../utils/logger";
 import * as gad from "get-audio-duration";
-import { readdir } from "fs/promises";
-import type { BotContext } from "../context";
+
+import logger from "../utils/logger.js";
+import type { BotContext } from "../context.js";
 
 const player = createAudioPlayer();
-export const soundDir = path.resolve(__dirname, "..", "..", "sounds");
+export const soundDir = path.resolve("sounds");
 
 async function connectToHauptwois(woisChannel: VoiceChannel): Promise<VoiceConnection> {
     try {

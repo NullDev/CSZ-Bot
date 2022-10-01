@@ -1,16 +1,15 @@
-// ========================= //
-// = Copyright (c) NullDev = //
-// ========================= //
+import fs from "node:fs/promises";
+import * as path from "node:path";
 
-import { promises as fs } from "fs";
-import * as path from "path";
 import { Client, Guild, GuildMember, Message } from "discord.js";
-import { CommandFunction, CommandResult } from "../types";
 
-import log from "../utils/logger";
-import { getConfig } from "../utils/configHandler";
-import * as ban from "../commands/modcommands/ban";
-import type { BotContext } from "../context";
+import { CommandFunction, CommandResult } from "../types.js";
+import log from "../utils/logger.js";
+import { getConfig } from "../utils/configHandler.js";
+import * as ban from "../commands/modcommands/ban.js";
+import { hasBotDenyRole } from "../utils/userUtils.js";
+import { isMessageInBotSpam } from "../utils/channelUtils.js";
+import type { BotContext } from "../context.js";
 
 const config = getConfig();
 
@@ -34,6 +33,11 @@ export function isProcessableMessage(message: Message): message is ProcessableMe
 export default async function(message: ProcessableMessage, client: Client, isModCommand: boolean, context: BotContext): Promise<CommandResult> {
     if (message.author.bot) return;
 
+    if (hasBotDenyRole(message.member) && !isMessageInBotSpam(message)) {
+        await message.member.send("Du hast dich scheinbar beschissen verhalten und darfst daher keine Befehle in diesem Channel ausführen!");
+        return;
+    }
+
     const cmdPrefix = isModCommand
         ? config.bot_settings.prefix.mod_prefix
         : config.bot_settings.prefix.command_prefix;
@@ -47,12 +51,13 @@ export default async function(message: ProcessableMessage, client: Client, isMod
 
     const commandArr = [];
     const commandDir = isModCommand
-        ? path.join(__dirname, "..", "commands", "modcommands")
-        : path.join(__dirname, "..", "commands");
+        ? path.join(context.srcDir, "commands", "modcommands")
+        : path.join(context.srcDir, "commands");
 
     const files = await fs.readdir(commandDir);
     for (const file of files) {
         const cmdPath = path.resolve(commandDir, file);
+        // eslint-disable-next-line no-await-in-loop
         const stats = await fs.stat(cmdPath);
         if (!stats.isDirectory()) {
             commandArr.push(file.toLowerCase());

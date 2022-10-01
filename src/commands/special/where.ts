@@ -1,8 +1,10 @@
 import { Message, Client, Util } from "discord.js";
-import { createCanvas, loadImage, registerFont } from "canvas";
-import { SpecialCommand } from "../command";
-import { countWords, substringAfter } from "../../utils/stringUtils";
+import nodeCanvas from "canvas";
 
+import { SpecialCommand } from "../command.js";
+import { countWords, substringAfter } from "../../utils/stringUtils.js";
+
+const { createCanvas, loadImage, registerFont } = nodeCanvas;
 
 if (process.env.NODE_ENV === "production") {
     // This is a simple detection if we're running inside docker

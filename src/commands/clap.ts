@@ -2,44 +2,36 @@ import { SlashCommandBuilder, SlashCommandStringOption } from "@discordjs/builde
 import { CacheType, Client, CommandInteraction, GuildMember, Message, MessageEmbed } from "discord.js";
 
 import { BotContext } from "../context.js";
-import { ApplicationCommand, MessageCommand } from "./command.js";
 import type { ProcessableMessage } from "../handler/cmdHandler.js";
+import { ApplicationCommand, MessageCommand } from "./command.js";
 
 /**
- * Randomly capitalize letters
+ * Clappifies text
  */
-const transform = function(c: string): string {
-    if (c === "ß" || c === "ẞ") return c;
-    return Math.random() < 0.5 ? c.toLowerCase() : c.toUpperCase();
-};
+const clapify = (str: string): string => str.split(/\s+/).join(" :clap: ") + " :clap:";
 
 /**
- * Mocks text
+ * build clapped embed
  */
-const mock = (str: string): string => str.split("").map(transform).join("");
-
-/**
- * build mocked embed
- */
-const buildMock = (author: GuildMember, toMock: string): MessageEmbed => {
+const buildClap = (author: GuildMember, toClap: string): MessageEmbed => {
     return new MessageEmbed()
-        .setDescription(`${mock(toMock)} <:mock:677504337769005096>`)
-        .setColor(0xFFC000)
+        .setDescription(`${clapify(toClap)}`)
+        .setColor(0x24283B)
         .setAuthor({
             name: `${author.displayName}`,
             iconURL: author.displayAvatarURL()
         });
 };
 
-export class MockCommand implements MessageCommand, ApplicationCommand {
-    name = "mock";
-    description = "Mockt einen Text.";
+export class ClapCommand implements MessageCommand, ApplicationCommand {
+    name = "clap";
+    description = clapify("Clapped deinen Text");
     applicationCommand = new SlashCommandBuilder()
         .setName(this.name)
         .setDescription(this.description)
         .addStringOption(new SlashCommandStringOption()
             .setName("text")
-            .setDescription("Wat soll ich denn mocken")
+            .setDescription(clapify("Dein clapped text"))
             .setRequired(true)
         );
 
@@ -50,9 +42,9 @@ export class MockCommand implements MessageCommand, ApplicationCommand {
             throw new Error("Couldn't resolve guild member");
         }
 
-        const mockedEmbed = buildMock(author, text);
+        const clappedEmbed = buildClap(author, text);
         await command.reply({
-            embeds: [mockedEmbed]
+            embeds: [clappedEmbed]
         });
     }
 
@@ -69,7 +61,7 @@ export class MockCommand implements MessageCommand, ApplicationCommand {
         }
 
         if(!isReply && !hasContent) {
-            await message.channel.send("Brudi da ist nix, was ich mocken kann");
+            await message.channel.send(clapify("Wo ist deine Nachricht?"));
             return;
         }
 
@@ -82,12 +74,12 @@ export class MockCommand implements MessageCommand, ApplicationCommand {
             }
         }
 
-        const mockedEmbed = buildMock(author, content);
+        const clappedEmbed = buildClap(author, content);
 
         if(isReply) {
             await Promise.all([
                 replyMessage!.reply({
-                    embeds: [mockedEmbed]
+                    embeds: [clappedEmbed]
                 }),
                 message.delete()
             ]);
@@ -95,7 +87,7 @@ export class MockCommand implements MessageCommand, ApplicationCommand {
         else {
             await Promise.all([
                 channel.send({
-                    embeds: [mockedEmbed]
+                    embeds: [clappedEmbed]
                 }),
                 message.delete()
             ]);

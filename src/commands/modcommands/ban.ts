@@ -1,14 +1,16 @@
 import { SlashCommandBuilder, SlashCommandIntegerOption, SlashCommandStringOption, SlashCommandUserOption } from "@discordjs/builders";
 import { CommandInteraction, GuildMember, PermissionString, User } from "discord.js";
 import { Client } from "discord.js";
-import Ban from "../../storage/model/Ban";
-import { getConfig } from "../../utils/configHandler";
-import { ApplicationCommand, CommandResult, MessageCommand } from "../command";
-import log from "../../utils/logger";
+
+import Ban from "../../storage/model/Ban.js";
+import { getConfig } from "../../utils/configHandler.js";
+import { ApplicationCommand, CommandResult, MessageCommand } from "../command.js";
+import log from "../../utils/logger.js";
 import moment from "moment";
-import type { ProcessableMessage } from "../../handler/cmdHandler";
+import type { ProcessableMessage } from "../../handler/cmdHandler.js";
 import Cron from "croner";
-import type { BotContext } from "../../context";
+import type { BotContext } from "../../context.js";
+import { unban } from "./unban.js";
 
 const config = getConfig();
 
@@ -87,19 +89,21 @@ export const startCron = (context: BotContext) => {
             const expiredBans = await Ban.findExpiredBans(now);
 
             for (const expiredBan of expiredBans) {
-                log.debug(`Expired Ban found by user ${expiredBan.userId}. Expired on ${expiredBan.bannedUntil}`);
-                await expiredBan.destroy();
-
+                log.debug(
+                    `Expired Ban found by user ${expiredBan.userId}. Expired on ${expiredBan.bannedUntil}`
+                );
                 const user = context.guild.members.cache.get(expiredBan.userId);
                 // No user, no problem
                 if (!user) continue;
 
-                await restoreRoles(user);
+                // eslint-disable-next-line no-await-in-loop
+                await unban(user);
 
                 const msg = expiredBan.isSelfBan
                     ? "Glückwunsch! Dein selbst auferlegter Bann in der Coding Shitpost Zentrale ist beendet."
                     : "Glückwunsch! Dein Bann in der Coding Shitpost Zentrale ist beendet. Sei nächstes Mal einfach kein Hurensohn.";
 
+                // eslint-disable-next-line no-await-in-loop
                 await user.send(msg);
             }
         }

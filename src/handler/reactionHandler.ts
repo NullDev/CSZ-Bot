@@ -1,14 +1,11 @@
-// ========================= //
-// = Copyright (c) NullDev = //
-// ========================= //
-
-import FadingMessage from "../storage/model/FadingMessage";
-import AdditionalMessageData from "../storage/model/AdditionalMessageData";
-
-import log from "../utils/logger";
-import * as poll from "../commands/poll";
 import { Client, MessageReaction, User } from "discord.js";
-import type { ProcessableMessage } from "./cmdHandler";
+
+import FadingMessage from "../storage/model/FadingMessage.js";
+import AdditionalMessageData from "../storage/model/AdditionalMessageData.js";
+
+import log from "../utils/logger.js";
+import * as poll from "../commands/poll.js";
+import type { ProcessableMessage } from "./cmdHandler.js";
 
 const pollEmojis = poll.EMOJI;
 const voteEmojis = ["👍", "👎"];
@@ -35,7 +32,9 @@ export default async function(reactionEvent: MessageReaction, user: User, client
 
     if(reactionEvent.emoji.name === "✅") {
         if (member.id !== client.user!.id) {
-            const role = guild.roles.cache.find(r => r.name === message.content);
+            // Some roles, especially "C" are prefixed with a invisible whitespace to ensure they are not mentioned
+            // by accidence.
+            const role = guild.roles.cache.find(r => r.name.replace(/[\u200B-\u200D\uFEFF]/g, "") === message.content);
 
             if (role === undefined) {
                 throw new Error(`Could not find role ${role}`);
@@ -94,7 +93,7 @@ export default async function(reactionEvent: MessageReaction, user: User, client
                 pollEmojis.includes(r.emoji.name!)
             );
 
-            for (const r of reactions.values()) await r.users.remove(member.id).catch(log.error);
+            await Promise.all(reactions.map(r => r.users.remove(member.id)));
         }
         else if(isUmfrage) {
             if(isDelayedPoll) {
@@ -118,7 +117,7 @@ export default async function(reactionEvent: MessageReaction, user: User, client
                 r.users.cache.has(member.id) &&
                 pollEmojis.includes(r.emoji.name!)
             );
-            for (const r of allUserReactions.values()) await r.users.remove(member.id).catch(log.error);
+            await Promise.all(allUserReactions.map(r => r.users.remove(member.id)));
         }
 
         const additionalData = await AdditionalMessageData.fromMessage(message);
