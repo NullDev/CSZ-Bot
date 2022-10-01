@@ -24,6 +24,7 @@ import {
     isSpecialCommand,
     MessageCommand,
     SpecialCommand, UserInteraction
+
 } from "../commands/command.js";
 import { InfoCommand } from "../commands/info.js";
 import { getConfig } from "../utils/configHandler.js";
@@ -46,6 +47,7 @@ import { NischdaaaCommand } from "../commands/special/nischdaaa.js";
 import { SdmCommand } from "../commands/sdm.js";
 import { Nickname, NicknameButtonHandler } from "../commands/nickname.js";
 import { WoisButton, WoisCommand } from "../commands/woisping.js";
+import { WoisLog } from "../commands/woislog.js";
 import { FicktabelleCommand } from "../commands/ficktabelle.js";
 import { InviteCommand } from "../commands/invite.js";
 import { ErleuchtungCommand } from "../commands/erleuchtung.js";
@@ -65,6 +67,7 @@ import { EhreCommand } from "../commands/ehre.js";
 import { hasBotDenyRole } from "../utils/userUtils.js";
 import { isMessageInBotSpam } from "../utils/channelUtils.js";
 import type { BotContext } from "../context.js";
+
 
 const config = getConfig();
 
@@ -86,6 +89,7 @@ export const commands: readonly Command[] = [
     new BonkCommand(),
     new GoogleCommand(),
     new Nickname(),
+    new WoisLog(),
     new NischdaaaCommand(),
     new SdmCommand(),
     new WoisCommand(),
@@ -211,6 +215,7 @@ const commandInteractionHandler = (
         log.debug(`Found a matching command ${matchingCommand.name}`);
         return matchingCommand.handleInteraction(command, client, context);
     }
+
 
     return Promise.reject(
         new Error(

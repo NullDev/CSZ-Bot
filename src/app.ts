@@ -1,6 +1,8 @@
 import * as Discord from "discord.js";
-import { Message, MessageReaction, User } from "discord.js";
+
+import { Message, MessageReaction, User, VoiceState } from "discord.js";
 import Cron from "croner";
+
 
 import * as conf from "./utils/configHandler.js";
 import log from "./utils/logger.js";
@@ -13,11 +15,13 @@ import AoCHandler from "./handler/aocHandler.js";
 import * as fadingMessageHandler from "./handler/fadingMessageHandler.js";
 import * as storage from "./storage/storage.js";
 
-// Other commands
+
 import * as ban from "./commands/modcommands/ban.js";
 import * as poll from "./commands/poll.js";
 import GuildRagequit from "./storage/model/GuildRagequit.js";
 import reactionHandler from "./handler/reactionHandler.js";
+import { checkVoiceUpdate } from "./handler/voiceStateUpdateHandler.js";
+
 import {
     handleInteractionEvent,
     messageCommandHandler,
@@ -30,7 +34,7 @@ import { reminderHandler } from "./commands/erinnerung.js";
 import { endAprilFools, startAprilFools } from "./handler/aprilFoolsHandler.js";
 import { createBotContext, type BotContext } from "./context.js";
 import { EhrePoints, EhreVotes } from "./storage/model/Ehre.js";
-
+import { WoisData } from "./handler/voiceStateUpdateHandler.js";
 const version = conf.getVersion();
 const appname = conf.getName();
 const devname = conf.getAuthor();
@@ -90,6 +94,11 @@ process.on("beforeExit", code => {
 process.on("exit", code => {
     log.warn(`Process exited with code: ${code}`);
 });
+
+
+const clearWoisLogTask = async() => {
+    WoisData.latestEvents = WoisData.latestEvents.filter(event => event.createdAt.getTime() > Date.now() - 2 * 60 * 1000);
+};
 
 const leetTask = async() => {
     const {hauptchat} = botContext.textChannels;
@@ -165,6 +174,9 @@ client.once("ready", async initializedClient => {
             log.info("Scheduling 1338 Cronjob...");
             // eslint-disable-next-line no-unused-vars
             const l33tJob = new Cron("37 13 * * *", leetTask, cronOptions);
+
+            // eslint-disable-next-line no-unused-vars
+            const clearWoisLogJob = new Cron("5 * * * *", clearWoisLogTask, cronOptions);
 
             log.info("Scheduling Birthday Cronjob...");
             // eslint-disable-next-line no-unused-vars
@@ -326,6 +338,7 @@ client.on("invalidated", () => void log.debug("Client invalidated"));
 client.on("messageReactionAdd", async(event, user) => reactionHandler(event as MessageReaction, user as User, client, false));
 client.on("messageReactionAdd", async(event, user) => quoteReactionHandler(event as MessageReaction, user as User, botContext));
 client.on("messageReactionRemove", async(event, user) => reactionHandler(event as MessageReaction, user as User, client, true));
+client.on("voiceStateUpdate", async(oldState, newState) => checkVoiceUpdate(oldState as VoiceState, newState as VoiceState, botContext));
 
 client.login(config.auth.bot_token).then(() => {
     log.info("Token login was successful!");
