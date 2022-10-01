@@ -1,4 +1,4 @@
-import { GuildMember, Message, MessageReaction, User, TextBasedChannel, GuildEmoji, ReactionEmoji } from "discord.js";
+import { GuildMember, Message, MessageReaction, User, TextBasedChannel, GuildEmoji, ReactionEmoji, ChannelType } from "discord.js";
 
 import { BotContext } from "../context.js";
 import { getConfig } from "../utils/configHandler.js";
@@ -154,7 +154,7 @@ export const quoteReactionHandler = async(event: MessageReaction, user: User, co
         return;
     }
 
-    if (!targetChannel.isText()) {
+    if (!targetChannel.isTextBased()) {
         log.error(`channel ${targetChannelId} is configured as quote output channel but it is not a text channel`);
 
         return;
@@ -181,7 +181,7 @@ export const quoteReactionHandler = async(event: MessageReaction, user: User, co
     }
 
     await quotedMessage.react(event.emoji);
-    if (quotedMessage.channel.isText() && quotedMessage.channel.type === "GUILD_TEXT") {
+    if (quotedMessage.channel.isTextBased() && quotedMessage.channel.type === ChannelType.GuildText) {
         await quotedMessage.reply("Ihr quoted echt jeden Scheiß, oder?");
     }
 };

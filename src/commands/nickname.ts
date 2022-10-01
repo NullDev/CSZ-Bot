@@ -11,7 +11,7 @@ import {
     GuildMember,
     User,
     CacheType,
-    MessageActionRow, MessageButton, MessageComponentInteraction
+    ActionRowBuilder, ButtonBuilder, MessageComponentInteraction, ButtonStyle
 } from "discord.js";
 
 import { ApplicationCommand, CommandResult, UserInteraction } from "./command.js";
@@ -101,6 +101,11 @@ export class Nickname implements ApplicationCommand {
     }
 
     async handleInteraction(command: CommandInteraction, client: Client<boolean>): Promise<CommandResult> {
+        if (!command.isChatInputCommand()) {
+            // TODO: Solve this on a type level
+            return;
+        }
+
         try {
             const option = command.options.getSubcommand();
             const commandUser = command.guild?.members.cache.find(m => m.id === command.user.id)!;
@@ -116,34 +121,41 @@ export class Nickname implements ApplicationCommand {
             // Yes, "else" is uneccessary as we're returning in every block. However, I find the semantics more clear.
             if (option === "deleteall") {
                 if (!trusted && !sameuser) {
-                    return command.reply("Hurensohn. Der Command ist nix für dich.");
+                    await command.reply("Hurensohn. Der Command ist nix für dich.");
+                    return;
                 }
                 const member = command.guild?.members.cache.get(user.id);
                 await Nicknames.deleteNickNames(user.id);
                 await this.updateNickName(member!, null);
-                return command.reply("Ok Brudi. Hab alles gelöscht");
+                await command.reply("Ok Brudi. Hab alles gelöscht");
+                return;
             }
             else if (option === "list") {
                 const nicknames = await Nicknames.getNicknames(user.id);
                 if (nicknames.length === 0) {
-                    return command.reply("Ne Brudi für den hab ich keine Nicknames");
+                    await command.reply("Ne Brudi für den hab ich keine Nicknames");
+                    return;
                 }
-                return command.reply(`Hab für den Brudi folgende Nicknames:\n${nicknames.map(n => n.nickName).join(", ")}`);
+                await command.reply(`Hab für den Brudi folgende Nicknames:\n${nicknames.map(n => n.nickName).join(", ")}`);
+                return;
             }
             else if (option === "add") {
                 if (!trusted) {
-                    return command.reply("Hurensohn. Der Command ist nix für dich.");
+                    await command.reply("Hurensohn. Der Command ist nix für dich.");
+                    return;
                 }
                 const nickname = command.options.getString("nickname", true);
                 if (await Nicknames.nickNameExist(user.id, nickname)) {
-                    return command.reply(`Würdest du Hurensohn aufpassen, wüsstest du, dass für ${user} '${nickname}' bereits existiert.`);
+                    await command.reply(`Würdest du Hurensohn aufpassen, wüsstest du, dass für ${user} '${nickname}' bereits existiert.`);
+                    return;
                 }
                 return Nickname.createNickNameVote(command, user, nickname);
                 //    await this.addNickname(command, user);
             }
             else if (option === "delete") {
                 if (!trusted && !sameuser) {
-                    return command.reply("Hurensohn. Der Command ist nix für dich.");
+                    await command.reply("Hurensohn. Der Command ist nix für dich.");
+                    return;
                 }
                 // We don't violate the DRY principle, since we're referring to another subcommand object as in the "add" subcommand.
                 // Code is equal but knowledge differs.
@@ -153,28 +165,31 @@ export class Nickname implements ApplicationCommand {
                 if (member.nickname === nickname) {
                     await this.updateNickName(member, null);
                 }
-                return command.reply(`Ok Brudi. Hab für ${user} ${nickname} gelöscht`);
+                await command.reply(`Ok Brudi. Hab für ${user} ${nickname} gelöscht`);
+                return;
             }
 
-            return command.reply("Das hätte nie passieren dürfen");
+            await command.reply("Das hätte nie passieren dürfen");
+            return;
         }
         catch (e) {
             console.log(e);
-            return command.reply("Das hätte nie passieren dürfen");
+            await command.reply("Das hätte nie passieren dürfen");
+            return;
         }
     }
 
     private static async createNickNameVote(command: CommandInteraction<CacheType>, user: User, nickname: string) {
-        const row = new MessageActionRow()
+        const row = new ActionRowBuilder()
             .addComponents(
-                new MessageButton()
+                new ButtonBuilder()
                     .setCustomId("nicknameVoteYes")
                     .setLabel("Guter")
-                    .setStyle("SUCCESS"),
-                new MessageButton()
+                    .setStyle(ButtonStyle.Success),
+                new ButtonBuilder()
                     .setCustomId("nicknameVoteNo")
                     .setLabel("Lass ma")
-                    .setStyle("DANGER")
+                    .setStyle(ButtonStyle.Danger)
             );
         await command.reply({
             content: `Eh Brudis, soll ich für ${user} ${nickname} hinzufügen?`,
@@ -206,10 +221,11 @@ export class NicknameButtonHandler implements UserInteraction {
         const suggestion = ongoingSuggestions[interaction.message.id];
 
         if (suggestion === undefined) {
-            return interaction.update({
+            await interaction.update({
                 content: "Ich find den Namensvorschlag nicht. Irgend ein Huso muss wohl den Bot neugestartet haben. Macht am besten ne Neue auf",
                 components: []
             });
+            return;
         }
         const userVoteMap = getUserVoteMap(interaction.message.id);
 
@@ -223,25 +239,28 @@ export class NicknameButtonHandler implements UserInteraction {
         // evaluate the Uservotes
         const votes:UserVote[] = Object.values(userVoteMap);
         if (this.hasEnoughVotes(votes, "NO")) {
-            return interaction.update({
+            await interaction.update({
                 content: `Der Vorschlag: \`${suggestion.nickname}\` für <@${suggestion.nicknameUserID}> war echt nicht so geil`,
                 components: []
             });
+            return;
         }
         if (this.hasEnoughVotes(votes, "YES")) {
             try {
                 await Nicknames.insertNickname(suggestion.nicknameUserID, suggestion.nickname);
             }
             catch (error) {
-                return interaction.update(`Würdet ihr Hurensöhne aufpassen, wüsstest ihr, dass für <@${suggestion.nicknameUserID}> \`${suggestion.nickname}\` bereits existiert.`);
+                await interaction.update(`Würdet ihr Hurensöhne aufpassen, wüsstest ihr, dass für <@${suggestion.nicknameUserID}> \`${suggestion.nickname}\` bereits existiert.`);
+                return;
             }
 
-            return interaction.update({
+            await interaction.update({
                 content: `Für <@${suggestion.nicknameUserID}> ist jetzt \`${suggestion.nickname}\` in der Rotation`,
                 components: []
             });
+            return;
         }
-        return interaction.reply({content: "Hast abgestimmt", ephemeral: true});
+        await interaction.reply({content: "Hast abgestimmt", ephemeral: true});
     }
 
     private hasEnoughVotes(votes:UserVote[], voteType:Vote) {

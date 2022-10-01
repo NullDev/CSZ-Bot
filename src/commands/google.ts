@@ -1,5 +1,5 @@
 import { SlashCommandBuilder, SlashCommandStringOption, SlashCommandUserOption } from "@discordjs/builders";
-import { Client, CommandInteraction, GuildMember, MessageEmbedOptions } from "discord.js";
+import { Client, CommandInteraction, GuildMember } from "discord.js";
 
 import { ApplicationCommand, CommandResult } from "./command.js";
 
@@ -15,7 +15,7 @@ const repliesWithUser = [
 ];
 
 
-const buildEmbed = (member: GuildMember, reply: string): MessageEmbedOptions => {
+const buildEmbed = (member: GuildMember, reply: string) => {
     return {
         color: 2007432,
         description: reply,
@@ -43,6 +43,11 @@ export class GoogleCommand implements ApplicationCommand {
     }
 
     async handleInteraction(command: CommandInteraction, client: Client<boolean>): Promise<CommandResult> {
+        if (!command.isChatInputCommand()) {
+            // TODO: Solve this on a type level
+            return;
+        }
+
         const user = command.guild?.members.cache.find(m => m.id === command.user.id)!;
         const dau = command.guild?.members.cache.find(m => m.id === command.options.getUser("dau", false)?.id) ?? null;
         const swd = command.options.getString("searchword", true);
@@ -60,7 +65,7 @@ export class GoogleCommand implements ApplicationCommand {
         }
 
         const embed = buildEmbed(user!, reply);
-        return command.reply({
+        await command.reply({
             embeds: [embed],
             ephemeral: false
         });

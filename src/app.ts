@@ -1,6 +1,5 @@
 import * as Discord from "discord.js";
-
-import { Message, MessageReaction, User, VoiceState } from "discord.js";
+import { Message, MessageReaction, User, VoiceState, GatewayIntentBits, Partials } from "discord.js";
 import Cron from "croner";
 
 
@@ -55,28 +54,28 @@ log.info("Started.");
 const config = conf.getConfig();
 const client = new Discord.Client({
     partials: [
-        "MESSAGE",
-        "REACTION",
-        "USER"
+        Partials.Message,
+        Partials.Reaction,
+        Partials.User
     ],
     allowedMentions: {
         parse: ["users"],
         repliedUser: true
     },
     intents: [
-        "DIRECT_MESSAGES",
-        "GUILDS",
-        "GUILD_BANS",
-        "GUILD_EMOJIS_AND_STICKERS",
-        "GUILD_INTEGRATIONS",
-        "GUILD_INVITES",
-        "GUILD_MEMBERS",
-        "GUILD_MESSAGES",
-        "GUILD_MESSAGE_REACTIONS",
-        "GUILD_MESSAGE_TYPING",
-        "GUILD_PRESENCES",
-        "GUILD_VOICE_STATES",
-        "GUILD_WEBHOOKS"
+        GatewayIntentBits.DirectMessages,
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildBans,
+        GatewayIntentBits.GuildEmojisAndStickers,
+        GatewayIntentBits.GuildIntegrations,
+        GatewayIntentBits.GuildInvites,
+        GatewayIntentBits.GuildMembers,
+        GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.GuildMessageReactions,
+        GatewayIntentBits.GuildMessageTyping,
+        GatewayIntentBits.GuildPresences,
+        GatewayIntentBits.GuildVoiceStates,
+        GatewayIntentBits.GuildWebhooks
     ]
 });
 
@@ -307,7 +306,9 @@ client.on("messageCreate", async message => {
 
 client.on("messageDelete", async message => {
     try {
-        await messageDeleteHandler(message as Message, client);
+        if(message.inGuild()) {
+            await messageDeleteHandler(message, client, botContext);
+        }
     }
     catch (err) {
         log.error(`[messageDelete] Error for ${message.id}`, err);

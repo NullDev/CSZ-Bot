@@ -1,5 +1,5 @@
 import { SlashCommandBuilder, SlashCommandStringOption } from "@discordjs/builders";
-import { CacheType, Client, CommandInteraction, GuildMember, Message, MessageEmbed } from "discord.js";
+import { CacheType, Client, CommandInteraction, GuildMember, Message, EmbedBuilder } from "discord.js";
 
 import { BotContext } from "../context.js";
 import { ApplicationCommand, MessageCommand } from "./command.js";
@@ -21,8 +21,8 @@ const mock = (str: string): string => str.split("").map(transform).join("");
 /**
  * build mocked embed
  */
-const buildMock = (author: GuildMember, toMock: string): MessageEmbed => {
-    return new MessageEmbed()
+const buildMock = (author: GuildMember, toMock: string) => {
+    return new EmbedBuilder()
         .setDescription(`${mock(toMock)} <:mock:677504337769005096>`)
         .setColor(0xFFC000)
         .setAuthor({
@@ -44,6 +44,11 @@ export class MockCommand implements MessageCommand, ApplicationCommand {
         );
 
     async handleInteraction(command: CommandInteraction<CacheType>, client: Client<boolean>, context: BotContext): Promise<void> {
+        if (!command.isChatInputCommand()) {
+            // TODO: Solve this on a type level
+            return;
+        }
+
         const author = command.guild?.members.resolve(command.user);
         const text = command.options.getString("text")!;
         if(!author) {

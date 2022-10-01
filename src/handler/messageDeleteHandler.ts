@@ -1,11 +1,12 @@
 import { Client, Message } from "discord.js";
 
 import { getConfig } from "../utils/configHandler.js";
+import type { BotContext } from "../context.js";
 
 const config = getConfig();
 
 const deleteInlineRepliesFromBot = (
-    messageRef: Message,
+    messageRef: Message<true>,
     client: Client
 ) =>
     Promise.allSettled(
@@ -18,7 +19,7 @@ const deleteInlineRepliesFromBot = (
             .map(m => m.delete())
     );
 
-export default async function(message: Message, client: Client) {
+export default async function(message: Message<true>, client: Client, _context: BotContext) {
     if (message.author && message.author.id !== client.user!.id) {
         if (message.content) {
             const isNormalCommand =

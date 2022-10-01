@@ -1,14 +1,13 @@
 import { REST } from "@discordjs/rest";
 import { APIApplicationCommand, Routes } from "discord-api-types/v9";
 import {
-    ApplicationCommandPermissionData,
+    ApplicationCommandPermissionType,
     Client,
     CommandInteraction,
     Interaction,
     Message,
     MessageComponentInteraction,
-    Permissions,
-    PermissionString
+    PermissionsString
 } from "discord.js";
 import { GuildMember } from "discord.js";
 
@@ -139,7 +138,7 @@ export const registerAllApplicationCommandsAsGuildCommands = async(
     const rest = new REST({ version: "9" }).setToken(token);
 
     const createPermissionSet = (
-        strings: readonly PermissionString[] | undefined
+        strings: readonly PermissionsString[] | undefined
     ): bigint => {
         if (strings === undefined) {
             return BigInt(0x40); // Default to "SEND_MESSAGES"
@@ -165,7 +164,7 @@ export const registerAllApplicationCommandsAsGuildCommands = async(
                 | {
                       dm_permission: boolean;
                       default_member_permissions: string;
-                      permissions: ApplicationCommandPermissionData[];
+                      permissions: ApplicationCommandPermissionType[];
                   } = {
                       ...command.applicationCommand.toJSON(),
                       dm_permission: false,
@@ -249,7 +248,7 @@ const messageComponentInteractionHandler = (
 };
 
 
-const checkPermissions = (member: GuildMember, permissions: ReadonlyArray<PermissionString>): boolean => {
+const checkPermissions = (member: GuildMember, permissions: ReadonlyArray<PermissionsString>): boolean => {
     log.debug(`Checking member ${member.id} permissions on permissionSet: ${JSON.stringify(permissions)}`);
 
     // No permissions, no problem

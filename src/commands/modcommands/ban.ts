@@ -1,5 +1,5 @@
 import { SlashCommandBuilder, SlashCommandIntegerOption, SlashCommandStringOption, SlashCommandUserOption } from "@discordjs/builders";
-import { CommandInteraction, GuildMember, PermissionString, User } from "discord.js";
+import { CommandInteraction, GuildMember, PermissionsString, User } from "discord.js";
 import { Client } from "discord.js";
 
 import Ban from "../../storage/model/Ban.js";
@@ -134,7 +134,7 @@ export const ban = async(client: Client, member: GuildMember, banInvoker: GuildM
     const humanReadableDuration = duration ? moment.duration(duration, "hours").locale("de").humanize() : undefined;
 
     const banReasonChannel = member.guild.channels.resolve(config.ids.bot_log_channel_id);
-    if (banReasonChannel && banReasonChannel.isText()) {
+    if (banReasonChannel && banReasonChannel.isTextBased()) {
         await banReasonChannel.send({
             content: `<@${member.id}> ${isSelfBan ? "hat sich selbst" : `wurde von ${banInvoker}`} ${humanReadableDuration ? `für ${humanReadableDuration}` : "bis auf unbestimmte Zeit"} gebannt. \nGrund: ${reason}`,
             allowedMentions: {
@@ -154,8 +154,8 @@ Lg & xD™`);
 export class BanCommand implements ApplicationCommand, MessageCommand {
     name: string = "ban";
     description: string = "Joa, bannt halt einen ne?";
-    requiredPermissions: readonly PermissionString[] = [
-        "BAN_MEMBERS"
+    requiredPermissions: readonly PermissionsString[] = [
+        "BanMembers"
     ];
     get applicationCommand(): Pick<SlashCommandBuilder, "toJSON"> {
         return new SlashCommandBuilder()
@@ -181,6 +181,11 @@ export class BanCommand implements ApplicationCommand, MessageCommand {
     }
 
     async handleInteraction(command: CommandInteraction, client: Client<boolean>): Promise<void> {
+        if (!command.isChatInputCommand()) {
+            // TODO: Solve this on a type level
+            return;
+        }
+
         const user = command.options.getUser("user", true);
         const invokingUser = command.user;
         const reason = command.options.getString("reason", true);
@@ -191,24 +196,27 @@ export class BanCommand implements ApplicationCommand, MessageCommand {
 
         const userAsGuildMember = command.guild?.members.resolve(user);
         if (!userAsGuildMember) {
-            return command.reply({
+            await command.reply({
                 content: "Yo, der ist nicht auf dem Server",
                 ephemeral: true
             });
+            return;
         }
 
         const err = await ban(client, userAsGuildMember, invokingUser, reason, false, duration ?? undefined);
 
         if (err) {
-            return command.reply({
+            await command.reply({
                 content: err,
                 ephemeral: true
             });
+            return;
         }
 
-        return command.reply({
+        await command.reply({
             content: `Ok Bruder, ich hab <@${user.id}> wegen ${reason} ${duration > 0 ? `für ${humanReadableDuration}` : ""} gebannt`
         });
+        return;
     }
 
     async handleMessage(message: ProcessableMessage, client: Client<boolean>): Promise<CommandResult> {

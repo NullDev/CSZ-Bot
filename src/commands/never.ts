@@ -1,5 +1,5 @@
 import fetch from "node-fetch";
-import { CacheType, CommandInteraction, Client, Message, MessageEmbed, GuildMember } from "discord.js";
+import { CacheType, CommandInteraction, Client, Message, EmbedBuilder, GuildMember } from "discord.js";
 import { SlashCommandBuilder, SlashCommandStringOption } from "@discordjs/builders";
 
 import { ApplicationCommand, MessageCommand } from "./command.js";
@@ -37,9 +37,9 @@ async function getPrompt(userPrompt: Prompt | null): Promise<NeverPrompt> {
     return promptResponse.json() as unknown as NeverPrompt;
 }
 
-function buildEmbed(prompt: NeverPrompt, author: GuildMember): MessageEmbed {
+function buildEmbed(prompt: NeverPrompt, author: GuildMember) {
     const emoji = prompt.level !== undefined ? QUESTION_LEVEL_EMOJI_MAP[prompt.level] : "👀";
-    return new MessageEmbed()
+    return new EmbedBuilder()
         .setTitle(prompt.prompt)
         .setColor(0x2ecc71)
         .setAuthor({
@@ -63,7 +63,12 @@ export class NeverCommand implements ApplicationCommand, MessageCommand {
             .setRequired(false)
         );
 
-    async handleInteraction(command: CommandInteraction<CacheType>, _client: Client<boolean>): Promise<void> {
+    async handleInteraction(command: CommandInteraction<CacheType>): Promise<void> {
+        if (!command.isChatInputCommand()) {
+            // TODO: Solve this on a type level
+            return
+        }
+
         const author = command.guild?.members.resolve(command.user);
         const customInput = command.options.getString("prompt", false) || null;
 

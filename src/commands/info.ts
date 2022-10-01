@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { Client, CommandInteraction, Guild, MessageActionRow, MessageButton, MessageEmbedOptions } from "discord.js";
+import { Client, CommandInteraction, Guild, GuildPremiumTier, ActionRowBuilder, ButtonBuilder, APIEmbed, ButtonStyle, MessageActionRowComponentData } from "discord.js";
 import fetch from "node-fetch";
 
 import { ApplicationCommand, CommandResult, MessageCommand } from "./command.js";
@@ -7,15 +7,16 @@ import { GitHubContributor } from "../types.js";
 import type { ProcessableMessage } from "../handler/cmdHandler.js";
 import { assertNever } from "../utils/typeUtils.js";
 
-const buildMessageActionsRow = (): MessageActionRow[] => {
+const buildMessageActionRow = (): ActionRowBuilder[] => {
     return [
-        new MessageActionRow()
+        new ActionRowBuilder()
             .addComponents(
-                new MessageButton()
+                new ButtonBuilder()
                     .setURL("https://github.com/NullDev/CSZ-Bot")
                     .setLabel("GitHub")
-                    .setStyle("LINK")
-                    .setDisabled(false))
+                    .setStyle(ButtonStyle.Link)
+                    .setDisabled(false)
+            )
     ];
 };
 
@@ -58,10 +59,10 @@ const getSystemInfo = (): string => {
 
 const getServerLevel = (guild: Guild) => {
     switch(guild.premiumTier) {
-        case "NONE": return 0;
-        case "TIER_1": return 1;
-        case "TIER_2": return 2;
-        case "TIER_3": return 3;
+        case GuildPremiumTier.None: return 0;
+        case GuildPremiumTier.Tier1: return 1;
+        case GuildPremiumTier.Tier2: return 2;
+        case GuildPremiumTier.Tier3: return 3;
         default: return assertNever(guild.premiumTier);
     }
 };
@@ -78,7 +79,7 @@ const getServerInfo = (guild: Guild): string => {
         "**Invite\n** https://discord.gg/csz";
 };
 
-const buildEmbed = async(guild: Guild | null, avatarUrl?: string): Promise<MessageEmbedOptions> => {
+const buildEmbed = async(guild: Guild | null, avatarUrl?: string): Promise<APIEmbed> => {
     const now = new Date();
     const embed = {
         color: 2007432,
@@ -146,12 +147,13 @@ export class InfoCommand implements ApplicationCommand, MessageCommand {
      * @returns info reply
      */
     async handleInteraction(command: CommandInteraction, client: Client): Promise<CommandResult> {
-        const embed: MessageEmbedOptions = await buildEmbed(command.guild, client.user?.avatarURL() ?? undefined);
-        return command.reply({
+        const embed = await buildEmbed(command.guild, client.user?.avatarURL() ?? undefined);
+        await command.reply({
             embeds: [embed],
             ephemeral: true,
-            components: buildMessageActionsRow()
+            components: buildMessageActionRow()
         });
+        return;
     }
 
     /**
@@ -161,7 +163,7 @@ export class InfoCommand implements ApplicationCommand, MessageCommand {
      * @returns reply and reaction
      */
     async handleMessage(message: ProcessableMessage, client: Client): Promise<CommandResult> {
-        const embed: MessageEmbedOptions = await buildEmbed(message.guild, client.user?.avatarURL() ?? undefined);
+        const embed = await buildEmbed(message.guild, client.user?.avatarURL() ?? undefined);
 
         const reply = message.reply({
             embeds: [embed]

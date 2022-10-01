@@ -1,4 +1,4 @@
-import { Client, GuildMember, MessageOptions, MessageEmbedOptions, InteractionReplyOptions, CommandInteraction, CacheType } from "discord.js";
+import { Client, GuildMember, EmbedData, InteractionReplyOptions, CommandInteraction, CacheType } from "discord.js";
 import { SlashCommandBuilder, SlashCommandStringOption, SlashCommandSubcommandBuilder } from "@discordjs/builders";
 
 import { ApplicationCommand, CommandResult, MessageCommand } from "./command.js";
@@ -34,7 +34,7 @@ const secureDecisionMaker = (question: string, max: number = 1) => (rng(0, max, 
 
 const createSecureDecisionMessage = (question: string, author: GuildMember, options: string[] = []): MessageOptions & InteractionReplyOptions => {
     const formattedQuestion = question.endsWith("?") ? question : `${question}?`;
-    const embed: MessageEmbedOptions = {
+    const embed: EmbedData = {
         title: formattedQuestion,
         timestamp: Date.now(),
         author: {
@@ -99,32 +99,38 @@ export class SdmCommand implements MessageCommand, ApplicationCommand {
                         new SlashCommandStringOption()
                             .setDescription("Frage")
                             .setRequired(true)
-                            .setName("question"))
+                            .setName("question")
+                    )
                     .addStringOption(
                         new SlashCommandStringOption()
                             .setDescription("Option 1")
                             .setRequired(true)
-                            .setName("o1"))
+                            .setName("o1")
+                    )
                     .addStringOption(
                         new SlashCommandStringOption()
                             .setDescription("Option 2")
                             .setRequired(true)
-                            .setName("o2"))
+                            .setName("o2")
+                    )
                     .addStringOption(
                         new SlashCommandStringOption()
                             .setDescription("Option 3")
                             .setRequired(false)
-                            .setName("o3"))
+                            .setName("o3")
+                    )
                     .addStringOption(
                         new SlashCommandStringOption()
                             .setDescription("Option 4")
                             .setRequired(false)
-                            .setName("o4"))
+                            .setName("o4")
+                    )
                     .addStringOption(
                         new SlashCommandStringOption()
                             .setDescription("Option 5")
                             .setRequired(false)
-                            .setName("o5"))
+                            .setName("o5")
+                    )
             );
     }
 
@@ -161,15 +167,19 @@ export class SdmCommand implements MessageCommand, ApplicationCommand {
         return;
     }
 
-    handleInteraction(command: CommandInteraction<CacheType>, client: Client<boolean>): Promise<CommandResult> {
+    async handleInteraction(command: CommandInteraction<CacheType>, client: Client<boolean>): Promise<CommandResult> {
+        if (!command.isChatInputCommand()) {
+            // TODO: Solve this on a type level
+            return;
+        }
+
         const subcommand = command.options.getSubcommand(true);
         const question = command.options.getString("question", true);
         const member = command.member as GuildMember;
         if (subcommand === "ja-nein") {
             const msg = createSecureDecisionMessage(question, member);
-            return command.reply(
-                msg
-            );
+            await command.reply(                msg            );
+            return;
         }
 
         if (subcommand === "entscheidung") {
@@ -183,9 +193,8 @@ export class SdmCommand implements MessageCommand, ApplicationCommand {
             const options = [o1, o2, o3, o4, o5].filter(o => o !== null) as string[];
 
             const msg = createSecureDecisionMessage(question, member, options);
-            return command.reply(
-                msg
-            );
+            await command.reply(                msg            );
+            return;
         }
         return Promise.reject(new Error(`Subcommand ${subcommand} not implemented.`));
     }

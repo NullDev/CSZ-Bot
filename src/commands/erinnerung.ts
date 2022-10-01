@@ -44,7 +44,11 @@ export class ErinnerungCommand implements MessageCommand, ApplicationCommand {
         );
 
     async handleInteraction(command: CommandInteraction<CacheType>, client: Client<boolean>, context: BotContext): Promise<void> {
-        const time = command.options.getString("time")!;
+        if (!command.isChatInputCommand()) {
+            // TODO: Solve this on a type level
+            return;
+        }
+                const time = command.options.getString("time")!;
         const note = command.options.getString("note");
 
         try {
@@ -106,7 +110,7 @@ const sendReminder = async(reminder: ReminderAttributes, context: BotContext) =>
         if (channel === undefined) {
             throw new Error(`Channel ${reminder.channelId} couldn't be found`);
         }
-        if (!channel.isText()) {
+        if (!channel.isTextBased()) {
             throw new Error(`Channel ${reminder.channelId} is not a text channel`);
         }
         const textChannel = channel as TextBasedChannel;

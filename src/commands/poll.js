@@ -1,6 +1,6 @@
 import parseOptions from "minimist";
 import Cron from "croner";
-import { Util } from "discord.js";
+import { ChannelType, Util } from "discord.js";
 
 import log from "../utils/logger.js";
 import AdditionalMessageData from "../storage/model/AdditionalMessageData.js";
@@ -177,7 +177,7 @@ export const run = async(client, message, args, context) => {
         return "Du kannst keine verzögerte Abstimmung außerhalb des Umfragenchannels machen!";
     }
 
-    if (channel.type !== "GUILD_TEXT") return "Der Zielchannel ist irgenwie kein Text-Channel?";
+    if (channel.type !== ChannelType.GuildText) return "Der Zielchannel ist irgenwie kein Text-Channel?";
 
     const pollMessage = await channel.send({
         embeds: [embed]

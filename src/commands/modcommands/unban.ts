@@ -1,5 +1,5 @@
 import { SlashCommandBuilder, SlashCommandUserOption } from "@discordjs/builders";
-import { CommandInteraction, GuildMember, PermissionString } from "discord.js";
+import { CommandInteraction, GuildMember, PermissionsString } from "discord.js";
 import { Message, Client } from "discord.js";
 
 import Ban from "../../storage/model/Ban.js";
@@ -20,8 +20,8 @@ export const unban = async(member: GuildMember) => {
 export class UnbanCommand implements ApplicationCommand, MessageCommand {
     name: string = "unban";
     description: string = "Joa, unbannt halt einen ne?";
-    requiredPermissions: readonly PermissionString[] = [
-        "BAN_MEMBERS"
+    requiredPermissions: readonly PermissionsString[] = [
+        "BanMembers"
     ];
     get applicationCommand(): Pick<SlashCommandBuilder, "toJSON"> {
         return new SlashCommandBuilder()
@@ -39,22 +39,24 @@ export class UnbanCommand implements ApplicationCommand, MessageCommand {
 
         const userAsGuildMember = command.guild?.members.resolve(user);
         if(!userAsGuildMember) {
-            return command.reply({
+            await command.reply({
                 content: "Yo, der ist nicht auf dem Server",
                 ephemeral: true
             });
+            return;
         }
 
         const err = await unban(userAsGuildMember);
 
         if(err) {
-            return command.reply({
+            await command.reply({
                 content: err,
                 ephemeral: true
             });
+            return;
         }
 
-        return command.reply({
+        await command.reply({
             content: "Yo bruder, hab ihn entbannt"
         });
     }

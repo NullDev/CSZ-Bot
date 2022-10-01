@@ -1,4 +1,4 @@
-import type { Client, ClientUser, Message } from "discord.js";
+import { ChannelType, Client, ClientUser, Message } from "discord.js";
 
 import { getConfig } from "../utils/configHandler.js";
 import cmdHandler, { isProcessableMessage } from "./cmdHandler.js";
@@ -17,7 +17,7 @@ export default async function(message: Message, client: Client, context: BotCont
         .replace(/\s/g, "");
 
     // Maybe we can move some of these checks to `isProcessableMessage`, but we need to figure out how to represent this in a type
-    if (message.author.bot || nonBiased === "" || message.channel.type === "DM") return;
+    if (message.author.bot || nonBiased === "" || message.channel.type === ChannelType.DM) return;
 
     // Ensures that every command always gets a message that fits certain criteria (for example, being a message originating from a server, not a DM)
     if (!isProcessableMessage(message)) return;

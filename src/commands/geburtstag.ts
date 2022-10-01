@@ -26,6 +26,11 @@ export class GeburtstagCommand implements ApplicationCommand {
             .setRequired(true));
 
     async handleInteraction(command: CommandInteraction<CacheType>, client: Client<boolean>): Promise<void> {
+        if (!command.isChatInputCommand()) {
+            // TODO: Solve this on a type level
+            return;
+        }
+
         const day = command.options.getInteger("day", true);
         const month = command.options.getInteger("month", true);
 

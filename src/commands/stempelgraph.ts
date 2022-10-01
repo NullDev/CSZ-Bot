@@ -204,6 +204,11 @@ export class StempelgraphCommand implements ApplicationCommand {
     }
 
     async handleInteraction(command: CommandInteraction, _client: Client<boolean>): Promise<CommandResult> {
+        if (!command.isChatInputCommand()) {
+            // TODO: Solve this on a type level
+            return;
+        }
+
         const members = command.guild?.members.cache;
         if (!members) {
             log.debug(`No Members found within guild ${command.guild}`);

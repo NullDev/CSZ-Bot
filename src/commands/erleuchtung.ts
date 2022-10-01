@@ -2,7 +2,7 @@
 // = Copyright (c) Ehrenvio der G = //
 // ================================ //
 
-import {  Client, MessageEmbed, GuildMember } from "discord.js";
+import {  Client, EmbedBuilder, GuildMember } from "discord.js";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { CommandInteraction, CacheType } from "discord.js";
 import fetch from "node-fetch";
@@ -18,10 +18,10 @@ function getInspiration(): Promise<string> {
     }).then(response => response.text());
 }
 
-async function buildInspirationMessage(author: GuildMember): Promise<MessageEmbed> {
+async function buildInspirationMessage(author: GuildMember): Promise<EmbedBuilder> {
     const inspiration = await getInspiration();
 
-    return new MessageEmbed()
+    return new EmbedBuilder()
         .setImage(inspiration)
         .setColor(0x26c723)
         .setTimestamp(new Date())

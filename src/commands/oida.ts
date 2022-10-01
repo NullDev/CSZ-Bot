@@ -42,6 +42,11 @@ export class OidaCommand implements ApplicationCommand {
     }
 
     async handleInteraction(command: CommandInteraction, client: Client, context: BotContext) {
+        if (!command.isChatInputCommand()) {
+            // TODO: Solve this on a type level
+            return;
+        }
+
         const addedBy = await context.guild.members.fetch(command.user);
         if (!addedBy) {
             return;

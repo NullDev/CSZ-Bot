@@ -1,5 +1,5 @@
 import { SlashCommandBuilder, SlashCommandStringOption } from "@discordjs/builders";
-import { CacheType, Client, CommandInteraction, GuildMember, Message, MessageEmbed } from "discord.js";
+import { CacheType, Client, CommandInteraction, GuildMember, Message, EmbedBuilder } from "discord.js";
 
 import { BotContext } from "../context.js";
 import type { ProcessableMessage } from "../handler/cmdHandler.js";
@@ -13,8 +13,8 @@ const clapify = (str: string): string => str.split(/\s+/).join(" :clap: ") + " :
 /**
  * build clapped embed
  */
-const buildClap = (author: GuildMember, toClap: string): MessageEmbed => {
-    return new MessageEmbed()
+const buildClap = (author: GuildMember, toClap: string) => {
+    return new EmbedBuilder()
         .setDescription(`${clapify(toClap)}`)
         .setColor(0x24283B)
         .setAuthor({
@@ -36,6 +36,11 @@ export class ClapCommand implements MessageCommand, ApplicationCommand {
         );
 
     async handleInteraction(command: CommandInteraction<CacheType>, client: Client<boolean>, context: BotContext): Promise<void> {
+        if (!command.isChatInputCommand()) {
+            // TODO: Solve this on a type level
+            return;
+        }
+
         const author = command.guild?.members.resolve(command.user);
         const text = command.options.getString("text")!;
         if(!author) {

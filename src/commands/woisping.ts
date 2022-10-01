@@ -1,8 +1,9 @@
 import {
-    Client, CommandInteraction, MessageActionRow,
-    MessageButton,
+    Client, CommandInteraction, ActionRowBuilder,
+    ButtonBuilder,
     MessageComponentInteraction,
-    Util
+    ButtonStyle,
+    cleanContent
 } from "discord.js";
 import { SlashCommandBuilder, SlashCommandStringOption } from "@discordjs/builders";
 
@@ -51,26 +52,33 @@ export class WoisCommand implements ApplicationCommand {
     }
 
     async handleInteraction(command: CommandInteraction, client: Client<boolean>): Promise<CommandResult> {
+        if (!command.isChatInputCommand()) {
+            // TODO: Solve this on a type level
+            return;
+        }
+
         const pinger = command.guild?.members.cache.get(command.member!.user.id)!;
 
         const isModMessage = isMod(pinger);
 
         if (!isModMessage && !isWoisGang(pinger)) {
             log.warn(`User (${pinger}) tried command "${config.bot_settings.prefix.command_prefix}woisping" and was denied`);
-            return command.reply(`Tut mir leid, ${pinger}. Du hast nicht genügend Rechte um diesen Command zu verwenden =(`);
+            await command.reply(`Tut mir leid, ${pinger}. Du hast nicht genügend Rechte um diesen Command zu verwenden =(`);
+            return;
         }
         const now = Date.now();
         if (!isModMessage && lastPing + config.bot_settings.woisping_limit * 1000 > now) {
-            return command.reply("Piss dich und spam nicht.");
+            await command.reply("Piss dich und spam nicht.");
+            return;
         }
-        const reason = `${Util.cleanContent(command.options.getString("grund", true), command.channel!)}`;
+        const reason = `${cleanContent(command.options.getString("grund", true), command.channel!)}`;
         if (isModMessage) {
             lastPing = now;
 
             const usersVotedYes = [pinger.id];
             const content = getMessage(reason, usersVotedYes).trim();
 
-            return command.reply({
+            await command.reply({
                 content,
                 allowedMentions: {
                     parse: ["users", "roles"],
@@ -79,12 +87,13 @@ export class WoisCommand implements ApplicationCommand {
                 },
                 components: []
             });
+            return;
         }
-        const row = new MessageActionRow()
-            .addComponents(new MessageButton()
+        const row = new ActionRowBuilder()
+            .addComponents(new ButtonBuilder()
                 .setCustomId("woisbutton")
                 .setLabel("Ich hab Bock")
-                .setStyle("SUCCESS")
+                .setStyle(ButtonStyle.Success)
             );
         await command.reply({
             content: `${pendingMessagePrefix} <@!${pinger.id}> hat Bock auf Wois. ${reason ? `Grund dafür ist \`${reason}\`` : ""}. Biste dabei?`,
@@ -112,10 +121,11 @@ export class WoisButton implements UserInteraction {
         const member = command.guild.members.cache.get(command.member.user.id)!;
         const isModMessage = isMod(member);
         if (!isModMessage && !isWoisGang(member)) {
-            return command.reply({
+            await command.reply({
                 content: "Sorry, du bist leider kein Woisgang-Mitglied und darfst nicht abstimmen.",
                 ephemeral: true
             });
+            return;
         }
 
         const pingVoteMap = getPingVoteMap(command.message.id);
@@ -139,9 +149,10 @@ export class WoisButton implements UserInteraction {
                 components: []
             });
 
-            return command.update({ content: " Woisping ist durch", components: [] });
+            await command.update({ content: " Woisping ist durch", components: [] });
+            return;
         }
-        return command.reply({
+        await command.reply({
             content: " Jetzt müssen nur die anderen Bock drauf haben.",
             ephemeral: true
         });

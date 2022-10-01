@@ -35,13 +35,16 @@ export class StempelCommand implements ApplicationCommand {
         const invitator = command.guild?.members.cache.find(m => m.id === command.options.getUser("inviter", true).id);
         const invitedUser = command.guild?.members.cache.find(m => m.id === command.user.id);
         if(!invitator || !invitedUser) {
-            return command.reply("Bruder gib doch bitte richtige User an");
+            await command.reply("Bruder gib doch bitte richtige User an");
+            return;
         }
         if(invitator!.user.bot) {
-            return command.reply("Alter als ob dich der Bot invited hat. Laber nich!");
+            await command.reply("Alter als ob dich der Bot invited hat. Laber nich!");
+            return;
         }
         if(invitator.id === invitedUser.id) {
-            return command.reply("Bruder wie solltest du dich bitte selbst inviten können?");
+            await command.reply("Bruder wie solltest du dich bitte selbst inviten können?");
+            return;
         }
 
         const isNewInvite = await stempelUser(invitator!, invitedUser!);
@@ -49,7 +52,7 @@ export class StempelCommand implements ApplicationCommand {
             const reply = replies[Math.floor(Math.random() * replies.length)]
                 .replace("{0}", `<@${invitator.id}>`)
                 .replace("{1}", `<@${invitedUser.id}>`);
-            return command.reply({
+            await command.reply({
                 content: reply,
                 allowedMentions: {
                     users: [
@@ -58,7 +61,8 @@ export class StempelCommand implements ApplicationCommand {
                     ]
                 }
             });
+            return;
         }
-        return command.reply("Alla du hast schonmal gestempelt");
+        await command.reply("Alla du hast schonmal gestempelt");
     }
 }

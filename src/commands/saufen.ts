@@ -4,7 +4,7 @@ import { readdir } from "node:fs/promises";
 
 import fetch from "node-fetch";
 import { SlashCommandBuilder, SlashCommandStringOption, SlashCommandSubcommandBuilder } from "@discordjs/builders";
-import { CommandInteraction, CacheType, Client, PermissionString } from "discord.js";
+import { CommandInteraction, CacheType, Client, PermissionsString } from "discord.js";
 
 import { connectAndPlaySaufen, soundDir } from "../handler/voiceHandler.js";
 import { ApplicationCommand } from "./command.js";
@@ -16,9 +16,9 @@ type SubCommand = "los" | "add" | "list" | "select";
 export class Saufen implements ApplicationCommand {
     name = "saufen";
     description = "Macht Stimmung in Wois";
-    requiredPermissions: readonly PermissionString[] = [
-        "BAN_MEMBERS",
-        "MANAGE_EVENTS"
+    requiredPermissions: readonly PermissionsString[] = [
+        "BanMembers",
+        "ManageEvents"
     ];
     applicationCommand = new SlashCommandBuilder()
         .setName(this.name)
@@ -51,6 +51,11 @@ export class Saufen implements ApplicationCommand {
                 ));
 
     async handleInteraction(command: CommandInteraction<CacheType>, client: Client<boolean>, context: BotContext): Promise<void> {
+        if (!command.isChatInputCommand()) {
+            // TODO: Solve this on a type level
+            return;
+        }
+
         const subCommand = command.options.getSubcommand() as SubCommand;
         const isWeekend = (): boolean => {
             const today = new Date();

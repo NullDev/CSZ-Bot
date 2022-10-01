@@ -3,19 +3,20 @@ import { Client, CommandInteraction, InteractionReplyOptions, MessagePayload } f
 
 import { ApplicationCommand, CommandResult } from "./command.js";
 import { EhreGroups, EhrePoints, EhreVotes } from "../storage/model/Ehre.js";
+import { BotContext } from "../context.js";
 
 function createUserPointString(e: EhrePoints) {
     return `<@${e.userId}> : ${e.points}`;
 }
 
-async function createEhreTable(client: Client<boolean>): Promise<MessagePayload | InteractionReplyOptions> {
+async function createEhreTable(context: BotContext): Promise<MessagePayload | InteractionReplyOptions> {
     const userInGroups = await EhrePoints.getUserInGroups();
 
     return {
         embeds: [{
             color: 2007432,
             author: {
-                name: client.user?.username
+                name: context.client.user?.username
             },
             fields: [
                 userInGroups.best ? {
@@ -81,10 +82,16 @@ export class EhreCommand implements ApplicationCommand {
             );
     }
 
-    async handleInteraction(command: CommandInteraction, client: Client<boolean>): Promise<CommandResult> {
+    async handleInteraction(command: CommandInteraction, _client: Client<boolean>, context: BotContext): Promise<CommandResult> {
+        if (!command.isChatInputCommand()) {
+            // TODO: Solve this on a type level
+            return;
+        }
+
         const subcommand = command.options.getSubcommand();
         if (subcommand === "tabelle") {
-            return command.reply(await createEhreTable(client));
+            await command.reply(await createEhreTable(context));
+            return;
         }
         const user = command.options.getUser("user", true);
         if (subcommand === "add") {
@@ -94,15 +101,15 @@ export class EhreCommand implements ApplicationCommand {
                         userId: user.id
                     }
                 });
-                return command.reply("Willst dich selber ähren? Dreckiger Abschaum. Sowas verdient einfach kein Respekt!");
+                await command.reply("Willst dich selber ähren? Dreckiger Abschaum. Sowas verdient einfach kein Respekt!");
+                return;
             }
             if (await EhreVotes.hasVoted(command.user.id)) {
-                return command.reply("Ey, Einmal pro tag. Nicht gierig werden");
+                await command.reply("Ey, Einmal pro tag. Nicht gierig werden");
+                return;
             }
             await handleVote(command.user.id, user.id);
         }
-        return command.reply(`<@${command.user.id}> hat <@${user.id}> geährt`);
+        await command.reply(`<@${command.user.id}> hat <@${user.id}> geährt`);
     }
 }
-
-

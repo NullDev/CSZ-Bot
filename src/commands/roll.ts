@@ -1,4 +1,4 @@
-import { Util } from "discord.js";
+import { APIEmbed, cleanContent } from "discord.js";
 
 import { getConfig } from "../utils/configHandler.js";
 import type { CommandFunction } from "../types.js";
@@ -100,8 +100,8 @@ export const run: CommandFunction = async(_client, message, args) => {
 
     const maxHexCol = 16777214;
 
-    const embed = {
-        title: Util.cleanContent(`${parsed}:`, message.channel),
+    const embed: APIEmbed = {
+        title: cleanContent(`${parsed}:`, message.channel),
         timestamp: new Date(),
         author: {
             name: `Würfel Resultat für ${message.author.username}`,

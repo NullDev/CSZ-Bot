@@ -1,4 +1,4 @@
-import {  Client, Util } from "discord.js";
+import { Client, cleanContent } from "discord.js";
 
 import type { ProcessableMessage } from "../../handler/cmdHandler.js";
 import { substringAfter } from "../../utils/stringUtils.js";
@@ -71,7 +71,7 @@ export class DadJokeCommand implements SpecialCommand {
             const indexOfTerminator = message.content.search(/(?:(?![,])[\p{P}\p{S}\p{C}])/gu);
             // Extract the dad joke subject
             const trimmedWords = message.content.substring(idx + phrase.length + 1, indexOfTerminator !== -1 ? indexOfTerminator : message.content.length).split(/\s+/).map(w => w.trim());
-            const whoIs = Util.cleanContent(trimmedWords.join(" "), message.channel).trim();
+            const whoIs = cleanContent(trimmedWords.join(" "), message.channel).trim();
             const slots: Record<Slot, string> = {
                 WHOIS: whoIs,
                 BOTNAME: client.user!.username

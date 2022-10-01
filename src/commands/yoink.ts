@@ -1,7 +1,7 @@
 import {
     Client, CommandInteraction, Guild, Message,
     TextBasedChannel,
-    Util
+    parseEmoji
 } from "discord.js";
 import { SlashCommandBuilder, SlashCommandStringOption } from "@discordjs/builders";
 
@@ -27,14 +27,21 @@ export class YoinkCommand implements MessageCommand, ApplicationCommand {
             .setRequired(false));
 
     async handleInteraction(command: CommandInteraction, client: Client): Promise<void> {
+        if (!command.isChatInputCommand()) {
+            // TODO: Solve this on a type level
+            return;
+        }
+
         const author = command.guild?.members.cache.get(command.member!.user.id)!;
         if (!isEmotifizierer(author) && !isMod(author)) {
-            return command.reply("Bist nicht cool genug");
+            await command.reply("Bist nicht cool genug");
+            return;
         }
         const emote = command.options.getString("emote", true);
         const name = command.options.getString("name", false);
         const s = await this.createEmote(emote, command.channel!, name, command.guild!);
-        return command.reply(s);
+        await command.reply(s);
+        return;
     }
 
     async handleMessage(message: Message, client: Client): Promise<void> {
@@ -58,14 +65,14 @@ export class YoinkCommand implements MessageCommand, ApplicationCommand {
 
 
     async createEmote(emoji: string, channel: TextBasedChannel, name: string | null, guild: Guild):Promise<string> {
-        const parseEmoji = Util.parseEmoji(emoji);
-        if (parseEmoji === null) {
-            return "Du Spast, ich kann dein Emote nicht parsen";
+        const parsedEmoji = parseEmoji(emoji);
+        if (!parsedEmoji) {
+            return "Du Lellek, ich kann dein Emote nicht parsen";
         }
-        const extension = parseEmoji.animated ? ".gif" : ".png";
-        const emoteUrl = `https://cdn.discordapp.com/emojis/${parseEmoji.id}` + extension;
-        const emotename = name !== null ? name : parseEmoji.name;
-        const guildEmoji = await guild?.emojis.create(emoteUrl, emotename);
+        const extension = parsedEmoji.animated ? ".gif" : ".png";
+        const emoteUrl = `https://cdn.discordapp.com/emojis/${parsedEmoji.id}` + extension;
+        const emoteName = name ?? parsedEmoji.name;
+        const guildEmoji = await guild?.emojis.create(emoteUrl, emoteName);
         return `Hab \<:${guildEmoji.name}:${guildEmoji.id}\> als \`${guildEmoji.name}\` hinzugefügt`;
     }
 }
