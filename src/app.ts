@@ -96,7 +96,7 @@ process.on("exit", code => {
 });
 
 
-const clearWoisLogTast = async() => {
+const clearWoisLogTask = async() => {
     WoisData.latestEvents = WoisData.latestEvents.filter(event => event.createdAt.getTime() > Date.now() - 2 * 60 * 1000);
 }
 
