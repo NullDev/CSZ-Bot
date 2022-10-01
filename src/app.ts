@@ -174,7 +174,7 @@ client.once("ready", async initializedClient => {
             log.info("Scheduling 1338 Cronjob...");
             // eslint-disable-next-line no-unused-vars
             const l33tJob = new Cron("37 13 * * *", leetTask, cronOptions);
-            const clearWoisLogJob = new Cron("5 * * * *", clearWoisLogTast, cronOptions);
+            const clearWoisLogJob = new Cron("5 * * * *", clearWoisLogTask, cronOptions);
             log.info("Scheduling Birthday Cronjob...");
             // eslint-disable-next-line no-unused-vars
             const bDayJob = new Cron("1 0 * * *", async() => {
