@@ -10,7 +10,7 @@ const config = getConfig();
  */
 export const run: CommandFunction = async(client, message, args) => {
     const commandObj: Record<string, string> = {};
-    const commandDir = __dirname;
+    const commandDir = path.resolve("built/commands/modcommands");
 
     const files = await fs.readdir(commandDir);
     for (const file of files) {

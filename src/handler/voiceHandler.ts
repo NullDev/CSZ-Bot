@@ -8,7 +8,7 @@ import { readdir } from "fs/promises";
 import type { BotContext } from "../context";
 
 const player = createAudioPlayer();
-export const soundDir = path.resolve(__dirname, "..", "..", "sounds");
+export const soundDir = path.resolve("sounds");
 
 async function connectToHauptwois(woisChannel: VoiceChannel): Promise<VoiceConnection> {
     try {

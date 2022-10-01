@@ -33,7 +33,7 @@ const getCommandMessageChunksMatchingLimit = (commands: Array<[string, string]>)
  */
 export const run: CommandFunction = async(client, message, args, context) => {
     const commandObj: Record<string, string> = {};
-    const commandDir = __dirname;
+    const commandDir = path.resolve("built/commands");
 
     const files = await fs.readdir(commandDir);
     for (const file of files) {
