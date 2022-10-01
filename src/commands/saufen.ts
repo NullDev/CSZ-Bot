@@ -1,13 +1,15 @@
+import path from "node:path";
+import { createWriteStream } from "node:fs";
+import { readdir } from "node:fs/promises";
+
+import fetch from "node-fetch";
 import { SlashCommandBuilder, SlashCommandStringOption, SlashCommandSubcommandBuilder } from "@discordjs/builders";
 import { CommandInteraction, CacheType, Client, PermissionString } from "discord.js";
-import { connectAndPlaySaufen, soundDir } from "../handler/voiceHandler";
-import { ApplicationCommand } from "./command";
-import fetch from "node-fetch";
-import path from "path";
-import { createWriteStream } from "fs";
-import { assertNever } from "../utils/typeUtils";
-import { readdir } from "fs/promises";
-import type { BotContext } from "../context";
+
+import { connectAndPlaySaufen, soundDir } from "../handler/voiceHandler.js";
+import { ApplicationCommand } from "./command.js";
+import { assertNever } from "../utils/typeUtils.js";
+import type { BotContext } from "../context.js";
 
 type SubCommand = "los" | "add" | "list" | "select";
 

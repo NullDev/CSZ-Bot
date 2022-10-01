@@ -1,9 +1,10 @@
 /* eslint-disable no-use-before-define */
 import { MessageComponentInteraction, PermissionString } from "discord.js";
-import { SlashCommandBuilder /* , SlashCommandOptionsOnlyBuilder, SlashCommandSubcommandsOnlyBuilder */ } from "@discordjs/builders";
+import { SlashCommandBuilder } from "@discordjs/builders";
 import type { Client, CommandInteraction } from "discord.js";
-import type { ProcessableMessage } from "../handler/cmdHandler";
-import type { BotContext } from "../context";
+
+import type { ProcessableMessage } from "../handler/cmdHandler.js";
+import type { BotContext } from "../context.js";
 
 // A command can be an application command (slash command) or a message command or both
 export type Command = ApplicationCommand | MessageCommand | SpecialCommand;

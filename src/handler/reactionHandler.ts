@@ -1,14 +1,11 @@
-// ========================= //
-// = Copyright (c) NullDev = //
-// ========================= //
-
-import FadingMessage from "../storage/model/FadingMessage";
-import AdditionalMessageData from "../storage/model/AdditionalMessageData";
-
-import log from "../utils/logger";
-import * as poll from "../commands/poll";
 import { Client, MessageReaction, User } from "discord.js";
-import type { ProcessableMessage } from "./cmdHandler";
+
+import FadingMessage from "../storage/model/FadingMessage.js";
+import AdditionalMessageData from "../storage/model/AdditionalMessageData.js";
+
+import log from "../utils/logger.js";
+import * as poll from "../commands/poll.js";
+import type { ProcessableMessage } from "./cmdHandler.js";
 
 const pollEmojis = poll.EMOJI;
 const voteEmojis = ["👍", "👎"];

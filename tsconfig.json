@@ -2,7 +2,7 @@
   "compilerOptions": {
     "allowJs": true,
     "target": "es2019",
-    "module": "esnext",
+    "module": "NodeNext",
     "strict": true,                                 /* Enable all strict type-checking options. */
     "lib": [
       "ES2021.String"
@@ -22,7 +22,6 @@
     // "noUncheckedIndexedAccess": true,            /* Include 'undefined' in index signature results */
     // "noPropertyAccessFromIndexSignature": true,  /* Require undeclared properties from index signatures to use element accesses. */
 
-    "moduleResolution": "node",
     "outDir": "built",
     /* Module Resolution Options */
     // "moduleResolution": "node",                  /* Specify module resolution strategy: 'node' (Node.js) or 'classic' (TypeScript pre-1.6). */

@@ -1,7 +1,8 @@
-import { promises as fs } from "fs";
-import * as path from "path";
-import { messageCommands } from "../handler/commandHandler";
-import type { CommandFunction } from "../types";
+import { promises as fs } from "node:fs";
+import * as path from "node:path";
+
+import { messageCommands } from "../handler/commandHandler.js";
+import type { CommandFunction } from "../types.js";
 
 /**
  * Retrieves commands in chunks that doesn't affect message limit

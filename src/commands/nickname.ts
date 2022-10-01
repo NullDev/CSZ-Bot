@@ -14,9 +14,9 @@ import {
     MessageActionRow, MessageButton, MessageComponentInteraction
 } from "discord.js";
 
-import { ApplicationCommand, CommandResult, UserInteraction } from "./command";
-import Nicknames from "../storage/model/Nickname";
-import { isTrusted } from "../utils/userUtils";
+import { ApplicationCommand, CommandResult, UserInteraction } from "./command.js";
+import Nicknames from "../storage/model/Nickname.js";
+import { isTrusted } from "../utils/userUtils.js";
 
 
 type Vote = "YES" | "NO";

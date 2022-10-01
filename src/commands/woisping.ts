@@ -1,22 +1,16 @@
-// ================================= //
-// = Copyright (c) diewellenlaenge = //
-// ================================= //
-
 import {
-    CommandInteraction, MessageActionRow,
+    Client, CommandInteraction, MessageActionRow,
     MessageButton,
     MessageComponentInteraction,
     Util
 } from "discord.js";
-import { Client } from "discord.js";
-import { ApplicationCommand, CommandResult, UserInteraction } from "./command";
-import log from "../utils/logger";
-
-
-import { isMod, isWoisGang } from "../utils/userUtils";
-
-import { getConfig } from "../utils/configHandler";
 import { SlashCommandBuilder, SlashCommandStringOption } from "@discordjs/builders";
+
+import { ApplicationCommand, CommandResult, UserInteraction } from "./command.js";
+import log from "../utils/logger.js";
+import { isMod, isWoisGang } from "../utils/userUtils.js";
+
+import { getConfig } from "../utils/configHandler.js";
 
 const config = getConfig();
 

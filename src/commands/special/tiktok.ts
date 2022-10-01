@@ -1,11 +1,8 @@
-// ========================= //
-// = Copyright (c) NullDev = //
-// ========================= //
-
 import { Message } from "discord.js";
-import { SpecialCommand, CommandResult } from "../command";
 import fetch from "node-fetch";
 import * as TikTokScraper from "tiktok-scraper";
+
+import { SpecialCommand, CommandResult } from "../command.js";
 
 const tiktokOptions = {
     asyncDownload: 1,

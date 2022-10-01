@@ -1,19 +1,19 @@
 import { Sequelize } from "sequelize";
 
-import AdditionalMessageData from "./model/AdditionalMessageData";
-import Birthday from "./model/Birthday";
-import FadingMessage from "./model/FadingMessage";
-import GuildRagequit from "./model/GuildRagequit";
-import Stempel from "./model/Stempel";
-import Ban from "./model/Ban";
-import log from "../utils/logger";
-import Penis from "./model/Penis";
-import Nickname from "./model/Nickname";
-import Boob from "./model/Boob";
-import Reminder from "./model/Reminder";
-import AustrianTranslation from "./model/AustrianTranslation";
-import {EhrePoints, EhreVotes} from "./model/Ehre";
-import type { BotContext } from "../context";
+import AdditionalMessageData from "./model/AdditionalMessageData.js";
+import Birthday from "./model/Birthday.js";
+import FadingMessage from "./model/FadingMessage.js";
+import GuildRagequit from "./model/GuildRagequit.js";
+import Stempel from "./model/Stempel.js";
+import Ban from "./model/Ban.js";
+import log from "../utils/logger.js";
+import Penis from "./model/Penis.js";
+import Nickname from "./model/Nickname.js";
+import Boob from "./model/Boob.js";
+import Reminder from "./model/Reminder.js";
+import AustrianTranslation from "./model/AustrianTranslation.js";
+import { EhrePoints, EhreVotes } from "./model/Ehre.js";
+import type { BotContext } from "../context.js";
 
 export async function initialize(botContext: BotContext) {
     const sequelize = new Sequelize({

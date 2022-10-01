@@ -1,12 +1,8 @@
-// ========================= //
-// = Copyright (c) NullDev = //
-// ========================= //
+import * as fs from "node:fs";
+import * as path from "node:path";
 
-import * as fs from "fs";
-import * as path from "path";
-import type { Config } from "../types";
-
-import log from "../utils/logger";
+import log from "../utils/logger.js";
+import type { Config } from "../types.js";
 
 const packageFile = JSON.parse(fs.readFileSync(path.resolve("package.json"), "utf-8"));
 const configPath = path.resolve("config.json");

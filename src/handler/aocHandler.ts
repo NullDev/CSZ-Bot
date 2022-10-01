@@ -1,14 +1,12 @@
 /* eslint-disable camelcase */
-// =============================== //
-// = Nicht Copyright (c) NullDev = //
-// =============================== //
+import * as path from "node:path";
+import * as fs from "node:fs";
 
 import * as discord from "discord.js";
-import * as path from "path";
-import * as fs from "fs";
 import fetch from "node-fetch";
-import log from "../utils/logger";
-import { BotContext } from "../context";
+
+import log from "../utils/logger.js";
+import { BotContext } from "../context.js";
 
 const aocConfigPath = path.resolve("aoc.config.json");
 

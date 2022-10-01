@@ -1,10 +1,9 @@
 /* Disabled due to sequelize's DataTypes */
 /* eslint-disable new-cap */
-
 import type { GuildMember, Snowflake } from "discord.js";
 import { DataTypes, Model, Op, Optional, Sequelize } from "sequelize";
 
-import log from "../../utils/logger";
+import log from "../../utils/logger.js";
 
 export interface AustrianTranslationAttributes {
     id: string;

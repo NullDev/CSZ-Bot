@@ -1,11 +1,11 @@
+import * as fs from "node:fs/promises";
 import nodeCanvas from "canvas";
-import { promises as fs } from "fs";
 import { AllowedImageSize, Client, CommandInteraction, GuildMember, Snowflake } from "discord.js";
-
-import Stempel from "../storage/model/Stempel";
-import log from "../utils/logger";
-import { ApplicationCommand, CommandResult } from "./command";
 import { SlashCommandBuilder, SlashCommandUserOption } from "@discordjs/builders";
+
+import Stempel from "../storage/model/Stempel.js";
+import log from "../utils/logger.js";
+import { ApplicationCommand, CommandResult } from "./command.js";
 
 const { createCanvas, loadImage } = nodeCanvas;
 

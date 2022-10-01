@@ -1,5 +1,6 @@
 import { Message } from "discord.js";
-import { getConfig } from "./configHandler";
+
+import { getConfig } from "./configHandler.js";
 
 const config = getConfig();
 

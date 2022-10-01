@@ -1,13 +1,10 @@
-// ==================================================== //
-// = Copyright (c) ist mir egal wer hauptsache code   = //
-// ==================================================== //
-
 import fetch from "node-fetch";
 import { CacheType, CommandInteraction, Client, Message, MessageEmbed, GuildMember } from "discord.js";
-import { ApplicationCommand, MessageCommand } from "./command";
 import { SlashCommandBuilder, SlashCommandStringOption } from "@discordjs/builders";
-import type { ProcessableMessage } from "../handler/cmdHandler";
-import type { BotContext } from "../context";
+
+import { ApplicationCommand, MessageCommand } from "./command.js";
+import type { ProcessableMessage } from "../handler/cmdHandler.js";
+import type { BotContext } from "../context.js";
 
 type Prompt = string;
 

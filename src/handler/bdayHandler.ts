@@ -1,7 +1,8 @@
 import type { GuildMember, Role } from "discord.js";
-import log from "../utils/logger";
-import Birthday from "../storage/model/Birthday";
-import type { BotContext } from "../context";
+
+import log from "../utils/logger.js";
+import Birthday from "../storage/model/Birthday.js";
+import type { BotContext } from "../context.js";
 
 export default class BdayHandler {
     constructor(readonly context: BotContext) { }

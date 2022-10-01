@@ -1,11 +1,12 @@
 import { CacheType, Client, CommandInteraction, TextBasedChannel } from "discord.js";
-import { MessageCommand, ApplicationCommand } from "./command";
-import * as chrono from "chrono-node";
-import logger from "../utils/logger";
-import Reminder, { ReminderAttributes } from "../storage/model/Reminder";
-import type { ProcessableMessage } from "../handler/cmdHandler";
-import { BotContext } from "../context";
 import { SlashCommandBuilder, SlashCommandStringOption } from "@discordjs/builders";
+import * as chrono from "chrono-node";
+
+import { MessageCommand, ApplicationCommand } from "./command.js";
+import logger from "../utils/logger.js";
+import Reminder, { ReminderAttributes } from "../storage/model/Reminder.js";
+import type { ProcessableMessage } from "../handler/cmdHandler.js";
+import { BotContext } from "../context.js";
 
 const validateDate = (date: Date): true | string => {
     if (Number.isNaN(date.getTime()) || !Number.isFinite(date.getTime())) {

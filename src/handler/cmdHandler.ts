@@ -1,18 +1,15 @@
-// ========================= //
-// = Copyright (c) NullDev = //
-// ========================= //
+import fs from "node:fs/promises";
+import * as path from "node:path";
 
-import { promises as fs } from "fs";
-import * as path from "path";
 import { Client, Guild, GuildMember, Message } from "discord.js";
-import { CommandFunction, CommandResult } from "../types";
 
-import log from "../utils/logger";
-import { getConfig } from "../utils/configHandler";
-import * as ban from "../commands/modcommands/ban";
-import type { BotContext } from "../context";
-import { hasBotDenyRole } from "../utils/userUtils";
-import { isMessageInBotSpam } from "../utils/channelUtils";
+import { CommandFunction, CommandResult } from "../types.js";
+import log from "../utils/logger.js";
+import { getConfig } from "../utils/configHandler.js";
+import * as ban from "../commands/modcommands/ban.js";
+import { hasBotDenyRole } from "../utils/userUtils.js";
+import { isMessageInBotSpam } from "../utils/channelUtils.js";
+import type { BotContext } from "../context.js";
 
 const config = getConfig();
 

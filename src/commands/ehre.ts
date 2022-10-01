@@ -1,9 +1,8 @@
-import {SlashCommandBuilder, SlashCommandSubcommandBuilder, SlashCommandUserOption} from "@discordjs/builders";
+import { SlashCommandBuilder, SlashCommandSubcommandBuilder, SlashCommandUserOption } from "@discordjs/builders";
+import { Client, CommandInteraction, InteractionReplyOptions, MessagePayload } from "discord.js";
 
-import {Client, CommandInteraction, InteractionReplyOptions, MessagePayload} from "discord.js";
-
-import {ApplicationCommand, CommandResult} from "./command";
-import {EhreGroups, EhrePoints, EhreVotes} from "../storage/model/Ehre";
+import { ApplicationCommand, CommandResult } from "./command.js";
+import { EhreGroups, EhrePoints, EhreVotes } from "../storage/model/Ehre.js";
 
 function createUserPointString(e: EhrePoints) {
     return `<@${e.userId}> : ${e.points}`;

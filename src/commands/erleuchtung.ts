@@ -6,13 +6,14 @@ import {  Client, MessageEmbed, GuildMember } from "discord.js";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { CommandInteraction, CacheType } from "discord.js";
 import fetch from "node-fetch";
-import { ApplicationCommand, MessageCommand } from "./command";
-import type { ProcessableMessage } from "../handler/cmdHandler";
 
-const INSPIRATION_GENERATEAPI_URL = "https://inspirobot.me/api?generate=true";
+import { ApplicationCommand, MessageCommand } from "./command.js";
+import type { ProcessableMessage } from "../handler/cmdHandler.js";
+
+const INSPIRATION_GENERATE_API_URL = "https://inspirobot.me/api?generate=true";
 
 function getInspiration(): Promise<string> {
-    return fetch(INSPIRATION_GENERATEAPI_URL, {
+    return fetch(INSPIRATION_GENERATE_API_URL, {
         method: "GET"
     }).then(response => response.text());
 }

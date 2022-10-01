@@ -1,9 +1,12 @@
+import path from "node:path";
+
 import { Message } from "discord.js";
-import { SpecialCommand, CommandResult } from "../command";
 import fetch from "node-fetch";
-import path from "path";
 import url from "url";
 import { JSDOM } from "jsdom";
+
+import { SpecialCommand, CommandResult } from "../command.js";
+
 
 const instagramOptions = {
     uriPattern: /(?<uri>https?:\/\/(www\.)?instagram\.com\/(?:reel|tv|p)\/.*)\/.*/i,

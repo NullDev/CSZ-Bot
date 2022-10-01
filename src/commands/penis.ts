@@ -1,9 +1,10 @@
 // @ts-ignore
 import { Client, User } from "discord.js";
-import Penis from "../storage/model/Penis";
-import { CommandResult, MessageCommand } from "./command";
-import log from "../utils/logger";
-import type { ProcessableMessage } from "../handler/cmdHandler";
+
+import Penis from "../storage/model/Penis.js";
+import { CommandResult, MessageCommand } from "./command.js";
+import log from "../utils/logger.js";
+import type { ProcessableMessage } from "../handler/cmdHandler.js";
 
 export type Radius = 1 | 2 | 3;
 

@@ -1,10 +1,11 @@
 /* Disabled due to sequelize's DataTypes */
 /* eslint-disable new-cap */
 
-import type { Snowflake } from "discord.js";
 import { Model, DataTypes, Op, type Sequelize } from "sequelize";
 import { v4 as uuidv4 } from "uuid";
-import log from "../../utils/logger";
+import type { Snowflake } from "discord.js";
+
+import log from "../../utils/logger.js";
 
 export type OneBasedMonth = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
 export function isOneBasedMonth(v: unknown): v is OneBasedMonth {
