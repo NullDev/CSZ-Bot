@@ -97,9 +97,7 @@ process.on("exit", code => {
 
 
 const clearWoisLogTast = async() => {
-    WoisData.latestEvents = WoisData.latestEvents.filter(event => {
-        return event.createdAt.getTime() > Date.now() - 2 * 60 * 1000;
-    });
+    WoisData.latestEvents = WoisData.latestEvents.filter(event => event.createdAt.getTime() > Date.now() - 2 * 60 * 1000);
 }
 
 const leetTask = async() => {
