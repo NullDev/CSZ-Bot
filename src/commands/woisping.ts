@@ -35,7 +35,7 @@ const getPingVoteMap = (messageid: string): Set<string> => {
     return pingvoteMap[messageid];
 };
 
-const getMessage = (reason: string, usersVotedYes: string[] = []) : InteractionReplyOptions | MessageOptions => {
+const getMessage = (reason: string, usersVotedYes: string[] = []) : InteractionReplyOptions => {
     const content = usersVotedYes.length === 1 ? `<@&${config.ids.woisgang_role_id}> <@!${usersVotedYes[0]}> hat Bock auf Wois. Grund dafür ist \`${reason}\`` :
         `<@&${config.ids.woisgang_role_id}> <@!${usersVotedYes.join(">,<@!")}> haben Bock auf Wois. Grund dafür ist \`${reason}\``;
     return {
