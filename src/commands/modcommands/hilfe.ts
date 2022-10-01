@@ -1,8 +1,8 @@
 import { promises as fs } from "fs";
 import * as path from "path";
 
-import type { CommandFunction } from "../../types";
-import { getConfig } from "../../utils/configHandler";
+import type { CommandFunction } from "../../types.js";
+import { getConfig } from "../../utils/configHandler.js";
 const config = getConfig();
 
 /**

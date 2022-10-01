@@ -1,6 +1,6 @@
-import type { CommandFunction } from "../types";
+import { getConfig } from "../utils/configHandler.js";
+import type { CommandFunction } from "../types.js";
 
-import { getConfig } from "../utils/configHandler";
 const config = getConfig();
 
 const getAdvice = (age: number) => {

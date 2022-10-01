@@ -1,12 +1,8 @@
-// ========================== //
-// = Copyright (c) s0LA1337 = //
-// ========================== //
-
 import { Util } from "discord.js";
 
-import type { CommandFunction } from "../types";
+import { getConfig } from "../utils/configHandler.js";
+import type { CommandFunction } from "../types.js";
 
-import { getConfig } from "../utils/configHandler";
 const config = getConfig();
 
 

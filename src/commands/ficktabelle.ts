@@ -1,12 +1,8 @@
-// ================================ //
-// = Copyright (c) Ehrenvio der G = //
-// ================================ //
-
-
 import { Client } from "discord.js";
-import { getConfig } from "../utils/configHandler";
-import { MessageCommand } from "./command";
-import type { ProcessableMessage } from "../handler/cmdHandler";
+
+import { getConfig } from "../utils/configHandler.js";
+import { MessageCommand } from "./command.js";
+import type { ProcessableMessage } from "../handler/cmdHandler.js";
 
 const config = getConfig();
 

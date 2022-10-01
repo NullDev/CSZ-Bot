@@ -1,13 +1,10 @@
-// ==================================================== //
-// = Copyright (c) ist mir egal wer hauptsache code   = //
-// ==================================================== //
-
 import fetch from "node-fetch";
 import { CacheType, CommandInteraction, Client, Message, MessageEmbed, GuildMember } from "discord.js";
-import { ApplicationCommand, MessageCommand } from "./command";
 import { SlashCommandBuilder, SlashCommandStringOption } from "@discordjs/builders";
-import type { ProcessableMessage } from "../handler/cmdHandler";
-import type { BotContext } from "../context";
+
+import { ApplicationCommand, MessageCommand } from "./command.js";
+import type { ProcessableMessage } from "../handler/cmdHandler.js";
+import type { BotContext } from "../context.js";
 
 type Prompt = string;
 
@@ -37,7 +34,7 @@ async function getPrompt(userPrompt: Prompt | null): Promise<NeverPrompt> {
     const promptResponse = await fetch(NEVER_EVER_RANDOM_PROMPT_API_URL, {
         method: "GET"
     });
-    return promptResponse.json();
+    return promptResponse.json() as unknown as NeverPrompt;
 }
 
 function buildEmbed(prompt: NeverPrompt, author: GuildMember): MessageEmbed {

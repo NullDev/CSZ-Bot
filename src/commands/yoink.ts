@@ -1,16 +1,13 @@
-// ========================= //
-// = Copyright (c) NullDev = //
-// ========================= //
-
-// Dependencies
 import {
     Client, CommandInteraction, Guild, Message,
     TextBasedChannel,
     Util
 } from "discord.js";
-import {isEmotifizierer, isMod} from "../utils/userUtils";
-import {ApplicationCommand, MessageCommand} from "./command";
-import {SlashCommandBuilder, SlashCommandStringOption} from "@discordjs/builders";
+import { SlashCommandBuilder, SlashCommandStringOption } from "@discordjs/builders";
+
+import { isEmotifizierer, isMod } from "../utils/userUtils.js";
+import { ApplicationCommand, MessageCommand } from "./command.js";
+
 /**
  * Sends instructions on how to ask better questions
  */

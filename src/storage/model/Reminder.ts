@@ -1,10 +1,11 @@
 /* Disabled due to sequelize's DataTypes */
 /* eslint-disable new-cap */
 
-import { User } from "discord.js";
 import { Model, DataTypes, Sequelize, Optional, Op } from "sequelize";
 import { v4 as uuidv4 } from "uuid";
-import log from "../../utils/logger";
+import type { User } from "discord.js";
+
+import log from "../../utils/logger.js";
 
 export interface ReminderAttributes {
     id: string;

@@ -1,14 +1,10 @@
-// ========================= //
-// = Copyright (c) NullDev = //
-// ========================= //
-
 import parseOptions from "minimist";
-
-import log from "../utils/logger";
-import AdditionalMessageData from "../storage/model/AdditionalMessageData";
-import { getConfig } from "../utils/configHandler";
-import { Util } from "discord.js";
 import Cron from "croner";
+import { Util } from "discord.js";
+
+import log from "../utils/logger.js";
+import AdditionalMessageData from "../storage/model/AdditionalMessageData.js";
+import { getConfig } from "../utils/configHandler.js";
 
 const config = getConfig();
 

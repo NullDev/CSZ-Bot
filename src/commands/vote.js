@@ -1,6 +1,7 @@
 import parseOptions from "minimist";
 import { Util } from "discord.js";
-import { getConfig } from "../utils/configHandler";
+
+import { getConfig } from "../utils/configHandler.js";
 
 const config = getConfig();
 

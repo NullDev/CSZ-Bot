@@ -4,7 +4,8 @@
 import type { User, GuildMember } from "discord.js";
 import { Model, DataTypes, Sequelize, Optional, Op } from "sequelize";
 import { v4 as uuidv4 } from "uuid";
-import log from "../../utils/logger";
+
+import log from "../../utils/logger.js";
 
 export interface BanAttributes {
     id: string;

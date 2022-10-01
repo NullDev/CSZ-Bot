@@ -1,11 +1,13 @@
-import { Client, GuildMember } from "discord.js";
-import { CommandResult, MessageCommand } from "./command";
+import path from "node:path";
+
 import Jimp from "jimp";
-import path from "path";
 import * as fs from "fs";
-import log from "../utils/logger";
-import { getConfig } from "../utils/configHandler";
-import type { ProcessableMessage } from "../handler/cmdHandler";
+import { Client, GuildMember } from "discord.js";
+
+import { CommandResult, MessageCommand } from "./command.js";
+import log from "../utils/logger.js";
+import { getConfig } from "../utils/configHandler.js";
+import type { ProcessableMessage } from "../handler/cmdHandler.js";
 
 const config = getConfig();
 

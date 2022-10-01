@@ -1,11 +1,8 @@
 /* eslint-disable camelcase */
-// =============================== //
-// = Nicht Copyright (c) NullDev = //
-// =============================== //
 
-import type { BotContext } from "../context";
-import Nicknames from "../storage/model/Nickname";
-import log from "../utils/logger";
+import Nicknames from "../storage/model/Nickname.js";
+import log from "../utils/logger.js";
+import type { BotContext } from "../context.js";
 
 export default class NicknameHandler {
     constructor(private readonly context: BotContext) {}

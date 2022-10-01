@@ -1,13 +1,15 @@
+import path from "node:path";
+import { createWriteStream } from "node:fs";
+import { readdir } from "node:fs/promises";
+
+import fetch from "node-fetch";
 import { SlashCommandBuilder, SlashCommandStringOption, SlashCommandSubcommandBuilder } from "@discordjs/builders";
 import { CommandInteraction, CacheType, Client, PermissionString } from "discord.js";
-import { connectAndPlaySaufen, soundDir } from "../handler/voiceHandler";
-import { ApplicationCommand } from "./command";
-import fetch from "node-fetch";
-import path from "path";
-import { createWriteStream } from "fs";
-import { assertNever } from "../utils/typeUtils";
-import { readdir } from "fs/promises";
-import type { BotContext } from "../context";
+
+import { connectAndPlaySaufen, soundDir } from "../handler/voiceHandler.js";
+import { ApplicationCommand } from "./command.js";
+import { assertNever } from "../utils/typeUtils.js";
+import type { BotContext } from "../context.js";
 
 type SubCommand = "los" | "add" | "list" | "select";
 
@@ -87,12 +89,12 @@ export class Saufen implements ApplicationCommand {
                 const soundUrl = new URL(command.options.getString("sound", true));
                 const targetPath = path.resolve(soundDir, path.basename(soundUrl.pathname));
                 const fileStream = createWriteStream(targetPath);
-                const res = await fetch(soundUrl, {
+                const res = await fetch(soundUrl.toString(), {
                     method: "GET"
                 });
                 const savePromise = new Promise((resolve, reject) => {
-                    res.body.pipe(fileStream);
-                    res.body.on("error", reject);
+                    res.body!.pipe(fileStream);
+                    res.body!.on("error", reject);
                     fileStream.on("finish", resolve);
                 });
                 await Promise.all([

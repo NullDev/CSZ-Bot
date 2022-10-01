@@ -1,10 +1,10 @@
-import Birthday, { isOneBasedMonth } from "../storage/model/Birthday";
 import moment from "moment";
-
-import log from "../utils/logger";
-import { ApplicationCommand } from "./command";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { CommandInteraction, CacheType, Client } from "discord.js";
+
+import Birthday, { isOneBasedMonth } from "../storage/model/Birthday.js";
+import log from "../utils/logger.js";
+import { ApplicationCommand } from "./command.js";
 
 export class GeburtstagCommand implements ApplicationCommand {
     name = "geburtstag";

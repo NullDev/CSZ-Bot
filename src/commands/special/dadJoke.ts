@@ -1,7 +1,8 @@
 import {  Client, Util } from "discord.js";
-import type { ProcessableMessage } from "../../handler/cmdHandler";
-import { substringAfter } from "../../utils/stringUtils";
-import { SpecialCommand, CommandResult } from "../command";
+
+import type { ProcessableMessage } from "../../handler/cmdHandler.js";
+import { substringAfter } from "../../utils/stringUtils.js";
+import { SpecialCommand, CommandResult } from "../command.js";
 
 type Lang = "german" | "austrian";
 
