@@ -20,7 +20,7 @@ import * as ban from "./commands/modcommands/ban.js";
 import * as poll from "./commands/poll.js";
 import GuildRagequit from "./storage/model/GuildRagequit.js";
 import reactionHandler from "./handler/reactionHandler.js";
-import {checkVoiceUpdate} from "./handler/voiceStateUpdateHandler";
+import { checkVoiceUpdate } from "./handler/voiceStateUpdateHandler";
 
 import {
     handleInteractionEvent,
