@@ -42,11 +42,13 @@ export const run: CommandFunction = async(client, message, args, context) => {
         }
 
         const cmdPath = path.resolve(commandDir, file);
+        // eslint-disable-next-line no-await-in-loop
         const stats = await fs.stat(cmdPath);
 
         if (!stats.isDirectory()) {
             // commandStr is the key and the description of the command is the value
             const modulePath = path.join(commandDir, file);
+            // eslint-disable-next-line no-await-in-loop
             const module = await import(modulePath);
 
             // Old file-based commands
@@ -55,15 +57,15 @@ export const run: CommandFunction = async(client, message, args, context) => {
                 commandObj[commandStr] = module.description;
             }
         }
-
-        // New Class-based commands
-        messageCommands
-            .filter(cmd => !cmd.modCommand)
-            .forEach(cmd => {
-                const commandStr = context.rawConfig.bot_settings.prefix.command_prefix + cmd.name;
-                commandObj[commandStr] = cmd.description;
-            });
     }
+
+    // New Class-based commands
+    messageCommands
+        .filter(cmd => !cmd.modCommand)
+        .forEach(cmd => {
+            const commandStr = context.rawConfig.bot_settings.prefix.command_prefix + cmd.name;
+            commandObj[commandStr] = cmd.description;
+        });
 
     await message.author.send(
         "Hallo, " + message.author.username + "!\n\n" +
@@ -72,9 +74,7 @@ export const run: CommandFunction = async(client, message, args, context) => {
     );
 
     const chunks = getCommandMessageChunksMatchingLimit(Object.entries(commandObj));
-    for (const chunk of chunks) {
-        await message.author.send(chunk);
-    }
+    await Promise.all(chunks.map(chunk => message.author.send(chunk)));
 
     // Add :envelope: reaction to authors message
     await message.react("✉"); // Send this last, so we only display a confirmation when everything actually worked

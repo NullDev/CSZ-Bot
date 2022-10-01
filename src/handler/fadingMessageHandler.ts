@@ -5,6 +5,7 @@ import { setInterval } from "timers/promises";
 
 let isLooping = false;
 
+/* eslint-disable no-await-in-loop */
 const fadingMessageDeleteLoop = async(client: Client) => {
     const fadingMessages = await FadingMessage.findAll();
     const currentTime = new Date();
@@ -28,6 +29,7 @@ const fadingMessageDeleteLoop = async(client: Client) => {
         }
     }
 };
+/* eslint-enable no-await-in-loop */
 
 const loopWrapper = async(client: Client) => {
     isLooping = true;

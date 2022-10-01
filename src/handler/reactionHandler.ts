@@ -96,7 +96,7 @@ export default async function(reactionEvent: MessageReaction, user: User, client
                 pollEmojis.includes(r.emoji.name!)
             );
 
-            for (const r of reactions.values()) await r.users.remove(member.id).catch(log.error);
+            await Promise.all(reactions.map(r => r.users.remove(member.id)));
         }
         else if(isUmfrage) {
             if(isDelayedPoll) {
@@ -120,7 +120,7 @@ export default async function(reactionEvent: MessageReaction, user: User, client
                 r.users.cache.has(member.id) &&
                 pollEmojis.includes(r.emoji.name!)
             );
-            for (const r of allUserReactions.values()) await r.users.remove(member.id).catch(log.error);
+            await Promise.all(allUserReactions.map(r => r.users.remove(member.id)));
         }
 
         const additionalData = await AdditionalMessageData.fromMessage(message);
