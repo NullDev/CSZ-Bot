@@ -1,6 +1,7 @@
-import {SlashCommandBuilder, SlashCommandStringOption, SlashCommandUserOption} from "@discordjs/builders";
-import {Client, CommandInteraction, GuildMember, MessageEmbedOptions} from "discord.js";
-import {ApplicationCommand, CommandResult} from "./command";
+import { SlashCommandBuilder, SlashCommandStringOption, SlashCommandUserOption } from "@discordjs/builders";
+import { Client, CommandInteraction, GuildMember, MessageEmbedOptions } from "discord.js";
+
+import { ApplicationCommand, CommandResult } from "./command.js";
 
 
 const replies = [

@@ -1,9 +1,9 @@
 import { SlashCommandBuilder, SlashCommandStringOption } from "@discordjs/builders";
 import type { Client, CommandInteraction } from "discord.js";
 
-import type { BotContext } from "../context";
-import AustrianTranslation from "../storage/model/AustrianTranslation";
-import type { ApplicationCommand } from "./command";
+import AustrianTranslation from "../storage/model/AustrianTranslation.js";
+import type { ApplicationCommand } from "./command.js";
+import type { BotContext } from "../context.js";
 
 export class OidaCommand implements ApplicationCommand {
     modCommand = false;

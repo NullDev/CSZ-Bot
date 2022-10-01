@@ -1,7 +1,8 @@
 import { SlashCommandBuilder, SlashCommandUserOption } from "@discordjs/builders";
 import { CommandInteraction, Client, GuildMember } from "discord.js";
-import Stempel from "../storage/model/Stempel";
-import { ApplicationCommand, CommandResult } from "./command";
+
+import Stempel from "../storage/model/Stempel.js";
+import { ApplicationCommand, CommandResult } from "./command.js";
 
 const stempelUser = async(invitator: GuildMember, invitedMember: GuildMember): Promise<boolean> => {
     return Stempel.insertStempel(invitator.id, invitedMember.id);

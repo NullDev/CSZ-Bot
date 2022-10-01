@@ -1,8 +1,8 @@
 import type { Client, ClientUser, Message } from "discord.js";
-import type { BotContext } from "../context";
-import { getConfig } from "../utils/configHandler";
 
-import cmdHandler, { isProcessableMessage } from "./cmdHandler";
+import { getConfig } from "../utils/configHandler.js";
+import cmdHandler, { isProcessableMessage } from "./cmdHandler.js";
+import type { BotContext } from "../context.js";
 
 const config = getConfig();
 

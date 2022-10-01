@@ -1,7 +1,8 @@
 /* eslint-disable camelcase */
 import type { Snowflake, Client } from "discord.js";
-import type { BotContext } from "./context";
-import type { ProcessableMessage } from "./handler/cmdHandler";
+
+import type { BotContext } from "./context.js";
+import type { ProcessableMessage } from "./handler/cmdHandler.js";
 
 /**
  * A string denotes the response to the message (for example a business error).

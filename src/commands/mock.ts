@@ -1,12 +1,9 @@
-// ========================= //
-// = Copyright (c) NullDev = //
-// ========================= //
-
 import { SlashCommandBuilder, SlashCommandStringOption } from "@discordjs/builders";
 import { CacheType, Client, CommandInteraction, GuildMember, Message, MessageEmbed } from "discord.js";
-import { BotContext } from "../context";
-import type { ProcessableMessage } from "../handler/cmdHandler";
-import { ApplicationCommand, MessageCommand } from "./command";
+
+import { BotContext } from "../context.js";
+import { ApplicationCommand, MessageCommand } from "./command.js";
+import type { ProcessableMessage } from "../handler/cmdHandler.js";
 
 /**
  * Randomly capitalize letters

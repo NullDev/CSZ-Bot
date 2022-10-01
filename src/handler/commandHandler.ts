@@ -1,12 +1,5 @@
-/**
- * Completly new bullish command handler it unifies slash commands and
- * message commands and relies on the "new commands"
- */
-
-import {InfoCommand} from "../commands/info";
-import {getConfig} from "../utils/configHandler";
-import {REST} from "@discordjs/rest";
-import {APIApplicationCommand, Routes} from "discord-api-types/v9";
+import { REST } from "@discordjs/rest";
+import { APIApplicationCommand, Routes } from "discord-api-types/v9";
 import {
     ApplicationCommandPermissionData,
     Client,
@@ -17,6 +10,12 @@ import {
     Permissions,
     PermissionString
 } from "discord.js";
+import { GuildMember } from "discord.js";
+
+/**
+ * Completely new bullish command handler it unifies slash commands and
+ * message commands and relies on the "new commands"
+ */
 import {
     ApplicationCommand,
     Command,
@@ -25,47 +24,50 @@ import {
     isSpecialCommand,
     MessageCommand,
     SpecialCommand, UserInteraction
-} from "../commands/command";
-import type {BotContext} from "../context";
-import log from "../utils/logger";
-import { TriggerReactOnKeyword } from "../commands/special/keyword_react";
-import { WhereCommand } from "../commands/special/where";
-import { DadJokeCommand } from "../commands/special/dadJoke";
-import { WatCommand } from "../commands/special/wat";
-import { TikTokLink } from "../commands/special/tiktok";
-import { StempelCommand } from "../commands/stempeln";
-import { StempelgraphCommand } from "../commands/stempelgraph";
-import { StempelkarteCommand } from "../commands/stempelkarte";
-import { GuildMember } from "discord.js";
-import { ban, BanCommand } from "../commands/modcommands/ban";
-import { UnbanCommand } from "../commands/modcommands/unban";
-import { PenisCommand } from "../commands/penis";
-import { BoobCommand } from "../commands/boobs";
-import { BonkCommand } from "../commands/bonk";
-import { GoogleCommand } from "../commands/google";
-import { NischdaaaCommand } from "../commands/special/nischdaaa";
-import { SdmCommand } from "../commands/sdm";
-import { Nickname, NicknameButtonHandler } from "../commands/nickname";
-import { WoisLog } from "../commands/woislog";
-import { WoisButton, WoisCommand } from "../commands/woisping";
-import { FicktabelleCommand } from "../commands/ficktabelle";
-import { InviteCommand } from "../commands/invite";
-import { ErleuchtungCommand } from "../commands/erleuchtung";
-import { MockCommand } from "../commands/mock";
-import { ClapCommand } from "../commands/clap";
-import { NeverCommand } from "../commands/never";
-import { GeburtstagCommand } from "../commands/geburtstag";
-import { Saufen } from "../commands/saufen";
-import { ErinnerungCommand } from "../commands/erinnerung";
-import { YoinkCommand } from "../commands/yoink";
-import { isProcessableMessage, ProcessableMessage } from "./cmdHandler";
-import { EmoteSenderCommand } from "../commands/special/emoteSender";
-import { InstagramLink } from "../commands/special/instagram";
-import { OidaCommand } from "../commands/oida";
-import { DeOidaCommand } from "../commands/deoida";
-import { EhreCommand } from "../commands/ehre";
-import { hasBotDenyRole } from "../utils/userUtils";
-import { isMessageInBotSpam } from "../utils/channelUtils";
+
+} from "../commands/command.js";
+import { InfoCommand } from "../commands/info.js";
+import { getConfig } from "../utils/configHandler.js";
+import log from "../utils/logger.js";
+import { TriggerReactOnKeyword } from "../commands/special/keyword_react.js";
+import { WhereCommand } from "../commands/special/where.js";
+import { DadJokeCommand } from "../commands/special/dadJoke.js";
+import { WatCommand } from "../commands/special/wat.js";
+import { TikTokLink } from "../commands/special/tiktok.js";
+import { StempelCommand } from "../commands/stempeln.js";
+import { StempelgraphCommand } from "../commands/stempelgraph.js";
+import { StempelkarteCommand } from "../commands/stempelkarte.js";
+import { ban, BanCommand } from "../commands/modcommands/ban.js";
+import { UnbanCommand } from "../commands/modcommands/unban.js";
+import { PenisCommand } from "../commands/penis.js";
+import { BoobCommand } from "../commands/boobs.js";
+import { BonkCommand } from "../commands/bonk.js";
+import { GoogleCommand } from "../commands/google.js";
+import { NischdaaaCommand } from "../commands/special/nischdaaa.js";
+import { SdmCommand } from "../commands/sdm.js";
+import { Nickname, NicknameButtonHandler } from "../commands/nickname.js";
+import { WoisButton, WoisCommand } from "../commands/woisping.js";
+import { WoisLog } from "../commands/woislog.js";
+import { FicktabelleCommand } from "../commands/ficktabelle.js";
+import { InviteCommand } from "../commands/invite.js";
+import { ErleuchtungCommand } from "../commands/erleuchtung.js";
+import { MockCommand } from "../commands/mock.js";
+import { ClapCommand } from "../commands/clap.js";
+import { NeverCommand } from "../commands/never.js";
+import { GeburtstagCommand } from "../commands/geburtstag.js";
+import { Saufen } from "../commands/saufen.js";
+import { ErinnerungCommand } from "../commands/erinnerung.js";
+import { YoinkCommand } from "../commands/yoink.js";
+import { isProcessableMessage, ProcessableMessage } from "./cmdHandler.js";
+import { EmoteSenderCommand } from "../commands/special/emoteSender.js";
+import { InstagramLink } from "../commands/special/instagram.js";
+import { OidaCommand } from "../commands/oida.js";
+import { DeOidaCommand } from "../commands/deoida.js";
+import { EhreCommand } from "../commands/ehre.js";
+import { hasBotDenyRole } from "../utils/userUtils.js";
+import { isMessageInBotSpam } from "../utils/channelUtils.js";
+import type { BotContext } from "../context.js";
+
 
 const config = getConfig();
 

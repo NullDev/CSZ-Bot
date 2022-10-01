@@ -1,13 +1,13 @@
 import graphviz from "graphviz-wasm";
 import { Client, CommandInteraction, Guild, GuildMember, Snowflake } from "discord.js";
+import { SlashCommandBuilder, SlashCommandStringOption } from "@discordjs/builders";
 import { svg2png } from "svg-png-converter";
 
-import { getConfig } from "../utils/configHandler";
-import Stempel from "../storage/model/Stempel";
-import log from "../utils/logger";
-import { isMod } from "../utils/userUtils";
-import { SlashCommandBuilder, SlashCommandStringOption } from "@discordjs/builders";
-import { ApplicationCommand, CommandResult } from "./command";
+import { getConfig } from "../utils/configHandler.js";
+import Stempel from "../storage/model/Stempel.js";
+import log from "../utils/logger.js";
+import { isMod } from "../utils/userUtils.js";
+import { ApplicationCommand, CommandResult } from "./command.js";
 
 const config = getConfig();
 

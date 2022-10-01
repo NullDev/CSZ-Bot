@@ -4,9 +4,9 @@
 import type { Client, Snowflake, Message } from "discord.js";
 import { Model, Sequelize, DataTypes } from "sequelize";
 import { v4 as uuidv4 } from "uuid";
-import type { JsonObject } from "../../types";
 
-import log from "../../utils/logger";
+import log from "../../utils/logger.js";
+import type { JsonObject } from "../../types.js";
 
 export default class AdditionalMessageData extends Model {
     declare id: string;

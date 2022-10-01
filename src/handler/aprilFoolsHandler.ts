@@ -1,8 +1,9 @@
 import { Collection, GuildMember, Snowflake } from "discord.js";
-import type { BotContext } from "../context";
-import Boob from "../storage/model/Boob";
-import Penis from "../storage/model/Penis";
-import logger from "../utils/logger";
+
+import type { BotContext } from "../context.js";
+import Boob from "../storage/model/Boob.js";
+import Penis from "../storage/model/Penis.js";
+import logger from "../utils/logger.js";
 
 // Store old usernames. Hope the bot doesn't crash lol
 const tmpNicknameStore: Record<Snowflake, string> = {};

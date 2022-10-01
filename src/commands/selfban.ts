@@ -1,10 +1,9 @@
 import moment from "moment";
 
-import Ban from "../storage/model/Ban";
-import type { CommandFunction } from "../types";
-import { getConfig } from "../utils/configHandler";
-
-import * as ban from "./modcommands/ban";
+import Ban from "../storage/model/Ban.js";
+import { getConfig } from "../utils/configHandler.js";
+import * as ban from "./modcommands/ban.js";
+import type { CommandFunction } from "../types.js";
 
 const config = getConfig();
 

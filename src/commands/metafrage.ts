@@ -1,11 +1,6 @@
-// ========================= //
-// = Copyright (c) NullDev = //
-// ========================= //
-
-import type { CommandFunction } from "../types";
-// Dependencies
 import parseOptions from "minimist";
-// import type { Client, Message } from "discord.js";
+
+import type { CommandFunction } from "../types.js";
 
 /**
  * Sends instructions on how to ask better questions

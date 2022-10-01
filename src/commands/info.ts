@@ -1,11 +1,11 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-// @ts-ignore
-import fetch from "node-fetch";
 import { Client, CommandInteraction, Guild, MessageActionRow, MessageButton, MessageEmbedOptions } from "discord.js";
-import { ApplicationCommand, CommandResult, MessageCommand } from "./command";
-import { GitHubContributor } from "../types";
-import type { ProcessableMessage } from "../handler/cmdHandler";
-import { assertNever } from "../utils/typeUtils";
+import fetch from "node-fetch";
+
+import { ApplicationCommand, CommandResult, MessageCommand } from "./command.js";
+import { GitHubContributor } from "../types.js";
+import type { ProcessableMessage } from "../handler/cmdHandler.js";
+import { assertNever } from "../utils/typeUtils.js";
 
 const buildMessageActionsRow = (): MessageActionRow[] => {
     return [
@@ -29,7 +29,7 @@ const fetchLanguages = async(): Promise<Array<string>> => {
     const res = await fetch("https://api.github.com/repos/NullDev/CSZ-Bot/languages", {
         headers: { Accept: "application/vnd.github.v3+json" }
     });
-    return Object.keys(await res.json());
+    return Object.keys(await res.json() as {});
 };
 
 const getContributors = async(): Promise<string> => {

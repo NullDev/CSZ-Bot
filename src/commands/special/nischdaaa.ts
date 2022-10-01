@@ -1,6 +1,7 @@
 import { Client } from "discord.js";
-import type { ProcessableMessage } from "../../handler/cmdHandler";
-import {SpecialCommand, CommandResult} from "../command";
+
+import type { ProcessableMessage } from "../../handler/cmdHandler.js";
+import {SpecialCommand, CommandResult} from "../command.js";
 
 export class NischdaaaCommand implements SpecialCommand {
     name  = "Nischdaaa";

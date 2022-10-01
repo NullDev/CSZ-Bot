@@ -1,11 +1,11 @@
 /* Disabled due to sequelize's DataTypes */
 /* eslint-disable new-cap */
 
-import { Snowflake } from "discord.js";
 import {DataTypes, Model, Optional, Sequelize} from "sequelize";
 import {v4 as uuidv4} from "uuid";
+import type { Snowflake } from "discord.js";
 
-import log from "../../utils/logger";
+import log from "../../utils/logger.js";
 
 export interface NicknameAttributes {
     id: string;

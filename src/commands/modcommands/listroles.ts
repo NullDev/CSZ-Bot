@@ -1,4 +1,4 @@
-import type { CommandFunction } from "../../types";
+import type { CommandFunction } from "../../types.js";
 
 /**
  * Lists all server roles

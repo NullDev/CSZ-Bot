@@ -1,9 +1,9 @@
 import type { Message } from "discord.js";
 
-import log from "../utils/logger";
-import { getConfig } from "../utils/configHandler";
-import * as poll from "./poll";
-import type { CommandFunction } from "../types";
+import log from "../utils/logger.js";
+import { getConfig } from "../utils/configHandler.js";
+import * as poll from "./poll.js";
+import type { CommandFunction } from "../types.js";
 
 const config = getConfig();
 

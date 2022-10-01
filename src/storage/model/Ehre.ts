@@ -1,11 +1,9 @@
 /* Disabled due to sequelize's DataTypes */
 /* eslint-disable new-cap */
 
-
-import {DataTypes, Model, Sequelize} from "sequelize";
-import {v4 as uuidv4} from "uuid";
-import {Snowflake} from "discord.js";
-
+import { DataTypes, Model, Sequelize } from "sequelize";
+import { v4 as uuidv4 } from "uuid";
+import { Snowflake } from "discord.js";
 
 export class EhreVotes extends Model {
     declare id: string;

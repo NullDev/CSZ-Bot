@@ -1,15 +1,16 @@
 import { SlashCommandBuilder, SlashCommandIntegerOption, SlashCommandStringOption, SlashCommandUserOption } from "@discordjs/builders";
 import { CommandInteraction, GuildMember, PermissionString, User } from "discord.js";
 import { Client } from "discord.js";
-import Ban from "../../storage/model/Ban";
-import { getConfig } from "../../utils/configHandler";
-import { ApplicationCommand, CommandResult, MessageCommand } from "../command";
-import log from "../../utils/logger";
+
+import Ban from "../../storage/model/Ban.js";
+import { getConfig } from "../../utils/configHandler.js";
+import { ApplicationCommand, CommandResult, MessageCommand } from "../command.js";
+import log from "../../utils/logger.js";
 import moment from "moment";
-import type { ProcessableMessage } from "../../handler/cmdHandler";
+import type { ProcessableMessage } from "../../handler/cmdHandler.js";
 import Cron from "croner";
-import type { BotContext } from "../../context";
-import { unban } from "./unban";
+import type { BotContext } from "../../context.js";
+import { unban } from "./unban.js";
 
 const config = getConfig();
 

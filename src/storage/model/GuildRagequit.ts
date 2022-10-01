@@ -1,9 +1,9 @@
 /* Disabled due to sequelize's DataTypes */
 /* eslint-disable new-cap */
 
-import type { Snowflake } from "discord.js";
 import { Model, DataTypes, type Sequelize } from "sequelize";
 import { v4 as uuidv4 } from "uuid";
+import type { Snowflake } from "discord.js";
 
 export default class GuildRagequit extends Model {
     declare id: string;

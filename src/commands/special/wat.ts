@@ -1,5 +1,6 @@
 import { Message, Client } from "discord.js";
-import { SpecialCommand, CommandResult } from "../command";
+
+import { SpecialCommand, CommandResult } from "../command.js";
 
 export class WatCommand implements SpecialCommand {
     name: string = "wat";

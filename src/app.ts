@@ -1,43 +1,39 @@
-// ========================= //
-// = Copyright (c) NullDev = //
-// ========================= //
-
-/** @typedef {import("discord.js").TextChannel} TC */
-
-// Dependencies
 import * as Discord from "discord.js";
-import {Message, MessageReaction, User, VoiceState} from "discord.js";
-import {Cron} from "croner";
 
-import * as conf from "./utils/configHandler";
-import log from "./utils/logger";
+import { Message, MessageReaction, User } from "discord.js";
+import Cron from "croner";
+
+
+import * as conf from "./utils/configHandler.js";
+import log from "./utils/logger.js";
 
 // Handler
-import messageHandler from "./handler/messageHandler";
-import messageDeleteHandler from "./handler/messageDeleteHandler";
-import BdayHandler from "./handler/bdayHandler";
-import AoCHandler from "./handler/aocHandler";
-import * as fadingMessageHandler from "./handler/fadingMessageHandler";
-import * as storage from "./storage/storage";
+import messageHandler from "./handler/messageHandler.js";
+import messageDeleteHandler from "./handler/messageDeleteHandler.js";
+import BdayHandler from "./handler/bdayHandler.js";
+import AoCHandler from "./handler/aocHandler.js";
+import * as fadingMessageHandler from "./handler/fadingMessageHandler.js";
+import * as storage from "./storage/storage.js";
 
-// Other commands
-import * as ban from "./commands/modcommands/ban";
-import * as poll from "./commands/poll";
-import GuildRagequit from "./storage/model/GuildRagequit";
-import reactionHandler from "./handler/reactionHandler";
+
+import * as ban from "./commands/modcommands/ban.js";
+import * as poll from "./commands/poll.js";
+import GuildRagequit from "./storage/model/GuildRagequit.js";
+import reactionHandler from "./handler/reactionHandler.js";
 import {checkVoiceUpdate} from "./handler/voiceStateUpdateHandler";
+
 import {
     handleInteractionEvent,
     messageCommandHandler,
     registerAllApplicationCommandsAsGuildCommands
-} from "./handler/commandHandler";
-import {quoteReactionHandler} from "./handler/quoteHandler";
-import NicknameHandler from "./handler/nicknameHandler";
-import {connectAndPlaySaufen} from "./handler/voiceHandler";
-import {reminderHandler} from "./commands/erinnerung";
-import {endAprilFools, startAprilFools} from "./handler/aprilFoolsHandler";
-import {createBotContext, type BotContext} from "./context";
-import {EhrePoints, EhreVotes} from "./storage/model/Ehre";
+} from "./handler/commandHandler.js";
+import { quoteReactionHandler } from "./handler/quoteHandler.js";
+import NicknameHandler from "./handler/nicknameHandler.js";
+import { connectAndPlaySaufen } from "./handler/voiceHandler.js";
+import { reminderHandler } from "./commands/erinnerung.js";
+import { endAprilFools, startAprilFools } from "./handler/aprilFoolsHandler.js";
+import { createBotContext, type BotContext } from "./context.js";
+import { EhrePoints, EhreVotes } from "./storage/model/Ehre.js";
 
 const version = conf.getVersion();
 const appname = conf.getName();
