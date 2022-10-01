@@ -14,7 +14,7 @@ import { VoiceUpdateEvent } from "../handler/voiceStateUpdateHandler.js";
 
 
 export class WoisLog implements ApplicationCommand {
-    name = "WoisLog";
+    name = "woislog";
     description = "Zeigt die letzen Aktivitäten im Woischat an";
 
 
