@@ -1,23 +1,23 @@
-import { ChannelType, Client, ClientUser, Message } from "discord.js";
+import { Client, ClientUser, Message } from "discord.js";
 
 import { getConfig } from "../utils/configHandler.js";
-import cmdHandler, { isProcessableMessage } from "./cmdHandler.js";
+import cmdHandler, { isProcessableMessage, ProcessableMessage } from "./cmdHandler.js";
 import type { BotContext } from "../context.js";
 
 const config = getConfig();
 
-const getInlineReplies = (messageRef: Message, clientUser: ClientUser) => {
+const getInlineReplies = (messageRef: ProcessableMessage, clientUser: ClientUser) => {
     return messageRef.channel.messages.cache.filter(m => m.author.id === clientUser.id && m.reference?.messageId === messageRef.id);
 };
 
-export default async function(message: Message, client: Client, context: BotContext) {
+export default async function(message: Message, _client: Client, context: BotContext) {
     const nonBiased = message.content
         .replace(config.bot_settings.prefix.command_prefix, "")
         .replace(config.bot_settings.prefix.mod_prefix, "")
         .replace(/\s/g, "");
 
     // Maybe we can move some of these checks to `isProcessableMessage`, but we need to figure out how to represent this in a type
-    if (message.author.bot || nonBiased === "" || message.channel.type === ChannelType.DM) return;
+    if (message.author.bot || nonBiased === "") return;
 
     // Ensures that every command always gets a message that fits certain criteria (for example, being a message originating from a server, not a DM)
     if (!isProcessableMessage(message)) return;
@@ -26,7 +26,7 @@ export default async function(message: Message, client: Client, context: BotCont
     const isModCommand = message.content.startsWith(config.bot_settings.prefix.mod_prefix);
     const isCommand = isNormalCommand || isModCommand;
 
-    if (client.user && message.mentions.has(client.user.id) && !isCommand) {
+    if (context.client.user && message.mentions.has(context.client.user.id) && !isCommand) {
         // Trusted users should be familiar with the bot, they should know how to use it
         // Maybe, we don't want to flame them, since that can make the chat pretty noisy
         // Unless you are a Marcel
@@ -50,10 +50,12 @@ export default async function(message: Message, client: Client, context: BotCont
         return;
     }
 
-    const response = await cmdHandler(message, client, isModCommand, context);
+    const response = await cmdHandler(message, context.client, isModCommand, context);
 
     // Get all inline replies to the message and delete them. Ignore errors, since cached is used and previously deleted messages are contained as well
-    getInlineReplies(message, client.user!).forEach(msg => void msg.delete().then(() => {}, () => {}));
+    for (const msg of getInlineReplies(message, context.client.user).values()) {
+        await msg.delete();
+    }
 
     if (!response) {
         return;

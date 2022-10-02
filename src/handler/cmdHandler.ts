@@ -17,20 +17,20 @@ const config = getConfig();
  * A message that the bot can pass to command handlers.
  * For example, it ensures that there is a member (and it's not a DM)
  */
-export type ProcessableMessage = Message & {
+export type ProcessableMessage = Message<true> & {
     member: GuildMember;
     guild: Guild;
 };
 
 export function isProcessableMessage(message: Message): message is ProcessableMessage {
-    return !!message.member && !!message.guild;
+    return !!message.member && !!message.guild && message.inGuild();
 }
 
 /**
  * Passes commands to the correct executor
  *
  */
-export default async function(message: ProcessableMessage, client: Client, isModCommand: boolean, context: BotContext): Promise<CommandResult> {
+export default async function(message: ProcessableMessage, client: Client<true>, isModCommand: boolean, context: BotContext): Promise<CommandResult> {
     if (message.author.bot) return;
 
     if (hasBotDenyRole(message.member) && !isMessageInBotSpam(message)) {

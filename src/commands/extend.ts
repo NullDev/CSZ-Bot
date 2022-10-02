@@ -1,4 +1,4 @@
-import { ChannelType, Message } from "discord.js";
+import { APIEmbed, ChannelType, Message } from "discord.js";
 
 import log from "../utils/logger.js";
 import { getConfig } from "../utils/configHandler.js";
@@ -67,13 +67,14 @@ export const run: CommandFunction = async(client, message, args, context) => {
     const originalAuthor = replyMessage.embeds[0].author!.name.split(" ")[2];
     const authorNote = originalAuthor !== message.author.username ? ` (von ${message.author.username})` : "";
 
-    const embed = replyMessage.embeds[0];
+    // TODO: Replace with structuredClone as soon as we run on Node.js 18
+    const embed = JSON.parse(JSON.stringify(replyMessage.embeds[0])) as APIEmbed;
     embed.description += "\n";
     additionalPollOptions.forEach((e, i) => (embed.description += `${poll.LETTERS[oldPollOptions.length + i]} - ${e}${authorNote}\n`));
 
     if (oldPollOptions.length + additionalPollOptions.length === poll.OPTION_LIMIT) {
         embed.color = 0xCD5C5C;
-        embed.footer = null;
+        embed.footer = undefined;
     }
 
     const msg = await replyMessage.edit({

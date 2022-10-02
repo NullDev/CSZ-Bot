@@ -1,5 +1,5 @@
 import {
-    Client, CommandInteraction, Guild, Message,
+    Client, CommandInteraction, Guild,
     TextBasedChannel,
     parseEmoji
 } from "discord.js";
@@ -7,6 +7,7 @@ import { SlashCommandBuilder, SlashCommandStringOption } from "@discordjs/builde
 
 import { isEmotifizierer, isMod } from "../utils/userUtils.js";
 import { ApplicationCommand, MessageCommand } from "./command.js";
+import { ProcessableMessage } from "../handler/cmdHandler.js";
 
 /**
  * Sends instructions on how to ask better questions
@@ -21,12 +22,14 @@ export class YoinkCommand implements MessageCommand, ApplicationCommand {
             .setName("emote")
             .setDescription("Emote")
             .setRequired(true)
-        ).addStringOption(new SlashCommandStringOption()
+        )
+        .addStringOption(new SlashCommandStringOption()
             .setName("name")
             .setDescription("name")
-            .setRequired(false));
+            .setRequired(false)
+        );
 
-    async handleInteraction(command: CommandInteraction, client: Client): Promise<void> {
+    async handleInteraction(command: CommandInteraction, _client: Client): Promise<void> {
         if (!command.isChatInputCommand()) {
             // TODO: Solve this on a type level
             return;
@@ -44,35 +47,38 @@ export class YoinkCommand implements MessageCommand, ApplicationCommand {
         return;
     }
 
-    async handleMessage(message: Message, client: Client): Promise<void> {
+    async handleMessage(message: ProcessableMessage, _client: Client): Promise<void> {
         // parse options
-        const guildMember = message.guild?.members.cache.get(message.member!.user.id)!;
+        const guildMember = message.guild.members.cache.get(message.member!.user.id)!;
         if (!isEmotifizierer(guildMember) && !isMod(guildMember)) {
             await message.channel.send("Bist nicht cool genug");
             return;
         }
-        const args = message.content.split(" ");
 
+        const args = message.content.split(" ");
         if (args.length >= 1) {
-            await this.createEmote(args[1], message.channel, args.length >= 2 ? args[1] : null, message.guild!);
+            await this.createEmote(args[1], message.channel, args.length >= 2 ? args[1] : null, message.guild);
+            await message.delete();
         }
         else {
             await message.channel.send("Argumente musst du schon angeben, du Mongo");
             return;
         }
-        await message.delete();
     }
 
 
-    async createEmote(emoji: string, channel: TextBasedChannel, name: string | null, guild: Guild):Promise<string> {
+    async createEmote(emoji: string, channel: TextBasedChannel, name: string | null, guild: Guild): Promise<string> {
         const parsedEmoji = parseEmoji(emoji);
         if (!parsedEmoji) {
             return "Du Lellek, ich kann dein Emote nicht parsen";
         }
+
         const extension = parsedEmoji.animated ? ".gif" : ".png";
-        const emoteUrl = `https://cdn.discordapp.com/emojis/${parsedEmoji.id}` + extension;
-        const emoteName = name ?? parsedEmoji.name;
-        const guildEmoji = await guild?.emojis.create(emoteUrl, emoteName);
+        const guildEmoji = await guild?.emojis.create({
+            attachment: `https://cdn.discordapp.com/emojis/${parsedEmoji.id}` + extension,
+            name: name ?? parsedEmoji.name
+        });
+
         return `Hab \<:${guildEmoji.name}:${guildEmoji.id}\> als \`${guildEmoji.name}\` hinzugefügt`;
     }
 }
