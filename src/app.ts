@@ -279,7 +279,7 @@ client.on("guildMemberAdd", async member => {
     await member.roles.add(botContext.roles.shame);
 
     await botContext.textChannels.hauptchat.send({
-        content: `Haha, schau mal einer guck wer wieder hergekommen ist! <@${member.id}> hast es aber nicht lange ohne uns ausgehalten. ${numRagequits > 1 ? "Und das schon zum " + numRagequits + ". mal" : ""}`,
+        content: `Haha, schau mal einer guck wer wieder hergekommen ist! ${member} hast es aber nicht lange ohne uns ausgehalten. ${numRagequits > 1 ? "Und das schon zum " + numRagequits + ". mal" : ""}`,
         allowedMentions: {
             users: [member.id]
         }

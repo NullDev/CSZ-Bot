@@ -71,6 +71,7 @@ export class WoisCommand implements ApplicationCommand {
             await command.reply("Piss dich und spam nicht.");
             return;
         }
+
         const reason = `${cleanContent(command.options.getString("grund", true), command.channel!)}`;
         if (isModMessage) {
             lastPing = now;
@@ -98,7 +99,7 @@ export class WoisCommand implements ApplicationCommand {
             );
 
         await command.reply({
-            content: `${pendingMessagePrefix} <@!${pinger.id}> hat Bock auf Wois. ${reason ? `Grund dafür ist \`${reason}\`` : ""}. Biste dabei?`,
+            content: `${pendingMessagePrefix} ${pinger} hat Bock auf Wois. ${reason ? `Grund dafür ist \`${reason}\`` : ""}. Biste dabei?`,
             allowedMentions: {
                 users: [pinger.id]
             },
@@ -155,7 +156,7 @@ export class WoisButton implements UserInteraction {
             return;
         }
         await command.reply({
-            content: " Jetzt müssen nur die anderen Bock drauf haben.",
+            content: "Jetzt müssen nur die anderen Bock drauf haben.",
             ephemeral: true
         });
     }

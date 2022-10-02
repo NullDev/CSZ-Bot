@@ -131,7 +131,7 @@ export const quoteReactionHandler = async (event: MessageReaction, user: User, c
 
     if (isQuoterQuotingHimself(quoter, quotedUser)) {
         await context.textChannels.hauptchat.send({
-            content: `<@${quoter.id}> der Lellek hat gerade versucht sich, selbst zu quoten. Was für ein Opfer!`,
+            content: `${quoter} der Lellek hat gerade versucht sich, selbst zu quoten. Was für ein Opfer!`,
             allowedMentions: {
                 users: [quoter.id]
             }

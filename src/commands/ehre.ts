@@ -110,6 +110,6 @@ export class EhreCommand implements ApplicationCommand {
             }
             await handleVote(command.user.id, user.id);
         }
-        await command.reply(`<@${command.user.id}> hat <@${user.id}> geährt`);
+        await command.reply(`${command.user} hat ${user} geährt`);
     }
 }

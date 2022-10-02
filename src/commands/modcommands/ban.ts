@@ -136,7 +136,7 @@ export const ban = async(client: Client, member: GuildMember, banInvoker: GuildM
     const banReasonChannel = member.guild.channels.resolve(config.ids.bot_log_channel_id);
     if (banReasonChannel && banReasonChannel.isTextBased()) {
         await banReasonChannel.send({
-            content: `<@${member.id}> ${isSelfBan ? "hat sich selbst" : `wurde von ${banInvoker}`} ${humanReadableDuration ? `für ${humanReadableDuration}` : "bis auf unbestimmte Zeit"} gebannt. \nGrund: ${reason}`,
+            content: `${member} ${isSelfBan ? "hat sich selbst" : `wurde von ${banInvoker}`} ${humanReadableDuration ? `für ${humanReadableDuration}` : "bis auf unbestimmte Zeit"} gebannt. \nGrund: ${reason}`,
             allowedMentions: {
                 users: []
             }
@@ -214,7 +214,7 @@ export class BanCommand implements ApplicationCommand, MessageCommand {
         }
 
         await command.reply({
-            content: `Ok Bruder, ich hab <@${user.id}> wegen ${reason} ${duration > 0 ? `für ${humanReadableDuration}` : ""} gebannt`
+            content: `Ok Bruder, ich hab ${user} wegen ${reason} ${duration > 0 ? `für ${humanReadableDuration}` : ""} gebannt`
         });
         return;
     }
@@ -267,7 +267,7 @@ export class BanCommand implements ApplicationCommand, MessageCommand {
         }
 
         await message.reply({
-            content: `Ok Bruder, ich hab <@${user.id}> wegen ${reason} gebannt`
+            content: `Ok Bruder, ich hab ${user} wegen ${reason} gebannt`
         });
     }
 }

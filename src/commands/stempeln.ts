@@ -50,8 +50,8 @@ export class StempelCommand implements ApplicationCommand {
         const isNewInvite = await stempelUser(invitator!, invitedUser!);
         if(isNewInvite) {
             const reply = replies[Math.floor(Math.random() * replies.length)]
-                .replace("{0}", `<@${invitator.id}>`)
-                .replace("{1}", `<@${invitedUser.id}>`);
+                .replace("{0}", invitator.toString())
+                .replace("{1}", invitedUser.toString());
             await command.reply({
                 content: reply,
                 allowedMentions: {
