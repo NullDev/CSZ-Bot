@@ -5,6 +5,7 @@ import Penis from "../storage/model/Penis.js";
 import { CommandResult, MessageCommand } from "./command.js";
 import log from "../utils/logger.js";
 import type { ProcessableMessage } from "../handler/cmdHandler.js";
+import { formatTime } from "../utils/dateUtils.js";
 
 export type Radius = 1 | 2 | 3;
 
@@ -16,19 +17,11 @@ const DIAMETER_CHARS: Record<Radius, string> = {
 
 const PENIS_MAX = 30;
 
-
-const measurementTimeFormatter = new Intl.DateTimeFormat("de-DE", {
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    hour12: false
-});
-
 const sendPenis = async(user: User, message: ProcessableMessage, size: number, radius: Radius, measurement: Date = new Date()): Promise<void> => {
     const diameterChar = DIAMETER_CHARS[radius];
     const penis = `8${diameterChar.repeat(size)}D`;
     const circumference = (Math.PI * radius * 2).toFixed(2);
-    const measuredAt = measurementTimeFormatter.format(measurement);
+    const measuredAt = formatTime(measurement);
 
     await message.reply(`Pimmel von <@${user.id}>:\n${penis}\n(Länge: ${size} cm, Umfang: ${circumference} cm, Gemessen um ${measuredAt})`);
 };
