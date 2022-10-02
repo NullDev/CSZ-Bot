@@ -13,7 +13,7 @@ const isChannelAnonymous = (channelId: string) => quoteConfig.anonymous_channel_
 const isQuoteEmoji = (emoji: GuildEmoji | ReactionEmoji) => emoji.name === quoteConfig.emoji_name;
 const isMemberAllowedToQuote = (member: GuildMember) => isNerd(member);
 
-const getMessageQuoter = async (message: Message): Promise<readonly GuildMember[]> => {
+const getMessageQuoter = async(message: Message): Promise<readonly GuildMember[]> => {
     const fetchedMessage = await message.fetch(true);
     const messageReaction = fetchedMessage.reactions.cache.find(r => isQuoteEmoji(r.emoji))!;
     const fetchedUsersOfReaction = await messageReaction.users.fetch();
@@ -53,7 +53,7 @@ const createQuote = (
 ) => {
     const getAuthor = (user: GuildMember) => {
         if (isChannelAnonymous(quotedMessage.channelId) || !user) {
-            return { name: "Anon" }
+            return { name: "Anon" };
         }
 
         return {
@@ -102,7 +102,7 @@ const createQuote = (
     };
 };
 
-export const quoteReactionHandler = async (event: MessageReaction, user: User, context: BotContext) => {
+export const quoteReactionHandler = async(event: MessageReaction, user: User, context: BotContext) => {
     if (!isQuoteEmoji(event.emoji) || event.message.guildId === null || user.id === context.client.user.id) {
         return;
     }
@@ -173,7 +173,8 @@ export const quoteReactionHandler = async (event: MessageReaction, user: User, c
     if (reference !== undefined) {
         const quoteMessage = await targetChannel.send(reference);
         await quoteMessage.reply(quote);
-    } else {
+    }
+    else {
         await targetChannel.send(quote);
     }
 
