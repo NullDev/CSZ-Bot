@@ -240,6 +240,8 @@ client.once("ready", async initializedClient => {
         // Not awaiting this promise because it's basically an infinite loop (that can be cancelled)
         // Possible TODO: Refactor this to a cron job
         void fadingMessageHandler.startLoop(client);
+
+        log.info("Bot successfully started");
     }
     catch (err) {
         log.error("Error in Ready handler:", err);
