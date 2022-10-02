@@ -6,6 +6,15 @@ const timeFormatter = new Intl.DateTimeFormat("de-DE", {
     hour12: false
 });
 
+const dateTimeFormatter = new Intl.DateTimeFormat("de-DE", {
+    dateStyle: "long",
+    timeStyle: "medium"
+});
+
 export function formatTime(time: Date) {
     return timeFormatter.format(time);
+}
+
+export function formatDateTime(dateTime: Date) {
+    return dateTimeFormatter.format(dateTime);
 }

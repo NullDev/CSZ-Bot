@@ -2,6 +2,7 @@ import { GuildMember, Message, MessageReaction, User, TextBasedChannel, GuildEmo
 
 import { BotContext } from "../context.js";
 import { getConfig } from "../utils/configHandler.js";
+import { formatDateTime } from "../utils/dateUtils.js";
 import log from "../utils/logger.js";
 import { isNerd, isTrusted } from "../utils/userUtils.js";
 
@@ -12,7 +13,7 @@ const isChannelAnonymous = (channelId: string) => quoteConfig.anonymous_channel_
 const isQuoteEmoji = (emoji: GuildEmoji | ReactionEmoji) => emoji.name === quoteConfig.emoji_name;
 const isMemberAllowedToQuote = (member: GuildMember) => isNerd(member);
 
-const getMessageQuoter = async(message: Message): Promise<readonly GuildMember[]> => {
+const getMessageQuoter = async (message: Message): Promise<readonly GuildMember[]> => {
     const fetchedMessage = await message.fetch(true);
     const messageReaction = fetchedMessage.reactions.cache.find(r => isQuoteEmoji(r.emoji))!;
     const fetchedUsersOfReaction = await messageReaction.users.fetch();
@@ -51,14 +52,14 @@ const createQuote = (
     referencedMessage: Message | undefined
 ) => {
     const getAuthor = (user: GuildMember) => {
-        return isChannelAnonymous(quotedMessage.channelId) || !user
-            ? {
-                name: "Anon"
-            }
-            : {
-                name: user.displayName,
-                icon_url: user.displayAvatarURL()
-            };
+        if (isChannelAnonymous(quotedMessage.channelId) || !user) {
+            return { name: "Anon" }
+        }
+
+        return {
+            name: user.displayName,
+            icon_url: user.displayAvatarURL()
+        };
     };
 
     const randomizedColor = generateRandomColor();
@@ -71,7 +72,7 @@ const createQuote = (
                     color: randomizedColor,
                     description: quotedMessage.content,
                     author: getAuthor(quotedUser),
-                    timestamp: quotedMessage.createdTimestamp,
+                    timestamp: formatDateTime(new Date(quotedMessage.createdTimestamp)),
                     fields: [
                         {
                             name: "Link zur Nachricht",
@@ -93,7 +94,7 @@ const createQuote = (
                     color: randomizedColor,
                     description: referencedMessage.content,
                     author: getAuthor(referencedUser!),
-                    timestamp: referencedMessage.createdTimestamp
+                    timestamp: formatDateTime(new Date(referencedMessage.createdTimestamp))
                 }
             ],
             files: referencedMessage.attachments.map((attachment, _key) => attachment)
@@ -101,7 +102,7 @@ const createQuote = (
     };
 };
 
-export const quoteReactionHandler = async(event: MessageReaction, user: User, context: BotContext) => {
+export const quoteReactionHandler = async (event: MessageReaction, user: User, context: BotContext) => {
     if (!isQuoteEmoji(event.emoji) || event.message.guildId === null || user.id === context.client.user.id) {
         return;
     }
@@ -132,7 +133,7 @@ export const quoteReactionHandler = async(event: MessageReaction, user: User, co
         await context.textChannels.hauptchat.send({
             content: `<@${quoter.id}> der Lellek hat gerade versucht sich, selbst zu quoten. Was für ein Opfer!`,
             allowedMentions: {
-                users: [ quoter.id ]
+                users: [quoter.id]
             }
         });
 
@@ -144,19 +145,16 @@ export const quoteReactionHandler = async(event: MessageReaction, user: User, co
         return;
     }
 
-    const {quote, reference} = createQuote(quotedUser, quotingMembersAllowed.map(member => member.user), referencedUser, quotedMessage, referencedMessage);
-    const {id: targetChannelId, channel: targetChannel} = getTargetChannel(quotedMessage.channelId, context);
-
+    const { quote, reference } = createQuote(quotedUser, quotingMembersAllowed.map(member => member.user), referencedUser, quotedMessage, referencedMessage);
+    const { id: targetChannelId, channel: targetChannel } = getTargetChannel(quotedMessage.channelId, context);
 
     if (targetChannel === undefined) {
         log.error(`channel ${targetChannelId} is configured as quote output channel but it doesn't exist`);
-
         return;
     }
 
     if (!targetChannel.isTextBased()) {
         log.error(`channel ${targetChannelId} is configured as quote output channel but it is not a text channel`);
-
         return;
     }
 
@@ -173,11 +171,10 @@ export const quoteReactionHandler = async(event: MessageReaction, user: User, co
     }
 
     if (reference !== undefined) {
-        const quoteMessage = await (targetChannel as TextBasedChannel).send(reference);
+        const quoteMessage = await targetChannel.send(reference);
         await quoteMessage.reply(quote);
-    }
-    else {
-        await (targetChannel as TextBasedChannel).send(quote);
+    } else {
+        await targetChannel.send(quote);
     }
 
     await quotedMessage.react(event.emoji);

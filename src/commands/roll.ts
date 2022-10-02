@@ -1,6 +1,7 @@
 import { APIEmbed, cleanContent } from "discord.js";
 
 import { getConfig } from "../utils/configHandler.js";
+import { formatDateTime } from "../utils/dateUtils.js";
 import type { CommandFunction } from "../types.js";
 
 const config = getConfig();
@@ -102,7 +103,7 @@ export const run: CommandFunction = async(_client, message, args) => {
 
     const embed: APIEmbed = {
         title: cleanContent(`${parsed}:`, message.channel),
-        timestamp: new Date(),
+        timestamp: formatDateTime(new Date()),
         author: {
             name: `Würfel Resultat für ${message.author.username}`,
             icon_url: message.author.displayAvatarURL()
