@@ -30,4 +30,4 @@ jobs:
         sed 's/<CLIENT_ID>/${{ secrets.CI_CLIENT_ID }}/g' config.json > config.json
     - name: start se bot
       run: |
-        timeout -k 300 300 docker run -v "$PWD/config.json:/app/config.json" csz-bot:latest | ( ! grep -v -e ".*Bot successfully started.*")
+        timeout -k 500 300 docker run -v "$PWD/config.json:/app/config.json" csz-bot:latest | ( ! grep -v -e ".*Bot successfully started.*")
