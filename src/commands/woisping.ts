@@ -90,11 +90,13 @@ export class WoisCommand implements ApplicationCommand {
             return;
         }
         const row = new ActionRowBuilder()
-            .addComponents(new ButtonBuilder()
-                .setCustomId("woisbutton")
-                .setLabel("Ich hab Bock")
-                .setStyle(ButtonStyle.Success)
+            .addComponents(
+                new ButtonBuilder()
+                    .setCustomId("woisbutton")
+                    .setLabel("Ich hab Bock")
+                    .setStyle(ButtonStyle.Success)
             );
+
         await command.reply({
             content: `${pendingMessagePrefix} <@!${pinger.id}> hat Bock auf Wois. ${reason ? `Grund dafür ist \`${reason}\`` : ""}. Biste dabei?`,
             allowedMentions: {
