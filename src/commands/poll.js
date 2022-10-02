@@ -1,6 +1,6 @@
 import parseOptions from "minimist";
 import Cron from "croner";
-import { ChannelType, Util } from "discord.js";
+import { ChannelType, cleanContent } from "discord.js";
 
 import log from "../utils/logger.js";
 import AdditionalMessageData from "../storage/model/AdditionalMessageData.js";
@@ -131,7 +131,7 @@ export const run = async(client, message, args, context) => {
     }
 
     const embed = {
-        title: Util.cleanContent(pollArray[0], message.channel),
+        title: cleanContent(pollArray[0], message.channel),
         description: optionstext,
         timestamp: new Date(),
         author: {
