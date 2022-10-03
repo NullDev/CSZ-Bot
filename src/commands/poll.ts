@@ -1,6 +1,6 @@
 import parseOptions from "minimist";
 import Cron from "croner";
-import { APIEmbed, ChannelType, cleanContent, EmbedData } from "discord.js";
+import { APIEmbed, ChannelType, cleanContent, Snowflake, User } from "discord.js";
 
 import log from "../utils/logger.js";
 import AdditionalMessageData from "../storage/model/AdditionalMessageData.js";
@@ -74,7 +74,7 @@ export const delayedPolls: DelayedPoll[] = [];
 /**
  * Creates a new poll (multiple answers) or straw poll (single selection)
  */
-export const run: CommandFunction = async (_client, message, args, context) => {
+export const run: CommandFunction = async(_client, message, args, context) => {
     const options = parseOptions(args, {
         "boolean": [
             "channel",
@@ -134,7 +134,7 @@ export const run: CommandFunction = async (_client, message, args, context) => {
         author: {
             name: `${options.straw ? "Strawpoll" : "Umfrage"} von ${message.author.username}`,
             icon_url: message.author.displayAvatarURL()
-        },
+        }
     };
 
     const footer = [];
@@ -209,7 +209,7 @@ export const run: CommandFunction = async (_client, message, args, context) => {
     }
 };
 
-export const importPolls = async () => {
+export const importPolls = async() => {
     const additionalDatas = await AdditionalMessageData.findAll();
     let count = 0;
     additionalDatas.forEach(additionalData => {
@@ -231,7 +231,7 @@ export const startCron = (context: BotContext) => {
 
     /* eslint-disable no-await-in-loop */
     // eslint-disable-next-line no-unused-vars
-    const pollCron = new Cron("* * * * *", async () => {
+    const pollCron = new Cron("* * * * *", async() => {
         const currentDate = new Date();
         const pollsToFinish = delayedPolls.filter(delayedPoll => currentDate >= delayedPoll.finishesAt);
         /** @type {import("discord.js").GuildChannel} */
@@ -242,10 +242,10 @@ export const startCron = (context: BotContext) => {
             const delayedPoll = element;
             const message = await /** @type {import("discord.js").TextChannel} */ (channel).messages.fetch(delayedPoll.pollId);
 
-            const users = {};
+            const users: Record<Snowflake, User> = {};
             await Promise.all(delayedPoll.reactions
                 .flat()
-                .filter((x, uidi) => delayedPoll.reactions.indexOf(x) !== uidi)
+                .filter((x, uidi) => delayedPoll.reactions.indexOf(x as any as string[] /* TODO @twobiers this is not correct, but the code isn't in use (yet) */) !== uidi)
                 .map(async uidToResolve => {
                     users[uidToResolve] = await context.client.users.fetch(uidToResolve);
                 }));
@@ -261,8 +261,8 @@ ${x.map(uid => users[uid]).join("\n")}\n\n`
 `,
                 timestamp: formatDateTime(new Date()),
                 author: {
-                    name: `${message.embeds[0].author.name}`,
-                    icon_url: message.embeds[0].author.iconURL
+                    name: `${message.embeds[0].author!.name}`,
+                    icon_url: message.embeds[0].author!.iconURL
                 },
                 footer: {
                     text: `Gesamtabstimmungen: ${delayedPoll.reactions
