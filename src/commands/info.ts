@@ -1,4 +1,4 @@
-import { Client, CommandInteraction, Guild, GuildPremiumTier, ActionRowBuilder, ButtonBuilder, APIEmbed, ButtonStyle, SlashCommandBuilder } from "discord.js";
+import { Client, CommandInteraction, Guild, GuildPremiumTier, ActionRowBuilder, ButtonBuilder, APIEmbed, ButtonStyle, SlashCommandBuilder, ComponentType } from "discord.js";
 import fetch from "node-fetch";
 
 import { ApplicationCommand, CommandResult, MessageCommand } from "./command.js";
@@ -6,18 +6,6 @@ import { GitHubContributor } from "../types.js";
 import type { ProcessableMessage } from "../handler/cmdHandler.js";
 import { assertNever } from "../utils/typeUtils.js";
 
-const buildMessageActionRow = (): ActionRowBuilder[] => {
-    return [
-        new ActionRowBuilder()
-            .addComponents(
-                new ButtonBuilder()
-                    .setURL("https://github.com/NullDev/CSZ-Bot")
-                    .setLabel("GitHub")
-                    .setStyle(ButtonStyle.Link)
-                    .setDisabled(false)
-            )
-    ];
-};
 
 const fetchContributions = async(): Promise<Array<GitHubContributor>> => {
     return fetch("https://api.github.com/repos/NullDev/CSZ-Bot/contributors", {
@@ -150,9 +138,21 @@ export class InfoCommand implements ApplicationCommand, MessageCommand {
         await command.reply({
             embeds: [embed],
             ephemeral: true,
-            components: buildMessageActionRow()
+            components: [
+                {
+                    type: ComponentType.ActionRow,
+                    components: [
+                        {
+                            type: ComponentType.Button,
+                            url: "https://github.com/NullDev/CSZ-Bot",
+                            label: "GitHub",
+                            style: ButtonStyle.Link,
+                            disabled: false
+                        }
+                    ]
+                }
+            ]
         });
-        return;
     }
 
     /**

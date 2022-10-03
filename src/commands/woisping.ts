@@ -86,23 +86,28 @@ export class WoisCommand implements ApplicationCommand {
             });
             return;
         }
-        const row = new ActionRowBuilder()
-            .addComponents(
-                new ButtonBuilder()
-                    .setCustomId("woisbutton")
-                    .setLabel("Ich hab Bock")
-                    .setStyle(ButtonStyle.Success)
-            );
 
         await command.reply({
             content: `${pendingMessagePrefix} ${pinger} hat Bock auf Wois. ${reason ? `Grund dafür ist \`${reason}\`` : ""}. Biste dabei?`,
             allowedMentions: {
                 users: [pinger.id]
             },
-            components: [row]
+            components: [{
+                type: ComponentType.ActionRow,
+                components: [
+                    {
+                        type: ComponentType.Button,
+                        customId: "woisbutton",
+                        label: "Ich hab Bock",
+                        style: ButtonStyle.Success
+                    }
+                ]
+            }]
         });
+
         const message = await command.fetchReply();
         reasons[message.id] = reason;
+
         const pingVoteMap = getOrCreatePingVoteMap(message.id);
         pingVoteMap.add(pinger.id);
     }

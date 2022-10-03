@@ -191,28 +191,34 @@ export class Nickname implements ApplicationCommand {
     }
 
     private static async createNickNameVote(command: CommandInteraction<CacheType>, user: User, nickname: string) {
-        const row = new ActionRowBuilder()
-            .addComponents(
-                new ButtonBuilder()
-                    .setCustomId("nicknameVoteYes")
-                    .setLabel("Guter")
-                    .setStyle(ButtonStyle.Success),
-                new ButtonBuilder()
-                    .setCustomId("nicknameVoteNo")
-                    .setLabel("Lass ma")
-                    .setStyle(ButtonStyle.Danger)
-            );
         await command.reply({
             content: `Eh Brudis, soll ich für ${user} ${nickname} hinzufügen?`,
-            components: [row]
+            components: [{
+                type: ComponentType.ActionRow,
+                components: [
+                    {
+                        type: ComponentType.Button,
+                        customId: "nicknameVoteYes",
+                        label: "Guter",
+                        style: ButtonStyle.Success
+                    },
+                    {
+                        type: ComponentType.Button,
+                        customId: "nicknameVoteNo",
+                        label: "Lass ma",
+                        style: ButtonStyle.Danger
+                    }
+                ]
+            }]
         });
+
         const message = await command.fetchReply();
         ongoingSuggestions[message.id] = { nicknameUserID: user.id, nickname };
+
         getUserVoteMap(message.id)[user.id] = {
             vote: "YES",
             trusted: isTrusted(command.guild?.members.cache.get(user.id)!)
         };
-        return;
     }
 
 
