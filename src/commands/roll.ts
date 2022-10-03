@@ -103,7 +103,7 @@ export const run: CommandFunction = async(_client, message, args) => {
 
     const embed: APIEmbed = {
         title: cleanContent(`${parsed}:`, message.channel),
-        timestamp: formatDateTime(new Date()),
+        timestamp: new Date().toISOString(),
         author: {
             name: `Würfel Resultat für ${message.author.username}`,
             icon_url: message.author.displayAvatarURL()

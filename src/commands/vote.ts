@@ -26,7 +26,7 @@ export const run: CommandFunction = async(_client, message, args, context) => {
 
     const embed = {
         title: `**${cleanContent(parsedArgs.join(" "), message.channel)}**`,
-        timestamp: formatDateTime(new Date()),
+        timestamp: new Date().toISOString(),
         color: 0x9400D3,
         author: {
             name: `Umfrage von ${message.author.username}`,
