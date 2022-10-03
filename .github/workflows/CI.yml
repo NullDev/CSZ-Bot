@@ -26,6 +26,7 @@ jobs:
         context: .
         file: ./Dockerfile
         tags: csz-bot:latest
+        load: true
         cache-from: type=gha
         cache-to: type=gha,mode=max
 
@@ -37,5 +38,5 @@ jobs:
 
     - name: Check if bot starts correctly
       run: |
-        docker run -v "$PWD/config.json:/app/config.json" csz-bot:latest --dry-run
+        docker run --rm -v "$PWD/config.json:/app/config.json" csz-bot:latest --dry-run
 
