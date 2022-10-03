@@ -144,24 +144,25 @@ export const registerAllApplicationCommandsAsGuildCommands = async(
 
     const rest = new REST({ version: "10" }).setToken(token);
 
-    // TODO: Reconsider using batch creation here. Ratelimit kicks in and takes round about 40 seconds to start the bot
+    // TODO: Reconsider using batch creation here. Rate limit kicks in and takes round about 40 seconds to start the bot
     for (const command of applicationCommands) {
         const defaultMemberPermissions = createPermissionSet(command.requiredPermissions ?? ["SendMessages"]);
 
-        const commandCreationData: APIApplicationCommand[] = [
-            {
-                ...command.applicationCommand.toJSON(),
-                dm_permission: false,
-                default_member_permissions: defaultMemberPermissions.toString(),
-                permissions: [
-                    {
-                        id: config.ids.bot_deny_role_id,
-                        type: ApplicationCommandPermissionType.Role,
-                        permission: false
-                    }
-                ]
-            }
-        ];
+        const commandCreationData: APIApplicationCommand =
+        {
+            ...command.applicationCommand.toJSON(),
+            dm_permission: false,
+            default_member_permissions: defaultMemberPermissions.toString(),
+
+            // Somehow, this permission thing does not make any sense, that's why we assert to `any`
+            permissions: [
+                {
+                    id: config.ids.bot_deny_role_id,
+                    type: ApplicationCommandPermissionType.Role,
+                    permission: false
+                }
+            ]
+        } as any;
 
         try {
             const url = Routes.applicationGuildCommands(clientId, context.guild.id);
