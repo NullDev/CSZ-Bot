@@ -249,6 +249,7 @@ client.once("ready", async initializedClient => {
     }
     catch (err) {
         log.error("Error in Ready handler:", err);
+        process.exit(1);
     }
 });
 
