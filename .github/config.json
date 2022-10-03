@@ -35,9 +35,9 @@
         "hauptchat_id": "893179191292477441",
         "default_role_id": "893179190709477407",
         "banned_role_id": "893179190709477409",
-        "bday_role_id": "814411148795314186",
-        "woisgang_role_id": "835225686775300147",
-        "shame_role_id":  "856269806969421844",
+        "bday_role_id": "893179190709477416",
+        "woisgang_role_id": "893179190235508825",
+        "shame_role_id":  "893179190235508822",
 
         "bot_deny_role_id": "1019955091459035199",
         "bot_spam_channel_id": "893179191556706387",
