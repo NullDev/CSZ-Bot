@@ -3,6 +3,8 @@ name: CI
 on:
   pull_request:
     branches: [ master ]
+  push:
+    branches: [ master ]
 
 env:
   DOCKER_BUILDKIT: "1"
@@ -31,12 +33,14 @@ jobs:
         cache-to: type=gha,mode=max
 
     - name: Update configuration
+      if: ${{ github.event_name == 'push' }}
       run: |
         cp .github/config.json config.json
         sed -i 's/<BOT_TOKEN>/${{ secrets.CI_BOT_TOKEN }}/g' config.json
         sed -i 's/<CLIENT_ID>/${{ secrets.CI_CLIENT_ID }}/g' config.json
 
     - name: Check if bot starts correctly
+      if: ${{ github.event_name == 'push' }}
       run: |
         docker run --rm -v "$PWD/config.json:/app/config.json" csz-bot:latest --dry-run
 
