@@ -1,0 +1,58 @@
+{
+    "auth": {
+        "bot_token": "<BOT_TOKEN>",
+        "client_id": "<CLIENT_ID>"
+    },
+    "bot_settings": {
+        "status": "Hi!",
+        "prefix": {
+            "command_prefix": ".",
+            "mod_prefix": "~"
+        },
+        "moderator_roles": [
+            "Moderader"
+        ],
+        "moderator_id": "893179190709477413",
+        "ban_reason_channel_id": "893179190881452117",
+        "woisping_limit": 7200,
+        "woisping_threshold": 2,
+        "quotes": {
+            "emoji_name": "zitat",
+            "emoji_id": "905042096724017212",
+            "allowed_group_ids": [
+                "893179190709477407"
+            ],
+            "quote_threshold": 2,
+            "anonymous_channel_ids": [],
+            "blacklisted_channel_ids": [],
+            "default_target_channel_id": "893179191556706386",
+            "target_channel_overrides": []
+        },
+        "flame_trusted_user_on_bot_ping": false
+    },
+    "ids": {
+        "guild_id": "893179190235508819",
+        "hauptchat_id": "893179191292477441",
+        "default_role_id": "893179190709477407",
+        "banned_role_id": "893179190709477409",
+        "bday_role_id": "893179190709477416",
+        "woisgang_role_id": "893179190235508825",
+        "shame_role_id":  "893179190235508822",
+
+        "bot_deny_role_id": "1025870480374247485",
+        "bot_spam_channel_id": "893179191556706387",
+
+        "haupt_woischat_id": "893179191825162372",
+        "woischat_text_id": "893179191825162371",
+
+        "gruendervaeter_role_id": "893179190709477411",
+        "gruendervaeter_banned_role_id": "893179190571044916",
+        "trusted_role_id": "893179190571044915",
+        "trusted_banned_role_id": "893179190571044914",
+        "emotifizierer_role_id": "893179190709477410",
+
+        "banned_channel_id": "893179193741942888",
+        "votes_channel_id": "893179191556706384",
+        "bot_log_channel_id": "893179191556706387"
+    }
+}

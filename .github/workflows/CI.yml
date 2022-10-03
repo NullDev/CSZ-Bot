@@ -13,5 +13,30 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Build Docker Image
-      run: docker build . -t csz-bot:latest
+
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v2
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
+    - name: Build and export
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        file: ./Dockerfile
+        tags: csz-bot:latest
+        load: true
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+    - name: Update configuration
+      run: |
+        cp .github/config.json config.json
+        sed -i 's/<BOT_TOKEN>/${{ secrets.CI_BOT_TOKEN }}/g' config.json
+        sed -i 's/<CLIENT_ID>/${{ secrets.CI_CLIENT_ID }}/g' config.json
+
+    - name: Check if bot starts correctly
+      run: |
+        docker run --rm -v "$PWD/config.json:/app/config.json" csz-bot:latest --dry-run
+
