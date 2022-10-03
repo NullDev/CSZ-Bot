@@ -6,6 +6,7 @@ import {
     Interaction,
     Message,
     MessageComponentInteraction,
+    PermissionFlagsBits,
     PermissionsBitField,
     PermissionsString,
     REST
@@ -136,43 +137,36 @@ const createPermissionSet = (permissions: readonly PermissionsString[]): bigint 
  * Registers all defined applicationCommands as guild commands
  * We're overwriting ALL, therefore no deletion is necessary
  */
-export const registerAllApplicationCommandsAsGuildCommands = async(
+export const registerAllApplicationCommandsAsGuildCommands = async (
     context: BotContext
 ): Promise<void> => {
     const clientId = context.rawConfig.auth.client_id;
     const token = context.rawConfig.auth.bot_token;
 
-    const rest = new REST({ version: "9" }).setToken(token);
+    const rest = new REST({ version: "10" }).setToken(token);
 
-    // TODO: Reconsider using batch creation here. Ratelimit kicks in and takes round about 40 seconds to start the butt
+    // TODO: Reconsider using batch creation here. Ratelimit kicks in and takes round about 40 seconds to start the bot
     for (const command of applicationCommands) {
         const defaultMemberPermissions = createPermissionSet(command.requiredPermissions ?? ["SendMessages"]);
+
+        const commandCreationData: APIApplicationCommand[] = [
+            {
+                ...command.applicationCommand.toJSON(),
+                dm_permission: false,
+                default_member_permissions: defaultMemberPermissions.toString(),
+                permissions: [
+                    {
+                        id: config.ids.bot_deny_role_id,
+                        type: ApplicationCommandPermissionType.Role,
+                        permission: false
+                    }
+                ]
+            }
+        ];
+
         try {
-            const commandCreationData:
-                | APIApplicationCommand
-                | {
-                    dm_permission: boolean;
-                    default_member_permissions: string;
-                    permissions: ApplicationCommandPermissionType[];
-                } = {
-                    ...command.applicationCommand.toJSON(),
-                    dm_permission: false,
-                    default_member_permissions: defaultMemberPermissions.toString(),
-                    permissions: [
-                        {
-                            id: config.ids.bot_deny_role_id,
-                            type: "ROLE",
-                            permission: false
-                        }
-                    ]
-                };
-            // eslint-disable-next-line no-unused-vars
-            (await rest.post(
-                Routes.applicationGuildCommands(clientId, context.guild.id),
-                {
-                    body: commandCreationData
-                }
-            )) as { id: string; name: string };
+            const url = Routes.applicationGuildCommands(clientId, context.guild.id);
+            await rest.post(url, { body: commandCreationData });
         }
         catch (err) {
             log.error(
@@ -255,7 +249,7 @@ const checkPermissions = (member: GuildMember, permissions: ReadonlyArray<Permis
  * was found or an error if the command would be a mod command but the
  * invoking user is not a mod
  */
-const commandMessageHandler = async(
+const commandMessageHandler = async (
     commandString: string,
     message: ProcessableMessage,
     client: Client,
@@ -338,7 +332,7 @@ export const handleInteractionEvent = (
     return Promise.reject(new Error("Not supported"));
 };
 
-export const messageCommandHandler = async(
+export const messageCommandHandler = async (
     message: Message,
     client: Client,
     context: BotContext
