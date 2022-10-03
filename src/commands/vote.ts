@@ -3,7 +3,6 @@ import { cleanContent } from "discord.js";
 
 import { getConfig } from "../utils/configHandler.js";
 import type { CommandFunction } from "../types.js";
-import { formatDateTime } from "../utils/dateUtils.js";
 
 const config = getConfig();
 
@@ -26,7 +25,7 @@ export const run: CommandFunction = async(_client, message, args, context) => {
 
     const embed = {
         title: `**${cleanContent(parsedArgs.join(" "), message.channel)}**`,
-        timestamp: formatDateTime(new Date()),
+        timestamp: new Date().toISOString(),
         color: 0x9400D3,
         author: {
             name: `Umfrage von ${message.author.username}`,

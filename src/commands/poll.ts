@@ -7,7 +7,6 @@ import AdditionalMessageData from "../storage/model/AdditionalMessageData.js";
 import { getConfig } from "../utils/configHandler.js";
 import { BotContext } from "../context.js";
 import { CommandFunction } from "../types.js";
-import { formatDateTime } from "../utils/dateUtils.js";
 
 const config = getConfig();
 
@@ -130,7 +129,7 @@ export const run: CommandFunction = async(_client, message, args, context) => {
     const embed: APIEmbed = {
         title: cleanContent(pollArray[0], message.channel),
         description: optionstext,
-        timestamp: formatDateTime(new Date()),
+        timestamp: new Date().toISOString(),
         author: {
             name: `${options.straw ? "Strawpoll" : "Umfrage"} von ${message.author.username}`,
             icon_url: message.author.displayAvatarURL()
@@ -259,7 +258,7 @@ ${x.map(uid => users[uid]).join("\n")}\n\n`
                     )
                     .join("")}
 `,
-                timestamp: formatDateTime(new Date()),
+                timestamp: new Date().toISOString(),
                 author: {
                     name: `${message.embeds[0].author!.name}`,
                     icon_url: message.embeds[0].author!.iconURL
