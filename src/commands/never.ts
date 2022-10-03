@@ -1,6 +1,5 @@
 import fetch from "node-fetch";
-import { CacheType, CommandInteraction, Client, Message, EmbedBuilder, GuildMember } from "discord.js";
-import { SlashCommandBuilder, SlashCommandStringOption } from "@discordjs/builders";
+import { CacheType, CommandInteraction, Client, Message, EmbedBuilder, GuildMember, SlashCommandBuilder, SlashCommandStringOption } from "discord.js";
 
 import { ApplicationCommand, MessageCommand } from "./command.js";
 import type { ProcessableMessage } from "../handler/cmdHandler.js";
@@ -57,10 +56,11 @@ export class NeverCommand implements ApplicationCommand, MessageCommand {
     applicationCommand = new SlashCommandBuilder()
         .setName(this.name)
         .setDescription(this.description)
-        .addStringOption(new SlashCommandStringOption()
-            .setName("prompt")
-            .setDescription("Wat haste denn noch nie?")
-            .setRequired(false)
+        .addStringOption(
+            new SlashCommandStringOption()
+                .setName("prompt")
+                .setDescription("Wat haste denn noch nie?")
+                .setRequired(false)
         );
 
     async handleInteraction(command: CommandInteraction<CacheType>): Promise<void> {
@@ -72,7 +72,7 @@ export class NeverCommand implements ApplicationCommand, MessageCommand {
         const author = command.guild?.members.resolve(command.user);
         const customInput = command.options.getString("prompt", false) || null;
 
-        if(!author) {
+        if (!author) {
             throw new Error("Couldn't resolve guild member");
         }
 
@@ -94,7 +94,7 @@ export class NeverCommand implements ApplicationCommand, MessageCommand {
         const author = message.guild?.members.resolve(message.author);
         const customInput = message.content.slice(`${context.rawConfig.bot_settings.prefix.command_prefix}mock `.length);
 
-        if(!author) {
+        if (!author) {
             throw new Error("Couldn't resolve guild member");
         }
 

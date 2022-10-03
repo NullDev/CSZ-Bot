@@ -2,8 +2,7 @@
 // = Copyright (c) Ehrenvio der G = //
 // ================================ //
 
-import {  Client, EmbedBuilder, GuildMember } from "discord.js";
-import { SlashCommandBuilder } from "@discordjs/builders";
+import {  Client, EmbedBuilder, GuildMember, SlashCommandBuilder } from "discord.js";
 import { CommandInteraction, CacheType } from "discord.js";
 import fetch from "node-fetch";
 

@@ -1,5 +1,4 @@
-import { SlashCommandBuilder, SlashCommandStringOption, SlashCommandUserOption } from "@discordjs/builders";
-import { Client, CommandInteraction, GuildMember } from "discord.js";
+import { Client, CommandInteraction, GuildMember, SlashCommandBuilder, SlashCommandStringOption, SlashCommandUserOption } from "discord.js";
 
 import { ApplicationCommand, CommandResult } from "./command.js";
 
@@ -35,11 +34,18 @@ export class GoogleCommand implements ApplicationCommand {
         return new SlashCommandBuilder()
             .setName(this.name)
             .setDescription(this.description)
-            .addStringOption(new SlashCommandStringOption()
-                .setRequired(true)
-                .setName("searchword")
-                .setDescription("Das, wonach du suchen willst"))
-            .addUserOption(new SlashCommandUserOption().setName("dau").setRequired(false).setDescription("Der User, der nichtmal googln kann"));
+            .addStringOption(
+                new SlashCommandStringOption()
+                    .setRequired(true)
+                    .setName("searchword")
+                    .setDescription("Das, wonach du suchen willst")
+            )
+            .addUserOption(
+                new SlashCommandUserOption()
+                    .setName("dau")
+                    .setRequired(false)
+                    .setDescription("Der User, der nichtmal googln kann")
+            );
     }
 
     async handleInteraction(command: CommandInteraction, client: Client<boolean>): Promise<CommandResult> {

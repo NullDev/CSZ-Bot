@@ -1,7 +1,6 @@
 import * as fs from "node:fs/promises";
 import nodeCanvas from "canvas";
-import { ImageSize, Client, CommandInteraction, GuildMember, Snowflake } from "discord.js";
-import { SlashCommandBuilder, SlashCommandUserOption } from "@discordjs/builders";
+import { ImageSize, Client, CommandInteraction, GuildMember, Snowflake, SlashCommandBuilder, SlashCommandUserOption } from "discord.js";
 
 import Stempel from "../storage/model/Stempel.js";
 import log from "../utils/logger.js";

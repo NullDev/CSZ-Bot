@@ -1,5 +1,4 @@
-import { SlashCommandBuilder, SlashCommandUserOption } from "@discordjs/builders";
-import { CommandInteraction, GuildMember, PermissionsString } from "discord.js";
+import { CommandInteraction, GuildMember, PermissionsString, SlashCommandBuilder, SlashCommandUserOption } from "discord.js";
 import { Message, Client } from "discord.js";
 
 import Ban from "../../storage/model/Ban.js";

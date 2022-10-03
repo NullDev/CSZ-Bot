@@ -1,5 +1,4 @@
-import { SlashCommandBuilder, SlashCommandSubcommandBuilder, SlashCommandUserOption } from "@discordjs/builders";
-import { Client, CommandInteraction, InteractionReplyOptions, MessagePayload } from "discord.js";
+import { Client, CommandInteraction, InteractionReplyOptions, MessagePayload, SlashCommandBuilder, SlashCommandSubcommandBuilder, SlashCommandUserOption } from "discord.js";
 
 import { ApplicationCommand, CommandResult } from "./command.js";
 import { EhreGroups, EhrePoints, EhreVotes } from "../storage/model/Ehre.js";
@@ -72,9 +71,12 @@ export class EhreCommand implements ApplicationCommand {
                 new SlashCommandSubcommandBuilder()
                     .setName("add")
                     .setDescription("Ehre einen User")
-                    .addUserOption(new SlashCommandUserOption()
-                        .setRequired(true)
-                        .setName("user").setDescription("Dem ehrenhaften User")))
+                    .addUserOption(
+                        new SlashCommandUserOption()
+                            .setRequired(true)
+                            .setName("user").setDescription("Dem ehrenhaften User")
+                    )
+            )
             .addSubcommand(
                 new SlashCommandSubcommandBuilder()
                     .setName("tabelle")

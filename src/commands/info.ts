@@ -1,5 +1,4 @@
-import { SlashCommandBuilder } from "@discordjs/builders";
-import { Client, CommandInteraction, Guild, GuildPremiumTier, ActionRowBuilder, ButtonBuilder, APIEmbed, ButtonStyle } from "discord.js";
+import { Client, CommandInteraction, Guild, GuildPremiumTier, ActionRowBuilder, ButtonBuilder, APIEmbed, ButtonStyle, SlashCommandBuilder } from "discord.js";
 import fetch from "node-fetch";
 
 import { ApplicationCommand, CommandResult, MessageCommand } from "./command.js";

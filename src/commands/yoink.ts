@@ -1,9 +1,9 @@
 import {
     Client, CommandInteraction, Guild,
     TextBasedChannel,
-    parseEmoji
+    parseEmoji,
+    SlashCommandBuilder, SlashCommandStringOption
 } from "discord.js";
-import { SlashCommandBuilder, SlashCommandStringOption } from "@discordjs/builders";
 
 import { isEmotifizierer, isMod } from "../utils/userUtils.js";
 import { ApplicationCommand, MessageCommand } from "./command.js";

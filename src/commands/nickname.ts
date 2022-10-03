@@ -1,17 +1,14 @@
 import {
-    SlashCommandBuilder,
-    SlashCommandStringOption,
-    SlashCommandSubcommandBuilder,
-    SlashCommandUserOption
-} from "@discordjs/builders";
-
-import {
     CommandInteraction,
     Client,
     GuildMember,
     User,
     CacheType,
-    ActionRowBuilder, ButtonBuilder, MessageComponentInteraction, ButtonStyle
+    ActionRowBuilder, ButtonBuilder, MessageComponentInteraction, ButtonStyle,
+    SlashCommandBuilder,
+    SlashCommandStringOption,
+    SlashCommandSubcommandBuilder,
+    SlashCommandUserOption
 } from "discord.js";
 
 import { ApplicationCommand, CommandResult, UserInteraction } from "./command.js";
@@ -60,44 +57,58 @@ export class Nickname implements ApplicationCommand {
                 new SlashCommandSubcommandBuilder()
                     .setName("add")
                     .setDescription("Fügt einen nickname hinzu brudi")
-                    .addUserOption(new SlashCommandUserOption()
-                        .setRequired(true)
-                        .setName("user")
-                        .setDescription("Wem du tun willst"))
-                    .addStringOption(new SlashCommandStringOption()
-                        .setRequired(true)
-                        .setName("nickname")
-                        .setDescription("Was du tun willst")
-                    ))
+                    .addUserOption(
+                        new SlashCommandUserOption()
+                            .setRequired(true)
+                            .setName("user")
+                            .setDescription("Wem du tun willst")
+                    )
+                    .addStringOption(
+                        new SlashCommandStringOption()
+                            .setRequired(true)
+                            .setName("nickname")
+                            .setDescription("Was du tun willst")
+                    )
+            )
             .addSubcommand(
                 new SlashCommandSubcommandBuilder()
                     .setName("delete")
                     .setDescription("Entfernt einen Nickname brudi")
-                    .addUserOption(new SlashCommandUserOption()
-                        .setRequired(true)
-                        .setName("user")
-                        .setDescription("Wem du tun willst"))
-                    .addStringOption(new SlashCommandStringOption()
-                        .setRequired(true)
-                        .setName("nickname")
-                        .setDescription("Was du tun willst")
-                    ))
+                    .addUserOption(
+                        new SlashCommandUserOption()
+                            .setRequired(true)
+                            .setName("user")
+                            .setDescription("Wem du tun willst")
+                    )
+                    .addStringOption(
+                        new SlashCommandStringOption()
+                            .setRequired(true)
+                            .setName("nickname")
+                            .setDescription("Was du tun willst")
+                    )
+            )
             .addSubcommand(
                 new SlashCommandSubcommandBuilder()
                     .setName("deleteall")
                     .setDescription("Entfernt alle nicknames brudi")
-                    .addUserOption(new SlashCommandUserOption()
-                        .setRequired(true)
-                        .setName("user")
-                        .setDescription("Wem du tun willst")))
+                    .addUserOption(
+                        new SlashCommandUserOption()
+                            .setRequired(true)
+                            .setName("user")
+                            .setDescription("Wem du tun willst")
+                    )
+            )
             .addSubcommand(
                 new SlashCommandSubcommandBuilder()
                     .setName("list")
                     .setDescription("Zeigt alle nicknames brudi")
-                    .addUserOption(new SlashCommandUserOption()
-                        .setRequired(true)
-                        .setName("user")
-                        .setDescription("Wem du tun willst")));
+                    .addUserOption(
+                        new SlashCommandUserOption()
+                            .setRequired(true)
+                            .setName("user")
+                            .setDescription("Wem du tun willst")
+                    )
+            );
     }
 
     async handleInteraction(command: CommandInteraction, client: Client<boolean>): Promise<CommandResult> {
@@ -196,7 +207,7 @@ export class Nickname implements ApplicationCommand {
             components: [row]
         });
         const message = await command.fetchReply();
-        ongoingSuggestions[message.id] = {nicknameUserID: user.id, nickname};
+        ongoingSuggestions[message.id] = { nicknameUserID: user.id, nickname };
         getUserVoteMap(message.id)[user.id] = {
             vote: "YES",
             trusted: isTrusted(command.guild?.members.cache.get(user.id)!)
@@ -231,13 +242,13 @@ export class NicknameButtonHandler implements UserInteraction {
 
         const istrusted = isTrusted(interaction.guild?.members.cache.get(interaction.user.id)!);
         if (interaction.customId === "nicknameVoteYes") {
-            userVoteMap[interaction.user.id] = {vote: "YES", trusted: istrusted};
+            userVoteMap[interaction.user.id] = { vote: "YES", trusted: istrusted };
         }
         else if (interaction.customId === "nicknameVoteNo") {
-            userVoteMap[interaction.user.id] = {vote: "NO", trusted: istrusted};
+            userVoteMap[interaction.user.id] = { vote: "NO", trusted: istrusted };
         }
         // evaluate the Uservotes
-        const votes:UserVote[] = Object.values(userVoteMap);
+        const votes: UserVote[] = Object.values(userVoteMap);
         if (this.hasEnoughVotes(votes, "NO")) {
             await interaction.update({
                 content: `Der Vorschlag: \`${suggestion.nickname}\` für <@${suggestion.nicknameUserID}> war echt nicht so geil`,
@@ -260,10 +271,10 @@ export class NicknameButtonHandler implements UserInteraction {
             });
             return;
         }
-        await interaction.reply({content: "Hast abgestimmt", ephemeral: true});
+        await interaction.reply({ content: "Hast abgestimmt", ephemeral: true });
     }
 
-    private hasEnoughVotes(votes:UserVote[], voteType:Vote) {
+    private hasEnoughVotes(votes: UserVote[], voteType: Vote) {
         return votes.filter(vote => vote.vote === voteType).reduce((sum, uservote) => sum + getWeightOfUserVote(uservote), 0) >= this.threshold;
     }
 }

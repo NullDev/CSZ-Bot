@@ -1,5 +1,4 @@
-import { Client, GuildMember, EmbedData, InteractionReplyOptions, CommandInteraction, CacheType } from "discord.js";
-import { SlashCommandBuilder, SlashCommandStringOption, SlashCommandSubcommandBuilder } from "@discordjs/builders";
+import { Client, GuildMember, EmbedData, InteractionReplyOptions, CommandInteraction, CacheType, SlashCommandBuilder, SlashCommandStringOption, SlashCommandSubcommandBuilder } from "discord.js";
 
 import { ApplicationCommand, CommandResult, MessageCommand } from "./command.js";
 import { substringAfter } from "../utils/stringUtils.js";
@@ -178,7 +177,7 @@ export class SdmCommand implements MessageCommand, ApplicationCommand {
         const member = command.member as GuildMember;
         if (subcommand === "ja-nein") {
             const msg = createSecureDecisionMessage(question, member);
-            await command.reply(                msg            );
+            await command.reply(msg);
             return;
         }
 
@@ -193,7 +192,7 @@ export class SdmCommand implements MessageCommand, ApplicationCommand {
             const options = [o1, o2, o3, o4, o5].filter(o => o !== null) as string[];
 
             const msg = createSecureDecisionMessage(question, member, options);
-            await command.reply(                msg            );
+            await command.reply(msg);
             return;
         }
         return Promise.reject(new Error(`Subcommand ${subcommand} not implemented.`));

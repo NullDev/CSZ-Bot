@@ -3,8 +3,7 @@ import { createWriteStream } from "node:fs";
 import { readdir } from "node:fs/promises";
 
 import fetch from "node-fetch";
-import { SlashCommandBuilder, SlashCommandStringOption, SlashCommandSubcommandBuilder } from "@discordjs/builders";
-import { CommandInteraction, CacheType, Client, PermissionsString } from "discord.js";
+import { CommandInteraction, CacheType, Client, PermissionsString, SlashCommandBuilder, SlashCommandStringOption, SlashCommandSubcommandBuilder } from "discord.js";
 
 import { connectAndPlaySaufen, soundDir } from "../handler/voiceHandler.js";
 import { ApplicationCommand } from "./command.js";
@@ -26,7 +25,8 @@ export class Saufen implements ApplicationCommand {
         .addSubcommand(
             new SlashCommandSubcommandBuilder()
                 .setName("los")
-                .setDescription("LOS JETZT AUF GAR KEIN REDEN"))
+                .setDescription("LOS JETZT AUF GAR KEIN REDEN")
+        )
         .addSubcommand(
             new SlashCommandSubcommandBuilder()
                 .setName("select")
@@ -35,20 +35,25 @@ export class Saufen implements ApplicationCommand {
                     new SlashCommandStringOption()
                         .setRequired(true)
                         .setName("sound")
-                        .setDescription("Soundfile. Bruder mach vorher list ja")))
+                        .setDescription("Soundfile. Bruder mach vorher list ja")
+                )
+        )
         .addSubcommand(
             new SlashCommandSubcommandBuilder()
                 .setName("list")
-                .setDescription("Listet alle Woismotivatoren"))
+                .setDescription("Listet alle Woismotivatoren")
+        )
         .addSubcommand(
             new SlashCommandSubcommandBuilder()
                 .setName("add")
                 .setDescription("Fügt einen sound hinzu brudi")
-                .addStringOption(new SlashCommandStringOption()
-                    .setRequired(true)
-                    .setName("sound")
-                    .setDescription("Link zum File (Bitte nur audio files bro)")
-                ));
+                .addStringOption(
+                    new SlashCommandStringOption()
+                        .setRequired(true)
+                        .setName("sound")
+                        .setDescription("Link zum File (Bitte nur audio files bro)")
+                )
+        );
 
     async handleInteraction(command: CommandInteraction<CacheType>, client: Client<boolean>, context: BotContext): Promise<void> {
         if (!command.isChatInputCommand()) {

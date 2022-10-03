@@ -1,5 +1,4 @@
-import { SlashCommandBuilder, SlashCommandUserOption } from "@discordjs/builders";
-import { CommandInteraction, Client, GuildMember } from "discord.js";
+import { CommandInteraction, Client, GuildMember, SlashCommandBuilder, SlashCommandUserOption } from "discord.js";
 
 import Stempel from "../storage/model/Stempel.js";
 import { ApplicationCommand, CommandResult } from "./command.js";

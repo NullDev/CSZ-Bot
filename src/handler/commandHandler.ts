@@ -127,16 +127,16 @@ const lastSpecialCommands: Record<string, number> = specialCommands.reduce(
 );
 
 const createPermissionSet = (permissions: readonly PermissionsString[]): bigint => {
-    const flags = new PermissionsBitField()
+    const flags = new PermissionsBitField();
     flags.add(...permissions);
     return flags.bitfield;
-}
+};
 
 /**
  * Registers all defined applicationCommands as guild commands
  * We're overwriting ALL, therefore no deletion is necessary
  */
-export const registerAllApplicationCommandsAsGuildCommands = async (
+export const registerAllApplicationCommandsAsGuildCommands = async(
     context: BotContext
 ): Promise<void> => {
     const clientId = context.rawConfig.auth.client_id;
@@ -155,17 +155,17 @@ export const registerAllApplicationCommandsAsGuildCommands = async (
                     default_member_permissions: string;
                     permissions: ApplicationCommandPermissionType[];
                 } = {
-                ...command.applicationCommand.toJSON(),
-                dm_permission: false,
-                default_member_permissions: defaultMemberPermissions.toString(),
-                permissions: [
-                    {
-                        id: config.ids.bot_deny_role_id,
-                        type: "ROLE",
-                        permission: false
-                    }
-                ]
-            };
+                    ...command.applicationCommand.toJSON(),
+                    dm_permission: false,
+                    default_member_permissions: defaultMemberPermissions.toString(),
+                    permissions: [
+                        {
+                            id: config.ids.bot_deny_role_id,
+                            type: "ROLE",
+                            permission: false
+                        }
+                    ]
+                };
             // eslint-disable-next-line no-unused-vars
             (await rest.post(
                 Routes.applicationGuildCommands(clientId, context.guild.id),
@@ -255,7 +255,7 @@ const checkPermissions = (member: GuildMember, permissions: ReadonlyArray<Permis
  * was found or an error if the command would be a mod command but the
  * invoking user is not a mod
  */
-const commandMessageHandler = async (
+const commandMessageHandler = async(
     commandString: string,
     message: ProcessableMessage,
     client: Client,
@@ -338,7 +338,7 @@ export const handleInteractionEvent = (
     return Promise.reject(new Error("Not supported"));
 };
 
-export const messageCommandHandler = async (
+export const messageCommandHandler = async(
     message: Message,
     client: Client,
     context: BotContext

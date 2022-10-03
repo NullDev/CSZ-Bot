@@ -1,5 +1,4 @@
-import { CacheType, Client, CommandInteraction, TextBasedChannel } from "discord.js";
-import { SlashCommandBuilder, SlashCommandStringOption } from "@discordjs/builders";
+import { CacheType, Client, CommandInteraction, SlashCommandBuilder, SlashCommandStringOption, TextBasedChannel } from "discord.js";
 import * as chrono from "chrono-node";
 
 import { MessageCommand, ApplicationCommand } from "./command.js";

@@ -3,9 +3,8 @@ import {
     ButtonBuilder,
     MessageComponentInteraction,
     ButtonStyle,
-    cleanContent
+    cleanContent, SlashCommandBuilder, SlashCommandStringOption
 } from "discord.js";
-import { SlashCommandBuilder, SlashCommandStringOption } from "@discordjs/builders";
 
 import { ApplicationCommand, CommandResult, UserInteraction } from "./command.js";
 import log from "../utils/logger.js";

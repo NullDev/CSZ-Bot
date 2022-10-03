@@ -1,5 +1,4 @@
-import { SlashCommandBuilder, SlashCommandStringOption } from "@discordjs/builders";
-import { CacheType, Client, CommandInteraction, GuildMember, Message, EmbedBuilder } from "discord.js";
+import { CacheType, Client, CommandInteraction, GuildMember, Message, EmbedBuilder, SlashCommandBuilder, SlashCommandStringOption } from "discord.js";
 
 import { BotContext } from "../context.js";
 import type { ProcessableMessage } from "../handler/cmdHandler.js";
