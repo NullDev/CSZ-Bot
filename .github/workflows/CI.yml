@@ -38,7 +38,7 @@ jobs:
         name: csz-bot-image
 
     - name: Import Docker Image
-      run: docker import csz-bot
+      run: docker import csz-bot.tar
 
     - name: Build Docker Image
       run: docker build . -t csz-bot:latest
