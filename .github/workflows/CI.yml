@@ -17,6 +17,32 @@ jobs:
     - name: Build Docker Image
       run: docker build . -t csz-bot:latest
 
+    - name: Save Docker image
+      run: docker save csz-bot:latest > csz-bot.tar
+
+    - uses: actions/upload-artifact@v3
+      with:
+        name: csz-bot-image
+        path: csz-bot.tar
+
+  start:
+    needs: [ "build" ]
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - uses: actions/download-artifact@v3
+      with:
+        name: csz-bot-image
+
+    - name: Import Docker Image
+      run: docker import csz-bot
+
+    - name: Build Docker Image
+      run: docker build . -t csz-bot:latest
+
     - name: update configuration
       run: |
         cp .github/config.json config.json
@@ -26,3 +52,4 @@ jobs:
     - name: start se bot
       run: |
         docker run -v "$PWD/config.json:/app/config.json" csz-bot:latest --dry-run
+
