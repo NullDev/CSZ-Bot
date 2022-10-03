@@ -19,13 +19,11 @@ const pendingMessagePrefix = "*(Pending-Woisgang-Ping, bitte zustimmen)*";
 // Internal storage, no need to save this persistent
 let lastPing = 0;
 const reasons: Record<string, string> = {};
-const pingvoteMap: Record<string, Set<string>> = {};
+const pingVoteMap: Record<string, Set<string>> = {};
 
-const getPingVoteMap = (messageid: string): Set<string> => {
-    if (pingvoteMap[messageid] === undefined) {
-        pingvoteMap[messageid] = new Set();
-    }
-    return pingvoteMap[messageid];
+const getOrCreatePingVoteMap = (messageId: string): Set<string> => {
+    pingVoteMap[messageId] ??= new Set();
+    return pingVoteMap[messageId];
 };
 
 const getMessage = (reason: string, usersVotedYes: string[] = []) => {
@@ -106,7 +104,7 @@ export class WoisCommand implements ApplicationCommand {
         });
         const message = await command.fetchReply();
         reasons[message.id] = reason;
-        const pingVoteMap = getPingVoteMap(message.id);
+        const pingVoteMap = getOrCreatePingVoteMap(message.id);
         pingVoteMap.add(pinger.id);
     }
 }
@@ -130,7 +128,7 @@ export class WoisButton implements UserInteraction {
             return;
         }
 
-        const pingVoteMap = getPingVoteMap(command.message.id);
+        const pingVoteMap = getOrCreatePingVoteMap(command.message.id);
         pingVoteMap.add(member.id);
         const amount = pingVoteMap.size;
         const now = Date.now();
