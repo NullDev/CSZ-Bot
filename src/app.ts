@@ -41,9 +41,9 @@ const devname = conf.getAuthor();
 const splashPadding = 12 + appname.length + version.toString().length;
 
 console.log(
-    `\n #${"-".repeat(splashPadding)}#\n` +
-    ` # Started ${appname} v${version} #\n` +
-    ` #${"-".repeat(splashPadding)}#\n\n` +
+    `\n ┌${"─".repeat(splashPadding)}┐\n` +
+    ` │ Started ${appname} v${version} │\n` +
+    ` └${"─".repeat(splashPadding)}┘\n\n` +
     ` Copyright (c) ${(new Date()).getFullYear()} ${devname}\n`
 );
 
