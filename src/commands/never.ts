@@ -1,6 +1,5 @@
 import fetch from "node-fetch";
-import { CacheType, CommandInteraction, Client, Message, MessageEmbed, GuildMember } from "discord.js";
-import { SlashCommandBuilder, SlashCommandStringOption } from "@discordjs/builders";
+import { CacheType, CommandInteraction, Client, Message, EmbedBuilder, GuildMember, SlashCommandBuilder, SlashCommandStringOption } from "discord.js";
 
 import { ApplicationCommand, MessageCommand } from "./command.js";
 import type { ProcessableMessage } from "../handler/cmdHandler.js";
@@ -37,9 +36,9 @@ async function getPrompt(userPrompt: Prompt | null): Promise<NeverPrompt> {
     return promptResponse.json() as unknown as NeverPrompt;
 }
 
-function buildEmbed(prompt: NeverPrompt, author: GuildMember): MessageEmbed {
+function buildEmbed(prompt: NeverPrompt, author: GuildMember) {
     const emoji = prompt.level !== undefined ? QUESTION_LEVEL_EMOJI_MAP[prompt.level] : "👀";
-    return new MessageEmbed()
+    return new EmbedBuilder()
         .setTitle(prompt.prompt)
         .setColor(0x2ecc71)
         .setAuthor({
@@ -57,17 +56,23 @@ export class NeverCommand implements ApplicationCommand, MessageCommand {
     applicationCommand = new SlashCommandBuilder()
         .setName(this.name)
         .setDescription(this.description)
-        .addStringOption(new SlashCommandStringOption()
-            .setName("prompt")
-            .setDescription("Wat haste denn noch nie?")
-            .setRequired(false)
+        .addStringOption(
+            new SlashCommandStringOption()
+                .setName("prompt")
+                .setDescription("Wat haste denn noch nie?")
+                .setRequired(false)
         );
 
-    async handleInteraction(command: CommandInteraction<CacheType>, _client: Client<boolean>): Promise<void> {
+    async handleInteraction(command: CommandInteraction<CacheType>): Promise<void> {
+        if (!command.isChatInputCommand()) {
+            // TODO: Solve this on a type level
+            return;
+        }
+
         const author = command.guild?.members.resolve(command.user);
         const customInput = command.options.getString("prompt", false) || null;
 
-        if(!author) {
+        if (!author) {
             throw new Error("Couldn't resolve guild member");
         }
 
@@ -89,7 +94,7 @@ export class NeverCommand implements ApplicationCommand, MessageCommand {
         const author = message.guild?.members.resolve(message.author);
         const customInput = message.content.slice(`${context.rawConfig.bot_settings.prefix.command_prefix}mock `.length);
 
-        if(!author) {
+        if (!author) {
             throw new Error("Couldn't resolve guild member");
         }
 

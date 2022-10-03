@@ -1,5 +1,6 @@
 {
     "files.eol": "\n",
+    "cSpell.language": "de,en",
     "editor.codeActionsOnSave": {
         "source.fixAll.eslint": true
     },

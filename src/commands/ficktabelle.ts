@@ -34,7 +34,6 @@ export class FicktabelleCommand implements MessageCommand {
             embeds: [
                 {
                     image: { url: FICKTABELLE_URL },
-                    timestamp: new Date(),
                     author: {
                         name: `${message.author.username} ${titles[Math.max(0, Math.floor(Math.random() * titles.length))]}`,
                         icon_url: message.author.displayAvatarURL()

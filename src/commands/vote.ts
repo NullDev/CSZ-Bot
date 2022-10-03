@@ -1,16 +1,16 @@
 import parseOptions from "minimist";
-import { Util } from "discord.js";
+import { cleanContent } from "discord.js";
 
 import { getConfig } from "../utils/configHandler.js";
+import type { CommandFunction } from "../types.js";
+import { formatDateTime } from "../utils/dateUtils.js";
 
 const config = getConfig();
 
 /**
  * Creates a new poll (vote; yes/no)
- *
- * @type {import("../types").CommandFunction}
  */
-export const run = async(client, message, args, context) => {
+export const run: CommandFunction = async(_client, message, args, context) => {
     const options = parseOptions(args, {
         "boolean": [
             "channel"
@@ -25,8 +25,8 @@ export const run = async(client, message, args, context) => {
     if (!parsedArgs.length) return "Bruder da ist keine Frage :c";
 
     const embed = {
-        title: `**${Util.cleanContent(parsedArgs.join(" "), message.channel)}**`,
-        timestamp: new Date(),
+        title: `**${cleanContent(parsedArgs.join(" "), message.channel)}**`,
+        timestamp: formatDateTime(new Date()),
         color: 0x9400D3,
         author: {
             name: `Umfrage von ${message.author.username}`,
@@ -34,7 +34,6 @@ export const run = async(client, message, args, context) => {
         }
     };
 
-    /** @type {import("discord.js").TextChannel} */
     const channel = options.channel
         ? context.textChannels.votes
         : message.channel;

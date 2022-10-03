@@ -1,5 +1,4 @@
-import { SlashCommandBuilder, SlashCommandStringOption } from "@discordjs/builders";
-import type { Client, CommandInteraction } from "discord.js";
+import { type Client, type CommandInteraction, SlashCommandBuilder, SlashCommandStringOption } from "discord.js";
 
 import AustrianTranslation from "../storage/model/AustrianTranslation.js";
 import type { ApplicationCommand } from "./command.js";
@@ -10,30 +9,33 @@ export class OidaCommand implements ApplicationCommand {
     name = "oida";
     description = "Fügt a Übersetzung 🇦🇹 -> 🇩🇪 hinzu";
 
-    get applicationCommand(): Pick<SlashCommandBuilder, "toJSON"> {
+    get applicationCommand() {
         return new SlashCommandBuilder()
             .setName(this.name)
             .setDescription(this.description)
-            .addStringOption(new SlashCommandStringOption()
-                .setRequired(true)
-                .setName("austrian")
-                .setDescriptionLocalization("en-US", "ösisch")
-                .setDescriptionLocalization("de", "ösisch")
-                .setDescription("🇦🇹 Österreichische Bezeichnung. Darf Leerzeichen enthalten.")
+            .addStringOption(
+                new SlashCommandStringOption()
+                    .setRequired(true)
+                    .setName("austrian")
+                    .setDescriptionLocalization("en-US", "ösisch")
+                    .setDescriptionLocalization("de", "ösisch")
+                    .setDescription("🇦🇹 Österreichische Bezeichnung. Darf Leerzeichen enthalten.")
             )
-            .addStringOption(new SlashCommandStringOption()
-                .setRequired(true)
-                .setName("german")
-                .setDescriptionLocalization("en-US", "piefkisch")
-                .setDescriptionLocalization("de", "piefkisch")
-                .setDescription("🇩🇪 Deutsche Bezeichnung. Darf Leerzeichen enthalten.")
+            .addStringOption(
+                new SlashCommandStringOption()
+                    .setRequired(true)
+                    .setName("german")
+                    .setDescriptionLocalization("en-US", "piefkisch")
+                    .setDescriptionLocalization("de", "piefkisch")
+                    .setDescription("🇩🇪 Deutsche Bezeichnung. Darf Leerzeichen enthalten.")
             )
-            .addStringOption(new SlashCommandStringOption()
-                .setRequired(false)
-                .setName("description")
-                .setDescriptionLocalization("en-US", "a beschreibung")
-                .setDescriptionLocalization("de", "a beschreibung")
-                .setDescription("Eine Beschreibung, wenn du magst")
+            .addStringOption(
+                new SlashCommandStringOption()
+                    .setRequired(false)
+                    .setName("description")
+                    .setDescriptionLocalization("en-US", "a beschreibung")
+                    .setDescriptionLocalization("de", "a beschreibung")
+                    .setDescription("Eine Beschreibung, wenn du magst")
             );
     }
 
@@ -42,6 +44,11 @@ export class OidaCommand implements ApplicationCommand {
     }
 
     async handleInteraction(command: CommandInteraction, client: Client, context: BotContext) {
+        if (!command.isChatInputCommand()) {
+            // TODO: Solve this on a type level
+            return;
+        }
+
         const addedBy = await context.guild.members.fetch(command.user);
         if (!addedBy) {
             return;

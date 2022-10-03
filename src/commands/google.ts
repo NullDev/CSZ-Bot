@@ -1,5 +1,4 @@
-import { SlashCommandBuilder, SlashCommandStringOption, SlashCommandUserOption } from "@discordjs/builders";
-import { Client, CommandInteraction, GuildMember, MessageEmbedOptions } from "discord.js";
+import { Client, CommandInteraction, GuildMember, SlashCommandBuilder, SlashCommandStringOption, SlashCommandUserOption } from "discord.js";
 
 import { ApplicationCommand, CommandResult } from "./command.js";
 
@@ -15,9 +14,9 @@ const repliesWithUser = [
 ];
 
 
-const buildEmbed = (member: GuildMember, reply: string): MessageEmbedOptions => {
+const buildEmbed = (member: GuildMember, reply: string) => {
     return {
-        color: 2007432,
+        color: 0x1ea188,
         description: reply,
         author: {
             name: member.nickname ?? member.displayName,
@@ -31,18 +30,30 @@ export class GoogleCommand implements ApplicationCommand {
     name: string = "google";
     description: string = "Falls jemand zu blöd zum googlen ist und du es ihm unter die Nase reiben willst";
 
-    get applicationCommand(): Pick<SlashCommandBuilder, "toJSON"> {
+    get applicationCommand() {
         return new SlashCommandBuilder()
             .setName(this.name)
             .setDescription(this.description)
-            .addStringOption(new SlashCommandStringOption()
-                .setRequired(true)
-                .setName("searchword")
-                .setDescription("Das, wonach du suchen willst"))
-            .addUserOption(new SlashCommandUserOption().setName("dau").setRequired(false).setDescription("Der User, der nichtmal googln kann"));
+            .addStringOption(
+                new SlashCommandStringOption()
+                    .setRequired(true)
+                    .setName("searchword")
+                    .setDescription("Das, wonach du suchen willst")
+            )
+            .addUserOption(
+                new SlashCommandUserOption()
+                    .setName("dau")
+                    .setRequired(false)
+                    .setDescription("Der User, der nichtmal googln kann")
+            );
     }
 
     async handleInteraction(command: CommandInteraction, client: Client<boolean>): Promise<CommandResult> {
+        if (!command.isChatInputCommand()) {
+            // TODO: Solve this on a type level
+            return;
+        }
+
         const user = command.guild?.members.cache.find(m => m.id === command.user.id)!;
         const dau = command.guild?.members.cache.find(m => m.id === command.options.getUser("dau", false)?.id) ?? null;
         const swd = command.options.getString("searchword", true);
@@ -60,7 +71,7 @@ export class GoogleCommand implements ApplicationCommand {
         }
 
         const embed = buildEmbed(user!, reply);
-        return command.reply({
+        await command.reply({
             embeds: [embed],
             ephemeral: false
         });

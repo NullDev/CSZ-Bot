@@ -1,4 +1,4 @@
-import { Message, Client, Util } from "discord.js";
+import { Message, Client, cleanContent } from "discord.js";
 import nodeCanvas from "canvas";
 
 import { SpecialCommand } from "../command.js";
@@ -27,7 +27,7 @@ export class WhereCommand implements SpecialCommand {
     }
 
     async handleSpecialMessage(message: Message, client: Client<boolean>) {
-        const subject = Util.cleanContent(message.content.trim().toUpperCase(), message.channel);
+        const subject = cleanContent(message.content.trim().toUpperCase(), message.channel);
 
         const whereMemeBuffer = await WhereCommand.createWhereMeme(subject);
 

@@ -89,7 +89,7 @@ export default class AoCHandler {
         return channel.send({ embeds: [embed] });
     }
 
-    private createEmbedFromLeaderBoard(userMap: Record<string, UserMapEntry>, lb: LeaderBoard): discord.MessageEmbed {
+    private createEmbedFromLeaderBoard(userMap: Record<string, UserMapEntry>, lb: LeaderBoard) {
         log.info("[AoC] Creating Embed from leaderboard...");
 
         const members = Object.values(lb.members);
@@ -122,6 +122,6 @@ export default class AoCHandler {
                 ...top,
                 noobs
             ]
-        } as discord.MessageEmbed;
+        };
     }
 }

@@ -1,7 +1,7 @@
 /* Disabled due to sequelize's DataTypes */
 /* eslint-disable new-cap */
 
-import type { Client, Snowflake, Message } from "discord.js";
+import { Client, Snowflake, Message, ChannelType } from "discord.js";
 import { Model, Sequelize, DataTypes } from "sequelize";
 import { v4 as uuidv4 } from "uuid";
 
@@ -28,9 +28,8 @@ export default class AdditionalMessageData extends Model {
                 return undefined;
             }
 
-            const textChannel = "GUILD_TEXT";
-            if (channel.type !== textChannel) {
-                log.error(`Tried to retrieve text message from channel of type "${channel.type}". Only ${textChannel} is currently supported`);
+            if (channel.type !== ChannelType.GuildText) {
+                log.error(`Tried to retrieve text message from channel of type "${channel.type}". Only text channels are currently supported`);
                 return undefined;
             }
 

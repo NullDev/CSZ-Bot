@@ -1,10 +1,13 @@
 import parseOptions from "minimist";
 import Cron from "croner";
-import { Util } from "discord.js";
+import { APIEmbed, ChannelType, cleanContent, Snowflake, User } from "discord.js";
 
 import log from "../utils/logger.js";
 import AdditionalMessageData from "../storage/model/AdditionalMessageData.js";
 import { getConfig } from "../utils/configHandler.js";
+import { BotContext } from "../context.js";
+import { CommandFunction } from "../types.js";
+import { formatDateTime } from "../utils/dateUtils.js";
 
 const config = getConfig();
 
@@ -58,26 +61,20 @@ export const TEXT_LIMIT = 4096;
 export const OPTION_LIMIT = LETTERS.length;
 
 
-/**
- * @typedef {Object} DelayedPoll
- * @property {String} pollId
- * @property {Date} createdAt
- * @property {Date} finishesAt
- * @property {string[][]} reactions
- * @property {string[]} reactionMap
- */
+interface DelayedPoll {
+    pollId: string;
+    createdAt: Date;
+    finishesAt: Date;
+    reactions: string[][];
+    reactionMap: string[];
+}
+
+export const delayedPolls: DelayedPoll[] = [];
 
 /**
- * @type {DelayedPoll[]}
+ * Creates a new poll (multiple answers) or straw poll (single selection)
  */
-export const delayedPolls = [];
-
-/**
- * Creates a new poll (multiple answers) or strawpoll (single selection)
- *
- * @type {import("../types").CommandFunction}
- */
-export const run = async(client, message, args, context) => {
+export const run: CommandFunction = async(_client, message, args, context) => {
     const options = parseOptions(args, {
         "boolean": [
             "channel",
@@ -130,10 +127,10 @@ export const run = async(client, message, args, context) => {
         optionstext += `\nAbstimmen möglich bis ${new Date(finishTime.valueOf() + 60000).toLocaleTimeString("de").split(":").splice(0, 2).join(":")}`;
     }
 
-    const embed = {
-        title: Util.cleanContent(pollArray[0], message.channel),
+    const embed: APIEmbed = {
+        title: cleanContent(pollArray[0], message.channel),
         description: optionstext,
-        timestamp: new Date(),
+        timestamp: formatDateTime(new Date()),
         author: {
             name: `${options.straw ? "Strawpoll" : "Umfrage"} von ${message.author.username}`,
             icon_url: message.author.displayAvatarURL()
@@ -149,12 +146,12 @@ export const run = async(client, message, args, context) => {
         }
 
         footer.push("Erweiterbar mit .extend als Reply");
-        embed.color = 3066993;
+        embed.color = 0x2ecc71;
     }
 
     if (options.delayed) {
         footer.push("⏳");
-        embed.color = "#a10083";
+        embed.color = 0xa10083;
     }
 
     if (!options.straw) {
@@ -177,7 +174,7 @@ export const run = async(client, message, args, context) => {
         return "Du kannst keine verzögerte Abstimmung außerhalb des Umfragenchannels machen!";
     }
 
-    if (channel.type !== "GUILD_TEXT") return "Der Zielchannel ist irgenwie kein Text-Channel?";
+    if (channel.type !== ChannelType.GuildText) return "Der Zielchannel ist irgenwie kein Text-Channel?";
 
     const pollMessage = await channel.send({
         embeds: [embed]
@@ -187,9 +184,8 @@ export const run = async(client, message, args, context) => {
     await Promise.all(pollOptions.map((e, i) => pollMessage.react(EMOJI[i])));
 
     if (options.delayed) {
-        const reactionMap = [];
-        /** @type {string[][]} */
-        const reactions = [];
+        const reactionMap: string[] = [];
+        const reactions: string[][] = [];
         pollOptions.forEach((option, index) => {
             reactionMap[index] = option;
             reactions[index] = [];
@@ -197,8 +193,8 @@ export const run = async(client, message, args, context) => {
 
         const delayedPollData = {
             pollId: pollMessage.id,
-            createdAt: new Date().valueOf(),
-            finishesAt: finishTime.valueOf(),
+            createdAt: new Date(),
+            finishesAt: finishTime,
             reactions,
             reactionMap
         };
@@ -229,9 +225,8 @@ export const importPolls = async() => {
 
 /**
  * Initialized crons for delayed polls
- * @param {import("../context").BotContext} context
  */
-export const startCron = context => {
+export const startCron = (context: BotContext) => {
     log.info("Scheduling Poll Cronjob...");
 
     /* eslint-disable no-await-in-loop */
@@ -247,29 +242,27 @@ export const startCron = context => {
             const delayedPoll = element;
             const message = await /** @type {import("discord.js").TextChannel} */ (channel).messages.fetch(delayedPoll.pollId);
 
-            const users = {};
+            const users: Record<Snowflake, User> = {};
             await Promise.all(delayedPoll.reactions
                 .flat()
-                .filter((x, uidi) => delayedPoll.reactions.indexOf(x) !== uidi)
+                .filter((x, uidi) => delayedPoll.reactions.indexOf(x as any as string[] /* TODO @twobiers this is not correct, but the code isn't in use (yet) */) !== uidi)
                 .map(async uidToResolve => {
                     users[uidToResolve] = await context.client.users.fetch(uidToResolve);
                 }));
 
-            const toSend = {
+            const toSend: APIEmbed = {
                 title: `Zusammenfassung: ${message.embeds[0].title}`,
                 description: `${delayedPoll.reactions
                     .map(
-                        (x, index) => `${LETTERS[index]} ${
-                            delayedPoll.reactionMap[index]
-                        } (${x.length}):
+                        (x, index) => `${LETTERS[index]} ${delayedPoll.reactionMap[index]} (${x.length}):
 ${x.map(uid => users[uid]).join("\n")}\n\n`
                     )
                     .join("")}
 `,
-                timestamp: new Date(),
+                timestamp: formatDateTime(new Date()),
                 author: {
-                    name: `${message.embeds[0].author.name}`,
-                    icon_url: message.embeds[0].author.iconURL
+                    name: `${message.embeds[0].author!.name}`,
+                    icon_url: message.embeds[0].author!.iconURL
                 },
                 footer: {
                     text: `Gesamtabstimmungen: ${delayedPoll.reactions

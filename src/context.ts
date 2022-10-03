@@ -1,5 +1,5 @@
 import path from "node:path";
-import type { Client, Guild, Role, TextChannel, VoiceChannel } from "discord.js";
+import { ChannelType, Client, Guild, Role, TextChannel, VoiceChannel } from "discord.js";
 
 import { getConfig } from "./utils/configHandler.js";
 import { Config, ConfigTextChannelId, ConfigVoiceChannelId, ConfigRoleId } from "./types.js";
@@ -62,7 +62,7 @@ function ensureTextChannel<T extends ConfigTextChannelId>(config: Config, guild:
     const channel = guild.channels.cache.get(channelId);
 
     if (!channel) throw new Error(`Could not find main channel with id "${channelId}" on guild "${guild.id}"`);
-    if (channel.type !== "GUILD_TEXT") throw new Error(`Main channel is not a text channel. "${channel.id}" is "${channel.type}"`);
+    if (channel.type !== ChannelType.GuildText) throw new Error(`Main channel is not a text channel. "${channel.id}" is "${channel.type}"`);
 
     return channel;
 }
@@ -72,7 +72,7 @@ function ensureVoiceChannel<T extends ConfigVoiceChannelId>(config: Config, guil
     const channel = guild.channels.cache.get(channelId);
 
     if (!channel) throw new Error(`Could not find main channel with id "${channelId}" on guild "${guild.id}"`);
-    if (channel.type !== "GUILD_VOICE") throw new Error(`Main channel is not a voice channel. "${channel.id}" is "${channel.type}"`);
+    if (channel.type !== ChannelType.GuildVoice) throw new Error(`Main channel is not a voice channel. "${channel.id}" is "${channel.type}"`);
 
     return channel;
 }

@@ -1,6 +1,5 @@
 import * as Discord from "discord.js";
-
-import { Message, MessageReaction, User, VoiceState } from "discord.js";
+import { Message, MessageReaction, User, VoiceState, GatewayIntentBits, Partials } from "discord.js";
 import Cron from "croner";
 
 
@@ -42,9 +41,9 @@ const devname = conf.getAuthor();
 const splashPadding = 12 + appname.length + version.toString().length;
 
 console.log(
-    `\n #${"-".repeat(splashPadding)}#\n` +
-    ` # Started ${appname} v${version} #\n` +
-    ` #${"-".repeat(splashPadding)}#\n\n` +
+    `\n ┌${"─".repeat(splashPadding)}┐\n` +
+    ` │ Started ${appname} v${version} │\n` +
+    ` └${"─".repeat(splashPadding)}┘\n\n` +
     ` Copyright (c) ${(new Date()).getFullYear()} ${devname}\n`
 );
 
@@ -55,28 +54,28 @@ log.info("Started.");
 const config = conf.getConfig();
 const client = new Discord.Client({
     partials: [
-        "MESSAGE",
-        "REACTION",
-        "USER"
+        Partials.Message,
+        Partials.Reaction,
+        Partials.User
     ],
     allowedMentions: {
         parse: ["users"],
         repliedUser: true
     },
     intents: [
-        "DIRECT_MESSAGES",
-        "GUILDS",
-        "GUILD_BANS",
-        "GUILD_EMOJIS_AND_STICKERS",
-        "GUILD_INTEGRATIONS",
-        "GUILD_INVITES",
-        "GUILD_MEMBERS",
-        "GUILD_MESSAGES",
-        "GUILD_MESSAGE_REACTIONS",
-        "GUILD_MESSAGE_TYPING",
-        "GUILD_PRESENCES",
-        "GUILD_VOICE_STATES",
-        "GUILD_WEBHOOKS"
+        GatewayIntentBits.DirectMessages,
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildBans,
+        GatewayIntentBits.GuildEmojisAndStickers,
+        GatewayIntentBits.GuildIntegrations,
+        GatewayIntentBits.GuildInvites,
+        GatewayIntentBits.GuildMembers,
+        GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.GuildMessageReactions,
+        GatewayIntentBits.GuildMessageTyping,
+        GatewayIntentBits.GuildPresences,
+        GatewayIntentBits.GuildVoiceStates,
+        GatewayIntentBits.GuildWebhooks
     ]
 });
 
@@ -280,7 +279,7 @@ client.on("guildMemberAdd", async member => {
     await member.roles.add(botContext.roles.shame);
 
     await botContext.textChannels.hauptchat.send({
-        content: `Haha, schau mal einer guck wer wieder hergekommen ist! <@${member.id}> hast es aber nicht lange ohne uns ausgehalten. ${numRagequits > 1 ? "Und das schon zum " + numRagequits + ". mal" : ""}`,
+        content: `Haha, schau mal einer guck wer wieder hergekommen ist! ${member} hast es aber nicht lange ohne uns ausgehalten. ${numRagequits > 1 ? "Und das schon zum " + numRagequits + ". mal" : ""}`,
         allowedMentions: {
             users: [member.id]
         }
@@ -307,7 +306,9 @@ client.on("messageCreate", async message => {
 
 client.on("messageDelete", async message => {
     try {
-        await messageDeleteHandler(message as Message, client);
+        if(message.inGuild()) {
+            await messageDeleteHandler(message, client, botContext);
+        }
     }
     catch (err) {
         log.error(`[messageDelete] Error for ${message.id}`, err);

@@ -4,6 +4,7 @@ import type { ProcessableMessage } from "../handler/cmdHandler.js";
 import Boob from "../storage/model/Boob.js";
 import { CommandResult, MessageCommand } from "./command.js";
 import log from "../utils/logger.js";
+import { formatTime } from "../utils/dateUtils.js";
 
 interface Booba {
     description: string;
@@ -99,21 +100,14 @@ const boobas: Record<number, Booba> = {
 };
 /* eslint-enable quote-props */
 
-const measurementTimeFormatter = new Intl.DateTimeFormat("de-DE", {
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    hour12: false
-});
-
 const sendBoob = async(user: User, message: ProcessableMessage, size: number, measurement: Date = new Date()): Promise<void> => {
     const booba = boobas[size];
     if (!booba) {
         throw new Error(`Booba with size ${size} not defined`);
     }
-    const measuredAt = measurementTimeFormatter.format(measurement);
 
-    await message.reply(`${booba.description} von <@${user.id}>:\n${booba.representation}\n(Gemessen um ${measuredAt})`);
+    const measuredAt = formatTime(measurement);
+    await message.reply(`${booba.description} von ${user}, gemessen um ${measuredAt}:\n${booba.representation}`);
 };
 
 
