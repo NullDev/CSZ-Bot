@@ -6,7 +6,6 @@ import {
     Interaction,
     Message,
     MessageComponentInteraction,
-    PermissionFlagsBits,
     PermissionsBitField,
     PermissionsString,
     REST
@@ -137,7 +136,7 @@ const createPermissionSet = (permissions: readonly PermissionsString[]): bigint 
  * Registers all defined applicationCommands as guild commands
  * We're overwriting ALL, therefore no deletion is necessary
  */
-export const registerAllApplicationCommandsAsGuildCommands = async (
+export const registerAllApplicationCommandsAsGuildCommands = async(
     context: BotContext
 ): Promise<void> => {
     const clientId = context.rawConfig.auth.client_id;
@@ -249,7 +248,7 @@ const checkPermissions = (member: GuildMember, permissions: ReadonlyArray<Permis
  * was found or an error if the command would be a mod command but the
  * invoking user is not a mod
  */
-const commandMessageHandler = async (
+const commandMessageHandler = async(
     commandString: string,
     message: ProcessableMessage,
     client: Client,
@@ -332,7 +331,7 @@ export const handleInteractionEvent = (
     return Promise.reject(new Error("Not supported"));
 };
 
-export const messageCommandHandler = async (
+export const messageCommandHandler = async(
     message: Message,
     client: Client,
     context: BotContext

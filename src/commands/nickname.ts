@@ -4,11 +4,12 @@ import {
     GuildMember,
     User,
     CacheType,
-    ActionRowBuilder, ButtonBuilder, MessageComponentInteraction, ButtonStyle,
+    MessageComponentInteraction, ButtonStyle,
     SlashCommandBuilder,
     SlashCommandStringOption,
     SlashCommandSubcommandBuilder,
-    SlashCommandUserOption
+    SlashCommandUserOption,
+    ComponentType
 } from "discord.js";
 
 import { ApplicationCommand, CommandResult, UserInteraction } from "./command.js";

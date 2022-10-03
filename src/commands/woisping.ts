@@ -1,9 +1,8 @@
 import {
-    Client, CommandInteraction, ActionRowBuilder,
-    ButtonBuilder,
+    Client, CommandInteraction,
     MessageComponentInteraction,
     ButtonStyle,
-    cleanContent, SlashCommandBuilder, SlashCommandStringOption
+    cleanContent, SlashCommandBuilder, SlashCommandStringOption, ComponentType
 } from "discord.js";
 
 import { ApplicationCommand, CommandResult, UserInteraction } from "./command.js";
@@ -108,8 +107,8 @@ export class WoisCommand implements ApplicationCommand {
         const message = await command.fetchReply();
         reasons[message.id] = reason;
 
-        const pingVoteMap = getOrCreatePingVoteMap(message.id);
-        pingVoteMap.add(pinger.id);
+        const voteMap = getOrCreatePingVoteMap(message.id);
+        voteMap.add(pinger.id);
     }
 }
 
@@ -132,15 +131,15 @@ export class WoisButton implements UserInteraction {
             return;
         }
 
-        const pingVoteMap = getOrCreatePingVoteMap(command.message.id);
-        pingVoteMap.add(member.id);
-        const amount = pingVoteMap.size;
+        const voteMap = getOrCreatePingVoteMap(command.message.id);
+        voteMap.add(member.id);
+        const amount = voteMap.size;
         const now = Date.now();
         if (isModMessage || (amount >= config.bot_settings.woisping_threshold)) {
             const reason = reasons[command.message.id];
             lastPing = now;
 
-            const usersVotedYes = [...pingVoteMap];
+            const usersVotedYes = [...voteMap];
             const content = getMessage(reason, usersVotedYes).trim();
 
             await command.channel.send({

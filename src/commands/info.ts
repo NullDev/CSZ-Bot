@@ -1,4 +1,4 @@
-import { Client, CommandInteraction, Guild, GuildPremiumTier, ActionRowBuilder, ButtonBuilder, APIEmbed, ButtonStyle, SlashCommandBuilder, ComponentType } from "discord.js";
+import { Client, CommandInteraction, Guild, GuildPremiumTier, APIEmbed, ButtonStyle, SlashCommandBuilder, ComponentType } from "discord.js";
 import fetch from "node-fetch";
 
 import { ApplicationCommand, CommandResult, MessageCommand } from "./command.js";
@@ -45,7 +45,7 @@ const getSystemInfo = (): string => {
 };
 
 const getServerLevel = (guild: Guild) => {
-    switch(guild.premiumTier) {
+    switch (guild.premiumTier) {
         case GuildPremiumTier.None: return 0;
         case GuildPremiumTier.Tier1: return 1;
         case GuildPremiumTier.Tier2: return 2;
@@ -97,7 +97,7 @@ const buildEmbed = async(guild: Guild | null, avatarUrl?: string): Promise<APIEm
         ]
     };
 
-    if(!!guild){
+    if (!!guild) {
         embed.fields.push({
             name: "👑 Server",
             value: getServerInfo(guild),
