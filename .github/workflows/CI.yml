@@ -26,6 +26,7 @@ jobs:
     - run: npm run lint
 
   build:
+    name: Build + Smoke Test
     runs-on: ubuntu-latest
     needs:
     - lint
