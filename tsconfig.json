@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "allowJs": true,
-    "target": "es2019",
+    "target": "es2022",
     "module": "NodeNext",
     "strict": true,                                 /* Enable all strict type-checking options. */
     "lib": [
