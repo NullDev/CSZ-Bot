@@ -20,63 +20,22 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
 
-    - name: Cache Docker layers
-      uses: actions/cache@v2
-      with:
-        path: /tmp/.buildx-cache
-        key: ${{ runner.os }}-buildx-${{ github.sha }}
-        restore-keys: |
-          ${{ runner.os }}-buildx-
-
     - name: Build and export
       uses: docker/build-push-action@v2
       with:
         context: .
         file: ./Dockerfile
         tags: csz-bot:latest
-        outputs: type=oci,dest=/tmp/csz-bot.tar
-        cache-from: type=local,src=/tmp/.buildx-cache
-        cache-to: type=local,dest=/tmp/.buildx-cache-new
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
 
-    - uses: actions/upload-artifact@v3
-      with:
-        name: csz-bot-image
-        path: /tmp/csz-bot.tar
-
-      # Temp fix
-      # https://github.com/docker/build-push-action/issues/252
-      # https://github.com/moby/buildkit/issues/1896
-    - name: Move cache
-      run: |
-        rm -rf /tmp/.buildx-cache
-        mv /tmp/.buildx-cache-new /tmp/.buildx-cache
-
-  start:
-    needs: [ "build" ]
-
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v2
-
-    - uses: actions/download-artifact@v3
-      with:
-        name: csz-bot-image
-        path: /tmp
-
-    - name: Import Docker Image
-      run: docker load --input /tmp/csz-bot.tar
-
-    - name: Build Docker Image
-      run: docker build . -t csz-bot:latest
-
-    - name: update configuration
+    - name: Update configuration
       run: |
         cp .github/config.json config.json
         sed -i 's/<BOT_TOKEN>/${{ secrets.CI_BOT_TOKEN }}/g' config.json
         sed -i 's/<CLIENT_ID>/${{ secrets.CI_CLIENT_ID }}/g' config.json
 
-    - name: start se bot
+    - name: Check if bot starts correctly
       run: |
         docker run -v "$PWD/config.json:/app/config.json" csz-bot:latest --dry-run
 
