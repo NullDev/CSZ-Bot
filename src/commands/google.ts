@@ -16,7 +16,7 @@ const repliesWithUser = [
 
 const buildEmbed = (member: GuildMember, reply: string) => {
     return {
-        color: 2007432,
+        color: 0x1ea188,
         description: reply,
         author: {
             name: member.nickname ?? member.displayName,

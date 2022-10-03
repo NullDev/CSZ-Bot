@@ -81,7 +81,7 @@ const getServerInfo = (guild: Guild): string => {
 const buildEmbed = async(guild: Guild | null, avatarUrl?: string): Promise<APIEmbed> => {
     const now = new Date();
     const embed = {
-        color: 2007432,
+        color: 0x1ea188,
         footer: {
             text: `${now.toDateString()} ${now.toLocaleTimeString()}`
         },

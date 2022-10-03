@@ -13,7 +13,7 @@ async function createEhreTable(context: BotContext): Promise<MessagePayload | In
 
     return {
         embeds: [{
-            color: 2007432,
+            color: 0x1ea188,
             author: {
                 name: context.client.user?.username
             },
@@ -95,6 +95,7 @@ export class EhreCommand implements ApplicationCommand {
             await command.reply(await createEhreTable(context));
             return;
         }
+
         const user = command.options.getUser("user", true);
         if (subcommand === "add") {
             if (command.user.id === user.id) {
