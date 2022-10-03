@@ -13,10 +13,16 @@ on:
       - LICENSE
 
 jobs:
+
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
+
+    environment:
+      name: Production
+
     if: ${{ !github.event.repository.fork }}
+
     steps:
     - name: Deploy CSZ Bot
       uses: appleboy/ssh-action@1a8b3784eaa665f677fa114edd5683bb6a6bfaa8
