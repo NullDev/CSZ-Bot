@@ -3,7 +3,6 @@ import { cleanContent } from "discord.js";
 
 import { getConfig } from "../utils/configHandler.js";
 import type { CommandFunction } from "../types.js";
-import { formatDateTime } from "../utils/dateUtils.js";
 
 const config = getConfig();
 

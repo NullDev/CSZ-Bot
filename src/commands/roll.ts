@@ -1,7 +1,6 @@
 import { APIEmbed, cleanContent } from "discord.js";
 
 import { getConfig } from "../utils/configHandler.js";
-import { formatDateTime } from "../utils/dateUtils.js";
 import type { CommandFunction } from "../types.js";
 
 const config = getConfig();

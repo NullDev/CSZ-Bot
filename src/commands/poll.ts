@@ -7,7 +7,6 @@ import AdditionalMessageData from "../storage/model/AdditionalMessageData.js";
 import { getConfig } from "../utils/configHandler.js";
 import { BotContext } from "../context.js";
 import { CommandFunction } from "../types.js";
-import { formatDateTime } from "../utils/dateUtils.js";
 
 const config = getConfig();
 
