@@ -149,12 +149,12 @@ export const run = async(client, message, args, context) => {
         }
 
         footer.push("Erweiterbar mit .extend als Reply");
-        embed.color = 3066993;
+        embed.color = 0x2ecc71;
     }
 
     if (options.delayed) {
         footer.push("⏳");
-        embed.color = "#a10083";
+        embed.color = 0xa10083;
     }
 
     if (!options.straw) {
