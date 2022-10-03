@@ -8,14 +8,15 @@ import { SpecialCommand, CommandResult } from "../command.js";
 export class TriggerReactOnKeyword implements SpecialCommand {
     name: string = "ReactTrigger";
     description: string = "Trigger a Bot reaction on keyword";
-    randomness = 0.2;
+    randomness: number;
     cooldownTime = 300000;
     keyword: string;
     emoteName: string;
 
-    constructor(keyword: string, emoteName: string) {
+    constructor(keyword: string, emoteName: string, randomness: number = 0.2) {
         this.keyword = keyword;
         this.emoteName = emoteName;
+        this.randomness = randomness;
     }
 
     matches(message: ProcessableMessage): boolean {
