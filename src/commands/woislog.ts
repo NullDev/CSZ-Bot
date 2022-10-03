@@ -9,7 +9,7 @@ export class WoisLog implements ApplicationCommand {
     name = "woislog";
     description = "Zeigt die letzen Aktivitäten im Woischat an";
 
-    get applicationCommand(): Pick<SlashCommandBuilder, "toJSON"> {
+    get applicationCommand() {
         return new SlashCommandBuilder()
             .setName(this.name)
             .setDescription(this.description);

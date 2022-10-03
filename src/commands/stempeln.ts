@@ -21,7 +21,7 @@ export class StempelCommand implements ApplicationCommand {
     name: string = "stempeln";
     description: string = "Gib deinem Inviter ein Stempel, zeig deinen Respekt";
 
-    get applicationCommand(): Pick<SlashCommandBuilder, "toJSON"> {
+    get applicationCommand() {
         return new SlashCommandBuilder()
             .setName(this.name)
             .setDescription(this.description)

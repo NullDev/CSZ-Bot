@@ -9,7 +9,6 @@ import {
 import { ApplicationCommand, CommandResult, UserInteraction } from "./command.js";
 import log from "../utils/logger.js";
 import { isMod, isWoisGang } from "../utils/userUtils.js";
-
 import { getConfig } from "../utils/configHandler.js";
 
 const config = getConfig();
@@ -36,7 +35,7 @@ export class WoisCommand implements ApplicationCommand {
     name = "woisping";
     description = "Pingt die ganze Woisgang";
 
-    get applicationCommand(): Pick<SlashCommandBuilder, "toJSON"> {
+    get applicationCommand() {
         return new SlashCommandBuilder()
             .setName(this.name)
             .setDescription(this.description)

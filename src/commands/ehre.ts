@@ -63,7 +63,7 @@ export class EhreCommand implements ApplicationCommand {
     name: string = "ehre";
     description: string = "Fügt Ehre hinzu & Zeigt die Tabelle an";
 
-    get applicationCommand(): Pick<SlashCommandBuilder, "toJSON"> {
+    get applicationCommand() {
         return new SlashCommandBuilder()
             .setName(this.name)
             .setDescription(this.description)

@@ -186,7 +186,7 @@ export class StempelgraphCommand implements ApplicationCommand {
     name: string = "stempelgraph";
     description: string = "Zeigt einen Sozialgraphen der Stempel. 1984 ist real!";
 
-    get applicationCommand(): Pick<SlashCommandBuilder, "toJSON"> {
+    get applicationCommand() {
         return new SlashCommandBuilder()
             .setName(this.name)
             .setDescription(this.description)

@@ -49,7 +49,7 @@ export class Nickname implements ApplicationCommand {
     name: string = "nickname";
     description: string = "Setzt Nicknames für einen User";
 
-    get applicationCommand(): Pick<SlashCommandBuilder, "toJSON"> {
+    get applicationCommand() {
         return new SlashCommandBuilder()
             .setName(this.name)
             .setDescription(this.description)

@@ -9,7 +9,7 @@ export class OidaCommand implements ApplicationCommand {
     name = "oida";
     description = "Fügt a Übersetzung 🇦🇹 -> 🇩🇪 hinzu";
 
-    get applicationCommand(): Pick<SlashCommandBuilder, "toJSON"> {
+    get applicationCommand() {
         return new SlashCommandBuilder()
             .setName(this.name)
             .setDescription(this.description)

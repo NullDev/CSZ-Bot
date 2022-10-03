@@ -30,7 +30,7 @@ export class GoogleCommand implements ApplicationCommand {
     name: string = "google";
     description: string = "Falls jemand zu blöd zum googlen ist und du es ihm unter die Nase reiben willst";
 
-    get applicationCommand(): Pick<SlashCommandBuilder, "toJSON"> {
+    get applicationCommand() {
         return new SlashCommandBuilder()
             .setName(this.name)
             .setDescription(this.description)

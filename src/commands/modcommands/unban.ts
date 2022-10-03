@@ -22,7 +22,7 @@ export class UnbanCommand implements ApplicationCommand, MessageCommand {
     requiredPermissions: readonly PermissionsString[] = [
         "BanMembers"
     ];
-    get applicationCommand(): Pick<SlashCommandBuilder, "toJSON"> {
+    get applicationCommand() {
         return new SlashCommandBuilder()
             .setName(this.name)
             .setDescription(this.description)

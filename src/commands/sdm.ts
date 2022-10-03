@@ -75,7 +75,7 @@ const createSecureDecisionMessage = (question: string, author: GuildMember, opti
 export class SdmCommand implements MessageCommand, ApplicationCommand {
     name = "sdm";
     description = "Macht eine Secure Decision mithilfe eines komplexen, hochoptimierten, Blockchain Algorithmus.";
-    get applicationCommand(): Pick<SlashCommandBuilder, "toJSON"> {
+    get applicationCommand() {
         return new SlashCommandBuilder()
             .setName(this.name)
             .setDescription(this.description)
