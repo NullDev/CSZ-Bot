@@ -42,8 +42,6 @@ jobs:
     - name: Build and export
       uses: docker/build-push-action@v2
       with:
-        context: .
-        file: ./Dockerfile
         tags: csz-bot:latest
         load: true
         cache-from: type=gha
