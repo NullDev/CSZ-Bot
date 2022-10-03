@@ -38,6 +38,7 @@ import { WoisData } from "./handler/voiceStateUpdateHandler.js";
 const version = conf.getVersion();
 const appname = conf.getName();
 const devname = conf.getAuthor();
+const args = process.argv.slice(2);
 
 const splashPadding = 12 + appname.length + version.toString().length;
 
@@ -242,6 +243,9 @@ client.once("ready", async initializedClient => {
         void fadingMessageHandler.startLoop(client);
 
         log.info("Bot successfully started");
+        if (args.includes("--dry-run")) {
+            process.exit(0);
+        }
     }
     catch (err) {
         log.error("Error in Ready handler:", err);

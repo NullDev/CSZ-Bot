@@ -22,7 +22,7 @@ jobs:
         cp .github/config.json config.json
         sed -i 's/<BOT_TOKEN>/${{ secrets.CI_BOT_TOKEN }}/g' config.json
         sed -i 's/<CLIENT_ID>/${{ secrets.CI_CLIENT_ID }}/g' config.json
-   
+
     - name: start se bot
       run: |
-        timeout -k 500 300 docker run -v "$PWD/config.json:/app/config.json" csz-bot:latest | ( ! grep -v -e ".*Bot successfully started.*")
+        docker run -v "$PWD/config.json:/app/config.json" csz-bot:latest --dry-run

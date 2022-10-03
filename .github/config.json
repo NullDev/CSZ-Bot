@@ -32,27 +32,27 @@
     },
     "ids": {
         "guild_id": "893179190235508819",
-        "hauptchat_id": "618781839338897446",
-        "default_role_id": "620723158713892874",
-        "banned_role_id": "620727032824725534",
+        "hauptchat_id": "893179191292477441",
+        "default_role_id": "893179190709477407",
+        "banned_role_id": "893179190709477409",
         "bday_role_id": "814411148795314186",
         "woisgang_role_id": "835225686775300147",
         "shame_role_id":  "856269806969421844",
 
         "bot_deny_role_id": "1019955091459035199",
-        "bot_spam_channel_id": "620729211442692106",
+        "bot_spam_channel_id": "893179191556706387",
 
-        "haupt_woischat_id": "620733535124193300",
-        "woischat_text_id": "674749256225128488",
+        "haupt_woischat_id": "893179191825162372",
+        "woischat_text_id": "893179191825162371",
 
-        "gruendervaeter_role_id": "621994108029763584",
-        "gruendervaeter_banned_role_id": "786680849868652554",
-        "trusted_role_id": "786683862608642108",
-        "trusted_banned_role_id": "786685182379556894",
-        "emotifizierer_role_id": "633331183060516874",
+        "gruendervaeter_role_id": "893179190709477411",
+        "gruendervaeter_banned_role_id": "893179190571044916",
+        "trusted_role_id": "893179190571044915",
+        "trusted_banned_role_id": "893179190571044914",
+        "emotifizierer_role_id": "893179190709477410",
 
-        "banned_channel_id": "620734984105492480",
-        "votes_channel_id": "663593875901775872",
-        "bot_log_channel_id": "620729211442692106"
+        "banned_channel_id": "893179193741942888",
+        "votes_channel_id": "893179191556706384",
+        "bot_log_channel_id": "893179191556706387"
     }
 }
