@@ -1,4 +1,3 @@
-import { REST } from "@discordjs/rest";
 import { APIApplicationCommand, Routes } from "discord-api-types/v9";
 import {
     ApplicationCommandPermissionType,
@@ -8,7 +7,8 @@ import {
     Message,
     MessageComponentInteraction,
     PermissionsBitField,
-    PermissionsString
+    PermissionsString,
+    REST
 } from "discord.js";
 import { GuildMember } from "discord.js";
 
@@ -139,8 +139,8 @@ const createPermissionSet = (permissions: readonly PermissionsString[]): bigint 
 export const registerAllApplicationCommandsAsGuildCommands = async (
     context: BotContext
 ): Promise<void> => {
-    const clientId = config.auth.client_id;
-    const token = config.auth.bot_token;
+    const clientId = context.rawConfig.auth.client_id;
+    const token = context.rawConfig.auth.bot_token;
 
     const rest = new REST({ version: "9" }).setToken(token);
 
