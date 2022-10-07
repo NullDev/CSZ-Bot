@@ -23,8 +23,11 @@ export const run: CommandFunction = async(_client, message, args, context) => {
 
     if (!parsedArgs.length) return "Bruder da ist keine Frage :c";
 
+    const question = parsedArgs.join(" ");
+    if (question.length > 256) return "Bruder die Frage ist ja länger als mein Schwanz :c";
+
     const embed = {
-        title: `**${cleanContent(parsedArgs.join(" "), message.channel)}**`,
+        title: `**${cleanContent(question, message.channel)}**`,
         timestamp: new Date().toISOString(),
         color: 0x9400D3,
         author: {
