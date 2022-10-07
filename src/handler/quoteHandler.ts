@@ -72,7 +72,7 @@ const createQuote = (
                     color: randomizedColor,
                     description: quotedMessage.content,
                     author: getAuthor(quotedUser),
-                    timestamp: formatDateTime(new Date(quotedMessage.createdTimestamp)),
+                    timestamp: new Date(quotedMessage.createdTimestamp).toISOString(),
                     fields: [
                         {
                             name: "Link zur Nachricht",
