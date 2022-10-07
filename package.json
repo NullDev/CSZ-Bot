@@ -9,6 +9,7 @@
     "start": "node built/app.js",
     "test": "tsc --noEmit",
     "compile": "tsc --sourceMap false --removeComments true",
+    "lint:ci": "eslint -c .eslintrc.json $(git diff --name-only origin/master HEAD | grep -E \"^src/.*(.js$|.ts$)\")",
     "lint": "eslint -c .eslintrc.json \"src/**/*.{js,ts}\"",
     "lint:fix": "npm run lint -- --fix",
     "dev": "npm run lint && npm run watch",
