@@ -94,7 +94,7 @@ const createQuote = (
                     color: randomizedColor,
                     description: referencedMessage.content,
                     author: getAuthor(referencedUser!),
-                    timestamp: formatDateTime(new Date(referencedMessage.createdTimestamp))
+                    timestamp: new Date(referencedMessage.createdTimestamp).toISOString()
                 }
             ],
             files: referencedMessage.attachments.map((attachment, _key) => attachment)
