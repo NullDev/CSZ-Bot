@@ -7,6 +7,8 @@ import type { CommandFunction } from "../types.js";
 
 const config = getConfig();
 
+const isPollField = (field: APIEmbedField): boolean => !field.inline && poll.LETTERS.some(l => field.name.startsWith(l));
+
 /**
  * Extends an existing poll or strawpoll
  */
@@ -36,7 +38,7 @@ export const run: CommandFunction = async(client, message, args, context) => {
     if (!replyMessage.editable) return "Bruder aus irgrndeinem Grund hat der Bot verkackt und kann die Umfrage nicht bearbeiten :<";
     if (replyMessage.embeds[0].color !== 3066993) return "Bruder die Umfrage ist nicht erweiterbar (ง'̀-'́)ง";
 
-    const oldPollOptionFields = replyMessage.embeds[0].fields.filter(field => !field.inline || field.name.startsWith("Antwortoption"));
+    const oldPollOptionFields = replyMessage.embeds[0].fields.filter(field => isPollField(field));
     if (oldPollOptionFields.length === poll.OPTION_LIMIT) return "Bruder die Umfrage ist leider schon voll (⚆ ͜ʖ⚆)";
 
     const additionalPollOptions = args.join(" ")
@@ -55,7 +57,7 @@ export const run: CommandFunction = async(client, message, args, context) => {
         return {name: `${poll.LETTERS[oldPollOptionFields.length + i]} ${authorNote}`, value, inline: false};
     });
 
-    let metaFields = replyMessage.embeds[0].fields.filter(field => field.inline && !poll.LETTERS.some(l => field.name.startsWith(l)));
+    let metaFields = replyMessage.embeds[0].fields.filter(field => !isPollField(field));
     const embed = EmbedBuilder.from(replyMessage.embeds[0]);
 
     if (oldPollOptionFields.length + additionalPollOptions.length === poll.OPTION_LIMIT) {
