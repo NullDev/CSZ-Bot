@@ -55,7 +55,7 @@ export const run: CommandFunction = async(client, message, args, context) => {
         return {name: `${poll.LETTERS[oldPollOptionFields.length + i]} ${authorNote}`, value, inline: false};
     });
 
-    let metaFields = replyMessage.embeds[0].fields.filter(field => field.inline || !field.name.startsWith("Antwortoption"));
+    let metaFields = replyMessage.embeds[0].fields.filter(field => field.inline && (field.name.endsWith("Erweiterbar") || field.name.endsWith("Antwortmöglichkeit")));
     const embed = EmbedBuilder.from(replyMessage.embeds[0]);
 
     if (oldPollOptionFields.length + additionalPollOptions.length === poll.OPTION_LIMIT) {
