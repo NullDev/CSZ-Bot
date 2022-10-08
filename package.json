@@ -6,7 +6,7 @@
   "main": "built/app.js",
   "type": "module",
   "scripts": {
-    "start": "node built/app.js",
+    "start": "node --es-module-specifier-resolution=node built/app.js",
     "test": "tsc --noEmit",
     "compile": "tsc --sourceMap false --removeComments true",
     "lint:ci": "eslint -c .eslintrc.json $(git diff --name-only --diff-filter=ACMRTUXB origin/master HEAD | grep -E \"^src/.*(.js$|.ts$)\")",
