@@ -117,7 +117,7 @@ export const run: CommandFunction = async(_client, message, args, context) => {
     else if (pollOptions.some(value => value.length > FIELD_VALUE_LIMIT)) return `Bruder mindestens eine Antwortmöglichkeit ist länger als ${FIELD_VALUE_LIMIT} Zeichen!`;
 
     const fields: APIEmbedField[] = pollOptions.map((e, i) => {
-        return {name: `Antwortoption ${LETTERS[i]}`, value: e, inline: false};
+        return {name: `${LETTERS[i]}`, value: e, inline: false};
     });
 
     const embed: APIEmbed = {

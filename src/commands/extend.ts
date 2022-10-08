@@ -48,11 +48,11 @@ export const run: CommandFunction = async(client, message, args, context) => {
     else if (additionalPollOptions.length + oldPollOptionFields.length > poll.OPTION_LIMIT) return `Bruder mit deinen Antwortmöglichkeiten wird das Limit von ${poll.OPTION_LIMIT} überschritten!`;
     else if (additionalPollOptions.some(value => value.length > poll.FIELD_VALUE_LIMIT)) return `Bruder mindestens eine Antwortmöglichkeit ist länger als ${poll.FIELD_VALUE_LIMIT} Zeichen!`;
 
-    const originalAuthor = replyMessage.embeds[0].author!.name.split(" ")[2];
+    const originalAuthor = replyMessage.embeds[0].author!.name.split(" ").slice(2).join(" ");
     const authorNote = originalAuthor !== message.author.username ? ` (von ${message.author.username})` : "";
 
     const newFields: APIEmbedField[] = additionalPollOptions.map((value, i) => {
-        return {name: `Antwortoption ${poll.LETTERS[oldPollOptionFields.length + i]} ${authorNote}`, value, inline: false};
+        return {name: `${poll.LETTERS[oldPollOptionFields.length + i]} ${authorNote}`, value, inline: false};
     });
 
     let metaFields = replyMessage.embeds[0].fields.filter(field => field.inline || !field.name.startsWith("Antwortoption"));
