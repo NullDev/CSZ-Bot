@@ -60,7 +60,7 @@ export const run: CommandFunction = async(client, message, args, context) => {
 
     if (oldPollOptionFields.length + additionalPollOptions.length === poll.OPTION_LIMIT) {
         embed.setColor(0xCD5C5C);
-        metaFields = metaFields.filter(field => field.name.endsWith("Erweiterbar") || field.name.endsWith("Antwortmöglichkeit"));
+        metaFields = metaFields.filter(field => !field.name.endsWith("Erweiterbar"));
     }
 
     embed.setFields([...oldPollOptionFields, ...newFields, ...metaFields]);
