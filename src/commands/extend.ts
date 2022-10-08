@@ -64,7 +64,7 @@ export const run: CommandFunction = async(client, message, args, context) => {
         metaFields = metaFields.filter(field => !field.name.endsWith("Erweiterbar"));
     }
 
-    embed.fields = [...newFields, ...metaFields];
+    embed.fields?.push(...newFields, ...metaFields);
 
     const msg = await replyMessage.edit({
         embeds: [embed]
