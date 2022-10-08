@@ -56,7 +56,6 @@ export const run: CommandFunction = async(client, message, args, context) => {
     });
 
     let metaFields = replyMessage.embeds[0].fields.filter(field => field.inline || !field.name.startsWith("Antwortoption"));
-    // TODO: Replace with structuredClone as soon as we run on Node.js 18
     const embed = EmbedBuilder.from(replyMessage.embeds[0]);
 
     if (oldPollOptionFields.length + additionalPollOptions.length === poll.OPTION_LIMIT) {
