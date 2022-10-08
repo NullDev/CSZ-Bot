@@ -1,4 +1,4 @@
-import {APIEmbed, APIEmbedField, ChannelType, Message} from "discord.js";
+import {APIEmbedField, ChannelType, EmbedBuilder, Message} from "discord.js";
 
 import log from "../utils/logger.js";
 import { getConfig } from "../utils/configHandler.js";
@@ -57,14 +57,14 @@ export const run: CommandFunction = async(client, message, args, context) => {
 
     let metaFields = replyMessage.embeds[0].fields.filter(field => field.inline || !field.name.startsWith("Antwortoption"));
     // TODO: Replace with structuredClone as soon as we run on Node.js 18
-    const embed = JSON.parse(JSON.stringify(replyMessage.embeds[0])) as APIEmbed;
+    const embed = EmbedBuilder.from(replyMessage.embeds[0]);
 
     if (oldPollOptionFields.length + additionalPollOptions.length === poll.OPTION_LIMIT) {
-        embed.color = 0xCD5C5C;
+        embed.setColor(0xCD5C5C);
         metaFields = metaFields.filter(field => !field.name.endsWith("Erweiterbar"));
     }
 
-    embed.fields?.push(...newFields, ...metaFields);
+    embed.setFields([...oldPollOptionFields, ...newFields, ...metaFields]);
 
     const msg = await replyMessage.edit({
         embeds: [embed]
