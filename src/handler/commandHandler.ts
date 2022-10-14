@@ -74,7 +74,7 @@ const config = getConfig();
 export const commands: readonly Command[] = [
     new InfoCommand(),
     new TriggerReactOnKeyword("nix", "nixos"),
-    new TriggerReactOnKeyword("zig", "zig"),
+    new TriggerReactOnKeyword("zig", "zig", 0.05),
     new WhereCommand(),
     new DadJokeCommand(),
     new WatCommand(),
