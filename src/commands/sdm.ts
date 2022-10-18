@@ -151,7 +151,8 @@ export class SdmCommand implements MessageCommand, ApplicationCommand {
         const options = question.split(/,|;|\s+oder\s+/gi).map(s => s.trim()).filter(s => !!s);
 
         if (options.length > 1) {
-            question = options.reduce((p, c, i, a) => (`${p}${i === a.length - 1 ? " oder " : ", "}${c}`));
+            const listFormatter = new Intl.ListFormat("de", { style: "short", type: "disjunction" });
+            question = listFormatter.format(options);
             const msg = createSecureDecisionMessage(question, message.member, options);
             await message.reply(msg);
             // Don't delete as it would trigger the messageDeleteHandler
