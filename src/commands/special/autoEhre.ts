@@ -23,8 +23,8 @@ export class AutoEhreCommand implements SpecialCommand {
         if (message.reference === null) {
             return false;
         }
-        const normalizedMessage = message.content.trim().toLowerCase();
 
+        const normalizedMessage = message.content.trim().toLowerCase();
         if (this.ehreMessages.includes(normalizedMessage)) {
             return true;
         }
