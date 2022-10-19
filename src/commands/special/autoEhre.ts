@@ -15,6 +15,7 @@ export class AutoEhreCommand implements SpecialCommand {
 
     ehreMessages = [
         ":aehre:",
+        ":pr0aehre:",
         "ehre",
         "ehrenmann"
     ];
