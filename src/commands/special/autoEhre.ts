@@ -13,8 +13,27 @@ export class AutoEhreCommand implements SpecialCommand {
     randomness = 1;
     cooldownTime = 0;
 
+    ehreMessages = [
+        ":aehre:",
+        "ehre",
+        "ehrenmann"
+    ];
+
     matches(message: ProcessableMessage): boolean {
-        return message.reference !== null && message.content.trim().toLowerCase() === "ehre";
+        if (message.reference === null) {
+            return false;
+        }
+        const normalizedMessage = message.content.trim().toLowerCase();
+
+        if (this.ehreMessages.includes(normalizedMessage)) {
+            return true;
+        }
+
+        if (normalizedMessage.includes(":aehre:")) {
+            return true;
+        }
+
+        return false;
     }
 
     async handleSpecialMessage(message: ProcessableMessage, _client: Client<boolean>): Promise<CommandResult> {
