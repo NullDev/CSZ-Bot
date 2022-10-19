@@ -44,6 +44,7 @@ import { BoobCommand } from "../commands/boobs.js";
 import { BonkCommand } from "../commands/bonk.js";
 import { GoogleCommand } from "../commands/google.js";
 import { NischdaaaCommand } from "../commands/special/nischdaaa.js";
+import { AutoEhreCommand } from "../commands/special/autoEhre.js";
 import { SdmCommand } from "../commands/sdm.js";
 import { Nickname, NicknameButtonHandler } from "../commands/nickname.js";
 import { WoisButton, WoisCommand } from "../commands/woisping.js";
@@ -91,6 +92,7 @@ export const commands: readonly Command[] = [
     new Nickname(),
     new WoisLog(),
     new NischdaaaCommand(),
+    new AutoEhreCommand(),
     new SdmCommand(),
     new WoisCommand(),
     new FicktabelleCommand(),
