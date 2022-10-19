@@ -91,7 +91,7 @@ export class EhreCommand implements ApplicationCommand {
                     userId: ehrenbruder
                 }
             });
-            return "Willst dich selber ähren? Dreckiger Abschaum. Sowas verdient einfach kein Respekt!";
+            return "Willst dich selber ähren? Dreckiger Abschaum. Sowas verdient einfach keinen Respekt!";
         }
 
         if (await EhreVotes.hasVoted(thankingUser.id)) {
