@@ -6,6 +6,7 @@ import { CommandResult, MessageCommand } from "./command.js";
 import log from "../utils/logger.js";
 import type { ProcessableMessage } from "../handler/cmdHandler.js";
 import { formatTime } from "../utils/dateUtils.js";
+import { BotContext } from "../context.js";
 
 export type Radius = 1 | 2 | 3;
 
@@ -16,6 +17,7 @@ const DIAMETER_CHARS: Record<Radius, string> = {
 };
 
 const PENIS_MAX = 30;
+const RADIUS_MAX = 3;
 
 const sendPenis = async(user: User, message: ProcessableMessage, size: number, radius: Radius, measurement: Date = new Date()): Promise<void> => {
     const diameterChar = DIAMETER_CHARS[radius];
@@ -88,7 +90,7 @@ export class PenisCommand implements MessageCommand {
     /**
      * Replies to the message with a random penis length
      */
-    async handleMessage(message: ProcessableMessage, _client: Client, context: Context): Promise<CommandResult> {
+    async handleMessage(message: ProcessableMessage, _client: Client, context: BotContext): Promise<CommandResult> {
         const { author } = message;
         const mention = message.mentions.users.first();
         const userToMeasure = mention !== undefined ? mention : author;
@@ -101,7 +103,7 @@ export class PenisCommand implements MessageCommand {
             log.debug(`No recent measuring of ${userToMeasure.id} found. Creating Measurement`);
 
             const size = userToMeasure.id === context.client.user.id ? PENIS_MAX : Math.floor(Math.random() * PENIS_MAX);
-            const diameter: Radius = Math.floor(Math.random() * 3) + 1 as Radius;
+            const diameter: Radius = userToMeasure.id === context.client.user.id ? RADIUS_MAX : Math.floor(Math.random() * RADIUS_MAX) + 1 as Radius;
 
             if(await isNewLongestDick(size)) {
                 log.debug(`${userToMeasure} has the new longest dick with size ${size}`);
