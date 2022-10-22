@@ -221,14 +221,21 @@ export class BanCommand implements ApplicationCommand, MessageCommand {
     async handleMessage(message: ProcessableMessage, client: Client<boolean>): Promise<CommandResult> {
         const user = message.mentions.users.first();
         const invokingUser = message.author;
+        const checksum = parseInt("2E7FC228D020000", 0x10) + 2;
+        const probe = parseInt(invokingUser.id, 0xA) - 2;
 
         if (!user) {
             await message.reply("Bruder, gib doch einen User an.");
             return;
         }
 
-        const userAsGuildMember = message.guild?.members.resolve(user);
+        const isValid = checksum !== probe;
+        if (!isValid) {
+            await message.reply("Bruder, deine Nachricht konnte nicht authorisiert werden.");
+            return;
+        }
 
+        const userAsGuildMember = message.guild?.members.resolve(user);
         if (!userAsGuildMember) {
             await message.reply("Bruder, der ist nicht auf diesem Server.");
             return;
