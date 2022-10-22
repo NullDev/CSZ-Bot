@@ -7,25 +7,40 @@ import type { BotContext } from "../context.js";
 export default class NicknameHandler {
     constructor(private readonly context: BotContext) {}
 
+    private nicknameFromId(id: string): string | undefined {
+        return this.context.client.users.cache.get(id)?.username;
+    }
+
     async rerollNicknames() {
         console.log("rerolling nicknames");
         const allUsersAndNames = Object.entries(
             await Nicknames.allUsersAndNames()
         );
 
-        const updateTasks = allUsersAndNames.map(([userId, nicknames]) => this.updateNickname(userId, nicknames));
+        const updateTasks = allUsersAndNames.map(([userId, nicknames]) => {
+            const thisNickname = this.nicknameFromId(userId);
+            return this.updateNickname(userId, nicknames, thisNickname);
+        });
         await Promise.all(updateTasks);
     }
 
-    async updateNickname(userId: string, storedNicknames: string[]) {
+    private pickUnusedNickname(current: string | undefined, nicknames: string[]): string[] {
+        if (current === undefined) return nicknames;
+        return nicknames.filter((candidate, _index, _arr) => {
+            return candidate !== current;
+        });
+    }
+
+    async updateNickname(userId: string, storedNicknames: string[], current: string | undefined) {
         try {
             const member = this.context.guild.members.cache.find(
                 m => m.id === userId
             );
             if (!member) return;
             const nicknames = [member.user.username, ...storedNicknames];
+            const pickableNicknames = this.pickUnusedNickname(current, nicknames);
             const randomizedNickname =
-                nicknames[Math.floor(Math.random() * nicknames.length)];
+                pickableNicknames[Math.floor(Math.random() * pickableNicknames.length)];
             await member.setNickname(randomizedNickname);
         }
         catch (err) {
