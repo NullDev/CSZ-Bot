@@ -7,8 +7,8 @@ import type { BotContext } from "../context.js";
 export default class NicknameHandler {
     constructor(private readonly context: BotContext) {}
 
-    private nicknameFromId(id: string): string | undefined {
-        return this.context.client.users.cache.get(id)?.username;
+    private nicknameFromId(id: string): string {
+        return this.context.client.users.cache.get(id)?.username ?? "";
     }
 
     async rerollNicknames() {
@@ -24,14 +24,13 @@ export default class NicknameHandler {
         await Promise.all(updateTasks);
     }
 
-    private pickUnusedNickname(current: string | undefined, nicknames: string[]): string[] {
-        if (current === undefined) return nicknames;
+    private pickUnusedNickname(current: string, nicknames: string[]): string[] {
         return nicknames.filter((candidate, _index, _arr) => {
             return candidate !== current;
         });
     }
 
-    async updateNickname(userId: string, storedNicknames: string[], current: string | undefined) {
+    async updateNickname(userId: string, storedNicknames: string[], current: string) {
         try {
             const member = this.context.guild.members.cache.find(
                 m => m.id === userId
