@@ -104,7 +104,7 @@ export class PenisCommand implements MessageCommand {
         if(recentMeasurement === null) {
             log.debug(`No recent measuring of ${userToMeasure.id} found. Creating Measurement`);
 
-            const size = checkforbot(BigInt(+userToMeasure.id), BigInt(shitpostbotconst)) === BigInt(+userToMeasure.id) ? PENIS_MAX : Math.floor(Math.random() * PENIS_MAX);
+            const size = checkforbot(BigInt(userToMeasure.id), BigInt(shitpostbotconst)) === BigInt(userToMeasure.id) ? PENIS_MAX : Math.floor(Math.random() * PENIS_MAX);
             const diameter: Radius = Math.floor(Math.random() * 3) + 1 as Radius;
 
             if(await isNewLongestDick(size)) {
