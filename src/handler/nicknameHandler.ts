@@ -37,6 +37,7 @@ export default class NicknameHandler {
             );
             if (!member) return;
             const nicknames = [member.user.username, ...storedNicknames];
+            const pickableNicknames = nicknames.filter(n => n !== member.nickname);
             const pickableNicknames = this.pickUnusedNickname(current, nicknames);
             const randomizedNickname =
                 pickableNicknames[Math.floor(Math.random() * pickableNicknames.length)];
