@@ -24,8 +24,9 @@ export default class NicknameHandler {
             );
             if (!member) return;
             const nicknames = [member.user.username, ...storedNicknames];
+            const pickableNicknames = nicknames.filter(n => n !== member.nickname);
             const randomizedNickname =
-                nicknames[Math.floor(Math.random() * nicknames.length)];
+                pickableNicknames[Math.floor(Math.random() * pickableNicknames.length)];
             await member.setNickname(randomizedNickname);
         }
         catch (err) {
