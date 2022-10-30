@@ -1,10 +1,12 @@
 import parseOptions from "minimist";
 import Cron from "croner";
-import { Util } from "discord.js";
+import {APIEmbed, APIEmbedField, ChannelType, cleanContent, Snowflake, User} from "discord.js";
 
 import log from "../utils/logger.js";
 import AdditionalMessageData from "../storage/model/AdditionalMessageData.js";
 import { getConfig } from "../utils/configHandler.js";
+import { BotContext } from "../context.js";
+import { CommandFunction } from "../types.js";
 
 const config = getConfig();
 
@@ -55,29 +57,24 @@ export const EMOJI = [
 ];
 
 export const TEXT_LIMIT = 4096;
+export const FIELD_VALUE_LIMIT = 1024;
 export const OPTION_LIMIT = LETTERS.length;
 
 
-/**
- * @typedef {Object} DelayedPoll
- * @property {String} pollId
- * @property {Date} createdAt
- * @property {Date} finishesAt
- * @property {string[][]} reactions
- * @property {string[]} reactionMap
- */
+interface DelayedPoll {
+    pollId: string;
+    createdAt: Date;
+    finishesAt: Date;
+    reactions: string[][];
+    reactionMap: string[];
+}
+
+export const delayedPolls: DelayedPoll[] = [];
 
 /**
- * @type {DelayedPoll[]}
+ * Creates a new poll (multiple answers) or straw poll (single selection)
  */
-export const delayedPolls = [];
-
-/**
- * Creates a new poll (multiple answers) or strawpoll (single selection)
- *
- * @type {import("../types").CommandFunction}
- */
-export const run = async(client, message, args, context) => {
+export const run: CommandFunction = async(_client, message, args, context) => {
     const options = parseOptions(args, {
         "boolean": [
             "channel",
@@ -101,6 +98,10 @@ export const run = async(client, message, args, context) => {
     if (!parsedArgs.length) return "Bruder da ist keine Umfrage :c";
 
     const pollArray = parsedArgs.join(" ").split(";").map(e => e.trim()).filter(e => e.replace(/\s/g, "") !== "");
+
+    const question = pollArray[0];
+    if (question.length > TEXT_LIMIT) return "Bruder die Frage ist ja länger als mein Schwanz :c";
+
     const pollOptions = pollArray.slice(1);
     let pollOptionsTextLength = 0;
 
@@ -113,10 +114,32 @@ export const run = async(client, message, args, context) => {
     if (!pollOptions.length) return "Bruder da sind keine Antwortmöglichkeiten :c";
     else if (pollOptions.length < 2 && !isExtendable) return "Bruder du musst schon mehr als eine Antwortmöglichkeit geben 🙄";
     else if (pollOptions.length > OPTION_LIMIT) return `Bitte gib nicht mehr als ${OPTION_LIMIT} Antwortmöglichkeiten an!`;
-    else if (pollOptionsTextLength > TEXT_LIMIT) return "Bruder deine Umfrage ist zu lang!";
+    else if (pollOptions.some(value => value.length > FIELD_VALUE_LIMIT)) return `Bruder mindestens eine Antwortmöglichkeit ist länger als ${FIELD_VALUE_LIMIT} Zeichen!`;
 
-    let optionstext = "";
-    pollOptions.forEach((e, i) => (optionstext += `${LETTERS[i]} - ${e}\n`));
+    const fields: APIEmbedField[] = pollOptions.map((e, i) => {
+        return {name: `${LETTERS[i]}`, value: e, inline: false};
+    });
+
+    const embed: APIEmbed = {
+        description: `**${cleanContent(question, message.channel)}**`,
+        fields,
+        timestamp: new Date().toISOString(),
+        author: {
+            name: `${options.straw ? "Strawpoll" : "Umfrage"} von ${message.author.username}`,
+            icon_url: message.author.displayAvatarURL()
+        }
+    };
+
+    const extendable = options.extendable && pollOptions.length < OPTION_LIMIT && pollOptionsTextLength < TEXT_LIMIT;
+
+    if (extendable) {
+        if (options.delayed) {
+            return "Bruder du kannst -e nicht mit -d kombinieren. 🙄";
+        }
+
+        embed.fields!.push({name: "✏️ Erweiterbar", value: "Erweiterbar mit .extend als Reply", inline: true});
+        embed.color = 0x2ecc71;
+    }
 
     const finishTime = new Date(new Date().valueOf() + (delayTime * 60 * 1000));
     if (options.delayed) {
@@ -126,50 +149,15 @@ export const run = async(client, message, args, context) => {
         else if (delayTime > 60 * 1000 * 24 * 7) {
             return "Bruder du kannst maximal 7 Tage auf ein Ergebnis warten 🙄";
         }
-        // Haha oida ist das cancer
-        optionstext += `\nAbstimmen möglich bis ${new Date(finishTime.valueOf() + 60000).toLocaleTimeString("de").split(":").splice(0, 2).join(":")}`;
+
+
+        embed.fields!.push({name: "⏳ Verzögert", value: `Abstimmungsende: <t:${Math.floor(finishTime.valueOf() + 60000 / 1000)}:R>`, inline: true});
+        embed.color = 0xa10083;
     }
 
-    const embed = {
-        title: Util.cleanContent(pollArray[0], message.channel),
-        description: optionstext,
-        timestamp: new Date(),
-        author: {
-            name: `${options.straw ? "Strawpoll" : "Umfrage"} von ${message.author.username}`,
-            icon_url: message.author.displayAvatarURL()
-        }
-    };
 
-    const footer = [];
-    const extendable = options.extendable && pollOptions.length < OPTION_LIMIT && pollOptionsTextLength < TEXT_LIMIT;
+    embed.fields!.push({name: "📝 Antwortmöglichkeit", value: options.straw ? "Einzelauswahl" : "Mehrfachauswahl", inline: true});
 
-    if (extendable) {
-        if (options.delayed) {
-            return "Bruder du kannst -e nicht mit -d kombinieren. 🙄";
-        }
-
-        footer.push("Erweiterbar mit .extend als Reply");
-        embed.color = 3066993;
-    }
-
-    if (options.delayed) {
-        footer.push("⏳");
-        embed.color = "#a10083";
-    }
-
-    if (!options.straw) {
-        footer.push("Mehrfachauswahl");
-    }
-
-    if (options.straw) {
-        footer.push("Einzelauswahl");
-    }
-
-    if (footer.length) {
-        embed.footer = {
-            text: footer.join(" • ")
-        };
-    }
 
     const voteChannel = context.textChannels.votes;
     const channel = options.channel ? voteChannel : message.channel;
@@ -177,7 +165,7 @@ export const run = async(client, message, args, context) => {
         return "Du kannst keine verzögerte Abstimmung außerhalb des Umfragenchannels machen!";
     }
 
-    if (channel.type !== "GUILD_TEXT") return "Der Zielchannel ist irgenwie kein Text-Channel?";
+    if (channel.type !== ChannelType.GuildText) return "Der Zielchannel ist irgenwie kein Text-Channel?";
 
     const pollMessage = await channel.send({
         embeds: [embed]
@@ -187,9 +175,8 @@ export const run = async(client, message, args, context) => {
     await Promise.all(pollOptions.map((e, i) => pollMessage.react(EMOJI[i])));
 
     if (options.delayed) {
-        const reactionMap = [];
-        /** @type {string[][]} */
-        const reactions = [];
+        const reactionMap: string[] = [];
+        const reactions: string[][] = [];
         pollOptions.forEach((option, index) => {
             reactionMap[index] = option;
             reactions[index] = [];
@@ -197,8 +184,8 @@ export const run = async(client, message, args, context) => {
 
         const delayedPollData = {
             pollId: pollMessage.id,
-            createdAt: new Date().valueOf(),
-            finishesAt: finishTime.valueOf(),
+            createdAt: new Date(),
+            finishesAt: finishTime,
             reactions,
             reactionMap
         };
@@ -229,9 +216,8 @@ export const importPolls = async() => {
 
 /**
  * Initialized crons for delayed polls
- * @param {import("../context").BotContext} context
  */
-export const startCron = context => {
+export const startCron = (context: BotContext) => {
     log.info("Scheduling Poll Cronjob...");
 
     /* eslint-disable no-await-in-loop */
@@ -247,29 +233,35 @@ export const startCron = context => {
             const delayedPoll = element;
             const message = await /** @type {import("discord.js").TextChannel} */ (channel).messages.fetch(delayedPoll.pollId);
 
-            const users = {};
+            const users: Record<Snowflake, User> = {};
             await Promise.all(delayedPoll.reactions
                 .flat()
-                .filter((x, uidi) => delayedPoll.reactions.indexOf(x) !== uidi)
+                .filter((x, uidi) => delayedPoll.reactions.indexOf(x as any as string[] /* TODO @twobiers this is not correct, but the code isn't in use (yet) */) !== uidi)
                 .map(async uidToResolve => {
                     users[uidToResolve] = await context.client.users.fetch(uidToResolve);
                 }));
 
-            const toSend = {
-                title: `Zusammenfassung: ${message.embeds[0].title}`,
-                description: `${delayedPoll.reactions
-                    .map(
-                        (x, index) => `${LETTERS[index]} ${
-                            delayedPoll.reactionMap[index]
-                        } (${x.length}):
-${x.map(uid => users[uid]).join("\n")}\n\n`
-                    )
-                    .join("")}
-`,
-                timestamp: new Date(),
+
+            const fields: APIEmbedField[] = delayedPoll.reactions.map((value, i) => {
+                return {name: `${LETTERS[i]} ${delayedPoll.reactionMap[i]} (${value.length})`, value: value.map(uid => users[uid]).join("\n") || "-", inline: false};
+            });
+
+            const embed = message.embeds[0];
+            if (embed === undefined) {
+                continue;
+            }
+
+            const question = embed.description!.length > TEXT_LIMIT
+                ? embed.description!.slice(0, TEXT_LIMIT - 20) + "..."
+                : embed.description;
+
+            const toSend: APIEmbed = {
+                description: `Zusammenfassung: ${question}`,
+                fields,
+                timestamp: new Date().toISOString(),
                 author: {
-                    name: `${message.embeds[0].author.name}`,
-                    icon_url: message.embeds[0].author.iconURL
+                    name: `${message.embeds[0].author!.name}`,
+                    icon_url: message.embeds[0].author!.iconURL
                 },
                 footer: {
                     text: `Gesamtabstimmungen: ${delayedPoll.reactions

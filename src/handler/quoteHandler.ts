@@ -1,7 +1,8 @@
-import { GuildMember, Message, MessageReaction, User, TextBasedChannel, GuildEmoji, ReactionEmoji } from "discord.js";
+import { GuildMember, Message, MessageReaction, User, TextBasedChannel, GuildEmoji, ReactionEmoji, ChannelType } from "discord.js";
 
 import { BotContext } from "../context.js";
 import { getConfig } from "../utils/configHandler.js";
+import { formatDateTime } from "../utils/dateUtils.js";
 import log from "../utils/logger.js";
 import { isNerd, isTrusted } from "../utils/userUtils.js";
 
@@ -51,14 +52,14 @@ const createQuote = (
     referencedMessage: Message | undefined
 ) => {
     const getAuthor = (user: GuildMember) => {
-        return isChannelAnonymous(quotedMessage.channelId) || !user
-            ? {
-                name: "Anon"
-            }
-            : {
-                name: user.displayName,
-                icon_url: user.displayAvatarURL()
-            };
+        if (isChannelAnonymous(quotedMessage.channelId) || !user) {
+            return { name: "Anon" };
+        }
+
+        return {
+            name: user.displayName,
+            icon_url: user.displayAvatarURL()
+        };
     };
 
     const randomizedColor = generateRandomColor();
@@ -71,7 +72,7 @@ const createQuote = (
                     color: randomizedColor,
                     description: quotedMessage.content,
                     author: getAuthor(quotedUser),
-                    timestamp: quotedMessage.createdTimestamp,
+                    timestamp: new Date(quotedMessage.createdTimestamp).toISOString(),
                     fields: [
                         {
                             name: "Link zur Nachricht",
@@ -93,7 +94,7 @@ const createQuote = (
                     color: randomizedColor,
                     description: referencedMessage.content,
                     author: getAuthor(referencedUser!),
-                    timestamp: referencedMessage.createdTimestamp
+                    timestamp: new Date(referencedMessage.createdTimestamp).toISOString()
                 }
             ],
             files: referencedMessage.attachments.map((attachment, _key) => attachment)
@@ -130,9 +131,9 @@ export const quoteReactionHandler = async(event: MessageReaction, user: User, co
 
     if (isQuoterQuotingHimself(quoter, quotedUser)) {
         await context.textChannels.hauptchat.send({
-            content: `<@${quoter.id}> der Lellek hat gerade versucht sich, selbst zu quoten. Was für ein Opfer!`,
+            content: `${quoter} der Lellek hat gerade versucht sich, selbst zu quoten. Was für ein Opfer!`,
             allowedMentions: {
-                users: [ quoter.id ]
+                users: [quoter.id]
             }
         });
 
@@ -144,19 +145,16 @@ export const quoteReactionHandler = async(event: MessageReaction, user: User, co
         return;
     }
 
-    const {quote, reference} = createQuote(quotedUser, quotingMembersAllowed.map(member => member.user), referencedUser, quotedMessage, referencedMessage);
-    const {id: targetChannelId, channel: targetChannel} = getTargetChannel(quotedMessage.channelId, context);
-
+    const { quote, reference } = createQuote(quotedUser, quotingMembersAllowed.map(member => member.user), referencedUser, quotedMessage, referencedMessage);
+    const { id: targetChannelId, channel: targetChannel } = getTargetChannel(quotedMessage.channelId, context);
 
     if (targetChannel === undefined) {
         log.error(`channel ${targetChannelId} is configured as quote output channel but it doesn't exist`);
-
         return;
     }
 
-    if (!targetChannel.isText()) {
+    if (!targetChannel.isTextBased()) {
         log.error(`channel ${targetChannelId} is configured as quote output channel but it is not a text channel`);
-
         return;
     }
 
@@ -173,15 +171,15 @@ export const quoteReactionHandler = async(event: MessageReaction, user: User, co
     }
 
     if (reference !== undefined) {
-        const quoteMessage = await (targetChannel as TextBasedChannel).send(reference);
+        const quoteMessage = await targetChannel.send(reference);
         await quoteMessage.reply(quote);
     }
     else {
-        await (targetChannel as TextBasedChannel).send(quote);
+        await targetChannel.send(quote);
     }
 
     await quotedMessage.react(event.emoji);
-    if (quotedMessage.channel.isText() && quotedMessage.channel.type === "GUILD_TEXT") {
+    if (quotedMessage.channel.isTextBased() && quotedMessage.channel.type === ChannelType.GuildText) {
         await quotedMessage.reply("Ihr quoted echt jeden Scheiß, oder?");
     }
 };

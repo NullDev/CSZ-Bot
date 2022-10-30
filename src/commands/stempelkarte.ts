@@ -1,7 +1,6 @@
 import * as fs from "node:fs/promises";
 import nodeCanvas from "canvas";
-import { AllowedImageSize, Client, CommandInteraction, GuildMember, Snowflake } from "discord.js";
-import { SlashCommandBuilder, SlashCommandUserOption } from "@discordjs/builders";
+import { ImageSize, Client, CommandInteraction, GuildMember, Snowflake, SlashCommandBuilder, SlashCommandUserOption } from "discord.js";
 
 import Stempel from "../storage/model/Stempel.js";
 import log from "../utils/logger.js";
@@ -34,11 +33,11 @@ const firmenstempelCenter = {
     y: 155
 };
 
-const getAvatarUrlForMember = (member?: GuildMember, size: AllowedImageSize = 32) => {
+const getAvatarUrlForMember = (member?: GuildMember, size: ImageSize = 32) => {
     return member?.user.avatarURL({
         size,
-        dynamic: false,
-        format: "png"
+        forceStatic: true,
+        extension: "png"
     }) ?? undefined;
 };
 

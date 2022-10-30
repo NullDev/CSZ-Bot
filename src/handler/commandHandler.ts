@@ -1,14 +1,14 @@
-import { REST } from "@discordjs/rest";
 import { APIApplicationCommand, Routes } from "discord-api-types/v9";
 import {
-    ApplicationCommandPermissionData,
+    ApplicationCommandPermissionType,
     Client,
     CommandInteraction,
     Interaction,
     Message,
     MessageComponentInteraction,
-    Permissions,
-    PermissionString
+    PermissionsBitField,
+    PermissionsString,
+    REST
 } from "discord.js";
 import { GuildMember } from "discord.js";
 
@@ -74,7 +74,7 @@ const config = getConfig();
 export const commands: readonly Command[] = [
     new InfoCommand(),
     new TriggerReactOnKeyword("nix", "nixos"),
-    new TriggerReactOnKeyword("zig", "zig"),
+    new TriggerReactOnKeyword("zig", "zig", 0.05),
     new WhereCommand(),
     new DadJokeCommand(),
     new WatCommand(),
@@ -126,6 +126,12 @@ const lastSpecialCommands: Record<string, number> = specialCommands.reduce(
     {}
 );
 
+const createPermissionSet = (permissions: readonly PermissionsString[]): bigint => {
+    const flags = new PermissionsBitField();
+    flags.add(...permissions);
+    return flags.bitfield;
+};
+
 /**
  * Registers all defined applicationCommands as guild commands
  * We're overwriting ALL, therefore no deletion is necessary
@@ -133,60 +139,34 @@ const lastSpecialCommands: Record<string, number> = specialCommands.reduce(
 export const registerAllApplicationCommandsAsGuildCommands = async(
     context: BotContext
 ): Promise<void> => {
-    const clientId = config.auth.client_id;
-    const token = config.auth.bot_token;
+    const clientId = context.rawConfig.auth.client_id;
+    const token = context.rawConfig.auth.bot_token;
 
-    const rest = new REST({ version: "9" }).setToken(token);
+    const rest = new REST({ version: "10" }).setToken(token);
 
-    const createPermissionSet = (
-        strings: readonly PermissionString[] | undefined
-    ): bigint => {
-        if (strings === undefined) {
-            return BigInt(0x40); // Default to "SEND_MESSAGES"
-        }
-
-        const start = BigInt(0x0);
-        let permSet = start;
-        for (const str of strings) {
-            const permFlag = Permissions.FLAGS[str];
-            if (permFlag === undefined) {
-                throw new Error(`Permission ${str} could not be resolved.`);
-            }
-            permSet |= permFlag;
-        }
-        return permSet;
-    };
-
-    // TODO: Reconsider using batch creation here. Ratelimit kicks in and takes round about 40 seconds to start the butt
+    // TODO: Reconsider using batch creation here. Rate limit kicks in and takes round about 40 seconds to start the bot
     for (const command of applicationCommands) {
-        try {
-            const commandCreationData:
-                | APIApplicationCommand
-                | {
-                      dm_permission: boolean;
-                      default_member_permissions: string;
-                      permissions: ApplicationCommandPermissionData[];
-                  } = {
-                      ...command.applicationCommand.toJSON(),
-                      dm_permission: false,
-                      default_member_permissions: String(
-                          createPermissionSet(command.requiredPermissions)
-                      ),
-                      permissions: [
-                          {
-                              id: config.ids.bot_deny_role_id,
-                              type: "ROLE",
-                              permission: false
-                          }
-                      ]
-                  };
-            // eslint-disable-next-line no-unused-vars
-            (await rest.post(
-                Routes.applicationGuildCommands(clientId, context.guild.id),
+        const defaultMemberPermissions = createPermissionSet(command.requiredPermissions ?? ["SendMessages"]);
+
+        const commandCreationData: APIApplicationCommand =
+        {
+            ...command.applicationCommand.toJSON(),
+            dm_permission: false,
+            default_member_permissions: defaultMemberPermissions.toString(),
+
+            // Somehow, this permission thing does not make any sense, that's why we assert to `any`
+            permissions: [
                 {
-                    body: commandCreationData
+                    id: config.ids.bot_deny_role_id,
+                    type: ApplicationCommandPermissionType.Role,
+                    permission: false
                 }
-            )) as { id: string; name: string };
+            ]
+        } as any;
+
+        try {
+            const url = Routes.applicationGuildCommands(clientId, context.guild.id);
+            await rest.post(url, { body: commandCreationData });
         }
         catch (err) {
             log.error(
@@ -249,7 +229,7 @@ const messageComponentInteractionHandler = (
 };
 
 
-const checkPermissions = (member: GuildMember, permissions: ReadonlyArray<PermissionString>): boolean => {
+const checkPermissions = (member: GuildMember, permissions: ReadonlyArray<PermissionsString>): boolean => {
     log.debug(`Checking member ${member.id} permissions on permissionSet: ${JSON.stringify(permissions)}`);
 
     // No permissions, no problem

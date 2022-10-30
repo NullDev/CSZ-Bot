@@ -1,5 +1,4 @@
-import { Client, GuildMember, MessageOptions, MessageEmbedOptions, InteractionReplyOptions, CommandInteraction, CacheType } from "discord.js";
-import { SlashCommandBuilder, SlashCommandStringOption, SlashCommandSubcommandBuilder } from "@discordjs/builders";
+import { Client, GuildMember, CommandInteraction, CacheType, SlashCommandBuilder, SlashCommandStringOption, SlashCommandSubcommandBuilder, EmbedBuilder } from "discord.js";
 
 import { ApplicationCommand, CommandResult, MessageCommand } from "./command.js";
 import { substringAfter } from "../utils/stringUtils.js";
@@ -32,41 +31,41 @@ const ioc = iocCalculator(randomSeed);
 
 const secureDecisionMaker = (question: string, max: number = 1) => (rng(0, max, (Date.now() * ioc) / iocCalculator(question)));
 
-const createSecureDecisionMessage = (question: string, author: GuildMember, options: string[] = []): MessageOptions & InteractionReplyOptions => {
+const createSecureDecisionMessage = (question: string, author: GuildMember, options: string[] = []) => {
     const formattedQuestion = question.endsWith("?") ? question : `${question}?`;
-    const embed: MessageEmbedOptions = {
-        title: formattedQuestion,
-        timestamp: Date.now(),
-        author: {
+
+    const embed = new EmbedBuilder()
+        .setTitle(formattedQuestion)
+        .setTimestamp(new Date())
+        .setAuthor({
             name: `Secure Decision für ${author.user.username}`,
             iconURL: author.displayAvatarURL()
-        }
-    };
+        });
+
     // If yes / no
     if (options.length === 0) {
         const decision = secureDecisionMaker(question);
         let file;
         if (!!decision) {
-            embed.color = 0x2ecc71;
+            embed.setColor(0x2ecc71);
             file = "yes.png";
         }
         else {
-            embed.color = 0xe74c3c;
+            embed.setColor(0xe74c3c);
             file = "no.png";
         }
-        embed.thumbnail = {
-            url: `attachment://${file}`
-        };
+        embed.setThumbnail("attachment://" + file);
 
         return {
             embeds: [embed],
             files: [`./assets/${file}`]
         };
     }
+
     // If pick
     const decision = secureDecisionMaker(question, options.length - 1);
-    embed.color = 0x9b59b6;
-    embed.description = `Ich rate dir zu **${options[decision]}**!`;
+    embed.setColor(0x9b59b6);
+    embed.setDescription(`Ich rate dir zu **${options[decision]}**!`);
 
     return {
         embeds: [embed]
@@ -76,7 +75,7 @@ const createSecureDecisionMessage = (question: string, author: GuildMember, opti
 export class SdmCommand implements MessageCommand, ApplicationCommand {
     name = "sdm";
     description = "Macht eine Secure Decision mithilfe eines komplexen, hochoptimierten, Blockchain Algorithmus.";
-    get applicationCommand(): Pick<SlashCommandBuilder, "toJSON"> {
+    get applicationCommand() {
         return new SlashCommandBuilder()
             .setName(this.name)
             .setDescription(this.description)
@@ -99,36 +98,42 @@ export class SdmCommand implements MessageCommand, ApplicationCommand {
                         new SlashCommandStringOption()
                             .setDescription("Frage")
                             .setRequired(true)
-                            .setName("question"))
+                            .setName("question")
+                    )
                     .addStringOption(
                         new SlashCommandStringOption()
                             .setDescription("Option 1")
                             .setRequired(true)
-                            .setName("o1"))
+                            .setName("o1")
+                    )
                     .addStringOption(
                         new SlashCommandStringOption()
                             .setDescription("Option 2")
                             .setRequired(true)
-                            .setName("o2"))
+                            .setName("o2")
+                    )
                     .addStringOption(
                         new SlashCommandStringOption()
                             .setDescription("Option 3")
                             .setRequired(false)
-                            .setName("o3"))
+                            .setName("o3")
+                    )
                     .addStringOption(
                         new SlashCommandStringOption()
                             .setDescription("Option 4")
                             .setRequired(false)
-                            .setName("o4"))
+                            .setName("o4")
+                    )
                     .addStringOption(
                         new SlashCommandStringOption()
                             .setDescription("Option 5")
                             .setRequired(false)
-                            .setName("o5"))
+                            .setName("o5")
+                    )
             );
     }
 
-    async handleMessage(message: ProcessableMessage, client: Client<boolean>): Promise<CommandResult> {
+    async handleMessage(message: ProcessableMessage, _client: Client<boolean>): Promise<CommandResult> {
         const replyRef = message.reference?.messageId;
         const isReply = replyRef !== undefined;
         const args = substringAfter(message.cleanContent, this.name).trim().split(/\s+/g).filter(s => !!s);
@@ -146,7 +151,8 @@ export class SdmCommand implements MessageCommand, ApplicationCommand {
         const options = question.split(/,|;|\s+oder\s+/gi).map(s => s.trim()).filter(s => !!s);
 
         if (options.length > 1) {
-            question = options.reduce((p, c, i, a) => (`${p}${i === a.length - 1 ? " oder " : ", "}${c}`));
+            const listFormatter = new Intl.ListFormat("de", { style: "short", type: "disjunction" });
+            question = listFormatter.format(options);
             const msg = createSecureDecisionMessage(question, message.member, options);
             await message.reply(msg);
             // Don't delete as it would trigger the messageDeleteHandler
@@ -161,15 +167,19 @@ export class SdmCommand implements MessageCommand, ApplicationCommand {
         return;
     }
 
-    handleInteraction(command: CommandInteraction<CacheType>, client: Client<boolean>): Promise<CommandResult> {
+    async handleInteraction(command: CommandInteraction<CacheType>, client: Client<boolean>): Promise<CommandResult> {
+        if (!command.isChatInputCommand()) {
+            // TODO: Solve this on a type level
+            return;
+        }
+
         const subcommand = command.options.getSubcommand(true);
         const question = command.options.getString("question", true);
         const member = command.member as GuildMember;
         if (subcommand === "ja-nein") {
             const msg = createSecureDecisionMessage(question, member);
-            return command.reply(
-                msg
-            );
+            await command.reply(msg);
+            return;
         }
 
         if (subcommand === "entscheidung") {
@@ -183,9 +193,8 @@ export class SdmCommand implements MessageCommand, ApplicationCommand {
             const options = [o1, o2, o3, o4, o5].filter(o => o !== null) as string[];
 
             const msg = createSecureDecisionMessage(question, member, options);
-            return command.reply(
-                msg
-            );
+            await command.reply(msg);
+            return;
         }
         return Promise.reject(new Error(`Subcommand ${subcommand} not implemented.`));
     }

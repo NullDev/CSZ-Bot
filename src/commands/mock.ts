@@ -1,5 +1,4 @@
-import { SlashCommandBuilder, SlashCommandStringOption } from "@discordjs/builders";
-import { CacheType, Client, CommandInteraction, GuildMember, Message, MessageEmbed } from "discord.js";
+import { CacheType, Client, CommandInteraction, GuildMember, Message, EmbedBuilder, SlashCommandBuilder, SlashCommandStringOption } from "discord.js";
 
 import { BotContext } from "../context.js";
 import { ApplicationCommand, MessageCommand } from "./command.js";
@@ -21,8 +20,8 @@ const mock = (str: string): string => str.split("").map(transform).join("");
 /**
  * build mocked embed
  */
-const buildMock = (author: GuildMember, toMock: string): MessageEmbed => {
-    return new MessageEmbed()
+const buildMock = (author: GuildMember, toMock: string) => {
+    return new EmbedBuilder()
         .setDescription(`${mock(toMock)} <:mock:677504337769005096>`)
         .setColor(0xFFC000)
         .setAuthor({
@@ -37,16 +36,22 @@ export class MockCommand implements MessageCommand, ApplicationCommand {
     applicationCommand = new SlashCommandBuilder()
         .setName(this.name)
         .setDescription(this.description)
-        .addStringOption(new SlashCommandStringOption()
-            .setName("text")
-            .setDescription("Wat soll ich denn mocken")
-            .setRequired(true)
+        .addStringOption(
+            new SlashCommandStringOption()
+                .setName("text")
+                .setDescription("Wat soll ich denn mocken")
+                .setRequired(true)
         );
 
     async handleInteraction(command: CommandInteraction<CacheType>, client: Client<boolean>, context: BotContext): Promise<void> {
+        if (!command.isChatInputCommand()) {
+            // TODO: Solve this on a type level
+            return;
+        }
+
         const author = command.guild?.members.resolve(command.user);
         const text = command.options.getString("text")!;
-        if(!author) {
+        if (!author) {
             throw new Error("Couldn't resolve guild member");
         }
 
@@ -64,19 +69,19 @@ export class MockCommand implements MessageCommand, ApplicationCommand {
         let content = message.content.slice(`${context.rawConfig.bot_settings.prefix.command_prefix}${this.name} `.length);
         const hasContent = !!content && content.trim().length > 0;
 
-        if(!author) {
+        if (!author) {
             throw new Error("Couldn't resolve guild member");
         }
 
-        if(!isReply && !hasContent) {
+        if (!isReply && !hasContent) {
             await message.channel.send("Brudi da ist nix, was ich mocken kann");
             return;
         }
 
         let replyMessage: Message<boolean> | null = null;
-        if(isReply) {
+        if (isReply) {
             replyMessage = await message.channel.messages.fetch(message.reference!.messageId!);
-            if(!hasContent) {
+            if (!hasContent) {
                 // eslint-disable-next-line prefer-destructuring
                 content = replyMessage.content;
             }
@@ -84,7 +89,7 @@ export class MockCommand implements MessageCommand, ApplicationCommand {
 
         const mockedEmbed = buildMock(author, content);
 
-        if(isReply) {
+        if (isReply) {
             await Promise.all([
                 replyMessage!.reply({
                     embeds: [mockedEmbed]

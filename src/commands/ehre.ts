@@ -1,21 +1,21 @@
-import { SlashCommandBuilder, SlashCommandSubcommandBuilder, SlashCommandUserOption } from "@discordjs/builders";
-import { Client, CommandInteraction, InteractionReplyOptions, MessagePayload } from "discord.js";
+import { Client, CommandInteraction, InteractionReplyOptions, MessagePayload, SlashCommandBuilder, SlashCommandSubcommandBuilder, SlashCommandUserOption } from "discord.js";
 
 import { ApplicationCommand, CommandResult } from "./command.js";
 import { EhreGroups, EhrePoints, EhreVotes } from "../storage/model/Ehre.js";
+import { BotContext } from "../context.js";
 
 function createUserPointString(e: EhrePoints) {
     return `<@${e.userId}> : ${e.points}`;
 }
 
-async function createEhreTable(client: Client<boolean>): Promise<MessagePayload | InteractionReplyOptions> {
+async function createEhreTable(context: BotContext): Promise<MessagePayload | InteractionReplyOptions> {
     const userInGroups = await EhrePoints.getUserInGroups();
 
     return {
         embeds: [{
-            color: 2007432,
+            color: 0x1ea188,
             author: {
-                name: client.user?.username
+                name: context.client.user?.username
             },
             fields: [
                 userInGroups.best ? {
@@ -63,7 +63,7 @@ export class EhreCommand implements ApplicationCommand {
     name: string = "ehre";
     description: string = "Fügt Ehre hinzu & Zeigt die Tabelle an";
 
-    get applicationCommand(): Pick<SlashCommandBuilder, "toJSON"> {
+    get applicationCommand() {
         return new SlashCommandBuilder()
             .setName(this.name)
             .setDescription(this.description)
@@ -71,9 +71,12 @@ export class EhreCommand implements ApplicationCommand {
                 new SlashCommandSubcommandBuilder()
                     .setName("add")
                     .setDescription("Ehre einen User")
-                    .addUserOption(new SlashCommandUserOption()
-                        .setRequired(true)
-                        .setName("user").setDescription("Dem ehrenhaften User")))
+                    .addUserOption(
+                        new SlashCommandUserOption()
+                            .setRequired(true)
+                            .setName("user").setDescription("Dem ehrenhaften User")
+                    )
+            )
             .addSubcommand(
                 new SlashCommandSubcommandBuilder()
                     .setName("tabelle")
@@ -81,11 +84,18 @@ export class EhreCommand implements ApplicationCommand {
             );
     }
 
-    async handleInteraction(command: CommandInteraction, client: Client<boolean>): Promise<CommandResult> {
+    async handleInteraction(command: CommandInteraction, _client: Client<boolean>, context: BotContext): Promise<CommandResult> {
+        if (!command.isChatInputCommand()) {
+            // TODO: Solve this on a type level
+            return;
+        }
+
         const subcommand = command.options.getSubcommand();
         if (subcommand === "tabelle") {
-            return command.reply(await createEhreTable(client));
+            await command.reply(await createEhreTable(context));
+            return;
         }
+
         const user = command.options.getUser("user", true);
         if (subcommand === "add") {
             if (command.user.id === user.id) {
@@ -94,15 +104,15 @@ export class EhreCommand implements ApplicationCommand {
                         userId: user.id
                     }
                 });
-                return command.reply("Willst dich selber ähren? Dreckiger Abschaum. Sowas verdient einfach kein Respekt!");
+                await command.reply("Willst dich selber ähren? Dreckiger Abschaum. Sowas verdient einfach kein Respekt!");
+                return;
             }
             if (await EhreVotes.hasVoted(command.user.id)) {
-                return command.reply("Ey, Einmal pro tag. Nicht gierig werden");
+                await command.reply("Ey, Einmal pro tag. Nicht gierig werden");
+                return;
             }
             await handleVote(command.user.id, user.id);
         }
-        return command.reply(`<@${command.user.id}> hat <@${user.id}> geährt`);
+        await command.reply(`${command.user} hat ${user} geährt`);
     }
 }
-
-

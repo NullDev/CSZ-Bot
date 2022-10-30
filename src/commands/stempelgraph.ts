@@ -1,6 +1,5 @@
 import graphviz from "graphviz-wasm";
-import { Client, CommandInteraction, Guild, GuildMember, Snowflake } from "discord.js";
-import { SlashCommandBuilder, SlashCommandStringOption } from "@discordjs/builders";
+import { Client, CommandInteraction, Guild, GuildMember, Snowflake, SlashCommandBuilder, SlashCommandStringOption } from "discord.js";
 import { svg2png } from "svg-png-converter";
 
 import { getConfig } from "../utils/configHandler.js";
@@ -79,10 +78,10 @@ function getMemberNode(member: UserInfo): string {
 }
 
 async function drawStempelgraph(stempels: StempelConnection[], engine: LayoutEngine, userInfo: Map<GuildMember, UserInfo>): Promise<Buffer> {
-    for(const stempel of stempels) {
+    for (const stempel of stempels) {
         log.debug(`${stempel.inviter} --> ${stempel.invitee}`);
     }
-    for(const info of userInfo) {
+    for (const info of userInfo) {
         log.debug(`${info[0].id} : ${info[1].name} / ${info[1].member} / ${info[1].roles}`);
     }
     const inviterNodes = stempels
@@ -187,7 +186,7 @@ export class StempelgraphCommand implements ApplicationCommand {
     name: string = "stempelgraph";
     description: string = "Zeigt einen Sozialgraphen der Stempel. 1984 ist real!";
 
-    get applicationCommand(): Pick<SlashCommandBuilder, "toJSON"> {
+    get applicationCommand() {
         return new SlashCommandBuilder()
             .setName(this.name)
             .setDescription(this.description)
@@ -204,6 +203,11 @@ export class StempelgraphCommand implements ApplicationCommand {
     }
 
     async handleInteraction(command: CommandInteraction, _client: Client<boolean>): Promise<CommandResult> {
+        if (!command.isChatInputCommand()) {
+            // TODO: Solve this on a type level
+            return;
+        }
+
         const members = command.guild?.members.cache;
         if (!members) {
             log.debug(`No Members found within guild ${command.guild}`);

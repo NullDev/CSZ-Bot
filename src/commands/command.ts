@@ -1,6 +1,5 @@
 /* eslint-disable no-use-before-define */
-import { MessageComponentInteraction, PermissionString } from "discord.js";
-import { SlashCommandBuilder } from "@discordjs/builders";
+import { MessageComponentInteraction, PermissionsString, type SlashCommandBuilder } from "discord.js";
 import type { Client, CommandInteraction } from "discord.js";
 
 import type { ProcessableMessage } from "../handler/cmdHandler.js";
@@ -17,7 +16,7 @@ export interface CommandBase {
     readonly name: string;
     readonly aliases?: string[];
     readonly description: string;
-    readonly requiredPermissions?: ReadonlyArray<PermissionString>;
+    readonly requiredPermissions?: readonly PermissionsString[];
 }
 
 export interface UserInteraction {

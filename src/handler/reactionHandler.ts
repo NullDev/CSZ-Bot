@@ -16,7 +16,7 @@ export default async function(reactionEvent: MessageReaction, user: User, client
     if(channel === undefined) {
         throw new Error("Channel is undefined");
     }
-    if(!channel.isText()) {
+    if(!channel.isTextBased()) {
         throw new Error("Channel is not text based");
     }
 

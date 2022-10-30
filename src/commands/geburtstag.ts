@@ -1,6 +1,5 @@
 import moment from "moment";
-import { SlashCommandBuilder } from "@discordjs/builders";
-import { CommandInteraction, CacheType, Client } from "discord.js";
+import { CommandInteraction, CacheType, Client, SlashCommandBuilder } from "discord.js";
 
 import Birthday, { isOneBasedMonth } from "../storage/model/Birthday.js";
 import log from "../utils/logger.js";
@@ -17,15 +16,22 @@ export class GeburtstagCommand implements ApplicationCommand {
             .setMaxValue(31)
             .setName("day")
             .setDescription("Tag")
-            .setRequired(true))
+            .setRequired(true)
+        )
         .addIntegerOption(option => option
             .setMinValue(1)
             .setMaxValue(12)
             .setName("month")
             .setDescription("Monat")
-            .setRequired(true));
+            .setRequired(true)
+        );
 
     async handleInteraction(command: CommandInteraction<CacheType>, client: Client<boolean>): Promise<void> {
+        if (!command.isChatInputCommand()) {
+            // TODO: Solve this on a type level
+            return;
+        }
+
         const day = command.options.getInteger("day", true);
         const month = command.options.getInteger("month", true);
 

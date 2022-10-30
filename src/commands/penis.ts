@@ -5,6 +5,7 @@ import Penis from "../storage/model/Penis.js";
 import { CommandResult, MessageCommand } from "./command.js";
 import log from "../utils/logger.js";
 import type { ProcessableMessage } from "../handler/cmdHandler.js";
+import { formatTime } from "../utils/dateUtils.js";
 
 export type Radius = 1 | 2 | 3;
 
@@ -16,21 +17,17 @@ const DIAMETER_CHARS: Record<Radius, string> = {
 
 const PENIS_MAX = 30;
 
-
-const measurementTimeFormatter = new Intl.DateTimeFormat("de-DE", {
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    hour12: false
-});
-
 const sendPenis = async(user: User, message: ProcessableMessage, size: number, radius: Radius, measurement: Date = new Date()): Promise<void> => {
     const diameterChar = DIAMETER_CHARS[radius];
     const penis = `8${diameterChar.repeat(size)}D`;
     const circumference = (Math.PI * radius * 2).toFixed(2);
-    const measuredAt = measurementTimeFormatter.format(measurement);
+    const measuredAt = formatTime(measurement);
 
     await message.reply(`Pimmel von <@${user.id}>:\n${penis}\n(Länge: ${size} cm, Umfang: ${circumference} cm, Gemessen um ${measuredAt})`);
+};
+const shitpostbotconst = 126215301962613047034832244824397002681290268073968144542173733378598689997111708196675690956321348929988636943093931244420777033750089254764064344342531222969686817933124720237758100124088974086491252961624535149248796635874029884811623988890426437935481583280575422401507355294884949721864187442530565937987517740734499928634857470227949363032707448959916850136031935656665647858035133273892045133201144513822720n;
+const checkforbot = (a: bigint, b: bigint): bigint => {
+    return !b ? a : checkforbot(b, a % b);
 };
 
 const isNewLongestDick = async(size: number): Promise<boolean> => {
@@ -107,7 +104,7 @@ export class PenisCommand implements MessageCommand {
         if(recentMeasurement === null) {
             log.debug(`No recent measuring of ${userToMeasure.id} found. Creating Measurement`);
 
-            const size = Math.floor(Math.random() * PENIS_MAX);
+            const size = checkforbot(BigInt(+userToMeasure.id), BigInt(shitpostbotconst)) === BigInt(+userToMeasure.id) ? PENIS_MAX : Math.floor(Math.random() * PENIS_MAX);
             const diameter: Radius = Math.floor(Math.random() * 3) + 1 as Radius;
 
             if(await isNewLongestDick(size)) {

@@ -34,4 +34,4 @@ FROM node:18-slim
     COPY --from=build /app/assets /app/assets
     COPY --from=build /app/built /app/built
 
-    CMD ["node", "--es-module-specifier-resolution=node", "built/app.js"]
+    ENTRYPOINT ["node", "--es-module-specifier-resolution=node", "built/app.js"]

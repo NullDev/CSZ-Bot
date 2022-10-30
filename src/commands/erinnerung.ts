@@ -1,5 +1,4 @@
-import { CacheType, Client, CommandInteraction, TextBasedChannel } from "discord.js";
-import { SlashCommandBuilder, SlashCommandStringOption } from "@discordjs/builders";
+import { CacheType, Client, CommandInteraction, SlashCommandBuilder, SlashCommandStringOption, TextBasedChannel } from "discord.js";
 import * as chrono from "chrono-node";
 
 import { MessageCommand, ApplicationCommand } from "./command.js";
@@ -44,6 +43,10 @@ export class ErinnerungCommand implements MessageCommand, ApplicationCommand {
         );
 
     async handleInteraction(command: CommandInteraction<CacheType>, client: Client<boolean>, context: BotContext): Promise<void> {
+        if (!command.isChatInputCommand()) {
+            // TODO: Solve this on a type level
+            return;
+        }
         const time = command.options.getString("time")!;
         const note = command.options.getString("note");
 
@@ -106,7 +109,7 @@ const sendReminder = async(reminder: ReminderAttributes, context: BotContext) =>
         if (channel === undefined) {
             throw new Error(`Channel ${reminder.channelId} couldn't be found`);
         }
-        if (!channel.isText()) {
+        if (!channel.isTextBased()) {
             throw new Error(`Channel ${reminder.channelId} is not a text channel`);
         }
         const textChannel = channel as TextBasedChannel;
