@@ -1,4 +1,4 @@
-FROM node:18-slim as dependency-base
+FROM node:19-slim as dependency-base
     WORKDIR /app
     RUN apt-get update -yqq && \
         apt-get install python3 build-essential pkg-config -yqq && \
@@ -16,7 +16,7 @@ FROM dependency-base as build
 FROM dependency-base as runtime-dependencies
     RUN NODE_ENV=production npm ci
 
-FROM node:18-slim
+FROM node:19-slim
     WORKDIR /app
     RUN apt-get update -yqq && \
         apt-get install ffmpeg fonts-noto-color-emoji fontconfig fonts-liberation -yqq && \
