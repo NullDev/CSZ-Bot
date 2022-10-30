@@ -6,6 +6,7 @@ import { CommandResult, MessageCommand } from "./command.js";
 import log from "../utils/logger.js";
 import type { ProcessableMessage } from "../handler/cmdHandler.js";
 import { formatTime } from "../utils/dateUtils.js";
+import { BotContext } from "../context.js";
 
 export type Radius = 1 | 2 | 3;
 
@@ -16,6 +17,7 @@ const DIAMETER_CHARS: Record<Radius, string> = {
 };
 
 const PENIS_MAX = 30;
+const RADIUS_MAX = 3;
 
 const sendPenis = async(user: User, message: ProcessableMessage, size: number, radius: Radius, measurement: Date = new Date()): Promise<void> => {
     const diameterChar = DIAMETER_CHARS[radius];
@@ -24,10 +26,6 @@ const sendPenis = async(user: User, message: ProcessableMessage, size: number, r
     const measuredAt = formatTime(measurement);
 
     await message.reply(`Pimmel von <@${user.id}>:\n${penis}\n(Länge: ${size} cm, Umfang: ${circumference} cm, Gemessen um ${measuredAt})`);
-};
-const shitpostbotconst = 126215301962613047034832244824397002681290268073968144542173733378598689997111708196675690956321348929988636943093931244420777033750089254764064344342531222969686817933124720237758100124088974086491252961624535149248796635874029884811623988890426437935481583280575422401507355294884949721864187442530565937987517740734499928634857470227949363032707448959916850136031935656665647858035133273892045133201144513822720n;
-const checkforbot = (a: bigint, b: bigint): bigint => {
-    return !b ? a : checkforbot(b, a % b);
 };
 
 const isNewLongestDick = async(size: number): Promise<boolean> => {
@@ -92,7 +90,7 @@ export class PenisCommand implements MessageCommand {
     /**
      * Replies to the message with a random penis length
      */
-    async handleMessage(message: ProcessableMessage, _client: Client): Promise<CommandResult> {
+    async handleMessage(message: ProcessableMessage, _client: Client, context: BotContext): Promise<CommandResult> {
         const { author } = message;
         const mention = message.mentions.users.first();
         const userToMeasure = mention !== undefined ? mention : author;
@@ -104,8 +102,8 @@ export class PenisCommand implements MessageCommand {
         if(recentMeasurement === null) {
             log.debug(`No recent measuring of ${userToMeasure.id} found. Creating Measurement`);
 
-            const size = checkforbot(BigInt(+userToMeasure.id), BigInt(shitpostbotconst)) === BigInt(+userToMeasure.id) ? PENIS_MAX : Math.floor(Math.random() * PENIS_MAX);
-            const diameter: Radius = Math.floor(Math.random() * 3) + 1 as Radius;
+            const size = userToMeasure.id === context.client.user.id ? PENIS_MAX : Math.floor(Math.random() * PENIS_MAX);
+            const diameter: Radius = userToMeasure.id === context.client.user.id ? RADIUS_MAX : Math.floor(Math.random() * RADIUS_MAX) + 1 as Radius;
 
             if(await isNewLongestDick(size)) {
                 log.debug(`${userToMeasure} has the new longest dick with size ${size}`);

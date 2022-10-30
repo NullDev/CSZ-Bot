@@ -1,4 +1,4 @@
-import { Client, CommandInteraction, InteractionReplyOptions, MessagePayload, SlashCommandBuilder, SlashCommandSubcommandBuilder, SlashCommandUserOption } from "discord.js";
+import { Client, CommandInteraction, InteractionReplyOptions, MessagePayload, SlashCommandBuilder, SlashCommandSubcommandBuilder, SlashCommandUserOption, User } from "discord.js";
 
 import { ApplicationCommand, CommandResult } from "./command.js";
 import { EhreGroups, EhrePoints, EhreVotes } from "../storage/model/Ehre.js";
@@ -84,6 +84,24 @@ export class EhreCommand implements ApplicationCommand {
             );
     }
 
+    static async addEhre(thankingUser: User, ehrenbruder: User): Promise<string> {
+        if (thankingUser.id === ehrenbruder.id) {
+            await EhrePoints.destroy({
+                where: {
+                    userId: ehrenbruder
+                }
+            });
+            return "Willst dich selber ähren? Dreckiger Abschaum. Sowas verdient einfach keinen Respekt!";
+        }
+
+        if (await EhreVotes.hasVoted(thankingUser.id)) {
+            return "Ey, Einmal pro tag. Nicht gierig werden";
+        }
+
+        await handleVote(thankingUser.id, ehrenbruder.id);
+        return `${thankingUser} hat ${ehrenbruder} geährt`;
+    }
+
     async handleInteraction(command: CommandInteraction, _client: Client<boolean>, context: BotContext): Promise<CommandResult> {
         if (!command.isChatInputCommand()) {
             // TODO: Solve this on a type level
@@ -98,21 +116,8 @@ export class EhreCommand implements ApplicationCommand {
 
         const user = command.options.getUser("user", true);
         if (subcommand === "add") {
-            if (command.user.id === user.id) {
-                await EhrePoints.destroy({
-                    where: {
-                        userId: user.id
-                    }
-                });
-                await command.reply("Willst dich selber ähren? Dreckiger Abschaum. Sowas verdient einfach kein Respekt!");
-                return;
-            }
-            if (await EhreVotes.hasVoted(command.user.id)) {
-                await command.reply("Ey, Einmal pro tag. Nicht gierig werden");
-                return;
-            }
-            await handleVote(command.user.id, user.id);
+            const reply = await EhreCommand.addEhre(command.user, user);
+            await command.reply(reply);
         }
-        await command.reply(`${command.user} hat ${user} geährt`);
     }
 }
