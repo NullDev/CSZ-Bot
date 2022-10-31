@@ -18,6 +18,7 @@ jobs:
     name: Deploy
     runs-on: ubuntu-latest
 
+    concurrency: production
     environment:
       name: Production
 
