@@ -64,11 +64,13 @@ export default async function(message: ProcessableMessage, client: Client<true>,
         }
     }
 
-    if (!commandArr.includes(command.toLowerCase() + ".js")) {
+    const commandFile = commandArr.find(cmd => cmd === `${command.toLowerCase()}.js`);
+
+    if (commandFile === undefined) {
         return;
     }
 
-    const commandPath = path.join(commandDir, command);
+    const commandPath = path.join(commandDir, commandFile);
 
     const usedCommand = await import(commandPath) as { run: CommandFunction, description: string };
 
