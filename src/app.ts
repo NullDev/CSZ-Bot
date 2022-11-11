@@ -34,6 +34,11 @@ import { endAprilFools, startAprilFools } from "./handler/aprilFoolsHandler.js";
 import { createBotContext, type BotContext } from "./context.js";
 import { EhrePoints, EhreVotes } from "./storage/model/Ehre.js";
 import { WoisData } from "./handler/voiceStateUpdateHandler.js";
+import {
+    woisVoteReactionHandler,
+    woisVoteScheduler
+} from "./commands/woisvote.js";
+import { ReactionHandler } from "./types.js";
 const version = conf.getVersion();
 const appname = conf.getName();
 const devname = conf.getAuthor();
@@ -80,6 +85,10 @@ const client = new Discord.Client({
         GatewayIntentBits.GuildWebhooks
     ]
 });
+
+const reactionHandlers: ReactionHandler[] = [
+    woisVoteReactionHandler
+];
 
 process.on("unhandledRejection", (err: any, promise) => {
     log.error(`Unhandled rejection (promise: ${promise})`, err);
@@ -215,6 +224,17 @@ client.once("ready", async initializedClient => {
                 await reminderHandler(botContext);
             }, cronOptions);
 
+            log.info("Scheduling Woisvote Cronjob");
+            // eslint-disable-next-line no-unused-vars
+            const woisVoteJob = new Cron(
+                "* * * * *",
+                async() => {
+                    log.debug("Entered reminder cronjob");
+                    await woisVoteScheduler(botContext);
+                },
+                cronOptions
+            );
+
             // eslint-disable-next-line no-unused-vars
             const startAprilFoolsJob = new Cron("2022-04-01T00:00:00", async() => {
                 log.debug("Entered start april fools cronjob");
@@ -344,9 +364,22 @@ client.on("debug", d => {
 client.on("rateLimit", rateLimitData => void log.error(`Discord Client RateLimit Shit: ${JSON.stringify(rateLimitData)}`));
 client.on("invalidated", () => void log.debug("Client invalidated"));
 
+// TODO: Refactor to include in reaction handlers
 client.on("messageReactionAdd", async(event, user) => reactionHandler(event as MessageReaction, user as User, client, false));
 client.on("messageReactionAdd", async(event, user) => quoteReactionHandler(event as MessageReaction, user as User, botContext));
 client.on("messageReactionRemove", async(event, user) => reactionHandler(event as MessageReaction, user as User, client, true));
+
+client.on("messageReactionAdd", async(event, user) => {
+    for(const handler of reactionHandlers) {
+        await handler(event as MessageReaction, user as User, botContext, false);
+    }
+});
+client.on("messageReactionRemove", async(event, user) => {
+    for(const handler of reactionHandlers) {
+        await handler(event as MessageReaction, user as User, botContext, true);
+    }
+});
+
 client.on("voiceStateUpdate", async(oldState, newState) => checkVoiceUpdate(oldState as VoiceState, newState as VoiceState, botContext));
 
 client.login(config.auth.bot_token).then(() => {

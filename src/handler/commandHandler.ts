@@ -47,7 +47,6 @@ import { NischdaaaCommand } from "../commands/special/nischdaaa.js";
 import { AutoEhreCommand } from "../commands/special/autoEhre.js";
 import { SdmCommand } from "../commands/sdm.js";
 import { Nickname, NicknameButtonHandler } from "../commands/nickname.js";
-import { WoisButton, WoisCommand } from "../commands/woisping.js";
 import { WoisLog } from "../commands/woislog.js";
 import { FicktabelleCommand } from "../commands/ficktabelle.js";
 import { InviteCommand } from "../commands/invite.js";
@@ -68,6 +67,7 @@ import { EhreCommand } from "../commands/ehre.js";
 import { hasBotDenyRole } from "../utils/userUtils.js";
 import { isMessageInBotSpam } from "../utils/channelUtils.js";
 import type { BotContext } from "../context.js";
+import { WoisCommand } from "../commands/woisvote.js";
 
 
 const config = getConfig();
@@ -111,10 +111,7 @@ export const commands: readonly Command[] = [
     new DeOidaCommand(),
     new EhreCommand()
 ];
-export const interactions: readonly UserInteraction[] = [
-    new NicknameButtonHandler(),
-    new WoisButton()
-];
+export const interactions: readonly UserInteraction[] = [new NicknameButtonHandler()];
 
 export const applicationCommands: Array<ApplicationCommand> =
     commands.filter<ApplicationCommand>(isApplicationCommand);
