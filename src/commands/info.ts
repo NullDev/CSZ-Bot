@@ -25,8 +25,7 @@ const getContributors = async(): Promise<string> => {
     return contributors
         .filter(c => c.type === "User")
         .map(c => {
-            const noBreakLogin = c.login.replace("-", "‑"); // Replace normal hyphen with no-breaking hypen
-            return noBreakLogin;
+            return c.login.replace("-", "‑"); // Replace normal hyphen with no-breaking hypen
         }).join(", ") + " | [[Auf GitHub ansehen]](https://github.com/NullDev/CSZ-Bot/graphs/contributors)";
 };
 
