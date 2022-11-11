@@ -80,7 +80,10 @@ export default class WoisAction
                 woisAction.interestedUsers.push(interestedUser);
             }
             else {
-                woisAction.interestedUsers.splice(woisAction.interestedUsers.indexOf(notInterestedAnymore), 1);
+                woisAction.interestedUsers.splice(
+                    woisAction.interestedUsers.indexOf(interestedUser),
+                    1
+                );
             }
             await woisAction.save();
 

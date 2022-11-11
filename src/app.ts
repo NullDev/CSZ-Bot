@@ -36,7 +36,7 @@ import { EhrePoints, EhreVotes } from "./storage/model/Ehre.js";
 import { WoisData } from "./handler/voiceStateUpdateHandler.js";
 import {
     woisVoteReactionHandler,
-    woisVoteScheduler,
+    woisVoteScheduler
 } from "./commands/woisvote.js";
 import { ReactionHandler } from "./types.js";
 const version = conf.getVersion();
@@ -228,7 +228,7 @@ client.once("ready", async initializedClient => {
             // eslint-disable-next-line no-unused-vars
             const woisVoteJob = new Cron(
                 "* * * * *",
-                async () => {
+                async() => {
                     log.debug("Entered reminder cronjob");
                     await woisVoteScheduler(botContext);
                 },
