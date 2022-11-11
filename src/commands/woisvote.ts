@@ -41,8 +41,7 @@ const createWoisMessage = async(
 
 export class WoisCommand implements ApplicationCommand {
     name = "woisvote";
-    description =
-        "Erstellt einen Woisvote, der die Interessenten auch daran erinnert in den wois zu kommen (und zu erscheinen).";
+    description = "Erstellt einen Vote für Wois";
 
     get applicationCommand() {
         return new SlashCommandBuilder()
@@ -59,7 +58,7 @@ export class WoisCommand implements ApplicationCommand {
                     .setName("zeitpunkt")
                     .setRequired(false)
                     .setDescription(
-                        `Wann? Ich werde dann den Ping zeitlich verschieben Standard: ${defaultWoisTime}. (Format: HH:MM)`
+                        `Wann? Uhrzeit für Ping. Standard: ${defaultWoisTime}. (Format: HH:MM)`
                     )
             );
     }
@@ -88,9 +87,10 @@ export class WoisCommand implements ApplicationCommand {
             .set("hour", timeMoment.get("hour"))
             .set("minute", timeMoment.get("minute"));
 
-        if(timeForWois.isBefore(moment())) {
+        if (timeForWois.isBefore(moment())) {
             await command.reply({
-                content: "Sorry, ich kann einen Woisping nur in der Zukunft ausführen. Zeitreisen müssen erst noch erfunden werden.",
+                content:
+                    "Sorry, ich kann einen Woisping nur in der Zukunft ausführen. Zeitreisen müssen erst noch erfunden werden.",
                 ephemeral: true
             });
             return;
@@ -170,7 +170,10 @@ export const woisVoteReactionHandler: ReactionHandler = async(
 export const woisVoteScheduler = async(
     _context: BotContext
 ): Promise<void> => {
-    const woisAction = await WoisAction.getWoisActionInRange(new Date(0), new Date());
+    const woisAction = await WoisAction.getWoisActionInRange(
+        new Date(0),
+        new Date()
+    );
     if (woisAction === null) {
         return;
     }
@@ -184,7 +187,10 @@ export const woisVoteScheduler = async(
         return;
     }
 
-    const woisMessage = await (channel as TextChannel).send("Yoooo, es ist Zeit für das angekündigte Wois. Denk dran, der Grund war: " + woisAction.reason);
+    const woisMessage = await (channel as TextChannel).send(
+        "Yoooo, es ist Zeit für das angekündigte Wois. Denk dran, der Grund war: " +
+            woisAction.reason
+    );
 
     // We remove woisvote from the database immediately before anything goes wrong and we spam pings.
     await WoisAction.destroy({
