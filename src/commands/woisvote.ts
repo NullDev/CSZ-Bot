@@ -7,7 +7,7 @@ import {
     SlashCommandStringOption,
     TextBasedChannel,
     TextChannel,
-    User,
+    User
 } from "discord.js";
 
 import { ApplicationCommand, CommandResult } from "./command.js";
@@ -22,7 +22,7 @@ const defaultWoisTime = "20:00";
 // Constant will be used to check whether a message is a woisvote without querying the database
 const woisVoteConstant = "⚠️🍻 **WOISVOTE** 🍻⚠️";
 
-const createWoisMessage = async (
+const createWoisMessage = async(
     reason: string,
     date: Date,
     channel: TextBasedChannel
@@ -122,7 +122,7 @@ export class WoisCommand implements ApplicationCommand {
     }
 }
 
-export const woisVoteReactionHandler: ReactionHandler = async (
+export const woisVoteReactionHandler: ReactionHandler = async(
     reactionEvent: MessageReaction,
     user: User,
     _context: BotContext,
@@ -156,4 +156,39 @@ export const woisVoteReactionHandler: ReactionHandler = async (
     }
 
     await WoisAction.registerInterst(message.id, user.id, interest);
+};
+
+export const woisVoteScheduler = async(
+    _context: BotContext
+): Promise<void> => {
+    const woisAction = await WoisAction.getWoisActionInRange(new Date(0), new Date());
+    if (woisAction === null) {
+        return;
+    }
+    const hauptchat = config.ids.hauptchat_id;
+
+    const channel = _context.client.channels.cache.get(hauptchat);
+    if (!channel) {
+        return;
+    }
+    if (channel.isTextBased() === false) {
+        return;
+    }
+
+    const woisMessage = await (channel as TextChannel).send("Yoooo, es ist Zeit für das angekündigte Wois. Denk dran, der Grund war: " + woisAction.reason);
+
+    // We remove woisvote from the database immediately before anything goes wrong and we spam pings.
+    await WoisAction.destroy({
+        where: {
+            id: woisAction.id
+        }
+    });
+
+    const chunkSize = 10;
+    for (let i = 0; i < woisAction.interestedUsers.length; i += chunkSize) {
+        const chunk = woisAction.interestedUsers.slice(i, i + chunkSize);
+        // It's okay for readability
+        // eslint-disable-next-line no-await-in-loop
+        await woisMessage.reply(chunk.join(" "));
+    }
 };

@@ -34,7 +34,10 @@ import { endAprilFools, startAprilFools } from "./handler/aprilFoolsHandler.js";
 import { createBotContext, type BotContext } from "./context.js";
 import { EhrePoints, EhreVotes } from "./storage/model/Ehre.js";
 import { WoisData } from "./handler/voiceStateUpdateHandler.js";
-import { woisVoteReactionHandler } from "./commands/woisvote.js";
+import {
+    woisVoteReactionHandler,
+    woisVoteScheduler,
+} from "./commands/woisvote.js";
 import { ReactionHandler } from "./types.js";
 const version = conf.getVersion();
 const appname = conf.getName();
@@ -220,6 +223,17 @@ client.once("ready", async initializedClient => {
                 log.debug("Entered reminder cronjob");
                 await reminderHandler(botContext);
             }, cronOptions);
+
+            log.info("Scheduling Woisvote Cronjob");
+            // eslint-disable-next-line no-unused-vars
+            const woisVoteJob = new Cron(
+                "* * * * *",
+                async () => {
+                    log.debug("Entered reminder cronjob");
+                    await woisVoteScheduler(botContext);
+                },
+                cronOptions
+            );
 
             // eslint-disable-next-line no-unused-vars
             const startAprilFoolsJob = new Cron("2022-04-01T00:00:00", async() => {
