@@ -2,16 +2,20 @@ import {
     Client,
     CommandInteraction,
     Message,
+    MessageReaction,
     SlashCommandBuilder,
     SlashCommandStringOption,
     TextBasedChannel,
     TextChannel,
+    User,
 } from "discord.js";
 
 import { ApplicationCommand, CommandResult } from "./command.js";
 import { getConfig } from "../utils/configHandler.js";
 import moment from "moment";
 import WoisAction from "../storage/model/WoisAction.js";
+import { ReactionHandler } from "../types.js";
+import { BotContext } from "../context.js";
 
 const config = getConfig();
 const defaultWoisTime = "20:00";
@@ -117,3 +121,39 @@ export class WoisCommand implements ApplicationCommand {
         }
     }
 }
+
+export const woisVoteReactionHandler: ReactionHandler = async (
+    reactionEvent: MessageReaction,
+    user: User,
+    _context: BotContext,
+    removal: boolean
+): Promise<void> => {
+    const { message } = reactionEvent;
+
+    if (!message.content) return;
+
+    if (!message.content.startsWith(woisVoteConstant)) {
+        return;
+    }
+
+    const voteYes = reactionEvent.emoji.name !== "👍";
+    const voteNo = reactionEvent.emoji.name !== "👎";
+    // Some other emoji was used
+    if (!voteYes && !voteNo) {
+        return;
+    }
+    // We just need to save/update interest when a user votes with yes or removes a yes vote.
+    // No need to do anything when a user votes with no.
+    // Only ambigous case is when a user reacts with both yes and no. In this case we just keep the yes vote.
+    const interest = !(removal && voteYes) || voteYes;
+
+    const woisAction = await WoisAction.getWoisActionByMessageId(message.id);
+    if (woisAction === null) {
+        return;
+    }
+    if (!woisAction.interestedUsers.includes(user.id)) {
+        return;
+    }
+
+    await WoisAction.registerInterst(message.id, user.id, interest);
+};

@@ -18,8 +18,7 @@ export interface WoisActionCreationAttributes
 
 export default class WoisAction
     extends Model<WoisActionAttributes, WoisActionCreationAttributes>
-    implements WoisActionAttributes
-{
+    implements WoisActionAttributes {
     declare id: string;
     declare messageId: Snowflake;
     declare reason: string;
@@ -36,10 +35,11 @@ export default class WoisAction
                 messageId,
                 reason,
                 date,
-                interestedUsers: [],
+                interestedUsers: []
             });
             return true;
-        } catch {
+        }
+        catch {
             return false;
         }
     }
@@ -51,29 +51,42 @@ export default class WoisAction
         return WoisAction.findOne({
             where: {
                 date: {
-                    [Op.between]: [begin, end],
-                },
-            },
+                    [Op.between]: [begin, end]
+                }
+            }
         });
     }
 
-    static async registerInterstedUser(
+    static async getWoisActionByMessageId(
+        messageId: Snowflake
+    ): Promise<WoisAction | null> {
+        return WoisAction.findOne({
+            where: {
+                messageId
+            }
+        });
+    }
+
+    static async registerInterst(
         messageId: Snowflake,
-        interestedUser: Snowflake
+        interestedUser: Snowflake,
+        interested: boolean
     ): Promise<boolean> {
         try {
-            const woisAction = await WoisAction.findOne({
-                where: {
-                    messageId,
-                },
-            });
+            const woisAction = await WoisAction.getWoisActionByMessageId(messageId);
             if (!woisAction) return false;
 
-            woisAction.interestedUsers.push(interestedUser);
+            if(interested) {
+                woisAction.interestedUsers.push(interestedUser);
+            }
+            else {
+                woisAction.interestedUsers.splice(woisAction.interestedUsers.indexOf(notInterestedAnymore), 1);
+            }
             await woisAction.save();
 
             return true;
-        } catch {
+        }
+        catch {
             return false;
         }
     }
@@ -84,28 +97,28 @@ export default class WoisAction
                 id: {
                     type: DataTypes.STRING(36),
                     defaultValue: () => uuidv4(),
-                    primaryKey: true,
+                    primaryKey: true
                 },
                 messageId: {
                     type: DataTypes.STRING(32),
                     allowNull: false,
-                    unique: true,
+                    unique: true
                 },
                 reason: {
                     type: DataTypes.STRING(32),
-                    allowNull: false,
+                    allowNull: false
                 },
                 date: {
                     type: DataTypes.DATE(),
-                    allowNull: false,
+                    allowNull: false
                 },
                 interestedUsers: {
-                    type: DataTypes.ARRAY(DataTypes.STRING(32)),
-                },
+                    type: DataTypes.ARRAY(DataTypes.STRING(32))
+                }
             },
             {
                 sequelize,
-                modelName: "WoisAction",
+                modelName: "WoisAction"
             }
         );
     }
