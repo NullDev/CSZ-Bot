@@ -184,6 +184,11 @@ export const woisVoteScheduler = async(
         }
     });
 
+    if (woisAction.interestedUsers.length === 0) {
+        // No one wants wois
+        return;
+    }
+
     const chunkSize = 10;
     for (let i = 0; i < woisAction.interestedUsers.length; i += chunkSize) {
         const chunk = woisAction.interestedUsers.slice(i, i + chunkSize);
