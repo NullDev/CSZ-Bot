@@ -87,6 +87,15 @@ export class WoisCommand implements ApplicationCommand {
         const timeForWois = moment()
             .set("hour", timeMoment.get("hour"))
             .set("minute", timeMoment.get("minute"));
+
+        if(timeForWois.isBefore(moment())) {
+            await command.reply({
+                content: "Sorry, ich kann einen Woisping nur in der Zukunft ausführen. Zeitreisen müssen erst noch erfunden werden.",
+                ephemeral: true
+            });
+            return;
+        }
+
         const start = timeForWois.subtract(6, "hours");
         const existingWoisVote = await WoisAction.getWoisActionInRange(
             start.toDate(),
