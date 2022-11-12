@@ -281,12 +281,12 @@ client.once("ready", async initializedClient => {
  */
 client.on("messageCreate", async message =>
     void messageCommandHandler(message, client, botContext)
-        .catch(err => log.error(`[messageCreate] Error on message ${message.id}. Cause: ${err}`))
+        .catch(err => log.error(`[messageCreate] Error on message ${message.id}`, err))
 );
 
 client.on("interactionCreate", interaction =>
     void handleInteractionEvent(interaction, client, botContext)
-        .catch(err => log.error(`[interactionCreate] Error on interaction ${interaction.id}. Cause: ${err}`))
+        .catch(err => log.error(`[interactionCreate] Error on interaction ${interaction.id}`, err))
 );
 
 client.on("guildCreate", guild => void log.info(`New guild joined: ${guild.name} (id: ${guild.id}) with ${guild.memberCount} members`));
