@@ -51,7 +51,10 @@ export default class WoisAction
         return WoisAction.findOne({
             where: {
                 date: {
-                    [Op.between]: [begin, end]
+                    [Op.and]: {
+                        [Op.gte]: begin,
+                        [Op.lt]: end
+                    }
                 }
             }
         });
