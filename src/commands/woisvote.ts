@@ -19,7 +19,8 @@ import { BotContext } from "../context.js";
 
 const config = getConfig();
 const defaultWoisTime = "20:00";
-// Constant will be used to check whether a message is a woisvote without querying the database
+// Constant can be used to check whether a message is a woisvote without querying the database
+// Because we would need to fetch the full message, we just query the database. Should be faster.
 const woisVoteConstant = "⚠️🍻 **WOISVOTE** 🍻⚠️";
 
 const createWoisMessage = async(
@@ -139,12 +140,6 @@ export const woisVoteReactionHandler: ReactionHandler = async(
     removal: boolean
 ): Promise<void> => {
     const { message } = reactionEvent;
-
-    if (!message.content) return;
-
-    if (!message.content.startsWith(woisVoteConstant)) {
-        return;
-    }
 
     const voteYes = reactionEvent.emoji.name === "👍";
     const voteNo = reactionEvent.emoji.name === "👎";
