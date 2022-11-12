@@ -97,10 +97,8 @@ export default class WoisAction
                 woisAction.interestedUsers.push(interestedUser);
             }
             else {
-                woisAction.interestedUsers.splice(
-                    woisAction.interestedUsers.indexOf(interestedUser),
-                    1
-                );
+                // Filter instead of splice because a user might not be in the array
+                woisAction.interestedUsers = woisAction.interestedUsers.filter(user => user !== interestedUser);
             }
             await woisAction.save();
 

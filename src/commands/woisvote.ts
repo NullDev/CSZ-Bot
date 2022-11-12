@@ -160,9 +160,6 @@ export const woisVoteReactionHandler: ReactionHandler = async(
     if (woisAction === null) {
         return;
     }
-    if (!woisAction.interestedUsers.includes(user.id)) {
-        return;
-    }
 
     await WoisAction.registerInterst(message.id, user.id, interest);
 };
