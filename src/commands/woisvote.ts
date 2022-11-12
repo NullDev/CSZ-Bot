@@ -128,6 +128,11 @@ export class WoisCommand implements ApplicationCommand {
                 "Ich konnte den Woisvote nicht erstellen. Da hat wohl jemand kacke gebaut."
             );
         }
+        await command.reply({
+            content: `Woisvote erstellt: ${woisMessage.url}`,
+            ephemeral: true
+        });
+        return;
     }
 }
 
