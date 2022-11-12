@@ -174,7 +174,17 @@ export const woisVoteReactionHandler: ReactionHandler = async(
     // We just need to save/update interest when a user votes with yes or removes a yes vote.
     // No need to do anything when a user votes with no.
     // Only ambigous case is when a user reacts with both yes and no. In this case we just keep the yes vote.
-    const interest = !(removal && voteYes) || voteYes;
+    // | voteYes | voteNo | removal | interest                 |
+    // | ------- | ------ | ------- | ------------------------ |
+    // | 0       | 0      | 0       | X (cannot happen)        |
+    // | 1       | 0      | 0       | 1                        |
+    // | 0       | 1      | 0       | 0                        |
+    // | 1       | 1      | 0       | X (cannot happen)        |
+    // | 0       | 0      | 1       | X (cannot happen)        |
+    // | 1       | 0      | 1       | 0                        |
+    // | 0       | 1      | 1       | 0                        |
+    // | 1       | 1      | 1       | X (cannot happen)        |
+    const interest = voteYes && !voteNo && !removal;
 
     const woisAction = await WoisAction.getWoisActionByMessageId(message.id);
     if (woisAction === null) {
