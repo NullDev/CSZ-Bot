@@ -119,7 +119,7 @@ export default class WoisAction
                     allowNull: false
                 },
                 interestedUsers: {
-                    type: DataTypes.ARRAY(DataTypes.STRING(32))
+                    type: DataTypes.JSON()
                 }
             },
             {
