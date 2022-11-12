@@ -17,6 +17,7 @@ import WoisAction from "../storage/model/WoisAction.js";
 import { ReactionHandler } from "../types.js";
 import { BotContext } from "../context.js";
 import logger from "../utils/logger.js";
+import { isWoisGang } from "../utils/userUtils.js";
 
 const config = getConfig();
 const defaultWoisTime = "20:00";
@@ -39,6 +40,12 @@ const createWoisMessage = async(
     await woisMessage.react("👍");
     await woisMessage.react("👎");
     return woisMessage;
+};
+
+const pingWoisgang = async(
+    message: Message
+): Promise<Message> => {
+    return message.reply(`<@&${config.ids.woisgang_role_id}> DA PASSIERT WAS!`);
 };
 
 export class WoisCommand implements ApplicationCommand {
@@ -67,7 +74,8 @@ export class WoisCommand implements ApplicationCommand {
 
     async handleInteraction(
         command: CommandInteraction,
-        _client: Client<boolean>
+        _client: Client<boolean>,
+        context: BotContext
     ): Promise<CommandResult> {
         if (!command.isChatInputCommand()) {
             // TODO: Solve this on a type level
@@ -84,6 +92,8 @@ export class WoisCommand implements ApplicationCommand {
         const time =
             command.options.getString("zeitpunkt", false) ?? defaultWoisTime;
         const timeForWois = moment(time, "HH:mm");
+        const member = context.guild.members.cache.get(command.user.id);
+        const isWoisgangVote = member && isWoisGang(member);
 
         if (timeForWois.isBefore(moment())) {
             await command.reply({
@@ -117,10 +127,15 @@ export class WoisCommand implements ApplicationCommand {
             command.channel
         );
 
+        if(isWoisgangVote) {
+            await pingWoisgang(woisMessage);
+        }
+
         const result = await WoisAction.insertWoisAction(
             woisMessage.id,
             reason,
-            timeForWois.toDate()
+            timeForWois.toDate(),
+            isWoisgangVote
         );
         if (!result) {
             await command.channel.send(
@@ -156,6 +171,11 @@ export const woisVoteReactionHandler: ReactionHandler = async(
     const woisAction = await WoisAction.getWoisActionByMessageId(message.id);
     if (woisAction === null) {
         return;
+    }
+
+    // If the woisvote has not been created by a woisgang user, but we have two votes on it. PING DEM WOISGANG!
+    if(!woisAction.isWoisgangAction && woisAction.interestedUsers.length === 1 && interest) {
+        await message.channel.messages.fetch(message.id).then(pingWoisgang);
     }
 
     const success = await WoisAction.registerInterst(message.id, user.id, interest);

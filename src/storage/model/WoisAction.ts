@@ -11,6 +11,7 @@ export interface WoisActionAttributes {
     reason: string;
     date: Date;
     interestedUsers: Snowflake[];
+    isWoisgangAction: boolean;
 }
 
 export interface WoisActionCreationAttributes
@@ -24,18 +25,21 @@ export default class WoisAction
     declare reason: string;
     declare date: Date;
     declare interestedUsers: Snowflake[];
+    declare isWoisgangAction: boolean;
 
     static async insertWoisAction(
         messageId: Snowflake,
         reason: string,
-        date: Date
+        date: Date,
+        isWoisgangAction: boolean = false
     ): Promise<boolean> {
         try {
             await WoisAction.create({
                 messageId,
                 reason,
                 date,
-                interestedUsers: []
+                interestedUsers: [],
+                isWoisgangAction
             });
             return true;
         }
@@ -135,6 +139,9 @@ export default class WoisAction
                 },
                 interestedUsers: {
                     type: DataTypes.JSON()
+                },
+                isWoisgangAction: {
+                    type: DataTypes.BOOLEAN()
                 }
             },
             {
