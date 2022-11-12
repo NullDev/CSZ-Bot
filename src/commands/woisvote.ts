@@ -45,7 +45,12 @@ const createWoisMessage = async(
 const pingWoisgang = async(
     message: Message
 ): Promise<Message> => {
-    return message.reply(`<@&${config.ids.woisgang_role_id}> DA PASSIERT WAS!`);
+    return message.reply({
+        content: `<@&${config.ids.woisgang_role_id}> DA PASSIERT WAS!`,
+        allowedMentions: {
+            roles: [config.ids.woisgang_role_id]
+        }
+    });
 };
 
 export class WoisCommand implements ApplicationCommand {
@@ -225,6 +230,11 @@ export const woisVoteScheduler = async(
             .map(user => `<@${user}>`);
         // It's okay for readability
         // eslint-disable-next-line no-await-in-loop
-        await woisMessage.reply(chunk.join(" "));
+        await woisMessage.reply({
+            content: chunk.join(" "),
+            allowedMentions: {
+                users: woisAction.interestedUsers
+            }
+        });
     }
 };
