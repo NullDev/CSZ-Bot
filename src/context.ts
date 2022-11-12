@@ -113,7 +113,8 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
             bot_log: ensureTextChannel(config, guild, "bot_log_channel_id"),
             hauptchat: ensureTextChannel(config, guild, "hauptchat_id"),
             votes: ensureTextChannel(config, guild, "votes_channel_id"),
-            bot_spam: ensureTextChannel(config, guild, "bot_spam_channel_id")
+            bot_spam: ensureTextChannel(config, guild, "bot_spam_channel_id"),
+            welcome: ensureTextChannel(config, guild, "welcome_channel_id")
         },
         voiceChannels: {
             haupt_woischat: ensureVoiceChannel(config, guild, "haupt_woischat_id")
