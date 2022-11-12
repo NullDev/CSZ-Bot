@@ -145,8 +145,8 @@ export const woisVoteReactionHandler: ReactionHandler = async(
         return;
     }
 
-    const voteYes = reactionEvent.emoji.name !== "👍";
-    const voteNo = reactionEvent.emoji.name !== "👎";
+    const voteYes = reactionEvent.emoji.name === "👍";
+    const voteNo = reactionEvent.emoji.name === "👎";
     // Some other emoji was used
     if (!voteYes && !voteNo) {
         return;
