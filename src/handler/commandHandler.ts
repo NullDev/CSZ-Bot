@@ -68,7 +68,8 @@ import { hasBotDenyRole } from "../utils/userUtils.js";
 import { isMessageInBotSpam } from "../utils/channelUtils.js";
 import type { BotContext } from "../context.js";
 import { WoisCommand } from "../commands/woisvote.js";
-
+import { ApplicationCommandCreationResponse } from "../types.js";
+import logger from "../utils/logger.js";
 
 const config = getConfig();
 
@@ -111,7 +112,9 @@ export const commands: readonly Command[] = [
     new DeOidaCommand(),
     new EhreCommand()
 ];
-export const interactions: readonly UserInteraction[] = [new NicknameButtonHandler()];
+export const interactions: readonly UserInteraction[] = [
+    new NicknameButtonHandler()
+];
 
 export const applicationCommands: Array<ApplicationCommand> =
     commands.filter<ApplicationCommand>(isApplicationCommand);
@@ -125,7 +128,9 @@ const lastSpecialCommands: Record<string, number> = specialCommands.reduce(
     {}
 );
 
-const createPermissionSet = (permissions: readonly PermissionsString[]): bigint => {
+const createPermissionSet = (
+    permissions: readonly PermissionsString[]
+): bigint => {
     const flags = new PermissionsBitField();
     flags.add(...permissions);
     return flags.bitfield;
@@ -142,14 +147,15 @@ export const registerAllApplicationCommandsAsGuildCommands = async(
     const token = context.rawConfig.auth.bot_token;
 
     const rest = new REST({ version: "10" }).setToken(token);
+    const buildGuildCommand = (
+        cmd: ApplicationCommand
+    ): APIApplicationCommand => {
+        const defaultMemberPermissions = createPermissionSet(
+            cmd.requiredPermissions ?? ["SendMessages"]
+        );
 
-    // TODO: Reconsider using batch creation here. Rate limit kicks in and takes round about 40 seconds to start the bot
-    for (const command of applicationCommands) {
-        const defaultMemberPermissions = createPermissionSet(command.requiredPermissions ?? ["SendMessages"]);
-
-        const commandCreationData: APIApplicationCommand =
-        {
-            ...command.applicationCommand.toJSON(),
+        const commandCreationData: APIApplicationCommand = {
+            ...cmd.applicationCommand.toJSON(),
             dm_permission: false,
             default_member_permissions: defaultMemberPermissions.toString(),
 
@@ -162,17 +168,24 @@ export const registerAllApplicationCommandsAsGuildCommands = async(
                 }
             ]
         } as any;
+        return commandCreationData;
+    };
 
-        try {
-            const url = Routes.applicationGuildCommands(clientId, context.guild.id);
-            await rest.post(url, { body: commandCreationData });
-        }
-        catch (err) {
-            log.error(
-                `Could not register the application command ${command.name}`,
-                err
-            );
-        }
+    const commandsToRegister = applicationCommands
+        .map(buildGuildCommand);
+
+    try {
+        const url = Routes.applicationGuildCommands(clientId, context.guild.id);
+        const response = await rest.put(url, {
+            body: commandsToRegister
+        }) as ApplicationCommandCreationResponse[];
+        logger.info(`Registered ${response.length} guild commands`);
+    }
+    catch (err) {
+        log.error(
+            `Could not register application commands for guild ${context.guild.id}`,
+            err
+        );
     }
 };
 

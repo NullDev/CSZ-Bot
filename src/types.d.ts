@@ -106,3 +106,7 @@ export type JsonValue =
     | null;
 /* eslint-enable no-use-before-define */
 export type JsonObject = Record<string, JsonValue>;
+
+export type ApplicationCommandCreationResponse = {
+    id: Snowflake;
+};

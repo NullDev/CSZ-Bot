@@ -166,9 +166,6 @@ client.once("ready", async initializedClient => {
         botContext = await createBotContext(initializedClient);
         console.assert(!!botContext); // TODO: Remove once botContext is used
 
-        // When the application is ready, slash commands should be registered
-        await registerAllApplicationCommandsAsGuildCommands(botContext);
-
         const cronOptions = {
             timezone: "Europe/Berlin"
         } as const;
@@ -251,6 +248,9 @@ client.once("ready", async initializedClient => {
                 log.debug("Entered start ehreReset cronjob");
                 await Promise.all([EhrePoints.deflation(), EhreVotes.resetVotes()]);
             }, cronOptions);
+
+            // When the application is ready, slash commands should be registered
+            await registerAllApplicationCommandsAsGuildCommands(botContext);
         }
 
         ban.startCron(botContext);
