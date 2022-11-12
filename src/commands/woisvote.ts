@@ -130,7 +130,7 @@ export class WoisCommand implements ApplicationCommand {
         }
         await command.reply({
             content: `Woisvote erstellt: ${woisMessage.url}`,
-            ephemeral: true,
+            ephemeral: true
         });
     }
 }
