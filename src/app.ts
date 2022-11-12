@@ -352,14 +352,14 @@ client.on("messageUpdate", async(_, newMessage) => {
     }
 });
 
-client.on("error", e => void log.error(`Discord Client Error: ${e}`));
-client.on("warn", w => void log.warn(`Discord Client Warning: ${w}`));
+client.on("error", e => void log.error("Discord Client Error", e));
+client.on("warn", w => void log.warn("Discord Client Warning", w));
 client.on("debug", d => {
     if (d.includes("Heartbeat")) {
         return;
     }
 
-    log.debug(`Discord Client Debug: ${d}`);
+    log.debug("Discord Client Debug d", d);
 });
 client.on("rateLimit", rateLimitData => void log.error(`Discord Client RateLimit Shit: ${JSON.stringify(rateLimitData)}`));
 client.on("invalidated", () => void log.debug("Client invalidated"));
