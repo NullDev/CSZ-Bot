@@ -53,6 +53,7 @@
 
         "banned_channel_id": "893179193741942888",
         "votes_channel_id": "893179191556706384",
-        "bot_log_channel_id": "893179191556706387"
+        "bot_log_channel_id": "893179191556706387",
+        "welcome_channel_id": "893179190881452117"
     }
 }

@@ -46,6 +46,13 @@ export default async function(message: Message, _client: Client, context: BotCon
         }
     }
 
+    if (message.channelId === config.ids.welcome_channel_id) {
+        const emote = message.guild.emojis.cache.find(e => e.name === "alarm");
+        if(emote) {
+            await message.react(emote);
+        }
+    }
+
     if (!isCommand) {
         return;
     }

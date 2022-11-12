@@ -50,7 +50,8 @@ export type ConfigTextChannelId =
     | "bot_log_channel_id"
     | "bot_spam_channel_id"
     | "hauptchat_id"
-    | "votes_channel_id";
+    | "votes_channel_id"
+    | "welcome_channel_id";
 
 export type ConfigVoiceChannelId = "haupt_woischat_id";
 
