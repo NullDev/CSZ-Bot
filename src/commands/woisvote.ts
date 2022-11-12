@@ -92,7 +92,8 @@ export class WoisCommand implements ApplicationCommand {
             return;
         }
 
-        const start = timeForWois.subtract(6, "hours");
+        const start = moment(timeForWois)
+            .subtract(6, "hours");
         const existingWoisVote = await WoisAction.getWoisActionInRange(
             start.toDate(),
             timeForWois.toDate()
