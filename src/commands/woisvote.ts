@@ -81,11 +81,7 @@ export class WoisCommand implements ApplicationCommand {
         const reason = command.options.getString("grund", true);
         const time =
             command.options.getString("zeitpunkt", false) ?? defaultWoisTime;
-        const timeMoment = moment(time, "HH:mm");
-
-        const timeForWois = moment()
-            .set("hour", timeMoment.get("hour"))
-            .set("minute", timeMoment.get("minute"));
+        const timeForWois = moment(time, "HH:mm");
 
         if (timeForWois.isBefore(moment())) {
             await command.reply({
