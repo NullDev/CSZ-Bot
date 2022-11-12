@@ -48,7 +48,10 @@ const pingWoisgang = async(
     return message.reply({
         content: `<@&${config.ids.woisgang_role_id}> DA PASSIERT WAS!`,
         allowedMentions: {
-            roles: [config.ids.woisgang_role_id]
+            // Not working for obious reasons.
+            // Okay, not obvious. I don't have any clue why...
+            // roles: [ config.ids.woisgang_role_id ]
+            parse: ["roles"]
         }
     });
 };
