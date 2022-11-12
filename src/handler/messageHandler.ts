@@ -1,10 +1,7 @@
 import { Client, ClientUser, Message } from "discord.js";
 
-import { getConfig } from "../utils/configHandler.js";
 import cmdHandler, { isProcessableMessage, ProcessableMessage } from "./cmdHandler.js";
 import type { BotContext } from "../context.js";
-
-const config = getConfig();
 
 const getInlineReplies = (messageRef: ProcessableMessage, clientUser: ClientUser) => {
     return messageRef.channel.messages.cache.filter(m => m.author.id === clientUser.id && m.reference?.messageId === messageRef.id);
@@ -12,12 +9,12 @@ const getInlineReplies = (messageRef: ProcessableMessage, clientUser: ClientUser
 
 export default async function(message: Message, _client: Client, context: BotContext) {
     const nonBiased = message.content
-        .replace(config.bot_settings.prefix.command_prefix, "")
-        .replace(config.bot_settings.prefix.mod_prefix, "")
+        .replace(context.prefix.command, "")
+        .replace(context.prefix.modCommand, "")
         .replace(/\s/g, "");
 
     // Must be executed before isProcessableMessage() and any message.author.bot checks
-    if (message.guild && message.channelId === config.ids.welcome_channel_id) {
+    if (message.guild && message.channelId === context.textChannels.welcome.id) {
         const emote = message.guild.emojis.cache.find(e => e.name === "alarm");
         if (emote) {
             await message.react(emote);
@@ -30,8 +27,8 @@ export default async function(message: Message, _client: Client, context: BotCon
     // Ensures that every command always gets a message that fits certain criteria (for example, being a message originating from a server, not a DM)
     if (!isProcessableMessage(message)) return;
 
-    const isNormalCommand = message.content.startsWith(config.bot_settings.prefix.command_prefix);
-    const isModCommand = message.content.startsWith(config.bot_settings.prefix.mod_prefix);
+    const isNormalCommand = message.content.startsWith(context.prefix.command);
+    const isModCommand = message.content.startsWith(context.prefix.modCommand);
     const isCommand = isNormalCommand || isModCommand;
 
     if (context.client.user && message.mentions.has(context.client.user.id) && !isCommand) {
@@ -40,7 +37,7 @@ export default async function(message: Message, _client: Client, context: BotCon
         // Unless you are a Marcel
 
         const isMarcel = message.member.id === "209413133020823552";
-        const shouldFlameUser = config.bot_settings.flame_trusted_user_on_bot_ping || !message.member.roles.cache.has(config.ids.trusted_role_id) || isMarcel;
+        const shouldFlameUser = context.rawConfig.bot_settings.flame_trusted_user_on_bot_ping || !message.member.roles.cache.has(context.roles.trusted.id) || isMarcel;
 
         if (shouldFlameUser) {
             const hasAlreadyReplied = message.channel.messages.cache
