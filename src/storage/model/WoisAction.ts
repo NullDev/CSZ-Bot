@@ -60,6 +60,20 @@ export default class WoisAction
         });
     }
 
+    static async getPendingWoisAction(
+        before: Date
+    ): Promise<WoisAction | null> {
+        return WoisAction.findOne({
+            where: {
+                date: {
+                    [Op.and]: {
+                        [Op.lte]: before
+                    }
+                }
+            }
+        });
+    }
+
     static async getWoisActionByMessageId(
         messageId: Snowflake
     ): Promise<WoisAction | null> {

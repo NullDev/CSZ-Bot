@@ -170,10 +170,7 @@ export const woisVoteReactionHandler: ReactionHandler = async(
 export const woisVoteScheduler = async(
     _context: BotContext
 ): Promise<void> => {
-    const woisAction = await WoisAction.getWoisActionInRange(
-        new Date(0),
-        new Date()
-    );
+    const woisAction = await WoisAction.getPendingWoisAction(new Date());
     if (woisAction === null) {
         return;
     }
