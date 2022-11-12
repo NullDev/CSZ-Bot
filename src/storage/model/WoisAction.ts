@@ -94,12 +94,15 @@ export default class WoisAction
             if (!woisAction) return false;
 
             if(interested) {
-                woisAction.interestedUsers.push(interestedUser);
+                if(!woisAction.interestedUsers.includes(interestedUser)) {
+                    woisAction.interestedUsers = [...woisAction.interestedUsers, interestedUser];
+                }
             }
             else {
                 // Filter instead of splice because a user might not be in the array
                 woisAction.interestedUsers = woisAction.interestedUsers.filter(user => user !== interestedUser);
             }
+
             await woisAction.save();
 
             return true;

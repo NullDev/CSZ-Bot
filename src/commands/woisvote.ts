@@ -16,6 +16,7 @@ import moment from "moment";
 import WoisAction from "../storage/model/WoisAction.js";
 import { ReactionHandler } from "../types.js";
 import { BotContext } from "../context.js";
+import logger from "../utils/logger.js";
 
 const config = getConfig();
 const defaultWoisTime = "20:00";
@@ -157,7 +158,10 @@ export const woisVoteReactionHandler: ReactionHandler = async(
         return;
     }
 
-    await WoisAction.registerInterst(message.id, user.id, interest);
+    const success = await WoisAction.registerInterst(message.id, user.id, interest);
+    if(!success) {
+        logger.error("Could not register interest for user " + user.id + " in message " + message.id);
+    }
 };
 
 export const woisVoteScheduler = async(
@@ -196,7 +200,9 @@ export const woisVoteScheduler = async(
 
     const chunkSize = 10;
     for (let i = 0; i < woisAction.interestedUsers.length; i += chunkSize) {
-        const chunk = woisAction.interestedUsers.slice(i, i + chunkSize);
+        const chunk = woisAction.interestedUsers
+            .slice(i, i + chunkSize)
+            .map(user => `<@${user}>`);
         // It's okay for readability
         // eslint-disable-next-line no-await-in-loop
         await woisMessage.reply(chunk.join(" "));
