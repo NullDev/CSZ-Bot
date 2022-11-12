@@ -16,6 +16,14 @@ export default async function(message: Message, _client: Client, context: BotCon
         .replace(config.bot_settings.prefix.mod_prefix, "")
         .replace(/\s/g, "");
 
+    // Must be executed before isProcessableMessage() and any message.author.bot checks
+    if (message.guild && message.channelId === config.ids.welcome_channel_id) {
+        const emote = message.guild.emojis.cache.find(e => e.name === "alarm");
+        if (emote) {
+            await message.react(emote);
+        }
+    }
+
     // Maybe we can move some of these checks to `isProcessableMessage`, but we need to figure out how to represent this in a type
     if (message.author.bot || nonBiased === "") return;
 
@@ -43,13 +51,6 @@ export default async function(message: Message, _client: Client, context: BotCon
                     content: "Was pingst du mich du Hurensohn :angry:"
                 });
             }
-        }
-    }
-
-    if (message.channelId === config.ids.welcome_channel_id) {
-        const emote = message.guild.emojis.cache.find(e => e.name === "alarm");
-        if(emote) {
-            await message.react(emote);
         }
     }
 
