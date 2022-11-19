@@ -46,7 +46,8 @@ const readFromAdditionalMetadata = (content: string): InstagramPost | null => {
     const r = /<script type="text\/javascript">window.__additionalDataLoaded\('extra',(.+)\);<\/script>/;
     const match = content.match(r);
     if(!match || !match[1]) {
-        throw new Error("Could not find SharedData");
+        console.log("Could not find SharedData");
+        return null;
     }
     const data = JSON.parse(match[1]);
 
