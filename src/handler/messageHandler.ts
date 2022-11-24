@@ -38,14 +38,19 @@ export default async function(message: Message, _client: Client, context: BotCon
 
         const isMarcel = message.member.id === "209413133020823552";
         const shouldFlameUser = context.rawConfig.bot_settings.flame_trusted_user_on_bot_ping || !message.member.roles.cache.has(context.roles.trusted.id) || isMarcel;
+        const shouldHonorUser = message.member.roles.cache.has(context.roles.winner.id);
 
-        if (shouldFlameUser) {
+        // eslint-disable-next-line no-nested-ternary
+        const reply = shouldFlameUser ? "Was pingst du mich du Hurensohn :angry:"
+            : shouldHonorUser ? "Bruder, du bist ein ehrenhafter Typ. Bleib so stabil wie du bist :heart:" : null;
+
+        if (reply) {
             const hasAlreadyReplied = message.channel.messages.cache
-                .filter(m => m.content.includes("Was pingst du mich du Hurensohn"))
+                .filter(m => m.content.includes(reply))
                 .some(m => m.reference?.messageId === message.id);
             if (!hasAlreadyReplied) {
                 await message.reply({
-                    content: "Was pingst du mich du Hurensohn :angry:"
+                    content: reply
                 });
             }
         }

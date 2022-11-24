@@ -106,7 +106,8 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
             shame: ensureRole(config, guild, "shame_role_id"),
             trusted_banned: ensureRole(config, guild, "trusted_banned_role_id"),
             trusted: ensureRole(config, guild, "trusted_role_id"),
-            woisgang: ensureRole(config, guild, "woisgang_role_id")
+            woisgang: ensureRole(config, guild, "woisgang_role_id"),
+            winner: ensureRole(config, guild, "winner_role_id")
         },
         textChannels: {
             banned: ensureTextChannel(config, guild, "banned_channel_id"),

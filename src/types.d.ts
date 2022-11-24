@@ -43,7 +43,8 @@ export type ConfigRoleId =
     | "shame_role_id"
     | "trusted_banned_role_id"
     | "trusted_role_id"
-    | "woisgang_role_id";
+    | "woisgang_role_id"
+    | "winner_role_id";
 
 export type ConfigTextChannelId =
     | "banned_channel_id"
