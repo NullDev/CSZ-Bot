@@ -44,6 +44,14 @@ const getTargetChannel = (sourceChannelId: string, context: BotContext) => {
     };
 };
 
+const getQuoteeUsername = (author: GuildMember, quotee: User): string => {
+    if(author.user.username === quotee.username) {
+        return `${quotee.username} (Selbstzitierer :FBIOPENUP:)`;
+    }
+
+    return quotee.username;
+};
+
 const createQuote = (
     quotedUser: GuildMember,
     quoter: readonly User[],
@@ -80,7 +88,7 @@ const createQuote = (
                         },
                         {
                             name: "zitiert von",
-                            value: quoter.map(u => u.username).join(", ")
+                            value: quoter.map(u => getQuoteeUsername(quotedUser, u)).join(", ")
                         }
                     ]
                 }
