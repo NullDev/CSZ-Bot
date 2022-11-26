@@ -2,7 +2,6 @@ import { GuildMember, Message, MessageReaction, User, TextBasedChannel, GuildEmo
 
 import { BotContext } from "../context.js";
 import { getConfig } from "../utils/configHandler.js";
-import { formatDateTime } from "../utils/dateUtils.js";
 import log from "../utils/logger.js";
 import { isNerd, isTrusted } from "../utils/userUtils.js";
 
@@ -44,6 +43,14 @@ const getTargetChannel = (sourceChannelId: string, context: BotContext) => {
     };
 };
 
+const getQuoteeUsername = (author: GuildMember, quotee: User): string => {
+    if(author.user.username === quotee.username) {
+        return `**${quotee.username} (Selbstzitierer :FBIOPENUP:)**`;
+    }
+
+    return quotee.username;
+};
+
 const createQuote = (
     quotedUser: GuildMember,
     quoter: readonly User[],
@@ -80,7 +87,7 @@ const createQuote = (
                         },
                         {
                             name: "zitiert von",
-                            value: quoter.map(u => u.username).join(", ")
+                            value: quoter.map(u => getQuoteeUsername(quotedUser, u)).join(", ")
                         }
                     ]
                 }
