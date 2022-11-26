@@ -20,7 +20,7 @@ const resetAll = async(context: BotContext): Promise<PromiseSettledResult<GuildM
 };
 
 const shuffleArray = <T>(array: T[], biasFn: (item: T) => number): T[] => array
-    .map((value, idx) => ({ value, bias: biasFn(value) }))
+    .map((value, _idx) => ({ value, bias: biasFn(value) }))
     .sort((a, b) => a.bias - b.bias)
     .map(({ value }) => value);
 

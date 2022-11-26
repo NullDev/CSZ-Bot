@@ -1,4 +1,4 @@
-import { Message } from "discord.js";
+import { BufferResolvable, Message } from "discord.js";
 import fetch from "node-fetch";
 import * as TikTokScraper from "tiktok-scraper";
 
@@ -61,12 +61,12 @@ export class TikTokLink implements SpecialCommand {
         const res = await fetch(videoMeta.collector[0].videoUrl, {
             headers: videoMeta.headers as any
         });
-        const buf = await res.buffer();
+        const buf = await res.arrayBuffer();
 
         await message.reply({
             content: (videoMeta.collector[0].text || "Dein TikTok du Hund:"),
             files: [{
-                attachment: buf,
+                attachment: buf as BufferResolvable,
                 name: `${videoMeta.collector[0].id}.mp4`
             }]
         });

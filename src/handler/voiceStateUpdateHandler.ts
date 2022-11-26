@@ -16,7 +16,7 @@ export class WoisData {
     static latestEvents: VoiceUpdateEvent[] = [];
 }
 
-export async function checkVoiceUpdate(oldState: VoiceState, newState: VoiceState, botContext: BotContext) {
+export async function checkVoiceUpdate(oldState: VoiceState, newState: VoiceState, _botContext: BotContext) {
     logger.debug(`Voice update detected: ${oldState.channelId} -> ${newState.channelId}`);
 
     // User joined Channel

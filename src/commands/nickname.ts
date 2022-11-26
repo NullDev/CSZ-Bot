@@ -112,7 +112,7 @@ export class Nickname implements ApplicationCommand {
             );
     }
 
-    async handleInteraction(command: CommandInteraction, client: Client<boolean>): Promise<CommandResult> {
+    async handleInteraction(command: CommandInteraction, _client: Client<boolean>): Promise<CommandResult> {
         if (!command.isChatInputCommand()) {
             // TODO: Solve this on a type level
             return;
@@ -235,7 +235,7 @@ export class NicknameButtonHandler implements UserInteraction {
     readonly threshold = 7;
 
 
-    async handleInteraction(interaction: MessageComponentInteraction, client: Client): Promise<void> {
+    async handleInteraction(interaction: MessageComponentInteraction, _client: Client): Promise<void> {
         const suggestion = ongoingSuggestions[interaction.message.id];
 
         if (suggestion === undefined) {

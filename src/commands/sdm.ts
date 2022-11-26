@@ -167,7 +167,7 @@ export class SdmCommand implements MessageCommand, ApplicationCommand {
         return;
     }
 
-    async handleInteraction(command: CommandInteraction<CacheType>, client: Client<boolean>): Promise<CommandResult> {
+    async handleInteraction(command: CommandInteraction<CacheType>, _client: Client<boolean>): Promise<CommandResult> {
         if (!command.isChatInputCommand()) {
             // TODO: Solve this on a type level
             return;

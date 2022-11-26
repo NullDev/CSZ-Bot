@@ -112,7 +112,7 @@ export class DeOidaCommand implements MessageCommand {
     Usage: Mit dem Command auf eine veroidarte (🇦🇹) Nachricht antworten. Alternativ den zu de-oidarten Text übergeben.
     `.trim();
 
-    async handleMessage(message: ProcessableMessage, client: Client<boolean>, context: BotContext): Promise<void> {
+    async handleMessage(message: ProcessableMessage, _client: Client<boolean>, context: BotContext): Promise<void> {
         const messageToTranslate = message.reference?.messageId
             ? (await message.channel.messages.fetch(message.reference.messageId))
             : message;

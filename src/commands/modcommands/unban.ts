@@ -26,7 +26,7 @@ export class UnbanCommand implements ApplicationCommand, MessageCommand {
         return new SlashCommandBuilder()
             .setName(this.name)
             .setDescription(this.description)
-            .setDefaultPermission(false)
+            .setDefaultMemberPermissions(undefined)
             .addUserOption(new SlashCommandUserOption()
                 .setRequired(true)
                 .setName("user")

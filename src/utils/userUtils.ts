@@ -16,11 +16,6 @@ function hasRoleById(member: GuildMember, id: string): boolean {
     return member.roles.cache.some(role => role.id === id);
 }
 
-// eslint-disable-next-line no-unused-vars
-function hasAnyRoleById(member: GuildMember, ids: string[]) {
-    return ids.some(id => hasRoleById(member, id));
-}
-
 /**
  * Checks whether the provided member is a mod according to the configured moderator roles
  * @param member member

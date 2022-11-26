@@ -29,7 +29,7 @@ export class FicktabelleCommand implements MessageCommand {
     name = "ficktabelle";
     description = `Sendet die Ficktabelle.\nBenutzung: ${config.bot_settings.prefix.command_prefix}ficktabelle`;
 
-    async handleMessage(message: ProcessableMessage, client: Client<boolean>): Promise<void> {
+    async handleMessage(message: ProcessableMessage, _client: Client<boolean>): Promise<void> {
         await message.channel.send({
             embeds: [
                 {

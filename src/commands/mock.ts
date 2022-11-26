@@ -43,7 +43,7 @@ export class MockCommand implements MessageCommand, ApplicationCommand {
                 .setRequired(true)
         );
 
-    async handleInteraction(command: CommandInteraction<CacheType>, client: Client<boolean>, context: BotContext): Promise<void> {
+    async handleInteraction(command: CommandInteraction<CacheType>, _client: Client<boolean>, _context: BotContext): Promise<void> {
         if (!command.isChatInputCommand()) {
             // TODO: Solve this on a type level
             return;

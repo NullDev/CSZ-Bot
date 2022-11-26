@@ -43,7 +43,7 @@ export class OidaCommand implements ApplicationCommand {
         return value.replaceAll(/\s+/g, " ").trim();
     }
 
-    async handleInteraction(command: CommandInteraction, client: Client, context: BotContext) {
+    async handleInteraction(command: CommandInteraction, _client: Client, context: BotContext) {
         if (!command.isChatInputCommand()) {
             // TODO: Solve this on a type level
             return;

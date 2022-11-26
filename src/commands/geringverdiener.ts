@@ -12,7 +12,7 @@ import type { ProcessableMessage } from "../handler/cmdHandler.js";
  *
  * Limitation: this does only work for emojis from this server.
  */
-const geringverdiener = (emojiManager: GuildEmojiManager, str: string): string => str.replace(/:([\w~]+):(?!\d+>)/gi, function(match, emojiName, offset, wholeString) {
+const geringverdiener = (emojiManager: GuildEmojiManager, str: string): string => str.replace(/:([\w~]+):(?!\d+>)/gi, (_match, emojiName, _offset, wholeString) => {
     const emote = emojiManager.cache.find(e => e.name === emojiName);
     if (emote) {
         return `${emote}`;
@@ -50,7 +50,7 @@ export class GeringverdienerCommand implements MessageCommand, ApplicationComman
                 .setRequired(true)
         );
 
-    async handleInteraction(command: CommandInteraction<CacheType>, client: Client<boolean>, context: BotContext): Promise<void> {
+    async handleInteraction(command: CommandInteraction<CacheType>, _client: Client<boolean>, _context: BotContext): Promise<void> {
         if (!command.isChatInputCommand()) {
             // TODO: Solve this on a type level
             return;
