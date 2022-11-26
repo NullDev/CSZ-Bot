@@ -45,7 +45,7 @@ const getTargetChannel = (sourceChannelId: string, context: BotContext) => {
 
 const getQuoteeUsername = (author: GuildMember, quotee: User): string => {
     if(author.user.username === quotee.username) {
-        return `${quotee.username} (Selbstzitierer :FBIOPENUP:)`;
+        return `**${quotee.username} (Selbstzitierer :FBIOPENUP:)**`;
     }
 
     return quotee.username;
