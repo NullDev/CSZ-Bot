@@ -2,7 +2,6 @@ import { GuildMember, Message, MessageReaction, User, TextBasedChannel, GuildEmo
 
 import { BotContext } from "../context.js";
 import { getConfig } from "../utils/configHandler.js";
-import { formatDateTime } from "../utils/dateUtils.js";
 import log from "../utils/logger.js";
 import { isNerd, isTrusted } from "../utils/userUtils.js";
 
