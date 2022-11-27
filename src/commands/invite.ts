@@ -12,7 +12,7 @@ export class InviteCommand implements MessageCommand {
     /**
      * Send the invite link to the person issuing the command
      */
-    async handleMessage(message: ProcessableMessage, client: Client<boolean>): Promise<void> {
+    async handleMessage(message: ProcessableMessage, _client: Client<boolean>): Promise<void> {
         await message.author.send("Invite Link: https://discord.gg/csz");
         await message.react("✉"); // Only react when the message was actually sent
     }

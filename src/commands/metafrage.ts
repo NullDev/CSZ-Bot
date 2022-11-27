@@ -5,7 +5,7 @@ import type { CommandFunction } from "../types.js";
 /**
  * Sends instructions on how to ask better questions
  */
-export const run: CommandFunction = async(client, message, args) => {
+export const run: CommandFunction = async(_client, message, args) => {
     // parse options
     const options = parseOptions(args, {
         "boolean": [

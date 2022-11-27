@@ -7,7 +7,7 @@ import { ApplicationCommand, CommandResult, MessageCommand } from "../command.js
 import log from "../../utils/logger.js";
 import moment from "moment";
 import type { ProcessableMessage } from "../../handler/cmdHandler.js";
-import Cron from "croner";
+import cron from "croner";
 import type { BotContext } from "../../context.js";
 import { unban } from "./unban.js";
 
@@ -81,7 +81,7 @@ export const startCron = (context: BotContext) => {
     log.info("Scheduling Ban Cronjob...");
 
     // eslint-disable-next-line no-unused-vars
-    const banCron = new Cron("* * * * *", async() => {
+    cron("* * * * *", {}, async() => {
         const now = new Date();
 
         try {
@@ -160,7 +160,7 @@ export class BanCommand implements ApplicationCommand, MessageCommand {
         return new SlashCommandBuilder()
             .setName(this.name)
             .setDescription(this.description)
-            .setDefaultPermission(false)
+            .setDefaultMemberPermissions(0)
             .addUserOption(new SlashCommandUserOption()
                 .setRequired(true)
                 .setName("user")
@@ -240,7 +240,7 @@ export class BanCommand implements ApplicationCommand, MessageCommand {
 
         // If we have a reference the first mention is in the reference and the reason is therefore
         // the whole message except the command itself
-        const messageAfterCommand = message.content.substr(message.content.indexOf(this.name) + this.name.length).trim();
+        const messageAfterCommand = message.content.substring(message.content.indexOf(this.name) + this.name.length).trim();
         let reason = "Willkür";
         if (message.reference) {
             if (messageAfterCommand.trim().length > 0) {

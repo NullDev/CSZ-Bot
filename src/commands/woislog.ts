@@ -15,7 +15,7 @@ export class WoisLog implements ApplicationCommand {
             .setDescription(this.description);
     }
 
-    async handleInteraction(command: CommandInteraction, client: Client, context: BotContext): Promise<CommandResult> {
+    async handleInteraction(command: CommandInteraction, _client: Client, _context: BotContext): Promise<CommandResult> {
         const latestEvents = WoisData.latestEvents.filter(event => {
             return event.createdAt.getTime() > Date.now() - 2 * 60 * 1000;
         });

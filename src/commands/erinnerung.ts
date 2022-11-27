@@ -42,7 +42,7 @@ export class ErinnerungCommand implements MessageCommand, ApplicationCommand {
             .setRequired(false)
         );
 
-    async handleInteraction(command: CommandInteraction<CacheType>, client: Client<boolean>, context: BotContext): Promise<void> {
+    async handleInteraction(command: CommandInteraction<CacheType>, _client: Client<boolean>, _context: BotContext): Promise<void> {
         if (!command.isChatInputCommand()) {
             // TODO: Solve this on a type level
             return;
@@ -67,7 +67,7 @@ export class ErinnerungCommand implements MessageCommand, ApplicationCommand {
         }
     }
 
-    async handleMessage(message: ProcessableMessage, client: Client<boolean>, context: BotContext): Promise<void> {
+    async handleMessage(message: ProcessableMessage, _client: Client<boolean>, context: BotContext): Promise<void> {
         // TODO: Create utility function that removes the command prefix for easier parsing
         const param = message.content.split(`${context.rawConfig.bot_settings.prefix.command_prefix}${this.name} `)[1];
         if (!param) {

@@ -1,6 +1,6 @@
 import path from "node:path";
 
-import { Message } from "discord.js";
+import { BufferResolvable, Message } from "discord.js";
 import fetch from "node-fetch";
 import url from "url";
 import { JSDOM } from "jsdom";
@@ -115,12 +115,12 @@ export class InstagramLink implements SpecialCommand {
                 ...instagramOptions.headers
             }
         });
-        const buf = await res.buffer();
+        const buf = await res.arrayBuffer();
 
         await message.reply({
             content: post.caption || "Dein Instagram Scheiß du Hund:",
             files: [{
-                attachment: buf,
+                attachment: buf as BufferResolvable,
                 name: filename
             }]
         });

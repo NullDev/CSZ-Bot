@@ -36,7 +36,7 @@ Usage: ${config.bot_settings.prefix.command_prefix}bonk
        ${config.bot_settings.prefix.command_prefix}bonk @ShadowByte#1337
        Oder auf eine Nachricht mit ${config.bot_settings.prefix.command_prefix}bonk antworten.`;
 
-    async handleMessage(message: ProcessableMessage, client: Client<boolean>): Promise<CommandResult> {
+    async handleMessage(message: ProcessableMessage, _client: Client<boolean>): Promise<CommandResult> {
         const messageRef = message.reference?.messageId;
         const messagePing = message.mentions?.users.first();
         let toBeBonked: GuildMember = await message.guild.members.fetch(message.author);

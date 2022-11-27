@@ -8,7 +8,7 @@ const config = getConfig();
 /**
  * Enlists all mod-commands with descriptions
  */
-export const run: CommandFunction = async(client, message, args, context) => {
+export const run: CommandFunction = async(_client, message, _args, context) => {
     const commandObj: Record<string, string> = {};
     const commandDir = path.join(context.srcDir, "commands", "modcommands");
 

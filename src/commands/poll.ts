@@ -1,6 +1,6 @@
 import parseOptions from "minimist";
-import Cron from "croner";
-import {APIEmbed, APIEmbedField, ChannelType, cleanContent, Snowflake, User} from "discord.js";
+import cron from "croner";
+import {APIEmbed, APIEmbedField, ChannelType, cleanContent, Snowflake, TextChannel, User} from "discord.js";
 
 import log from "../utils/logger.js";
 import AdditionalMessageData from "../storage/model/AdditionalMessageData.js";
@@ -172,7 +172,7 @@ export const run: CommandFunction = async(_client, message, args, context) => {
     });
 
     await message.delete();
-    await Promise.all(pollOptions.map((e, i) => pollMessage.react(EMOJI[i])));
+    await Promise.all(pollOptions.map((_e, i) => pollMessage.react(EMOJI[i])));
 
     if (options.delayed) {
         const reactionMap: string[] = [];
@@ -222,12 +222,11 @@ export const startCron = (context: BotContext) => {
 
     /* eslint-disable no-await-in-loop */
     // eslint-disable-next-line no-unused-vars
-    const pollCron = new Cron("* * * * *", async() => {
+    cron("* * * * *", async() => {
         const currentDate = new Date();
         const pollsToFinish = delayedPolls.filter(delayedPoll => currentDate >= delayedPoll.finishesAt);
-        /** @type {import("discord.js").GuildChannel} */
 
-        const channel = context.textChannels.votes;
+        const channel: TextChannel = context.textChannels.votes;
 
         for (const element of pollsToFinish) {
             const delayedPoll = element;

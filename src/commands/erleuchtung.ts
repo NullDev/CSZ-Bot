@@ -11,10 +11,10 @@ import type { ProcessableMessage } from "../handler/cmdHandler.js";
 
 const INSPIRATION_GENERATE_API_URL = "https://inspirobot.me/api?generate=true";
 
-function getInspiration(): Promise<string> {
-    return fetch(INSPIRATION_GENERATE_API_URL, {
+async function getInspiration(): Promise<string> {
+    return (await fetch(INSPIRATION_GENERATE_API_URL, {
         method: "GET"
-    }).then(response => response.text());
+    })).text();
 }
 
 async function buildInspirationMessage(author: GuildMember): Promise<EmbedBuilder> {

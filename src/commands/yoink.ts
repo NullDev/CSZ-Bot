@@ -67,7 +67,7 @@ export class YoinkCommand implements MessageCommand, ApplicationCommand {
     }
 
 
-    async createEmote(emoji: string, channel: TextBasedChannel, name: string | null, guild: Guild): Promise<string> {
+    async createEmote(emoji: string, _channel: TextBasedChannel, name: string | null, guild: Guild): Promise<string> {
         const parsedEmoji = parseEmoji(emoji);
         if (!parsedEmoji) {
             return "Du Lellek, ich kann dein Emote nicht parsen";

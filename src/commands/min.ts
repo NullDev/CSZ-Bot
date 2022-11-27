@@ -19,7 +19,7 @@ const getAdvice = (age: number) => {
 /**
  * Calculate a minimum moral age
  */
-export const run: CommandFunction = async(client, message, args) => {
+export const run: CommandFunction = async(_client, message, args) => {
     if (args.length === 0) return "Wie wärs wenn du auch ein Alter angibst?";
 
     const parsedAge = Number(args[0]);

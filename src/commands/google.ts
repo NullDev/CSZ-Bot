@@ -48,7 +48,7 @@ export class GoogleCommand implements ApplicationCommand {
             );
     }
 
-    async handleInteraction(command: CommandInteraction, client: Client<boolean>): Promise<CommandResult> {
+    async handleInteraction(command: CommandInteraction, _client: Client<boolean>): Promise<CommandResult> {
         if (!command.isChatInputCommand()) {
             // TODO: Solve this on a type level
             return;

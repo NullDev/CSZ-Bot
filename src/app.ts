@@ -1,6 +1,6 @@
 import * as Discord from "discord.js";
 import { Message, MessageReaction, User, VoiceState, GatewayIntentBits, Partials } from "discord.js";
-import Cron from "croner";
+import cron from "croner";
 
 
 import * as conf from "./utils/configHandler.js";
@@ -180,74 +180,72 @@ client.once("ready", async initializedClient => {
 
             log.info("Scheduling 1338 Cronjob...");
             // eslint-disable-next-line no-unused-vars
-            const l33tJob = new Cron("37 13 * * *", leetTask, cronOptions);
+            cron("37 13 * * *", cronOptions, leetTask);
 
             // eslint-disable-next-line no-unused-vars
-            const clearWoisLogJob = new Cron("5 * * * *", clearWoisLogTask, cronOptions);
+            cron("5 * * * *", cronOptions, clearWoisLogTask);
 
             log.info("Scheduling Birthday Cronjob...");
             // eslint-disable-next-line no-unused-vars
-            const bDayJob = new Cron("1 0 * * *", async() => {
+            cron("1 0 * * *", cronOptions, async() => {
                 log.debug("Entered Birthday cronjob");
                 await bday.checkBdays();
-            }, cronOptions);
+            });
             await bday.checkBdays();
 
             log.info("Scheduling Advent of Code Cronjob...");
             // eslint-disable-next-line no-unused-vars
-            const aocJob = new Cron("0 20 1-25 12 *", async() => {
+            cron("0 20 1-25 12 *", cronOptions, async() => {
                 log.debug("Entered AoC cronjob");
                 await aoc.publishLeaderBoard();
-            }, cronOptions);
+            });
 
             log.info("Scheduling Nickname Cronjob");
             // eslint-disable-next-line no-unused-vars
-            const nicknameJob = new Cron("0 0 * * 0", async() => {
+            cron("0 0 * * 0", cronOptions, async() => {
                 log.debug("Entered Nickname cronjob");
                 await nicknameHandler.rerollNicknames();
-            }, cronOptions);
+            });
 
             log.info("Scheduling Saufen Cronjob");
             // eslint-disable-next-line no-unused-vars
-            const saufenJob = new Cron("36 0-23 * * FRI-SAT,SUN", async() => {
+            cron("36 0-23 * * FRI-SAT, cronOptions,SUN", async() => {
                 log.debug("Entered Saufen cronjob");
                 await connectAndPlaySaufen(botContext);
-            }, cronOptions);
+            });
 
             log.info("Scheduling Reminder Cronjob");
             // eslint-disable-next-line no-unused-vars
-            const reminderJob = new Cron("* * * * *", async() => {
+            cron("* * * * *", cronOptions, async() => {
                 log.debug("Entered reminder cronjob");
                 await reminderHandler(botContext);
-            }, cronOptions);
+            });
 
             log.info("Scheduling Woisvote Cronjob");
             // eslint-disable-next-line no-unused-vars
-            const woisVoteJob = new Cron(
-                "* * * * *",
+            cron("* * * * *", cronOptions,
                 async() => {
                     log.debug("Entered reminder cronjob");
                     await woisVoteScheduler(botContext);
-                },
-                cronOptions
+                }
             );
 
             // eslint-disable-next-line no-unused-vars
-            const startAprilFoolsJob = new Cron("2022-04-01T00:00:00", async() => {
+            cron("2022-04-01T00:00:00", cronOptions, async() => {
                 log.debug("Entered start april fools cronjob");
                 await startAprilFools(botContext);
-            }, cronOptions);
+            });
 
             // eslint-disable-next-line no-unused-vars
-            const stopAprilFoolsJob = new Cron("2022-04-02T00:00:00", async() => {
+            cron("2022-04-02T00:00:00", cronOptions, async() => {
                 log.debug("Entered end april fools cronjob");
                 await endAprilFools(botContext);
-            }, cronOptions);
+            });
             // eslint-disable-next-line no-unused-vars
-            const ehreReset = new Cron("1 0 * * *", async() => {
+            cron("1 0 * * *", cronOptions, async() => {
                 log.debug("Entered start ehreReset cronjob");
                 await Promise.all([EhrePoints.deflation(), EhreVotes.resetVotes()]);
-            }, cronOptions);
+            });
 
             // When the application is ready, slash commands should be registered
             await registerAllApplicationCommandsAsGuildCommands(botContext);
