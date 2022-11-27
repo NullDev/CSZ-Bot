@@ -1,6 +1,6 @@
 import parseOptions from "minimist";
 import cron from "croner";
-import {APIEmbed, APIEmbedField, ChannelType, cleanContent, Snowflake, User} from "discord.js";
+import {APIEmbed, APIEmbedField, ChannelType, cleanContent, Snowflake, TextChannel, User} from "discord.js";
 
 import log from "../utils/logger.js";
 import AdditionalMessageData from "../storage/model/AdditionalMessageData.js";
