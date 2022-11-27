@@ -226,8 +226,7 @@ export const startCron = (context: BotContext) => {
         const currentDate = new Date();
         const pollsToFinish = delayedPolls.filter(delayedPoll => currentDate >= delayedPoll.finishesAt);
 
-        /** @type {import("discord.js").GuildChannel} */
-        const channel: import("discord.js").TextChannel = context.textChannels.votes;
+        const channel: TextChannel = context.textChannels.votes;
 
         for (const element of pollsToFinish) {
             const delayedPoll = element;
