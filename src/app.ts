@@ -209,7 +209,7 @@ client.once("ready", async initializedClient => {
 
             log.info("Scheduling Saufen Cronjob");
             // eslint-disable-next-line no-unused-vars
-            cron("36 0-23 * * FRI-SAT, cronOptions,SUN", async() => {
+            cron("36 0-23 * * FRI-SUN", cronOptions, async() => {
                 log.debug("Entered Saufen cronjob");
                 await connectAndPlaySaufen(botContext);
             });
