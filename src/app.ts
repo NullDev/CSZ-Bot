@@ -10,7 +10,6 @@ import log from "./utils/logger.js";
 import messageHandler from "./handler/messageHandler.js";
 import messageDeleteHandler from "./handler/messageDeleteHandler.js";
 import BdayHandler from "./handler/bdayHandler.js";
-import AoCHandler from "./handler/aocHandler.js";
 import * as fadingMessageHandler from "./handler/fadingMessageHandler.js";
 import * as storage from "./storage/storage.js";
 
@@ -39,6 +38,7 @@ import {
     woisVoteScheduler
 } from "./commands/woisvote.js";
 import { ReactionHandler } from "./types.js";
+import { AoCHandler } from "./commands/aoc.js";
 const version = conf.getVersion();
 const appname = conf.getName();
 const devname = conf.getAuthor();

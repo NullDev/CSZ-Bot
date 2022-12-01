@@ -71,6 +71,7 @@ import type { BotContext } from "../context.js";
 import { WoisCommand } from "../commands/woisvote.js";
 import { ApplicationCommandCreationResponse } from "../types.js";
 import logger from "../utils/logger.js";
+import { AoCCommand } from "../commands/aoc.js";
 
 const config = getConfig();
 
@@ -112,7 +113,8 @@ export const commands: readonly Command[] = [
     new InstagramLink(),
     new OidaCommand(),
     new DeOidaCommand(),
-    new EhreCommand()
+    new EhreCommand(),
+    new AoCCommand()
 ];
 export const interactions: readonly UserInteraction[] = [
     new NicknameButtonHandler()
