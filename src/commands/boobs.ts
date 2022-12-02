@@ -159,11 +159,15 @@ export class BoobCommand implements MessageCommand {
 
             await Promise.all([
                 Boob.insertMeasurement(userToMeasure, size),
-                sendBoob(userToMeasure, message, size)
+                sendBoob(userToMeasure, message, size),
+                message.delete()
             ]);
             return;
         }
 
-        await sendBoob(userToMeasure, message, recentMeasurement.size, recentMeasurement.measuredAt);
+        await Promise.all([
+            sendBoob(userToMeasure, message, recentMeasurement.size, recentMeasurement.measuredAt),
+            message.delete()
+        ]);
     }
 }

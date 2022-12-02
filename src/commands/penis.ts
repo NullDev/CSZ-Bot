@@ -111,11 +111,15 @@ export class PenisCommand implements MessageCommand {
 
             await Promise.all([
                 Penis.insertMeasurement(userToMeasure, size, diameter),
-                sendPenis(userToMeasure, message, size, diameter)
+                sendPenis(userToMeasure, message, size, diameter),
+                message.delete()
             ]);
             return;
         }
 
-        await sendPenis(userToMeasure, message, recentMeasurement.size, recentMeasurement.diameter, recentMeasurement.measuredAt);
+        await Promise.all([
+            sendPenis(userToMeasure, message, recentMeasurement.size, recentMeasurement.diameter, recentMeasurement.measuredAt),
+            message.delete()
+        ]);
     }
 }
