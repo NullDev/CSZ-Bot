@@ -218,7 +218,7 @@ export class AoCCommand implements ApplicationCommand {
             return;
         }
 
-        const order = command.options.getString("order", false) ?? "stars";
+        const order = command.options.getString("order", false) ?? "local_score";
 
         if (order !== "stars" && order !== "local_score" && order !== "global_score") {
             // Shouldn't happen unless we change the command
