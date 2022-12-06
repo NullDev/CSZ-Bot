@@ -2,7 +2,8 @@ import {
     CacheType,
     Client,
     CommandInteraction,
-    SlashCommandBuilder
+    SlashCommandBuilder,
+    SlashCommandStringOption
 } from "discord.js";
 
 import { BotContext } from "../context.js";
@@ -87,12 +88,13 @@ const getNameString = (
 
 const createEmbedFromLeaderBoard = (
     userMap: Record<string, UserMapEntry>,
-    lb: LeaderBoard
+    lb: LeaderBoard,
+    order: "stars" | "local_score" | "global_score"
 ) => {
     log.info("[AoC] Creating Embed from leaderboard...");
 
     const members = Object.values(lb.members);
-    members.sort((a, b) => b.local_score - a.local_score);
+    members.sort((a, b) => b[order] - a[order]);
     const top: discord.EmbedField[] = members.slice(0, 6).map((m, i) => ({
         name: `${medals[i]} ${i + 1}. ${getNameString(m, userMap, false)}`,
         value: `⭐ ${m.stars}\n🏆 ${m.local_score}\n🌐 ${getLanguage(
@@ -163,7 +165,8 @@ export class AoCHandler {
         const leaderBoard = await getLeaderBoard();
         const embed = createEmbedFromLeaderBoard(
             aocConfig.userMap,
-            leaderBoard
+            leaderBoard,
+            "local_score"
         );
         return channel.send({ embeds: [embed] });
     }
@@ -174,7 +177,27 @@ export class AoCCommand implements ApplicationCommand {
     description = "Zeigt das Advent of Code Leaderboard an";
     applicationCommand = new SlashCommandBuilder()
         .setName(this.name)
-        .setDescription(this.description);
+        .setDescription(this.description)
+        .addStringOption(
+            new SlashCommandStringOption()
+                .setName("order")
+                .setDescription("Sortierart")
+                .addChoices(
+                    {
+                        name: "Stars",
+                        value: "stars"
+                    },
+                    {
+                        name: "Local Score",
+                        value: "local_score"
+                    },
+                    {
+                        name: "Global Score",
+                        value: "global_score"
+                    }
+                )
+                .setRequired(false)
+        );
 
     async handleInteraction(
         command: CommandInteraction<CacheType>,
@@ -188,14 +211,25 @@ export class AoCCommand implements ApplicationCommand {
 
         const { channel } = command;
         if (!channel?.isTextBased()) {
-            await command.reply({ content: "Mach mal nicht hier", ephemeral: true });
+            await command.reply({
+                content: "Mach mal nicht hier",
+                ephemeral: true
+            });
             return;
+        }
+
+        const order = command.options.getString("order", false) ?? "stars";
+
+        if (order !== "stars" && order !== "local_score" && order !== "global_score") {
+            // Shouldn't happen unless we change the command
+            throw new Error(`Invalid order ${order}`);
         }
 
         const leaderBoard = await getLeaderBoard();
         const embed = createEmbedFromLeaderBoard(
             aocConfig.userMap,
-            leaderBoard
+            leaderBoard,
+            order
         );
         await command.reply({ embeds: [embed] });
     }
