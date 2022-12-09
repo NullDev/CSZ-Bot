@@ -44,11 +44,12 @@ const createWoisMessage = async(
 
 const pingWoisgang = async(
     message: Message
-): Promise<Message> => {
+): Promise<void> => {
     if (message.reactions.cache.get("🍻") !== undefined) return;
     
+    // TODO: Promise.all
     await message.react("🍻");
-    return message.reply({
+    await message.reply({
         content: `<@&${config.ids.woisgang_role_id}> DA PASSIERT WAS!`,
         allowedMentions: {
             // Not working for obious reasons.
