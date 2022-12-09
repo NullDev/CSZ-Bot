@@ -12,15 +12,7 @@ export default async function(message: Message, _client: Client, context: BotCon
         .replace(context.prefix.command, "")
         .replace(context.prefix.modCommand, "")
         .replace(/\s/g, "");
-
-    // Must be executed before isProcessableMessage() and any message.author.bot checks
-    if (message.guild && message.channelId === context.textChannels.welcome.id) {
-        const emote = message.guild.emojis.cache.find(e => e.name === "alarm");
-        if (emote) {
-            await message.react(emote);
-        }
-    }
-
+    
     // Maybe we can move some of these checks to `isProcessableMessage`, but we need to figure out how to represent this in a type
     if (message.author.bot || nonBiased === "") return;
 
