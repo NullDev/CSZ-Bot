@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "allowJs": true,
     "target": "es2022",
     "module": "NodeNext",
     "strict": true,                                 /* Enable all strict type-checking options. */
