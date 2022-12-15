@@ -49,9 +49,12 @@ export const run: CommandFunction = async(client, message, args, context) => {
     const embed = EmbedBuilder.from(replyMessage.embeds[0]);
     embed.setColor(colorToUse);
 
-    await replyMessage.edit({
-        embeds: [embed]
-    });
+    await Promise.all([
+        replyMessage.edit({
+            embeds: [embed]
+        }),
+        message.delete()
+    ]);
 };
 
 export const description =
