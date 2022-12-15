@@ -39,7 +39,7 @@ export const run: CommandFunction = async(client, message, args, context) => {
 
     const pollOptions = pollEmbed.fields.filter((field) => isPollField(field));
     const isFull = pollOptions.length === poll.OPTION_LIMIT;
-    if (!isFull) return "Bruder die ist eh schon voll :<";
+    if (isFull) return "Bruder die ist eh schon voll :<";
 
     const extendColor = 3066993;
     const isExtensible = pollEmbed.color !== extendColor;
