@@ -24,8 +24,7 @@ const togglePoll = async(message: Message) => {
     await Promise.all([
         message.edit({
             embeds: [embed]
-        }),
-        message.delete()
+        })
     ]);
 };
 
@@ -33,17 +32,16 @@ const toggleSdm = async(message: Message) => {
     const embed = message.embeds[0];
     const isYes = embed.color === 0x2ecc71;
 
-    const toggledEmbed = EmbedBuilder.from(message.embeds[0]);
+    const toggledEmbed = EmbedBuilder.from(embed);
     toggledEmbed.setColor(isYes ? 0xe74c3c : 0x2ecc71);
     const file = isYes ? "no.png" : "yes.png";
-    toggledEmbed.setThumbnail(`"attachment://${file}`);
+    toggledEmbed.setThumbnail(`attachment://${file}`);
 
     await Promise.all([
         message.edit({
             embeds: [toggledEmbed],
             files: [`./assets/${file}`]
-        }),
-        message.delete()
+        })
     ]);
 };
 
@@ -80,10 +78,18 @@ export const run: CommandFunction = async(client, message, args, context) => {
         pollEmbed.author!.name.startsWith("Secure Decision");
 
     if (isPoll) {
-        return togglePoll(replyMessage);
+        await Promise.all([
+            togglePoll(replyMessage),
+            message.delete()
+        ]);
+        return;
     }
     if (isSdm) {
-        return toggleSdm(replyMessage);
+        await Promise.all([
+            toggleSdm(replyMessage),
+            message.delete()
+        ]);
+        return;
     }
 
     return "Bruder da ist nichts was ich manipulieren kann";
