@@ -30,7 +30,7 @@
   "homepage": "https://github.com/NullDev/CSZ-Bot#readme",
   "dependencies": {
     "@discordjs/voice": "^0.14.0",
-    "canvas": "^2.10.2",
+    "canvas": "^2.11.0",
     "chrono-node": "^2.4.1",
     "croner": "^5.3.5",
     "discord-api-types": "^0.37.23",
