@@ -42,5 +42,9 @@ jobs:
     - name: Check if bot starts correctly
       if: ${{ github.event_name == 'push' }}
       run: |
-        docker run --rm -v "$PWD/config.json:/app/config.json" csz-bot:latest --dry-run
+        docker run \
+          --rm \
+          -v "$PWD/config.json:/app/config.json" \
+          -v "$PWD/aoc.config.json:/app/aoc.config.json" \
+          csz-bot:latest --dry-run
 
