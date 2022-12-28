@@ -1,6 +1,6 @@
 import parseOptions from "minimist";
 import cron from "croner";
-import {APIEmbed, APIEmbedField, ChannelType, cleanContent, Snowflake, TextChannel, User} from "discord.js";
+import {APIEmbed, APIEmbedField, cleanContent, Snowflake, TextChannel, User} from "discord.js";
 
 import log from "../utils/logger.js";
 import AdditionalMessageData from "../storage/model/AdditionalMessageData.js";
@@ -165,7 +165,9 @@ export const run: CommandFunction = async(_client, message, args, context) => {
         return "Du kannst keine verzögerte Abstimmung außerhalb des Umfragenchannels machen!";
     }
 
-    if (channel.type !== ChannelType.GuildText) return "Der Zielchannel ist irgenwie kein Text-Channel?";
+    if (!channel.isTextBased()) {
+        return "Der Zielchannel ist irgenwie kein Text-Channel?";
+    }
 
     const pollMessage = await channel.send({
         embeds: [embed]
