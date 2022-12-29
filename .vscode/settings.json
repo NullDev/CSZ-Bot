@@ -1,6 +1,8 @@
 {
     "files.eol": "\n",
     "cSpell.language": "de,en",
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+    "editor.formatOnSaveMode": "modificationsIfAvailable",
     "editor.codeActionsOnSave": {
         "source.fixAll.eslint": true
     },
