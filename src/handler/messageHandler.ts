@@ -2,6 +2,7 @@ import { Client, ClientUser, Message } from "discord.js";
 
 import cmdHandler, { isProcessableMessage, ProcessableMessage } from "./cmdHandler.js";
 import type { BotContext } from "../context.js";
+import { isMarcel } from "../utils/userUtils.js";
 
 const getInlineReplies = (messageRef: ProcessableMessage, clientUser: ClientUser) => {
     return messageRef.channel.messages.cache.filter(m => m.author.id === clientUser.id && m.reference?.messageId === messageRef.id);
@@ -27,8 +28,7 @@ export default async function(message: Message, _client: Client, context: BotCon
         // Maybe, we don't want to flame them, since that can make the chat pretty noisy
         // Unless you are a Marcel
 
-        const isMarcel = message.member.id === "209413133020823552";
-        const shouldFlameUser = context.rawConfig.bot_settings.flame_trusted_user_on_bot_ping || !message.member.roles.cache.has(context.roles.trusted.id) || isMarcel;
+        const shouldFlameUser = context.rawConfig.bot_settings.flame_trusted_user_on_bot_ping || !message.member.roles.cache.has(context.roles.trusted.id) || isMarcel(message.member.user);
         const shouldHonorUser = message.member.roles.cache.has(context.roles.winner.id);
 
         // eslint-disable-next-line no-nested-ternary

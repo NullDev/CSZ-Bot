@@ -1,4 +1,4 @@
-import { GuildMember } from "discord.js";
+import { GuildMember, User } from "discord.js";
 
 import { getConfig } from "./configHandler.js";
 
@@ -14,6 +14,10 @@ function hasAnyRoleByName(member: GuildMember, roleNames: string[]) {
 
 function hasRoleById(member: GuildMember, id: string): boolean {
     return member.roles.cache.some(role => role.id === id);
+}
+
+export function isMarcel(user: User): boolean {
+    return user.id === "878337496285605918" || user.id === "209413133020823552";
 }
 
 /**
