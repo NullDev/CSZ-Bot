@@ -64,7 +64,7 @@
     "@typescript-eslint/eslint-plugin": "^5.46.1",
     "@typescript-eslint/parser": "^5.47.0",
     "concurrently": "^7.6.0",
-    "eslint": "^8.26.0",
+    "eslint": "^8.31.0",
     "eslint-plugin-node": "^11.1.0",
     "eslint-watch": "^8.0.0",
     "nodemon": "^2.0.20",
