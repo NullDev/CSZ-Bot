@@ -1,4 +1,4 @@
-import {APIEmbedField, ChannelType, EmbedBuilder, Message} from "discord.js";
+import {APIEmbedField, EmbedBuilder, Message} from "discord.js";
 
 import log from "../utils/logger.js";
 import { getConfig } from "../utils/configHandler.js";
@@ -22,7 +22,7 @@ export const run: CommandFunction = async(client, message, args, context) => {
     const channel = context.guild.channels.cache.get(message.reference.channelId);
 
     if (!channel) return "Bruder der Channel existiert nicht? LOLWUT";
-    if (channel.type !== ChannelType.GuildText) return "Channel ist kein Text-Channel";
+    if (!channel.isTextBased()) return "Channel ist kein Text-Channel";
 
     let replyMessage: Message;
     try {
