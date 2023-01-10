@@ -22,7 +22,7 @@ export const run: CommandFunction = async(client, message, args, context) => {
     const channel = context.guild.channels.cache.get(message.reference.channelId);
 
     if (!channel) return "Bruder der Channel existiert nicht? LOLWUT";
-    if (!channel.isTextBased() && !channel.isThread()) return "Channel ist kein Text-Channel";
+    if (!channel.isTextBased()) return "Channel ist kein Text-Channel";
 
     let replyMessage: Message;
     try {
