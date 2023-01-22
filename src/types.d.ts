@@ -83,6 +83,7 @@ export interface Config {
         moderator_roles: Array<string>;
         woisping_limit: number;
         woisping_threshold: number;
+        faulenzerping_ignored_role_ids: Array<Snowflake>;
         quotes: {
             allowed_group_ids: Array<Snowflake>;
             anonymous_channel_ids: Array<Snowflake>;

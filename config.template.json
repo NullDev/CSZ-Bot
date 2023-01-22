@@ -16,6 +16,9 @@
         ],
         "woisping_limit": 7200,
         "woisping_threshold": 2,
+        "faulenzerping_ignored_role_ids": [
+
+        ],
         "flame_trusted_user_on_bot_ping": false,
         "quotes": {
             "emoji_name": "",
