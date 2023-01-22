@@ -5,11 +5,11 @@ import type { CommandFunction } from "../types.js";
 import { isMod } from "../utils/userUtils.js";
 
 const isPollField = (field: APIEmbedField): boolean =>
-    !field.inline && poll.LETTERS.some((l) => field.name.startsWith(l));
+    !field.inline && poll.LETTERS.some(l => field.name.startsWith(l));
 
 const togglePoll = async(message: Message) => {
     const pollEmbed = message.embeds[0];
-    const pollOptions = pollEmbed.fields.filter((field) => isPollField(field));
+    const pollOptions = pollEmbed.fields.filter(field => isPollField(field));
     const isFull = pollOptions.length === poll.OPTION_LIMIT;
     if (isFull) return "Bruder die ist eh schon voll :<";
 
