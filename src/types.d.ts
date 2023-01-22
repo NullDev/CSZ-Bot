@@ -81,9 +81,13 @@ export interface Config {
         moderator_id: Snowflake;
         ban_reason_channel_id: Snowflake;
         moderator_roles: Array<string>;
+
         woisping_limit: number;
         woisping_threshold: number;
+
         faulenzerping_ignored_role_ids: Array<Snowflake>;
+        faulenzerping_max_number_of_pings: number;
+
         quotes: {
             allowed_group_ids: Array<Snowflake>;
             anonymous_channel_ids: Array<Snowflake>;

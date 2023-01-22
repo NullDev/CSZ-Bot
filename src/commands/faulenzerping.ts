@@ -9,7 +9,7 @@ export class FaulenzerPingCommand implements MessageCommand {
     name = "faulenzerping";
     description = "Pingt alle Leute, die noch nicht auf die ausgewählte Nachricht reagiert haben, aber in der angegebenen Gruppe sind.";
 
-    async handleMessage(message: ProcessableMessage, client: Client<boolean>, context: BotContext): Promise<void> {
+    async handleMessage(message: ProcessableMessage, _client: Client<boolean>, context: BotContext): Promise<void> {
         if (!isTrusted(message.member)) {
             await message.reply("Du bist nicht berechtigt, diesen Command zu benutzen.");
             return;
@@ -21,9 +21,9 @@ export class FaulenzerPingCommand implements MessageCommand {
             return;
         }
 
-        const ignoredRoles = context.commandConfig.faulenzerPing.ignoredRoleIds;
+        const {ignoredRoleIds, maxNumberOfPings} = context.commandConfig.faulenzerPing;
 
-        const roles = [...message.mentions.roles.filter(role => !ignoredRoles.has(role.id)).values()];
+        const roles = [...message.mentions.roles.filter(role => !ignoredRoleIds.has(role.id)).values()];
         if (roles.length === 0) {
             await message.reply("Du hast keine nicht-ignorierten Gruppen angegeben.");
             return;
@@ -42,9 +42,19 @@ export class FaulenzerPingCommand implements MessageCommand {
 
         const usersToNotify = [...usersInAllRoles.values()].filter(user => !usersNotToNotify.has(user));
 
+        if(usersToNotify.length > maxNumberOfPings) {
+            await message.reply(`Offenbar interessieren sich so wenig dafür, dass das Limit von ${maxNumberOfPings} Pings überschritten wurde.\nEs würden ${usersToNotify.length} Leute gepingt.`);
+            return;
+        }
+
         const usersToNotifyMentions = usersToNotify.map(user => `<@${user}>`).join(" ");
 
-        await messageThatWasRepliedTo.reply(`Hallo! Von euch kam hierauf noch keine Reaktion. ${usersToNotifyMentions}`);
+        await messageThatWasRepliedTo.reply({
+            content: `Hallo! Von euch kam hierauf noch keine Reaktion. ${usersToNotifyMentions}`,
+            allowedMentions: {
+                users: usersToNotify
+            }
+        });
     }
 
     async getUsersThatReactedToMessage(message: Message<true>) {
