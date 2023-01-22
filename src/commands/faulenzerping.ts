@@ -1,48 +1,65 @@
-import type { Client, Message } from "discord.js";
+import type { Client, Message, Snowflake } from "discord.js";
 
 import { BotContext } from "../context.js";
 import { MessageCommand } from "./command.js";
 import type { ProcessableMessage } from "../handler/cmdHandler.js";
+import { isTrusted } from "../utils/userUtils.js";
 
 export class FaulenzerPingCommand implements MessageCommand {
     name = "faulenzerping";
     description = "Pingt alle Leute, die noch nicht auf die ausgewählte Nachricht reagiert haben, aber in der angegebenen Gruppe sind.";
 
-    // https://stackoverflow.com/a/64242640
-    async getReactedUsers(message: ProcessableMessage) {
-        // fetch the users
-        // I STOPPED HERE BECAUSE IT SUXXXXX
-        message.reactions.cache.users.fetch().then(users =>
-            // I'm not quite sure what you were trying to accomplish with the original lines
-            reaction.cache.map(item => item.users.cache.array())
-        );
-    }
-
-    async handleMessage(message: ProcessableMessage, _client: Client<boolean>, context: BotContext): Promise<void> {
-        const author = message.guild.members.resolve(message.author);
-        const { channel } = message;
-
-        const isReply = message.reference?.messageId !== undefined;
-
-        let content = message.content.slice(`${context.rawConfig.bot_settings.prefix.command_prefix}${this.name} `.length);
-        const hasContent = !!content && content.trim().length > 0;
-
-        if (!author) {
-            throw new Error("Couldn't resolve guild member");
-        }
-
-        if (!isReply) {
-            await message.channel.send("Brudi du hast keinen Reply benutzt");
+    async handleMessage(message: ProcessableMessage, client: Client<boolean>, context: BotContext): Promise<void> {
+        if (!isTrusted(message.member)) {
+            await message.reply("Du bist nicht berechtigt, diesen Command zu benutzen.");
             return;
         }
 
-        let replyMessage: Message<boolean> | null = null;
-        if (isReply) {
-            replyMessage = await message.channel.messages.fetch(message.reference!.messageId!);
-            if (!hasContent) {
-                // eslint-disable-next-line prefer-destructuring
-                content = replyMessage.content;
+        const messageIdThatWasRepliedTo = message.reference?.messageId ?? undefined;
+        if (!messageIdThatWasRepliedTo) {
+            await message.reply("Brudi du hast kein Reply benutzt");
+            return;
+        }
+
+        const ignoredRoles = context.commandConfig.faulenzerPing.ignoredRoleIds;
+
+        const roles = [...message.mentions.roles.filter(role => !ignoredRoles.has(role.id)).values()];
+        if (roles.length === 0) {
+            await message.reply("Du hast keine nicht-ignorierten Gruppen angegeben.");
+            return;
+        }
+
+        const usersInAllRoles = new Set<Snowflake>();
+        for (const role of roles) {
+            for (const user of role.members.keys()) {
+                usersInAllRoles.add(user);
             }
         }
+
+        const messageThatWasRepliedTo = await message.fetchReference();
+
+        const usersNotToNotify = await this.getUsersThatReactedToMessage(messageThatWasRepliedTo);
+
+        const usersToNotify = [...usersInAllRoles.values()].filter(user => !usersNotToNotify.has(user));
+
+        const usersToNotifyMentions = usersToNotify.map(user => `<@${user}>`).join(" ");
+
+        await messageThatWasRepliedTo.reply(`Hallo! Von euch kam hierauf noch keine Reaktion. ${usersToNotifyMentions}`);
+    }
+
+    async getUsersThatReactedToMessage(message: Message<true>) {
+        // Ref: https://stackoverflow.com/a/64242640
+        const fetchedMessage = await message.fetch(true);
+
+        const usersThatReacted = new Set<Snowflake>();
+        const reactions = fetchedMessage.reactions.cache.values();
+        for (const reaction of reactions) {
+            // eslint-disable-next-line no-await-in-loop
+            const usersReactedWithEmoji = await reaction.users.fetch();
+            for (const user of usersReactedWithEmoji.values()) {
+                usersThatReacted.add(user.id);
+            }
+        }
+        return usersThatReacted;
     }
 }
