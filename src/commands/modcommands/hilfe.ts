@@ -23,7 +23,7 @@ export const run: CommandFunction = async(_client, message, _args, context) => {
 
         if (!stats.isDirectory()) {
             // Prefix + Command name
-            const commandStr = context.rawConfig.bot_settings.prefix.mod_prefix + file.toLowerCase().replace(/\.js/gi, "");
+            const commandStr = context.prefix.modCommand + file.toLowerCase().replace(/\.js/gi, "");
 
             // commandStr is the key and the description of the command is the value
             const modulePath = path.join(commandDir, file);

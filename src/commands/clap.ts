@@ -57,7 +57,7 @@ export class ClapCommand implements MessageCommand, ApplicationCommand {
         const { channel } = message;
 
         const isReply = message.reference?.messageId !== undefined;
-        let content = message.content.slice(`${context.rawConfig.bot_settings.prefix.command_prefix}${this.name} `.length);
+        let content = message.content.slice(`${context.prefix.command}${this.name} `.length);
         const hasContent = !!content && content.trim().length > 0;
 
         if(!author) {

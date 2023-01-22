@@ -123,7 +123,7 @@ export class DeOidaCommand implements MessageCommand {
         }
 
         const textToTranslate = messageToTranslate === message
-            ? message.content.trim().substring(`${context.rawConfig.bot_settings.prefix.command_prefix}${this.name}`.length).trim()
+            ? message.content.trim().substring(`${context.prefix.command}${this.name}`.length).trim()
             : messageToTranslate.content;
 
         if (!textToTranslate) {
