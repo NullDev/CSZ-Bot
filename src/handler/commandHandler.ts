@@ -283,7 +283,7 @@ const commandMessageHandler = async(
     }
 
     if (!matchingCommand) {
-        throw new Error(`No matching command found for command "${commandString}"`);
+        return;
     }
 
     if (matchingCommand.requiredPermissions) {
