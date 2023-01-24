@@ -46,7 +46,7 @@ const pingWoisgang = async(
     message: Message
 ): Promise<void> => {
     if (message.reactions.cache.get("🍻") !== undefined) return;
-    
+
     // TODO: Promise.all
     await message.react("🍻");
     await message.reply({
