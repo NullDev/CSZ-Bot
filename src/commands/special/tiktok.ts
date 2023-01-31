@@ -1,13 +1,10 @@
 import { Message } from "discord.js";
-// @ts-ignore
-import tiktokDown from "tiktok-down";
-
+import fetch from "node-fetch";
 import { SpecialCommand, CommandResult } from "../command.js";
 
-const tt = tiktokDown({
-    checkUpdate: true, // If you want to be notified when a new version is available
-    clientIP: "127.0.0.1" // your ip address or you can use localhost IP
-});
+const proxitokInstance = "https://proxitok.pussthecat.org";
+// const downloadUrlRegex = /href=["'](\/download[^"']*)["']/;
+const downloadUrlRegex = /source src=["'](\/stream[^"']*)["']/;
 
 export class TikTokLink implements SpecialCommand {
     name: string = "Tiktok";
@@ -22,20 +19,48 @@ export class TikTokLink implements SpecialCommand {
 
     async handleSpecialMessage(message: Message): Promise<CommandResult> {
         await message.channel.sendTyping();
-        // const video = await tt.download(message.content, "test.mp4");
-        const metaData = await tt.getDetails({
-            url: message.content
+        const tikTokUrl = message.content;
+        const searchUrl = `${proxitokInstance}/redirect/search?term=${tikTokUrl}&type=url`;
+        const response = await fetch(searchUrl, { method: "GET", redirect: "follow"});
+
+        if(!response.ok) {
+            return;
+        }
+
+        const defaultResponse = () => message.reply({
+            content: `Hab's nicht geschafft aber guck mal hier: ${response.url}`,
+            allowedMentions: {
+                repliedUser: false
+            }
         });
 
-        console.log(metaData);
-        const videoName = `${metaData.author}.${metaData.video.format}`;
+        const responseString = await response.text();
+        const linkCandidates = responseString.match(downloadUrlRegex);
+        if(linkCandidates === null || linkCandidates[1] === null) {
+            await defaultResponse();
+            return;
+        }
 
+        const link = linkCandidates[1];
+
+        // Hardcoded check to check if download is available.
+        // If we wouldn't do that the user will get a weird looking file.
+        console.log(link);
+        if(link === "/stream?url=") {
+            await defaultResponse();
+            return;
+        }
+
+        const downloadLink = `${proxitokInstance}${link}`;
 
         await message.reply({
-            content: (metaData.desc || "Dein TikTok du Hund:"),
+            content: `Dein TikTok du Hund: <${response.url}>`,
+            allowedMentions: {
+                repliedUser: false
+            },
             files: [{
-                attachment: metaData.video.playAddr,
-                name: videoName
+                attachment: downloadLink,
+                name: "ehrenlose-tiktok.mp4"
             }]
         });
         await message.suppressEmbeds(true);

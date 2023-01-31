@@ -47,7 +47,6 @@
     "sequelize": "6.28.0",
     "sqlite3": "~5.1.4",
     "svg-png-converter": "^0.0.9",
-    "tiktok-down": "^1.2.4",
     "unirest": "^0.6.0",
     "uuid": "^9.0.0",
     "winston": "^3.8.2"
