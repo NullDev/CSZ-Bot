@@ -2,8 +2,6 @@ import { promises as fs } from "fs";
 import * as path from "path";
 
 import type { CommandFunction } from "../../types.js";
-import { getConfig } from "../../utils/configHandler.js";
-const config = getConfig();
 
 /**
  * Enlists all mod-commands with descriptions
@@ -19,14 +17,18 @@ export const run: CommandFunction = async(_client, message, _args, context) => {
         }
 
         const cmdPath = path.resolve(commandDir, file);
+
+        // eslint-disable-next-line no-await-in-loop
         const stats = await fs.stat(cmdPath);
 
         if (!stats.isDirectory()) {
             // Prefix + Command name
-            const commandStr = config.bot_settings.prefix.mod_prefix + file.toLowerCase().replace(/\.js/gi, "");
+            const commandStr = context.prefix.modCommand + file.toLowerCase().replace(/\.js/gi, "");
 
             // commandStr is the key and the description of the command is the value
             const modulePath = path.join(commandDir, file);
+
+            // eslint-disable-next-line no-await-in-loop
             const module = await import(modulePath);
 
             commandObj[commandStr] = module.description;
