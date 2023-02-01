@@ -45,6 +45,6 @@ jobs:
         docker run \
           --rm \
           -v "$PWD/config.json:/app/config.json" \
-          -v "$PWD/aoc.config.json:/app/aoc.config.json" \
+          -v ".github/aoc.config.json:/app/aoc.config.json" \
           csz-bot:latest --dry-run
 
