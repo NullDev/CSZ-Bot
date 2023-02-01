@@ -30,7 +30,9 @@ const sendPenis = async(user: User, message: ProcessableMessage, size: number, r
 
 const isNewLongestDick = async(size: number): Promise<boolean> => {
     const oldLongest = await Penis.longestRecentMeasurement();
-    return (oldLongest ?? -1) < size;
+    return oldLongest === null
+        ? true
+        : (oldLongest.size ?? -1) < size;
 };
 
 /**
