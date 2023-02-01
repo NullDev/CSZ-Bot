@@ -1,4 +1,4 @@
-import { CacheType, Client, CommandInteraction, SlashCommandBuilder, SlashCommandStringOption, TextBasedChannel } from "discord.js";
+import { CacheType, Client, CommandInteraction, SlashCommandBuilder, SlashCommandStringOption, TextBasedChannel, TimestampStyles, time as formatTime } from "discord.js";
 import * as chrono from "chrono-node";
 
 import { MessageCommand, ApplicationCommand } from "./command.js";
@@ -59,7 +59,7 @@ export class ErinnerungCommand implements MessageCommand, ApplicationCommand {
             }
 
             await Reminder.insertStaticReminder(command.user, command.channelId, command.guildId!, date, note);
-            await command.reply(`Ok brudi, werd dich <t:${(date.getTime() / 1000) | 0}:R> dran erinnern. Außer ich kack ab lol, dann mach ich das später (vielleicht)`);
+            await command.reply(`Ok brudi, werd dich ${formatTime(date, TimestampStyles.RelativeTime)} dran erinnern. Außer ich kack ab lol, dann mach ich das später (vielleicht)`);
         }
         catch (err) {
             logger.error(`Couldn't parse date from message ${time} due to`, err);
@@ -87,7 +87,7 @@ export class ErinnerungCommand implements MessageCommand, ApplicationCommand {
             const refMessage = message.reference ?? message;
 
             await Reminder.insertMessageReminder(message.member.user, messageId, refMessage.channelId, refMessage.guildId!, date);
-            await message.reply(`Ok brudi, werd dich <t:${(date.getTime() / 1000) | 0}:R> dran erinnern. Außer ich kack ab lol, dann mach ich das später (vielleicht)`);
+            await message.reply(`Ok brudi, werd dich ${formatTime(date, TimestampStyles.RelativeTime)} dran erinnern. Außer ich kack ab lol, dann mach ich das später (vielleicht)`);
         }
         catch (err) {
             logger.error(`Couldn't parse date from message ${message.content} due to`, err);
@@ -116,7 +116,7 @@ const sendReminder = async(reminder: ReminderAttributes, context: BotContext) =>
         const user = await guild.members.fetch(reminder.userId);
         const note = reminder.reminderNote || "Lol du Vollidiot hast nichts angegeben";
 
-        if(!reminder.messageId) {
+        if (!reminder.messageId) {
             await textChannel.send({
                 content: `${user} du wolltest an etwas erinnert werden. Es ist: ${note}`,
                 allowedMentions: {

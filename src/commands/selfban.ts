@@ -1,3 +1,4 @@
+import { time, TimestampStyles } from "discord.js";
 import moment from "moment";
 
 import Ban from "../storage/model/Ban.js";
@@ -45,16 +46,17 @@ export const run: CommandFunction = async(client, message, args, context) => {
     const err = await ban.ban(client, invokingUser, invokingUser, "Selbstauferlegt", true, durationInHours);
     if (err) return err;
 
+    const targetTime = new Date(Date.now() + durationInMinutes * 60 * 1000);
     const durationHumanized = durationInMinutes === 0
         ? "manuell durch Moderader"
-        : momentDuration.locale("de").humanize();
+        : time(targetTime, TimestampStyles.RelativeTime);
 
     if (tilt) {
         const alarmEmote = message.guild?.emojis.cache.find(e => e.name === "alarm");
-        await message.channel.send(`${alarmEmote} User ${invokingUser} ist getilted und gönnt sich eine kurze Auszeit für ${durationHumanized}. ${alarmEmote}`);
+        await message.channel.send(`${alarmEmote} User ${invokingUser} ist getilted und gönnt sich eine kurze Auszeit für ${time(targetTime, TimestampStyles.ShortTime)}. ${alarmEmote}`);
     }
     else {
-        await message.channel.send(`User ${invokingUser} hat sich selber gebannt!\nEntbannen in: ${durationHumanized}`);
+        await message.channel.send(`User ${invokingUser} hat sich selber gebannt!\nEntbannen ${durationHumanized}`);
     }
 
     await message.author.send(`Du hast dich selber von der Coding Shitpost Zentrale gebannt!
