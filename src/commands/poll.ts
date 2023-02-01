@@ -1,6 +1,6 @@
 import parseOptions from "minimist";
 import cron from "croner";
-import {APIEmbed, APIEmbedField, cleanContent, Snowflake, TextChannel, User} from "discord.js";
+import {APIEmbed, APIEmbedField, cleanContent, Snowflake, TextChannel, time, TimestampStyles, User} from "discord.js";
 
 import log from "../utils/logger.js";
 import AdditionalMessageData from "../storage/model/AdditionalMessageData.js";
@@ -171,7 +171,7 @@ export const run: CommandFunction = async(_client, message, args, context) => {
         }
 
 
-        embed.fields!.push({name: "⏳ Verzögert", value: `Abstimmungsende: <t:${Math.floor(finishTime.valueOf() + 60000 / 1000)}:R>`, inline: true});
+        embed.fields!.push({name: "⏳ Verzögert", value: `Abstimmungsende: ${time(finishTime, TimestampStyles.RelativeTime)}`, inline: true});
         embed.color = 0xa10083;
     }
 

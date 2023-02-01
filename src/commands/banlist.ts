@@ -1,5 +1,5 @@
 
-import { CacheType, Client, CommandInteraction } from "discord.js";
+import { CacheType, Client, CommandInteraction, TimestampStyles, time } from "discord.js";
 import { SlashCommandBuilder } from "discord.js";
 import { ApplicationCommand } from "./command.js";
 import { BotContext } from "../context.js";
@@ -15,7 +15,7 @@ export class BanListCommand implements ApplicationCommand {
     async handleInteraction(command: CommandInteraction<CacheType>, _client: Client<boolean>, _context: BotContext): Promise<void> {
         const bans = await Ban.findAll();
 
-        if(bans.length === 0) {
+        if (bans.length === 0) {
             await command.reply({
                 content: "Ist grad keiner gebannt"
             });
@@ -27,7 +27,7 @@ export class BanListCommand implements ApplicationCommand {
             if (user === undefined) {
                 return "";
             }
-            const untilString = `Bis ${b.bannedUntil === null ? "auf weiteres" : `<t:${Math.trunc(b.bannedUntil.getTime() / 1000)}:R>`}`;
+            const untilString = `Bis ${b.bannedUntil === null ? "auf weiteres" : time(b.bannedUntil, TimestampStyles.RelativeTime)}`;
             const reasonString = b.reason === null ? "" : `(Grund: ${b.reason})`;
             return `${user}: ${untilString} ${reasonString}`;
         }).filter(s => s.length > 0).join("\n");
