@@ -32,7 +32,7 @@
     "@discordjs/voice": "^0.14.0",
     "canvas": "^2.11.0",
     "chrono-node": "^2.5.0",
-    "croner": "^5.4.1",
+    "croner": "^5.5.1",
     "discord-api-types": "^0.37.31",
     "discord.js": "^14.7.1",
     "get-audio-duration": "^3.1.1",
