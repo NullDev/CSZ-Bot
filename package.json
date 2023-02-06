@@ -55,7 +55,7 @@
     "@ffprobe-installer/ffprobe": "^1.4.1",
     "@types/jsdom": "^20.0.1",
     "@types/minimist": "^1.2.2",
-    "@types/node": "^18.11.18",
+    "@types/node": "^18.11.19",
     "@types/node-cron": "^3.0.7",
     "@types/node-fetch": "^2.6.2",
     "@types/sqlite3": "^3.1.8",
