@@ -44,7 +44,7 @@
     "minimist": "^1.2.7",
     "moment": "^2.29.4",
     "node-fetch": "^3.3.0",
-    "sequelize": "6.28.0",
+    "sequelize": "6.28.2",
     "sqlite3": "~5.1.4",
     "svg-png-converter": "^0.0.9",
     "unirest": "^0.6.0",
