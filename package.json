@@ -45,7 +45,7 @@
     "moment": "^2.29.4",
     "node-fetch": "^3.3.0",
     "sequelize": "6.28.0",
-    "sqlite3": "~5.1.4",
+    "sqlite3": "~5.1.5",
     "svg-png-converter": "^0.0.9",
     "unirest": "^0.6.0",
     "uuid": "^9.0.0",
