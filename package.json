@@ -30,6 +30,7 @@
   "homepage": "https://github.com/NullDev/CSZ-Bot#readme",
   "dependencies": {
     "@discordjs/voice": "^0.14.0",
+    "@resvg/resvg-js": "^2.4.1",
     "canvas": "^2.11.0",
     "chrono-node": "^2.5.0",
     "croner": "^5.6.1",
@@ -46,7 +47,6 @@
     "node-fetch": "^3.3.0",
     "sequelize": "6.29.3",
     "sqlite3": "~5.1.5",
-    "svg2img": "^1.0.0-beta.2",
     "unirest": "^0.6.0",
     "uuid": "^9.0.0",
     "winston": "^3.8.2"

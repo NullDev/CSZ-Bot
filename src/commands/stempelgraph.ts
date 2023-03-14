@@ -1,6 +1,6 @@
 import graphviz from "graphviz-wasm";
 import { Client, CommandInteraction, Guild, GuildMember, Snowflake, SlashCommandBuilder, SlashCommandStringOption } from "discord.js";
-import svg2img from "svg2img";
+import { Resvg } from "@resvg/resvg-js";
 
 import Stempel from "../storage/model/Stempel.js";
 import log from "../utils/logger.js";
@@ -75,17 +75,9 @@ function getMemberNode(member: UserInfo): string {
     return `"${member.member.id}" [label="${escapedLabel}", color="${boxColor}", style="${nodeStyle}"]`;
 }
 
-function convertToImage(svg: string): Promise<Buffer> {
-    return new Promise((resolve, reject) => {
-        svg2img.default(svg, (err, buffer) => {
-            if (err) {
-                reject(err);
-                return;
-            }
-
-            resolve(buffer);
-        });
-    });
+function convertToImage(svg: string): Buffer {
+    const resvg = new Resvg(svg);
+    return resvg.render().asPng();
 }
 
 async function drawStempelgraph(stempels: StempelConnection[], engine: LayoutEngine, userInfo: Map<GuildMember, UserInfo>): Promise<Buffer> {
