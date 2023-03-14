@@ -1,6 +1,6 @@
 import graphviz from "graphviz-wasm";
 import { Client, CommandInteraction, Guild, GuildMember, Snowflake, SlashCommandBuilder, SlashCommandStringOption } from "discord.js";
-import { svg2png } from "svg-png-converter";
+import svg2img from "svg2img";
 
 import Stempel from "../storage/model/Stempel.js";
 import log from "../utils/logger.js";
@@ -75,6 +75,19 @@ function getMemberNode(member: UserInfo): string {
     return `"${member.member.id}" [label="${escapedLabel}", color="${boxColor}", style="${nodeStyle}"]`;
 }
 
+function convertToImage(svg: string): Promise<Buffer> {
+    return new Promise((resolve, reject) => {
+        svg2img.default(svg, (err, buffer) => {
+            if (err) {
+                reject(err);
+                return;
+            }
+
+            resolve(buffer);
+        });
+    });
+}
+
 async function drawStempelgraph(stempels: StempelConnection[], engine: LayoutEngine, userInfo: Map<GuildMember, UserInfo>): Promise<Buffer> {
     for (const stempel of stempels) {
         log.debug(`${stempel.inviter} --> ${stempel.invitee}`);
@@ -126,11 +139,8 @@ async function drawStempelgraph(stempels: StempelConnection[], engine: LayoutEng
 
     await graphviz.loadWASM();
     const svg = graphviz.layout(dotSrc, "svg", engine);
-    return svg2png({
-        input: svg,
-        encoding: "buffer",
-        format: "png"
-    });
+
+    return convertToImage(svg);
 }
 
 async function fetchMemberInfo(guild: Guild, ids: Set<Snowflake>): Promise<Map<Snowflake, GuildMember>> {
