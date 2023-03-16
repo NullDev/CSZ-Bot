@@ -1,14 +1,12 @@
 import graphviz from "graphviz-wasm";
 import { Client, CommandInteraction, Guild, GuildMember, Snowflake, SlashCommandBuilder, SlashCommandStringOption } from "discord.js";
-import { svg2png } from "svg-png-converter";
+import { Resvg } from "@resvg/resvg-js";
 
-import { getConfig } from "../utils/configHandler.js";
 import Stempel from "../storage/model/Stempel.js";
 import log from "../utils/logger.js";
-import { isMod } from "../utils/userUtils.js";
+import { isMod, isTrusted } from "../utils/userUtils.js";
 import { ApplicationCommand, CommandResult } from "./command.js";
-
-const config = getConfig();
+import { BotContext } from "../context.js";
 
 const suportedLayoutEngines = ["circo", "dot", "fdp", "neato", "osage", "twopi"] as const;
 type LayoutEngine = (typeof suportedLayoutEngines)[number];
@@ -77,6 +75,11 @@ function getMemberNode(member: UserInfo): string {
     return `"${member.member.id}" [label="${escapedLabel}", color="${boxColor}", style="${nodeStyle}"]`;
 }
 
+function convertToImage(svg: string): Buffer {
+    const resvg = new Resvg(svg);
+    return resvg.render().asPng();
+}
+
 async function drawStempelgraph(stempels: StempelConnection[], engine: LayoutEngine, userInfo: Map<GuildMember, UserInfo>): Promise<Buffer> {
     for (const stempel of stempels) {
         log.debug(`${stempel.inviter} --> ${stempel.invitee}`);
@@ -128,11 +131,8 @@ async function drawStempelgraph(stempels: StempelConnection[], engine: LayoutEng
 
     await graphviz.loadWASM();
     const svg = graphviz.layout(dotSrc, "svg", engine);
-    return svg2png({
-        input: svg,
-        encoding: "buffer",
-        format: "png"
-    });
+
+    return convertToImage(svg);
 }
 
 async function fetchMemberInfo(guild: Guild, ids: Set<Snowflake>): Promise<Map<Snowflake, GuildMember>> {
@@ -150,17 +150,17 @@ async function fetchMemberInfo(guild: Guild, ids: Set<Snowflake>): Promise<Map<S
     return memberMap;
 }
 
-function getRoles(member: GuildMember): RoleInGraph[] {
+function getRoles(context: BotContext, member: GuildMember): RoleInGraph[] {
     const res: RoleInGraph[] = [];
 
     // TODO: Das Zeug hier aufräumen am besten ins userUtils Modul. Soon:tm:
-    if (member.roles.cache.has(config.ids.woisgang_role_id)) {
+    if (member.roles.cache.has(context.roles.woisgang.id)) {
         res.push("woisgang");
     }
-    if (member.roles.cache.has(config.ids.trusted_role_id)) {
+    if (isTrusted(member)) {
         res.push("trusted");
     }
-    if (member.roles.cache.has(config.ids.gruendervaeter_role_id)) {
+    if (member.roles.cache.has(context.roles.gruendervaeter.id)) {
         res.push("gruendervaeter");
     }
     if (member.roles.cache.has("856269806969421844")) {
@@ -202,7 +202,7 @@ export class StempelgraphCommand implements ApplicationCommand {
             );
     }
 
-    async handleInteraction(command: CommandInteraction, _client: Client<boolean>): Promise<CommandResult> {
+    async handleInteraction(command: CommandInteraction, _client: Client<boolean>, context: BotContext): Promise<CommandResult> {
         if (!command.isChatInputCommand()) {
             // TODO: Solve this on a type level
             return;
@@ -233,7 +233,7 @@ export class StempelgraphCommand implements ApplicationCommand {
             graphUserInfo.set(member, {
                 member,
                 name: member.nickname ?? member.displayName,
-                roles: getRoles(member)
+                roles: getRoles(context, member)
             });
         }
 

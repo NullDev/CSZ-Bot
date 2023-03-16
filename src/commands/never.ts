@@ -92,7 +92,7 @@ export class NeverCommand implements ApplicationCommand, MessageCommand {
     async handleMessage(message: ProcessableMessage, _client: Client<boolean>, context: BotContext): Promise<void> {
         const { channel } = message;
         const author = message.guild?.members.resolve(message.author);
-        const customInput = message.content.slice(`${context.rawConfig.bot_settings.prefix.command_prefix}mock `.length);
+        const customInput = message.content.slice(`${context.prefix.command}mock `.length);
 
         if (!author) {
             throw new Error("Couldn't resolve guild member");

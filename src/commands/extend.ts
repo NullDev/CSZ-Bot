@@ -51,21 +51,20 @@ export const run: CommandFunction = async(client, message, args, context) => {
     else if (additionalPollOptions.some(value => value.length > poll.FIELD_VALUE_LIMIT)) return `Bruder mindestens eine Antwortmöglichkeit ist länger als ${poll.FIELD_VALUE_LIMIT} Zeichen!`;
 
     const originalAuthor = replyMessage.embeds[0].author!.name.split(" ").slice(2).join(" ");
-    const authorNote = originalAuthor !== message.author.username ? ` (von ${message.author.username})` : "";
+    const author = originalAuthor === message.author.username ? undefined : message.author;
 
-    const newFields: APIEmbedField[] = additionalPollOptions.map((value, i) => {
-        return {name: `${poll.LETTERS[oldPollOptionFields.length + i]} ${authorNote}`, value, inline: false};
-    });
+    const newFields = additionalPollOptions.map((value, i) => poll.createOptionField(value, oldPollOptionFields.length + i, author));
+    console.log(newFields);
 
     let metaFields = replyMessage.embeds[0].fields.filter(field => !isPollField(field));
-    const embed = EmbedBuilder.from(replyMessage.embeds[0]);
+    const embed = EmbedBuilder.from(replyMessage.embeds[0]).data;
 
     if (oldPollOptionFields.length + additionalPollOptions.length === poll.OPTION_LIMIT) {
-        embed.setColor(0xCD5C5C);
+        embed.color = 0xCD5C5C;
         metaFields = metaFields.filter(field => !field.name.endsWith("Erweiterbar"));
     }
 
-    embed.setFields([...oldPollOptionFields, ...newFields, ...metaFields]);
+    embed.fields = [...oldPollOptionFields, ...newFields, ...metaFields];
 
     const msg = await replyMessage.edit({
         embeds: [embed]

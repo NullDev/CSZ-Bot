@@ -39,6 +39,7 @@ import {
 } from "./commands/woisvote.js";
 import { ReactionHandler } from "./types.js";
 import { AoCHandler } from "./commands/aoc.js";
+import { rotate } from "./helper/bannerCarusel.js";
 const version = conf.getVersion();
 const appname = conf.getName();
 const devname = conf.getAuthor();
@@ -179,14 +180,11 @@ client.once("ready", async initializedClient => {
             await storage.initialize(botContext);
 
             log.info("Scheduling 1338 Cronjob...");
-            // eslint-disable-next-line no-unused-vars
             cron("37 13 * * *", cronOptions, leetTask);
 
-            // eslint-disable-next-line no-unused-vars
             cron("5 * * * *", cronOptions, clearWoisLogTask);
 
             log.info("Scheduling Birthday Cronjob...");
-            // eslint-disable-next-line no-unused-vars
             cron("1 0 * * *", cronOptions, async() => {
                 log.debug("Entered Birthday cronjob");
                 await bday.checkBdays();
@@ -194,35 +192,30 @@ client.once("ready", async initializedClient => {
             await bday.checkBdays();
 
             log.info("Scheduling Advent of Code Cronjob...");
-            // eslint-disable-next-line no-unused-vars
             cron("0 20 1-25 12 *", cronOptions, async() => {
                 log.debug("Entered AoC cronjob");
                 await aoc.publishLeaderBoard();
             });
 
             log.info("Scheduling Nickname Cronjob");
-            // eslint-disable-next-line no-unused-vars
             cron("0 0 * * 0", cronOptions, async() => {
                 log.debug("Entered Nickname cronjob");
                 await nicknameHandler.rerollNicknames();
             });
 
             log.info("Scheduling Saufen Cronjob");
-            // eslint-disable-next-line no-unused-vars
             cron("36 0-23 * * FRI-SUN", cronOptions, async() => {
                 log.debug("Entered Saufen cronjob");
                 await connectAndPlaySaufen(botContext);
             });
 
             log.info("Scheduling Reminder Cronjob");
-            // eslint-disable-next-line no-unused-vars
             cron("* * * * *", cronOptions, async() => {
                 log.debug("Entered reminder cronjob");
                 await reminderHandler(botContext);
             });
 
             log.info("Scheduling Woisvote Cronjob");
-            // eslint-disable-next-line no-unused-vars
             cron("* * * * *", cronOptions,
                 async() => {
                     log.debug("Entered reminder cronjob");
@@ -230,21 +223,24 @@ client.once("ready", async initializedClient => {
                 }
             );
 
-            // eslint-disable-next-line no-unused-vars
             cron("2022-04-01T00:00:00", cronOptions, async() => {
                 log.debug("Entered start april fools cronjob");
                 await startAprilFools(botContext);
             });
 
-            // eslint-disable-next-line no-unused-vars
             cron("2022-04-02T00:00:00", cronOptions, async() => {
                 log.debug("Entered end april fools cronjob");
                 await endAprilFools(botContext);
             });
-            // eslint-disable-next-line no-unused-vars
+
             cron("1 0 * * *", cronOptions, async() => {
                 log.debug("Entered start ehreReset cronjob");
                 await Promise.all([EhrePoints.deflation(), EhreVotes.resetVotes()]);
+            });
+
+            cron("0 0 1 */2 *", cronOptions, async() => {
+                log.debug("Rotating banners");
+                await rotate(botContext);
             });
 
             // When the application is ready, slash commands should be registered

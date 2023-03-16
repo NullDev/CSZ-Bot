@@ -73,6 +73,7 @@ import { WoisCommand } from "../commands/woisvote.js";
 import { ApplicationCommandCreationResponse } from "../types.js";
 import logger from "../utils/logger.js";
 import { AoCCommand } from "../commands/aoc.js";
+import { BanListCommand } from "../commands/banlist.js";
 
 const config = getConfig();
 
@@ -116,7 +117,8 @@ export const commands: readonly Command[] = [
     new OidaCommand(),
     new DeOidaCommand(),
     new EhreCommand(),
-    new AoCCommand()
+    new AoCCommand(),
+    new BanListCommand()
 ];
 export const interactions: readonly UserInteraction[] = [
     new NicknameButtonHandler()
@@ -285,7 +287,7 @@ const commandMessageHandler = async(
     }
 
     if (!matchingCommand) {
-        throw new Error(`No matching command found for command "${commandString}"`);
+        return;
     }
 
     if (matchingCommand.requiredPermissions) {

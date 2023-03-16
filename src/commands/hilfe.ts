@@ -54,7 +54,7 @@ export const run: CommandFunction = async(_client, message, _args, context) => {
 
             // Old file-based commands
             if (module.description) {
-                const commandStr = context.rawConfig.bot_settings.prefix.command_prefix + file.toLowerCase().replace(/\.js/gi, "");
+                const commandStr = context.prefix.command + file.toLowerCase().replace(/\.js/gi, "");
                 commandObj[commandStr] = module.description;
             }
         }
@@ -64,7 +64,7 @@ export const run: CommandFunction = async(_client, message, _args, context) => {
     messageCommands
         .filter(cmd => !cmd.modCommand)
         .forEach(cmd => {
-            const commandStr = context.rawConfig.bot_settings.prefix.command_prefix + cmd.name;
+            const commandStr = context.prefix.command + cmd.name;
             commandObj[commandStr] = cmd.description;
         });
 

@@ -1,6 +1,6 @@
 import parseOptions from "minimist";
 import cron from "croner";
-import {APIEmbed, APIEmbedField, cleanContent, Snowflake, TextChannel, User} from "discord.js";
+import {APIEmbed, APIEmbedField, cleanContent, Snowflake, TextChannel, time, TimestampStyles, User} from "discord.js";
 
 import log from "../utils/logger.js";
 import AdditionalMessageData from "../storage/model/AdditionalMessageData.js";
@@ -57,7 +57,10 @@ export const EMOJI = [
 ];
 
 export const TEXT_LIMIT = 4096;
+export const FIELD_NAME_LIMIT = 256;
 export const FIELD_VALUE_LIMIT = 1024;
+export const POLL_OPTION_SEPARATOR = " - ";
+export const POLL_OPTION_MAX_LENGTH = (2 * FIELD_VALUE_LIMIT) - Math.max(...LETTERS.map(s => s.length)) - POLL_OPTION_SEPARATOR.length;
 export const OPTION_LIMIT = LETTERS.length;
 
 
@@ -70,6 +73,25 @@ interface DelayedPoll {
 }
 
 export const delayedPolls: DelayedPoll[] = [];
+
+export const createOptionField = (option: string, index: number, author?: User): APIEmbedField => {
+    let newOption = option;
+    if(author) {
+        const authorNote = ` (von ${author.username})`;
+        newOption += authorNote;
+
+        if(newOption.length > POLL_OPTION_MAX_LENGTH) {
+            throw new Error(`Alter jetzt mal ganz im ernst, du hast etwas weniger als ${POLL_OPTION_MAX_LENGTH} Zeichen zur Verfüngung. Ich brauch auch noch ein bisschen Platz. Kannst du doch nicht ernst meinen.`);
+        }
+    }
+
+    const optionDiscriminator = `${LETTERS[index]}${POLL_OPTION_SEPARATOR}`;
+    const splitIndex = FIELD_NAME_LIMIT - optionDiscriminator.length;
+    const firstTextBlock = optionDiscriminator + newOption.substring(0, splitIndex);
+    const secondTextBlock = newOption.substring(splitIndex) || " ";
+
+    return {name: firstTextBlock, value: secondTextBlock, inline: false};
+};
 
 /**
  * Creates a new poll (multiple answers) or straw poll (single selection)
@@ -114,11 +136,9 @@ export const run: CommandFunction = async(_client, message, args, context) => {
     if (!pollOptions.length) return "Bruder da sind keine Antwortmöglichkeiten :c";
     else if (pollOptions.length < 2 && !isExtendable) return "Bruder du musst schon mehr als eine Antwortmöglichkeit geben 🙄";
     else if (pollOptions.length > OPTION_LIMIT) return `Bitte gib nicht mehr als ${OPTION_LIMIT} Antwortmöglichkeiten an!`;
-    else if (pollOptions.some(value => value.length > FIELD_VALUE_LIMIT)) return `Bruder mindestens eine Antwortmöglichkeit ist länger als ${FIELD_VALUE_LIMIT} Zeichen!`;
+    else if (pollOptions.some(value => value.length > POLL_OPTION_MAX_LENGTH)) return `Bruder mindestens eine Antwortmöglichkeit ist länger als ${POLL_OPTION_MAX_LENGTH} Zeichen!`;
 
-    const fields: APIEmbedField[] = pollOptions.map((e, i) => {
-        return {name: `${LETTERS[i]}`, value: e, inline: false};
-    });
+    const fields = pollOptions.map((o, i) => createOptionField(o, i));
 
     const embed: APIEmbed = {
         description: `**${cleanContent(question, message.channel)}**`,
@@ -151,7 +171,7 @@ export const run: CommandFunction = async(_client, message, args, context) => {
         }
 
 
-        embed.fields!.push({name: "⏳ Verzögert", value: `Abstimmungsende: <t:${Math.floor(finishTime.valueOf() + 60000 / 1000)}:R>`, inline: true});
+        embed.fields!.push({name: "⏳ Verzögert", value: `Abstimmungsende: ${time(finishTime, TimestampStyles.RelativeTime)}`, inline: true});
         embed.color = 0xa10083;
     }
 

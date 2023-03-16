@@ -131,6 +131,13 @@ export class StempelkarteCommand implements ApplicationCommand {
 
         const allInvitees = await Stempel.getStempelByInvitator(ofMember.id);
 
+        if (allInvitees.length === 0) {
+            await command.reply({
+                content: "Wie wäre es wenn du überhaupt mal Leute einlädst du Schmarotzer"
+            });
+            return;
+        }
+
         const subjectAvatarUrl = getAvatarUrlForMember(ofMember, 64);
 
         const inviteesChunked = chunkArray(allInvitees, 10);
