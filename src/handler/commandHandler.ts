@@ -1,5 +1,5 @@
-import { APIApplicationCommand, Routes } from "discord-api-types/v9";
 import {
+    APIApplicationCommand,
     ApplicationCommandPermissionType,
     Client,
     CommandInteraction,
@@ -8,7 +8,8 @@ import {
     MessageComponentInteraction,
     PermissionsBitField,
     PermissionsString,
-    REST
+    REST,
+    Routes
 } from "discord.js";
 import { GuildMember } from "discord.js";
 
