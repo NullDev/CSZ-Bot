@@ -29,7 +29,7 @@
   },
   "homepage": "https://github.com/NullDev/CSZ-Bot#readme",
   "dependencies": {
-    "@discordjs/voice": "^0.14.0",
+    "@discordjs/voice": "^0.15.0",
     "@resvg/resvg-js": "^2.4.1",
     "canvas": "^2.11.0",
     "chrono-node": "^2.6.1",
