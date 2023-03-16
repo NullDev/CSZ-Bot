@@ -34,7 +34,6 @@
     "canvas": "^2.11.0",
     "chrono-node": "^2.6.1",
     "croner": "^6.0.2",
-    "discord-api-types": "^0.37.36",
     "discord.js": "^14.8.0",
     "get-audio-duration": "^3.1.1",
     "graphviz-wasm": "^3.0.0",
