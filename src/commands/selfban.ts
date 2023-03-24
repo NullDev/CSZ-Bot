@@ -53,7 +53,7 @@ export const run: CommandFunction = async(client, message, args, context) => {
 
     if (tilt) {
         const alarmEmote = message.guild?.emojis.cache.find(e => e.name === "alarm");
-        await message.channel.send(`${alarmEmote} User ${invokingUser} ist getilted und gönnt sich eine kurze Auszeit für ${time(targetTime, TimestampStyles.ShortTime)}. ${alarmEmote}`);
+        await message.channel.send(`${alarmEmote} User ${invokingUser} ist getilted und gönnt sich eine kurze Auszeit bis ${time(targetTime, TimestampStyles.ShortTime)}. ${alarmEmote}`);
     }
     else {
         await message.channel.send(`User ${invokingUser} hat sich selber gebannt!\nEntbannen ${durationHumanized}`);
