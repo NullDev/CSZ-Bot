@@ -16,7 +16,7 @@ const linkMap: Record<string, string> = {
 export class LinkRedirect implements SpecialCommand {
     name: string = "LinkRedirect";
     description: string = "Macht ein paar doofe Links zu tollen Links";
-    randomness = 0;
+    randomness = 1;
     cooldownTime = 0;
 
     matches(message: ProcessableMessage): boolean {
