@@ -41,8 +41,13 @@ const assignBannedRoles = async(user: GuildMember): Promise<boolean> => {
         banPromises.push(removeTrusted, addTrustedBanned);
     }
 
-    return Promise.all(banPromises)
-        .then(() => true);
+    // Sometimes the bot fails to assign the roles. For debugging purposes, we log the errors here.
+    // Later if we can't handle the error we can probably just retry.
+    const result = await Promise.allSettled(banPromises);
+    const rejected = result.filter((r): r is PromiseRejectedResult => r.status === "rejected");
+    rejected.forEach(r => log.error(r.reason));
+
+    return true;
 };
 
 export const restoreRoles = async(user: GuildMember): Promise<boolean> => {
