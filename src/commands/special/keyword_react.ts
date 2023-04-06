@@ -13,9 +13,9 @@ export class TriggerReactOnKeyword implements SpecialCommand {
     keyword: string;
     emoteName: string;
 
-    constructor(keyword: string, emoteName: string, randomness: number = 0.2) {
+    constructor(keyword: string, emote: string, randomness: number = 0.2) {
         this.keyword = keyword;
-        this.emoteName = emoteName;
+        this.emoteName = emote;
         this.randomness = randomness;
     }
 
@@ -24,11 +24,20 @@ export class TriggerReactOnKeyword implements SpecialCommand {
     }
 
     async handleSpecialMessage(message: ProcessableMessage, _client: Client<boolean>): Promise<CommandResult> {
+        if(this.isEmoji(this.emoteName)) {
+            await message.react(this.emoteName);
+            return;
+        }
+
         const emote = message.guild.emojis.cache.find(e => e.name === this.emoteName);
         if(emote) {
             await message.react(emote);
             return;
         }
         throw new Error(`${this.emoteName} emote not found`);
+    }
+
+    private isEmoji(str: string): boolean {
+        return /\p{Extended_Pictographic}/u.test(str);
     }
 }

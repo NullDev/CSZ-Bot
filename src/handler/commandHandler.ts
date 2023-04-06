@@ -81,6 +81,7 @@ export const commands: readonly Command[] = [
     new InfoCommand(),
     new TriggerReactOnKeyword("nix", "nixos"),
     new TriggerReactOnKeyword("zig", "zig", 0.05),
+    new TriggerReactOnKeyword("backend", "🍞", 1),
     new WhereCommand(),
     new DadJokeCommand(),
     new WatCommand(),
