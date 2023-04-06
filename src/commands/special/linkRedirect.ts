@@ -5,10 +5,10 @@ import { SpecialCommand, CommandResult } from "../command.js";
 
 
 const linkMap: Record<string, string> = {
-    "reddit.com": "teddit.net",
-    "old.reddit.com": "teddit.net",
+    "reddit.com": "teddit.adminforge.de",
+    "old.reddit.com": "teddit.adminforge.de",
     "tiktok.com": "proxitok.pabloferreiro.es",
-    "twitter.com": "nitter.net",
+    "twitter.com": "nitter.adminforge.de",
     "medium.com": "scribe.rip",
     "quora.com": "quetre.iket.me"
 };
