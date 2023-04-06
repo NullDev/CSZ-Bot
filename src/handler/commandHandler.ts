@@ -30,7 +30,7 @@ import {
 import { InfoCommand } from "../commands/info.js";
 import { getConfig } from "../utils/configHandler.js";
 import log from "../utils/logger.js";
-import { TriggerReactOnKeyword } from "../commands/special/keyword_react.js";
+import { TriggerReactOnKeyword } from "../commands/special/keywordReact.js";
 import { WhereCommand } from "../commands/special/where.js";
 import { DadJokeCommand } from "../commands/special/dadJoke.js";
 import { WatCommand } from "../commands/special/wat.js";
@@ -74,6 +74,7 @@ import { ApplicationCommandCreationResponse } from "../types.js";
 import logger from "../utils/logger.js";
 import { AoCCommand } from "../commands/aoc.js";
 import { BanListCommand } from "../commands/banlist.js";
+import { LinkRedirect } from "../commands/special/linkRedirect.js";
 
 const config = getConfig();
 
@@ -118,7 +119,8 @@ export const commands: readonly Command[] = [
     new DeOidaCommand(),
     new EhreCommand(),
     new AoCCommand(),
-    new BanListCommand()
+    new BanListCommand(),
+    new LinkRedirect()
 ];
 export const interactions: readonly UserInteraction[] = [
     new NicknameButtonHandler()
