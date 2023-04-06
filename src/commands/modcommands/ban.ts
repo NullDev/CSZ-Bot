@@ -76,8 +76,12 @@ export const restoreRoles = async(user: GuildMember): Promise<boolean> => {
         unbanPromises.push(removeTrustedBanned, addTrusted);
     }
 
-    return Promise.all(unbanPromises)
-        .then(() => true);
+    // See comment in assignBannedRoles
+    const result = await Promise.allSettled(unbanPromises);
+    const rejected = result.filter((r): r is PromiseRejectedResult => r.status === "rejected");
+    rejected.forEach(r => log.error(r.reason));
+
+    return true;
 };
 
 // #endregion
