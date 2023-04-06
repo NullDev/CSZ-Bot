@@ -25,16 +25,15 @@ export class LinkRedirect implements SpecialCommand {
     }
 
     async handleSpecialMessage(message: ProcessableMessage, _client: Client<boolean>): Promise<CommandResult> {
-        const domains = Object.keys(linkMap);
         const urls = message.content.toLowerCase().split(" ")
-            .filter(word => domains.some(d => word.startsWith(`https://${d}`)));
+            .filter(word => word.startsWith("https://"));
         if(urls.length === 0) return;
 
         const replacedUrls = urls
             .map(this.tryReplaceUrl)
             .filter((url): url is string => url !== undefined);
 
-        const msg = "Public Service Announcement für nicht krebsige Links:\n" + replacedUrls.join("\n");
+        const msg = "Public Service Announcement für nicht krebsige Links:\n" + replacedUrls.map(u => `<${u}>`).join("\n");
         await message.reply({
             content: msg,
             allowedMentions: { repliedUser: false }
@@ -47,6 +46,7 @@ export class LinkRedirect implements SpecialCommand {
         if(!domain) return;
 
         const replacement = linkMap[domain];
+        if(!replacement) return;
 
         return url.replace(`https://${domain}`, `https://${replacement}`);
     }
