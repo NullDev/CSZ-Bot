@@ -21,7 +21,8 @@ export class LinkRedirect implements SpecialCommand {
 
     matches(message: ProcessableMessage): boolean {
         const domains = Object.keys(linkMap);
-        return domains.some(domain => message.content.toLowerCase().includes(`https://${domain}`));
+        const content = message.content.toLowerCase();
+        return domains.some(domain => content.includes(`https://${domain}`) || content.includes(`http://www.${domain}`));
     }
 
     async handleSpecialMessage(message: ProcessableMessage, _client: Client<boolean>): Promise<CommandResult> {
