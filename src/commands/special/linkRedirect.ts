@@ -22,7 +22,7 @@ export class LinkRedirect implements SpecialCommand {
     matches(message: ProcessableMessage): boolean {
         const domains = Object.keys(linkMap);
         const content = message.content.toLowerCase();
-        return domains.some(domain => content.includes(`https://${domain}`) || content.includes(`http://www.${domain}`));
+        return domains.some(domain => content.includes(`https://${domain}`) || content.includes(`https://www.${domain}`));
     }
 
     async handleSpecialMessage(message: ProcessableMessage, _client: Client<boolean>): Promise<CommandResult> {
@@ -43,7 +43,7 @@ export class LinkRedirect implements SpecialCommand {
 
     private tryReplaceUrl(url: string): string | undefined {
         const domains = Object.keys(linkMap);
-        const domain = domains.find(d => url.startsWith(`https://${d}`) || url.startsWith(`http://www.${d}`));
+        const domain = domains.find(d => url.startsWith(`https://${d}`) || url.startsWith(`https://www.${d}`));
         if(!domain) return;
 
         const replacement = linkMap[domain];
