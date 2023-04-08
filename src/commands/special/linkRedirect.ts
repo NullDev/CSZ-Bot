@@ -42,12 +42,12 @@ export class LinkRedirect implements SpecialCommand {
 
     private tryReplaceUrl(url: string): string | undefined {
         const domains = Object.keys(linkMap);
-        const domain = domains.find(d => url.startsWith(`https://${d}`));
+        const domain = domains.find(d => url.startsWith(`https://${d}`) || url.startsWith(`http://www.${d}`));
         if(!domain) return;
 
         const replacement = linkMap[domain];
         if(!replacement) return;
 
-        return url.replace(`https://${domain}`, `https://${replacement}`);
+        return url.replace(new RegExp(`https:\/\/(www\.)?${domain}`), `https://${replacement}`);
     }
 }
