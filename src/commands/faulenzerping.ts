@@ -16,11 +16,11 @@ export class FaulenzerPingCommand implements MessageCommand {
             return;
         }
 
-        const messageIdThatWasRepliedTo = message.reference?.messageId ?? undefined;
-        if (!messageIdThatWasRepliedTo) {
+        if (message.reference?.messageId === undefined) {
             await message.reply("Brudi du hast kein Reply benutzt");
             return;
         }
+        const messageThatWasRepliedTo = await message.fetchReference();
 
         const { ignoredRoleIds, maxNumberOfPings } = context.commandConfig.faulenzerPing;
 
@@ -36,8 +36,6 @@ export class FaulenzerPingCommand implements MessageCommand {
                 usersInAllRoles.add(user);
             }
         }
-
-        const messageThatWasRepliedTo = await message.fetchReference();
 
         const usersNotToNotify = await this.getUsersThatReactedToMessage(messageThatWasRepliedTo);
 
