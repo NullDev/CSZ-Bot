@@ -30,6 +30,14 @@ export class FaulenzerPingCommand implements MessageCommand {
             return;
         }
 
+        for (const role of roles) {
+            if (!role.mentionable) {
+                // eslint-disable-next-line no-await-in-loop
+                await message.reply(`Die Rolle ${role} ist nicht pingbar.`);
+                return;
+            }
+        }
+
         const usersInAllRoles = new Set<Snowflake>();
         for (const role of roles) {
             for (const user of role.members.keys()) {
