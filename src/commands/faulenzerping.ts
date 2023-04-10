@@ -22,7 +22,7 @@ export class FaulenzerPingCommand implements MessageCommand {
         }
         const messageThatWasRepliedTo = await message.fetchReference();
 
-        const { ignoredRoleIds, maxNumberOfPings } = context.commandConfig.faulenzerPing;
+        const { ignoredRoleIds, maxNumberOfPings, minRequiredReactions } = context.commandConfig.faulenzerPing;
 
         const roles = [...message.mentions.roles.filter(role => !ignoredRoleIds.has(role.id)).values()];
         if (roles.length === 0) {
@@ -38,6 +38,10 @@ export class FaulenzerPingCommand implements MessageCommand {
         }
 
         const usersNotToNotify = await this.getUsersThatReactedToMessage(messageThatWasRepliedTo);
+        if (usersNotToNotify.size < minRequiredReactions) {
+            await message.reply(`Es gibt nur ${usersNotToNotify.size} Reaktionen, das ist zu wenig.`);
+            return;
+        }
 
         const usersToNotify = [...usersInAllRoles.values()].filter(user => !usersNotToNotify.has(user));
 
