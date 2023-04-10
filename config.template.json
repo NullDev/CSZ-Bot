@@ -20,6 +20,7 @@
 
         ],
         "faulenzerping_max_pings": 10,
+        "faulenzerping_min_required_reactions": 5,
         "flame_trusted_user_on_bot_ping": false,
         "quotes": {
             "emoji_name": "",

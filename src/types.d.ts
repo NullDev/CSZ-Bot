@@ -87,6 +87,7 @@ export interface Config {
 
         faulenzerping_ignored_role_ids: Array<Snowflake>;
         faulenzerping_max_number_of_pings: number;
+        faulenzerping_min_required_reactions: number;
 
         quotes: {
             allowed_group_ids: Array<Snowflake>;
