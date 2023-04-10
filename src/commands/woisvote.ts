@@ -17,6 +17,7 @@ import { ReactionHandler } from "../types.js";
 import { BotContext } from "../context.js";
 import logger from "../utils/logger.js";
 import { isWoisGang } from "../utils/userUtils.js";
+import { chunkArray } from "../utils/arrayUtils.js";
 
 const defaultWoisTime = "20:00";
 // Constant can be used to check whether a message is a woisvote without querying the database
@@ -229,17 +230,15 @@ export const woisVoteScheduler = async(
         return;
     }
 
-    const chunkSize = 10;
-    for (let i = 0; i < woisAction.interestedUsers.length; i += chunkSize) {
-        const chunk = woisAction.interestedUsers
-            .slice(i, i + chunkSize)
-            .map(user => `<@${user}>`);
+    const chunks = chunkArray(woisAction.interestedUsers, 10);
+    for (const users of chunks) {
+        const mentions = users.map(userId => `<@${userId}>`);
         // It's okay for readability
         // eslint-disable-next-line no-await-in-loop
         await woisMessage.reply({
-            content: chunk.join(" "),
+            content: mentions.join(" "),
             allowedMentions: {
-                users: woisAction.interestedUsers
+                users
             }
         });
     }

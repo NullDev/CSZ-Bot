@@ -4,6 +4,7 @@ import { BotContext } from "../context.js";
 import { MessageCommand } from "./command.js";
 import type { ProcessableMessage } from "../handler/cmdHandler.js";
 import { isTrusted } from "../utils/userUtils.js";
+import { chunkArray } from "../utils/arrayUtils.js";
 
 export class FaulenzerPingCommand implements MessageCommand {
     name = "faulenzerping";
@@ -21,7 +22,7 @@ export class FaulenzerPingCommand implements MessageCommand {
             return;
         }
 
-        const {ignoredRoleIds, maxNumberOfPings} = context.commandConfig.faulenzerPing;
+        const { ignoredRoleIds, maxNumberOfPings } = context.commandConfig.faulenzerPing;
 
         const roles = [...message.mentions.roles.filter(role => !ignoredRoleIds.has(role.id)).values()];
         if (roles.length === 0) {
@@ -42,19 +43,23 @@ export class FaulenzerPingCommand implements MessageCommand {
 
         const usersToNotify = [...usersInAllRoles.values()].filter(user => !usersNotToNotify.has(user));
 
-        if(usersToNotify.length > maxNumberOfPings) {
+        if (usersToNotify.length > maxNumberOfPings) {
             await message.reply(`Offenbar interessieren sich so wenig dafür, dass das Limit von ${maxNumberOfPings} Pings überschritten wurde.\nEs würden ${usersToNotify.length} Leute gepingt.`);
             return;
         }
 
-        const usersToNotifyMentions = usersToNotify.map(user => `<@${user}>`).join(" ");
+        const userChunks = chunkArray(usersToNotify, 10);
+        for (const users of userChunks) {
+            const usersToNotifyMentions = users.map(userId => `<@${userId}>`).join(" ");
 
-        await messageThatWasRepliedTo.reply({
-            content: `Hallo! Von euch kam hierauf noch keine Reaktion. ${usersToNotifyMentions}`,
-            allowedMentions: {
-                users: usersToNotify
-            }
-        });
+            // eslint-disable-next-line no-await-in-loop
+            await messageThatWasRepliedTo.reply({
+                content: `Hallo! Von euch kam hierauf noch keine Reaktion. ${usersToNotifyMentions}`,
+                allowedMentions: {
+                    users
+                }
+            });
+        }
     }
 
     async getUsersThatReactedToMessage(message: Message<true>) {

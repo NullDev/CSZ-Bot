@@ -5,6 +5,7 @@ import { ImageSize, Client, CommandInteraction, GuildMember, Snowflake, SlashCom
 import Stempel from "../storage/model/Stempel.js";
 import log from "../utils/logger.js";
 import { ApplicationCommand, CommandResult } from "./command.js";
+import { chunkArray } from "../utils/arrayUtils.js";
 
 const { createCanvas, loadImage } = nodeCanvas;
 
@@ -90,20 +91,6 @@ const drawStempelkarteBackside = async(subjectAvatarUrl: string | undefined, ava
 
     return canvas.toBuffer();
 };
-
-function chunkArray<T>(array: T[], chunkSize: number): T[][] {
-    let index = 0;
-    const arrayLength = array.length;
-    const tempArray = [];
-
-    for (index = 0; index < arrayLength; index += chunkSize) {
-        const myChunk = array.slice(index, index + chunkSize);
-        tempArray.push(myChunk);
-    }
-
-    return tempArray;
-}
-
 
 export class StempelkarteCommand implements ApplicationCommand {
     modCommand: boolean = false;
