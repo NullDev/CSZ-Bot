@@ -26,7 +26,11 @@ export class FaulenzerPingCommand implements MessageCommand {
 
         const roles = [...message.mentions.roles.filter(role => allowedRoleIds.has(role.id)).values()];
         if (roles.length === 0) {
-            await message.reply("Du hast keine erlaubten Rollen angegeben.\nAngegeben: " + [...message.mentions.roles].map(r => r.id).join(", ") + "\nErlaubt: " + [...allowedRoleIds].join(", "));
+            await message.reply(
+                "Du hast keine erlaubten Rollen angegeben.\nAngegeben: " +
+                [...message.mentions.roles].map(r => r[0]).join(", ") +
+                "\nErlaubt: " + [...allowedRoleIds].join(", ")
+            );
             return;
         }
 
