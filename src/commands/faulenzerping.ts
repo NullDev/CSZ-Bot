@@ -26,7 +26,7 @@ export class FaulenzerPingCommand implements MessageCommand {
 
         const roles = [...message.mentions.roles.filter(role => allowedRoleIds.has(role.id)).values()];
         if (roles.length === 0) {
-            await message.reply({ content: "Du hast keine erlaubten Rollen angegeben.", ephemeral: true });
+            await message.reply({ content: "Du hast keine erlaubten Rollen angegeben." });
             return;
         }
 
@@ -39,7 +39,7 @@ export class FaulenzerPingCommand implements MessageCommand {
 
         const usersNotToNotify = await this.getUsersThatReactedToMessage(messageThatWasRepliedTo);
         if (usersNotToNotify.size < minRequiredReactions) {
-            await message.reply({ content: `Es gibt nur ${usersNotToNotify.size} Reaktionen, das ist zu wenig.`, ephemeral: true });
+            await message.reply({ content: `Es gibt nur ${usersNotToNotify.size} Reaktionen, das ist zu wenig.` });
             return;
         }
 
