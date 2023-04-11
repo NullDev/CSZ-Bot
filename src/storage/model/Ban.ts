@@ -3,7 +3,6 @@
 
 import type { User, GuildMember } from "discord.js";
 import { Model, DataTypes, Sequelize, Optional, Op } from "sequelize";
-import { v4 as uuidv4 } from "uuid";
 
 import log from "../../utils/logger.js";
 
@@ -54,7 +53,7 @@ export default class Ban extends Model<BanAttributes, BanCreationAttributes> imp
         this.init({
             id: {
                 type: DataTypes.STRING(36),
-                defaultValue: () => uuidv4(),
+                defaultValue: () => crypto.randomUUID(),
                 primaryKey: true
             },
             userId: {

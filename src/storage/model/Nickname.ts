@@ -2,7 +2,6 @@
 /* eslint-disable new-cap */
 
 import {DataTypes, Model, Optional, Sequelize} from "sequelize";
-import {v4 as uuidv4} from "uuid";
 import type { Snowflake } from "discord.js";
 
 import log from "../../utils/logger.js";
@@ -79,7 +78,7 @@ export default class Nickname extends Model {
         this.init({
             id: {
                 type: DataTypes.STRING(36),
-                defaultValue: () => uuidv4(),
+                defaultValue: () => crypto.randomUUID(),
                 primaryKey: true
             },
             userId: {

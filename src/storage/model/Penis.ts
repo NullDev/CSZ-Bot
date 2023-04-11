@@ -3,7 +3,6 @@
 
 import moment from "moment";
 import { Model, DataTypes, Sequelize, Optional, Op } from "sequelize";
-import { v4 as uuidv4 } from "uuid";
 import type { User } from "discord.js";
 
 import { Radius } from "../../commands/penis.js";
@@ -95,7 +94,7 @@ export default class Penis extends Model<PenisAttributes, PenisCreationAttribute
         this.init({
             id: {
                 type: DataTypes.STRING(36),
-                defaultValue: () => uuidv4(),
+                defaultValue: () => crypto.randomUUID(),
                 primaryKey: true
             },
             userId: {

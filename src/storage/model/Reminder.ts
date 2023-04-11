@@ -2,7 +2,6 @@
 /* eslint-disable new-cap */
 
 import { Model, DataTypes, Sequelize, Optional, Op } from "sequelize";
-import { v4 as uuidv4 } from "uuid";
 import type { User } from "discord.js";
 
 import log from "../../utils/logger.js";
@@ -77,7 +76,7 @@ export default class Reminder extends Model<ReminderAttributes, ReminderCreation
         this.init({
             id: {
                 type: DataTypes.STRING(36),
-                defaultValue: () => uuidv4(),
+                defaultValue: () => crypto.randomUUID(),
                 primaryKey: true
             },
             userId: {

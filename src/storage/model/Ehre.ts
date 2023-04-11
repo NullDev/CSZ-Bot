@@ -2,7 +2,6 @@
 /* eslint-disable new-cap */
 
 import { DataTypes, Model, Sequelize } from "sequelize";
-import { v4 as uuidv4 } from "uuid";
 import { Snowflake } from "discord.js";
 
 export class EhreVotes extends Model {
@@ -35,7 +34,7 @@ export class EhreVotes extends Model {
         this.init({
             id: {
                 type: DataTypes.STRING(36),
-                defaultValue: () => uuidv4(),
+                defaultValue: () => crypto.randomUUID(),
                 primaryKey: true
             },
             userId: {
@@ -105,7 +104,7 @@ export class EhrePoints extends Model {
         this.init({
             id: {
                 type: DataTypes.STRING(36),
-                defaultValue: () => uuidv4(),
+                defaultValue: () => crypto.randomUUID(),
                 primaryKey: true
             },
             userId: {
