@@ -2,7 +2,6 @@
 /* eslint-disable new-cap */
 
 import { Sequelize, Model, DataTypes, Optional, Op } from "sequelize";
-import { v4 as uuidv4 } from "uuid";
 import type { Snowflake } from "discord.js";
 
 export interface WoisActionAttributes {
@@ -121,7 +120,7 @@ export default class WoisAction
             {
                 id: {
                     type: DataTypes.STRING(36),
-                    defaultValue: () => uuidv4(),
+                    defaultValue: () => crypto.randomUUID(),
                     primaryKey: true
                 },
                 messageId: {

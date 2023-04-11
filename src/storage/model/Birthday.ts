@@ -2,7 +2,6 @@
 /* eslint-disable new-cap */
 
 import { Model, DataTypes, Op, type Sequelize } from "sequelize";
-import { v4 as uuidv4 } from "uuid";
 import type { Snowflake } from "discord.js";
 
 import log from "../../utils/logger.js";
@@ -62,7 +61,7 @@ export default class Birthday extends Model {
         this.init({
             id: {
                 type: DataTypes.STRING(36),
-                defaultValue: () => uuidv4(),
+                defaultValue: () => crypto.randomUUID(),
                 primaryKey: true
             },
             userId: {

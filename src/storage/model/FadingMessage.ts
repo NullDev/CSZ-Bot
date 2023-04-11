@@ -2,7 +2,6 @@
 /* eslint-disable new-cap */
 
 import { Model, DataTypes, type Sequelize } from "sequelize";
-import { v4 as uuidv4 } from "uuid";
 import type { Snowflake } from "discord.js";
 
 import type { ProcessableMessage } from "../../handler/cmdHandler.js";
@@ -45,7 +44,7 @@ export default class FadingMessage extends Model {
         this.init({
             id: {
                 type: DataTypes.STRING(36),
-                defaultValue: () => uuidv4(),
+                defaultValue: () => crypto.randomUUID(),
                 primaryKey: true
             },
             messageId: {
