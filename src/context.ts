@@ -1,5 +1,5 @@
 import path from "node:path";
-import { ChannelType, Client, Guild, Role, TextChannel, VoiceChannel } from "discord.js";
+import { ChannelType, Client, Guild, Role, Snowflake, TextChannel, VoiceChannel } from "discord.js";
 
 import { getConfig } from "./utils/configHandler.js";
 import { Config, ConfigTextChannelId, ConfigVoiceChannelId, ConfigRoleId } from "./types.js";
@@ -19,6 +19,15 @@ export interface BotContext {
         command: string;
         modCommand: string;
     };
+
+    commandConfig: {
+        faulenzerPing: {
+            allowedRoleIds: Set<Snowflake>,
+            maxNumberOfPings: number,
+            minRequiredReactions: number
+        }
+    },
+
     roles: Record<RemoveSuffix<ConfigRoleId, "_role_id">, Role>;
 
     // This type is rather "complex"
@@ -94,6 +103,13 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
         prefix: {
             command: config.bot_settings.prefix.command_prefix,
             modCommand: config.bot_settings.prefix.mod_prefix
+        },
+        commandConfig: {
+            faulenzerPing: {
+                allowedRoleIds: new Set(...config.bot_settings.faulenzerping_allowed_role_ids),
+                maxNumberOfPings: Number(config.bot_settings.faulenzerping_max_number_of_pings ?? "10"),
+                minRequiredReactions: Number(config.bot_settings.faulenzerping_min_required_reactions ?? "5")
+            }
         },
         roles: {
             // TODO: Make this prettier (splitting up the IDs by type in the config would make this much easier)
