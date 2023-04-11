@@ -22,7 +22,7 @@ export interface BotContext {
 
     commandConfig: {
         faulenzerPing: {
-            ignoredRoleIds: Set<Snowflake>,
+            allowedRoleIds: Set<Snowflake>,
             maxNumberOfPings: number,
             minRequiredReactions: number
         }
@@ -106,7 +106,7 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
         },
         commandConfig: {
             faulenzerPing: {
-                ignoredRoleIds: new Set(...config.bot_settings.faulenzerping_ignored_role_ids),
+                allowedRoleIds: new Set(...config.bot_settings.faulenzerping_allowed_role_ids),
                 maxNumberOfPings: Number(config.bot_settings.faulenzerping_max_number_of_pings ?? "10"),
                 minRequiredReactions: Number(config.bot_settings.faulenzerping_min_required_reactions ?? "5")
             }

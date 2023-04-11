@@ -16,7 +16,7 @@
         ],
         "woisping_limit": 7200,
         "woisping_threshold": 2,
-        "faulenzerping_ignored_role_ids": [
+        "faulenzerping_allowed_role_ids": [
 
         ],
         "faulenzerping_max_pings": 10,

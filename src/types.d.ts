@@ -85,7 +85,7 @@ export interface Config {
         woisping_limit: number;
         woisping_threshold: number;
 
-        faulenzerping_ignored_role_ids: Array<Snowflake>;
+        faulenzerping_allowed_role_ids: Array<Snowflake>;
         faulenzerping_max_number_of_pings: number;
         faulenzerping_min_required_reactions: number;
 

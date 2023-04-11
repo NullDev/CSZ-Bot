@@ -22,11 +22,11 @@ export class FaulenzerPingCommand implements MessageCommand {
         }
         const messageThatWasRepliedTo = await message.fetchReference();
 
-        const { ignoredRoleIds, maxNumberOfPings, minRequiredReactions } = context.commandConfig.faulenzerPing;
+        const { allowedRoleIds, maxNumberOfPings, minRequiredReactions } = context.commandConfig.faulenzerPing;
 
-        const roles = [...message.mentions.roles.filter(role => !ignoredRoleIds.has(role.id)).values()];
+        const roles = [...message.mentions.roles.filter(role => allowedRoleIds.has(role.id)).values()];
         if (roles.length === 0) {
-            await message.reply("Du hast keine nicht-ignorierten Gruppen angegeben.");
+            await message.reply("Du hast keine erlaubten Rollen angegeben.");
             return;
         }
 
