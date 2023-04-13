@@ -16,37 +16,26 @@ const config = getConfig();
 // #region Banned User Role Assignment
 
 const assignBannedRoles = async(user: GuildMember): Promise<boolean> => {
-    log.debug(`Assigning ban role to user ${user.id}`);
     const defaultRole = user.guild.roles.cache.find(role => role.id === config.ids.default_role_id);
     const bannedRole = user.guild.roles.cache.find(role => role.id === config.ids.banned_role_id);
 
     if (!defaultRole || !bannedRole) {
         return false;
     }
-
-    const banPromises = [
-        user.roles.remove(defaultRole),
-        user.roles.add(bannedRole)
-    ];
+    const currentRoles = [...user.roles.cache.map(r => r.id)];
+    let newRoles = [...currentRoles, bannedRole.id].filter(r => r !== config.ids.default_role_id);
 
     if (user.roles.cache.find(r => r.id === config.ids.gruendervaeter_role_id)) {
-        const removeGruendervaeter = user.roles.remove(user.guild.roles.cache.find(role => role.id === config.ids.gruendervaeter_role_id)!);
-        const addGruendervaeterBanned = user.roles.add(user.guild.roles.cache.find(role => role.id === config.ids.gruendervaeter_banned_role_id)!);
-        banPromises.push(...[removeGruendervaeter, addGruendervaeterBanned]);
+        newRoles = newRoles.filter(r => r !== config.ids.gruendervaeter_role_id);
+        newRoles.push(config.ids.gruendervaeter_banned_role_id);
     }
 
     if (user.roles.cache.find(r => r.id === config.ids.trusted_role_id)) {
-        const removeTrusted = user.roles.remove(user.guild.roles.cache.find(role => role.id === config.ids.trusted_role_id)!);
-        const addTrustedBanned = user.roles.add(user.guild.roles.cache.find(role => role.id === config.ids.trusted_banned_role_id)!);
-        banPromises.push(removeTrusted, addTrustedBanned);
+        newRoles = newRoles.filter(r => r !== config.ids.trusted_role_id);
+        newRoles.push(config.ids.trusted_banned_role_id);
     }
 
-    // Sometimes the bot fails to assign the roles. For debugging purposes, we log the errors here.
-    // Later if we can't handle the error we can probably just retry.
-    const result = await Promise.allSettled(banPromises);
-    const rejected = result.filter((r): r is PromiseRejectedResult => r.status === "rejected");
-    rejected.forEach(r => log.error(r.reason));
-
+    await user.edit({ roles: newRoles });
     return true;
 };
 
@@ -58,28 +47,22 @@ export const restoreRoles = async(user: GuildMember): Promise<boolean> => {
     if (!defaultRole || !bannedRole) {
         return false;
     }
+    const currentRoles = [...user.roles.cache.map(r => r.id)];
+    let newRoles = [...currentRoles, defaultRole.id].filter(r => r !== config.ids.banned_role_id);
 
-    const unbanPromises = [
-        user.roles.add(defaultRole),
-        user.roles.remove(bannedRole)
-    ];
 
     if (user.roles.cache.find(r => r.id === config.ids.gruendervaeter_banned_role_id)) {
-        const removeGruendervaeterBanned = user.roles.remove(user.guild.roles.cache.find(role => role.id === config.ids.gruendervaeter_banned_role_id)!);
-        const addGruendervaeter = user.roles.add(user.guild.roles.cache.find(role => role.id === config.ids.gruendervaeter_role_id)!);
-        unbanPromises.push(removeGruendervaeterBanned, addGruendervaeter);
+        newRoles = newRoles.filter(r => r !== config.ids.gruendervaeter_banned_role_id);
+        newRoles.push(config.ids.gruendervaeter_role_id);
     }
 
     if (user.roles.cache.find(r => r.id === config.ids.trusted_banned_role_id)) {
-        const removeTrustedBanned = user.roles.remove(user.guild.roles.cache.find(role => role.id === config.ids.trusted_banned_role_id)!);
-        const addTrusted = user.roles.add(user.guild.roles.cache.find(role => role.id === config.ids.trusted_role_id)!);
-        unbanPromises.push(removeTrustedBanned, addTrusted);
+        newRoles = newRoles.filter(r => r !== config.ids.trusted_banned_role_id);
+        newRoles.push(config.ids.trusted_role_id);
     }
 
-    // See comment in assignBannedRoles
-    const result = await Promise.allSettled(unbanPromises);
-    const rejected = result.filter((r): r is PromiseRejectedResult => r.status === "rejected");
-    rejected.forEach(r => log.error(r.reason));
+
+    await user.edit({ roles: newRoles });
 
     return true;
 };
