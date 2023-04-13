@@ -13,7 +13,8 @@ export const unban = async(member: GuildMember) => {
 
     await Ban.remove(member.user);
 
-    if (!await restoreRoles(member)) return "Eine der angegebenen Rollen für das bannen existiert nich.";
+    const result = await restoreRoles(member);
+    if (!result) return "Ich konnte die Rollen nicht wiederherstellen. Bitte kontaktiere einen Admin.";
 };
 
 export class UnbanCommand implements ApplicationCommand, MessageCommand {

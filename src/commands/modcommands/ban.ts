@@ -134,7 +134,8 @@ export const ban = async(client: Client, member: GuildMember, banInvoker: GuildM
         return "Dieser nutzer ist laut Datenbank gebannt, ihm fehlt aber die Rolle. Fix das.";
     }
 
-    await assignBannedRoles(member);
+    const result = await assignBannedRoles(member);
+    if(!result) return "Fehler beim Bannen. Bitte kontaktiere einen Admin.";
 
     const unbanAt = duration === undefined || duration === 0
         ? null // never
