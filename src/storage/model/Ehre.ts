@@ -9,7 +9,6 @@ export class EhreVotes extends Model {
     declare userId: string;
 
     static async hasVoted(userId: Snowflake): Promise<boolean> {
-        console.log(userId);
         return (await EhreVotes.findAll({
             where: {
                 userId

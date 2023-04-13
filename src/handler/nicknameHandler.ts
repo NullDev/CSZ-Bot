@@ -8,7 +8,6 @@ export default class NicknameHandler {
     constructor(private readonly context: BotContext) {}
 
     async rerollNicknames() {
-        console.log("rerolling nicknames");
         const allUsersAndNames = Object.entries(
             await Nicknames.allUsersAndNames()
         );

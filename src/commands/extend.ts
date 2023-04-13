@@ -54,7 +54,6 @@ export const run: CommandFunction = async(client, message, args, context) => {
     const author = originalAuthor === message.author.username ? undefined : message.author;
 
     const newFields = additionalPollOptions.map((value, i) => poll.createOptionField(value, oldPollOptionFields.length + i, author));
-    console.log(newFields);
 
     let metaFields = replyMessage.embeds[0].fields.filter(field => !isPollField(field));
     const embed = EmbedBuilder.from(replyMessage.embeds[0]).data;

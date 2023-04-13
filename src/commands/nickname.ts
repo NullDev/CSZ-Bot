@@ -15,6 +15,7 @@ import {
 import { ApplicationCommand, CommandResult, UserInteraction } from "./command.js";
 import Nicknames from "../storage/model/Nickname.js";
 import { isTrusted } from "../utils/userUtils.js";
+import logger from "../utils/logger.js";
 
 
 type Vote = "YES" | "NO";
@@ -185,7 +186,7 @@ export class Nickname implements ApplicationCommand {
             return;
         }
         catch (e) {
-            console.log(e);
+            logger.error(e);
             await command.reply("Das hätte nie passieren dürfen");
             return;
         }

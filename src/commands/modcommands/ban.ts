@@ -261,7 +261,6 @@ export class BanCommand implements ApplicationCommand, MessageCommand {
             const match = /\<@!?[0-9]+\> (.+)/.exec(messageAfterCommand);
             if (match && match[1]) {
                 reason = match[1];
-                console.log(reason);
             }
         }
 

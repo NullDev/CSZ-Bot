@@ -45,7 +45,6 @@ export class TikTokLink implements SpecialCommand {
 
         // Hardcoded check to check if download is available.
         // If we wouldn't do that the user will get a weird looking file.
-        console.log(link);
         if(link === "/stream?url=") {
             await defaultResponse();
             return;
