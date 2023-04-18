@@ -7,8 +7,8 @@ FROM mcr.microsoft.com/devcontainers/typescript-node:0-${VARIANT}
 #     && apt-get -y install --no-install-recommends <your-package-list-here>
 
 # [Optional] Uncomment if you want to install an additional version of node using nvm
-# Install Node 19 using nvm and use it by default
-ARG EXTRA_NODE_VERSION=19
+# Install Node 20 using nvm and use it by default
+ARG EXTRA_NODE_VERSION=20
 RUN su node -c "umask 0002 && source ./usr/local/share/nvm/nvm.sh && nvm install ${EXTRA_NODE_VERSION} && nvm alias default ${EXTRA_NODE_VERSION} && nvm use default"
 
 # [Optional] Uncomment if you want to install more global node modules
