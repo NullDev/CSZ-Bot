@@ -1,0 +1,40 @@
+name: Feature-Vorschlag
+description: Tolle Idee für neue Bot-Features
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Beschreibung
+      description: Was stellst du dir vor?
+      placeholder: Kinnlose automatisch muten
+    validations:
+      required: true
+  - type: textarea
+    id: pro
+    attributes:
+      label: Pro
+      description: Warum wollen wir das Feature?
+      placeholder: Kinnlose nerven
+    validations:
+      required: true
+  - type: textarea
+    id: contra
+    attributes:
+      label: Contra
+      description: Was spricht gegen dieses Feature? Gibt es Problematiken?
+      placeholder: Ihre Meinung zu hören wär vielleicht ganz gut
+    validations:
+      required: true
+  - type: textarea
+    id: rest
+    attributes:
+      label: Umsetzungsideen und Hinweise
+      placeholder: Discord hat die API XY dafür, das könnte passen!
+  - type: checkboxes
+    id: language
+    attributes:
+      label: Ich möchte das Feature bauen
+      description: Kannst und möchtest du das Feature selbst bauen?
+      options:
+        - label: Ja
+          required: true
