@@ -16,7 +16,7 @@
         devShell = pkgs.mkShell {
           buildInputs = with pkgs; [
             nixpkgs-fmt
-            nodejs-16_x
+            nodejs
             pixman
             pkg-config
             cairo

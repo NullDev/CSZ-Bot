@@ -1,4 +1,4 @@
-import { GuildMember, User } from "discord.js";
+import { APIInteractionGuildMember, GuildMember, User } from "discord.js";
 
 import { getConfig } from "./configHandler.js";
 
@@ -12,8 +12,10 @@ function hasAnyRoleByName(member: GuildMember, roleNames: string[]) {
     return roleNames.some(role => hasRoleByName(member, role));
 }
 
-function hasRoleById(member: GuildMember, id: string): boolean {
-    return member.roles.cache.some(role => role.id === id);
+function hasRoleById(member: GuildMember | APIInteractionGuildMember, id: string): boolean {
+    return Array.isArray(member.roles)
+        ? member.roles.includes(id)
+        : member.roles.cache.some(role => role.id === id);
 }
 
 export function isMarcel(user: User): boolean {
@@ -29,21 +31,21 @@ export function isMod(member: GuildMember): boolean {
     return hasAnyRoleByName(member, config.bot_settings.moderator_roles);
 }
 
-export function isNerd(member: GuildMember): boolean {
+export function isNerd(member: GuildMember | APIInteractionGuildMember): boolean {
     return hasRoleById(member, config.ids.default_role_id);
 }
 
-export function isTrusted(member: GuildMember): boolean {
+export function isTrusted(member: GuildMember | APIInteractionGuildMember): boolean {
     return hasRoleById(member, config.ids.trusted_role_id);
 }
 
-export function isWoisGang(member: GuildMember): boolean {
+export function isWoisGang(member: GuildMember | APIInteractionGuildMember): boolean {
     return hasRoleById(member, config.ids.woisgang_role_id);
 }
-export function isEmotifizierer(member: GuildMember): boolean {
+export function isEmotifizierer(member: GuildMember | APIInteractionGuildMember): boolean {
     return hasRoleById(member, config.ids.emotifizierer_role_id);
 }
 
-export function hasBotDenyRole(member: GuildMember): boolean {
+export function hasBotDenyRole(member: GuildMember | APIInteractionGuildMember): boolean {
     return hasRoleById(member, config.ids.bot_deny_role_id);
 }

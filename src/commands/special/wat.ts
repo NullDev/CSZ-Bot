@@ -28,6 +28,6 @@ export class WatCommand implements SpecialCommand {
             await lastMessage?.react(watEmote);
             return;
         }
-        throw new Error("Wat Emoote not found");
+        throw new Error("Wat Emote not found");
     }
 }
