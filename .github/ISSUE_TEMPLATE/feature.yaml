@@ -37,4 +37,5 @@ body:
       description: Kannst und möchtest du das Feature selbst bauen?
       options:
         - label: Ja
-          required: true
+        - label: Nein
+        - label: Mit Hilfe
