@@ -1,5 +1,7 @@
 name: Bugreport
 description: Ein Fehler, der gefixt werden sollte.
+labels:
+  - bug
 body:
   - type: textarea
     id: description
@@ -32,6 +34,7 @@ body:
     attributes:
       label: Umgebung
       description: Falls relevant, deine Discord-, NPM-, Node.js- und OS-Version
+      placeholder: Linux mit KDE und komischerweise geht nichts
   - type: textarea
     id: rest
     attributes:

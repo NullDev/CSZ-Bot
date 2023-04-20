@@ -1,5 +1,7 @@
 name: Feature-Vorschlag
 description: Tolle Idee für neue Bot-Features
+labels:
+  - enhancement
 body:
   - type: textarea
     id: description
