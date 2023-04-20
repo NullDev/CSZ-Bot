@@ -1,5 +1,5 @@
 /* eslint-disable no-use-before-define */
-import { MessageComponentInteraction, PermissionsString, type SlashCommandBuilder } from "discord.js";
+import { ContextMenuCommandBuilder, MessageComponentInteraction, PermissionsString, type SlashCommandBuilder } from "discord.js";
 import type { Client, CommandInteraction } from "discord.js";
 
 import type { ProcessableMessage } from "../handler/cmdHandler.js";
@@ -34,7 +34,7 @@ export type CommandResult = void;
 
 // For ApplicationCommands we require a SlashCommandBuilder object to create the command and a handler method
 interface AppCommand {
-    applicationCommand: Pick<SlashCommandBuilder, "toJSON">;
+    applicationCommand: Pick<SlashCommandBuilder | ContextMenuCommandBuilder, "toJSON">;
     handleInteraction(
         command: CommandInteraction,
         client: Client,
