@@ -41,6 +41,11 @@ body:
         - label: Ja
         - label: Nein
         - label: Mit Hilfe
+  - type: checkboxes
+    id: legal
+    attributes:
+      label: Papierkram
+      options:
         - label: Ich habe die AGB gelesen und möchte den Newsletter abonnieren
           required: true
         - label: Ich akzeptiere das Setzen von Cookies
