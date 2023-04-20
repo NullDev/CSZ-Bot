@@ -77,13 +77,13 @@ export class FaulenzerPingCommand implements ApplicationCommand {
         }
 
         const usersNotToNotify = await this.getUsersThatReactedToMessage(command.targetMessage);
-        if (usersNotToNotify.size < minRequiredReactions) {
-            await response.edit({
-                content: `Es gibt nur ${usersNotToNotify.size} Reaktionen, das ist zu wenig.`,
-                components: []
-            });
-            return;
-        }
+        // if (usersNotToNotify.size < minRequiredReactions) {
+        //    await response.edit({
+        //        content: `Es gibt nur ${usersNotToNotify.size} Reaktionen, das ist zu wenig.`,
+        //        components: []
+        //    });
+        //    return;
+        // }
 
         const usersToNotify = [...usersInAllRoles.values()].filter(user => !usersNotToNotify.has(user));
 
