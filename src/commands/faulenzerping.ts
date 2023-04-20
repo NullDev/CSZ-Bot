@@ -22,7 +22,6 @@ export class FaulenzerPingCommand implements ApplicationCommand {
             await command.reply({ content: "Du bist nicht berechtigt, diesen Command zu benutzen.", ephemeral: true });
             return;
         }
-        const messageWithReactions = command.targetMessage;
 
         const response = await command.reply({
             content: "Welche Rolle ist die mit den Faulenzern?",
@@ -71,7 +70,7 @@ export class FaulenzerPingCommand implements ApplicationCommand {
             }
         }
 
-        const usersNotToNotify = await this.getUsersThatReactedToMessage(messageWithReactions);
+        const usersNotToNotify = await this.getUsersThatReactedToMessage(command.targetMessage);
         if (usersNotToNotify.size < minRequiredReactions) {
             await command.reply({ content: `Es gibt nur ${usersNotToNotify.size} Reaktionen, das ist zu wenig.` });
             return;
@@ -84,25 +83,8 @@ export class FaulenzerPingCommand implements ApplicationCommand {
             return;
         }
 
-        await this.notifyUsers(messageWithReactions, "Hallo! Von euch kam hierauf noch keine Reaktion.", usersToNotify);
+        await this.notifyUsers(command.targetMessage, "Hallo! Von euch kam hierauf noch keine Reaktion.", usersToNotify);
     }
-
-    /*
-    async promptTargetRoles(interaction: CommandInteraction, modalId: string) {
-        const modal = new ModalBuilder()
-            .setCustomId("myModal")
-            .setTitle("My Modal")
-            .addComponents(
-                ...new ActionRowBuilder<RoleSelectMenuBuilder>().addComponents(
-                    new RoleSelectMenuBuilder()
-                        .setCustomId("role-to-ping")
-                        .setPlaceholder("Rolle mit Faulenzern")
-                )
-            );
-
-        await interaction.showModal(modal);
-    }
-    */
 
     async getUsersThatReactedToMessage(message: Message) {
         // Ref: https://stackoverflow.com/a/64242640
