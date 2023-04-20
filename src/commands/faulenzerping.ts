@@ -52,16 +52,22 @@ export class FaulenzerPingCommand implements ApplicationCommand {
             return;
         }
 
-        await response.edit({ content: "Alles klar, mach ich.", components: [] });
-
         const { allowedRoleIds, maxNumberOfPings, minRequiredReactions } = context.commandConfig.faulenzerPing;
         const roleIds = [...confirmation.roles.keys()].filter(roleId => allowedRoleIds.has(roleId));
         if (roleIds.length === 0) {
-            await command.reply({ content: "Du hast keine erlaubten Rollen angegeben.", ephemeral: true });
+            await response.edit({
+                content: "Du hast keine erlaubten Rollen angegeben.",
+                components: []
+            });
             return;
         }
 
         const validRoles = (await Promise.all(roleIds.map(r => context.guild.roles.fetch(r)))).filter(role => !!role) as Role[];
+
+        await response.edit({
+            content: `Alles klar, nerve Faulenzer aus diesen Gruppen: ${validRoles.map(v => v.toString()).join(", ")}`,
+            components: []
+        });
 
         const usersInAllRoles = new Set<Snowflake>();
         for (const role of validRoles) {
@@ -72,14 +78,20 @@ export class FaulenzerPingCommand implements ApplicationCommand {
 
         const usersNotToNotify = await this.getUsersThatReactedToMessage(command.targetMessage);
         if (usersNotToNotify.size < minRequiredReactions) {
-            await command.reply({ content: `Es gibt nur ${usersNotToNotify.size} Reaktionen, das ist zu wenig.` });
+            await response.edit({
+                content: `Es gibt nur ${usersNotToNotify.size} Reaktionen, das ist zu wenig.`,
+                components: []
+            });
             return;
         }
 
         const usersToNotify = [...usersInAllRoles.values()].filter(user => !usersNotToNotify.has(user));
 
         if (usersToNotify.length > maxNumberOfPings) {
-            await command.reply(`Offenbar interessieren sich so wenig dafür, dass das Limit von ${maxNumberOfPings} Pings überschritten wurde.\nEs würden ${usersToNotify.length} Leute gepingt.`);
+            await response.edit({
+                content: `Offenbar interessieren sich so wenig dafür, dass das Limit von ${maxNumberOfPings} Pings überschritten wurde.\nEs würden ${usersToNotify.length} Leute genervt.`,
+                components: []
+            });
             return;
         }
 
