@@ -25,6 +25,7 @@ export class FaulenzerPingCommand implements ApplicationCommand {
         const messageWithReactions = command.targetMessage;
 
         const response = await command.reply({
+            content: "Welche Rolle ist die mit den Faulenzern?",
             components: [
                 new ActionRowBuilder<RoleSelectMenuBuilder>().addComponents(
                     new RoleSelectMenuBuilder()
@@ -48,11 +49,11 @@ export class FaulenzerPingCommand implements ApplicationCommand {
         }
 
         if (confirmation.roles.size === 0) {
-            await confirmation.update({ content: "Keine Rollen ausgewählt :(", components: [] });
+            await response.edit({ content: "Keine Rollen ausgewählt :(", components: [] });
             return;
         }
 
-        await confirmation.update({ content: "Alles klar, mach ich.", components: [] });
+        await response.edit({ content: "Alles klar, mach ich.", components: [] });
 
         const { allowedRoleIds, maxNumberOfPings, minRequiredReactions } = context.commandConfig.faulenzerPing;
         const roleIds = [...confirmation.roles.keys()].filter(roleId => allowedRoleIds.has(roleId));
