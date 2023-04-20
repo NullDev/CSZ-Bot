@@ -1,0 +1,40 @@
+name: Bugreport
+description: Ein Fehler, der gefixt werden sollte.
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Fehlerbeschreibung
+      description: Was genau der Fehler ist.
+      placeholder: Ich konnte kinnlose nicht bannen, das kann nicht sein
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Reproduktion
+      description: Wie kann man den Fehler reproduzieren?
+      placeholder: |
+        1. Mod sein
+        2. Auf einen kinnlosen klicken
+        3. "Ban" auswählen
+        4. Sich wundern, dass er noch da ist
+    validations:
+      required: true
+  - type: textarea
+    id: expectation
+    attributes:
+      label: Erwartung
+      description: Was sollte eigentlich passieren?
+      placeholder: Der User sollte gebannt sein.
+  - type: textarea
+    id: env
+    attributes:
+      label: Umgebung
+      description: Falls relevant, deine Discord-, NPM-, Node.js- und OS-Version
+  - type: textarea
+    id: rest
+    attributes:
+      label: Noch was?
+      description: Was du uns schon immer mal sagen wolltest
+      placeholder: Toller Bot!
