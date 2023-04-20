@@ -31,7 +31,8 @@ export class FaulenzerPingCommand implements ApplicationCommand {
                         .setCustomId("role-to-ping")
                         .setPlaceholder("Rolle mit Faulenzern")
                 )
-            ]
+            ],
+            ephemeral: true
         });
 
         let confirmation;
