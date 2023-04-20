@@ -48,5 +48,5 @@ body:
       options:
         - label: Ich habe die AGB gelesen und möchte den Newsletter abonnieren
           required: true
-        - label: Ich akzeptiere das Setzen von Cookies
+        - label: Ich stimme der Verwendung von Cookies zu
           required: true
