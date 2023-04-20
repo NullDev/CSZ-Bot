@@ -128,12 +128,9 @@ export const interactions: readonly UserInteraction[] = [
     new NicknameButtonHandler()
 ];
 
-export const applicationCommands: Array<ApplicationCommand> =
-    commands.filter<ApplicationCommand>(isApplicationCommand);
-export const messageCommands: Array<MessageCommand> =
-    commands.filter<MessageCommand>(isMessageCommand);
-export const specialCommands: Array<SpecialCommand> =
-    commands.filter<SpecialCommand>(isSpecialCommand);
+export const applicationCommands = commands.filter<ApplicationCommand>(isApplicationCommand);
+export const messageCommands = commands.filter<MessageCommand>(isMessageCommand);
+export const specialCommands = commands.filter<SpecialCommand>(isSpecialCommand);
 
 const lastSpecialCommands: Record<string, number> = specialCommands.reduce(
     (acc, cmd) => ({ ...acc, [cmd.name]: 0 }),
@@ -223,7 +220,7 @@ const commandInteractionHandler = (
 
     return Promise.reject(
         new Error(
-            `Application Command ${command.commandName} with ID ${command.id} invoked, but not availabe`
+            `Application Command ${command.commandName} with ID ${command.id} invoked, but not available`
         )
     );
 };
