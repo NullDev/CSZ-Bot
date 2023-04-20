@@ -7,7 +7,7 @@ import { chunkArray } from "../utils/arrayUtils.js";
 
 
 export class FaulenzerPingCommand implements ApplicationCommand {
-    name = "faulenzerping";
+    name = "Faulenzerping"; // Must be upper case, because this name will be matched against the application command name
     description = "Pingt alle Leute, die noch nicht auf die ausgewählte Nachricht reagiert haben, aber in der angegebenen Gruppe sind.";
     applicationCommand = new ContextMenuCommandBuilder()
         .setName("Faulenzerping")
