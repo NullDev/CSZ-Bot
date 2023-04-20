@@ -1,8 +1,11 @@
 FROM node:20-slim as dependency-base
     WORKDIR /app
-    RUN apt-get update -yqq && \
-        apt-get install python3 build-essential pkg-config -yqq && \
-        apt-get clean
+    RUN apt-get update -yqq \
+        && apt-get install -yqq \
+            python3 build-essential pkg-config \
+            # https://github.com/Automattic/node-canvas/issues/1065#issuecomment-654706161
+            libpixman-1-dev libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev \
+        && apt-get clean -yqqq
 
     COPY package*.json /app/
 
@@ -18,10 +21,15 @@ FROM dependency-base as runtime-dependencies
 
 FROM node:20-slim
     WORKDIR /app
-    RUN apt-get update -yqq && \
-        apt-get install ffmpeg fonts-noto-color-emoji fontconfig fonts-liberation -yqq && \
-        apt-get clean && \
-        fc-cache -f -v
+    RUN apt-get update -yqqq \
+        && apt-get install -yqqq \
+            ffmpeg \
+            fonts-noto-color-emoji \
+            fontconfig \
+            fonts-liberation \
+            libpixman-1-dev libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev \
+        && apt-get clean -yqqq \
+        && fc-cache -f -v
 
     ENV NODE_ENV=production
     EXPOSE 3000
