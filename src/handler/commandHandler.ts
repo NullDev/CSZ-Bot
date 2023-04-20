@@ -73,7 +73,7 @@ import type { BotContext } from "../context.js";
 import { WoisCommand } from "../commands/woisvote.js";
 import { ApplicationCommandCreationResponse } from "../types.js";
 import logger from "../utils/logger.js";
-import { AoCCommand } from "../commands/aoc.js";
+// import { AoCCommand } from "../commands/aoc.js";
 import { BanListCommand } from "../commands/banlist.js";
 import { LinkRedirect } from "../commands/special/linkRedirect.js";
 
@@ -120,7 +120,7 @@ export const commands: readonly Command[] = [
     new OidaCommand(),
     new DeOidaCommand(),
     new EhreCommand(),
-    new AoCCommand(),
+    // new AoCCommand(),
     new BanListCommand(),
     new LinkRedirect()
 ];
