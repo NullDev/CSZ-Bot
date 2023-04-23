@@ -116,7 +116,7 @@ const createQuote = async(
                 {
                     color: randomizedColor,
                     description: referencedMessage.content,
-                    author: getAuthor(referencedUser!),
+                    author: await getAuthor(referencedUser!),
                     timestamp: new Date(referencedMessage.createdTimestamp).toISOString()
                 }
             ],
