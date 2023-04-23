@@ -8,7 +8,7 @@ import { isNerd, isTrusted } from "../utils/userUtils.js";
 const quoteConfig = getConfig().bot_settings.quotes;
 const quoteThreshold = quoteConfig.quote_threshold;
 const isSourceChannelAllowed = (channelId: string) => !quoteConfig.blacklisted_channel_ids.includes(channelId);
-const isChannelAnonymous = (channel: Channel) => {
+const isChannelAnonymous = (context: BotContext, channel: Channel) => {
     const relevantChannel = channel.isThread() && channel.parent
         ? channel.parent
         : channel;
@@ -64,6 +64,7 @@ const getQuoteeUsername = (author: GuildMember, quotee: User): string => {
 };
 
 const createQuote = (
+    context: BotContext,
     quotedUser: GuildMember,
     quoter: readonly User[],
     referencedUser: GuildMember | null | undefined,
@@ -71,7 +72,7 @@ const createQuote = (
     referencedMessage: Message | undefined
 ) => {
     const getAuthor = (user: GuildMember) => {
-        if (isChannelAnonymous(quotedMessage.channel) || !user) {
+        if (isChannelAnonymous(context, quotedMessage.channel) || !user) {
             return { name: "Anon" };
         }
 
@@ -164,7 +165,7 @@ export const quoteReactionHandler = async(event: MessageReaction, user: User, co
         return;
     }
 
-    const { quote, reference } = createQuote(quotedUser, quotingMembersAllowed.map(member => member.user), referencedUser, quotedMessage, referencedMessage);
+    const { quote, reference } = createQuote(context, quotedUser, quotingMembersAllowed.map(member => member.user), referencedUser, quotedMessage, referencedMessage);
     const { id: targetChannelId, channel: targetChannel } = getTargetChannel(quotedMessage.channelId, context);
 
     if (targetChannel === undefined) {
