@@ -8,18 +8,23 @@ import { isNerd, isTrusted } from "../utils/userUtils.js";
 const quoteConfig = getConfig().bot_settings.quotes;
 const quoteThreshold = quoteConfig.quote_threshold;
 const isSourceChannelAllowed = (channelId: string) => !quoteConfig.blacklisted_channel_ids.includes(channelId);
-const isChannelAnonymous = (context: BotContext, channel: Channel) => {
-    const relevantChannel = channel.isThread() && channel.parent
-        ? channel.parent
-        : channel;
+const isChannelAnonymous = async(context: BotContext, channel: Channel) => {
+    const anonChannels = quoteConfig.anonymous_channel_ids;
 
-    if("parent" in relevantChannel && relevantChannel.parent?.type === ChannelType.GuildCategory) {
-        const category = relevantChannel.parent;
-        if (quoteConfig.anonymous_category_ids.includes(category.id)) {
+    let currentChannel: Channel | null = channel;
+    do {
+        // eslint-disable-next-line no-await-in-loop
+        currentChannel = await currentChannel.fetch();
+        if (anonChannels.includes(currentChannel.id)) {
             return true;
         }
-    }
-    return quoteConfig.anonymous_channel_ids.includes(relevantChannel.id);
+
+        currentChannel = "parent" in currentChannel && !!currentChannel.parent
+            ? currentChannel.parent
+            : null;
+    } while (!!currentChannel);
+
+    return false;
 };
 const isQuoteEmoji = (emoji: GuildEmoji | ReactionEmoji) => emoji.name === quoteConfig.emoji_name;
 const isMemberAllowedToQuote = (member: GuildMember) => isNerd(member);
@@ -56,14 +61,14 @@ const getTargetChannel = (sourceChannelId: string, context: BotContext) => {
 };
 
 const getQuoteeUsername = (author: GuildMember, quotee: User): string => {
-    if(author.user.username === quotee.username) {
+    if (author.user.username === quotee.username) {
         return `**${quotee.username} (Selbstzitierer :FBIOPENUP:)**`;
     }
 
     return quotee.username;
 };
 
-const createQuote = (
+const createQuote = async(
     context: BotContext,
     quotedUser: GuildMember,
     quoter: readonly User[],
@@ -71,15 +76,13 @@ const createQuote = (
     quotedMessage: Message,
     referencedMessage: Message | undefined
 ) => {
-    const getAuthor = (user: GuildMember) => {
-        if (isChannelAnonymous(context, quotedMessage.channel) || !user) {
-            return { name: "Anon" };
-        }
-
-        return {
-            name: user.displayName,
-            icon_url: user.displayAvatarURL()
-        };
+    const getAuthor = async(user: GuildMember) => {
+        return !user || await isChannelAnonymous(context, quotedMessage.channel)
+            ? { name: "Anon" }
+            : {
+                name: user.displayName,
+                icon_url: user.displayAvatarURL()
+            };
     };
 
     const randomizedColor = generateRandomColor();
@@ -91,7 +94,7 @@ const createQuote = (
                 {
                     color: randomizedColor,
                     description: quotedMessage.content,
-                    author: getAuthor(quotedUser),
+                    author: await getAuthor(quotedUser),
                     timestamp: new Date(quotedMessage.createdTimestamp).toISOString(),
                     fields: [
                         {
@@ -165,7 +168,7 @@ export const quoteReactionHandler = async(event: MessageReaction, user: User, co
         return;
     }
 
-    const { quote, reference } = createQuote(context, quotedUser, quotingMembersAllowed.map(member => member.user), referencedUser, quotedMessage, referencedMessage);
+    const { quote, reference } = await createQuote(context, quotedUser, quotingMembersAllowed.map(member => member.user), referencedUser, quotedMessage, referencedMessage);
     const { id: targetChannelId, channel: targetChannel } = getTargetChannel(quotedMessage.channelId, context);
 
     if (targetChannel === undefined) {
