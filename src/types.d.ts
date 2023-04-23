@@ -92,6 +92,7 @@ export interface Config {
         quotes: {
             allowed_group_ids: Array<Snowflake>;
             anonymous_channel_ids: Array<Snowflake>;
+            anonymous_category_ids: Array<Snowflake>;
             quote_threshold: number;
             blacklisted_channel_ids: Array<Snowflake>;
             target_channel_overrides: Record<string, string>;

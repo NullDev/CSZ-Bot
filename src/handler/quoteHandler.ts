@@ -1,6 +1,6 @@
 import { GuildMember, Message, MessageReaction, User, TextBasedChannel, GuildEmoji, ReactionEmoji, ChannelType, Channel } from "discord.js";
 
-import { BotContext } from "../context.js";
+import type { BotContext } from "../context.js";
 import { getConfig } from "../utils/configHandler.js";
 import log from "../utils/logger.js";
 import { isNerd, isTrusted } from "../utils/userUtils.js";
@@ -12,6 +12,13 @@ const isChannelAnonymous = (channel: Channel) => {
     const relevantChannel = channel.isThread() && channel.parent
         ? channel.parent
         : channel;
+
+    if("parent" in relevantChannel && relevantChannel.parent?.type === ChannelType.GuildCategory) {
+        const category = relevantChannel.parent;
+        if (quoteConfig.anonymous_category_ids.includes(category.id)) {
+            return true;
+        }
+    }
     return quoteConfig.anonymous_channel_ids.includes(relevantChannel.id);
 };
 const isQuoteEmoji = (emoji: GuildEmoji | ReactionEmoji) => emoji.name === quoteConfig.emoji_name;

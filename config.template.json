@@ -27,6 +27,7 @@
             "allowed_group_ids": [],
             "quote_threshold": 2,
             "anonymous_channel_ids": [],
+            "anonymous_category_ids": [],
             "blacklisted_channel_ids": [],
             "target_channel_overrides": [],
             "default_target_channel_id": ""
