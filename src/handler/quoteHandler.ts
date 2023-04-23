@@ -1,4 +1,4 @@
-import { GuildMember, Message, MessageReaction, User, TextBasedChannel, GuildEmoji, ReactionEmoji, ChannelType } from "discord.js";
+import { GuildMember, Message, MessageReaction, User, TextBasedChannel, GuildEmoji, ReactionEmoji, ChannelType, Channel } from "discord.js";
 
 import { BotContext } from "../context.js";
 import { getConfig } from "../utils/configHandler.js";
@@ -8,7 +8,12 @@ import { isNerd, isTrusted } from "../utils/userUtils.js";
 const quoteConfig = getConfig().bot_settings.quotes;
 const quoteThreshold = quoteConfig.quote_threshold;
 const isSourceChannelAllowed = (channelId: string) => !quoteConfig.blacklisted_channel_ids.includes(channelId);
-const isChannelAnonymous = (channelId: string) => quoteConfig.anonymous_channel_ids.includes(channelId);
+const isChannelAnonymous = (channel: Channel) => {
+    const relevantChannel = channel.isThread() && channel.parent
+        ? channel.parent
+        : channel;
+    return quoteConfig.anonymous_channel_ids.includes(relevantChannel.id);
+};
 const isQuoteEmoji = (emoji: GuildEmoji | ReactionEmoji) => emoji.name === quoteConfig.emoji_name;
 const isMemberAllowedToQuote = (member: GuildMember) => isNerd(member);
 
@@ -59,7 +64,7 @@ const createQuote = (
     referencedMessage: Message | undefined
 ) => {
     const getAuthor = (user: GuildMember) => {
-        if (isChannelAnonymous(quotedMessage.channelId) || !user) {
+        if (isChannelAnonymous(quotedMessage.channel) || !user) {
             return { name: "Anon" };
         }
 
