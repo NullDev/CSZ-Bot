@@ -1,5 +1,7 @@
 name: Feature-Vorschlag
 description: Tolle Idee für neue Bot-Features
+labels:
+  - enhancement
 body:
   - type: textarea
     id: description
@@ -37,4 +39,14 @@ body:
       description: Kannst und möchtest du das Feature selbst bauen?
       options:
         - label: Ja
+        - label: Nein
+        - label: Mit Hilfe
+  - type: checkboxes
+    id: legal
+    attributes:
+      label: Papierkram
+      options:
+        - label: Ich habe die AGB gelesen und möchte den Newsletter abonnieren
+          required: true
+        - label: Ich stimme der Verwendung von Cookies zu
           required: true
