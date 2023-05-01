@@ -44,7 +44,7 @@
     "minimist": "^1.2.8",
     "moment": "^2.29.4",
     "node-fetch": "^3.3.1",
-    "sequelize": "6.30.0",
+    "sequelize": "6.31.0",
     "sqlite3": "~5.1.6",
     "winston": "^3.8.2"
   },
