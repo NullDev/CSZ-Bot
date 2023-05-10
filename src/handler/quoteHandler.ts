@@ -19,10 +19,11 @@ const isChannelAnonymous = async(context: BotContext, channel: Channel) => {
             return true;
         }
 
-        currentChannel = "parent" in currentChannel && !!currentChannel.parent
-            ? currentChannel.parent
-            : null;
-    } while (!!currentChannel);
+        currentChannel =
+            "parent" in currentChannel && !!currentChannel.parent
+                ? currentChannel.parent
+                : null;
+    } while (currentChannel !== null);
 
     return false;
 };
@@ -30,13 +31,23 @@ const isQuoteEmoji = (emoji: GuildEmoji | ReactionEmoji) => emoji.name === quote
 const isMemberAllowedToQuote = (member: GuildMember) => isNerd(member);
 
 const getMessageQuoter = async(message: Message): Promise<readonly GuildMember[]> => {
+    const guild = message.guild;
+    if (guild === null) {
+        throw new Error("Guild is null");
+    }
     const fetchedMessage = await message.fetch(true);
-    const messageReaction = fetchedMessage.reactions.cache.find(r => isQuoteEmoji(r.emoji))!;
+    const messageReaction = fetchedMessage.reactions.cache.find((r) =>
+        isQuoteEmoji(r.emoji),
+    );
+    if (messageReaction === undefined) {
+        throw new Error(
+            "A message has been quoted but the reaction could not be found",
+        );
+    }
     const fetchedUsersOfReaction = await messageReaction.users.fetch();
     return fetchedUsersOfReaction
-        .map(user => message.guild!.members.resolve(user.id))
-        .filter(member => member !== null)
-        .map(member => member!);
+        .map((user) => guild.members.resolve(user.id))
+        .filter((member): member is GuildMember => member !== null);
 };
 
 const isMessageAlreadyQuoted = (messageQuoter: readonly GuildMember[], context: BotContext): boolean => {
@@ -76,13 +87,14 @@ const createQuote = async(
     quotedMessage: Message,
     referencedMessage: Message | undefined
 ) => {
-    const getAuthor = async(user: GuildMember) => {
-        return !user || await isChannelAnonymous(context, quotedMessage.channel)
+    const getAuthor = async (user: GuildMember | null | undefined) => {
+        return !user ||
+            (await isChannelAnonymous(context, quotedMessage.channel))
             ? { name: "Anon" }
             : {
-                name: user.displayName,
-                icon_url: user.displayAvatarURL()
-            };
+                  name: user.displayName,
+                  icon_url: user.displayAvatarURL(),
+              };
     };
 
     const randomizedColor = generateRandomColor();
@@ -95,33 +107,46 @@ const createQuote = async(
                     color: randomizedColor,
                     description: quotedMessage.content,
                     author: await getAuthor(quotedUser),
-                    timestamp: new Date(quotedMessage.createdTimestamp).toISOString(),
+                    timestamp: new Date(
+                        quotedMessage.createdTimestamp,
+                    ).toISOString(),
                     fields: [
                         {
                             name: "Link zur Nachricht",
-                            value: quotedMessage.url
+                            value: quotedMessage.url,
                         },
                         {
                             name: "zitiert von",
-                            value: quoter.map(u => getQuoteeUsername(quotedUser, u)).join(", ")
-                        }
-                    ]
-                }
+                            value: quoter
+                                .map((u) => getQuoteeUsername(quotedUser, u))
+                                .join(", "),
+                        },
+                    ],
+                },
             ],
-            files: quotedMessage.attachments.map((attachment, _key) => attachment)
+            files: quotedMessage.attachments.map(
+                (attachment, _key) => attachment,
+            ),
         },
-        reference: referencedMessage !== undefined ? {
-            embeds: [
-                ...referencedMessage.embeds,
-                {
-                    color: randomizedColor,
-                    description: referencedMessage.content,
-                    author: await getAuthor(referencedUser!),
-                    timestamp: new Date(referencedMessage.createdTimestamp).toISOString()
-                }
-            ],
-            files: referencedMessage.attachments.map((attachment, _key) => attachment)
-        } : undefined
+        reference:
+            referencedMessage !== undefined
+                ? {
+                      embeds: [
+                          ...referencedMessage.embeds,
+                          {
+                              color: randomizedColor,
+                              description: referencedMessage.content,
+                              author: await getAuthor(referencedUser),
+                              timestamp: new Date(
+                                  referencedMessage.createdTimestamp,
+                              ).toISOString(),
+                          },
+                      ],
+                      files: referencedMessage.attachments.map(
+                          (attachment, _key) => attachment,
+                      ),
+                  }
+                : undefined,
     };
 };
 
@@ -130,10 +155,13 @@ export const quoteReactionHandler = async(event: MessageReaction, user: User, co
         return;
     }
 
-    const quoter = context.guild.members.cache.get(user.id)!;
+    const quoter = context.guild.members.cache.get(user.id);
+
     const sourceChannel = event.message.channel as TextBasedChannel;
     const quotedMessage = await sourceChannel.messages.fetch(event.message.id);
-    const referencedMessage = quotedMessage.reference ? await sourceChannel.messages.fetch(quotedMessage.reference?.messageId!) : undefined;
+    const referencedMessage = quotedMessage.reference
+        ? await sourceChannel.messages.fetch(quotedMessage.reference?.messageId)
+        : undefined;
     const quotedUser = quotedMessage.member;
     const referencedUser = referencedMessage?.member;
     const quotingMembers = (await getMessageQuoter(quotedMessage));

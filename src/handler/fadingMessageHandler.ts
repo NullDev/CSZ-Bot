@@ -19,15 +19,21 @@ const fadingMessageDeleteLoop = async(client: Client) => {
 
         try {
             const guild = await client.guilds.fetch(fadingMessage.guildId);
-            const channel = guild.channels.cache.get(fadingMessage.channelId) as TextChannel;
-            const message = await channel.messages.fetch(fadingMessage.messageId);
+            const channel = guild.channels.cache.get(
+                fadingMessage.channelId,
+            ) as TextChannel;
+            const message = await channel.messages.fetch(
+                fadingMessage.messageId,
+            );
 
             await message.delete();
-        }
-        catch (error: any) {
-            log.warn(`Failed to handle FadingMessage [${fadingMessage.id}] properly: ${error.stack}`);
-        }
-        finally {
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                log.warn(
+                    `Failed to handle FadingMessage [${fadingMessage.id}] properly: ${error.stack}`,
+                );
+            }
+        } finally {
             await fadingMessage.destroy();
         }
     }

@@ -167,15 +167,15 @@ export const registerAllApplicationCommandsAsGuildCommands = async(
             ...cmd.applicationCommand.toJSON(),
             dm_permission: false,
             default_member_permissions: defaultMemberPermissions.toString(),
-
             // Somehow, this permission thing does not make any sense, that's why we assert to `any`
             permissions: [
                 {
                     id: config.ids.bot_deny_role_id,
                     type: ApplicationCommandPermissionType.Role,
-                    permission: false
-                }
-            ]
+                    permission: false,
+                },
+            ],
+            // rome-ignore lint/suspicious/noExplicitAny: this is a discord.js bug
         } as any;
         return commandCreationData;
     };
@@ -294,11 +294,16 @@ const commandMessageHandler = async(
     if (matchingCommand.requiredPermissions) {
         const member = message.guild.members.cache.get(message.author.id);
         if (member && !checkPermissions(member, matchingCommand.requiredPermissions)) {
+            const botUser = client.user;
+            if (!botUser) {
+                return Promise.reject(new Error("Bot user not found"));
+            }
+
             return Promise.all([
-                ban(client, member, client.user!, "Lol", false, 0.08),
+                ban(client, member, botUser, "Lol", false, 0.08),
                 message.reply({
-                    content: `Tut mir leid, ${message.author}. Du hast nicht genügend Rechte um dieses Command zu verwenden, dafür gibt's erstmal mit dem Willkürhammer einen auf den Deckel.`
-                })
+                    content: `Tut mir leid, ${message.author}. Du hast nicht genügend Rechte um dieses Command zu verwenden, dafür gibt's erstmal mit dem Willkürhammer einen auf den Deckel.`,
+                }),
             ]);
         }
     }
