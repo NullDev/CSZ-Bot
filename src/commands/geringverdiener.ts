@@ -61,7 +61,7 @@ export class GeringverdienerCommand implements MessageCommand, ApplicationComman
         }
 
         const author = command.guild.members.resolve(command.user);
-        const text = command.options.getString("text")!;
+        const text = command.options.getString("text", true);
         if (!author) {
             throw new Error("Couldn't resolve guild member");
         }
@@ -76,7 +76,8 @@ export class GeringverdienerCommand implements MessageCommand, ApplicationComman
         const author = message.guild.members.resolve(message.author);
         const { channel } = message;
 
-        const isReply = message.reference?.messageId !== undefined;
+        const refId = message.reference?.messageId;
+        const isReply = refId !== undefined;
         let content = message.content.slice(`${context.prefix.command}${this.name} `.length);
         const hasContent = !!content && content.trim().length > 0;
 
@@ -91,24 +92,32 @@ export class GeringverdienerCommand implements MessageCommand, ApplicationComman
 
         let replyMessage: Message<boolean> | null = null;
         if (isReply) {
-            replyMessage = await message.channel.messages.fetch(message.reference!.messageId!);
+            replyMessage = await message.channel.messages.fetch(refId);
             if (!hasContent) {
                 // eslint-disable-next-line prefer-destructuring
                 content = replyMessage.content;
             }
-        }
 
-        const geringverdieneredEmbed = buildGeringverdiener(message.guild.emojis, author, content);
+            const geringverdieneredEmbed = buildGeringverdiener(
+                message.guild.emojis,
+                author,
+                content,
+            );
 
-        if (isReply) {
             await Promise.all([
-                replyMessage!.reply({
-                    embeds: [geringverdieneredEmbed]
+                replyMessage.reply({
+                    embeds: [geringverdieneredEmbed],
                 }),
-                message.delete()
+                message.delete(),
             ]);
         }
         else {
+            const geringverdieneredEmbed = buildGeringverdiener(
+                message.guild.emojis,
+                author,
+                content,
+            );
+
             await Promise.all([
                 channel.send({
                     embeds: [geringverdieneredEmbed]
