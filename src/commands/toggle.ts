@@ -51,13 +51,13 @@ const toggleSdm = async(message: Message) => {
  */
 export const run: CommandFunction = async(client, message, args, context) => {
     if (!isMod(message.member)) return;
-    if (!message.reference) {
+    const reference = message.reference;
+    const referenceMessageId = reference?.messageId;
+    if (!reference || !referenceMessageId) {
         return "Bruder schon mal was von der Replyfunktion gehört?";
     }
 
-    const channel = context.guild.channels.cache.get(
-        message.reference.channelId
-    );
+    const channel = context.guild.channels.cache.get(reference.channelId);
 
     if (!channel) {
         return;
@@ -66,16 +66,16 @@ export const run: CommandFunction = async(client, message, args, context) => {
         return;
     }
 
-    const replyMessage = await channel.messages.fetch(
-        message.reference.messageId!
-    );
+    const replyMessage = await channel.messages.fetch(referenceMessageId);
     const pollEmbed = replyMessage.embeds[0];
-    const isPoll =
-        pollEmbed.author!.name.startsWith("Umfrage") ||
-        pollEmbed.author!.name.startsWith("Strawpoll");
+    const pollAuthor = pollEmbed.author;
+    if (!pollAuthor) return "Irgendwie ist der Poll kaputt";
 
-    const isSdm =
-        pollEmbed.author!.name.startsWith("Secure Decision");
+    const isPoll =
+        pollAuthor.name.startsWith("Umfrage") ||
+        pollAuthor.name.startsWith("Strawpoll");
+
+    const isSdm = pollAuthor.name.startsWith("Secure Decision");
 
     if (isPoll) {
         await Promise.all([
