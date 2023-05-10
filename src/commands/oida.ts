@@ -3,6 +3,7 @@ import { type Client, type CommandInteraction, SlashCommandBuilder, SlashCommand
 import AustrianTranslation from "../storage/model/AustrianTranslation.js";
 import type { ApplicationCommand } from "./command.js";
 import type { BotContext } from "../context.js";
+import { ensureChatInputCommand } from "../utils/interactionUtils.js";
 
 export class OidaCommand implements ApplicationCommand {
     modCommand = false;
@@ -44,19 +45,16 @@ export class OidaCommand implements ApplicationCommand {
     }
 
     async handleInteraction(command: CommandInteraction, _client: Client, context: BotContext) {
-        if (!command.isChatInputCommand()) {
-            // TODO: Solve this on a type level
-            return;
-        }
+        const cmd = ensureChatInputCommand(command);
 
         const addedBy = await context.guild.members.fetch(command.user);
         if (!addedBy) {
             return;
         }
 
-        const austrian = command.options.getString("austrian")!; // assertion because it is required
-        const german = command.options.getString("german")!; // assertion because it is required
-        const description = command.options.getString("description") ?? null;
+        const austrian = cmd.options.getString("austrian", true); // assertion because it is required
+        const german = cmd.options.getString("german", true); // assertion because it is required
+        const description = cmd.options.getString("description", false);
 
         await AustrianTranslation.persistOrUpdate(
             addedBy,
