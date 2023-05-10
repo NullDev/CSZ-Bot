@@ -149,6 +149,11 @@ export const run: CommandFunction = async(_client, message, args, context) => {
             icon_url: message.author.displayAvatarURL()
         }
     };
+    const embedFields = embed.fields;
+    if (embedFields === undefined) {
+        return "Irgendwie fehlen die Felder in dem Embed. Das sollte nicht passieren.";
+    }
+
 
     const extendable = options.extendable && pollOptions.length < OPTION_LIMIT && pollOptionsTextLength < TEXT_LIMIT;
 
@@ -157,7 +162,11 @@ export const run: CommandFunction = async(_client, message, args, context) => {
             return "Bruder du kannst -e nicht mit -d kombinieren. 🙄";
         }
 
-        embed.fields!.push({name: "✏️ Erweiterbar", value: "Erweiterbar mit .extend als Reply", inline: true});
+        embedFields.push({
+            name: "✏️ Erweiterbar",
+            value: "Erweiterbar mit .extend als Reply",
+            inline: true,
+        });
         embed.color = 0x2ecc71;
     }
 
@@ -171,12 +180,23 @@ export const run: CommandFunction = async(_client, message, args, context) => {
         }
 
 
-        embed.fields!.push({name: "⏳ Verzögert", value: `Abstimmungsende: ${time(finishTime, TimestampStyles.RelativeTime)}`, inline: true});
+        embedFields.push({
+            name: "⏳ Verzögert",
+            value: `Abstimmungsende: ${time(
+                finishTime,
+                TimestampStyles.RelativeTime,
+            )}`,
+            inline: true,
+        });
         embed.color = 0xa10083;
     }
 
 
-    embed.fields!.push({name: "📝 Antwortmöglichkeit", value: options.straw ? "Einzelauswahl" : "Mehrfachauswahl", inline: true});
+    embedFields.push({
+        name: "📝 Antwortmöglichkeit",
+        value: options.straw ? "Einzelauswahl" : "Mehrfachauswahl",
+        inline: true,
+    });
 
 
     const voteChannel = context.textChannels.votes;
@@ -255,12 +275,22 @@ export const startCron = (context: BotContext) => {
             const message = await /** @type {import("discord.js").TextChannel} */ (channel).messages.fetch(delayedPoll.pollId);
 
             const users: Record<Snowflake, User> = {};
-            await Promise.all(delayedPoll.reactions
-                .flat()
-                .filter((x, uidi) => delayedPoll.reactions.indexOf(x as any as string[] /* TODO @twobiers this is not correct, but the code isn't in use (yet) */) !== uidi)
-                .map(async uidToResolve => {
-                    users[uidToResolve] = await context.client.users.fetch(uidToResolve);
-                }));
+            await Promise.all(
+                delayedPoll.reactions
+                    .flat()
+                    .filter(
+                        (x, uidi) =>
+                            delayedPoll.reactions.indexOf(
+                                // rome-ignore lint/suspicious/noExplicitAny: I don't know if this works
+                                x as any as string[],
+                            ) !== uidi,
+                    )
+                    .map(async (uidToResolve) => {
+                        users[uidToResolve] = await context.client.users.fetch(
+                            uidToResolve,
+                        );
+                    }),
+            );
 
 
             const fields: APIEmbedField[] = delayedPoll.reactions.map((value, i) => {
@@ -271,24 +301,33 @@ export const startCron = (context: BotContext) => {
             if (embed === undefined) {
                 continue;
             }
+            const embedDescription = embed.description;
+            if (embedDescription === null) {
+                continue;
+            }
+            const embedAuthor = embed.author;
+            if (embedAuthor === null) {
+                continue;
+            }
 
-            const question = embed.description!.length > TEXT_LIMIT
-                ? embed.description!.slice(0, TEXT_LIMIT - 20) + "..."
-                : embed.description;
+            const question =
+                embedDescription.length > TEXT_LIMIT
+                    ? `${embedDescription.slice(0, TEXT_LIMIT - 20)}...`
+                    : embed.description;
 
             const toSend: APIEmbed = {
                 description: `Zusammenfassung: ${question}`,
                 fields,
                 timestamp: new Date().toISOString(),
                 author: {
-                    name: `${message.embeds[0].author!.name}`,
-                    icon_url: message.embeds[0].author!.iconURL
+                    name: `${embedAuthor.name}`,
+                    icon_url: embedAuthor.iconURL,
                 },
                 footer: {
                     text: `Gesamtabstimmungen: ${delayedPoll.reactions
-                        .map(x => x.length)
-                        .reduce((a, b) => a + b)}`
-                }
+                        .map((x) => x.length)
+                        .reduce((a, b) => a + b)}`,
+                },
             };
 
             await channel.send({
@@ -300,7 +339,7 @@ export const startCron = (context: BotContext) => {
 
             const messageData = await AdditionalMessageData.fromMessage(message);
             const { customData } = messageData;
-            delete customData.delayedPollData;
+            customData.delayedPollData = undefined;
             messageData.customData = customData;
             await messageData.save();
         }
