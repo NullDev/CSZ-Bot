@@ -24,6 +24,11 @@ export type ReactionHandler = (
 ) => Promise<void>;
 
 export type Mutable<T> = { -readonly [P in keyof T]: T[P] };
+type RequiredNotNull<T> = {
+    [P in keyof T]: NonNullable<T[P]>;
+};
+
+export type Ensure<T, K extends keyof T> = T & RequiredNotNull<Pick<T, K>>;
 
 export interface GitHubContributor {
     login: string;
