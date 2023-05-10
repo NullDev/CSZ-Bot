@@ -54,7 +54,12 @@ export class GoogleCommand implements ApplicationCommand {
             return;
         }
 
-        const user = command.guild?.members.cache.find(m => m.id === command.user.id)!;
+        const user = command.guild?.members.cache.find(
+            (m) => m.id === command.user.id,
+        );
+        if (!user) {
+            throw new Error("Couldn't resolve guild member");
+        }
         const dau = command.guild?.members.cache.find(m => m.id === command.options.getUser("dau", false)?.id) ?? null;
         const swd = command.options.getString("searchword", true);
 
@@ -70,7 +75,7 @@ export class GoogleCommand implements ApplicationCommand {
                 .replace("{1}", `${dau?.nickname ?? dau?.displayName}`);
         }
 
-        const embed = buildEmbed(user!, reply);
+        const embed = buildEmbed(user, reply);
         await command.reply({
             embeds: [embed],
             ephemeral: false
