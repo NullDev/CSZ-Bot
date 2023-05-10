@@ -23,4 +23,4 @@ jobs:
 
     - run: npm ci
     # Commented out until we have finalized rome
-    # - run: npm run ci
+    - run: npm run ci || true
