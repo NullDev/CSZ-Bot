@@ -41,9 +41,8 @@ export const run: CommandFunction = async(_client, message, args) => {
             choice = Math.max(choice, Math.floor(Math.random() * germanInsults.length));
             insult = germanInsults[choice];
             await message.channel.send(
-                `Hör auf, Metafragen zu stellen, ${insult}\n` +
-                "Das ist reine Zeitverschwendung und hindert uns nur daran, ~~uns zu beleidigen~~ an echten Problemen zu arbeiten.\n" +
-                "Für Tipps zum besser machen: <http://metafrage.de>");
+                `Hör auf, Metafragen zu stellen, ${insult}\nDas ist reine Zeitverschwendung und hindert uns nur daran, ~~uns zu beleidigen~~ an echten Problemen zu arbeiten.\nFür Tipps zum besser machen: <http://metafrage.de>`,
+            );
         }
         else {
             // insult user, then explain meta questions - but this time in english!
@@ -51,9 +50,8 @@ export const run: CommandFunction = async(_client, message, args) => {
             insult = englishInsults[choice];
 
             await message.channel.send(
-                `Stop asking meta questions, ${insult}\n` +
-                "It's a waste of time and stops us from ~~insulting each other~~ working on real problems.\n" +
-                "Here's a few hints on how to do it better: <https://metaquestion.net>");
+                `Stop asking meta questions, ${insult}\nIt's a waste of time and stops us from ~~insulting each other~~ working on real problems.\nHere's a few hints on how to do it better: <https://metaquestion.net>`,
+            );
         }
     }
     else {
