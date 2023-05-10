@@ -108,7 +108,12 @@ export const ban = async(client: Client, member: GuildMember, banInvoker: GuildM
     log.debug(`Banning ${member.id} by ${banInvoker.id} because of ${reason} for ${duration}.`);
 
     // No Shadow ban :(
-    if (member.id === "371724846205239326" || member.id === client.user!.id) return "Fick dich bitte.";
+    const botUser = client.user;
+    if (
+        member.id === "371724846205239326" ||
+        (botUser && member.id === botUser.id)
+    )
+        return "Fick dich bitte.";
 
     const existingBan = await Ban.findExisting(member.user);
     if (existingBan !== null) {
@@ -126,20 +131,28 @@ export const ban = async(client: Client, member: GuildMember, banInvoker: GuildM
     const humanReadableDuration = duration ? moment.duration(duration, "hours").locale("de").humanize() : undefined;
 
     const banReasonChannel = member.guild.channels.resolve(config.ids.bot_log_channel_id);
-    if (banReasonChannel && banReasonChannel.isTextBased()) {
+    if (banReasonChannel?.isTextBased()) {
         await banReasonChannel.send({
-            content: `${member} ${isSelfBan ? "hat sich selbst" : `wurde von ${banInvoker}`} ${humanReadableDuration ? `für ${humanReadableDuration}` : "bis auf unbestimmte Zeit"} gebannt. \nGrund: ${reason}`,
+            content: `${member} ${
+                isSelfBan ? "hat sich selbst" : `wurde von ${banInvoker}`
+            } ${
+                humanReadableDuration
+                    ? `für ${humanReadableDuration}`
+                    : "bis auf unbestimmte Zeit"
+            } gebannt. \nGrund: ${reason}`,
             allowedMentions: {
-                users: []
-            }
+                users: [],
+            },
         });
     }
 
     await Ban.persistOrUpdate(member, unbanAt, isSelfBan, reason);
 
     await member.send(`Du wurdest von der Coding Shitpost Zentrale gebannt!
-${!reason ? "Es wurde kein Banngrund angegeben." : "Banngrund: " + reason}
-Falls du Fragen zu dem Bann hast, kannst du dich im <#${config.ids.banned_channel_id}> Channel ausheulen.
+${!reason ? "Es wurde kein Banngrund angegeben." : `Banngrund: ${reason}`}
+Falls du Fragen zu dem Bann hast, kannst du dich im <#${
+        config.ids.banned_channel_id
+    }> Channel ausheulen.
 Lg & xD™`);
 };
 
@@ -243,7 +256,7 @@ export class BanCommand implements ApplicationCommand, MessageCommand {
         else {
             // Otherwise we would extract everything that is written AFTER the first mention
             const match = /\<@!?[0-9]+\> (.+)/.exec(messageAfterCommand);
-            if (match && match[1]) {
+            if (match?.[1]) {
                 reason = match[1];
             }
         }
