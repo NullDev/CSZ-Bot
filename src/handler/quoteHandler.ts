@@ -159,8 +159,10 @@ export const quoteReactionHandler = async(event: MessageReaction, user: User, co
 
     const sourceChannel = event.message.channel as TextBasedChannel;
     const quotedMessage = await sourceChannel.messages.fetch(event.message.id);
-    const referencedMessage = quotedMessage.reference
-        ? await sourceChannel.messages.fetch(quotedMessage.reference?.messageId)
+    const messageReference = quotedMessage.reference;
+    const messageReferenceId = messageReference?.messageId;
+    const referencedMessage = messageReferenceId
+        ? await sourceChannel.messages.fetch(messageReferenceId)
         : undefined;
     const quotedUser = quotedMessage.member;
     const referencedUser = referencedMessage?.member;
