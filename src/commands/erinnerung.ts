@@ -6,6 +6,7 @@ import logger from "../utils/logger.js";
 import Reminder, { ReminderAttributes } from "../storage/model/Reminder.js";
 import type { ProcessableMessage } from "../handler/cmdHandler.js";
 import { BotContext } from "../context.js";
+import { ensureChatInputCommand } from "../utils/interactionUtils.js";
 
 const validateDate = (date: Date): true | string => {
     if (Number.isNaN(date.getTime()) || !Number.isFinite(date.getTime())) {
@@ -43,27 +44,45 @@ export class ErinnerungCommand implements MessageCommand, ApplicationCommand {
         );
 
     async handleInteraction(command: CommandInteraction<CacheType>, _client: Client<boolean>, _context: BotContext): Promise<void> {
-        if (!command.isChatInputCommand()) {
-            // TODO: Solve this on a type level
+        const cmd = ensureChatInputCommand(command);
+        const time = cmd.options.getString("time", true);
+        const note = cmd.options.getString("note");
+        if (cmd.guildId === null) {
+            await cmd.reply(
+                "Brudi ich muss schon wissen wo ich dich erinnern soll",
+            );
             return;
         }
-        const time = command.options.getString("time")!;
-        const note = command.options.getString("note");
 
         try {
             const date = chrono.de.parseDate(time);
             const valid = validateDate(date);
             if (valid !== true) {
-                await command.reply(valid);
+                await cmd.reply(valid);
                 return;
             }
 
-            await Reminder.insertStaticReminder(command.user, command.channelId, command.guildId!, date, note);
-            await command.reply(`Ok brudi, werd dich ${formatTime(date, TimestampStyles.RelativeTime)} dran erinnern. Außer ich kack ab lol, dann mach ich das später (vielleicht)`);
-        }
-        catch (err) {
-            logger.error(`Couldn't parse date from message ${time} due to`, err);
-            await command.reply("Brudi was ist das denn für ne Datumsangabe? Gib was ordentliches an");
+            await Reminder.insertStaticReminder(
+                cmd.user,
+                cmd.channelId,
+                cmd.guildId,
+                date,
+                note,
+            );
+            await cmd.reply(
+                `Ok brudi, werd dich ${formatTime(
+                    date,
+                    TimestampStyles.RelativeTime,
+                )} dran erinnern. Außer ich kack ab lol, dann mach ich das später (vielleicht)`,
+            );
+        } catch (err) {
+            logger.error(
+                `Couldn't parse date from message ${time} due to`,
+                err,
+            );
+            await cmd.reply(
+                "Brudi was ist das denn für ne Datumsangabe? Gib was ordentliches an",
+            );
         }
     }
 
@@ -85,8 +104,18 @@ export class ErinnerungCommand implements MessageCommand, ApplicationCommand {
 
             const messageId = message.reference?.messageId ?? message.id;
             const refMessage = message.reference ?? message;
+            const guildId = refMessage.guildId;
+            if (guildId === undefined) {
+                throw new Error("GuildId is undefined");
+            }
 
-            await Reminder.insertMessageReminder(message.member.user, messageId, refMessage.channelId, refMessage.guildId!, date);
+            await Reminder.insertMessageReminder(
+                message.member.user,
+                messageId,
+                refMessage.channelId,
+                guildId,
+                date,
+            );
             await message.reply(`Ok brudi, werd dich ${formatTime(date, TimestampStyles.RelativeTime)} dran erinnern. Außer ich kack ab lol, dann mach ich das später (vielleicht)`);
         }
         catch (err) {
