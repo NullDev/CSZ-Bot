@@ -3,6 +3,7 @@ import { CacheType, Client, CommandInteraction, GuildMember, Message, EmbedBuild
 import { BotContext } from "../context.js";
 import { ApplicationCommand, MessageCommand } from "./command.js";
 import type { ProcessableMessage } from "../handler/cmdHandler.js";
+import { ensureChatInputCommand } from "../utils/interactionUtils.js";
 
 /**
  * Randomly capitalize letters
@@ -44,20 +45,17 @@ export class MockCommand implements MessageCommand, ApplicationCommand {
         );
 
     async handleInteraction(command: CommandInteraction<CacheType>, _client: Client<boolean>, _context: BotContext): Promise<void> {
-        if (!command.isChatInputCommand()) {
-            // TODO: Solve this on a type level
-            return;
-        }
+        const cmd = ensureChatInputCommand(command);
 
-        const author = command.guild?.members.resolve(command.user);
-        const text = command.options.getString("text")!;
+        const author = cmd.guild?.members.resolve(cmd.user);
+        const text = cmd.options.getString("text", true);
         if (!author) {
             throw new Error("Couldn't resolve guild member");
         }
 
         const mockedEmbed = buildMock(author, text);
-        await command.reply({
-            embeds: [mockedEmbed]
+        await cmd.reply({
+            embeds: [mockedEmbed],
         });
     }
 
@@ -65,7 +63,8 @@ export class MockCommand implements MessageCommand, ApplicationCommand {
         const author = message.guild.members.resolve(message.author);
         const { channel } = message;
 
-        const isReply = message.reference?.messageId !== undefined;
+        const messageReference = message.reference?.messageId;
+        const isReply = messageReference !== undefined;
         let content = message.content.slice(`${context.prefix.command}${this.name} `.length);
         const hasContent = !!content && content.trim().length > 0;
 
@@ -80,24 +79,21 @@ export class MockCommand implements MessageCommand, ApplicationCommand {
 
         let replyMessage: Message<boolean> | null = null;
         if (isReply) {
-            replyMessage = await message.channel.messages.fetch(message.reference!.messageId!);
+            replyMessage = await message.channel.messages.fetch(messageReference);
             if (!hasContent) {
                 // eslint-disable-next-line prefer-destructuring
                 content = replyMessage.content;
             }
-        }
-
-        const mockedEmbed = buildMock(author, content);
-
-        if (isReply) {
+            const mockedEmbed = buildMock(author, content);
             await Promise.all([
-                replyMessage!.reply({
-                    embeds: [mockedEmbed]
+                replyMessage.reply({
+                    embeds: [mockedEmbed],
                 }),
-                message.delete()
+                message.delete(),
             ]);
         }
         else {
+            const mockedEmbed = buildMock(author, content);
             await Promise.all([
                 channel.send({
                     embeds: [mockedEmbed]
