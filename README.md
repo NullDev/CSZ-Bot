@@ -1,6 +1,5 @@
 # CSZ-Bot
 
-[![ESLint Codestyle](https://github.com/NullDev/CSZ-Bot/actions/workflows/Lint.yml/badge.svg)](https://github.com/NullDev/CSZ-Bot/actions/workflows/Lint.yml)
 [![CSZ Discord](https://img.shields.io/discord/618781839338897443?color=%237289DA&label=CSZ%20Discord&logo=discord&logoColor=white)](https://discord.gg/csz)
 
 <p align="center">
