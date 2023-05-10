@@ -7,7 +7,8 @@ import { ApplicationCommand, MessageCommand } from "./command.js";
 /**
  * Clappifies text
  */
-const clapify = (str: string): string => str.split(/\s+/).join(" :clap: ") + " :clap:";
+const clapify = (str: string): string =>
+    `${str.split(/\s+/).join(" :clap: ")} :clap:`;
 
 /**
  * build clapped embed
@@ -41,7 +42,7 @@ export class ClapCommand implements MessageCommand, ApplicationCommand {
         }
 
         const author = command.guild?.members.resolve(command.user);
-        const text = command.options.getString("text")!;
+        const text = command.options.getString("text", true);
         if(!author) {
             throw new Error("Couldn't resolve guild member");
         }
@@ -56,7 +57,8 @@ export class ClapCommand implements MessageCommand, ApplicationCommand {
         const author = message.guild.members.resolve(message.author);
         const { channel } = message;
 
-        const isReply = message.reference?.messageId !== undefined;
+        const replyRef = message.reference?.messageId;
+        const isReply = replyRef !== undefined;
         let content = message.content.slice(`${context.prefix.command}${this.name} `.length);
         const hasContent = !!content && content.trim().length > 0;
 
@@ -71,24 +73,22 @@ export class ClapCommand implements MessageCommand, ApplicationCommand {
 
         let replyMessage: Message<boolean> | null = null;
         if(isReply) {
-            replyMessage = await message.channel.messages.fetch(message.reference!.messageId!);
+            replyMessage = await message.channel.messages.fetch(replyRef);
             if(!hasContent) {
                 // eslint-disable-next-line prefer-destructuring
                 content = replyMessage.content;
             }
-        }
 
-        const clappedEmbed = buildClap(author, content);
-
-        if(isReply) {
+            const clappedEmbed = buildClap(author, content);
             await Promise.all([
-                replyMessage!.reply({
-                    embeds: [clappedEmbed]
+                replyMessage.reply({
+                    embeds: [clappedEmbed],
                 }),
-                message.delete()
+                message.delete(),
             ]);
         }
         else {
+            const clappedEmbed = buildClap(author, content);
             await Promise.all([
                 channel.send({
                     embeds: [clappedEmbed]
