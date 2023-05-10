@@ -46,15 +46,14 @@ const createSecureDecisionMessage = (question: string, author: GuildMember, opti
     if (options.length === 0) {
         const decision = secureDecisionMaker(question);
         let file;
-        if (!!decision) {
+        if (decision) {
             embed.setColor(0x2ecc71);
             file = "yes.png";
-        }
-        else {
+        } else {
             embed.setColor(0xe74c3c);
             file = "no.png";
         }
-        embed.setThumbnail("attachment://" + file);
+        embed.setThumbnail(`attachment://${file}`);
 
         return {
             embeds: [embed],
@@ -145,7 +144,7 @@ export class SdmCommand implements MessageCommand, ApplicationCommand {
 
         let question = args.join(" ").replace(/\s\s+/g, " ");
         if (isReply && !args.length) {
-            question = (await message.channel.messages.fetch(replyRef!)).content.trim();
+            question = (await message.channel.messages.fetch(replyRef)).content.trim();
         }
 
         const options = question.split(/,|;|\s+oder\s+/gi).map(s => s.trim()).filter(s => !!s);
