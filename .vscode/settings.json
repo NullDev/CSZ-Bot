@@ -8,11 +8,16 @@
   },
   "files.eol": "\n",
   "cSpell.language": "de,en",
-  "editor.defaultFormatter": "dbaeumer.vscode-eslint",
   "editor.formatOnSaveMode": "modificationsIfAvailable",
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true
+  "[javascript]": {
+    "editor.defaultFormatter": "rome.rome"
   },
-  "eslint.validate": ["javascript", "typescript"],
-  "cSpell.words": ["faulenzer", "brudi", "faulenzerping"]
+  "[typescript]": {
+    "editor.defaultFormatter": "rome.rome"
+  },
+  "cSpell.words": [
+    "faulenzer",
+    "brudi",
+    "faulenzerping"
+  ]
 }
