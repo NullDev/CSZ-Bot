@@ -9,8 +9,8 @@ import { assertNever } from "../utils/typeUtils.js";
 
 const fetchContributions = async(): Promise<Array<GitHubContributor>> => {
     return fetch("https://api.github.com/repos/NullDev/CSZ-Bot/contributors", {
-        headers: { Accept: "application/vnd.github.v3+json" }
-    }).then((res: any) => res.json());
+        headers: { Accept: "application/vnd.github.v3+json" },
+    }).then((res) => res.json() as Promise<Array<GitHubContributor>>);
 };
 
 const fetchLanguages = async(): Promise<Array<string>> => {
@@ -22,25 +22,34 @@ const fetchLanguages = async(): Promise<Array<string>> => {
 
 const getContributors = async(): Promise<string> => {
     const contributors = await fetchContributions();
-    return contributors
-        .filter(c => c.type === "User")
-        .map(c => {
+    return `${contributors
+        .filter((c) => c.type === "User")
+        .map((c) => {
             return c.login.replace("-", "‑"); // Replace normal hyphen with no-breaking hypen
-        }).join(", ") + " | [[Auf GitHub ansehen]](https://github.com/NullDev/CSZ-Bot/graphs/contributors)";
+        })
+        .join(
+            ", ",
+        )} | [[Auf GitHub ansehen]](https://github.com/NullDev/CSZ-Bot/graphs/contributors)`;
 };
 
 const getTechStackInfo = async(): Promise<string> => {
-    return `**Programmiersprache\n** ${(await fetchLanguages()).join(",")} \n` +
-        `**NodeJS Version\n** ${process.version} \n`;
+    return (
+        // rome-ignore lint/style/useTemplate: Better readability
+        `**Programmiersprache\n** ${(await fetchLanguages()).join(",")} \n` +
+        `**NodeJS Version\n** ${process.version} \n`
+    );
 };
 
 const getSystemInfo = (): string => {
-    return `**PID\n** ${process.pid} \n` +
+    return (
+        // rome-ignore lint/style/useTemplate: Better readability
+        `**PID\n** ${process.pid} \n` +
         `**Uptime\n** ${Math.floor(process.uptime())}s \n` +
         `**Platform\n** ${process.platform} \n` +
         `**System CPU usage time\n** ${process.cpuUsage().system} \n` +
         `**User CPU usage time\n** ${process.cpuUsage().user} \n` +
-        `**Architecture\n** ${process.arch}`;
+        `**Architecture\n** ${process.arch}`
+    );
 };
 
 const getServerLevel = (guild: Guild) => {
@@ -54,15 +63,17 @@ const getServerLevel = (guild: Guild) => {
 };
 
 const getServerInfo = (guild: Guild): string => {
-    // eslint-disable-next-line new-cap
     const birthday = Intl.DateTimeFormat("de-DE").format(guild.joinedTimestamp);
     const level = getServerLevel(guild);
 
-    return `**Mitglieder\n** ${guild.memberCount} / ${guild.maximumMembers} \n` +
+    return (
+        // rome-ignore lint/style/useTemplate: Better readability
+        `**Mitglieder\n** ${guild.memberCount} / ${guild.maximumMembers} \n` +
         `**Oberbabo\n** <@!${guild.ownerId}> \n` +
         `**Geburtstag\n** ${birthday} \n` +
         `**Boosts\n** ${guild.premiumSubscriptionCount} (Level: ${level}) \n` +
-        "**Invite\n** https://discord.gg/csz";
+        "**Invite\n** https://discord.gg/csz"
+    );
 };
 
 const buildEmbed = async(guild: Guild | null, avatarUrl?: string): Promise<APIEmbed> => {
@@ -96,11 +107,11 @@ const buildEmbed = async(guild: Guild | null, avatarUrl?: string): Promise<APIEm
         ]
     };
 
-    if (!!guild) {
+    if (guild) {
         embed.fields.push({
             name: "👑 Server",
             value: getServerInfo(guild),
-            inline: true
+            inline: true,
         });
     }
 
