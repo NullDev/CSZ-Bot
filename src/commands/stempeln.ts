@@ -37,8 +37,10 @@ export class StempelCommand implements ApplicationCommand {
             await command.reply("Bruder gib doch bitte richtige User an");
             return;
         }
-        if(invitator!.user.bot) {
-            await command.reply("Alter als ob dich der Bot invited hat. Laber nich!");
+        if (invitator.user.bot) {
+            await command.reply(
+                "Alter als ob dich der Bot invited hat. Laber nich!",
+            );
             return;
         }
         if(invitator.id === invitedUser.id) {
@@ -46,7 +48,7 @@ export class StempelCommand implements ApplicationCommand {
             return;
         }
 
-        const isNewInvite = await stempelUser(invitator!, invitedUser!);
+        const isNewInvite = await stempelUser(invitator, invitedUser);
         if(isNewInvite) {
             const reply = replies[Math.floor(Math.random() * replies.length)]
                 .replace("{0}", invitator.toString())
