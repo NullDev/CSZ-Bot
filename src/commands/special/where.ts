@@ -32,10 +32,12 @@ export class WhereCommand implements SpecialCommand {
         const whereMemeBuffer = await WhereCommand.createWhereMeme(subject);
 
         await message.channel.send({
-            files: [{
-                attachment: whereMemeBuffer,
-                name: subject + ".png"
-            }]
+            files: [
+                {
+                    attachment: whereMemeBuffer,
+                    name: `${subject}.png`,
+                },
+            ],
         });
     }
 
