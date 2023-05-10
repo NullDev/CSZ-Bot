@@ -62,7 +62,10 @@ export class DadJokeCommand implements SpecialCommand {
 
     async handleSpecialMessage(message: ProcessableMessage, client: Client<boolean>): Promise<CommandResult> {
         const msg = message.content.toLowerCase();
-        const phrase = Object.keys(this.matchPhrases).find(p => msg.startsWith(p))!;
+        const phrase = Object.keys(this.matchPhrases).find((p) =>
+            msg.startsWith(p),
+        );
+        if (!phrase) return;
         const attributes = this.matchPhrases[phrase];
         const idx = msg.lastIndexOf(phrase);
 
@@ -74,7 +77,7 @@ export class DadJokeCommand implements SpecialCommand {
             const whoIs = cleanContent(trimmedWords.join(" "), message.channel).trim();
             const slots: Record<Slot, string> = {
                 WHOIS: whoIs,
-                BOTNAME: client.user!.username
+                BOTNAME: client.user?.username ?? "Bot",
             };
 
             const answer = this.getRandomAnswer(attributes, slots);
