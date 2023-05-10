@@ -122,8 +122,8 @@ export class FaulenzerPingCommand implements ApplicationCommand {
 
             // eslint-disable-next-line no-await-in-loop
             await originalMessage.reply({
-                content: message + " " + usersToNotifyMentions,
-                allowedMentions: { users }
+                content: `${message} ${usersToNotifyMentions}`,
+                allowedMentions: { users },
             });
         }
     }
