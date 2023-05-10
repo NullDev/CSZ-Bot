@@ -22,5 +22,4 @@ jobs:
         cache: npm
 
     - run: npm ci
-    # Commented out until we have finalized rome
-    - run: npm run ci || true
+    - run: npm run ci
