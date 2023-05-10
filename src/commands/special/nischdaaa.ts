@@ -14,8 +14,7 @@ export class NischdaaaCommand implements SpecialCommand {
 
     async handleSpecialMessage(message: ProcessableMessage, _client: Client<boolean>): Promise<CommandResult> {
         await message.reply({
-            content: "Nischdaaaa"
+            content: "Nischdaaaa",
         });
-        return;
     }
 }
