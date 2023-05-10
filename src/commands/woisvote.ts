@@ -30,11 +30,9 @@ const createWoisMessage = async(
     channel: TextBasedChannel
 ): Promise<Message> => {
     const woisMessage = await channel.send(
-        woisVoteConstant +
-        "\n" +
-        `Wois um ${moment(date).format(
-            "HH:mm"
-        )} Uhr. Grund: ${reason}. Bock?`
+        `${woisVoteConstant}\nWois um ${moment(date).format(
+            "HH:mm",
+        )} Uhr. Grund: ${reason}. Bock?`,
     );
     await woisMessage.react("👍");
     await woisMessage.react("👎");
@@ -199,7 +197,9 @@ export const woisVoteReactionHandler: ReactionHandler = async(
 
     const success = await WoisAction.registerInterst(message.id, user.id, interest);
     if (!success) {
-        logger.error("Could not register interest for user " + user.id + " in message " + message.id);
+        logger.error(
+            `Could not register interest for user ${user.id} in message ${message.id}`,
+        );
     }
 };
 
