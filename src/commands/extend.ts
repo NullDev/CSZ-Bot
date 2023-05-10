@@ -33,8 +33,20 @@ export const run: CommandFunction = async(client, message, args, context) => {
         return "Bruder irgendwas stimmt nicht mit deinem Reply ¯\\_(ツ)_/¯";
     }
 
-    if (replyMessage.author.id !== client.user!.id || replyMessage.embeds.length !== 1) return "Bruder das ist keine Umfrage ಠ╭╮ಠ";
-    if (!replyMessage.embeds[0].author!.name.startsWith("Umfrage") && !replyMessage.embeds[0].author!.name.startsWith("Strawpoll")) return "Bruder das ist keine Umfrage ಠ╭╮ಠ";
+    const botUser = client.user;
+    if (!botUser) return "Bruder der Bot existiert nicht? LOLWUT";
+    const replyEmbed = replyMessage.embeds[0];
+
+    if (
+        replyMessage.author.id !== botUser.id ||
+        replyMessage.embeds.length !== 1
+    )
+        return "Bruder das ist keine Umfrage ಠ╭╮ಠ";
+    if (
+        !replyEmbed.author?.name.startsWith("Umfrage") &&
+        replyEmbed.author?.name.startsWith("Strawpoll")
+    )
+        return "Bruder das ist keine Umfrage ಠ╭╮ಠ";
     if (!replyMessage.editable) return "Bruder aus irgrndeinem Grund hat der Bot verkackt und kann die Umfrage nicht bearbeiten :<";
     if (replyMessage.embeds[0].color !== 3066993) return "Bruder die Umfrage ist nicht erweiterbar (ง'̀-'́)ง";
 
@@ -50,7 +62,7 @@ export const run: CommandFunction = async(client, message, args, context) => {
     else if (additionalPollOptions.length + oldPollOptionFields.length > poll.OPTION_LIMIT) return `Bruder mit deinen Antwortmöglichkeiten wird das Limit von ${poll.OPTION_LIMIT} überschritten!`;
     else if (additionalPollOptions.some(value => value.length > poll.FIELD_VALUE_LIMIT)) return `Bruder mindestens eine Antwortmöglichkeit ist länger als ${poll.FIELD_VALUE_LIMIT} Zeichen!`;
 
-    const originalAuthor = replyMessage.embeds[0].author!.name.split(" ").slice(2).join(" ");
+    const originalAuthor = replyEmbed.author?.name.split(" ").slice(2).join(" ");
     const author = originalAuthor === message.author.username ? undefined : message.author;
 
     const newFields = additionalPollOptions.map((value, i) => poll.createOptionField(value, oldPollOptionFields.length + i, author));
