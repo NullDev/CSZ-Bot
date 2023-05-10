@@ -88,12 +88,14 @@ async function drawStempelgraph(stempels: StempelConnection[], engine: LayoutEng
         log.debug(`${info[0].id} : ${info[1].name} / ${info[1].member} / ${info[1].roles}`);
     }
     const inviterNodes = stempels
-        .map(s => userInfo.get(s.inviter)!)
+        .map((s) => userInfo.get(s.inviter))
+        .filter((m): m is UserInfo => m !== undefined)
         .map(getMemberNode)
         .join(";\n");
 
     const inviteeNodes = stempels
-        .map(s => userInfo.get(s.invitee)!)
+        .map((s) => userInfo.get(s.invitee))
+        .filter((s): s is UserInfo => s !== undefined)
         .map(getMemberNode)
         .join(";\n");
 
@@ -223,10 +225,15 @@ export class StempelgraphCommand implements ApplicationCommand {
         const memberInfoMap = await fetchMemberInfo(command.guild, allUserIds);
         log.debug(`All in all we have ${allUserIds.size} unique Stempler`);
 
-        const namedStempels = stempels.map(s => ({
-            inviter: memberInfoMap.get(s.invitator)!,
-            invitee: memberInfoMap.get(s.invitedMember)!
-        })).filter(s => s.invitee && s.inviter);
+        const namedStempels = stempels
+            .map((s) => ({
+                inviter: memberInfoMap.get(s.invitator),
+                invitee: memberInfoMap.get(s.invitedMember),
+            }))
+            .filter(
+                (s): s is StempelConnection =>
+                    s.invitee !== undefined && s.inviter !== undefined,
+            );
 
         const graphUserInfo = new Map<GuildMember, UserInfo>();
         for (const member of memberInfoMap.values()) {
