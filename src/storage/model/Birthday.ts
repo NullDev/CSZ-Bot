@@ -21,7 +21,9 @@ export default class Birthday extends Model {
     declare month: OneBasedMonth;
 
     static async insertBirthday(userId: Snowflake, day: number, month: OneBasedMonth) {
-        const isoBirthdayStr = month.toString().padStart(2, "0") + "-" + day.toString().padStart(2, "0");
+        const isoBirthdayStr = `${month.toString().padStart(2, "0")}-${day
+            .toString()
+            .padStart(2, "0")}`;
 
         log.debug(`Inserting Birthday for user ${userId} on YYYY-${isoBirthdayStr} (YYYY-MM-DD)`);
 

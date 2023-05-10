@@ -16,7 +16,10 @@ export interface BanAttributes {
 
 export type BanCreationAttributes = Optional<BanAttributes, "id">
 
-export default class Ban extends Model<BanAttributes, BanCreationAttributes> implements BanAttributes {
+export default class Ban
+    extends Model<BanAttributes, BanCreationAttributes>
+    implements BanAttributes
+{
     declare id: string;
     declare userId: string;
     declare reason: string | null;
@@ -26,69 +29,82 @@ export default class Ban extends Model<BanAttributes, BanCreationAttributes> imp
     declare readonly createdAt: Date;
     declare readonly updatedAt: Date;
 
-    static persistOrUpdate = (user: GuildMember, until: Date | null, isSelfBan: boolean, reason: string | null = null): Promise<void> => {
-        log.debug(`Saving Ban for user ${user} until ${until} (Selfban: ${isSelfBan}, Reason: ${reason})`);
-        return Ban.upsert({
+    static persistOrUpdate = async (
+        user: GuildMember,
+        until: Date | null,
+        isSelfBan: boolean,
+        reason: string | null = null,
+    ): Promise<void> => {
+        log.debug(
+            `Saving Ban for user ${user} until ${until} (Selfban: ${isSelfBan}, Reason: ${reason})`,
+        );
+        await Ban.upsert({
             userId: user.id,
             reason,
             bannedUntil: until,
-            isSelfBan
-        }) as Promise<any>;
+            isSelfBan,
+        });
     };
 
-    static remove = (user: User | GuildMember) => Ban.destroy({ where: { userId: user.id } });
+    static remove = (user: User | GuildMember) =>
+        Ban.destroy({ where: { userId: user.id } });
 
-    static findExisting = (user: User | GuildMember) => Ban.findOne({ where: { userId: user.id } });
+    static findExisting = (user: User | GuildMember) =>
+        Ban.findOne({ where: { userId: user.id } });
 
-    static findExpiredBans = (now: Date) => Ban.findAll({
-        where: {
-            bannedUntil: {
-                [Op.ne]: null,
-                [Op.lte]: now
-            }
-        }
-    });
+    static findExpiredBans = (now: Date) =>
+        Ban.findAll({
+            where: {
+                bannedUntil: {
+                    [Op.ne]: null,
+                    [Op.lte]: now,
+                },
+            },
+        });
 
     static initialize(sequelize: Sequelize) {
-        this.init({
-            id: {
-                type: DataTypes.STRING(36),
-                defaultValue: () => crypto.randomUUID(),
-                primaryKey: true
-            },
-            userId: {
-                type: DataTypes.STRING(32),
-                allowNull: false
-            },
-            reason: {
-                type: DataTypes.STRING(255),
-                allowNull: true
-            },
-            bannedUntil: {
-                type: DataTypes.DATE,
-                allowNull: true
-            },
-            isSelfBan: {
-                type: DataTypes.BOOLEAN,
-                allowNull: false
-            }
-        }, {
-            sequelize,
-            indexes: [
-                {
-                    unique: true,
-                    fields: ["userId"]
+        this.init(
+            {
+                id: {
+                    type: DataTypes.STRING(36),
+                    defaultValue: () => crypto.randomUUID(),
+                    primaryKey: true,
                 },
-                {
-                    using: "BTREE",
-                    fields: [
-                        {
-                            name: "bannedUntil",
-                            order: "ASC"
-                        }
-                    ]
-                }
-            ]
-        });
+                userId: {
+                    type: DataTypes.STRING(32),
+                    allowNull: false,
+                },
+                reason: {
+                    type: DataTypes.STRING(255),
+                    allowNull: true,
+                },
+                bannedUntil: {
+                    type: DataTypes.DATE,
+                    allowNull: true,
+                },
+                isSelfBan: {
+                    type: DataTypes.BOOLEAN,
+                    allowNull: false,
+                },
+            },
+            {
+                sequelize,
+                indexes: [
+                    {
+                        unique: true,
+                        fields: ["userId"],
+                    },
+                    {
+                        using: "BTREE",
+                        fields: [
+                            {
+                                name: "bannedUntil",
+                                order: "ASC",
+                            },
+                        ],
+                    },
+                ],
+            },
+        );
     }
 }

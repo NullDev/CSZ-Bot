@@ -23,19 +23,28 @@ export default class AdditionalMessageData extends Model {
             const channel = guild.channels.cache.get(this.channelId);
 
             if (!channel) {
-                log.error(`Tried to retrieve message with id "${this.messageId}" from channel with id "${this.channelId}" from guild with id "${this.guildId}", but discord returned none. That message might be deleted or something.`);
+                log.error(
+                    `Tried to retrieve message with id "${this.messageId}" from channel with id "${this.channelId}" from guild with id "${this.guildId}", but discord returned none. That message might be deleted or something.`,
+                );
                 return undefined;
             }
 
             if (channel.type !== ChannelType.GuildText) {
-                log.error(`Tried to retrieve text message from channel of type "${channel.type}". Only text channels are currently supported`);
+                log.error(
+                    `Tried to retrieve text message from channel of type "${channel.type}". Only text channels are currently supported`,
+                );
                 return undefined;
             }
 
             return channel.messages.cache.get(this.messageId);
-        }
-        catch (err: any) {
-            log.error(`Failed to fetch message from additional data [${JSON.stringify(this)}]: ${err.message}`);
+        } catch (err: unknown) {
+            if (err instanceof Error) {
+                log.error(
+                    `Failed to fetch message from additional data [${JSON.stringify(
+                        this,
+                    )}]: ${err.message}`,
+                );
+            }
         }
         return undefined;
     }
