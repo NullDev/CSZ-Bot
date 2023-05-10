@@ -16,6 +16,7 @@ import { ApplicationCommand, CommandResult, UserInteraction } from "./command.js
 import Nicknames from "../storage/model/Nickname.js";
 import { isTrusted } from "../utils/userUtils.js";
 import logger from "../utils/logger.js";
+import { ensureChatInputCommand } from "../utils/interactionUtils.js";
 
 
 type Vote = "YES" | "NO";
@@ -113,105 +114,134 @@ export class Nickname implements ApplicationCommand {
             );
     }
 
-    async handleInteraction(command: CommandInteraction, _client: Client<boolean>): Promise<CommandResult> {
-        if (!command.isChatInputCommand()) {
-            // TODO: Solve this on a type level
-            return;
-        }
+    async handleInteraction(
+        command: CommandInteraction,
+        _client: Client<boolean>,
+    ): Promise<CommandResult> {
+        const cmd = ensureChatInputCommand(command);
 
         try {
-            const option = command.options.getSubcommand();
-            const commandUser = command.guild?.members.cache.find(m => m.id === command.user.id)!;
-            // We know that the user option is in every subcommand.
-            const user = command.options.getUser("user", true);
-            const trusted = isTrusted(commandUser);
-            const sameuser = user.id === commandUser.user.id;
+            const option = cmd.options.getSubcommand();
+            const commandUser = cmd.guild?.members.cache.find(
+                (m) => m.id === cmd.user.id,
+            );
+            // We know that the user option is in every subcmd.
+            const user = cmd.options.getUser("user", true);
+            const trusted = commandUser && isTrusted(commandUser);
+            const sameuser = user.id === commandUser?.user.id;
 
-
-            // Yes, we could use a switch-statement here. No, that wouldn't make the code more readable as we're than
-            // struggling with the nickname parameter which is mandatory only in "add" and "delete" commands.
-            // Yes, we could rearrange the code parts into separate functions. Feel free to do so.
-            // Yes, "else" is uneccessary as we're returning in every block. However, I find the semantics more clear.
             if (option === "deleteall") {
+                // Yes, we could use a switch-statement here. No, that wouldn't make the code more readable as we're than
+                // struggling with the nickname parameter which is mandatory only in "add" and "delete" commands.
+                // Yes, we could rearrange the code parts into separate functions. Feel free to do so.
+                // Yes, "else" is uneccessary as we're returning in every block. However, I find the semantics more clear.
                 if (!trusted && !sameuser) {
-                    await command.reply("Hurensohn. Der Command ist nix für dich.");
+                    await cmd.reply("Hurensohn. Der Command ist nix für dich.");
                     return;
                 }
-                const member = command.guild?.members.cache.get(user.id);
+                const member = cmd.guild?.members.cache.get(user.id);
+                if (!member) {
+                    await cmd.reply(
+                        "Hurensohn. Der Brudi ist nicht auf dem Server.",
+                    );
+                    return;
+                }
                 await Nicknames.deleteNickNames(user.id);
-                await this.updateNickName(member!, null);
-                await command.reply("Ok Brudi. Hab alles gelöscht");
+                await this.updateNickName(member, null);
+                await cmd.reply("Ok Brudi. Hab alles gelöscht");
                 return;
-            }
-            else if (option === "list") {
+            } else if (option === "list") {
                 const nicknames = await Nicknames.getNicknames(user.id);
                 if (nicknames.length === 0) {
-                    await command.reply("Ne Brudi für den hab ich keine Nicknames");
+                    await cmd.reply("Ne Brudi für den hab ich keine Nicknames");
                     return;
                 }
-                await command.reply(`Hab für den Brudi folgende Nicknames:\n${nicknames.map(n => n.nickName).join(", ")}`);
+                await cmd.reply(
+                    `Hab für den Brudi folgende Nicknames:\n${nicknames
+                        .map((n) => n.nickName)
+                        .join(", ")}`,
+                );
                 return;
-            }
-            else if (option === "add") {
+            } else if (option === "add") {
                 if (!trusted) {
-                    await command.reply("Hurensohn. Der Command ist nix für dich.");
+                    await cmd.reply("Hurensohn. Der Command ist nix für dich.");
                     return;
                 }
-                const nickname = command.options.getString("nickname", true);
+                const nickname = cmd.options.getString("nickname", true);
                 if (await Nicknames.nickNameExist(user.id, nickname)) {
-                    await command.reply(`Würdest du Hurensohn aufpassen, wüsstest du, dass für ${user} '${nickname}' bereits existiert.`);
+                    await cmd.reply(
+                        `Würdest du Hurensohn aufpassen, wüsstest du, dass für ${user} '${nickname}' bereits existiert.`,
+                    );
                     return;
                 }
-                return Nickname.createNickNameVote(command, user, nickname);
+                return Nickname.createNickNameVote(
+                    command,
+                    user,
+                    nickname,
+                    trusted,
+                );
                 //    await this.addNickname(command, user);
-            }
-            else if (option === "delete") {
+            } else if (option === "delete") {
                 if (!trusted && !sameuser) {
-                    await command.reply("Hurensohn. Der Command ist nix für dich.");
+                    await cmd.reply("Hurensohn. Der Command ist nix für dich.");
                     return;
                 }
-                // We don't violate the DRY principle, since we're referring to another subcommand object as in the "add" subcommand.
+                // We don't violate the DRY principle, since we're referring to another subcommand object as in the "add" subcmd.
                 // Code is equal but knowledge differs.
-                const nickname = command.options.getString("nickname", true);
+                const nickname = cmd.options.getString("nickname", true);
                 await Nicknames.deleteNickName(user.id, nickname);
-                const member = command.guild?.members.cache.get(user.id)!;
+                const member = cmd.guild?.members.cache.get(user.id);
+                if (!member) {
+                    await cmd.reply(
+                        "Hurensohn. Der Brudi ist nicht auf dem Server.",
+                    );
+                    return;
+                }
                 if (member.nickname === nickname) {
                     await this.updateNickName(member, null);
                 }
-                await command.reply(`Ok Brudi. Hab für ${user} ${nickname} gelöscht`);
+                await cmd.reply(
+                    `Ok Brudi. Hab für ${user} ${nickname} gelöscht`,
+                );
                 return;
             }
 
-            await command.reply("Das hätte nie passieren dürfen");
+            await cmd.reply("Das hätte nie passieren dürfen");
             return;
-        }
-        catch (e) {
+        } catch (e) {
             logger.error(e);
-            await command.reply("Das hätte nie passieren dürfen");
+            await cmd.reply("Das hätte nie passieren dürfen");
             return;
         }
     }
 
-    private static async createNickNameVote(command: CommandInteraction<CacheType>, user: User, nickname: string) {
+    private static async createNickNameVote(
+        command: CommandInteraction<CacheType>,
+        user: User,
+        nickname: string,
+        trusted: boolean,
+    ) {
         await command.reply({
             content: `Eh Brudis, soll ich für ${user} ${nickname} hinzufügen?`,
-            components: [{
-                type: ComponentType.ActionRow,
-                components: [
-                    {
-                        type: ComponentType.Button,
-                        customId: "nicknameVoteYes",
-                        label: "Guter",
-                        style: ButtonStyle.Success
-                    },
-                    {
-                        type: ComponentType.Button,
-                        customId: "nicknameVoteNo",
-                        label: "Lass ma",
-                        style: ButtonStyle.Danger
-                    }
-                ]
-            }]
+            components: [
+                {
+                    type: ComponentType.ActionRow,
+                    components: [
+                        {
+                            type: ComponentType.Button,
+                            customId: "nicknameVoteYes",
+                            label: "Guter",
+                            style: ButtonStyle.Success,
+                        },
+                        {
+                            type: ComponentType.Button,
+                            customId: "nicknameVoteNo",
+                            label: "Lass ma",
+                            style: ButtonStyle.Danger,
+                        },
+                    ],
+                },
+            ],
         });
 
         const message = await command.fetchReply();
@@ -219,7 +249,7 @@ export class Nickname implements ApplicationCommand {
 
         getUserVoteMap(message.id)[user.id] = {
             vote: "YES",
-            trusted: isTrusted(command.guild?.members.cache.get(user.id)!)
+            trusted,
         };
     }
 
@@ -247,8 +277,18 @@ export class NicknameButtonHandler implements UserInteraction {
             return;
         }
         const userVoteMap = getUserVoteMap(interaction.message.id);
+        const member = interaction.guild?.members.cache.get(
+            interaction.user.id,
+        );
+        if (member === undefined) {
+            await interaction.update({
+                content: "Ich find dich nicht auf dem Server. Du Huso",
+                components: [],
+            });
+            return;
+        }
 
-        const istrusted = isTrusted(interaction.guild?.members.cache.get(interaction.user.id)!);
+        const istrusted = isTrusted(member);
         if (interaction.customId === "nicknameVoteYes") {
             userVoteMap[interaction.user.id] = { vote: "YES", trusted: istrusted };
         }
