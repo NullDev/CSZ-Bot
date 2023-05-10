@@ -9,10 +9,14 @@ const getAdvice = (age: number) => {
     }
 
     switch (age) {
-        case 69: return "heh";
-        case 187: return "https://www.youtube.com/watch?v=_Xf8LgT26Vk";
-        case 420: return "https://www.youtube.com/watch?v=U1ei5rwO7ZI&t=116s";
-        default: return "Moralisch vertretbares Alter: " + ((age / 2) + 7);
+        case 69:
+            return "heh";
+        case 187:
+            return "https://www.youtube.com/watch?v=_Xf8LgT26Vk";
+        case 420:
+            return "https://www.youtube.com/watch?v=U1ei5rwO7ZI&t=116s";
+        default:
+            return `Moralisch vertretbares Alter: ${age / 2 + 7}`;
     }
 };
 
