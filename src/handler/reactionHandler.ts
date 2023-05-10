@@ -26,24 +26,28 @@ export default async function(reactionEvent: MessageReaction, user: User, client
         throw new Error("Guild is null");
     }
 
-    if (message.author.id !== client.user!.id) return;
+    const botUser = client.user;
+    if (message.author.id !== botUser?.id) return;
 
     const member = await guild.members.fetch(user.id);
 
     if(reactionEvent.emoji.name === "✅") {
-        if (member.id !== client.user!.id) {
+        if (member.id && member.id !== botUser?.id) {
             // Some roles, especially "C" are prefixed with a invisible whitespace to ensure they are not mentioned
             // by accidence.
-            const role = guild.roles.cache.find(r => r.name.replace(/[\u200B-\u200D\uFEFF]/g, "") === message.content);
+            const role = guild.roles.cache.find(
+                (r) =>
+                    r.name.replace(/[\u200B-\u200D\uFEFF]/g, "") ===
+                    message.content,
+            );
 
             if (role === undefined) {
                 throw new Error(`Could not find role ${role}`);
             }
 
-            if(role && removal) {
+            if (role && removal) {
                 member.roles.remove(role.id).catch(log.error);
-            }
-            else {
+            } else {
                 member.roles.add(role.id).catch(log.error);
             }
         }
@@ -56,7 +60,7 @@ export default async function(reactionEvent: MessageReaction, user: User, client
     }
 
     if (pollVoteEmojis.includes(reactionName) && !removal) {
-        const fromThisBot = member.id === client.user!.id;
+        const fromThisBot = member.id === botUser.id;
 
         if(fromThisBot) {
             return;
@@ -87,11 +91,15 @@ export default async function(reactionEvent: MessageReaction, user: User, client
                 delayedPollReactions.push(member.id);
             }
 
-            const reactions = message.reactions.cache.filter(r =>
-                r.users.cache.has(member.id) &&
-                r.emoji.name !== reactionEvent.emoji.name &&
-                pollEmojis.includes(r.emoji.name!)
-            );
+            const reactions = message.reactions.cache.filter((r) => {
+                const emojiName = r.emoji.name;
+                return (
+                    emojiName &&
+                    r.users.cache.has(member.id) &&
+                    emojiName !== reactionEvent.emoji.name &&
+                    pollEmojis.includes(emojiName)
+                );
+            });
 
             await Promise.all(reactions.map(r => r.users.remove(member.id)));
         }
@@ -113,10 +121,14 @@ export default async function(reactionEvent: MessageReaction, user: User, client
 
         // If it's a delayed poll, we clear all Reactions
         if(isDelayedPoll) {
-            const allUserReactions = message.reactions.cache.filter(r =>
-                r.users.cache.has(member.id) &&
-                pollEmojis.includes(r.emoji.name!)
-            );
+            const allUserReactions = message.reactions.cache.filter((r) => {
+                const emojiName = r.emoji.name;
+                return (
+                    emojiName &&
+                    r.users.cache.has(member.id) &&
+                    pollEmojis.includes(emojiName)
+                );
+            });
             await Promise.all(allUserReactions.map(r => r.users.remove(member.id)));
         }
 
