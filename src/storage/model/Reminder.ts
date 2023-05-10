@@ -1,5 +1,5 @@
 /* Disabled due to sequelize's DataTypes */
-/* eslint-disable new-cap */
+
 
 import { Model, DataTypes, Sequelize, Optional, Op } from "sequelize";
 import type { User } from "discord.js";

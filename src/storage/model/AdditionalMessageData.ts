@@ -1,5 +1,5 @@
 /* Disabled due to sequelize's DataTypes */
-/* eslint-disable new-cap */
+
 
 import { Client, Snowflake, Message, ChannelType } from "discord.js";
 import { Model, Sequelize, DataTypes } from "sequelize";

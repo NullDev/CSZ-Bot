@@ -106,7 +106,7 @@ export class FaulenzerPingCommand implements ApplicationCommand {
         const usersThatReacted = new Set<Snowflake>();
         const reactions = fetchedMessage.reactions.cache.values();
         for (const reaction of reactions) {
-            // eslint-disable-next-line no-await-in-loop
+
             const usersReactedWithEmoji = await reaction.users.fetch();
             for (const user of usersReactedWithEmoji.values()) {
                 usersThatReacted.add(user.id);
@@ -120,7 +120,7 @@ export class FaulenzerPingCommand implements ApplicationCommand {
         for (const users of userChunks) {
             const usersToNotifyMentions = users.map(userId => `<@${userId}>`).join(" ");
 
-            // eslint-disable-next-line no-await-in-loop
+
             await originalMessage.reply({
                 content: `${message} ${usersToNotifyMentions}`,
                 allowedMentions: { users },

@@ -1,5 +1,5 @@
 /* Disabled due to sequelize's DataTypes */
-/* eslint-disable new-cap */
+
 
 import { DataTypes, Model, Sequelize } from "sequelize";
 import { Snowflake } from "discord.js";
@@ -74,7 +74,7 @@ export class EhrePoints extends Model {
     }
 
 
-    // eslint-disable-next-line no-use-before-define
+
     static async getUserInGroups(): Promise<EhreGroups> {
         const {rows, count} = await EhrePoints.findAndCountAll({
             order: [["points", "DESC"]]

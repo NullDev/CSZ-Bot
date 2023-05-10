@@ -1,4 +1,4 @@
-/* eslint-disable camelcase */
+
 import type { Snowflake, Client } from "discord.js";
 
 import type { BotContext } from "./context.js";
@@ -108,7 +108,7 @@ export interface Config {
     ids: Record<ConfigIdKey, Snowflake>;
 }
 
-/* eslint-disable no-use-before-define */
+
 export type JsonValue =
     | JsonObject
     | JsonValue[]
@@ -116,7 +116,7 @@ export type JsonValue =
     | number
     | string
     | null;
-/* eslint-enable no-use-before-define */
+
 export type JsonObject = Record<string, JsonValue>;
 
 export type ApplicationCommandCreationResponse = {

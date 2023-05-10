@@ -28,9 +28,9 @@ async function deOidaLine(line: string): Promise<string> {
 
     const aussieWordsToReplace = [];
 
-    // eslint-disable-next-line no-use-before-define
+
     for (const translationCandidate of enumerateAdjacentTokens(tokens)) {
-        // eslint-disable-next-line no-await-in-loop
+
         const germanTranslation = await AustrianTranslation.findTranslation(translationCandidate);
         if (germanTranslation) {
             // This is a rather dumb way of doing this.

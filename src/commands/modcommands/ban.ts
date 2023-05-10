@@ -72,7 +72,7 @@ export const restoreRoles = async(user: GuildMember): Promise<boolean> => {
 export const startCron = (context: BotContext) => {
     log.info("Scheduling Ban Cronjob...");
 
-    // eslint-disable-next-line no-unused-vars
+
     cron("* * * * *", {}, async() => {
         const now = new Date();
 
@@ -87,14 +87,14 @@ export const startCron = (context: BotContext) => {
                 // No user, no problem
                 if (!user) continue;
 
-                // eslint-disable-next-line no-await-in-loop
+
                 await unban(user);
 
                 const msg = expiredBan.isSelfBan
                     ? "Glückwunsch! Dein selbst auferlegter Bann in der Coding Shitpost Zentrale ist beendet."
                     : "Glückwunsch! Dein Bann in der Coding Shitpost Zentrale ist beendet. Sei nächstes Mal einfach kein Hurensohn.";
 
-                // eslint-disable-next-line no-await-in-loop
+
                 await user.send(msg);
             }
         }

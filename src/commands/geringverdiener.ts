@@ -94,7 +94,7 @@ export class GeringverdienerCommand implements MessageCommand, ApplicationComman
         if (isReply) {
             replyMessage = await message.channel.messages.fetch(refId);
             if (!hasContent) {
-                // eslint-disable-next-line prefer-destructuring
+
                 content = replyMessage.content;
             }
 

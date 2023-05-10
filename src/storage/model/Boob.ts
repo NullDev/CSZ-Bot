@@ -1,5 +1,5 @@
 /* Disabled due to sequelize's DataTypes */
-/* eslint-disable new-cap */
+
 
 import { User } from "discord.js";
 import moment from "moment";

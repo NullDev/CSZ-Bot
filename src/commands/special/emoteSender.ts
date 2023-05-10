@@ -9,7 +9,7 @@ export class EmoteSenderCommand implements SpecialCommand {
     description: string = "Schreibt witizige Emotes wenn jemand was witziges schreibt";
     randomness = 1;
     cooldownTime = 0;
-    /* eslint-disable quote-props */
+
     emotes: Record<string, string[]> = {
         "nn": ["NOP", "NOP"],
         "yy": ["YEP", "YEP"],
@@ -17,7 +17,7 @@ export class EmoteSenderCommand implements SpecialCommand {
         "ny": ["NOP", "YEP"],
         "kk": ["pepeOK", "pepeOK"]
     };
-    /* eslint-enable quote-props */
+
     private trimMessage(message: Message) : string {
         return message.content.toLowerCase().trim();
     }

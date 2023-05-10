@@ -1,5 +1,5 @@
 /* Disabled due to sequelize's DataTypes */
-/* eslint-disable new-cap */
+
 
 import moment from "moment";
 import { Model, DataTypes, Sequelize, Optional, Op } from "sequelize";

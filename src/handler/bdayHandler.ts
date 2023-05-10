@@ -31,7 +31,7 @@ export default class BdayHandler {
             if (!member.roles.cache.find(t => t.id === birthdayRole.id)) continue;
 
             try {
-                // eslint-disable-next-line no-await-in-loop
+
                 await member.roles.remove(birthdayRole);
             }
             catch (e) {

@@ -57,7 +57,7 @@ export default async function(message: ProcessableMessage, client: Client<true>,
     const files = await fs.readdir(commandDir);
     for (const file of files) {
         const cmdPath = path.resolve(commandDir, file);
-        // eslint-disable-next-line no-await-in-loop
+
         const stats = await fs.stat(cmdPath);
         if (!stats.isDirectory()) {
             commandArr.push(file.toLowerCase());

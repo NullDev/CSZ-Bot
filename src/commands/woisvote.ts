@@ -234,7 +234,7 @@ export const woisVoteScheduler = async(
     for (const users of chunks) {
         const mentions = users.map(userId => `<@${userId}>`);
         // It's okay for readability
-        // eslint-disable-next-line no-await-in-loop
+
         await woisMessage.reply({
             content: mentions.join(" "),
             allowedMentions: {

@@ -262,17 +262,22 @@ export const importPolls = async() => {
 export const startCron = (context: BotContext) => {
     log.info("Scheduling Poll Cronjob...");
 
-    /* eslint-disable no-await-in-loop */
-    // eslint-disable-next-line no-unused-vars
-    cron("* * * * *", async() => {
+
+
+    cron("* * * * *", async () => {
         const currentDate = new Date();
-        const pollsToFinish = delayedPolls.filter(delayedPoll => currentDate >= delayedPoll.finishesAt);
+        const pollsToFinish = delayedPolls.filter(
+            (delayedPoll) => currentDate >= delayedPoll.finishesAt,
+        );
 
         const channel: TextChannel = context.textChannels.votes;
 
         for (const element of pollsToFinish) {
             const delayedPoll = element;
-            const message = await /** @type {import("discord.js").TextChannel} */ (channel).messages.fetch(delayedPoll.pollId);
+            const message =
+                await /** @type {import("discord.js").TextChannel} */ (
+                    channel
+                ).messages.fetch(delayedPoll.pollId);
 
             const users: Record<Snowflake, User> = {};
             await Promise.all(
@@ -292,10 +297,15 @@ export const startCron = (context: BotContext) => {
                     }),
             );
 
-
-            const fields: APIEmbedField[] = delayedPoll.reactions.map((value, i) => {
-                return {name: `${LETTERS[i]} ${delayedPoll.reactionMap[i]} (${value.length})`, value: value.map(uid => users[uid]).join("\n") || "-", inline: false};
-            });
+            const fields: APIEmbedField[] = delayedPoll.reactions.map(
+                (value, i) => {
+                    return {
+                        name: `${LETTERS[i]} ${delayedPoll.reactionMap[i]} (${value.length})`,
+                        value: value.map((uid) => users[uid]).join("\n") || "-",
+                        inline: false,
+                    };
+                },
+            );
 
             const embed = message.embeds[0];
             if (embed === undefined) {
@@ -331,20 +341,24 @@ export const startCron = (context: BotContext) => {
             };
 
             await channel.send({
-                embeds: [toSend]
+                embeds: [toSend],
             });
-            await Promise.all(message.reactions.cache.map(reaction => reaction.remove()));
+            await Promise.all(
+                message.reactions.cache.map((reaction) => reaction.remove()),
+            );
             await message.react("✅");
             delayedPolls.splice(delayedPolls.indexOf(delayedPoll), 1);
 
-            const messageData = await AdditionalMessageData.fromMessage(message);
+            const messageData = await AdditionalMessageData.fromMessage(
+                message,
+            );
             const { customData } = messageData;
             customData.delayedPollData = undefined;
             messageData.customData = customData;
             await messageData.save();
         }
     });
-    /* eslint-enable no-await-in-loop */
+
 };
 
 export const description = `Erstellt eine Umfrage mit mehreren Antwortmöglichkeiten (standardmäßig mit Mehrfachauswahl) (maximal ${OPTION_LIMIT}).

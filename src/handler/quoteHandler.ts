@@ -13,7 +13,7 @@ const isChannelAnonymous = async(context: BotContext, channel: Channel) => {
 
     let currentChannel: Channel | null = channel;
     do {
-        // eslint-disable-next-line no-await-in-loop
+
         currentChannel = await currentChannel.fetch();
         if (anonChannels.includes(currentChannel.id)) {
             return true;

@@ -31,7 +31,7 @@ export default async function(message: Message, _client: Client, context: BotCon
         const shouldFlameUser = context.rawConfig.bot_settings.flame_trusted_user_on_bot_ping || !message.member.roles.cache.has(context.roles.trusted.id) || isMarcel(message.member.user);
         const shouldHonorUser = message.member.roles.cache.has(context.roles.winner.id);
 
-        // eslint-disable-next-line no-nested-ternary
+
         const reply = shouldFlameUser ? "Was pingst du mich du Hurensohn :angry:"
             : shouldHonorUser ? "Bruder, du bist ein ehrenhafter Typ. Bleib so stabil wie du bist :heart:" : null;
 

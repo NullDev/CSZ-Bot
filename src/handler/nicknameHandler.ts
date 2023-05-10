@@ -1,4 +1,4 @@
-/* eslint-disable camelcase */
+
 
 import Nicknames from "../storage/model/Nickname.js";
 import log from "../utils/logger.js";

@@ -43,13 +43,13 @@ export const run: CommandFunction = async(_client, message, _args, context) => {
         }
 
         const cmdPath = path.resolve(commandDir, file);
-        // eslint-disable-next-line no-await-in-loop
+
         const stats = await fs.stat(cmdPath);
 
         if (!stats.isDirectory()) {
             // commandStr is the key and the description of the command is the value
             const modulePath = path.join(commandDir, file);
-            // eslint-disable-next-line no-await-in-loop
+
             const module = await import(modulePath);
 
             // Old file-based commands

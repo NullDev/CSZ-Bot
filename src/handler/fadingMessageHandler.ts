@@ -8,7 +8,7 @@ import FadingMessage from "../storage/model/FadingMessage.js";
 
 let isLooping = false;
 
-/* eslint-disable no-await-in-loop */
+
 const fadingMessageDeleteLoop = async(client: Client) => {
     const fadingMessages = await FadingMessage.findAll();
     const currentTime = new Date();
@@ -38,7 +38,7 @@ const fadingMessageDeleteLoop = async(client: Client) => {
         }
     }
 };
-/* eslint-enable no-await-in-loop */
+
 
 const loopWrapper = async(client: Client) => {
     isLooping = true;
@@ -47,7 +47,7 @@ const loopWrapper = async(client: Client) => {
 };
 
 export const startLoop = async(client: Client) => {
-    // eslint-disable-next-line no-unused-vars
+
     for await (const _ of setInterval(1000)) {
         if(!isLooping) break;
         await loopWrapper(client);

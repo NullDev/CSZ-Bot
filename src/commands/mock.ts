@@ -81,7 +81,7 @@ export class MockCommand implements MessageCommand, ApplicationCommand {
         if (isReply) {
             replyMessage = await message.channel.messages.fetch(messageReference);
             if (!hasContent) {
-                // eslint-disable-next-line prefer-destructuring
+
                 content = replyMessage.content;
             }
             const mockedEmbed = buildMock(author, content);

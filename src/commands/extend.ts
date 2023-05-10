@@ -83,7 +83,7 @@ export const run: CommandFunction = async(client, message, args, context) => {
 
     for (const i in additionalPollOptions) {
         // Disabling rule because the order is important
-        // eslint-disable-next-line no-await-in-loop
+
         await msg.react(poll.EMOJI[oldPollOptionFields.length + Number(i)]);
     }
     await message.delete();

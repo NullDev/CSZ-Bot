@@ -1,4 +1,4 @@
-/* eslint-disable no-use-before-define */
+
 import { ContextMenuCommandBuilder, MessageComponentInteraction, PermissionsString, type SlashCommandBuilder } from "discord.js";
 import type { Client, CommandInteraction } from "discord.js";
 
