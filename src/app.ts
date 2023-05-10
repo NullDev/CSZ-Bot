@@ -18,7 +18,10 @@ import * as ban from "./commands/modcommands/ban.js";
 import * as poll from "./commands/poll.js";
 import GuildRagequit from "./storage/model/GuildRagequit.js";
 import reactionHandler from "./handler/reactionHandler.js";
-import { checkVoiceUpdate } from "./handler/voiceStateUpdateHandler.js";
+import {
+    WoisData,
+    checkVoiceUpdate,
+} from "./handler/voiceStateUpdateHandler.js";
 
 import {
     handleInteractionEvent,
@@ -32,7 +35,6 @@ import { reminderHandler } from "./commands/erinnerung.js";
 import { endAprilFools, startAprilFools } from "./handler/aprilFoolsHandler.js";
 import { createBotContext, type BotContext } from "./context.js";
 import { EhrePoints, EhreVotes } from "./storage/model/Ehre.js";
-import { WoisData } from "./handler/voiceStateUpdateHandler.js";
 import {
     woisVoteReactionHandler,
     woisVoteScheduler
@@ -48,10 +50,12 @@ const args = process.argv.slice(2);
 const splashPadding = 12 + appname.length + version.toString().length;
 
 console.log(
-    `\n ┌${"─".repeat(splashPadding)}┐\n` +
-    ` │ Started ${appname} v${version} │\n` +
-    ` └${"─".repeat(splashPadding)}┘\n\n` +
-    ` Copyright (c) ${(new Date()).getFullYear()} ${devname}\n`
+    // rome-ignore lint/style/useTemplate: Seems to be more readable this way
+    "\n" +
+        ` ┌${"─".repeat(splashPadding)}┐\n` +
+        ` │ Started ${appname} v${version} │\n` +
+        ` └${"─".repeat(splashPadding)}┘\n\n` +
+        ` Copyright (c) ${new Date().getFullYear()} ${devname}\n`,
 );
 
 let botContext: BotContext;
@@ -60,19 +64,15 @@ log.info("Started.");
 
 const config = conf.getConfig();
 const client = new Discord.Client({
-    partials: [
-        Partials.Message,
-        Partials.Reaction,
-        Partials.User
-    ],
+    partials: [Partials.Message, Partials.Reaction, Partials.User],
     allowedMentions: {
         parse: ["users"],
-        repliedUser: true
+        repliedUser: true,
     },
     intents: [
         GatewayIntentBits.DirectMessages,
         GatewayIntentBits.Guilds,
-        GatewayIntentBits.GuildBans,
+        GatewayIntentBits.GuildModeration,
         GatewayIntentBits.GuildEmojisAndStickers,
         GatewayIntentBits.GuildIntegrations,
         GatewayIntentBits.GuildInvites,
@@ -83,15 +83,15 @@ const client = new Discord.Client({
         GatewayIntentBits.GuildMessageTyping,
         GatewayIntentBits.GuildPresences,
         GatewayIntentBits.GuildVoiceStates,
-        GatewayIntentBits.GuildWebhooks
-    ]
+        GatewayIntentBits.GuildWebhooks,
+    ],
 });
 
 const reactionHandlers: ReactionHandler[] = [
     woisVoteReactionHandler
 ];
 
-process.on("unhandledRejection", (err: any, promise) => {
+process.on("unhandledRejection", (err: unknown, promise) => {
     log.error(`Unhandled rejection (promise: ${promise})`, err);
 });
 process.on("uncaughtException", (err, origin) => {
@@ -162,7 +162,11 @@ client.once("ready", async initializedClient => {
     try {
         log.info("Running...");
         log.info(`Got ${client.users.cache.size} users, in ${client.channels.cache.size} channels of ${client.guilds.cache.size} guilds`);
-        client.user!.setActivity(config.bot_settings.status);
+
+        const botUser = client.user;
+        if (botUser) {
+            botUser.setActivity(config.bot_settings.status);
+        }
 
         botContext = await createBotContext(initializedClient);
         console.assert(!!botContext); // TODO: Remove once botContext is used
@@ -301,10 +305,12 @@ client.on("guildMemberAdd", async member => {
     await member.roles.add(botContext.roles.shame);
 
     await botContext.textChannels.hauptchat.send({
-        content: `Haha, schau mal einer guck wer wieder hergekommen ist! ${member} hast es aber nicht lange ohne uns ausgehalten. ${numRagequits > 1 ? "Und das schon zum " + numRagequits + ". mal" : ""}`,
+        content: `Haha, schau mal einer guck wer wieder hergekommen ist! ${member} hast es aber nicht lange ohne uns ausgehalten. ${
+            numRagequits > 1 ? `Und das schon zum ${numRagequits}. mal` : ""
+        }`,
         allowedMentions: {
-            users: [member.id]
-        }
+            users: [member.id],
+        },
     });
 });
 
