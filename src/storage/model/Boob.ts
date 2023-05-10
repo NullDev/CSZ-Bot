@@ -14,7 +14,7 @@ export interface BoobAttributes {
     size: number;
 }
 
-export interface BoobCreationAttributes extends Optional<BoobAttributes, "id"> { }
+export type BoobCreationAttributes = Optional<BoobAttributes, "id">
 
 export default class Boob extends Model<BoobAttributes, BoobCreationAttributes> implements BoobAttributes {
     declare id: string;

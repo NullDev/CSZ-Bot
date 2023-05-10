@@ -12,7 +12,7 @@ export interface StempelAttributes {
     invitedMember: Snowflake;
 }
 
-export interface StempelCreationAttributes extends Optional<StempelAttributes, "id"> { }
+export type StempelCreationAttributes = Optional<StempelAttributes, "id">
 
 export default class Stempel extends Model<StempelAttributes, StempelCreationAttributes> implements StempelAttributes {
     declare id: string;

@@ -16,7 +16,7 @@ export interface PenisAttributes {
     diameter: Radius;
 }
 
-export interface PenisCreationAttributes extends Optional<PenisAttributes, "id"> { }
+export type PenisCreationAttributes = Optional<PenisAttributes, "id">
 
 export default class Penis extends Model<PenisAttributes, PenisCreationAttributes> implements PenisAttributes {
     declare id: string;

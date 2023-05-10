@@ -12,7 +12,7 @@ export interface NicknameAttributes {
     nickName: string;
 }
 
-export interface NicknameCreationAttributes extends Optional<NicknameAttributes, "id"> { }
+export type NicknameCreationAttributes = Optional<NicknameAttributes, "id">
 
 export default class Nickname extends Model {
     declare id: string;

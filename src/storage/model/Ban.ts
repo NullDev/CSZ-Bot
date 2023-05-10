@@ -14,7 +14,7 @@ export interface BanAttributes {
     isSelfBan: boolean;
 }
 
-export interface BanCreationAttributes extends Optional<BanAttributes, "id"> { }
+export type BanCreationAttributes = Optional<BanAttributes, "id">
 
 export default class Ban extends Model<BanAttributes, BanCreationAttributes> implements BanAttributes {
     declare id: string;

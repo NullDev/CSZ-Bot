@@ -13,8 +13,7 @@ export interface WoisActionAttributes {
     isWoisgangAction: boolean;
 }
 
-export interface WoisActionCreationAttributes
-    extends Optional<WoisActionAttributes, "id"> {}
+export type WoisActionCreationAttributes= Optional<WoisActionAttributes, "id">
 
 export default class WoisAction
     extends Model<WoisActionAttributes, WoisActionCreationAttributes>

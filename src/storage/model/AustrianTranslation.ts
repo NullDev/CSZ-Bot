@@ -13,7 +13,7 @@ export interface AustrianTranslationAttributes {
     description: string | null;
 }
 
-export interface AustrianTranslationCreationAttributes extends Optional<AustrianTranslationAttributes, "id"> { }
+export type AustrianTranslationCreationAttributes = Optional<AustrianTranslationAttributes, "id">
 
 export default class AustrianTranslation extends Model {
     declare id: number;

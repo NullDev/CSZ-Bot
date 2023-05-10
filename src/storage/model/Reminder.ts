@@ -16,7 +16,7 @@ export interface ReminderAttributes {
     reminderNote: string | null;
 }
 
-export interface ReminderCreationAttributes extends Optional<ReminderAttributes, "id"> { }
+export type ReminderCreationAttributes = Optional<ReminderAttributes, "id">
 
 export default class Reminder extends Model<ReminderAttributes, ReminderCreationAttributes> implements ReminderAttributes {
     declare id: string;
