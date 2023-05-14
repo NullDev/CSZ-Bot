@@ -14,8 +14,8 @@ const instagramOptions = {
 } as const;
 
 export class InstagramLink implements SpecialCommand {
-    name: string = "Instagram";
-    description: string = "Embedded Instagram Links";
+    name = "Instagram";
+    description = "Embedded Instagram Links";
     randomness = 1;
     cooldownTime = 0;
 

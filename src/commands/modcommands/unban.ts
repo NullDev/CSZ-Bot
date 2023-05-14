@@ -18,8 +18,8 @@ export const unban = async(member: GuildMember) => {
 };
 
 export class UnbanCommand implements ApplicationCommand, MessageCommand {
-    name: string = "unban";
-    description: string = "Joa, unbannt halt einen ne?";
+    name = "unban";
+    description = "Joa, unbannt halt einen ne?";
     requiredPermissions: readonly PermissionsString[] = [
         "BanMembers"
     ];

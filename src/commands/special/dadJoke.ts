@@ -15,8 +15,8 @@ type Slot = "WHOIS" | "BOTNAME";
 
 export class DadJokeCommand implements SpecialCommand {
     cooldownTime: number | undefined;
-    name: string = "Dad Joke";
-    description: string = "Macht bei der passenden Gelegenheit einen Dad Joke";
+    name = "Dad Joke";
+    description = "Macht bei der passenden Gelegenheit einen Dad Joke";
     randomness = 0.1;
 
     matchPhrases: Record<string, PhraseConfig> = {

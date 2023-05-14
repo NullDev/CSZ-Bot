@@ -14,8 +14,8 @@ const linkMap: Record<string, string> = {
 };
 
 export class LinkRedirect implements SpecialCommand {
-    name: string = "LinkRedirect";
-    description: string = "Macht ein paar doofe Links zu tollen Links";
+    name = "LinkRedirect";
+    description = "Macht ein paar doofe Links zu tollen Links";
     randomness = 1;
     cooldownTime = 0;
 

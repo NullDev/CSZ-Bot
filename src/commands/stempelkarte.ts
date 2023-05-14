@@ -93,9 +93,9 @@ const drawStempelkarteBackside = async(subjectAvatarUrl: string | undefined, ava
 };
 
 export class StempelkarteCommand implements ApplicationCommand {
-    modCommand: boolean = false;
-    name: string = "stempelkarte";
-    description: string = "Zeigt eine die Stempelkarte eines Users an.";
+    modCommand = false;
+    name = "stempelkarte";
+    description = "Zeigt eine die Stempelkarte eines Users an.";
 
     applicationCommand = new SlashCommandBuilder()
         .setName(this.name)

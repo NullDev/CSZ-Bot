@@ -29,9 +29,9 @@ const createBonkMeme = async(author: GuildMember): Promise<string> => {
 };
 
 export class BonkCommand implements MessageCommand {
-    name: string = "bonk";
+    name = "bonk";
     aliases = ["bong"];
-    description: string = `Bonkt einen Nutzer und ersetzt den rechten gelben Hund mit dem Avatar des Nutzers.
+    description = `Bonkt einen Nutzer und ersetzt den rechten gelben Hund mit dem Avatar des Nutzers.
 Usage: ${config.bot_settings.prefix.command_prefix}bonk
        ${config.bot_settings.prefix.command_prefix}bonk @ShadowByte#1337
        Oder auf eine Nachricht mit ${config.bot_settings.prefix.command_prefix}bonk antworten.`;

@@ -15,8 +15,8 @@ if (process.env.NODE_ENV === "production") {
 }
 
 export class WhereCommand implements SpecialCommand {
-    name: string = "Where";
-    description: string = "Macht ein Ape-Meme";
+    name = "Where";
+    description = "Macht ein Ape-Meme";
     randomness = 0.001;
     cooldownTime = 300000;
 

@@ -59,9 +59,9 @@ async function handleVote(voter: string, user: string) {
 }
 
 export class EhreCommand implements ApplicationCommand {
-    modCommand: boolean = false;
-    name: string = "ehre";
-    description: string = "Fügt Ehre hinzu & Zeigt die Tabelle an";
+    modCommand = false;
+    name = "ehre";
+    description = "Fügt Ehre hinzu & Zeigt die Tabelle an";
 
     get applicationCommand() {
         return new SlashCommandBuilder()

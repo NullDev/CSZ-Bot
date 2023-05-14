@@ -6,14 +6,14 @@ import { SpecialCommand, CommandResult } from "../command.js";
 // this is the former nixos.ts
 
 export class TriggerReactOnKeyword implements SpecialCommand {
-    name: string = "ReactTrigger";
-    description: string = "Trigger a Bot reaction on keyword";
+    name = "ReactTrigger";
+    description = "Trigger a Bot reaction on keyword";
     randomness: number;
     cooldownTime = 300000;
     keyword: string;
     emoteName: string;
 
-    constructor(keyword: string, emote: string, randomness: number = 0.2) {
+    constructor(keyword: string, emote: string, randomness = 0.2) {
         this.keyword = keyword;
         this.emoteName = emote;
         this.randomness = randomness;

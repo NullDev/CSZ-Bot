@@ -3,8 +3,8 @@ import { Message, Client } from "discord.js";
 import { SpecialCommand, CommandResult } from "../command.js";
 
 export class WatCommand implements SpecialCommand {
-    name: string = "wat";
-    description: string = "Reagiert mit wat emote sobald jemand wat schreibt";
+    name = "wat";
+    description = "Reagiert mit wat emote sobald jemand wat schreibt";
     randomness = 0.3;
     cooldownTime = 300000;
 

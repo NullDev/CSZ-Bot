@@ -33,8 +33,8 @@ export const run: CommandFunction = async(_client, message, args) => {
             "even my brother is more capable and he's a retard!"
         ];
         // by default, just pick the first or a fixed insult, just in case
-        let choice: number = 0;
-        let insult: string = "Idiot!";
+        let choice = 0;
+        let insult = "Idiot!";
 
         if (!options.english) {
             // insult user, then explain meta questions

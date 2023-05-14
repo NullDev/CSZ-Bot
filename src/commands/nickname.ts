@@ -48,9 +48,9 @@ const getUserVoteMap = (messageid: string): Record<string, UserVote> => {
 };
 
 export class Nickname implements ApplicationCommand {
-    modCommand: boolean = false;
-    name: string = "nickname";
-    description: string = "Setzt Nicknames für einen User";
+    modCommand = false;
+    name = "nickname";
+    description = "Setzt Nicknames für einen User";
 
     get applicationCommand() {
         return new SlashCommandBuilder()

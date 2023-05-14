@@ -17,9 +17,9 @@ const replies = [
 ];
 
 export class StempelCommand implements ApplicationCommand {
-    modCommand: boolean = false;
-    name: string = "stempeln";
-    description: string = "Gib deinem Inviter ein Stempel, zeig deinen Respekt";
+    modCommand = false;
+    name = "stempeln";
+    description = "Gib deinem Inviter ein Stempel, zeig deinen Respekt";
 
     get applicationCommand() {
         return new SlashCommandBuilder()

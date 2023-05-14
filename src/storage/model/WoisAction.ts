@@ -29,7 +29,7 @@ export default class WoisAction
         messageId: Snowflake,
         reason: string,
         date: Date,
-        isWoisgangAction: boolean = false
+        isWoisgangAction = false
     ): Promise<boolean> {
         try {
             await WoisAction.create({

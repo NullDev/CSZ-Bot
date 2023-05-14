@@ -29,7 +29,7 @@ const rng = function(min: number, max: number, seed: number): number {
 
 const ioc = iocCalculator(randomSeed);
 
-const secureDecisionMaker = (question: string, max: number = 1) => (rng(0, max, (Date.now() * ioc) / iocCalculator(question)));
+const secureDecisionMaker = (question: string, max = 1) => (rng(0, max, (Date.now() * ioc) / iocCalculator(question)));
 
 const createSecureDecisionMessage = (question: string, author: GuildMember, options: string[] = []) => {
     const formattedQuestion = question.endsWith("?") ? question : `${question}?`;

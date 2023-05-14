@@ -5,8 +5,8 @@ import logger from "../../utils/logger.js";
 import { SpecialCommand, CommandResult} from "../command.js";
 
 export class EmoteSenderCommand implements SpecialCommand {
-    name: string = "EmoteSender";
-    description: string = "Schreibt witizige Emotes wenn jemand was witziges schreibt";
+    name = "EmoteSender";
+    description = "Schreibt witizige Emotes wenn jemand was witziges schreibt";
     randomness = 1;
     cooldownTime = 0;
 

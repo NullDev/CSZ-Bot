@@ -157,8 +157,8 @@ Lg & xD™`);
 };
 
 export class BanCommand implements ApplicationCommand, MessageCommand {
-    name: string = "ban";
-    description: string = "Joa, bannt halt einen ne?";
+    name = "ban";
+    description = "Joa, bannt halt einen ne?";
     requiredPermissions: readonly PermissionsString[] = [
         "BanMembers"
     ];
