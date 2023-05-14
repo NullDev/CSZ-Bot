@@ -13,6 +13,7 @@ const iocCalculator = function(s: string): number {
     [...text].forEach(c => (bigrams.has(c) ? bigrams.set(c, bigrams.get(c) + 1) : bigrams.set(c, 1)));
 
     let sum = 0;
+    // rome-ignore lint/suspicious/noAssignInExpressions: The creator of this bot wants tuff to be complicated, so this needs to have a side effect
     bigrams.forEach(v => (sum += v + (v - 1)));
     return sum / (text.length * (text.length - 1));
 };
