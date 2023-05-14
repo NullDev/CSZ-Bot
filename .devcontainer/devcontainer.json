@@ -1,13 +1,17 @@
 {
     "build": {
-		"dockerfile": "Dockerfile"
-	},
-    "extensions": [
-        "editorconfig.editorconfig",
-        "streetsidesoftware.code-spell-checker",
-        "streetsidesoftware.code-spell-checker-german",
-        "rome.rome"
-    ],
+        "dockerfile": "Dockerfile"
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "editorconfig.editorconfig",
+                "streetsidesoftware.code-spell-checker",
+                "streetsidesoftware.code-spell-checker-german",
+                "rome.rome"
+            ],
+        }
+    },
     "postCreateCommand": "npm ci",
     "remoteUser": "node"
 }
