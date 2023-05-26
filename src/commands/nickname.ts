@@ -157,9 +157,9 @@ export class Nickname implements ApplicationCommand {
                     return;
                 }
                 await cmd.reply(
-                    `Hab für den Brudi folgende Nicknames:\n${nicknames
-                        .map((n) => n.nickName)
-                        .join(", ")}`,
+                    `Hab für den Brudi folgende Nicknames (${
+                        nicknames.length
+                    }):\n${nicknames.map((n) => n.nickName).join(", ")}`,
                 );
                 return;
             } else if (option === "add") {
