@@ -34,7 +34,7 @@
     "chrono-node": "^2.6.3",
     "croner": "^6.0.3",
     "discord.js": "^14.11.0",
-    "get-audio-duration": "^3.1.1",
+    "get-audio-duration": "^4.0.0",
     "graphviz-wasm": "^3.0.0",
     "instagram-url-direct": "^1.0.13",
     "jimp": "^0.22.8",
