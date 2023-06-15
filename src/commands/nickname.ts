@@ -40,11 +40,11 @@ interface Suggestion {
 const ongoingSuggestions: Record<string, Suggestion> = {};
 const idVoteMap: Record<string, Record<string, UserVote>> = {};
 
-const getUserVoteMap = (messageid: string): Record<string, UserVote> => {
-    if (idVoteMap[messageid] === undefined) {
-        idVoteMap[messageid] = {};
+const getUserVoteMap = (messageId: string): Record<string, UserVote> => {
+    if (idVoteMap[messageId] === undefined) {
+        idVoteMap[messageId] = {};
     }
-    return idVoteMap[messageid];
+    return idVoteMap[messageId];
 };
 
 export class Nickname implements ApplicationCommand {
