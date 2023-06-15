@@ -4,7 +4,8 @@ import {
     GuildMember,
     User,
     CacheType,
-    MessageComponentInteraction, ButtonStyle,
+    MessageComponentInteraction,
+    ButtonStyle,
     SlashCommandBuilder,
     SlashCommandStringOption,
     SlashCommandSubcommandBuilder,
@@ -13,19 +14,21 @@ import {
     AutocompleteInteraction,
 } from "discord.js";
 
-import { ApplicationCommand, CommandResult, UserInteraction } from "./command.js";
+import {
+    ApplicationCommand,
+    CommandResult,
+    UserInteraction,
+} from "./command.js";
 import Nicknames from "../storage/model/Nickname.js";
 import { isTrusted } from "../utils/userUtils.js";
 import logger from "../utils/logger.js";
 import { ensureChatInputCommand } from "../utils/interactionUtils.js";
-
 
 type Vote = "YES" | "NO";
 
 interface UserVote {
     readonly vote: Vote;
     readonly trusted: boolean;
-
 }
 
 function getWeightOfUserVote(vote: UserVote): number {
@@ -35,7 +38,6 @@ function getWeightOfUserVote(vote: UserVote): number {
 interface Suggestion {
     readonly nicknameUserID: string;
     readonly nickname: string;
-
 }
 
 const ongoingSuggestions: Record<string, Suggestion> = {};
@@ -65,14 +67,14 @@ export class Nickname implements ApplicationCommand {
                         new SlashCommandUserOption()
                             .setRequired(true)
                             .setName("user")
-                            .setDescription("Wem du tun willst")
+                            .setDescription("Wem du tun willst"),
                     )
                     .addStringOption(
                         new SlashCommandStringOption()
                             .setRequired(true)
                             .setName("nickname")
-                            .setDescription("Was du tun willst")
-                    )
+                            .setDescription("Was du tun willst"),
+                    ),
             )
             .addSubcommand(
                 new SlashCommandSubcommandBuilder()
@@ -82,7 +84,7 @@ export class Nickname implements ApplicationCommand {
                         new SlashCommandUserOption()
                             .setRequired(true)
                             .setName("user")
-                            .setDescription("Wem du tun willst")
+                            .setDescription("Wem du tun willst"),
                     )
                     .addStringOption(
                         new SlashCommandStringOption()
@@ -90,6 +92,7 @@ export class Nickname implements ApplicationCommand {
                             .setName("nickname")
                             .setDescription("Den zu entfernenden Namen")
                             .setAutocomplete(true),
+                    ),
             )
             .addSubcommand(
                 new SlashCommandSubcommandBuilder()
@@ -99,8 +102,8 @@ export class Nickname implements ApplicationCommand {
                         new SlashCommandUserOption()
                             .setRequired(true)
                             .setName("user")
-                            .setDescription("Wem du tun willst")
-                    )
+                            .setDescription("Wem du tun willst"),
+                    ),
             )
             .addSubcommand(
                 new SlashCommandSubcommandBuilder()
@@ -110,12 +113,14 @@ export class Nickname implements ApplicationCommand {
                         new SlashCommandUserOption()
                             .setRequired(true)
                             .setName("user")
-                            .setDescription("Wem du tun willst")
-                    )
+                            .setDescription("Wem du tun willst"),
+                    ),
             );
     }
 
-    async handleInteraction(command: CommandInteraction): Promise<CommandResult> {
+    async handleInteraction(
+        command: CommandInteraction,
+    ): Promise<CommandResult> {
         const cmd = ensureChatInputCommand(command);
 
         try {
@@ -275,26 +280,26 @@ export class Nickname implements ApplicationCommand {
         };
     }
 
-
     async updateNickName(user: GuildMember, nickname: string | null) {
         await user.setNickname(nickname);
     }
 }
-
 
 export class NicknameButtonHandler implements UserInteraction {
     readonly ids = ["nicknameVoteYes", "nicknameVoteNo"];
     readonly name = "NicknameButtonhandler";
     readonly threshold = 7;
 
-
-    async handleInteraction(interaction: MessageComponentInteraction, _client: Client): Promise<void> {
+    async handleInteraction(
+        interaction: MessageComponentInteraction,
+    ): Promise<void> {
         const suggestion = ongoingSuggestions[interaction.message.id];
 
         if (suggestion === undefined) {
             await interaction.update({
-                content: "Ich find den Namensvorschlag nicht. Irgend ein Huso muss wohl den Bot neugestartet haben. Macht am besten ne Neue auf",
-                components: []
+                content:
+                    "Ich find den Namensvorschlag nicht. Irgend ein Huso muss wohl den Bot neugestartet haben. Macht am besten ne Neue auf",
+                components: [],
             });
             return;
         }
@@ -312,41 +317,58 @@ export class NicknameButtonHandler implements UserInteraction {
 
         const istrusted = isTrusted(member);
         if (interaction.customId === "nicknameVoteYes") {
-            userVoteMap[interaction.user.id] = { vote: "YES", trusted: istrusted };
-        }
-        else if (interaction.customId === "nicknameVoteNo") {
-            userVoteMap[interaction.user.id] = { vote: "NO", trusted: istrusted };
+            userVoteMap[interaction.user.id] = {
+                vote: "YES",
+                trusted: istrusted,
+            };
+        } else if (interaction.customId === "nicknameVoteNo") {
+            userVoteMap[interaction.user.id] = {
+                vote: "NO",
+                trusted: istrusted,
+            };
         }
         // evaluate the Uservotes
         const votes: UserVote[] = Object.values(userVoteMap);
         if (this.hasEnoughVotes(votes, "NO")) {
             await interaction.update({
                 content: `Der Vorschlag: \`${suggestion.nickname}\` für <@${suggestion.nicknameUserID}> war echt nicht so geil`,
-                components: []
+                components: [],
             });
             return;
         }
         if (this.hasEnoughVotes(votes, "YES")) {
             try {
-                await Nicknames.insertNickname(suggestion.nicknameUserID, suggestion.nickname);
-            }
-            catch (error) {
-                await interaction.update(`Würdet ihr Hurensöhne aufpassen, wüsstest ihr, dass für <@${suggestion.nicknameUserID}> \`${suggestion.nickname}\` bereits existiert.`);
+                await Nicknames.insertNickname(
+                    suggestion.nicknameUserID,
+                    suggestion.nickname,
+                );
+            } catch (error) {
+                await interaction.update(
+                    `Würdet ihr Hurensöhne aufpassen, wüsstest ihr, dass für <@${suggestion.nicknameUserID}> \`${suggestion.nickname}\` bereits existiert.`,
+                );
                 return;
             }
 
             await interaction.update({
                 content: `Für <@${suggestion.nicknameUserID}> ist jetzt \`${suggestion.nickname}\` in der Rotation`,
-                components: []
+                components: [],
             });
             return;
         }
-        await interaction.reply({ content: "Hast abgestimmt", ephemeral: true });
+        await interaction.reply({
+            content: "Hast abgestimmt",
+            ephemeral: true,
+        });
     }
 
     private hasEnoughVotes(votes: UserVote[], voteType: Vote) {
-        return votes.filter(vote => vote.vote === voteType).reduce((sum, uservote) => sum + getWeightOfUserVote(uservote), 0) >= this.threshold;
+        return (
+            votes
+                .filter((vote) => vote.vote === voteType)
+                .reduce(
+                    (sum, uservote) => sum + getWeightOfUserVote(uservote),
+                    0,
+                ) >= this.threshold
+        );
     }
 }
-
-
