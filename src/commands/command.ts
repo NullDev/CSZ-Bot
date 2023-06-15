@@ -40,7 +40,7 @@ interface AppCommand {
         client: Client,
         context: BotContext
     ): Promise<CommandResult>;
-    autocomplete?: (interaction: AutocompleteInteraction, client: Client, context: BotContext) => Promise<void>;
+    autocomplete?(interaction: AutocompleteInteraction, context: BotContext): Promise<void>;
 }
 
 // For a MessageCommand we require an additional modCommand property and a handler method

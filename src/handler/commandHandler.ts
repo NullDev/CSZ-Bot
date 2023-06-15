@@ -246,7 +246,7 @@ const autocompleteInteractionHandler = async (
     }
 
     log.debug(`Found a matching autocomplete handler for command ${matchingCommand.name}`);
-    await matchingCommand.autocomplete(interaction, client, context);
+    await matchingCommand.autocomplete(interaction, context);
 };
 
 /**
