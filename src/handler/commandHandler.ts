@@ -226,7 +226,6 @@ const commandInteractionHandler = async (
 
 const autocompleteInteractionHandler = async (
     interaction: AutocompleteInteraction,
-    client: Client,
     context: BotContext
 ) => {
     const matchingCommand = applicationCommands.find(
@@ -379,7 +378,6 @@ export const handleInteractionEvent = (
     if (interaction.isAutocomplete()) {
         return autocompleteInteractionHandler(
             interaction,
-            client,
             context
         );
     }
