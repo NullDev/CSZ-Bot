@@ -9,7 +9,8 @@ import {
     SlashCommandStringOption,
     SlashCommandSubcommandBuilder,
     SlashCommandUserOption,
-    ComponentType
+    ComponentType,
+    AutocompleteInteraction,
 } from "discord.js";
 
 import { ApplicationCommand, CommandResult, UserInteraction } from "./command.js";
@@ -87,8 +88,8 @@ export class Nickname implements ApplicationCommand {
                         new SlashCommandStringOption()
                             .setRequired(true)
                             .setName("nickname")
-                            .setDescription("Was du tun willst")
-                    )
+                            .setDescription("Den zu entfernenden Namen")
+                            .setAutocomplete(true),
             )
             .addSubcommand(
                 new SlashCommandSubcommandBuilder()
@@ -210,6 +211,30 @@ export class Nickname implements ApplicationCommand {
             await cmd.reply("Das hätte nie passieren dürfen");
             return;
         }
+    }
+
+    async autocomplete(interaction: AutocompleteInteraction) {
+        const subCommand = interaction.options.getSubcommand(true);
+        if (subCommand !== "delete") {
+            return;
+        }
+
+        // No .getUser("user") available
+        // https://discordjs.guide/slash-commands/autocomplete.html#accessing-other-values
+        const userId = interaction.options.get("user", true).value as string; // Snowflake of the user
+
+        const nicknames = await Nicknames.getNicknames(userId);
+
+        const focusedValue = interaction.options.getFocused();
+
+        const completions = nicknames
+            .filter((n) => n.nickName.startsWith(focusedValue))
+            .map((n) => ({
+                name: n.nickName,
+                value: n.nickName,
+            }));
+
+        await interaction.respond(completions);
     }
 
     private static async createNickNameVote(
