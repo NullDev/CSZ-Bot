@@ -1,6 +1,7 @@
 import {
     APIApplicationCommand,
     ApplicationCommandPermissionType,
+    AutocompleteInteraction,
     Client,
     CommandInteraction,
     Interaction,
@@ -223,6 +224,31 @@ const commandInteractionHandler = async (
     await matchingCommand.handleInteraction(command, client, context);
 };
 
+const autocompleteInteractionHandler = async (
+    interaction: AutocompleteInteraction,
+    client: Client,
+    context: BotContext
+) => {
+    const matchingCommand = applicationCommands.find(
+        cmd => cmd.name === interaction.commandName
+    );
+
+    if (!matchingCommand) {
+        throw new Error(
+            `Application Command ${interaction.commandName} with ID ${interaction.id} invoked, but not available`
+        );
+    }
+
+    if(!matchingCommand.autocomplete) {
+        throw new Error(
+            `Application Command ${interaction.commandName} with ID ${interaction.id} invoked, but no autocomplete function available`
+        );
+    }
+
+    log.debug(`Found a matching autocomplete handler for command ${matchingCommand.name}`);
+    await matchingCommand.autocomplete(interaction, client, context);
+};
+
 /**
  * Handles command interactions.
  * @param command the recieved command interaction
@@ -345,6 +371,14 @@ export const handleInteractionEvent = (
     if (interaction.isCommand()) {
         return commandInteractionHandler(
             interaction as CommandInteraction,
+            client,
+            context
+        );
+    }
+
+    if (interaction.isAutocomplete()) {
+        return autocompleteInteractionHandler(
+            interaction,
             client,
             context
         );
