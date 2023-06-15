@@ -114,10 +114,7 @@ export class Nickname implements ApplicationCommand {
             );
     }
 
-    async handleInteraction(
-        command: CommandInteraction,
-        _client: Client<boolean>,
-    ): Promise<CommandResult> {
+    async handleInteraction(command: CommandInteraction): Promise<CommandResult> {
         const cmd = ensureChatInputCommand(command);
 
         try {
