@@ -173,14 +173,14 @@ export class StempelkarteCommand implements ApplicationCommand {
             (result) => result.status === "fulfilled",
         ) as PromiseFulfilledResult<Buffer>[];
 
-        const attachements = results.map((result, index) => ({
+        const files = results.map((result, index) => ({
             name: `stempelkarte-${ofMember.nickname}-${index}.png`,
             attachment: result.value,
         }));
 
         try {
             await command.reply({
-                files: attachements,
+                files,
             });
         } catch (err) {
             log.error("Could not send stempelkarten", err);
