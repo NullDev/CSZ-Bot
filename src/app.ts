@@ -470,6 +470,9 @@ function login() {
 login().then(
     (client) => {
         log.info(`Bot logged in as ${client.user.tag}`);
+        log.info(
+            `Prefixes: "${config.bot_settings.prefix.command_prefix}" and "${config.bot_settings.prefix.mod_prefix}"`,
+        );
     },
     (err) => {
         log.error("Token login was not successful", err);
