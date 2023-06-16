@@ -14,7 +14,8 @@ const config = getConfig();
 const createBonkMeme = async (author: GuildMember): Promise<string> => {
     const image = await Jimp.read("https://i.imgur.com/nav6WWX.png");
     const filename = `/tmp/bonk_meme_${Date.now()}.png`;
-    const avatarURL = author.displayAvatarURL({ extension: "png" });
+
+    const avatarURL = author.displayAvatarURL({ extension: "png", size: 128 });
     let avatar = await Jimp.read(avatarURL);
 
     avatar = avatar.resize(128, 128);
