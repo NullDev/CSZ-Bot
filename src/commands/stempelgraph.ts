@@ -16,7 +16,7 @@ import { isMod, isTrusted } from "../utils/userUtils.js";
 import { ApplicationCommand, CommandResult } from "./command.js";
 import { BotContext } from "../context.js";
 
-const suportedLayoutEngines = [
+const supportedLayoutEngines = [
     "circo",
     "dot",
     "fdp",
@@ -25,7 +25,7 @@ const suportedLayoutEngines = [
     // "neato",
     // "osage",
 ] as const;
-type LayoutEngine = typeof suportedLayoutEngines[number];
+type LayoutEngine = typeof supportedLayoutEngines[number];
 
 interface StempelConnection {
     inviter: GuildMember;
@@ -219,7 +219,7 @@ export class StempelgraphCommand implements ApplicationCommand {
                     .setDescription("Die layout-engine für GraphViz")
                     .setRequired(false)
                     .addChoices(
-                        ...suportedLayoutEngines.map((e) => ({
+                        ...supportedLayoutEngines.map((e) => ({
                             name: e,
                             value: e,
                         })),

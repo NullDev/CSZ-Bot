@@ -15,5 +15,22 @@
     "[typescript]": {
         "editor.defaultFormatter": "rome.rome"
     },
-    "cSpell.words": ["faulenzer", "brudi", "faulenzerping"]
+    "cSpell.words": [
+        "graphviz",
+        "stempel",
+        "stempels",
+        "resvg",
+        "woisgang",
+        "circo",
+        "twopi",
+        "neato",
+        "osage",
+        "rejoiner",
+        "faulenzer",
+        "brudi",
+        "faulenzerping",
+        "labelfontcolor",
+        "fontname",
+        "bgcolor"
+    ]
 }
