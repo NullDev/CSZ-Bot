@@ -257,7 +257,7 @@ const autocompleteInteractionHandler = async (
  * @param client client
  * @returns the handled command or an error if no matching command was found.
  */
-const messageComponentInteractionHandler = (
+const messageComponentInteractionHandler = async (
     command: MessageComponentInteraction,
     client: Client,
     context: BotContext,
@@ -265,14 +265,14 @@ const messageComponentInteractionHandler = (
     const matchingInteraction = interactions.find((cmd) =>
         cmd.ids.find((id) => id === command.customId),
     );
-    if (matchingInteraction) {
-        log.debug(`Found a matching interaction ${matchingInteraction.name}`);
-        return matchingInteraction.handleInteraction(command, client, context);
+    if (!matchingInteraction) {
+        throw new Error(
+            `Interaction ${command.customId} invoked, but not available`,
+        );
     }
 
-    return Promise.reject(
-        new Error(`Interaction ${command.customId} invoked, but not availabe`),
-    );
+    log.debug(`Found a matching interaction ${matchingInteraction.name}`);
+    return matchingInteraction.handleInteraction(command, client, context);
 };
 
 const checkPermissions = (
@@ -333,7 +333,7 @@ const commandMessageHandler = async (
         ) {
             const botUser = client.user;
             if (!botUser) {
-                return Promise.reject(new Error("Bot user not found"));
+                throw new Error("Bot user not found");
             }
 
             return Promise.all([
@@ -382,7 +382,7 @@ const specialCommandHandler = (
     );
 };
 
-export const handleInteractionEvent = (
+export const handleInteractionEvent = async (
     interaction: Interaction,
     client: Client,
     context: BotContext,
@@ -406,7 +406,8 @@ export const handleInteractionEvent = (
             context,
         );
     }
-    return Promise.reject(new Error("Not supported"));
+
+    throw new Error("Not supported");
 };
 
 export const messageCommandHandler = async (

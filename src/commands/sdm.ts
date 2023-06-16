@@ -243,8 +243,7 @@ export class SdmCommand implements MessageCommand, ApplicationCommand {
             await command.reply(msg);
             return;
         }
-        return Promise.reject(
-            new Error(`Subcommand ${subcommand} not implemented.`),
-        );
+
+        throw new Error(`Subcommand ${subcommand} not implemented.`);
     }
 }
