@@ -4,7 +4,7 @@
     "enabled": false
   },
   "formatter": {
-    "enabled": false,
+    "enabled": true,
     "indentSize": 4,
     "indentStyle": "space"
   },
