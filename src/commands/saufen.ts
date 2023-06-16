@@ -3,7 +3,16 @@ import { createWriteStream } from "node:fs";
 import { readdir } from "node:fs/promises";
 
 import fetch from "node-fetch";
-import { CommandInteraction, CacheType, Client, PermissionsString, SlashCommandBuilder, SlashCommandStringOption, SlashCommandSubcommandBuilder } from "discord.js";
+import {
+    CommandInteraction,
+    CacheType,
+    Client,
+    PermissionsString,
+    SlashCommandBuilder,
+    SlashCommandStringOption,
+    SlashCommandSubcommandBuilder,
+    AutocompleteInteraction,
+} from "discord.js";
 
 import { connectAndPlaySaufen, soundDir } from "../handler/voiceHandler.js";
 import { ApplicationCommand } from "./command.js";
@@ -17,7 +26,7 @@ export class Saufen implements ApplicationCommand {
     description = "Macht Stimmung in Wois";
     requiredPermissions: readonly PermissionsString[] = [
         "BanMembers",
-        "ManageEvents"
+        "ManageEvents",
     ];
     applicationCommand = new SlashCommandBuilder()
         .setName(this.name)
@@ -25,7 +34,7 @@ export class Saufen implements ApplicationCommand {
         .addSubcommand(
             new SlashCommandSubcommandBuilder()
                 .setName("los")
-                .setDescription("LOS JETZT AUF GAR KEIN REDEN")
+                .setDescription("LOS JETZT AUF GAR KEIN REDEN"),
         )
         .addSubcommand(
             new SlashCommandSubcommandBuilder()
@@ -36,12 +45,13 @@ export class Saufen implements ApplicationCommand {
                         .setRequired(true)
                         .setName("sound")
                         .setDescription("Soundfile. Bruder mach vorher list ja")
-                )
+                        .setAutocomplete(true),
+                ),
         )
         .addSubcommand(
             new SlashCommandSubcommandBuilder()
                 .setName("list")
-                .setDescription("Listet alle Woismotivatoren")
+                .setDescription("Listet alle Woismotivatoren"),
         )
         .addSubcommand(
             new SlashCommandSubcommandBuilder()
@@ -51,11 +61,17 @@ export class Saufen implements ApplicationCommand {
                     new SlashCommandStringOption()
                         .setRequired(true)
                         .setName("sound")
-                        .setDescription("Link zum File (Bitte nur audio files bro)")
-                )
+                        .setDescription(
+                            "Link zum File (Bitte nur audio files bro)",
+                        ),
+                ),
         );
 
-    async handleInteraction(command: CommandInteraction<CacheType>, _client: Client<boolean>, context: BotContext): Promise<void> {
+    async handleInteraction(
+        command: CommandInteraction<CacheType>,
+        _client: Client<boolean>,
+        context: BotContext,
+    ): Promise<void> {
         if (!command.isChatInputCommand()) {
             // TODO: Solve this on a type level
             return;
@@ -72,6 +88,7 @@ export class Saufen implements ApplicationCommand {
             }
             return false;
         };
+
         const reply = () => {
             if (isWeekend()) {
                 return command.reply("WOCHENENDE!! SAUFEN!! GEIL");
@@ -81,26 +98,28 @@ export class Saufen implements ApplicationCommand {
 
         switch (subCommand) {
             case "los": {
-                await Promise.all([
-                    connectAndPlaySaufen(context),
-                    reply()
-                ]);
+                await Promise.all([connectAndPlaySaufen(context), reply()]);
                 return;
             }
             case "select": {
                 const toPlay = command.options.getString("sound", true);
                 await Promise.all([
                     connectAndPlaySaufen(context, toPlay),
-                    reply()
+                    reply(),
                 ]);
                 return;
             }
             case "add": {
-                const soundUrl = new URL(command.options.getString("sound", true));
-                const targetPath = path.resolve(soundDir, path.basename(soundUrl.pathname));
+                const soundUrl = new URL(
+                    command.options.getString("sound", true),
+                );
+                const targetPath = path.resolve(
+                    soundDir,
+                    path.basename(soundUrl.pathname),
+                );
                 const fileStream = createWriteStream(targetPath);
                 const res = await fetch(soundUrl.toString(), {
-                    method: "GET"
+                    method: "GET",
                 });
                 const body = res.body;
                 if (!body) {
@@ -114,17 +133,42 @@ export class Saufen implements ApplicationCommand {
                 });
                 await Promise.all([
                     savePromise,
-                    command.reply("Jo, habs eingefügt")
+                    command.reply("Jo, habs eingefügt"),
                 ]);
                 return;
             }
             case "list": {
-                const files = await readdir(soundDir, { withFileTypes: true });
-                await command.reply(files.map(f => f.name).join("\n- "));
+                const files = await this.getSoundFiles();
+                await command.reply(files.join("\n- "));
                 return;
             }
             default:
                 return assertNever(subCommand);
         }
+    }
+
+    private async getSoundFiles() {
+        return (await readdir(soundDir, { withFileTypes: true }))
+            .filter((f) => f.isFile())
+            .map((f) => f.name);
+    }
+
+    async autocomplete(interaction: AutocompleteInteraction) {
+        const subCommand = interaction.options.getSubcommand(true);
+        if (subCommand !== "select") {
+            return;
+        }
+
+        const files = await this.getSoundFiles();
+
+        const focusedValue = interaction.options.getFocused();
+        const completions = files
+            .filter((f) => f.startsWith(focusedValue))
+            .map((name) => ({
+                name,
+                value: name,
+            }));
+
+        await interaction.respond(completions);
     }
 }
