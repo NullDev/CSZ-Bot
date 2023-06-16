@@ -1,8 +1,6 @@
 import path from "node:path";
-import { createWriteStream } from "node:fs";
-import { readdir } from "node:fs/promises";
+import * as fs from "node:fs/promises";
 
-import fetch from "node-fetch";
 import {
     CommandInteraction,
     CacheType,
@@ -117,24 +115,21 @@ export class Saufen implements ApplicationCommand {
                     soundDir,
                     path.basename(soundUrl.pathname),
                 );
-                const fileStream = createWriteStream(targetPath);
+
                 const res = await fetch(soundUrl.toString(), {
                     method: "GET",
                 });
+
                 const body = res.body;
                 if (!body) {
                     await command.reply("Hab ich nicht gefunden");
                     return;
                 }
-                const savePromise = new Promise((resolve, reject) => {
-                    body.pipe(fileStream);
-                    body.on("error", reject);
-                    fileStream.on("finish", resolve);
-                });
-                await Promise.all([
-                    savePromise,
-                    command.reply("Jo, habs eingefügt"),
-                ]);
+
+                const ab = await res.arrayBuffer();
+                await fs.writeFile(targetPath, Buffer.from(ab));
+
+                await command.reply("Jo, habs eingefügt");
                 return;
             }
             case "list": {
@@ -148,7 +143,7 @@ export class Saufen implements ApplicationCommand {
     }
 
     private async getSoundFiles() {
-        return (await readdir(soundDir, { withFileTypes: true }))
+        return (await fs.readdir(soundDir, { withFileTypes: true }))
             .filter((f) => f.isFile())
             .map((f) => f.name);
     }

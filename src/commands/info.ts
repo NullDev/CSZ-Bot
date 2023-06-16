@@ -8,7 +8,6 @@ import {
     SlashCommandBuilder,
     ComponentType,
 } from "discord.js";
-import fetch from "node-fetch";
 
 import type {
     ApplicationCommand,

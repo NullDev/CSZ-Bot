@@ -1,5 +1,4 @@
 import type { Message } from "discord.js";
-import fetch from "node-fetch";
 import type { SpecialCommand, CommandResult } from "../command.js";
 
 const proxitokInstance = "https://proxitok.pussthecat.org";

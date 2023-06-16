@@ -1,4 +1,4 @@
-import * as fs from "node:fs";
+import * as fs from "node:fs/promises";
 import * as path from "node:path";
 
 import {
@@ -11,8 +11,6 @@ import * as discord from "discord.js";
 
 import type { BotContext } from "../context.js";
 import type { ApplicationCommand } from "./command.js";
-
-import fetch from "node-fetch";
 
 import log from "../utils/logger.js";
 
@@ -49,7 +47,7 @@ type LeaderBoard = {
 };
 
 const aocConfig = JSON.parse(
-    fs.readFileSync(aocConfigPath, "utf8"),
+    await fs.readFile(aocConfigPath, "utf8"),
 ) as AoCConfig;
 const medals = ["🥇", "🥈", "🥉", "🪙", "🏵️", "🌹"];
 

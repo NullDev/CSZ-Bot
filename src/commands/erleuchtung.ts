@@ -9,7 +9,6 @@ import {
     SlashCommandBuilder,
 } from "discord.js";
 import { CommandInteraction, CacheType } from "discord.js";
-import fetch from "node-fetch";
 
 import type { ApplicationCommand, MessageCommand } from "./command.js";
 import type { ProcessableMessage } from "../handler/cmdHandler.js";
