@@ -1,6 +1,7 @@
-import type { BotContext } from "../context.js";
-import path from "node:path";
+import * as path from "node:path";
 import { readdir } from "node:fs/promises";
+
+import type { BotContext } from "../context.js";
 
 const bannersDir = path.resolve("banners");
 

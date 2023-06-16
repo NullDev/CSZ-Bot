@@ -1,4 +1,4 @@
-import { APIInteractionGuildMember, GuildMember, User } from "discord.js";
+import type { APIInteractionGuildMember, GuildMember, User } from "discord.js";
 
 import { getConfig } from "./configHandler.js";
 
