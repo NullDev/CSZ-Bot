@@ -6,6 +6,7 @@ import {
     VoiceState,
     GatewayIntentBits,
     Partials,
+    Client,
 } from "discord.js";
 import cron from "croner";
 
@@ -459,9 +460,16 @@ client.on("voiceStateUpdate", async (oldState, newState) =>
     ),
 );
 
-client.login(config.auth.bot_token).then(
-    () => {
-        log.info("Token login was successful!");
+function login() {
+    return new Promise<Client<true>>((resolve) => {
+        client.once("ready", resolve);
+        client.login(config.auth.bot_token);
+    });
+}
+
+login().then(
+    (client) => {
+        log.info(`Bot logged in as ${client.user.tag}`);
     },
     (err) => {
         log.error("Token login was not successful", err);
