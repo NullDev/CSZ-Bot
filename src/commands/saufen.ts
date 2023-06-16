@@ -3,7 +3,15 @@ import { createWriteStream } from "node:fs";
 import { readdir } from "node:fs/promises";
 
 import fetch from "node-fetch";
-import { CommandInteraction, CacheType, Client, PermissionsString, SlashCommandBuilder, SlashCommandStringOption, SlashCommandSubcommandBuilder } from "discord.js";
+import {
+    CommandInteraction,
+    CacheType,
+    Client,
+    PermissionsString,
+    SlashCommandBuilder,
+    SlashCommandStringOption,
+    SlashCommandSubcommandBuilder,
+} from "discord.js";
 
 import { connectAndPlaySaufen, soundDir } from "../handler/voiceHandler.js";
 import { ApplicationCommand } from "./command.js";
@@ -17,7 +25,7 @@ export class Saufen implements ApplicationCommand {
     description = "Macht Stimmung in Wois";
     requiredPermissions: readonly PermissionsString[] = [
         "BanMembers",
-        "ManageEvents"
+        "ManageEvents",
     ];
     applicationCommand = new SlashCommandBuilder()
         .setName(this.name)
@@ -25,7 +33,7 @@ export class Saufen implements ApplicationCommand {
         .addSubcommand(
             new SlashCommandSubcommandBuilder()
                 .setName("los")
-                .setDescription("LOS JETZT AUF GAR KEIN REDEN")
+                .setDescription("LOS JETZT AUF GAR KEIN REDEN"),
         )
         .addSubcommand(
             new SlashCommandSubcommandBuilder()
@@ -35,13 +43,15 @@ export class Saufen implements ApplicationCommand {
                     new SlashCommandStringOption()
                         .setRequired(true)
                         .setName("sound")
-                        .setDescription("Soundfile. Bruder mach vorher list ja")
-                )
+                        .setDescription(
+                            "Soundfile. Bruder mach vorher list ja",
+                        ),
+                ),
         )
         .addSubcommand(
             new SlashCommandSubcommandBuilder()
                 .setName("list")
-                .setDescription("Listet alle Woismotivatoren")
+                .setDescription("Listet alle Woismotivatoren"),
         )
         .addSubcommand(
             new SlashCommandSubcommandBuilder()
@@ -51,11 +61,17 @@ export class Saufen implements ApplicationCommand {
                     new SlashCommandStringOption()
                         .setRequired(true)
                         .setName("sound")
-                        .setDescription("Link zum File (Bitte nur audio files bro)")
-                )
+                        .setDescription(
+                            "Link zum File (Bitte nur audio files bro)",
+                        ),
+                ),
         );
 
-    async handleInteraction(command: CommandInteraction<CacheType>, _client: Client<boolean>, context: BotContext): Promise<void> {
+    async handleInteraction(
+        command: CommandInteraction<CacheType>,
+        _client: Client<boolean>,
+        context: BotContext,
+    ): Promise<void> {
         if (!command.isChatInputCommand()) {
             // TODO: Solve this on a type level
             return;
@@ -81,26 +97,28 @@ export class Saufen implements ApplicationCommand {
 
         switch (subCommand) {
             case "los": {
-                await Promise.all([
-                    connectAndPlaySaufen(context),
-                    reply()
-                ]);
+                await Promise.all([connectAndPlaySaufen(context), reply()]);
                 return;
             }
             case "select": {
                 const toPlay = command.options.getString("sound", true);
                 await Promise.all([
                     connectAndPlaySaufen(context, toPlay),
-                    reply()
+                    reply(),
                 ]);
                 return;
             }
             case "add": {
-                const soundUrl = new URL(command.options.getString("sound", true));
-                const targetPath = path.resolve(soundDir, path.basename(soundUrl.pathname));
+                const soundUrl = new URL(
+                    command.options.getString("sound", true),
+                );
+                const targetPath = path.resolve(
+                    soundDir,
+                    path.basename(soundUrl.pathname),
+                );
                 const fileStream = createWriteStream(targetPath);
                 const res = await fetch(soundUrl.toString(), {
-                    method: "GET"
+                    method: "GET",
                 });
                 const body = res.body;
                 if (!body) {
@@ -114,13 +132,13 @@ export class Saufen implements ApplicationCommand {
                 });
                 await Promise.all([
                     savePromise,
-                    command.reply("Jo, habs eingefügt")
+                    command.reply("Jo, habs eingefügt"),
                 ]);
                 return;
             }
             case "list": {
                 const files = await readdir(soundDir, { withFileTypes: true });
-                await command.reply(files.map(f => f.name).join("\n- "));
+                await command.reply(files.map((f) => f.name).join("\n- "));
                 return;
             }
             default:
