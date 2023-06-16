@@ -1,7 +1,6 @@
-import path from "node:path";
+import * as fs from "node:fs/promises";
 
-import Jimp from "jimp";
-import * as fs from "fs";
+import nodeCanvas from "canvas";
 import { Client, GuildMember } from "discord.js";
 
 import { CommandResult, MessageCommand } from "./command.js";
@@ -11,24 +10,22 @@ import type { ProcessableMessage } from "../handler/cmdHandler.js";
 
 const config = getConfig();
 
-const createBonkMeme = async (author: GuildMember): Promise<string> => {
-    const image = await Jimp.read("https://i.imgur.com/nav6WWX.png");
-    const filename = `/tmp/bonk_meme_${Date.now()}.png`;
+const { createCanvas, loadImage } = nodeCanvas;
+
+const createBonkMeme = async (author: GuildMember): Promise<Buffer> => {
+    const bonk = await fs.readFile("assets/bonk.png");
+    const bonkImage = await loadImage(bonk);
 
     const avatarURL = author.displayAvatarURL({ extension: "png", size: 128 });
-    let avatar = await Jimp.read(avatarURL);
+    const avatarImage = await loadImage(avatarURL);
 
-    avatar = avatar.resize(128, 128);
+    const canvas = createCanvas(bonkImage.width, bonkImage.height);
+    const ctx = canvas.getContext("2d");
 
-    await image
-        .composite(avatar, 120, 90, {
-            mode: Jimp.BLEND_DESTINATION_OVER,
-            opacitySource: 1,
-            opacityDest: 1,
-        })
-        .writeAsync(filename);
+    ctx.drawImage(avatarImage, 120, 90);
+    ctx.drawImage(bonkImage, 0, 0);
 
-    return filename;
+    return canvas.toBuffer();
 };
 
 export class BonkCommand implements MessageCommand {
@@ -45,36 +42,32 @@ Usage: ${config.bot_settings.prefix.command_prefix}bonk
     ): Promise<CommandResult> {
         const messageRef = message.reference?.messageId;
         const messagePing = message.mentions?.users.first();
-        let toBeBonked = await message.guild.members.fetch(
-            message.author,
-        );
+        let toBeBonked = await message.guild.members.fetch(message.author);
 
         // If reply to message
         if (messageRef) {
             const msg = await message.channel.messages.fetch(messageRef);
             toBeBonked = await message.guild.members.fetch(msg.author);
-        } // If a user is mentioned in the message
-        else if (messagePing) {
+        } else if (messagePing) {
+            // If a user is mentioned in the message
             const mentionedUser = message.mentions.users.first();
             if (mentionedUser) {
                 toBeBonked = await message.guild.members.fetch(mentionedUser);
             }
         }
 
-        const meme = await createBonkMeme(toBeBonked);
+        const bonkBuffer = await createBonkMeme(toBeBonked);
         try {
             await message.channel.send({
                 files: [
                     {
-                        attachment: meme,
-                        name: path.basename(meme),
+                        name: "bonk.png",
+                        attachment: bonkBuffer,
                     },
                 ],
             });
         } catch (err) {
             log.error("Could not create where meme", err);
-        } finally {
-            await fs.promises.unlink(meme);
         }
     }
 }
