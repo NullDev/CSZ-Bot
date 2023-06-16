@@ -284,13 +284,15 @@ export class StempelgraphCommand implements ApplicationCommand {
                 graphUserInfo,
             );
 
+            /*
             await command.reply({
                 content:
                     "```\n" +
                     JSON.stringify([...graphUserInfo.entries()], null, "  ") +
                     "\n```",
             });
-            await command.followUp({
+            */
+            await command.reply({
                 files: [
                     {
                         attachment: stempelGraph,
