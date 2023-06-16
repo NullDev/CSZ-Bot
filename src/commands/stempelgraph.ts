@@ -20,9 +20,10 @@ const suportedLayoutEngines = [
     "circo",
     "dot",
     "fdp",
-    "neato",
-    "osage",
     "twopi",
+    // Engines that produce crappy results:
+    // "neato",
+    // "osage",
 ] as const;
 type LayoutEngine = typeof suportedLayoutEngines[number];
 
