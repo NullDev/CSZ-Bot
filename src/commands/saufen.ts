@@ -11,6 +11,7 @@ import {
     SlashCommandBuilder,
     SlashCommandStringOption,
     SlashCommandSubcommandBuilder,
+    AutocompleteInteraction,
 } from "discord.js";
 
 import { connectAndPlaySaufen, soundDir } from "../handler/voiceHandler.js";
@@ -43,9 +44,8 @@ export class Saufen implements ApplicationCommand {
                     new SlashCommandStringOption()
                         .setRequired(true)
                         .setName("sound")
-                        .setDescription(
-                            "Soundfile. Bruder mach vorher list ja",
-                        ),
+                        .setDescription("Soundfile. Bruder mach vorher list ja")
+                        .setAutocomplete(true),
                 ),
         )
         .addSubcommand(
@@ -88,6 +88,7 @@ export class Saufen implements ApplicationCommand {
             }
             return false;
         };
+
         const reply = () => {
             if (isWeekend()) {
                 return command.reply("WOCHENENDE!! SAUFEN!! GEIL");
@@ -137,12 +138,37 @@ export class Saufen implements ApplicationCommand {
                 return;
             }
             case "list": {
-                const files = await readdir(soundDir, { withFileTypes: true });
-                await command.reply(files.map((f) => f.name).join("\n- "));
+                const files = await this.getSoundFiles();
+                await command.reply(files.join("\n- "));
                 return;
             }
             default:
                 return assertNever(subCommand);
         }
+    }
+
+    private async getSoundFiles() {
+        return (await readdir(soundDir, { withFileTypes: true }))
+            .filter((f) => f.isFile())
+            .map((f) => f.name);
+    }
+
+    async autocomplete(interaction: AutocompleteInteraction) {
+        const subCommand = interaction.options.getSubcommand(true);
+        if (subCommand !== "select") {
+            return;
+        }
+
+        const files = await this.getSoundFiles();
+
+        const focusedValue = interaction.options.getFocused();
+        const completions = files
+            .filter((f) => f.startsWith(focusedValue))
+            .map((name) => ({
+                name,
+                value: name,
+            }));
+
+        await interaction.respond(completions);
     }
 }
