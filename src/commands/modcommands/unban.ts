@@ -9,7 +9,7 @@ import { Message, Client } from "discord.js";
 
 import Ban from "../../storage/model/Ban.js";
 import { getConfig } from "../../utils/configHandler.js";
-import {
+import type {
     ApplicationCommand,
     CommandResult,
     MessageCommand,

@@ -1,12 +1,12 @@
 import * as fs from "node:fs/promises";
 
 import nodeCanvas from "canvas";
-import { Client, GuildMember } from "discord.js";
+import type { Client, GuildMember } from "discord.js";
 
-import { CommandResult, MessageCommand } from "./command.js";
+import type { CommandResult, MessageCommand } from "./command.js";
+import type { ProcessableMessage } from "../handler/cmdHandler.js";
 import log from "../utils/logger.js";
 import { getConfig } from "../utils/configHandler.js";
-import type { ProcessableMessage } from "../handler/cmdHandler.js";
 
 const config = getConfig();
 

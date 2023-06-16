@@ -11,7 +11,7 @@ import {
 import { CommandInteraction, CacheType } from "discord.js";
 import fetch from "node-fetch";
 
-import { ApplicationCommand, MessageCommand } from "./command.js";
+import type { ApplicationCommand, MessageCommand } from "./command.js";
 import type { ProcessableMessage } from "../handler/cmdHandler.js";
 
 const INSPIRATION_GENERATE_API_URL = "https://inspirobot.me/api?generate=true";

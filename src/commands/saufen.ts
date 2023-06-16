@@ -14,10 +14,10 @@ import {
     AutocompleteInteraction,
 } from "discord.js";
 
-import { connectAndPlaySaufen, soundDir } from "../handler/voiceHandler.js";
-import { ApplicationCommand } from "./command.js";
-import { assertNever } from "../utils/typeUtils.js";
+import type { ApplicationCommand } from "./command.js";
 import type { BotContext } from "../context.js";
+import { connectAndPlaySaufen, soundDir } from "../handler/voiceHandler.js";
+import { assertNever } from "../utils/typeUtils.js";
 
 type SubCommand = "los" | "add" | "list" | "select";
 

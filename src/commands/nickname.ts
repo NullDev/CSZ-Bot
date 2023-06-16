@@ -1,6 +1,5 @@
 import {
     CommandInteraction,
-    Client,
     GuildMember,
     User,
     CacheType,
@@ -14,7 +13,7 @@ import {
     AutocompleteInteraction,
 } from "discord.js";
 
-import {
+import type {
     ApplicationCommand,
     CommandResult,
     UserInteraction,

@@ -1,8 +1,8 @@
 // @ts-ignore
-import { Client, User } from "discord.js";
+import type { Client, User } from "discord.js";
 
 import Penis from "../storage/model/Penis.js";
-import { CommandResult, MessageCommand } from "./command.js";
+import type { CommandResult, MessageCommand } from "./command.js";
 import log from "../utils/logger.js";
 import type { ProcessableMessage } from "../handler/cmdHandler.js";
 import { formatTime } from "../utils/dateUtils.js";

@@ -12,7 +12,7 @@ import {
 } from "discord.js";
 
 import type { BotContext } from "../context.js";
-import { ApplicationCommand } from "./command.js";
+import type { ApplicationCommand } from "./command.js";
 import { isTrusted } from "../utils/userUtils.js";
 import { chunkArray } from "../utils/arrayUtils.js";
 

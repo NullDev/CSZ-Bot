@@ -9,9 +9,9 @@ import {
     User,
 } from "discord.js";
 
-import { ApplicationCommand, CommandResult } from "./command.js";
-import { EhreGroups, EhrePoints, EhreVotes } from "../storage/model/Ehre.js";
+import type { ApplicationCommand, CommandResult } from "./command.js";
 import type { BotContext } from "../context.js";
+import { EhreGroups, EhrePoints, EhreVotes } from "../storage/model/Ehre.js";
 
 function createUserPointString(e: EhrePoints) {
     return `<@${e.userId}> : ${e.points}`;

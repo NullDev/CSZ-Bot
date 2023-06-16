@@ -8,20 +8,20 @@ import {
     SlashCommandStringOption,
     SlashCommandUserOption,
 } from "discord.js";
-import { Client } from "discord.js";
+import type { Client } from "discord.js";
 
 import Ban from "../../storage/model/Ban.js";
 import { getConfig } from "../../utils/configHandler.js";
-import {
+import type {
     ApplicationCommand,
     CommandResult,
     MessageCommand,
 } from "../command.js";
+import type { ProcessableMessage } from "../../handler/cmdHandler.js";
+import type { BotContext } from "../../context.js";
 import log from "../../utils/logger.js";
 import moment from "moment";
-import type { ProcessableMessage } from "../../handler/cmdHandler.js";
 import cron from "croner";
-import type { BotContext } from "../../context.js";
 import { unban } from "./unban.js";
 
 const config = getConfig();

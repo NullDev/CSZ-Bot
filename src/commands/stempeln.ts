@@ -6,8 +6,8 @@ import {
     SlashCommandUserOption,
 } from "discord.js";
 
+import type { ApplicationCommand, CommandResult } from "./command.js";
 import Stempel from "../storage/model/Stempel.js";
-import { ApplicationCommand, CommandResult } from "./command.js";
 
 const stempelUser = async (
     invitator: GuildMember,

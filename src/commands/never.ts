@@ -10,7 +10,7 @@ import {
     SlashCommandStringOption,
 } from "discord.js";
 
-import { ApplicationCommand, MessageCommand } from "./command.js";
+import type { ApplicationCommand, MessageCommand } from "./command.js";
 import type { ProcessableMessage } from "../handler/cmdHandler.js";
 import type { BotContext } from "../context.js";
 

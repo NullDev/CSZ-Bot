@@ -12,7 +12,7 @@ import {
 
 import Stempel from "../storage/model/Stempel.js";
 import log from "../utils/logger.js";
-import { ApplicationCommand, CommandResult } from "./command.js";
+import type { ApplicationCommand, CommandResult } from "./command.js";
 import { chunkArray } from "../utils/arrayUtils.js";
 
 const { createCanvas, loadImage } = nodeCanvas;

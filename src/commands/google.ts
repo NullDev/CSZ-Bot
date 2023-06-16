@@ -7,7 +7,7 @@ import {
     SlashCommandUserOption,
 } from "discord.js";
 
-import { ApplicationCommand, CommandResult } from "./command.js";
+import type { ApplicationCommand, CommandResult } from "./command.js";
 
 const replies = [
     "Da bitte, dein Suchergebnis, du Opfer: {0}",

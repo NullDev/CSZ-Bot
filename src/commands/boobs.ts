@@ -1,8 +1,8 @@
 import { Client, User } from "discord.js";
 
 import type { ProcessableMessage } from "../handler/cmdHandler.js";
+import type { CommandResult, MessageCommand } from "./command.js";
 import Boob from "../storage/model/Boob.js";
-import { CommandResult, MessageCommand } from "./command.js";
 import log from "../utils/logger.js";
 import { formatTime } from "../utils/dateUtils.js";
 

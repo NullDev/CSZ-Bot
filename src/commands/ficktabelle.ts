@@ -1,8 +1,8 @@
 import { Client } from "discord.js";
 
-import { getConfig } from "../utils/configHandler.js";
-import { MessageCommand } from "./command.js";
+import type { MessageCommand } from "./command.js";
 import type { ProcessableMessage } from "../handler/cmdHandler.js";
+import { getConfig } from "../utils/configHandler.js";
 
 const config = getConfig();
 

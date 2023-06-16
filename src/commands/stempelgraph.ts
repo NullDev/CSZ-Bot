@@ -10,11 +10,11 @@ import {
 } from "discord.js";
 import { Resvg } from "@resvg/resvg-js";
 
+import type { ApplicationCommand, CommandResult } from "./command.js";
+import type { BotContext } from "../context.js";
 import Stempel from "../storage/model/Stempel.js";
 import log from "../utils/logger.js";
 import { isMod, isTrusted } from "../utils/userUtils.js";
-import { ApplicationCommand, CommandResult } from "./command.js";
-import type { BotContext } from "../context.js";
 
 const supportedLayoutEngines = [
     "circo",

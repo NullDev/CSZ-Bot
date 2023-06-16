@@ -8,9 +8,9 @@ import {
     SlashCommandStringOption,
 } from "discord.js";
 
+import type { ApplicationCommand, MessageCommand } from "./command.js";
+import type { ProcessableMessage } from "../handler/cmdHandler.js";
 import { isEmotifizierer, isMod } from "../utils/userUtils.js";
-import { ApplicationCommand, MessageCommand } from "./command.js";
-import { ProcessableMessage } from "../handler/cmdHandler.js";
 import { ensureChatInputCommand } from "../utils/interactionUtils.js";
 
 /**

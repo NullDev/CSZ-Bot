@@ -1,7 +1,7 @@
 import { CommandInteraction, SlashCommandBuilder } from "discord.js";
 
+import type { ApplicationCommand, CommandResult } from "./command.js";
 import { WoisData } from "../handler/voiceStateUpdateHandler.js";
-import { ApplicationCommand, CommandResult } from "./command.js";
 
 export class WoisLog implements ApplicationCommand {
     name = "woislog";

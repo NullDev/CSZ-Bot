@@ -1,6 +1,7 @@
-import log from "../../utils/logger.js";
 import type { CommandFunction } from "../../types.js";
+import log from "../../utils/logger.js";
 import { getConfig } from "../../utils/configHandler.js";
+
 const config = getConfig();
 
 /**

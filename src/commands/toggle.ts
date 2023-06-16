@@ -1,7 +1,7 @@
 import { APIEmbedField, EmbedBuilder, Message } from "discord.js";
 
-import * as poll from "./poll.js";
 import type { CommandFunction } from "../types.js";
+import * as poll from "./poll.js";
 import { isMod } from "../utils/userUtils.js";
 
 const isPollField = (field: APIEmbedField): boolean =>

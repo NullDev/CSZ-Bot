@@ -6,9 +6,9 @@ import {
     SlashCommandBuilder,
 } from "discord.js";
 
+import type { ApplicationCommand } from "./command.js";
 import Birthday, { isOneBasedMonth } from "../storage/model/Birthday.js";
 import log from "../utils/logger.js";
-import { ApplicationCommand } from "./command.js";
 
 export class GeburtstagCommand implements ApplicationCommand {
     name = "geburtstag";

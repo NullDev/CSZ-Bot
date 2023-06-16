@@ -9,11 +9,11 @@ import {
     TextBasedChannel,
     User,
 } from "discord.js";
-
-import { ApplicationCommand, CommandResult } from "./command.js";
 import moment from "moment";
+
+import type { ApplicationCommand, CommandResult } from "./command.js";
 import WoisAction from "../storage/model/WoisAction.js";
-import { ReactionHandler } from "../types.js";
+import type { ReactionHandler } from "../types.js";
 import type { BotContext } from "../context.js";
 import logger from "../utils/logger.js";
 import { isWoisGang } from "../utils/userUtils.js";

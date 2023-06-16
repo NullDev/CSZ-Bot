@@ -6,7 +6,7 @@ import {
     time,
 } from "discord.js";
 import { SlashCommandBuilder } from "discord.js";
-import { ApplicationCommand } from "./command.js";
+import type { ApplicationCommand } from "./command.js";
 import type { BotContext } from "../context.js";
 import Ban from "../storage/model/Ban.js";
 

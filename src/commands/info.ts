@@ -10,12 +10,12 @@ import {
 } from "discord.js";
 import fetch from "node-fetch";
 
-import {
+import type {
     ApplicationCommand,
     CommandResult,
     MessageCommand,
 } from "./command.js";
-import { GitHubContributor } from "../types.js";
+import type { GitHubContributor } from "../types.js";
 import type { ProcessableMessage } from "../handler/cmdHandler.js";
 import { assertNever } from "../utils/typeUtils.js";
 

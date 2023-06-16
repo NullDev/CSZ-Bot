@@ -1,17 +1,17 @@
+import * as fs from "node:fs";
+import * as path from "node:path";
+
 import {
     CacheType,
-    Client,
     CommandInteraction,
     SlashCommandBuilder,
     SlashCommandStringOption,
 } from "discord.js";
+import * as discord from "discord.js";
 
 import type { BotContext } from "../context.js";
-import { ApplicationCommand } from "./command.js";
-import * as path from "node:path";
-import * as fs from "node:fs";
+import type { ApplicationCommand } from "./command.js";
 
-import * as discord from "discord.js";
 import fetch from "node-fetch";
 
 import log from "../utils/logger.js";

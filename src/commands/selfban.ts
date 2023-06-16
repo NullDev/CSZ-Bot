@@ -1,10 +1,10 @@
 import { time, TimestampStyles } from "discord.js";
 import moment from "moment";
 
+import type { CommandFunction } from "../types.js";
 import Ban from "../storage/model/Ban.js";
 import { getConfig } from "../utils/configHandler.js";
 import * as ban from "./modcommands/ban.js";
-import type { CommandFunction } from "../types.js";
 
 const config = getConfig();
 
