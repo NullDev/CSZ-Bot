@@ -45,7 +45,7 @@ Usage: ${config.bot_settings.prefix.command_prefix}bonk
     ): Promise<CommandResult> {
         const messageRef = message.reference?.messageId;
         const messagePing = message.mentions?.users.first();
-        let toBeBonked: GuildMember = await message.guild.members.fetch(
+        let toBeBonked = await message.guild.members.fetch(
             message.author,
         );
 
