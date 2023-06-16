@@ -208,9 +208,9 @@ client.once("ready", async (initializedClient) => {
             timezone: "Europe/Berlin",
         } as const;
 
-        const bday = new BdayHandler(botContext);
+        const birthday = new BdayHandler(botContext);
         const aoc = new AoCHandler(botContext);
-        log.info("Starting Nicknamehandler ");
+        log.info("Starting Nickname Handler ");
         const nicknameHandler = new NicknameHandler(botContext);
         if (firstRun) {
             firstRun = false; // Hacky deadlock ...
@@ -224,9 +224,9 @@ client.once("ready", async (initializedClient) => {
             log.info("Scheduling Birthday Cronjob...");
             cron("1 0 * * *", cronOptions, async () => {
                 log.debug("Entered Birthday cronjob");
-                await bday.checkBdays();
+                await birthday.checkBdays();
             });
-            await bday.checkBdays();
+            await birthday.checkBdays();
 
             log.info("Scheduling Advent of Code Cronjob...");
             cron("0 20 1-25 12 *", cronOptions, async () => {
