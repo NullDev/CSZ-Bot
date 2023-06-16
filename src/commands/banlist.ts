@@ -20,7 +20,7 @@ export class BanListCommand implements ApplicationCommand {
     async handleInteraction(
         command: CommandInteraction<CacheType>,
         _client: Client<boolean>,
-        _context: BotContext,
+        context: BotContext,
     ): Promise<void> {
         const bans = await Ban.findAll();
 
@@ -33,7 +33,7 @@ export class BanListCommand implements ApplicationCommand {
 
         const banMessage = bans
             .map((b) => {
-                const user = _context.guild.members.cache.get(b.userId);
+                const user = context.guild.members.cache.get(b.userId);
                 if (user === undefined) {
                     return "";
                 }

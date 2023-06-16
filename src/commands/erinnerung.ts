@@ -56,8 +56,6 @@ export class ErinnerungCommand implements MessageCommand, ApplicationCommand {
 
     async handleInteraction(
         command: CommandInteraction<CacheType>,
-        _client: Client<boolean>,
-        _context: BotContext,
     ): Promise<void> {
         const cmd = ensureChatInputCommand(command);
         const time = cmd.options.getString("time", true);

@@ -201,8 +201,6 @@ export class AoCCommand implements ApplicationCommand {
 
     async handleInteraction(
         command: CommandInteraction<CacheType>,
-        _client: Client<boolean>,
-        _context: BotContext,
     ): Promise<void> {
         if (!command.isChatInputCommand()) {
             // TODO: Solve this on a type level
