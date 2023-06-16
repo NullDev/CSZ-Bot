@@ -134,7 +134,7 @@ export class Saufen implements ApplicationCommand {
             }
             case "list": {
                 const files = await this.getSoundFiles();
-                await command.reply(files.join("\n- "));
+                await command.reply(files.map(f => `- ${f}`).join("\n"));
                 return;
             }
             default:
