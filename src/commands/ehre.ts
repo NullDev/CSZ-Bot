@@ -95,27 +95,25 @@ export class EhreCommand implements ApplicationCommand {
     name = "ehre";
     description = "Fügt Ehre hinzu & Zeigt die Tabelle an";
 
-    get applicationCommand() {
-        return new SlashCommandBuilder()
-            .setName(this.name)
-            .setDescription(this.description)
-            .addSubcommand(
-                new SlashCommandSubcommandBuilder()
-                    .setName("add")
-                    .setDescription("Ehre einen User")
-                    .addUserOption(
-                        new SlashCommandUserOption()
-                            .setRequired(true)
-                            .setName("user")
-                            .setDescription("Dem ehrenhaften User"),
-                    ),
-            )
-            .addSubcommand(
-                new SlashCommandSubcommandBuilder()
-                    .setName("tabelle")
-                    .setDescription("Alle Ehrenuser"),
-            );
-    }
+    applicationCommand = new SlashCommandBuilder()
+        .setName(this.name)
+        .setDescription(this.description)
+        .addSubcommand(
+            new SlashCommandSubcommandBuilder()
+                .setName("add")
+                .setDescription("Ehre einen User")
+                .addUserOption(
+                    new SlashCommandUserOption()
+                        .setRequired(true)
+                        .setName("user")
+                        .setDescription("Dem ehrenhaften User"),
+                ),
+        )
+        .addSubcommand(
+            new SlashCommandSubcommandBuilder()
+                .setName("tabelle")
+                .setDescription("Alle Ehrenuser"),
+        );
 
     static async addEhre(
         thankingUser: User,

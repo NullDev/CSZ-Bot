@@ -15,39 +15,37 @@ export class OidaCommand implements ApplicationCommand {
     name = "oida";
     description = "Fügt a Übersetzung 🇦🇹 -> 🇩🇪 hinzu";
 
-    get applicationCommand() {
-        return new SlashCommandBuilder()
-            .setName(this.name)
-            .setDescription(this.description)
-            .addStringOption(
-                new SlashCommandStringOption()
-                    .setRequired(true)
-                    .setName("austrian")
-                    .setDescriptionLocalization("en-US", "ösisch")
-                    .setDescriptionLocalization("de", "ösisch")
-                    .setDescription(
-                        "🇦🇹 Österreichische Bezeichnung. Darf Leerzeichen enthalten.",
-                    ),
-            )
-            .addStringOption(
-                new SlashCommandStringOption()
-                    .setRequired(true)
-                    .setName("german")
-                    .setDescriptionLocalization("en-US", "piefkisch")
-                    .setDescriptionLocalization("de", "piefkisch")
-                    .setDescription(
-                        "🇩🇪 Deutsche Bezeichnung. Darf Leerzeichen enthalten.",
-                    ),
-            )
-            .addStringOption(
-                new SlashCommandStringOption()
-                    .setRequired(false)
-                    .setName("description")
-                    .setDescriptionLocalization("en-US", "a beschreibung")
-                    .setDescriptionLocalization("de", "a beschreibung")
-                    .setDescription("Eine Beschreibung, wenn du magst"),
-            );
-    }
+    applicationCommand = new SlashCommandBuilder()
+        .setName(this.name)
+        .setDescription(this.description)
+        .addStringOption(
+            new SlashCommandStringOption()
+                .setRequired(true)
+                .setName("austrian")
+                .setDescriptionLocalization("en-US", "ösisch")
+                .setDescriptionLocalization("de", "ösisch")
+                .setDescription(
+                    "🇦🇹 Österreichische Bezeichnung. Darf Leerzeichen enthalten.",
+                ),
+        )
+        .addStringOption(
+            new SlashCommandStringOption()
+                .setRequired(true)
+                .setName("german")
+                .setDescriptionLocalization("en-US", "piefkisch")
+                .setDescriptionLocalization("de", "piefkisch")
+                .setDescription(
+                    "🇩🇪 Deutsche Bezeichnung. Darf Leerzeichen enthalten.",
+                ),
+        )
+        .addStringOption(
+            new SlashCommandStringOption()
+                .setRequired(false)
+                .setName("description")
+                .setDescriptionLocalization("en-US", "a beschreibung")
+                .setDescriptionLocalization("de", "a beschreibung")
+                .setDescription("Eine Beschreibung, wenn du magst"),
+        );
 
     normalizeTranslation(value: string) {
         return value.replaceAll(/\s+/g, " ").trim();

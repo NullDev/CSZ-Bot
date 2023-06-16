@@ -211,36 +211,35 @@ export class BanCommand implements ApplicationCommand, MessageCommand {
     name = "ban";
     description = "Joa, bannt halt einen ne?";
     requiredPermissions: readonly PermissionsString[] = ["BanMembers"];
-    get applicationCommand() {
-        return new SlashCommandBuilder()
-            .setName(this.name)
-            .setDescription(this.description)
-            .setDefaultMemberPermissions(0)
-            .addUserOption(
-                new SlashCommandUserOption()
-                    .setRequired(true)
-                    .setName("user")
-                    .setDescription("Der, der gebannt werden soll"),
-            )
-            .addStringOption(
-                new SlashCommandStringOption()
-                    .setRequired(true)
-                    .setName("reason")
-                    .setDescription("Warum er es verdient hat"),
-            )
-            .addIntegerOption(
-                new SlashCommandIntegerOption()
-                    .setRequired(false)
-                    .setName("hours")
-                    .setDescription("Wie lange in Stunden"),
-            )
-            .addIntegerOption(
-                new SlashCommandIntegerOption()
-                    .setRequired(false)
-                    .setName("minutes")
-                    .setDescription("Wie lange in Minuten"),
-            );
-    }
+
+    applicationCommand = new SlashCommandBuilder()
+        .setName(this.name)
+        .setDescription(this.description)
+        .setDefaultMemberPermissions(0)
+        .addUserOption(
+            new SlashCommandUserOption()
+                .setRequired(true)
+                .setName("user")
+                .setDescription("Der, der gebannt werden soll"),
+        )
+        .addStringOption(
+            new SlashCommandStringOption()
+                .setRequired(true)
+                .setName("reason")
+                .setDescription("Warum er es verdient hat"),
+        )
+        .addIntegerOption(
+            new SlashCommandIntegerOption()
+                .setRequired(false)
+                .setName("hours")
+                .setDescription("Wie lange in Stunden"),
+        )
+        .addIntegerOption(
+            new SlashCommandIntegerOption()
+                .setRequired(false)
+                .setName("minutes")
+                .setDescription("Wie lange in Minuten"),
+        );
 
     async handleInteraction(
         command: CommandInteraction,

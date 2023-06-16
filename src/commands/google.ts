@@ -36,23 +36,21 @@ export class GoogleCommand implements ApplicationCommand {
     description =
         "Falls jemand zu blöd zum googlen ist und du es ihm unter die Nase reiben willst";
 
-    get applicationCommand() {
-        return new SlashCommandBuilder()
-            .setName(this.name)
-            .setDescription(this.description)
-            .addStringOption(
-                new SlashCommandStringOption()
-                    .setRequired(true)
-                    .setName("searchword")
-                    .setDescription("Das, wonach du suchen willst"),
-            )
-            .addUserOption(
-                new SlashCommandUserOption()
-                    .setName("dau")
-                    .setRequired(false)
-                    .setDescription("Der User, der nichtmal googln kann"),
-            );
-    }
+    applicationCommand = new SlashCommandBuilder()
+        .setName(this.name)
+        .setDescription(this.description)
+        .addStringOption(
+            new SlashCommandStringOption()
+                .setRequired(true)
+                .setName("searchword")
+                .setDescription("Das, wonach du suchen willst"),
+        )
+        .addUserOption(
+            new SlashCommandUserOption()
+                .setName("dau")
+                .setRequired(false)
+                .setDescription("Der User, der nichtmal googln kann"),
+        );
 
     async handleInteraction(
         command: CommandInteraction,

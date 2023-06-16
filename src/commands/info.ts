@@ -151,14 +151,12 @@ export class InfoCommand implements ApplicationCommand, MessageCommand {
     name = "info";
     description = "Listet Informationen über diesen Bot in einem Embed auf";
 
-    public get applicationCommand(): SlashCommandBuilder {
-        // Every Application command would have this structure at minimal. However
-        // we don't enforce to use the name from the constructor, but highly encourage it
-        // since the command handler is based on that.
-        return new SlashCommandBuilder()
-            .setName(this.name)
-            .setDescription(this.description);
-    }
+    // Every Application command would have this structure at minimal. However
+    // we don't enforce to use the name from the constructor, but highly encourage it
+    // since the command handler is based on that.
+    applicationCommand = new SlashCommandBuilder()
+        .setName(this.name)
+        .setDescription(this.description);
 
     /**
      * Replies to the interaction with the info embed as ephemeral reply

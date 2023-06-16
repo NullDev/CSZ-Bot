@@ -33,18 +33,17 @@ export class UnbanCommand implements ApplicationCommand, MessageCommand {
     name = "unban";
     description = "Joa, unbannt halt einen ne?";
     requiredPermissions: readonly PermissionsString[] = ["BanMembers"];
-    get applicationCommand() {
-        return new SlashCommandBuilder()
-            .setName(this.name)
-            .setDescription(this.description)
-            .setDefaultMemberPermissions(0)
-            .addUserOption(
-                new SlashCommandUserOption()
-                    .setRequired(true)
-                    .setName("user")
-                    .setDescription("Der, der gebannt werden soll"),
-            );
-    }
+
+    applicationCommand = new SlashCommandBuilder()
+        .setName(this.name)
+        .setDescription(this.description)
+        .setDefaultMemberPermissions(0)
+        .addUserOption(
+            new SlashCommandUserOption()
+                .setRequired(true)
+                .setName("user")
+                .setDescription("Der, der gebannt werden soll"),
+        );
 
     async handleInteraction(
         command: CommandInteraction,

@@ -59,25 +59,23 @@ export class WoisCommand implements ApplicationCommand {
     name = "woisvote";
     description = "Erstellt einen Vote für Wois";
 
-    get applicationCommand() {
-        return new SlashCommandBuilder()
-            .setName(this.name)
-            .setDescription(this.description)
-            .addStringOption(
-                new SlashCommandStringOption()
-                    .setName("grund")
-                    .setRequired(true)
-                    .setDescription("Saufen, brauchts noch n weiteren grund?"),
-            )
-            .addStringOption(
-                new SlashCommandStringOption()
-                    .setName("zeitpunkt")
-                    .setRequired(false)
-                    .setDescription(
-                        `Wann? Uhrzeit für Ping. Standard: ${defaultWoisTime}. (Format: HH:MM)`,
-                    ),
-            );
-    }
+    applicationCommand = new SlashCommandBuilder()
+        .setName(this.name)
+        .setDescription(this.description)
+        .addStringOption(
+            new SlashCommandStringOption()
+                .setName("grund")
+                .setRequired(true)
+                .setDescription("Saufen, brauchts noch n weiteren grund?"),
+        )
+        .addStringOption(
+            new SlashCommandStringOption()
+                .setName("zeitpunkt")
+                .setRequired(false)
+                .setDescription(
+                    `Wann? Uhrzeit für Ping. Standard: ${defaultWoisTime}. (Format: HH:MM)`,
+                ),
+        );
 
     async handleInteraction(
         command: CommandInteraction,

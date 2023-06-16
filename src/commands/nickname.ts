@@ -55,68 +55,66 @@ export class Nickname implements ApplicationCommand {
     name = "nickname";
     description = "Setzt Nicknames für einen User";
 
-    get applicationCommand() {
-        return new SlashCommandBuilder()
-            .setName(this.name)
-            .setDescription(this.description)
-            .addSubcommand(
-                new SlashCommandSubcommandBuilder()
-                    .setName("add")
-                    .setDescription("Fügt einen nickname hinzu brudi")
-                    .addUserOption(
-                        new SlashCommandUserOption()
-                            .setRequired(true)
-                            .setName("user")
-                            .setDescription("Wem du tun willst"),
-                    )
-                    .addStringOption(
-                        new SlashCommandStringOption()
-                            .setRequired(true)
-                            .setName("nickname")
-                            .setDescription("Was du tun willst"),
-                    ),
-            )
-            .addSubcommand(
-                new SlashCommandSubcommandBuilder()
-                    .setName("delete")
-                    .setDescription("Entfernt einen Nickname brudi")
-                    .addUserOption(
-                        new SlashCommandUserOption()
-                            .setRequired(true)
-                            .setName("user")
-                            .setDescription("Wem du tun willst"),
-                    )
-                    .addStringOption(
-                        new SlashCommandStringOption()
-                            .setRequired(true)
-                            .setName("nickname")
-                            .setDescription("Den zu entfernenden Namen")
-                            .setAutocomplete(true),
-                    ),
-            )
-            .addSubcommand(
-                new SlashCommandSubcommandBuilder()
-                    .setName("deleteall")
-                    .setDescription("Entfernt alle nicknames brudi")
-                    .addUserOption(
-                        new SlashCommandUserOption()
-                            .setRequired(true)
-                            .setName("user")
-                            .setDescription("Wem du tun willst"),
-                    ),
-            )
-            .addSubcommand(
-                new SlashCommandSubcommandBuilder()
-                    .setName("list")
-                    .setDescription("Zeigt alle nicknames brudi")
-                    .addUserOption(
-                        new SlashCommandUserOption()
-                            .setRequired(true)
-                            .setName("user")
-                            .setDescription("Wem du tun willst"),
-                    ),
-            );
-    }
+    applicationCommand = new SlashCommandBuilder()
+        .setName(this.name)
+        .setDescription(this.description)
+        .addSubcommand(
+            new SlashCommandSubcommandBuilder()
+                .setName("add")
+                .setDescription("Fügt einen nickname hinzu brudi")
+                .addUserOption(
+                    new SlashCommandUserOption()
+                        .setRequired(true)
+                        .setName("user")
+                        .setDescription("Wem du tun willst"),
+                )
+                .addStringOption(
+                    new SlashCommandStringOption()
+                        .setRequired(true)
+                        .setName("nickname")
+                        .setDescription("Was du tun willst"),
+                ),
+        )
+        .addSubcommand(
+            new SlashCommandSubcommandBuilder()
+                .setName("delete")
+                .setDescription("Entfernt einen Nickname brudi")
+                .addUserOption(
+                    new SlashCommandUserOption()
+                        .setRequired(true)
+                        .setName("user")
+                        .setDescription("Wem du tun willst"),
+                )
+                .addStringOption(
+                    new SlashCommandStringOption()
+                        .setRequired(true)
+                        .setName("nickname")
+                        .setDescription("Den zu entfernenden Namen")
+                        .setAutocomplete(true),
+                ),
+        )
+        .addSubcommand(
+            new SlashCommandSubcommandBuilder()
+                .setName("deleteall")
+                .setDescription("Entfernt alle nicknames brudi")
+                .addUserOption(
+                    new SlashCommandUserOption()
+                        .setRequired(true)
+                        .setName("user")
+                        .setDescription("Wem du tun willst"),
+                ),
+        )
+        .addSubcommand(
+            new SlashCommandSubcommandBuilder()
+                .setName("list")
+                .setDescription("Zeigt alle nicknames brudi")
+                .addUserOption(
+                    new SlashCommandUserOption()
+                        .setRequired(true)
+                        .setName("user")
+                        .setDescription("Wem du tun willst"),
+                ),
+        );
 
     async handleInteraction(
         command: CommandInteraction,

@@ -30,17 +30,16 @@ export class StempelCommand implements ApplicationCommand {
     name = "stempeln";
     description = "Gib deinem Inviter ein Stempel, zeig deinen Respekt";
 
-    get applicationCommand() {
-        return new SlashCommandBuilder()
-            .setName(this.name)
-            .setDescription(this.description)
-            .addUserOption(
-                new SlashCommandUserOption()
-                    .setRequired(true)
-                    .setName("inviter")
-                    .setDescription("Derjeniche, der dich invited hat"),
-            );
-    }
+    applicationCommand = new SlashCommandBuilder()
+        .setName(this.name)
+        .setDescription(this.description)
+        .addUserOption(
+            new SlashCommandUserOption()
+                .setRequired(true)
+                .setName("inviter")
+                .setDescription("Derjeniche, der dich invited hat"),
+        );
+
     async handleInteraction(
         command: CommandInteraction,
         _client: Client<boolean>,

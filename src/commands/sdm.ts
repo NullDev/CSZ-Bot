@@ -99,63 +99,62 @@ export class SdmCommand implements MessageCommand, ApplicationCommand {
     name = "sdm";
     description =
         "Macht eine Secure Decision mithilfe eines komplexen, hochoptimierten, Blockchain Algorithmus.";
-    get applicationCommand() {
-        return new SlashCommandBuilder()
-            .setName(this.name)
-            .setDescription(this.description)
-            .addSubcommand(
-                new SlashCommandSubcommandBuilder()
-                    .setName("ja-nein")
-                    .setDescription("Macht ne ja/nein decision")
-                    .addStringOption(
-                        new SlashCommandStringOption()
-                            .setDescription("Frage")
-                            .setRequired(true)
-                            .setName("question"),
-                    ),
-            )
-            .addSubcommand(
-                new SlashCommandSubcommandBuilder()
-                    .setName("entscheidung")
-                    .setDescription("Macht ne decision aus n Elementen")
-                    .addStringOption(
-                        new SlashCommandStringOption()
-                            .setDescription("Frage")
-                            .setRequired(true)
-                            .setName("question"),
-                    )
-                    .addStringOption(
-                        new SlashCommandStringOption()
-                            .setDescription("Option 1")
-                            .setRequired(true)
-                            .setName("o1"),
-                    )
-                    .addStringOption(
-                        new SlashCommandStringOption()
-                            .setDescription("Option 2")
-                            .setRequired(true)
-                            .setName("o2"),
-                    )
-                    .addStringOption(
-                        new SlashCommandStringOption()
-                            .setDescription("Option 3")
-                            .setRequired(false)
-                            .setName("o3"),
-                    )
-                    .addStringOption(
-                        new SlashCommandStringOption()
-                            .setDescription("Option 4")
-                            .setRequired(false)
-                            .setName("o4"),
-                    )
-                    .addStringOption(
-                        new SlashCommandStringOption()
-                            .setDescription("Option 5")
-                            .setRequired(false)
-                            .setName("o5"),
-                    ),
-            );
-    }
+
+    applicationCommand = new SlashCommandBuilder()
+        .setName(this.name)
+        .setDescription(this.description)
+        .addSubcommand(
+            new SlashCommandSubcommandBuilder()
+                .setName("ja-nein")
+                .setDescription("Macht ne ja/nein decision")
+                .addStringOption(
+                    new SlashCommandStringOption()
+                        .setDescription("Frage")
+                        .setRequired(true)
+                        .setName("question"),
+                ),
+        )
+        .addSubcommand(
+            new SlashCommandSubcommandBuilder()
+                .setName("entscheidung")
+                .setDescription("Macht ne decision aus n Elementen")
+                .addStringOption(
+                    new SlashCommandStringOption()
+                        .setDescription("Frage")
+                        .setRequired(true)
+                        .setName("question"),
+                )
+                .addStringOption(
+                    new SlashCommandStringOption()
+                        .setDescription("Option 1")
+                        .setRequired(true)
+                        .setName("o1"),
+                )
+                .addStringOption(
+                    new SlashCommandStringOption()
+                        .setDescription("Option 2")
+                        .setRequired(true)
+                        .setName("o2"),
+                )
+                .addStringOption(
+                    new SlashCommandStringOption()
+                        .setDescription("Option 3")
+                        .setRequired(false)
+                        .setName("o3"),
+                )
+                .addStringOption(
+                    new SlashCommandStringOption()
+                        .setDescription("Option 4")
+                        .setRequired(false)
+                        .setName("o4"),
+                )
+                .addStringOption(
+                    new SlashCommandStringOption()
+                        .setDescription("Option 5")
+                        .setRequired(false)
+                        .setName("o5"),
+                ),
+        );
 
     async handleMessage(
         message: ProcessableMessage,

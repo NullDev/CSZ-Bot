@@ -210,23 +210,21 @@ export class StempelgraphCommand implements ApplicationCommand {
     name = "stempelgraph";
     description = "Zeigt einen Sozialgraphen der Stempel. 1984 ist real!";
 
-    get applicationCommand() {
-        return new SlashCommandBuilder()
-            .setName(this.name)
-            .setDescription(this.description)
-            .addStringOption(
-                new SlashCommandStringOption()
-                    .setDescription("Die layout-engine für GraphViz")
-                    .setRequired(false)
-                    .addChoices(
-                        ...supportedLayoutEngines.map((e) => ({
-                            name: e,
-                            value: e,
-                        })),
-                    )
-                    .setName("engine"),
-            );
-    }
+    applicationCommand = new SlashCommandBuilder()
+        .setName(this.name)
+        .setDescription(this.description)
+        .addStringOption(
+            new SlashCommandStringOption()
+                .setDescription("Die layout-engine für GraphViz")
+                .setRequired(false)
+                .addChoices(
+                    ...supportedLayoutEngines.map((e) => ({
+                        name: e,
+                        value: e,
+                    })),
+                )
+                .setName("engine"),
+        );
 
     async handleInteraction(
         command: CommandInteraction,
