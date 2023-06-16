@@ -37,7 +37,6 @@
     "get-audio-duration": "^4.0.0",
     "graphviz-wasm": "^3.0.0",
     "instagram-url-direct": "^1.0.13",
-    "jimp": "^0.22.8",
     "jsdom": "^22.1.0",
     "libsodium-wrappers": "^0.7.11",
     "minimist": "^1.2.8",
