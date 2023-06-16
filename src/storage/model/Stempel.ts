@@ -1,6 +1,5 @@
 /* Disabled due to sequelize's DataTypes */
 
-
 import { Sequelize, Model, DataTypes, Optional } from "sequelize";
 import type { Snowflake } from "discord.js";
 
@@ -12,9 +11,12 @@ export interface StempelAttributes {
     invitedMember: Snowflake;
 }
 
-export type StempelCreationAttributes = Optional<StempelAttributes, "id">
+export type StempelCreationAttributes = Optional<StempelAttributes, "id">;
 
-export default class Stempel extends Model<StempelAttributes, StempelCreationAttributes> implements StempelAttributes {
+export default class Stempel
+    extends Model<StempelAttributes, StempelCreationAttributes>
+    implements StempelAttributes
+{
     declare id: string;
     declare invitator: Snowflake;
     declare invitedMember: Snowflake;
@@ -22,16 +24,20 @@ export default class Stempel extends Model<StempelAttributes, StempelCreationAtt
     /**
      * @returns true/false depending if the invitedMember is already in the database
      */
-    static async insertStempel(invitator: Snowflake, invitedMember: Snowflake): Promise<boolean> {
-        log.debug(`Inserting Stempel into Database with ${invitator} invitator and ${invitedMember} as invited member`);
+    static async insertStempel(
+        invitator: Snowflake,
+        invitedMember: Snowflake,
+    ): Promise<boolean> {
+        log.debug(
+            `Inserting Stempel into Database with ${invitator} invitator and ${invitedMember} as invited member`,
+        );
         try {
             await Stempel.create({
                 invitator,
-                invitedMember
+                invitedMember,
             });
             return true;
-        }
-        catch {
+        } catch {
             log.debug("Stempel does already exist");
             return false;
         }
@@ -43,31 +49,33 @@ export default class Stempel extends Model<StempelAttributes, StempelCreationAtt
     static getStempelByInvitator(invitator: Snowflake) {
         return Stempel.findAll({
             where: {
-                invitator
-            }
+                invitator,
+            },
         });
     }
 
     static initialize(sequelize: Sequelize) {
-        this.init({
-            id: {
-                type: DataTypes.STRING(36),
-                defaultValue: () => crypto.randomUUID(),
-                primaryKey: true
+        this.init(
+            {
+                id: {
+                    type: DataTypes.STRING(36),
+                    defaultValue: () => crypto.randomUUID(),
+                    primaryKey: true,
+                },
+                invitator: {
+                    type: DataTypes.STRING(32),
+                    allowNull: false,
+                },
+                invitedMember: {
+                    type: DataTypes.STRING(32),
+                    allowNull: false,
+                    unique: true,
+                },
             },
-            invitator: {
-                type: DataTypes.STRING(32),
-                allowNull: false
+            {
+                sequelize,
+                modelName: "Stempel",
             },
-            invitedMember: {
-                type: DataTypes.STRING(32),
-                allowNull: false,
-                unique: true
-            }
-        },
-        {
-            sequelize,
-            modelName: "Stempel"
-        });
+        );
     }
 }

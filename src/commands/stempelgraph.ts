@@ -1,5 +1,13 @@
 import graphviz from "graphviz-wasm";
-import { Client, CommandInteraction, Guild, GuildMember, Snowflake, SlashCommandBuilder, SlashCommandStringOption } from "discord.js";
+import {
+    Client,
+    CommandInteraction,
+    Guild,
+    GuildMember,
+    Snowflake,
+    SlashCommandBuilder,
+    SlashCommandStringOption,
+} from "discord.js";
 import { Resvg } from "@resvg/resvg-js";
 
 import Stempel from "../storage/model/Stempel.js";
@@ -8,8 +16,15 @@ import { isMod, isTrusted } from "../utils/userUtils.js";
 import { ApplicationCommand, CommandResult } from "./command.js";
 import { BotContext } from "../context.js";
 
-const suportedLayoutEngines = ["circo", "dot", "fdp", "neato", "osage", "twopi"] as const;
-type LayoutEngine = (typeof suportedLayoutEngines)[number];
+const suportedLayoutEngines = [
+    "circo",
+    "dot",
+    "fdp",
+    "neato",
+    "osage",
+    "twopi",
+] as const;
+type LayoutEngine = typeof suportedLayoutEngines[number];
 
 interface StempelConnection {
     inviter: GuildMember;
@@ -32,7 +47,7 @@ const roleColors: Partial<Record<RoleInGraph, string>> = {
     trusted: "#e91e63",
     moderator: "#5865f2",
     gruendervaeter: "#faa81a",
-    administrator: "#8b51ff"
+    administrator: "#8b51ff",
 };
 
 interface UserInfo {
@@ -67,9 +82,7 @@ function getMemberNode(member: UserInfo): string {
         }
     }
 
-    const nodeStyle = roles.includes("rejoiner")
-        ? "dashed,bold"
-        : "solid,bold";
+    const nodeStyle = roles.includes("rejoiner") ? "dashed,bold" : "solid,bold";
 
     const escapedLabel = label.replaceAll('"', '\\"'); // dirty hack to fix quotes in user names
     return `"${member.member.id}" [label="${escapedLabel}", color="${boxColor}", style="${nodeStyle}"]`;
@@ -80,12 +93,18 @@ function convertToImage(svg: string): Buffer {
     return resvg.render().asPng();
 }
 
-async function drawStempelgraph(stempels: StempelConnection[], engine: LayoutEngine, userInfo: Map<GuildMember, UserInfo>): Promise<Buffer> {
+async function drawStempelgraph(
+    stempels: StempelConnection[],
+    engine: LayoutEngine,
+    userInfo: Map<GuildMember, UserInfo>,
+): Promise<Buffer> {
     for (const stempel of stempels) {
         log.debug(`${stempel.inviter} --> ${stempel.invitee}`);
     }
     for (const info of userInfo) {
-        log.debug(`${info[0].id} : ${info[1].name} / ${info[1].member} / ${info[1].roles}`);
+        log.debug(
+            `${info[0].id} : ${info[1].name} / ${info[1].member} / ${info[1].roles}`,
+        );
     }
     const inviterNodes = stempels
         .map((s) => userInfo.get(s.inviter))
@@ -100,9 +119,8 @@ async function drawStempelgraph(stempels: StempelConnection[], engine: LayoutEng
         .join(";\n");
 
     const connections = stempels
-        .map(s => `"${s.inviter.id}" -> "${s.invitee.id}"`)
+        .map((s) => `"${s.inviter.id}" -> "${s.invitee.id}"`)
         .join(";\n");
-
 
     const dotSrc = `digraph {
         layout = ${engine};
@@ -137,7 +155,10 @@ async function drawStempelgraph(stempels: StempelConnection[], engine: LayoutEng
     return convertToImage(svg);
 }
 
-async function fetchMemberInfo(guild: Guild, ids: Set<Snowflake>): Promise<Map<Snowflake, GuildMember>> {
+async function fetchMemberInfo(
+    guild: Guild,
+    ids: Set<Snowflake>,
+): Promise<Map<Snowflake, GuildMember>> {
     const memberMap = new Map<Snowflake, GuildMember>();
     for (const id of ids) {
         const cachedUser = memberMap.get(id);
@@ -196,15 +217,21 @@ export class StempelgraphCommand implements ApplicationCommand {
                 new SlashCommandStringOption()
                     .setDescription("Die layout-engine für GraphViz")
                     .setRequired(false)
-                    .addChoices(...suportedLayoutEngines.map(e => ({
-                        name: e,
-                        value: e
-                    })))
-                    .setName("engine")
+                    .addChoices(
+                        ...suportedLayoutEngines.map((e) => ({
+                            name: e,
+                            value: e,
+                        })),
+                    )
+                    .setName("engine"),
             );
     }
 
-    async handleInteraction(command: CommandInteraction, _client: Client<boolean>, context: BotContext): Promise<CommandResult> {
+    async handleInteraction(
+        command: CommandInteraction,
+        _client: Client<boolean>,
+        context: BotContext,
+    ): Promise<CommandResult> {
         if (!command.isChatInputCommand()) {
             // TODO: Solve this on a type level
             return;
@@ -219,7 +246,11 @@ export class StempelgraphCommand implements ApplicationCommand {
         const stempels = await Stempel.findAll();
         log.debug(`Found ${stempels.length} Stempels`);
 
-        const allUserIds = new Set<string>(stempels.map(s => s.invitator).concat(stempels.map(s => s.invitedMember)));
+        const allUserIds = new Set<string>(
+            stempels
+                .map((s) => s.invitator)
+                .concat(stempels.map((s) => s.invitedMember)),
+        );
         log.debug(`All in all we have ${allUserIds.size} unique Stempler`);
 
         const memberInfoMap = await fetchMemberInfo(command.guild, allUserIds);
@@ -240,23 +271,29 @@ export class StempelgraphCommand implements ApplicationCommand {
             graphUserInfo.set(member, {
                 member,
                 name: member.nickname ?? member.displayName,
-                roles: getRoles(context, member)
+                roles: getRoles(context, member),
             });
         }
 
-        const engine = (command.options.getString("engine") ?? "dot") as LayoutEngine;
+        const engine = (command.options.getString("engine") ??
+            "dot") as LayoutEngine;
 
         try {
-            const stempelGraph = await drawStempelgraph(namedStempels, engine, graphUserInfo);
+            const stempelGraph = await drawStempelgraph(
+                namedStempels,
+                engine,
+                graphUserInfo,
+            );
 
             await command.reply({
-                files: [{
-                    attachment: stempelGraph,
-                    name: "stempelgraph.png"
-                }]
+                files: [
+                    {
+                        attachment: stempelGraph,
+                        name: "stempelgraph.png",
+                    },
+                ],
             });
-        }
-        catch (err) {
+        } catch (err) {
             log.error("Could not draw stempelgraph", err);
         }
     }

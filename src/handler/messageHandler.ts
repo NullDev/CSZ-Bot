@@ -1,14 +1,28 @@
 import { Client, ClientUser, Message } from "discord.js";
 
-import cmdHandler, { isProcessableMessage, ProcessableMessage } from "./cmdHandler.js";
+import cmdHandler, {
+    isProcessableMessage,
+    ProcessableMessage,
+} from "./cmdHandler.js";
 import type { BotContext } from "../context.js";
 import { isMarcel } from "../utils/userUtils.js";
 
-const getInlineReplies = (messageRef: ProcessableMessage, clientUser: ClientUser) => {
-    return messageRef.channel.messages.cache.filter(m => m.author.id === clientUser.id && m.reference?.messageId === messageRef.id);
+const getInlineReplies = (
+    messageRef: ProcessableMessage,
+    clientUser: ClientUser,
+) => {
+    return messageRef.channel.messages.cache.filter(
+        (m) =>
+            m.author.id === clientUser.id &&
+            m.reference?.messageId === messageRef.id,
+    );
 };
 
-export default async function(message: Message, _client: Client, context: BotContext) {
+export default async function (
+    message: Message,
+    _client: Client,
+    context: BotContext,
+) {
     const nonBiased = message.content
         .replace(context.prefix.command, "")
         .replace(context.prefix.modCommand, "")
@@ -23,25 +37,36 @@ export default async function(message: Message, _client: Client, context: BotCon
     const isModCommand = message.content.startsWith(context.prefix.modCommand);
     const isCommand = isNormalCommand || isModCommand;
 
-    if (context.client.user && message.mentions.has(context.client.user.id) && !isCommand) {
+    if (
+        context.client.user &&
+        message.mentions.has(context.client.user.id) &&
+        !isCommand
+    ) {
         // Trusted users should be familiar with the bot, they should know how to use it
         // Maybe, we don't want to flame them, since that can make the chat pretty noisy
         // Unless you are a Marcel
 
-        const shouldFlameUser = context.rawConfig.bot_settings.flame_trusted_user_on_bot_ping || !message.member.roles.cache.has(context.roles.trusted.id) || isMarcel(message.member.user);
-        const shouldHonorUser = message.member.roles.cache.has(context.roles.winner.id);
+        const shouldFlameUser =
+            context.rawConfig.bot_settings.flame_trusted_user_on_bot_ping ||
+            !message.member.roles.cache.has(context.roles.trusted.id) ||
+            isMarcel(message.member.user);
+        const shouldHonorUser = message.member.roles.cache.has(
+            context.roles.winner.id,
+        );
 
-
-        const reply = shouldFlameUser ? "Was pingst du mich du Hurensohn :angry:"
-            : shouldHonorUser ? "Bruder, du bist ein ehrenhafter Typ. Bleib so stabil wie du bist :heart:" : null;
+        const reply = shouldFlameUser
+            ? "Was pingst du mich du Hurensohn :angry:"
+            : shouldHonorUser
+            ? "Bruder, du bist ein ehrenhafter Typ. Bleib so stabil wie du bist :heart:"
+            : null;
 
         if (reply) {
             const hasAlreadyReplied = message.channel.messages.cache
-                .filter(m => m.content.includes(reply))
-                .some(m => m.reference?.messageId === message.id);
+                .filter((m) => m.content.includes(reply))
+                .some((m) => m.reference?.messageId === message.id);
             if (!hasAlreadyReplied) {
                 await message.reply({
-                    content: reply
+                    content: reply,
                 });
             }
         }
@@ -51,7 +76,12 @@ export default async function(message: Message, _client: Client, context: BotCon
         return;
     }
 
-    const response = await cmdHandler(message, context.client, isModCommand, context);
+    const response = await cmdHandler(
+        message,
+        context.client,
+        isModCommand,
+        context,
+    );
 
     // Get all inline replies to the message and delete them. Ignore errors, since cached is used and previously deleted messages are contained as well
     for (const msg of getInlineReplies(message, context.client.user).values()) {
@@ -63,6 +93,6 @@ export default async function(message: Message, _client: Client, context: BotCon
     }
 
     await message.reply({
-        content: response
+        content: response,
     });
 }

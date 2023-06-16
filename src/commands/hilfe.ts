@@ -7,14 +7,20 @@ import type { CommandFunction } from "../types.js";
 /**
  * Retrieves commands in chunks that doesn't affect message limit
  */
-const getCommandMessageChunksMatchingLimit = (commands: Array<[string, string]>): string[] => {
+const getCommandMessageChunksMatchingLimit = (
+    commands: Array<[string, string]>,
+): string[] => {
     const chunk: string[] = [];
     let index = 0;
 
     commands
         .sort((a, b) => a[0].localeCompare(b[0]))
-        .forEach(value => {
-            if (chunk[index] && chunk[index].length + (value[0].length + value[1].length + 10) > 2000) {
+        .forEach((value) => {
+            if (
+                chunk[index] &&
+                chunk[index].length + (value[0].length + value[1].length + 10) >
+                    2000
+            ) {
                 chunk[index] += "```";
                 ++index;
             }
@@ -32,7 +38,12 @@ const getCommandMessageChunksMatchingLimit = (commands: Array<[string, string]>)
 /**
  * Enlists all user-commands with descriptions
  */
-export const run: CommandFunction = async(_client, message, _args, context) => {
+export const run: CommandFunction = async (
+    _client,
+    message,
+    _args,
+    context,
+) => {
     const commandObj: Record<string, string> = {};
     const commandDir = path.join(context.srcDir, "commands");
 
@@ -54,7 +65,9 @@ export const run: CommandFunction = async(_client, message, _args, context) => {
 
             // Old file-based commands
             if (module.description) {
-                const commandStr = context.prefix.command + file.toLowerCase().replace(/\.js/gi, "");
+                const commandStr =
+                    context.prefix.command +
+                    file.toLowerCase().replace(/\.js/gi, "");
                 commandObj[commandStr] = module.description;
             }
         }
@@ -62,8 +75,8 @@ export const run: CommandFunction = async(_client, message, _args, context) => {
 
     // New Class-based commands
     messageCommands
-        .filter(cmd => !cmd.modCommand)
-        .forEach(cmd => {
+        .filter((cmd) => !cmd.modCommand)
+        .forEach((cmd) => {
             const commandStr = context.prefix.command + cmd.name;
             commandObj[commandStr] = cmd.description;
         });
@@ -72,8 +85,10 @@ export const run: CommandFunction = async(_client, message, _args, context) => {
         `Hallo, ${message.author.username}!\n\nHier ist eine Liste mit Commands:\n\nBei Fragen kannst du dich über den Kanal #czs-Bot (<#902960751222853702>) an uns wenden!`,
     );
 
-    const chunks = getCommandMessageChunksMatchingLimit(Object.entries(commandObj));
-    await Promise.all(chunks.map(chunk => message.author.send(chunk)));
+    const chunks = getCommandMessageChunksMatchingLimit(
+        Object.entries(commandObj),
+    );
+    await Promise.all(chunks.map((chunk) => message.author.send(chunk)));
 
     // Add :envelope: reaction to authors message
     await message.react("✉"); // Send this last, so we only display a confirmation when everything actually worked

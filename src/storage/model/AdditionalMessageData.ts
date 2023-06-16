@@ -1,6 +1,5 @@
 /* Disabled due to sequelize's DataTypes */
 
-
 import { Client, Snowflake, Message, ChannelType } from "discord.js";
 import { Model, Sequelize, DataTypes } from "sequelize";
 
@@ -54,61 +53,67 @@ export default class AdditionalMessageData extends Model {
      */
     static async fromMessage(message: Message): Promise<AdditionalMessageData> {
         if (!message.guild) {
-            throw new Error("Cannot associate data with message outside of a guild");
+            throw new Error(
+                "Cannot associate data with message outside of a guild",
+            );
         }
 
         const objectData = {
             guildId: message.guild.id,
             channelId: message.channel.id,
-            messageId: message.id
+            messageId: message.id,
         };
 
-        const existingMessageData = await AdditionalMessageData.findOne({ where: objectData });
+        const existingMessageData = await AdditionalMessageData.findOne({
+            where: objectData,
+        });
         return existingMessageData ?? AdditionalMessageData.create(objectData);
     }
 
     static initialize(sequelize: Sequelize) {
-        this.init({
-            id: {
-                type: DataTypes.STRING(36),
-                defaultValue: () => crypto.randomUUID(),
-                primaryKey: true
-            },
-            messageId: {
-                type: DataTypes.STRING(32),
-                allowNull: false
-            },
-            channelId: {
-                type: DataTypes.STRING(32),
-                allowNull: false
-            },
-            guildId: {
-                type: DataTypes.STRING(32),
-                allowNull: false
-            },
-            customData: {
-                type: DataTypes.TEXT,
-                defaultValue: "{}",
-                get() {
-                    try {
-                        return JSON.parse(this.getDataValue("customData"));
-                    }
-                    catch {
-                        return null;
-                    }
+        this.init(
+            {
+                id: {
+                    type: DataTypes.STRING(36),
+                    defaultValue: () => crypto.randomUUID(),
+                    primaryKey: true,
                 },
-                set(value) {
-                    this.setDataValue("customData", JSON.stringify(value));
-                }
-            }
-        }, {
-            sequelize,
-            indexes: [
-                {
-                    unique: true,
-                    fields: ["guildId", "channelId", "messageId"]
-                }
-            ]
-        });
+                messageId: {
+                    type: DataTypes.STRING(32),
+                    allowNull: false,
+                },
+                channelId: {
+                    type: DataTypes.STRING(32),
+                    allowNull: false,
+                },
+                guildId: {
+                    type: DataTypes.STRING(32),
+                    allowNull: false,
+                },
+                customData: {
+                    type: DataTypes.TEXT,
+                    defaultValue: "{}",
+                    get() {
+                        try {
+                            return JSON.parse(this.getDataValue("customData"));
+                        } catch {
+                            return null;
+                        }
+                    },
+                    set(value) {
+                        this.setDataValue("customData", JSON.stringify(value));
+                    },
+                },
+            },
+            {
+                sequelize,
+                indexes: [
+                    {
+                        unique: true,
+                        fields: ["guildId", "channelId", "messageId"],
+                    },
+                ],
+            },
+        );
     }
 }

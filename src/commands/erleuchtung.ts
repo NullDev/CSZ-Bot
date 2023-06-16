@@ -2,7 +2,12 @@
 // = Copyright (c) Ehrenvio der G = //
 // ================================ //
 
-import {  Client, EmbedBuilder, GuildMember, SlashCommandBuilder } from "discord.js";
+import {
+    Client,
+    EmbedBuilder,
+    GuildMember,
+    SlashCommandBuilder,
+} from "discord.js";
 import { CommandInteraction, CacheType } from "discord.js";
 import fetch from "node-fetch";
 
@@ -12,12 +17,16 @@ import type { ProcessableMessage } from "../handler/cmdHandler.js";
 const INSPIRATION_GENERATE_API_URL = "https://inspirobot.me/api?generate=true";
 
 async function getInspiration(): Promise<string> {
-    return (await fetch(INSPIRATION_GENERATE_API_URL, {
-        method: "GET"
-    })).text();
+    return (
+        await fetch(INSPIRATION_GENERATE_API_URL, {
+            method: "GET",
+        })
+    ).text();
 }
 
-async function buildInspirationMessage(author: GuildMember): Promise<EmbedBuilder> {
+async function buildInspirationMessage(
+    author: GuildMember,
+): Promise<EmbedBuilder> {
     const inspiration = await getInspiration();
 
     return new EmbedBuilder()
@@ -26,12 +35,12 @@ async function buildInspirationMessage(author: GuildMember): Promise<EmbedBuilde
         .setTimestamp(new Date())
         .setAuthor({
             name: `${author.displayName} wurde erleuchtet`,
-            iconURL: author.displayAvatarURL()
-        }).setFooter({
-            text: "🙏 Glaub an dich 🙏"
+            iconURL: author.displayAvatarURL(),
+        })
+        .setFooter({
+            text: "🙏 Glaub an dich 🙏",
         });
 }
-
 
 export class ErleuchtungCommand implements MessageCommand, ApplicationCommand {
     name = "erleuchtung";
@@ -40,29 +49,35 @@ export class ErleuchtungCommand implements MessageCommand, ApplicationCommand {
         .setName(this.name)
         .setDescription(this.description);
 
-    async handleMessage(message: ProcessableMessage, _client: Client<boolean>): Promise<void> {
+    async handleMessage(
+        message: ProcessableMessage,
+        _client: Client<boolean>,
+    ): Promise<void> {
         const author = message.guild.members.resolve(message.author);
-        if(!author) {
+        if (!author) {
             throw new Error("Couldn't resolve guild member");
         }
 
         const embed = await buildInspirationMessage(author);
         await message.channel.send({
-            embeds: [embed]
+            embeds: [embed],
         });
     }
 
-    async handleInteraction(command: CommandInteraction<CacheType>, _client: Client<boolean>): Promise<void> {
-        if(!command.channel) {
+    async handleInteraction(
+        command: CommandInteraction<CacheType>,
+        _client: Client<boolean>,
+    ): Promise<void> {
+        if (!command.channel) {
             throw new Error("Command was invoked without a channel in context");
         }
         const author = command.guild?.members.resolve(command.user);
-        if(!author) {
+        if (!author) {
             throw new Error("Couldn't resolve guild member");
         }
         const embed = await buildInspirationMessage(author);
         await command.reply({
-            embeds: [embed]
+            embeds: [embed],
         });
     }
 }

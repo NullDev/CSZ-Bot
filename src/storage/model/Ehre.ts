@@ -1,6 +1,5 @@
 /* Disabled due to sequelize's DataTypes */
 
-
 import { DataTypes, Model, Sequelize } from "sequelize";
 import { Snowflake } from "discord.js";
 
@@ -9,46 +8,50 @@ export class EhreVotes extends Model {
     declare userId: string;
 
     static async hasVoted(userId: Snowflake): Promise<boolean> {
-        return (await EhreVotes.findAll({
-            where: {
-                userId
-            }
-        })).length > 0;
+        return (
+            (
+                await EhreVotes.findAll({
+                    where: {
+                        userId,
+                    },
+                })
+            ).length > 0
+        );
     }
 
     static async insertVote(userId: Snowflake) {
         return EhreVotes.create({
-            userId
-        }
-        );
+            userId,
+        });
     }
 
     static async resetVotes() {
         return EhreVotes.destroy({
-            where: {}
+            where: {},
         });
     }
 
     static initialize(sequelize: Sequelize) {
-        this.init({
-            id: {
-                type: DataTypes.STRING(36),
-                defaultValue: () => crypto.randomUUID(),
-                primaryKey: true
+        this.init(
+            {
+                id: {
+                    type: DataTypes.STRING(36),
+                    defaultValue: () => crypto.randomUUID(),
+                    primaryKey: true,
+                },
+                userId: {
+                    type: DataTypes.STRING(32),
+                    allowNull: false,
+                    unique: true,
+                },
             },
-            userId: {
-                type: DataTypes.STRING(32),
-                allowNull: false,
-                unique: true
-            }
-        },
-        {
-            sequelize,
-            modelName: "EhreVotes"
-        });
+            {
+                sequelize,
+                modelName: "EhreVotes",
+            },
+        );
     }
 }
-
 
 export class EhrePoints extends Model {
     declare id: string;
@@ -60,66 +63,71 @@ export class EhrePoints extends Model {
         if (storedpoints === null) {
             return EhrePoints.create({
                 userId,
-                points: amount
-            }
-            );
+                points: amount,
+            });
         }
-        return EhrePoints.update({
-            points: storedpoints.points + amount
-        }, {
-            where: {
-                userId
-            }
-        });
+        return EhrePoints.update(
+            {
+                points: storedpoints.points + amount,
+            },
+            {
+                where: {
+                    userId,
+                },
+            },
+        );
     }
 
-
-
     static async getUserInGroups(): Promise<EhreGroups> {
-        const {rows, count} = await EhrePoints.findAndCountAll({
-            order: [["points", "DESC"]]
+        const { rows, count } = await EhrePoints.findAndCountAll({
+            order: [["points", "DESC"]],
         });
         const splitterIndex = (count - 1) * 0.2 + 1;
         return {
             best: rows[0],
             middle: rows.slice(1, splitterIndex),
-            bottom: rows.slice(splitterIndex)
+            bottom: rows.slice(splitterIndex),
         };
     }
 
     static async findPoints(userId: string): Promise<EhrePoints | null> {
         return EhrePoints.findOne({
             where: {
-                userId
-            }
+                userId,
+            },
         });
     }
 
     static async deflation() {
-        return EhrePoints.update({points: Sequelize.literal("points * 0.98")}, {where: {}});
+        return EhrePoints.update(
+            { points: Sequelize.literal("points * 0.98") },
+            { where: {} },
+        );
     }
 
     static initialize(sequelize: Sequelize) {
-        this.init({
-            id: {
-                type: DataTypes.STRING(36),
-                defaultValue: () => crypto.randomUUID(),
-                primaryKey: true
+        this.init(
+            {
+                id: {
+                    type: DataTypes.STRING(36),
+                    defaultValue: () => crypto.randomUUID(),
+                    primaryKey: true,
+                },
+                userId: {
+                    type: DataTypes.STRING(32),
+                    allowNull: false,
+                    unique: true,
+                },
+                points: {
+                    type: DataTypes.DOUBLE,
+                    allowNull: false,
+                },
             },
-            userId: {
-                type: DataTypes.STRING(32),
-                allowNull: false,
-                unique: true
+            {
+                sequelize,
+                modelName: "EhrePoints",
             },
-            points: {
-                type: DataTypes.DOUBLE,
-                allowNull: false
-            }
-        },
-        {
-            sequelize,
-            modelName: "EhrePoints"
-        });
+        );
     }
 }
 

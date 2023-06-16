@@ -6,7 +6,12 @@ import type { CommandFunction } from "../../types.js";
 /**
  * Enlists all mod-commands with descriptions
  */
-export const run: CommandFunction = async(_client, message, _args, context) => {
+export const run: CommandFunction = async (
+    _client,
+    message,
+    _args,
+    context,
+) => {
     const commandObj: Record<string, string> = {};
     const commandDir = path.join(context.srcDir, "commands", "modcommands");
 
@@ -18,16 +23,16 @@ export const run: CommandFunction = async(_client, message, _args, context) => {
 
         const cmdPath = path.resolve(commandDir, file);
 
-
         const stats = await fs.stat(cmdPath);
 
         if (!stats.isDirectory()) {
             // Prefix + Command name
-            const commandStr = context.prefix.modCommand + file.toLowerCase().replace(/\.js/gi, "");
+            const commandStr =
+                context.prefix.modCommand +
+                file.toLowerCase().replace(/\.js/gi, "");
 
             // commandStr is the key and the description of the command is the value
             const modulePath = path.join(commandDir, file);
-
 
             const module = await import(modulePath);
 

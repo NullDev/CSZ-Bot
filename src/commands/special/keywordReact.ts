@@ -23,14 +23,19 @@ export class TriggerReactOnKeyword implements SpecialCommand {
         return message.content.toLowerCase().includes(this.keyword);
     }
 
-    async handleSpecialMessage(message: ProcessableMessage, _client: Client<boolean>): Promise<CommandResult> {
-        if(this.isEmoji(this.emoteName)) {
+    async handleSpecialMessage(
+        message: ProcessableMessage,
+        _client: Client<boolean>,
+    ): Promise<CommandResult> {
+        if (this.isEmoji(this.emoteName)) {
             await message.react(this.emoteName);
             return;
         }
 
-        const emote = message.guild.emojis.cache.find(e => e.name === this.emoteName);
-        if(emote) {
+        const emote = message.guild.emojis.cache.find(
+            (e) => e.name === this.emoteName,
+        );
+        if (emote) {
             await message.react(emote);
             return;
         }

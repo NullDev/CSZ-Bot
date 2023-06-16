@@ -1,6 +1,5 @@
 /* Disabled due to sequelize's DataTypes */
 
-
 import { Sequelize, Model, DataTypes, Optional, Op } from "sequelize";
 import type { Snowflake } from "discord.js";
 
@@ -13,11 +12,12 @@ export interface WoisActionAttributes {
     isWoisgangAction: boolean;
 }
 
-export type WoisActionCreationAttributes= Optional<WoisActionAttributes, "id">
+export type WoisActionCreationAttributes = Optional<WoisActionAttributes, "id">;
 
 export default class WoisAction
     extends Model<WoisActionAttributes, WoisActionCreationAttributes>
-    implements WoisActionAttributes {
+    implements WoisActionAttributes
+{
     declare id: string;
     declare messageId: Snowflake;
     declare reason: string;
@@ -29,7 +29,7 @@ export default class WoisAction
         messageId: Snowflake,
         reason: string,
         date: Date,
-        isWoisgangAction = false
+        isWoisgangAction = false,
     ): Promise<boolean> {
         try {
             await WoisAction.create({
@@ -37,79 +37,83 @@ export default class WoisAction
                 reason,
                 date,
                 interestedUsers: [],
-                isWoisgangAction
+                isWoisgangAction,
             });
             return true;
-        }
-        catch {
+        } catch {
             return false;
         }
     }
 
     static async getWoisActionInRange(
         begin: Date,
-        end: Date
+        end: Date,
     ): Promise<WoisAction | null> {
         return WoisAction.findOne({
             where: {
                 date: {
                     [Op.and]: {
                         [Op.gte]: begin,
-                        [Op.lt]: end
-                    }
-                }
-            }
+                        [Op.lt]: end,
+                    },
+                },
+            },
         });
     }
 
     static async getPendingWoisAction(
-        before: Date
+        before: Date,
     ): Promise<WoisAction | null> {
         return WoisAction.findOne({
             where: {
                 date: {
                     [Op.and]: {
-                        [Op.lte]: before
-                    }
-                }
-            }
+                        [Op.lte]: before,
+                    },
+                },
+            },
         });
     }
 
     static async getWoisActionByMessageId(
-        messageId: Snowflake
+        messageId: Snowflake,
     ): Promise<WoisAction | null> {
         return WoisAction.findOne({
             where: {
-                messageId
-            }
+                messageId,
+            },
         });
     }
 
     static async registerInterst(
         messageId: Snowflake,
         interestedUser: Snowflake,
-        interested: boolean
+        interested: boolean,
     ): Promise<boolean> {
         try {
-            const woisAction = await WoisAction.getWoisActionByMessageId(messageId);
+            const woisAction = await WoisAction.getWoisActionByMessageId(
+                messageId,
+            );
             if (!woisAction) return false;
 
-            if(interested) {
-                if(!woisAction.interestedUsers.includes(interestedUser)) {
-                    woisAction.interestedUsers = [...woisAction.interestedUsers, interestedUser];
+            if (interested) {
+                if (!woisAction.interestedUsers.includes(interestedUser)) {
+                    woisAction.interestedUsers = [
+                        ...woisAction.interestedUsers,
+                        interestedUser,
+                    ];
                 }
-            }
-            else {
+            } else {
                 // Filter instead of splice because a user might not be in the array
-                woisAction.interestedUsers = woisAction.interestedUsers.filter(user => user !== interestedUser);
+                woisAction.interestedUsers = woisAction.interestedUsers.filter(
+                    (user) => user !== interestedUser,
+                );
             }
 
             await woisAction.save();
 
             return true;
-        }
-        catch {
+        } catch {
             return false;
         }
     }
@@ -120,32 +124,32 @@ export default class WoisAction
                 id: {
                     type: DataTypes.STRING(36),
                     defaultValue: () => crypto.randomUUID(),
-                    primaryKey: true
+                    primaryKey: true,
                 },
                 messageId: {
                     type: DataTypes.STRING(32),
                     allowNull: false,
-                    unique: true
+                    unique: true,
                 },
                 reason: {
                     type: DataTypes.STRING(32),
-                    allowNull: false
+                    allowNull: false,
                 },
                 date: {
                     type: DataTypes.DATE(),
-                    allowNull: false
+                    allowNull: false,
                 },
                 interestedUsers: {
-                    type: DataTypes.JSON()
+                    type: DataTypes.JSON(),
                 },
                 isWoisgangAction: {
-                    type: DataTypes.BOOLEAN()
-                }
+                    type: DataTypes.BOOLEAN(),
+                },
             },
             {
                 sequelize,
-                modelName: "WoisAction"
-            }
+                modelName: "WoisAction",
+            },
         );
     }
 }

@@ -13,8 +13,8 @@ async function deOidaLine(line: string): Promise<string> {
 
     const tokens = line
         .split(/\s+/)
-        .map(s => s.trim().toLowerCase())
-        .filter(s => s.length > 0);
+        .map((s) => s.trim().toLowerCase())
+        .filter((s) => s.length > 0);
 
     // We join adjacent tokens to terms that may come up in the database
     // We do longest token combinations first, so more precise translations can be matched. For example, when translating:
@@ -28,10 +28,10 @@ async function deOidaLine(line: string): Promise<string> {
 
     const aussieWordsToReplace = [];
 
-
     for (const translationCandidate of enumerateAdjacentTokens(tokens)) {
-
-        const germanTranslation = await AustrianTranslation.findTranslation(translationCandidate);
+        const germanTranslation = await AustrianTranslation.findTranslation(
+            translationCandidate,
+        );
         if (germanTranslation) {
             // This is a rather dumb way of doing this.
             // Consider the example from above: "oida der fesche bursch han recht"
@@ -46,9 +46,15 @@ async function deOidaLine(line: string): Promise<string> {
 
     let result = line;
 
-    for(const dbTranslation of aussieWordsToReplace) {
-        const caseInsensitivePattern = new RegExp(`\\b${dbTranslation.austrian}\\b`, "ig");
-        result = result.replaceAll(caseInsensitivePattern, dbTranslation.german);
+    for (const dbTranslation of aussieWordsToReplace) {
+        const caseInsensitivePattern = new RegExp(
+            `\\b${dbTranslation.austrian}\\b`,
+            "ig",
+        );
+        result = result.replaceAll(
+            caseInsensitivePattern,
+            dbTranslation.german,
+        );
     }
 
     return result;
@@ -87,17 +93,29 @@ function* enumerateAdjacentTokens(tokens: string[]) {
 
     // TODO: If a message is really large without sufficient line breaks, we should break it apart heuristically
 
-    for (let adjacentTokenCount = tokens.length; adjacentTokenCount > 0; --adjacentTokenCount) {
-        for (let startIndex = 0; startIndex <= tokens.length - adjacentTokenCount; ++startIndex) {
-            const adjacentTokensForStartIndex = tokens.slice(startIndex, startIndex + adjacentTokenCount);
+    for (
+        let adjacentTokenCount = tokens.length;
+        adjacentTokenCount > 0;
+        --adjacentTokenCount
+    ) {
+        for (
+            let startIndex = 0;
+            startIndex <= tokens.length - adjacentTokenCount;
+            ++startIndex
+        ) {
+            const adjacentTokensForStartIndex = tokens.slice(
+                startIndex,
+                startIndex + adjacentTokenCount,
+            );
             yield adjacentTokensForStartIndex.join(" ");
         }
     }
 }
 
 async function deOida(value: string): Promise<string> {
-    const lines = value.split("\n")
-        .map(s => s.trim())
+    const lines = value
+        .split("\n")
+        .map((s) => s.trim())
         .map(deOidaLine);
 
     const translatedLines = await Promise.all(lines);
@@ -112,9 +130,13 @@ export class DeOidaCommand implements MessageCommand {
     Usage: Mit dem Command auf eine veroidarte (🇦🇹) Nachricht antworten. Alternativ den zu de-oidarten Text übergeben.
     `.trim();
 
-    async handleMessage(message: ProcessableMessage, _client: Client<boolean>, context: BotContext): Promise<void> {
+    async handleMessage(
+        message: ProcessableMessage,
+        _client: Client<boolean>,
+        context: BotContext,
+    ): Promise<void> {
         const messageToTranslate = message.reference?.messageId
-            ? (await message.channel.messages.fetch(message.reference.messageId))
+            ? await message.channel.messages.fetch(message.reference.messageId)
             : message;
 
         if (!messageToTranslate) {
@@ -122,9 +144,13 @@ export class DeOidaCommand implements MessageCommand {
             return;
         }
 
-        const textToTranslate = messageToTranslate === message
-            ? message.content.trim().substring(`${context.prefix.command}${this.name}`.length).trim()
-            : messageToTranslate.content;
+        const textToTranslate =
+            messageToTranslate === message
+                ? message.content
+                      .trim()
+                      .substring(`${context.prefix.command}${this.name}`.length)
+                      .trim()
+                : messageToTranslate.content;
 
         if (!textToTranslate) {
             await message.reply("Nichts zum Übersetzen da :question:");
@@ -136,8 +162,8 @@ export class DeOidaCommand implements MessageCommand {
         await messageToTranslate.reply({
             content: `🇦🇹 -> 🇩🇪: ${translation}`,
             allowedMentions: {
-                parse: []
-            }
+                parse: [],
+            },
         });
     }
 }

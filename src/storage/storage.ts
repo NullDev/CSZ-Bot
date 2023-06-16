@@ -21,12 +21,12 @@ export async function initialize(botContext: BotContext) {
         dialect: "sqlite",
         storage: botContext.databasePath,
         logQueryParameters: true,
-        logging: sql => {
+        logging: (sql) => {
             // currently way too noisy because of the fading messages
-            if(!sql.includes(FadingMessage.tableName)) {
+            if (!sql.includes(FadingMessage.tableName)) {
                 log.verbose(sql);
             }
-        }
+        },
     });
 
     log.info("Initializing Database Schemas...");

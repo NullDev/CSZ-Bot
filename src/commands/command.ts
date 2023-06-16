@@ -1,6 +1,14 @@
-
-import { ContextMenuCommandBuilder, MessageComponentInteraction, PermissionsString, type SlashCommandBuilder } from "discord.js";
-import type { AutocompleteInteraction, Client, CommandInteraction } from "discord.js";
+import {
+    ContextMenuCommandBuilder,
+    MessageComponentInteraction,
+    PermissionsString,
+    type SlashCommandBuilder,
+} from "discord.js";
+import type {
+    AutocompleteInteraction,
+    Client,
+    CommandInteraction,
+} from "discord.js";
 
 import type { ProcessableMessage } from "../handler/cmdHandler.js";
 import type { BotContext } from "../context.js";
@@ -25,7 +33,7 @@ export interface UserInteraction {
     handleInteraction(
         command: MessageComponentInteraction,
         client: Client,
-        context: BotContext
+        context: BotContext,
     ): Promise<void>;
 }
 
@@ -34,25 +42,39 @@ export type CommandResult = void;
 
 // For ApplicationCommands we require a SlashCommandBuilder object to create the command and a handler method
 interface AppCommand {
-    applicationCommand: Pick<SlashCommandBuilder | ContextMenuCommandBuilder, "toJSON">;
+    applicationCommand: Pick<
+        SlashCommandBuilder | ContextMenuCommandBuilder,
+        "toJSON"
+    >;
     handleInteraction(
         command: CommandInteraction,
         client: Client,
-        context: BotContext
+        context: BotContext,
     ): Promise<CommandResult>;
-    autocomplete?(interaction: AutocompleteInteraction, context: BotContext): Promise<void>;
+    autocomplete?(
+        interaction: AutocompleteInteraction,
+        context: BotContext,
+    ): Promise<void>;
 }
 
 // For a MessageCommand we require an additional modCommand property and a handler method
 interface MsgCommand {
-    handleMessage(message: ProcessableMessage, client: Client, context: BotContext): Promise<CommandResult>;
+    handleMessage(
+        message: ProcessableMessage,
+        client: Client,
+        context: BotContext,
+    ): Promise<CommandResult>;
 }
 
 // For SpecialCommands we require a pattern and a randomness (<= 1)
 interface SpcalCommand {
     randomness: number;
     cooldownTime?: number;
-    handleSpecialMessage(message: ProcessableMessage, client: Client, context: BotContext): Promise<CommandResult>;
+    handleSpecialMessage(
+        message: ProcessableMessage,
+        client: Client,
+        context: BotContext,
+    ): Promise<CommandResult>;
     matches(message: ProcessableMessage, context: BotContext): boolean;
 }
 

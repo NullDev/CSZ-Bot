@@ -4,7 +4,7 @@
  * @returns number of words
  */
 export function countWords(str: string): number {
-    return str.split(" ").filter(s => s.trim().length > 0).length;
+    return str.split(" ").filter((s) => s.trim().length > 0).length;
 }
 
 /**
@@ -13,6 +13,6 @@ export function countWords(str: string): number {
  * @param s search
  * @returns substring (untrimmed!)
  */
-export function substringAfter(str: string, s: string): string{
+export function substringAfter(str: string, s: string): string {
     return str.substring(str.indexOf(s) + s.length);
 }

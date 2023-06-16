@@ -7,7 +7,7 @@ import {
     SlashCommandBuilder,
     SlashCommandStringOption,
     TextBasedChannel,
-    User
+    User,
 } from "discord.js";
 
 import { ApplicationCommand, CommandResult } from "./command.js";
@@ -24,10 +24,10 @@ const defaultWoisTime = "20:00";
 // Because we would need to fetch the full message, we just query the database. Should be faster.
 const woisVoteConstant = "⚠️🍻 **WOISVOTE** 🍻⚠️";
 
-const createWoisMessage = async(
+const createWoisMessage = async (
     reason: string,
     date: Date,
-    channel: TextBasedChannel
+    channel: TextBasedChannel,
 ): Promise<Message> => {
     const woisMessage = await channel.send(
         `${woisVoteConstant}\nWois um ${moment(date).format(
@@ -39,7 +39,7 @@ const createWoisMessage = async(
     return woisMessage;
 };
 
-const pingWoisgang = async(message: Message, role: Role): Promise<void> => {
+const pingWoisgang = async (message: Message, role: Role): Promise<void> => {
     if (message.reactions.cache.get("🍻") !== undefined) return;
 
     // TODO: Promise.all
@@ -50,8 +50,8 @@ const pingWoisgang = async(message: Message, role: Role): Promise<void> => {
             // Not working for obious reasons.
             // Okay, not obvious. I don't have any clue why...
             // roles: [ config.ids.woisgang_role_id ]
-            parse: ["roles"]
-        }
+            parse: ["roles"],
+        },
     });
 };
 
@@ -67,22 +67,22 @@ export class WoisCommand implements ApplicationCommand {
                 new SlashCommandStringOption()
                     .setName("grund")
                     .setRequired(true)
-                    .setDescription("Saufen, brauchts noch n weiteren grund?")
+                    .setDescription("Saufen, brauchts noch n weiteren grund?"),
             )
             .addStringOption(
                 new SlashCommandStringOption()
                     .setName("zeitpunkt")
                     .setRequired(false)
                     .setDescription(
-                        `Wann? Uhrzeit für Ping. Standard: ${defaultWoisTime}. (Format: HH:MM)`
-                    )
+                        `Wann? Uhrzeit für Ping. Standard: ${defaultWoisTime}. (Format: HH:MM)`,
+                    ),
             );
     }
 
     async handleInteraction(
         command: CommandInteraction,
         _client: Client<boolean>,
-        context: BotContext
+        context: BotContext,
     ): Promise<CommandResult> {
         if (!command.isChatInputCommand()) {
             // TODO: Solve this on a type level
@@ -106,23 +106,23 @@ export class WoisCommand implements ApplicationCommand {
             await command.reply({
                 content:
                     "Sorry, ich kann einen Woisping nur in der Zukunft ausführen. Zeitreisen müssen erst noch erfunden werden.",
-                ephemeral: true
+                ephemeral: true,
             });
             return;
         }
 
-        const start = moment(timeForWois)
-            .subtract(6, "hours");
+        const start = moment(timeForWois).subtract(6, "hours");
         const existingWoisVote = await WoisAction.getWoisActionInRange(
             start.toDate(),
-            timeForWois.toDate()
+            timeForWois.toDate(),
         );
         if (existingWoisVote !== null) {
             await command.reply(
                 `Es gibt bereits einen Woisvote für ${moment(
-                    existingWoisVote.date
-                ).format("HH:mm")} Uhr. Geh doch da hin: ${existingWoisVote.messageId
-                }`
+                    existingWoisVote.date,
+                ).format("HH:mm")} Uhr. Geh doch da hin: ${
+                    existingWoisVote.messageId
+                }`,
             );
             return;
         }
@@ -130,7 +130,7 @@ export class WoisCommand implements ApplicationCommand {
         const woisMessage = await createWoisMessage(
             reason,
             timeForWois.toDate(),
-            command.channel
+            command.channel,
         );
 
         if (isWoisgangVote) {
@@ -141,25 +141,25 @@ export class WoisCommand implements ApplicationCommand {
             woisMessage.id,
             reason,
             timeForWois.toDate(),
-            isWoisgangVote
+            isWoisgangVote,
         );
         if (!result) {
             await command.channel.send(
-                "Ich konnte den Woisvote nicht erstellen. Da hat wohl jemand kacke gebaut."
+                "Ich konnte den Woisvote nicht erstellen. Da hat wohl jemand kacke gebaut.",
             );
         }
         await command.reply({
             content: `Woisvote erstellt: ${woisMessage.url}`,
-            ephemeral: true
+            ephemeral: true,
         });
     }
 }
 
-export const woisVoteReactionHandler: ReactionHandler = async(
+export const woisVoteReactionHandler: ReactionHandler = async (
     reactionEvent: MessageReaction,
     user: User,
     context: BotContext,
-    removal: boolean
+    removal: boolean,
 ): Promise<void> => {
     const { message } = reactionEvent;
 
@@ -190,12 +190,22 @@ export const woisVoteReactionHandler: ReactionHandler = async(
     }
 
     // If the woisvote has not been created by a woisgang user, but we have two votes on it. PING DEM WOISGANG!
-    if (!woisAction.isWoisgangAction && woisAction.interestedUsers.length === 1 && interest) {
-        const alertingMessage = await message.channel.messages.fetch(message.id);
+    if (
+        !woisAction.isWoisgangAction &&
+        woisAction.interestedUsers.length === 1 &&
+        interest
+    ) {
+        const alertingMessage = await message.channel.messages.fetch(
+            message.id,
+        );
         await pingWoisgang(alertingMessage, context.roles.woisgang);
     }
 
-    const success = await WoisAction.registerInterst(message.id, user.id, interest);
+    const success = await WoisAction.registerInterst(
+        message.id,
+        user.id,
+        interest,
+    );
     if (!success) {
         logger.error(
             `Could not register interest for user ${user.id} in message ${message.id}`,
@@ -203,9 +213,7 @@ export const woisVoteReactionHandler: ReactionHandler = async(
     }
 };
 
-export const woisVoteScheduler = async(
-    context: BotContext
-): Promise<void> => {
+export const woisVoteScheduler = async (context: BotContext): Promise<void> => {
     const woisAction = await WoisAction.getPendingWoisAction(new Date());
     if (woisAction === null) {
         return;
@@ -216,13 +224,15 @@ export const woisVoteScheduler = async(
         return;
     }
 
-    const woisMessage = await channel.send(`Yoooo, es ist Zeit für das angekündigte Wois. Denk dran, der Grund war: ${woisAction.reason}`);
+    const woisMessage = await channel.send(
+        `Yoooo, es ist Zeit für das angekündigte Wois. Denk dran, der Grund war: ${woisAction.reason}`,
+    );
 
     // We remove woisvote from the database immediately before anything goes wrong and we spam pings.
     await WoisAction.destroy({
         where: {
-            id: woisAction.id
-        }
+            id: woisAction.id,
+        },
     });
 
     if (woisAction.interestedUsers.length === 0) {
@@ -232,14 +242,14 @@ export const woisVoteScheduler = async(
 
     const chunks = chunkArray(woisAction.interestedUsers, 10);
     for (const users of chunks) {
-        const mentions = users.map(userId => `<@${userId}>`);
+        const mentions = users.map((userId) => `<@${userId}>`);
         // It's okay for readability
 
         await woisMessage.reply({
             content: mentions.join(" "),
             allowedMentions: {
-                users
-            }
+                users,
+            },
         });
     }
 };

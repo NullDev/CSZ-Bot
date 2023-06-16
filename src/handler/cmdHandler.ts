@@ -22,7 +22,9 @@ export type ProcessableMessage = Message<true> & {
     guild: Guild;
 };
 
-export function isProcessableMessage(message: Message): message is ProcessableMessage {
+export function isProcessableMessage(
+    message: Message,
+): message is ProcessableMessage {
     return !!message.member && !!message.guild && message.inGuild();
 }
 
@@ -30,11 +32,18 @@ export function isProcessableMessage(message: Message): message is ProcessableMe
  * Passes commands to the correct executor
  *
  */
-export default async function(message: ProcessableMessage, client: Client<true>, isModCommand: boolean, context: BotContext): Promise<CommandResult> {
+export default async function (
+    message: ProcessableMessage,
+    client: Client<true>,
+    isModCommand: boolean,
+    context: BotContext,
+): Promise<CommandResult> {
     if (message.author.bot) return;
 
     if (hasBotDenyRole(message.member) && !isMessageInBotSpam(message)) {
-        await message.member.send("Du hast dich scheinbar beschissen verhalten und darfst daher keine Befehle in diesem Channel ausführen!");
+        await message.member.send(
+            "Du hast dich scheinbar beschissen verhalten und darfst daher keine Befehle in diesem Channel ausführen!",
+        );
         return;
     }
 
@@ -64,7 +73,9 @@ export default async function(message: ProcessableMessage, client: Client<true>,
         }
     }
 
-    const commandFile = commandArr.find(cmd => cmd === `${command.toLowerCase()}.js`);
+    const commandFile = commandArr.find(
+        (cmd) => cmd === `${command.toLowerCase()}.js`,
+    );
 
     if (commandFile === undefined) {
         return;
@@ -72,7 +83,10 @@ export default async function(message: ProcessableMessage, client: Client<true>,
 
     const commandPath = path.join(commandDir, commandFile);
 
-    const usedCommand = await import(commandPath) as { run: CommandFunction, description: string };
+    const usedCommand = (await import(commandPath)) as {
+        run: CommandFunction;
+        description: string;
+    };
 
     console.assert(!!usedCommand, "usedCommand must be non-falsy");
 
@@ -85,30 +99,38 @@ export default async function(message: ProcessableMessage, client: Client<true>,
 
     if (
         isModCommand &&
-        !message.member.roles.cache.some(r =>
-            config.bot_settings.moderator_roles.includes(r.name)
+        !message.member.roles.cache.some((r) =>
+            config.bot_settings.moderator_roles.includes(r.name),
         )
     ) {
         log.warn(
-            `User "${message.author.tag}" (${message.author}) tried mod command "${cmdPrefix}${command}" and was denied`
+            `User "${message.author.tag}" (${message.author}) tried mod command "${cmdPrefix}${command}" and was denied`,
         );
 
         if (
             message.member.roles.cache.some(
-                r => r.id === config.ids.banned_role_id
+                (r) => r.id === config.ids.banned_role_id,
             )
         ) {
             return "Da haste aber Schwein gehabt";
         }
 
-        await ban.ban(client, message.member, message.member, "Lol", false, 0.08);
+        await ban.ban(
+            client,
+            message.member,
+            message.member,
+            "Lol",
+            false,
+            0.08,
+        );
 
         return `Tut mir leid, ${message.author}. Du hast nicht genügend Rechte um dieses Command zu verwenden, dafür gibt's erstmal mit dem Willkürhammer einen auf den Deckel.`;
     }
 
     log.info(
-        `User "${message.author.tag}" (${message.author}) performed ${isModCommand ? "mod-" : ""
-        }command: ${cmdPrefix}${command}`
+        `User "${message.author.tag}" (${message.author}) performed ${
+            isModCommand ? "mod-" : ""
+        }command: ${cmdPrefix}${command}`,
     );
 
     try {
@@ -116,11 +138,9 @@ export default async function(message: ProcessableMessage, client: Client<true>,
 
         // Non-Exception Error returned by the command (e.g.: Missing Argument)
         return response;
-    }
-    catch (err) {
+    } catch (err) {
         // Exception returned by the command handler
         log.error("Error", err);
         return "Sorry, irgendwas ist schief gegangen! =(";
     }
 }
-

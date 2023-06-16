@@ -13,7 +13,10 @@ export interface AustrianTranslationAttributes {
     description: string | null;
 }
 
-export type AustrianTranslationCreationAttributes = Optional<AustrianTranslationAttributes, "id">
+export type AustrianTranslationCreationAttributes = Optional<
+    AustrianTranslationAttributes,
+    "id"
+>;
 
 export default class AustrianTranslation extends Model {
     declare id: number;
@@ -25,59 +28,70 @@ export default class AustrianTranslation extends Model {
     declare readonly createdAt: Date;
     declare readonly updatedAt: Date;
 
-    static persistOrUpdate = async(addedBy: GuildMember, german: string, austrian: string, description: string | null): Promise<AustrianTranslation> => {
-        log.debug(`Saving austrian translation for user ${addedBy}. German: ${german}; Austrian: ${austrian}`);
+    static persistOrUpdate = async (
+        addedBy: GuildMember,
+        german: string,
+        austrian: string,
+        description: string | null,
+    ): Promise<AustrianTranslation> => {
+        log.debug(
+            `Saving austrian translation for user ${addedBy}. German: ${german}; Austrian: ${austrian}`,
+        );
         const result = await AustrianTranslation.upsert({
             addedByUserId: addedBy.id,
             austrian,
             german,
-            description
+            description,
         });
         return result[0];
     };
 
-    static findTranslation(austrian: string): Promise<AustrianTranslation | null> {
+    static findTranslation(
+        austrian: string,
+    ): Promise<AustrianTranslation | null> {
         return AustrianTranslation.findOne({
             where: {
                 austrian: {
                     // we want like to be case-insensitive, we don't need a placeholder
-                    [Op.like]: austrian.trim().toLowerCase()
-                }
-            }
+                    [Op.like]: austrian.trim().toLowerCase(),
+                },
+            },
         });
     }
 
     static initialize(sequelize: Sequelize) {
-        this.init({
-            id: {
-                type: DataTypes.INTEGER,
-                autoIncrement: true,
-                primaryKey: true
-            },
-            german: {
-                type: DataTypes.STRING,
-                allowNull: false,
-                unique: false
-            },
-            austrian: {
-                type: DataTypes.STRING,
-                allowNull: false,
-                unique: true
-            }
-        },
-        {
-            sequelize,
-            modelName: "AustrianTranslation",
-            indexes: [
-                {
-                    unique: true,
-                    fields: ["austrian"]
+        this.init(
+            {
+                id: {
+                    type: DataTypes.INTEGER,
+                    autoIncrement: true,
+                    primaryKey: true,
                 },
-                {
+                german: {
+                    type: DataTypes.STRING,
+                    allowNull: false,
                     unique: false,
-                    fields: ["german"]
-                }
-            ]
-        });
+                },
+                austrian: {
+                    type: DataTypes.STRING,
+                    allowNull: false,
+                    unique: true,
+                },
+            },
+            {
+                sequelize,
+                modelName: "AustrianTranslation",
+                indexes: [
+                    {
+                        unique: true,
+                        fields: ["austrian"],
+                    },
+                    {
+                        unique: false,
+                        fields: ["german"],
+                    },
+                ],
+            },
+        );
     }
 }

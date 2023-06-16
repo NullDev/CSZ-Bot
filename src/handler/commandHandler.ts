@@ -10,7 +10,7 @@ import {
     PermissionsBitField,
     PermissionsString,
     REST,
-    Routes
+    Routes,
 } from "discord.js";
 import { GuildMember } from "discord.js";
 
@@ -25,8 +25,8 @@ import {
     isMessageCommand,
     isSpecialCommand,
     MessageCommand,
-    SpecialCommand, UserInteraction
-
+    SpecialCommand,
+    UserInteraction,
 } from "../commands/command.js";
 import { InfoCommand } from "../commands/info.js";
 import { getConfig } from "../utils/configHandler.js";
@@ -123,23 +123,26 @@ export const commands: readonly Command[] = [
     new EhreCommand(),
     // new AoCCommand(),
     new BanListCommand(),
-    new LinkRedirect()
+    new LinkRedirect(),
 ];
 export const interactions: readonly UserInteraction[] = [
-    new NicknameButtonHandler()
+    new NicknameButtonHandler(),
 ];
 
-export const applicationCommands = commands.filter<ApplicationCommand>(isApplicationCommand);
-export const messageCommands = commands.filter<MessageCommand>(isMessageCommand);
-export const specialCommands = commands.filter<SpecialCommand>(isSpecialCommand);
+export const applicationCommands =
+    commands.filter<ApplicationCommand>(isApplicationCommand);
+export const messageCommands =
+    commands.filter<MessageCommand>(isMessageCommand);
+export const specialCommands =
+    commands.filter<SpecialCommand>(isSpecialCommand);
 
 const lastSpecialCommands: Record<string, number> = specialCommands.reduce(
     (acc, cmd) => ({ ...acc, [cmd.name]: 0 }),
-    {}
+    {},
 );
 
 const createPermissionSet = (
-    permissions: readonly PermissionsString[]
+    permissions: readonly PermissionsString[],
 ): bigint => {
     const flags = new PermissionsBitField();
     flags.add(...permissions);
@@ -150,18 +153,18 @@ const createPermissionSet = (
  * Registers all defined applicationCommands as guild commands
  * We're overwriting ALL, therefore no deletion is necessary
  */
-export const registerAllApplicationCommandsAsGuildCommands = async(
-    context: BotContext
+export const registerAllApplicationCommandsAsGuildCommands = async (
+    context: BotContext,
 ): Promise<void> => {
     const clientId = context.rawConfig.auth.client_id;
     const token = context.rawConfig.auth.bot_token;
 
     const rest = new REST({ version: "10" }).setToken(token);
     const buildGuildCommand = (
-        cmd: ApplicationCommand
+        cmd: ApplicationCommand,
     ): APIApplicationCommand => {
         const defaultMemberPermissions = createPermissionSet(
-            cmd.requiredPermissions ?? ["SendMessages"]
+            cmd.requiredPermissions ?? ["SendMessages"],
         );
 
         const commandCreationData: APIApplicationCommand = {
@@ -181,20 +184,18 @@ export const registerAllApplicationCommandsAsGuildCommands = async(
         return commandCreationData;
     };
 
-    const commandsToRegister = applicationCommands
-        .map(buildGuildCommand);
+    const commandsToRegister = applicationCommands.map(buildGuildCommand);
 
     try {
         const url = Routes.applicationGuildCommands(clientId, context.guild.id);
-        const response = await rest.put(url, {
-            body: commandsToRegister
-        }) as ApplicationCommandCreationResponse[];
+        const response = (await rest.put(url, {
+            body: commandsToRegister,
+        })) as ApplicationCommandCreationResponse[];
         logger.info(`Registered ${response.length} guild commands`);
-    }
-    catch (err) {
+    } catch (err) {
         log.error(
             `Could not register application commands for guild ${context.guild.id}`,
-            err
+            err,
         );
     }
 };
@@ -208,15 +209,15 @@ export const registerAllApplicationCommandsAsGuildCommands = async(
 const commandInteractionHandler = async (
     command: CommandInteraction,
     client: Client,
-    context: BotContext
+    context: BotContext,
 ): Promise<void> => {
     const matchingCommand = applicationCommands.find(
-        cmd => cmd.name === command.commandName
+        (cmd) => cmd.name === command.commandName,
     );
 
     if (!matchingCommand) {
         throw new Error(
-            `Application Command ${command.commandName} with ID ${command.id} invoked, but not available`
+            `Application Command ${command.commandName} with ID ${command.id} invoked, but not available`,
         );
     }
 
@@ -226,25 +227,27 @@ const commandInteractionHandler = async (
 
 const autocompleteInteractionHandler = async (
     interaction: AutocompleteInteraction,
-    context: BotContext
+    context: BotContext,
 ) => {
     const matchingCommand = applicationCommands.find(
-        cmd => cmd.name === interaction.commandName
+        (cmd) => cmd.name === interaction.commandName,
     );
 
     if (!matchingCommand) {
         throw new Error(
-            `Application Command ${interaction.commandName} with ID ${interaction.id} invoked, but not available`
+            `Application Command ${interaction.commandName} with ID ${interaction.id} invoked, but not available`,
         );
     }
 
-    if(!matchingCommand.autocomplete) {
+    if (!matchingCommand.autocomplete) {
         throw new Error(
-            `Application Command ${interaction.commandName} with ID ${interaction.id} invoked, but no autocomplete function available`
+            `Application Command ${interaction.commandName} with ID ${interaction.id} invoked, but no autocomplete function available`,
         );
     }
 
-    log.debug(`Found a matching autocomplete handler for command ${matchingCommand.name}`);
+    log.debug(
+        `Found a matching autocomplete handler for command ${matchingCommand.name}`,
+    );
     await matchingCommand.autocomplete(interaction, context);
 };
 
@@ -257,24 +260,30 @@ const autocompleteInteractionHandler = async (
 const messageComponentInteractionHandler = (
     command: MessageComponentInteraction,
     client: Client,
-    context: BotContext
+    context: BotContext,
 ): Promise<unknown> => {
-    const matchingInteraction = interactions.find(
-        cmd => cmd.ids.find(id => id === command.customId
-        ));
+    const matchingInteraction = interactions.find((cmd) =>
+        cmd.ids.find((id) => id === command.customId),
+    );
     if (matchingInteraction) {
         log.debug(`Found a matching interaction ${matchingInteraction.name}`);
         return matchingInteraction.handleInteraction(command, client, context);
     }
 
-    return Promise.reject(new Error(
-        `Interaction ${command.customId} invoked, but not availabe`
-    ));
+    return Promise.reject(
+        new Error(`Interaction ${command.customId} invoked, but not availabe`),
+    );
 };
 
-
-const checkPermissions = (member: GuildMember, permissions: ReadonlyArray<PermissionsString>): boolean => {
-    log.debug(`Checking member ${member.id} permissions on permissionSet: ${JSON.stringify(permissions)}`);
+const checkPermissions = (
+    member: GuildMember,
+    permissions: ReadonlyArray<PermissionsString>,
+): boolean => {
+    log.debug(
+        `Checking member ${
+            member.id
+        } permissions on permissionSet: ${JSON.stringify(permissions)}`,
+    );
 
     // No permissions, no problem
     if (permissions.length === 0) {
@@ -293,19 +302,21 @@ const checkPermissions = (member: GuildMember, permissions: ReadonlyArray<Permis
  * was found or an error if the command would be a mod command but the
  * invoking user is not a mod
  */
-const commandMessageHandler = async(
+const commandMessageHandler = async (
     commandString: string,
     message: ProcessableMessage,
     client: Client,
-    context: BotContext
+    context: BotContext,
 ): Promise<unknown> => {
     const matchingCommand = messageCommands.find(
-        cmd => cmd.name.toLowerCase() === commandString.toLowerCase() || cmd.aliases?.includes(commandString.toLowerCase())
+        (cmd) =>
+            cmd.name.toLowerCase() === commandString.toLowerCase() ||
+            cmd.aliases?.includes(commandString.toLowerCase()),
     );
 
     if (hasBotDenyRole(message.member) && !isMessageInBotSpam(message)) {
         await message.member.send(
-            "Du hast dich scheinbar beschissen verhalten und darfst daher keine Befehle in diesem Channel ausführen!"
+            "Du hast dich scheinbar beschissen verhalten und darfst daher keine Befehle in diesem Channel ausführen!",
         );
         return;
     }
@@ -316,7 +327,10 @@ const commandMessageHandler = async(
 
     if (matchingCommand.requiredPermissions) {
         const member = message.guild.members.cache.get(message.author.id);
-        if (member && !checkPermissions(member, matchingCommand.requiredPermissions)) {
+        if (
+            member &&
+            !checkPermissions(member, matchingCommand.requiredPermissions)
+        ) {
             const botUser = client.user;
             if (!botUser) {
                 return Promise.reject(new Error("Bot user not found"));
@@ -346,52 +360,59 @@ const isCooledDown = (command: SpecialCommand) => {
     return Math.random() < diff / cooldownTime;
 };
 
-const specialCommandHandler = (message: ProcessableMessage, client: Client, context: BotContext): Promise<unknown> => {
-    const commandCandidates = specialCommands.filter(p => p.matches(message, context));
+const specialCommandHandler = (
+    message: ProcessableMessage,
+    client: Client,
+    context: BotContext,
+): Promise<unknown> => {
+    const commandCandidates = specialCommands.filter((p) =>
+        p.matches(message, context),
+    );
     return Promise.all(
         commandCandidates
-            .filter(c => Math.random() <= c.randomness)
-            .filter(c => isCooledDown(c))
-            .map(c => {
+            .filter((c) => Math.random() <= c.randomness)
+            .filter((c) => isCooledDown(c))
+            .map((c) => {
                 log.info(
-                    `User "${message.author.tag}" (${message.author}) performed special command: ${c.name}`
+                    `User "${message.author.tag}" (${message.author}) performed special command: ${c.name}`,
                 );
                 lastSpecialCommands[c.name] = Date.now();
                 return c.handleSpecialMessage(message, client, context);
-            })
+            }),
     );
 };
 
 export const handleInteractionEvent = (
     interaction: Interaction,
     client: Client,
-    context: BotContext
+    context: BotContext,
 ): Promise<unknown> => {
     if (interaction.isCommand()) {
         return commandInteractionHandler(
             interaction as CommandInteraction,
             client,
-            context
+            context,
         );
     }
 
     if (interaction.isAutocomplete()) {
-        return autocompleteInteractionHandler(
-            interaction,
-            context
-        );
+        return autocompleteInteractionHandler(interaction, context);
     }
 
     if (interaction.isMessageComponent()) {
-        return messageComponentInteractionHandler(interaction as MessageComponentInteraction, client, context);
+        return messageComponentInteractionHandler(
+            interaction as MessageComponentInteraction,
+            client,
+            context,
+        );
     }
     return Promise.reject(new Error("Not supported"));
 };
 
-export const messageCommandHandler = async(
+export const messageCommandHandler = async (
     message: Message,
     client: Client,
-    context: BotContext
+    context: BotContext,
 ): Promise<unknown> => {
     // Bots shall not be able to perform commands. High Security
     if (message.author.bot) {

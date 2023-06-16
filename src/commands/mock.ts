@@ -1,4 +1,13 @@
-import { CacheType, Client, CommandInteraction, GuildMember, Message, EmbedBuilder, SlashCommandBuilder, SlashCommandStringOption } from "discord.js";
+import {
+    CacheType,
+    Client,
+    CommandInteraction,
+    GuildMember,
+    Message,
+    EmbedBuilder,
+    SlashCommandBuilder,
+    SlashCommandStringOption,
+} from "discord.js";
 
 import { BotContext } from "../context.js";
 import { ApplicationCommand, MessageCommand } from "./command.js";
@@ -8,7 +17,7 @@ import { ensureChatInputCommand } from "../utils/interactionUtils.js";
 /**
  * Randomly capitalize letters
  */
-const transform = function(c: string): string {
+const transform = function (c: string): string {
     if (c === "ß" || c === "ẞ") return c;
     return Math.random() < 0.5 ? c.toLowerCase() : c.toUpperCase();
 };
@@ -24,10 +33,10 @@ const mock = (str: string): string => str.split("").map(transform).join("");
 const buildMock = (author: GuildMember, toMock: string) => {
     return new EmbedBuilder()
         .setDescription(`${mock(toMock)} <:mock:677504337769005096>`)
-        .setColor(0xFFC000)
+        .setColor(0xffc000)
         .setAuthor({
             name: `${author.displayName}`,
-            iconURL: author.displayAvatarURL()
+            iconURL: author.displayAvatarURL(),
         });
 };
 
@@ -41,10 +50,14 @@ export class MockCommand implements MessageCommand, ApplicationCommand {
             new SlashCommandStringOption()
                 .setName("text")
                 .setDescription("Wat soll ich denn mocken")
-                .setRequired(true)
+                .setRequired(true),
         );
 
-    async handleInteraction(command: CommandInteraction<CacheType>, _client: Client<boolean>, _context: BotContext): Promise<void> {
+    async handleInteraction(
+        command: CommandInteraction<CacheType>,
+        _client: Client<boolean>,
+        _context: BotContext,
+    ): Promise<void> {
         const cmd = ensureChatInputCommand(command);
 
         const author = cmd.guild?.members.resolve(cmd.user);
@@ -59,13 +72,19 @@ export class MockCommand implements MessageCommand, ApplicationCommand {
         });
     }
 
-    async handleMessage(message: ProcessableMessage, _client: Client<boolean>, context: BotContext): Promise<void> {
+    async handleMessage(
+        message: ProcessableMessage,
+        _client: Client<boolean>,
+        context: BotContext,
+    ): Promise<void> {
         const author = message.guild.members.resolve(message.author);
         const { channel } = message;
 
         const messageReference = message.reference?.messageId;
         const isReply = messageReference !== undefined;
-        let content = message.content.slice(`${context.prefix.command}${this.name} `.length);
+        let content = message.content.slice(
+            `${context.prefix.command}${this.name} `.length,
+        );
         const hasContent = !!content && content.trim().length > 0;
 
         if (!author) {
@@ -79,9 +98,10 @@ export class MockCommand implements MessageCommand, ApplicationCommand {
 
         let replyMessage: Message<boolean> | null = null;
         if (isReply) {
-            replyMessage = await message.channel.messages.fetch(messageReference);
+            replyMessage = await message.channel.messages.fetch(
+                messageReference,
+            );
             if (!hasContent) {
-
                 content = replyMessage.content;
             }
             const mockedEmbed = buildMock(author, content);
@@ -91,14 +111,13 @@ export class MockCommand implements MessageCommand, ApplicationCommand {
                 }),
                 message.delete(),
             ]);
-        }
-        else {
+        } else {
             const mockedEmbed = buildMock(author, content);
             await Promise.all([
                 channel.send({
-                    embeds: [mockedEmbed]
+                    embeds: [mockedEmbed],
                 }),
-                message.delete()
+                message.delete(),
             ]);
         }
     }

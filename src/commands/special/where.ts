@@ -10,7 +10,7 @@ if (process.env.NODE_ENV === "production") {
     // This is a simple detection if we're running inside docker
     // We assume that every developer that wants to use this feature has impact installed
     registerFont("assets/impact.ttf", {
-        family: "Impact"
+        family: "Impact",
     });
 }
 
@@ -23,11 +23,16 @@ export class WhereCommand implements SpecialCommand {
     matches(message: Message<boolean>): boolean {
         const msg = message.content.toLowerCase();
 
-        return msg.startsWith("wo ") && countWords(substringAfter(msg, "wo ")) <= 3;
+        return (
+            msg.startsWith("wo ") && countWords(substringAfter(msg, "wo ")) <= 3
+        );
     }
 
     async handleSpecialMessage(message: Message, _client: Client<boolean>) {
-        const subject = cleanContent(message.content.trim().toUpperCase(), message.channel);
+        const subject = cleanContent(
+            message.content.trim().toUpperCase(),
+            message.channel,
+        );
 
         const whereMemeBuffer = await WhereCommand.createWhereMeme(subject);
 
@@ -50,7 +55,7 @@ export class WhereCommand implements SpecialCommand {
 
         const textPos = {
             x: (whereImage.width / 2) | 0,
-            y: 40
+            y: 40,
         };
 
         ctx.font = "42px Impact";

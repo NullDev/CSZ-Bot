@@ -9,14 +9,12 @@ const config = getConfig();
 /**
  * Creates a new poll (vote; yes/no)
  */
-export const run: CommandFunction = async(_client, message, args, context) => {
+export const run: CommandFunction = async (_client, message, args, context) => {
     const options = parseOptions(args, {
-        "boolean": [
-            "channel"
-        ],
+        boolean: ["channel"],
         alias: {
-            channel: "c"
-        }
+            channel: "c",
+        },
     });
 
     const parsedArgs = options._;
@@ -24,28 +22,29 @@ export const run: CommandFunction = async(_client, message, args, context) => {
     if (!parsedArgs.length) return "Bruder da ist keine Frage :c";
 
     const question = parsedArgs.join(" ");
-    if (question.length > 4096) return "Bruder die Frage ist ja länger als mein Schwanz :c";
+    if (question.length > 4096)
+        return "Bruder die Frage ist ja länger als mein Schwanz :c";
 
     const embed = {
         description: `**${cleanContent(question, message.channel)}**`,
         timestamp: new Date().toISOString(),
-        color: 0x9400D3,
+        color: 0x9400d3,
         author: {
             name: `Umfrage von ${message.author.username}`,
-            icon_url: message.author.displayAvatarURL()
-        }
+            icon_url: message.author.displayAvatarURL(),
+        },
     };
 
     const channel = options.channel
         ? context.textChannels.votes
         : message.channel;
 
-    const messageWithVoteContent = await channel.send( {
-        embeds: [embed]
+    const messageWithVoteContent = await channel.send({
+        embeds: [embed],
     });
     await Promise.all([
         messageWithVoteContent.react("👍"),
-        messageWithVoteContent.react("👎")
+        messageWithVoteContent.react("👎"),
     ]);
     await message.delete();
 };

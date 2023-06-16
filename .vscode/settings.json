@@ -1,23 +1,19 @@
 {
-  "explorer.fileNesting.enabled": true,
-  "explorer.fileNesting.patterns": {
-    "tsconfig.json": "tsconfig.*.json",
-    "package.json": "package-lock.json, .npmrc, yarn.lock, .yarnrc, .nvmrc",
-    "flake.nix": "flake.lock",
-    "*.ts": "$(capture).test.ts"
-  },
-  "files.eol": "\n",
-  "cSpell.language": "de,en",
-  "editor.formatOnSaveMode": "modificationsIfAvailable",
-  "[javascript]": {
-    "editor.defaultFormatter": "rome.rome"
-  },
-  "[typescript]": {
-    "editor.defaultFormatter": "rome.rome"
-  },
-  "cSpell.words": [
-    "faulenzer",
-    "brudi",
-    "faulenzerping"
-  ]
+    "explorer.fileNesting.enabled": true,
+    "explorer.fileNesting.patterns": {
+        "tsconfig.json": "tsconfig.*.json",
+        "package.json": "package-lock.json, .npmrc, yarn.lock, .yarnrc, .nvmrc",
+        "flake.nix": "flake.lock",
+        "*.ts": "$(capture).test.ts"
+    },
+    "files.eol": "\n",
+    "cSpell.language": "de,en",
+    "editor.formatOnSaveMode": "modificationsIfAvailable",
+    "[javascript]": {
+        "editor.defaultFormatter": "rome.rome"
+    },
+    "[typescript]": {
+        "editor.defaultFormatter": "rome.rome"
+    },
+    "cSpell.words": ["faulenzer", "brudi", "faulenzerping"]
 }

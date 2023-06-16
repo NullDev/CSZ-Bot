@@ -4,7 +4,6 @@ import type { ProcessableMessage } from "../../handler/cmdHandler.js";
 import { SpecialCommand, CommandResult } from "../command.js";
 import { EhreCommand } from "../ehre.js";
 
-
 export class AutoEhreCommand implements SpecialCommand {
     name = "AutoEhre";
     description = "Ährt automatisch";
@@ -13,12 +12,7 @@ export class AutoEhreCommand implements SpecialCommand {
     randomness = 1;
     cooldownTime = 0;
 
-    ehreMessages = [
-        ":aehre:",
-        ":pr0aehre:",
-        "ehre",
-        "ehrenmann"
-    ];
+    ehreMessages = [":aehre:", ":pr0aehre:", "ehre", "ehrenmann"];
 
     matches(message: ProcessableMessage): boolean {
         if (message.reference === null) {
@@ -37,7 +31,10 @@ export class AutoEhreCommand implements SpecialCommand {
         return false;
     }
 
-    async handleSpecialMessage(message: ProcessableMessage, _client: Client<boolean>): Promise<CommandResult> {
+    async handleSpecialMessage(
+        message: ProcessableMessage,
+        _client: Client<boolean>,
+    ): Promise<CommandResult> {
         const repliedToMessage = await message.fetchReference();
         if (repliedToMessage.author.id === message.author.id) {
             // Silently discard if the user replies with "ehre" to his own message
@@ -45,7 +42,10 @@ export class AutoEhreCommand implements SpecialCommand {
             return;
         }
 
-        const reply = await EhreCommand.addEhre(message.author, repliedToMessage.author);
+        const reply = await EhreCommand.addEhre(
+            message.author,
+            repliedToMessage.author,
+        );
         await message.reply(reply);
     }
 }

@@ -1,6 +1,5 @@
 /* Disabled due to sequelize's DataTypes */
 
-
 import type { User, GuildMember } from "discord.js";
 import { Model, DataTypes, Sequelize, Optional, Op } from "sequelize";
 
@@ -14,7 +13,7 @@ export interface BanAttributes {
     isSelfBan: boolean;
 }
 
-export type BanCreationAttributes = Optional<BanAttributes, "id">
+export type BanCreationAttributes = Optional<BanAttributes, "id">;
 
 export default class Ban
     extends Model<BanAttributes, BanCreationAttributes>

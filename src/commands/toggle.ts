@@ -5,11 +5,11 @@ import type { CommandFunction } from "../types.js";
 import { isMod } from "../utils/userUtils.js";
 
 const isPollField = (field: APIEmbedField): boolean =>
-    !field.inline && poll.LETTERS.some(l => field.name.startsWith(l));
+    !field.inline && poll.LETTERS.some((l) => field.name.startsWith(l));
 
-const togglePoll = async(message: Message) => {
+const togglePoll = async (message: Message) => {
     const pollEmbed = message.embeds[0];
-    const pollOptions = pollEmbed.fields.filter(field => isPollField(field));
+    const pollOptions = pollEmbed.fields.filter((field) => isPollField(field));
     const isFull = pollOptions.length === poll.OPTION_LIMIT;
     if (isFull) return "Bruder die ist eh schon voll :<";
 
@@ -23,12 +23,12 @@ const togglePoll = async(message: Message) => {
 
     await Promise.all([
         message.edit({
-            embeds: [embed]
-        })
+            embeds: [embed],
+        }),
     ]);
 };
 
-const toggleSdm = async(message: Message) => {
+const toggleSdm = async (message: Message) => {
     const embed = message.embeds[0];
     const isYes = embed.color === 0x2ecc71;
 
@@ -40,16 +40,15 @@ const toggleSdm = async(message: Message) => {
     await Promise.all([
         message.edit({
             embeds: [toggledEmbed],
-            files: [`./assets/${file}`]
-        })
+            files: [`./assets/${file}`],
+        }),
     ]);
 };
-
 
 /**
  * Extends an existing poll or strawpoll
  */
-export const run: CommandFunction = async(client, message, args, context) => {
+export const run: CommandFunction = async (client, message, args, context) => {
     if (!isMod(message.member)) return;
     const reference = message.reference;
     const referenceMessageId = reference?.messageId;
@@ -78,17 +77,11 @@ export const run: CommandFunction = async(client, message, args, context) => {
     const isSdm = pollAuthor.name.startsWith("Secure Decision");
 
     if (isPoll) {
-        await Promise.all([
-            togglePoll(replyMessage),
-            message.delete()
-        ]);
+        await Promise.all([togglePoll(replyMessage), message.delete()]);
         return;
     }
     if (isSdm) {
-        await Promise.all([
-            toggleSdm(replyMessage),
-            message.delete()
-        ]);
+        await Promise.all([toggleSdm(replyMessage), message.delete()]);
         return;
     }
 

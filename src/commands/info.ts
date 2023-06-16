@@ -1,26 +1,41 @@
-import { Client, CommandInteraction, Guild, GuildPremiumTier, APIEmbed, ButtonStyle, SlashCommandBuilder, ComponentType } from "discord.js";
+import {
+    Client,
+    CommandInteraction,
+    Guild,
+    GuildPremiumTier,
+    APIEmbed,
+    ButtonStyle,
+    SlashCommandBuilder,
+    ComponentType,
+} from "discord.js";
 import fetch from "node-fetch";
 
-import { ApplicationCommand, CommandResult, MessageCommand } from "./command.js";
+import {
+    ApplicationCommand,
+    CommandResult,
+    MessageCommand,
+} from "./command.js";
 import { GitHubContributor } from "../types.js";
 import type { ProcessableMessage } from "../handler/cmdHandler.js";
 import { assertNever } from "../utils/typeUtils.js";
 
-
-const fetchContributions = async(): Promise<Array<GitHubContributor>> => {
+const fetchContributions = async (): Promise<Array<GitHubContributor>> => {
     return fetch("https://api.github.com/repos/NullDev/CSZ-Bot/contributors", {
         headers: { Accept: "application/vnd.github.v3+json" },
     }).then((res) => res.json() as Promise<Array<GitHubContributor>>);
 };
 
-const fetchLanguages = async(): Promise<Array<string>> => {
-    const res = await fetch("https://api.github.com/repos/NullDev/CSZ-Bot/languages", {
-        headers: { Accept: "application/vnd.github.v3+json" }
-    });
-    return Object.keys(await res.json() as {});
+const fetchLanguages = async (): Promise<Array<string>> => {
+    const res = await fetch(
+        "https://api.github.com/repos/NullDev/CSZ-Bot/languages",
+        {
+            headers: { Accept: "application/vnd.github.v3+json" },
+        },
+    );
+    return Object.keys((await res.json()) as {});
 };
 
-const getContributors = async(): Promise<string> => {
+const getContributors = async (): Promise<string> => {
     const contributors = await fetchContributions();
     return `${contributors
         .filter((c) => c.type === "User")
@@ -32,7 +47,7 @@ const getContributors = async(): Promise<string> => {
         )} | [[Auf GitHub ansehen]](https://github.com/NullDev/CSZ-Bot/graphs/contributors)`;
 };
 
-const getTechStackInfo = async(): Promise<string> => {
+const getTechStackInfo = async (): Promise<string> => {
     return (
         // rome-ignore lint/style/useTemplate: Better readability
         `**Programmiersprache\n** ${(await fetchLanguages()).join(",")} \n` +
@@ -54,11 +69,16 @@ const getSystemInfo = (): string => {
 
 const getServerLevel = (guild: Guild) => {
     switch (guild.premiumTier) {
-        case GuildPremiumTier.None: return 0;
-        case GuildPremiumTier.Tier1: return 1;
-        case GuildPremiumTier.Tier2: return 2;
-        case GuildPremiumTier.Tier3: return 3;
-        default: return assertNever(guild.premiumTier);
+        case GuildPremiumTier.None:
+            return 0;
+        case GuildPremiumTier.Tier1:
+            return 1;
+        case GuildPremiumTier.Tier2:
+            return 2;
+        case GuildPremiumTier.Tier3:
+            return 3;
+        default:
+            return assertNever(guild.premiumTier);
     }
 };
 
@@ -76,35 +96,38 @@ const getServerInfo = (guild: Guild): string => {
     );
 };
 
-const buildEmbed = async(guild: Guild | null, avatarUrl?: string): Promise<APIEmbed> => {
+const buildEmbed = async (
+    guild: Guild | null,
+    avatarUrl?: string,
+): Promise<APIEmbed> => {
     const now = new Date();
     const embed = {
         color: 0x1ea188,
         footer: {
-            text: `${now.toDateString()} ${now.toLocaleTimeString()}`
+            text: `${now.toDateString()} ${now.toLocaleTimeString()}`,
         },
         author: {
             name: "Shitpost Bot",
             url: "https://discordapp.com/users/663146938811547660/",
-            icon_url: avatarUrl
+            icon_url: avatarUrl,
         },
         fields: [
             {
                 name: "🪛 Contributors",
                 value: await getContributors(),
-                inline: false
+                inline: false,
             },
             {
                 name: "🧬 Tech-Stack",
                 value: await getTechStackInfo(),
-                inline: true
+                inline: true,
             },
             {
                 name: "⚙️ System",
                 value: getSystemInfo(),
-                inline: true
-            }
-        ]
+                inline: true,
+            },
+        ],
     };
 
     if (guild) {
@@ -143,8 +166,14 @@ export class InfoCommand implements ApplicationCommand, MessageCommand {
      * @param client client
      * @returns info reply
      */
-    async handleInteraction(command: CommandInteraction, client: Client): Promise<CommandResult> {
-        const embed = await buildEmbed(command.guild, client.user?.avatarURL() ?? undefined);
+    async handleInteraction(
+        command: CommandInteraction,
+        client: Client,
+    ): Promise<CommandResult> {
+        const embed = await buildEmbed(
+            command.guild,
+            client.user?.avatarURL() ?? undefined,
+        );
         await command.reply({
             embeds: [embed],
             ephemeral: true,
@@ -157,11 +186,11 @@ export class InfoCommand implements ApplicationCommand, MessageCommand {
                             url: "https://github.com/NullDev/CSZ-Bot",
                             label: "GitHub",
                             style: ButtonStyle.Link,
-                            disabled: false
-                        }
-                    ]
-                }
-            ]
+                            disabled: false,
+                        },
+                    ],
+                },
+            ],
         });
     }
 
@@ -171,11 +200,17 @@ export class InfoCommand implements ApplicationCommand, MessageCommand {
      * @param client client
      * @returns reply and reaction
      */
-    async handleMessage(message: ProcessableMessage, client: Client): Promise<CommandResult> {
-        const embed = await buildEmbed(message.guild, client.user?.avatarURL() ?? undefined);
+    async handleMessage(
+        message: ProcessableMessage,
+        client: Client,
+    ): Promise<CommandResult> {
+        const embed = await buildEmbed(
+            message.guild,
+            client.user?.avatarURL() ?? undefined,
+        );
 
         const reply = message.reply({
-            embeds: [embed]
+            embeds: [embed],
         });
         const reaction = message.react("⚙️");
         await Promise.all([reply, reaction]);

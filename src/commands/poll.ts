@@ -1,6 +1,15 @@
 import parseOptions from "minimist";
 import cron from "croner";
-import {APIEmbed, APIEmbedField, cleanContent, Snowflake, TextChannel, time, TimestampStyles, User} from "discord.js";
+import {
+    APIEmbed,
+    APIEmbedField,
+    cleanContent,
+    Snowflake,
+    TextChannel,
+    time,
+    TimestampStyles,
+    User,
+} from "discord.js";
 
 import log from "../utils/logger.js";
 import AdditionalMessageData from "../storage/model/AdditionalMessageData.js";
@@ -30,7 +39,7 @@ export const LETTERS = [
     ":regional_indicator_q:",
     ":regional_indicator_r:",
     ":regional_indicator_s:",
-    ":regional_indicator_t:"
+    ":regional_indicator_t:",
 ];
 
 export const EMOJI = [
@@ -53,16 +62,18 @@ export const EMOJI = [
     "🇶",
     "🇷",
     "🇸",
-    "🇹"
+    "🇹",
 ];
 
 export const TEXT_LIMIT = 4096;
 export const FIELD_NAME_LIMIT = 256;
 export const FIELD_VALUE_LIMIT = 1024;
 export const POLL_OPTION_SEPARATOR = " - ";
-export const POLL_OPTION_MAX_LENGTH = (2 * FIELD_VALUE_LIMIT) - Math.max(...LETTERS.map(s => s.length)) - POLL_OPTION_SEPARATOR.length;
+export const POLL_OPTION_MAX_LENGTH =
+    2 * FIELD_VALUE_LIMIT -
+    Math.max(...LETTERS.map((s) => s.length)) -
+    POLL_OPTION_SEPARATOR.length;
 export const OPTION_LIMIT = LETTERS.length;
-
 
 interface DelayedPoll {
     pollId: string;
@@ -74,44 +85,45 @@ interface DelayedPoll {
 
 export const delayedPolls: DelayedPoll[] = [];
 
-export const createOptionField = (option: string, index: number, author?: User): APIEmbedField => {
+export const createOptionField = (
+    option: string,
+    index: number,
+    author?: User,
+): APIEmbedField => {
     let newOption = option;
-    if(author) {
+    if (author) {
         const authorNote = ` (von ${author.username})`;
         newOption += authorNote;
 
-        if(newOption.length > POLL_OPTION_MAX_LENGTH) {
-            throw new Error(`Alter jetzt mal ganz im ernst, du hast etwas weniger als ${POLL_OPTION_MAX_LENGTH} Zeichen zur Verfüngung. Ich brauch auch noch ein bisschen Platz. Kannst du doch nicht ernst meinen.`);
+        if (newOption.length > POLL_OPTION_MAX_LENGTH) {
+            throw new Error(
+                `Alter jetzt mal ganz im ernst, du hast etwas weniger als ${POLL_OPTION_MAX_LENGTH} Zeichen zur Verfüngung. Ich brauch auch noch ein bisschen Platz. Kannst du doch nicht ernst meinen.`,
+            );
         }
     }
 
     const optionDiscriminator = `${LETTERS[index]}${POLL_OPTION_SEPARATOR}`;
     const splitIndex = FIELD_NAME_LIMIT - optionDiscriminator.length;
-    const firstTextBlock = optionDiscriminator + newOption.substring(0, splitIndex);
+    const firstTextBlock =
+        optionDiscriminator + newOption.substring(0, splitIndex);
     const secondTextBlock = newOption.substring(splitIndex) || " ";
 
-    return {name: firstTextBlock, value: secondTextBlock, inline: false};
+    return { name: firstTextBlock, value: secondTextBlock, inline: false };
 };
 
 /**
  * Creates a new poll (multiple answers) or straw poll (single selection)
  */
-export const run: CommandFunction = async(_client, message, args, context) => {
+export const run: CommandFunction = async (_client, message, args, context) => {
     const options = parseOptions(args, {
-        "boolean": [
-            "channel",
-            "extendable",
-            "straw"
-        ],
-        string: [
-            "delayed"
-        ],
+        boolean: ["channel", "extendable", "straw"],
+        string: ["delayed"],
         alias: {
             channel: "c",
             extendable: "e",
             straw: "s",
-            delayed: "d"
-        }
+            delayed: "d",
+        },
     });
 
     const parsedArgs = options._;
@@ -119,10 +131,15 @@ export const run: CommandFunction = async(_client, message, args, context) => {
 
     if (!parsedArgs.length) return "Bruder da ist keine Umfrage :c";
 
-    const pollArray = parsedArgs.join(" ").split(";").map(e => e.trim()).filter(e => e.replace(/\s/g, "") !== "");
+    const pollArray = parsedArgs
+        .join(" ")
+        .split(";")
+        .map((e) => e.trim())
+        .filter((e) => e.replace(/\s/g, "") !== "");
 
     const question = pollArray[0];
-    if (question.length > TEXT_LIMIT) return "Bruder die Frage ist ja länger als mein Schwanz :c";
+    if (question.length > TEXT_LIMIT)
+        return "Bruder die Frage ist ja länger als mein Schwanz :c";
 
     const pollOptions = pollArray.slice(1);
     let pollOptionsTextLength = 0;
@@ -132,11 +149,14 @@ export const run: CommandFunction = async(_client, message, args, context) => {
         pollOptionsTextLength += pollOption.length;
     }
 
-
-    if (!pollOptions.length) return "Bruder da sind keine Antwortmöglichkeiten :c";
-    else if (pollOptions.length < 2 && !isExtendable) return "Bruder du musst schon mehr als eine Antwortmöglichkeit geben 🙄";
-    else if (pollOptions.length > OPTION_LIMIT) return `Bitte gib nicht mehr als ${OPTION_LIMIT} Antwortmöglichkeiten an!`;
-    else if (pollOptions.some(value => value.length > POLL_OPTION_MAX_LENGTH)) return `Bruder mindestens eine Antwortmöglichkeit ist länger als ${POLL_OPTION_MAX_LENGTH} Zeichen!`;
+    if (!pollOptions.length)
+        return "Bruder da sind keine Antwortmöglichkeiten :c";
+    else if (pollOptions.length < 2 && !isExtendable)
+        return "Bruder du musst schon mehr als eine Antwortmöglichkeit geben 🙄";
+    else if (pollOptions.length > OPTION_LIMIT)
+        return `Bitte gib nicht mehr als ${OPTION_LIMIT} Antwortmöglichkeiten an!`;
+    else if (pollOptions.some((value) => value.length > POLL_OPTION_MAX_LENGTH))
+        return `Bruder mindestens eine Antwortmöglichkeit ist länger als ${POLL_OPTION_MAX_LENGTH} Zeichen!`;
 
     const fields = pollOptions.map((o, i) => createOptionField(o, i));
 
@@ -145,17 +165,21 @@ export const run: CommandFunction = async(_client, message, args, context) => {
         fields,
         timestamp: new Date().toISOString(),
         author: {
-            name: `${options.straw ? "Strawpoll" : "Umfrage"} von ${message.author.username}`,
-            icon_url: message.author.displayAvatarURL()
-        }
+            name: `${options.straw ? "Strawpoll" : "Umfrage"} von ${
+                message.author.username
+            }`,
+            icon_url: message.author.displayAvatarURL(),
+        },
     };
     const embedFields = embed.fields;
     if (embedFields === undefined) {
         return "Irgendwie fehlen die Felder in dem Embed. Das sollte nicht passieren.";
     }
 
-
-    const extendable = options.extendable && pollOptions.length < OPTION_LIMIT && pollOptionsTextLength < TEXT_LIMIT;
+    const extendable =
+        options.extendable &&
+        pollOptions.length < OPTION_LIMIT &&
+        pollOptionsTextLength < TEXT_LIMIT;
 
     if (extendable) {
         if (options.delayed) {
@@ -170,15 +194,13 @@ export const run: CommandFunction = async(_client, message, args, context) => {
         embed.color = 0x2ecc71;
     }
 
-    const finishTime = new Date(new Date().valueOf() + (delayTime * 60 * 1000));
+    const finishTime = new Date(new Date().valueOf() + delayTime * 60 * 1000);
     if (options.delayed) {
         if (isNaN(delayTime) || delayTime <= 0) {
             return "Bruder keine ungültigen Zeiten angeben 🙄";
-        }
-        else if (delayTime > 60 * 1000 * 24 * 7) {
+        } else if (delayTime > 60 * 1000 * 24 * 7) {
             return "Bruder du kannst maximal 7 Tage auf ein Ergebnis warten 🙄";
         }
-
 
         embedFields.push({
             name: "⏳ Verzögert",
@@ -191,13 +213,11 @@ export const run: CommandFunction = async(_client, message, args, context) => {
         embed.color = 0xa10083;
     }
 
-
     embedFields.push({
         name: "📝 Antwortmöglichkeit",
         value: options.straw ? "Einzelauswahl" : "Mehrfachauswahl",
         inline: true,
     });
-
 
     const voteChannel = context.textChannels.votes;
     const channel = options.channel ? voteChannel : message.channel;
@@ -210,7 +230,7 @@ export const run: CommandFunction = async(_client, message, args, context) => {
     }
 
     const pollMessage = await channel.send({
-        embeds: [embed]
+        embeds: [embed],
     });
 
     await message.delete();
@@ -229,10 +249,12 @@ export const run: CommandFunction = async(_client, message, args, context) => {
             createdAt: new Date(),
             finishesAt: finishTime,
             reactions,
-            reactionMap
+            reactionMap,
         };
 
-        const additionalData = await AdditionalMessageData.fromMessage(pollMessage);
+        const additionalData = await AdditionalMessageData.fromMessage(
+            pollMessage,
+        );
         const newCustomData = additionalData.customData;
         newCustomData.delayedPollData = delayedPollData;
         additionalData.customData = newCustomData;
@@ -242,10 +264,10 @@ export const run: CommandFunction = async(_client, message, args, context) => {
     }
 };
 
-export const importPolls = async() => {
+export const importPolls = async () => {
     const additionalDatas = await AdditionalMessageData.findAll();
     let count = 0;
-    additionalDatas.forEach(additionalData => {
+    additionalDatas.forEach((additionalData) => {
         if (!additionalData.customData.delayedPollData) {
             return;
         }
@@ -261,8 +283,6 @@ export const importPolls = async() => {
  */
 export const startCron = (context: BotContext) => {
     log.info("Scheduling Poll Cronjob...");
-
-
 
     cron("* * * * *", async () => {
         const currentDate = new Date();
@@ -358,7 +378,6 @@ export const startCron = (context: BotContext) => {
             await messageData.save();
         }
     });
-
 };
 
 export const description = `Erstellt eine Umfrage mit mehreren Antwortmöglichkeiten (standardmäßig mit Mehrfachauswahl) (maximal ${OPTION_LIMIT}).
@@ -372,4 +391,3 @@ Optionen:
 \t\t\tStatt mehrerer Antworten kann nur eine Antwort gewählt werden
 \t-d <T>, --delayed <T>
 \t\t\tErgebnisse der Umfrage wird erst nach <T> Minuten angezeigt. (Noch) inkompatibel mit -e`;
-

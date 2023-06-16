@@ -1,4 +1,4 @@
-import type {  VoiceState } from "discord.js";
+import type { VoiceState } from "discord.js";
 import { BotContext } from "../context.js";
 import { getConfig } from "../utils/configHandler.js";
 import logger from "../utils/logger.js";
@@ -16,8 +16,14 @@ export class WoisData {
     static latestEvents: VoiceUpdateEvent[] = [];
 }
 
-export async function checkVoiceUpdate(oldState: VoiceState, newState: VoiceState, _botContext: BotContext) {
-    logger.debug(`Voice update detected: ${oldState.channelId} -> ${newState.channelId}`);
+export async function checkVoiceUpdate(
+    oldState: VoiceState,
+    newState: VoiceState,
+    _botContext: BotContext,
+) {
+    logger.debug(
+        `Voice update detected: ${oldState.channelId} -> ${newState.channelId}`,
+    );
 
     // User joined Channel
     if (oldState.channel === null && newState.channel !== null) {
@@ -25,7 +31,7 @@ export async function checkVoiceUpdate(oldState: VoiceState, newState: VoiceStat
             WoisData.latestEvents.push({
                 oldState,
                 newState,
-                createdAt: new Date()
+                createdAt: new Date(),
             });
         }
     }
@@ -37,7 +43,7 @@ export async function checkVoiceUpdate(oldState: VoiceState, newState: VoiceStat
             WoisData.latestEvents.push({
                 oldState,
                 newState,
-                createdAt: new Date()
+                createdAt: new Date(),
             });
         }
     }

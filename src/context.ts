@@ -1,8 +1,21 @@
 import path from "node:path";
-import { ChannelType, Client, Guild, Role, Snowflake, TextChannel, VoiceChannel } from "discord.js";
+import {
+    ChannelType,
+    Client,
+    Guild,
+    Role,
+    Snowflake,
+    TextChannel,
+    VoiceChannel,
+} from "discord.js";
 
 import { getConfig } from "./utils/configHandler.js";
-import { Config, ConfigTextChannelId, ConfigVoiceChannelId, ConfigRoleId } from "./types.js";
+import {
+    Config,
+    ConfigTextChannelId,
+    ConfigVoiceChannelId,
+    ConfigRoleId,
+} from "./types.js";
 import { RemoveOptionalSuffix, type RemoveSuffix } from "./utils/typeUtils.js";
 
 /**
@@ -22,11 +35,11 @@ export interface BotContext {
 
     commandConfig: {
         faulenzerPing: {
-            allowedRoleIds: Set<Snowflake>,
-            maxNumberOfPings: number,
-            minRequiredReactions: number
-        }
-    },
+            allowedRoleIds: Set<Snowflake>;
+            maxNumberOfPings: number;
+            minRequiredReactions: number;
+        };
+    };
 
     roles: Record<RemoveSuffix<ConfigRoleId, "_role_id">, Role>;
 
@@ -57,43 +70,74 @@ export interface BotContext {
 
 // #region Ensure Channels
 
-function ensureRole<T extends ConfigRoleId>(config: Config, guild: Guild, roleIdName: T): Role {
+function ensureRole<T extends ConfigRoleId>(
+    config: Config,
+    guild: Guild,
+    roleIdName: T,
+): Role {
     const roleId = config.ids[roleIdName];
     const role = guild.roles.cache.get(roleId);
 
-    if (!role) throw new Error(`Role "${roleIdName}" not found by id: "${roleId}" in guild "${guild.id}"`);
+    if (!role)
+        throw new Error(
+            `Role "${roleIdName}" not found by id: "${roleId}" in guild "${guild.id}"`,
+        );
 
     return role;
 }
-function ensureTextChannel<T extends ConfigTextChannelId>(config: Config, guild: Guild, channelIdName: T): TextChannel {
+function ensureTextChannel<T extends ConfigTextChannelId>(
+    config: Config,
+    guild: Guild,
+    channelIdName: T,
+): TextChannel {
     const channelId = config.ids[channelIdName];
 
     const channel = guild.channels.cache.get(channelId);
 
-    if (!channel) throw new Error(`Could not find main channel with id "${channelId}" on guild "${guild.id}"`);
-    if (channel.type !== ChannelType.GuildText) throw new Error(`Main channel is not a text channel. "${channel.id}" is "${channel.type}"`);
+    if (!channel)
+        throw new Error(
+            `Could not find main channel with id "${channelId}" on guild "${guild.id}"`,
+        );
+    if (channel.type !== ChannelType.GuildText)
+        throw new Error(
+            `Main channel is not a text channel. "${channel.id}" is "${channel.type}"`,
+        );
 
     return channel;
 }
-function ensureVoiceChannel<T extends ConfigVoiceChannelId>(config: Config, guild: Guild, channelIdName: T): VoiceChannel {
+function ensureVoiceChannel<T extends ConfigVoiceChannelId>(
+    config: Config,
+    guild: Guild,
+    channelIdName: T,
+): VoiceChannel {
     const channelId = config.ids[channelIdName];
 
     const channel = guild.channels.cache.get(channelId);
 
-    if (!channel) throw new Error(`Could not find main channel with id "${channelId}" on guild "${guild.id}"`);
-    if (channel.type !== ChannelType.GuildVoice) throw new Error(`Main channel is not a voice channel. "${channel.id}" is "${channel.type}"`);
+    if (!channel)
+        throw new Error(
+            `Could not find main channel with id "${channelId}" on guild "${guild.id}"`,
+        );
+    if (channel.type !== ChannelType.GuildVoice)
+        throw new Error(
+            `Main channel is not a voice channel. "${channel.id}" is "${channel.type}"`,
+        );
 
     return channel;
 }
 
 // #endregion
 
-export async function createBotContext(client: Client<true>): Promise<BotContext> {
+export async function createBotContext(
+    client: Client<true>,
+): Promise<BotContext> {
     const config = getConfig();
 
     const guild = client.guilds.cache.get(config.ids.guild_id);
     if (!guild) {
-        throw new Error(`Cannot find configured guild "${config.ids.guild_id}"`);
+        throw new Error(
+            `Cannot find configured guild "${config.ids.guild_id}"`,
+        );
     }
 
     return {
@@ -102,41 +146,57 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
         guild,
         prefix: {
             command: config.bot_settings.prefix.command_prefix,
-            modCommand: config.bot_settings.prefix.mod_prefix
+            modCommand: config.bot_settings.prefix.mod_prefix,
         },
         commandConfig: {
             faulenzerPing: {
-                allowedRoleIds: new Set(config.bot_settings.faulenzerping_allowed_role_ids),
-                maxNumberOfPings: Number(config.bot_settings.faulenzerping_max_number_of_pings ?? "10"),
-                minRequiredReactions: Number(config.bot_settings.faulenzerping_min_required_reactions ?? "5")
-            }
+                allowedRoleIds: new Set(
+                    config.bot_settings.faulenzerping_allowed_role_ids,
+                ),
+                maxNumberOfPings: Number(
+                    config.bot_settings.faulenzerping_max_number_of_pings ??
+                        "10",
+                ),
+                minRequiredReactions: Number(
+                    config.bot_settings.faulenzerping_min_required_reactions ??
+                        "5",
+                ),
+            },
         },
         roles: {
             // TODO: Make this prettier (splitting up the IDs by type in the config would make this much easier)
             banned: ensureRole(config, guild, "banned_role_id"),
             bday: ensureRole(config, guild, "bday_role_id"),
             bot_deny: ensureRole(config, guild, "bot_deny_role_id"),
-            "default": ensureRole(config, guild, "default_role_id"),
-            gruendervaeter_banned: ensureRole(config, guild, "gruendervaeter_banned_role_id"),
+            default: ensureRole(config, guild, "default_role_id"),
+            gruendervaeter_banned: ensureRole(
+                config,
+                guild,
+                "gruendervaeter_banned_role_id",
+            ),
             gruendervaeter: ensureRole(config, guild, "gruendervaeter_role_id"),
             shame: ensureRole(config, guild, "shame_role_id"),
             trusted_banned: ensureRole(config, guild, "trusted_banned_role_id"),
             trusted: ensureRole(config, guild, "trusted_role_id"),
             woisgang: ensureRole(config, guild, "woisgang_role_id"),
-            winner: ensureRole(config, guild, "winner_role_id")
+            winner: ensureRole(config, guild, "winner_role_id"),
         },
         textChannels: {
             banned: ensureTextChannel(config, guild, "banned_channel_id"),
             bot_log: ensureTextChannel(config, guild, "bot_log_channel_id"),
             hauptchat: ensureTextChannel(config, guild, "hauptchat_id"),
             votes: ensureTextChannel(config, guild, "votes_channel_id"),
-            bot_spam: ensureTextChannel(config, guild, "bot_spam_channel_id")
+            bot_spam: ensureTextChannel(config, guild, "bot_spam_channel_id"),
         },
         voiceChannels: {
-            haupt_woischat: ensureVoiceChannel(config, guild, "haupt_woischat_id")
+            haupt_woischat: ensureVoiceChannel(
+                config,
+                guild,
+                "haupt_woischat_id",
+            ),
         },
         rootDir: path.resolve(""),
         srcDir: path.resolve("built"),
-        databasePath: path.resolve("storage.db")
+        databasePath: path.resolve("storage.db"),
     };
 }

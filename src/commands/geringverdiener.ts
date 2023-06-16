@@ -1,4 +1,14 @@
-import { CacheType, Client, CommandInteraction, GuildMember, Message, EmbedBuilder, SlashCommandBuilder, SlashCommandStringOption, GuildEmojiManager } from "discord.js";
+import {
+    CacheType,
+    Client,
+    CommandInteraction,
+    GuildMember,
+    Message,
+    EmbedBuilder,
+    SlashCommandBuilder,
+    SlashCommandStringOption,
+    GuildEmojiManager,
+} from "discord.js";
 
 import { BotContext } from "../context.js";
 import { ApplicationCommand, MessageCommand } from "./command.js";
@@ -12,34 +22,49 @@ import type { ProcessableMessage } from "../handler/cmdHandler.js";
  *
  * Limitation: this does only work for emojis from this server.
  */
-const geringverdiener = (emojiManager: GuildEmojiManager, str: string): string => str.replace(/:([\w~]+):(?!\d+>)/gi, (_match, emojiName, _offset, wholeString) => {
-    const emote = emojiManager.cache.find(e => e.name === emojiName);
-    if (emote) {
-        return `${emote}`;
-    }
-    return wholeString;
-});
+const geringverdiener = (
+    emojiManager: GuildEmojiManager,
+    str: string,
+): string =>
+    str.replace(
+        /:([\w~]+):(?!\d+>)/gi,
+        (_match, emojiName, _offset, wholeString) => {
+            const emote = emojiManager.cache.find((e) => e.name === emojiName);
+            if (emote) {
+                return `${emote}`;
+            }
+            return wholeString;
+        },
+    );
 
 /**
  * build geringverdienered embed
  */
-const buildGeringverdiener = (emojiManager: GuildEmojiManager, author: GuildMember, toGeringverdiener: string) => {
+const buildGeringverdiener = (
+    emojiManager: GuildEmojiManager,
+    author: GuildMember,
+    toGeringverdiener: string,
+) => {
     return new EmbedBuilder()
         .setDescription(`${geringverdiener(emojiManager, toGeringverdiener)}`)
         .setColor(0x157989)
         .setAuthor({
             name: `Geringverdiener ${author.displayName}`,
-            iconURL: author.displayAvatarURL()
+            iconURL: author.displayAvatarURL(),
         })
         .setFooter({
             text: "für Geringverdiener ohne Discord Nitro",
-            iconURL: "https://cdn.discordapp.com/emojis/862373048388157451.webp?size=160&quality=lossless"
+            iconURL:
+                "https://cdn.discordapp.com/emojis/862373048388157451.webp?size=160&quality=lossless",
         });
 };
 
-export class GeringverdienerCommand implements MessageCommand, ApplicationCommand {
+export class GeringverdienerCommand
+    implements MessageCommand, ApplicationCommand
+{
     name = "geringverdiener";
-    description = "Erlaubt das nutzen von animierten Emojis dieses Servers für Geringverdiener ohne Discord Nitro.";
+    description =
+        "Erlaubt das nutzen von animierten Emojis dieses Servers für Geringverdiener ohne Discord Nitro.";
     applicationCommand = new SlashCommandBuilder()
         .setName(this.name)
         .setDescription(this.description)
@@ -47,10 +72,14 @@ export class GeringverdienerCommand implements MessageCommand, ApplicationComman
             new SlashCommandStringOption()
                 .setName("text")
                 .setDescription("Wat soll ich denn geringverdieneren")
-                .setRequired(true)
+                .setRequired(true),
         );
 
-    async handleInteraction(command: CommandInteraction<CacheType>, _client: Client<boolean>, _context: BotContext): Promise<void> {
+    async handleInteraction(
+        command: CommandInteraction<CacheType>,
+        _client: Client<boolean>,
+        _context: BotContext,
+    ): Promise<void> {
         if (!command.isChatInputCommand()) {
             // TODO: Solve this on a type level
             return;
@@ -66,19 +95,29 @@ export class GeringverdienerCommand implements MessageCommand, ApplicationComman
             throw new Error("Couldn't resolve guild member");
         }
 
-        const geringverdieneredEmbed = buildGeringverdiener(command.guild.emojis, author, text);
+        const geringverdieneredEmbed = buildGeringverdiener(
+            command.guild.emojis,
+            author,
+            text,
+        );
         await command.reply({
-            embeds: [geringverdieneredEmbed]
+            embeds: [geringverdieneredEmbed],
         });
     }
 
-    async handleMessage(message: ProcessableMessage, _client: Client<boolean>, context: BotContext): Promise<void> {
+    async handleMessage(
+        message: ProcessableMessage,
+        _client: Client<boolean>,
+        context: BotContext,
+    ): Promise<void> {
         const author = message.guild.members.resolve(message.author);
         const { channel } = message;
 
         const refId = message.reference?.messageId;
         const isReply = refId !== undefined;
-        let content = message.content.slice(`${context.prefix.command}${this.name} `.length);
+        let content = message.content.slice(
+            `${context.prefix.command}${this.name} `.length,
+        );
         const hasContent = !!content && content.trim().length > 0;
 
         if (!author) {
@@ -86,7 +125,9 @@ export class GeringverdienerCommand implements MessageCommand, ApplicationComman
         }
 
         if (!isReply && !hasContent) {
-            await message.channel.send("Brudi da ist nix, was ich geringverdieneren kann");
+            await message.channel.send(
+                "Brudi da ist nix, was ich geringverdieneren kann",
+            );
             return;
         }
 
@@ -94,7 +135,6 @@ export class GeringverdienerCommand implements MessageCommand, ApplicationComman
         if (isReply) {
             replyMessage = await message.channel.messages.fetch(refId);
             if (!hasContent) {
-
                 content = replyMessage.content;
             }
 
@@ -110,8 +150,7 @@ export class GeringverdienerCommand implements MessageCommand, ApplicationComman
                 }),
                 message.delete(),
             ]);
-        }
-        else {
+        } else {
             const geringverdieneredEmbed = buildGeringverdiener(
                 message.guild.emojis,
                 author,
@@ -120,9 +159,9 @@ export class GeringverdienerCommand implements MessageCommand, ApplicationComman
 
             await Promise.all([
                 channel.send({
-                    embeds: [geringverdieneredEmbed]
+                    embeds: [geringverdieneredEmbed],
                 }),
-                message.delete()
+                message.delete(),
             ]);
         }
     }

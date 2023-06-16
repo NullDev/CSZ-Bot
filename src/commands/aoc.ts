@@ -3,11 +3,11 @@ import {
     Client,
     CommandInteraction,
     SlashCommandBuilder,
-    SlashCommandStringOption
+    SlashCommandStringOption,
 } from "discord.js";
 
 import { BotContext } from "../context.js";
-import { ApplicationCommand} from "./command.js";
+import { ApplicationCommand } from "./command.js";
 import * as path from "node:path";
 import * as fs from "node:fs";
 
@@ -49,17 +49,17 @@ type LeaderBoard = {
 };
 
 const aocConfig = JSON.parse(
-    fs.readFileSync(aocConfigPath, "utf8")
+    fs.readFileSync(aocConfigPath, "utf8"),
 ) as AoCConfig;
 const medals = ["🥇", "🥈", "🥉", "🪙", "🏵️", "🌹"];
 
 const getLanguage = (
     member: AoCMember,
-    userMap: Record<string, UserMapEntry>
+    userMap: Record<string, UserMapEntry>,
 ): string => {
     const language = userMap[member.id]?.language ?? "n/a";
     log.debug(
-        `[AoC] Resolved language ${language} for member with id ${member.id}`
+        `[AoC] Resolved language ${language} for member with id ${member.id}`,
     );
     return language;
 };
@@ -67,7 +67,7 @@ const getLanguage = (
 const getNameString = (
     member: AoCMember,
     userMap: Record<string, UserMapEntry>,
-    includeLanguage: boolean
+    includeLanguage: boolean,
 ): string => {
     const convertedName =
         userMap[member.id]?.displayName ??
@@ -76,12 +76,12 @@ const getNameString = (
     if (includeLanguage) {
         const language = getLanguage(member, userMap);
         log.debug(
-            `[AoC] Resolved ${convertedName} with language ${language} for member with id ${member.id}`
+            `[AoC] Resolved ${convertedName} with language ${language} for member with id ${member.id}`,
         );
         return `${convertedName} [${language}]`;
     }
     log.debug(
-        `[AoC] Resolved ${convertedName} for member with id ${member.id}`
+        `[AoC] Resolved ${convertedName} for member with id ${member.id}`,
     );
     return convertedName;
 };
@@ -89,7 +89,7 @@ const getNameString = (
 const createEmbedFromLeaderBoard = (
     userMap: Record<string, UserMapEntry>,
     lb: LeaderBoard,
-    order: "stars" | "local_score" | "global_score"
+    order: "stars" | "local_score" | "global_score",
 ) => {
     log.info("[AoC] Creating Embed from leaderboard...");
 
@@ -99,9 +99,9 @@ const createEmbedFromLeaderBoard = (
         name: `${medals[i]} ${i + 1}. ${getNameString(m, userMap, false)}`,
         value: `⭐ ${m.stars}\n🏆 ${m.local_score}\n🌐 ${getLanguage(
             m,
-            userMap
+            userMap,
         )}`,
-        inline: true
+        inline: true,
     }));
 
     log.info(`[AoC] Created Fields for the first ${top.length} Members`);
@@ -115,37 +115,37 @@ const createEmbedFromLeaderBoard = (
                     `${top.length + i + 1}. ${getNameString(
                         m,
                         userMap,
-                        true
-                    )} (Stars: ${m.stars} / Local Score: ${m.local_score})`
+                        true,
+                    )} (Stars: ${m.stars} / Local Score: ${m.local_score})`,
             )
             .join("\n"),
-        inline: false
+        inline: false,
     };
 
     log.info(
         `[AoC] Created Fields for the butom ${
             members.length - top.length
-        } Members`
+        } Members`,
     );
 
     return {
         title: "AoC Leaderboard",
         description: "Aktuelle Platzierungen in der CSZ",
         author: {
-            name: "AoC-Shitpost-Bot"
+            name: "AoC-Shitpost-Bot",
         },
         color: 0x009900,
         createdAt: new Date(),
-        fields: [...top, noobs]
+        fields: [...top, noobs],
     };
 };
 
-const getLeaderBoard = async(): Promise<LeaderBoard> => {
+const getLeaderBoard = async (): Promise<LeaderBoard> => {
     const leaderBoard = (await fetch(aocConfig.leaderBoardJsonUrl, {
         headers: {
-            Cookie: `session=${aocConfig.sessionToken}`
-        }
-    }).then(r => r.json())) as LeaderBoard;
+            Cookie: `session=${aocConfig.sessionToken}`,
+        },
+    }).then((r) => r.json())) as LeaderBoard;
     return leaderBoard;
 };
 
@@ -154,7 +154,7 @@ export class AoCHandler {
 
     async publishLeaderBoard() {
         const targetChannel = this.context.guild.channels.cache.get(
-            aocConfig.targetChannelId
+            aocConfig.targetChannelId,
         );
         if (!targetChannel) {
             log.error(`Target channel ${aocConfig.targetChannelId} not found`);
@@ -166,7 +166,7 @@ export class AoCHandler {
         const embed = createEmbedFromLeaderBoard(
             aocConfig.userMap,
             leaderBoard,
-            "local_score"
+            "local_score",
         );
         return channel.send({ embeds: [embed] });
     }
@@ -185,24 +185,24 @@ export class AoCCommand implements ApplicationCommand {
                 .addChoices(
                     {
                         name: "Stars",
-                        value: "stars"
+                        value: "stars",
                     },
                     {
                         name: "Local Score",
-                        value: "local_score"
+                        value: "local_score",
                     },
                     {
                         name: "Global Score",
-                        value: "global_score"
-                    }
+                        value: "global_score",
+                    },
                 )
-                .setRequired(false)
+                .setRequired(false),
         );
 
     async handleInteraction(
         command: CommandInteraction<CacheType>,
         _client: Client<boolean>,
-        _context: BotContext
+        _context: BotContext,
     ): Promise<void> {
         if (!command.isChatInputCommand()) {
             // TODO: Solve this on a type level
@@ -213,14 +213,19 @@ export class AoCCommand implements ApplicationCommand {
         if (!channel?.isTextBased()) {
             await command.reply({
                 content: "Mach mal nicht hier",
-                ephemeral: true
+                ephemeral: true,
             });
             return;
         }
 
-        const order = command.options.getString("order", false) ?? "local_score";
+        const order =
+            command.options.getString("order", false) ?? "local_score";
 
-        if (order !== "stars" && order !== "local_score" && order !== "global_score") {
+        if (
+            order !== "stars" &&
+            order !== "local_score" &&
+            order !== "global_score"
+        ) {
             // Shouldn't happen unless we change the command
             throw new Error(`Invalid order ${order}`);
         }
@@ -229,7 +234,7 @@ export class AoCCommand implements ApplicationCommand {
         const embed = createEmbedFromLeaderBoard(
             aocConfig.userMap,
             leaderBoard,
-            order
+            order,
         );
         await command.reply({ embeds: [embed] });
     }

@@ -1,6 +1,5 @@
 /* Disabled due to sequelize's DataTypes */
 
-
 import { User } from "discord.js";
 import moment from "moment";
 import { Model, DataTypes, Sequelize, Optional, Op } from "sequelize";
@@ -14,9 +13,12 @@ export interface BoobAttributes {
     size: number;
 }
 
-export type BoobCreationAttributes = Optional<BoobAttributes, "id">
+export type BoobCreationAttributes = Optional<BoobAttributes, "id">;
 
-export default class Boob extends Model<BoobAttributes, BoobCreationAttributes> implements BoobAttributes {
+export default class Boob
+    extends Model<BoobAttributes, BoobCreationAttributes>
+    implements BoobAttributes
+{
     declare id: string;
     declare userId: string;
     declare measuredAt: Date;
@@ -25,19 +27,19 @@ export default class Boob extends Model<BoobAttributes, BoobCreationAttributes> 
     declare readonly createdAt: Date;
     declare readonly updatedAt: Date;
 
-    static getAverageBoobSizes = async(): Promise<Record<string, number>> => {
+    static getAverageBoobSizes = async (): Promise<Record<string, number>> => {
         // Everything hacky, but I just want to implement it.
         const averageObj: Record<string, number> = {};
         // @ts-ignore
-        const result: ({ id: string, avgSize: number })[] = (await Boob.findAll({
+        const result: { id: string; avgSize: number }[] = await Boob.findAll({
             attributes: [
                 "id",
-                [Sequelize.fn("AVG", Sequelize.col("size")), "avgSize"]
+                [Sequelize.fn("AVG", Sequelize.col("size")), "avgSize"],
             ],
-            group: [ "id" ]
-        }));
+            group: ["id"],
+        });
 
-        for(const res of result) {
+        for (const res of result) {
             averageObj[res.id] = res.avgSize;
         }
 
@@ -53,10 +55,10 @@ export default class Boob extends Model<BoobAttributes, BoobCreationAttributes> 
                 measuredAt: {
                     [Op.and]: {
                         [Op.gte]: startToday.toDate(),
-                        [Op.lt]: startTomorrow.toDate()
-                    }
-                }
-            }
+                        [Op.lt]: startTomorrow.toDate(),
+                    },
+                },
+            },
         });
     };
 
@@ -70,54 +72,63 @@ export default class Boob extends Model<BoobAttributes, BoobCreationAttributes> 
                 measuredAt: {
                     [Op.and]: {
                         [Op.gte]: startToday.toDate(),
-                        [Op.lt]: startTomorrow.toDate()
-                    }
-                }
-            }
+                        [Op.lt]: startTomorrow.toDate(),
+                    },
+                },
+            },
         });
     };
 
-    static insertMeasurement = (user: User, size: number, measuredAt: Date = new Date()): Promise<Boob> => {
-        log.debug(`Saving Boob Measurement for user ${user.id} with size ${size} from ${measuredAt}`);
+    static insertMeasurement = (
+        user: User,
+        size: number,
+        measuredAt: Date = new Date(),
+    ): Promise<Boob> => {
+        log.debug(
+            `Saving Boob Measurement for user ${user.id} with size ${size} from ${measuredAt}`,
+        );
         return Boob.create({
             userId: user.id,
             measuredAt,
-            size
+            size,
         });
     };
 
     static initialize(sequelize: Sequelize) {
-        this.init({
-            id: {
-                type: DataTypes.STRING(36),
-                defaultValue: () => crypto.randomUUID(),
-                primaryKey: true
+        this.init(
+            {
+                id: {
+                    type: DataTypes.STRING(36),
+                    defaultValue: () => crypto.randomUUID(),
+                    primaryKey: true,
+                },
+                userId: {
+                    type: DataTypes.STRING(32),
+                    allowNull: false,
+                },
+                measuredAt: {
+                    type: DataTypes.DATE,
+                    allowNull: true,
+                },
+                size: {
+                    type: DataTypes.INTEGER,
+                    allowNull: false,
+                },
             },
-            userId: {
-                type: DataTypes.STRING(32),
-                allowNull: false
+            {
+                sequelize,
+                indexes: [
+                    {
+                        using: "BTREE",
+                        fields: [
+                            {
+                                name: "measuredAt",
+                                order: "ASC",
+                            },
+                        ],
+                    },
+                ],
             },
-            measuredAt: {
-                type: DataTypes.DATE,
-                allowNull: true
-            },
-            size: {
-                type: DataTypes.INTEGER,
-                allowNull: false
-            }
-        }, {
-            sequelize,
-            indexes: [
-                {
-                    using: "BTREE",
-                    fields: [
-                        {
-                            name: "measuredAt",
-                            order: "ASC"
-                        }
-                    ]
-                }
-            ]
-        });
+        );
     }
 }

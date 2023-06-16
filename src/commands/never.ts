@@ -1,5 +1,14 @@
 import fetch from "node-fetch";
-import { CacheType, CommandInteraction, Client, Message, EmbedBuilder, GuildMember, SlashCommandBuilder, SlashCommandStringOption } from "discord.js";
+import {
+    CacheType,
+    CommandInteraction,
+    Client,
+    Message,
+    EmbedBuilder,
+    GuildMember,
+    SlashCommandBuilder,
+    SlashCommandStringOption,
+} from "discord.js";
 
 import { ApplicationCommand, MessageCommand } from "./command.js";
 import type { ProcessableMessage } from "../handler/cmdHandler.js";
@@ -8,22 +17,23 @@ import type { BotContext } from "../context.js";
 type Prompt = string;
 
 interface NeverPrompt {
-    prompt: Prompt,
-    level?: number
+    prompt: Prompt;
+    level?: number;
 }
 
-const NEVER_EVER_RANDOM_PROMPT_API_URL = "https://thepartyapp.xyz/api/games/neverever/getRandomPrompt";
+const NEVER_EVER_RANDOM_PROMPT_API_URL =
+    "https://thepartyapp.xyz/api/games/neverever/getRandomPrompt";
 const QUESTION_LEVEL_EMOJI_MAP: Record<number, string> = {
     0: "👶",
     1: "🍆",
-    2: "🍆"
+    2: "🍆",
 };
 
 async function getPrompt(userPrompt: Prompt | null): Promise<NeverPrompt> {
     if (userPrompt !== null && userPrompt.length > 0) {
         return {
             prompt: userPrompt,
-            level: undefined
+            level: undefined,
         };
     }
 
@@ -31,28 +41,31 @@ async function getPrompt(userPrompt: Prompt | null): Promise<NeverPrompt> {
     // 0 = kids, 1 = 18+
     // by default (undefined) it is not filtering and gives you *any* prompt
     const promptResponse = await fetch(NEVER_EVER_RANDOM_PROMPT_API_URL, {
-        method: "GET"
+        method: "GET",
     });
     return promptResponse.json() as unknown as NeverPrompt;
 }
 
 function buildEmbed(prompt: NeverPrompt, author: GuildMember) {
-    const emoji = prompt.level !== undefined ? QUESTION_LEVEL_EMOJI_MAP[prompt.level] : "👀";
+    const emoji =
+        prompt.level !== undefined
+            ? QUESTION_LEVEL_EMOJI_MAP[prompt.level]
+            : "👀";
     return new EmbedBuilder()
         .setTitle(prompt.prompt)
         .setColor(0x2ecc71)
         .setAuthor({
             name: `${author.displayName} ${emoji}`,
-            iconURL: author.displayAvatarURL()
+            iconURL: author.displayAvatarURL(),
         })
         .setFooter({
-            text: "🍻: Hab ich schon, 🚱: Hab ich noch nie"
+            text: "🍻: Hab ich schon, 🚱: Hab ich noch nie",
         });
 }
 
 export class NeverCommand implements ApplicationCommand, MessageCommand {
     name = "never";
-    description = "Stellt eine \"ich hab noch nie\" Frage";
+    description = 'Stellt eine "ich hab noch nie" Frage';
     applicationCommand = new SlashCommandBuilder()
         .setName(this.name)
         .setDescription(this.description)
@@ -60,10 +73,12 @@ export class NeverCommand implements ApplicationCommand, MessageCommand {
             new SlashCommandStringOption()
                 .setName("prompt")
                 .setDescription("Wat haste denn noch nie?")
-                .setRequired(false)
+                .setRequired(false),
         );
 
-    async handleInteraction(command: CommandInteraction<CacheType>): Promise<void> {
+    async handleInteraction(
+        command: CommandInteraction<CacheType>,
+    ): Promise<void> {
         if (!command.isChatInputCommand()) {
             // TODO: Solve this on a type level
             return;
@@ -80,19 +95,22 @@ export class NeverCommand implements ApplicationCommand, MessageCommand {
         const embed = buildEmbed(prompt, author);
         const sentReply = await command.reply({
             fetchReply: true,
-            embeds: [embed]
+            embeds: [embed],
         });
-        const sentMessage = (sentReply) as Message<boolean>;
-        await Promise.all([
-            sentMessage.react("🍻"),
-            sentMessage.react("🚱")
-        ]);
+        const sentMessage = sentReply as Message<boolean>;
+        await Promise.all([sentMessage.react("🍻"), sentMessage.react("🚱")]);
     }
 
-    async handleMessage(message: ProcessableMessage, _client: Client<boolean>, context: BotContext): Promise<void> {
+    async handleMessage(
+        message: ProcessableMessage,
+        _client: Client<boolean>,
+        context: BotContext,
+    ): Promise<void> {
         const { channel } = message;
         const author = message.guild?.members.resolve(message.author);
-        const customInput = message.content.slice(`${context.prefix.command}mock `.length);
+        const customInput = message.content.slice(
+            `${context.prefix.command}mock `.length,
+        );
 
         if (!author) {
             throw new Error("Couldn't resolve guild member");
@@ -101,11 +119,8 @@ export class NeverCommand implements ApplicationCommand, MessageCommand {
         const prompt = await getPrompt(customInput);
         const embed = buildEmbed(prompt, author);
         const sentMessage = await channel.send({
-            embeds: [embed]
+            embeds: [embed],
         });
-        await Promise.all([
-            sentMessage.react("🍻"),
-            sentMessage.react("🚱")
-        ]);
+        await Promise.all([sentMessage.react("🍻"), sentMessage.react("🚱")]);
     }
 }

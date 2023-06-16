@@ -11,14 +11,10 @@
         },
         "moderator_id": "",
         "ban_reason_channel_id": "624931933758947343",
-        "moderator_roles": [
-            "Moderator"
-        ],
+        "moderator_roles": ["Moderator"],
         "woisping_limit": 7200,
         "woisping_threshold": 2,
-        "faulenzerping_allowed_role_ids": [
-
-        ],
+        "faulenzerping_allowed_role_ids": [],
         "faulenzerping_max_pings": 10,
         "faulenzerping_min_required_reactions": 5,
         "flame_trusted_user_on_bot_ping": false,
@@ -33,9 +29,7 @@
             "default_target_channel_id": ""
         }
     },
-    "saufen_files": [
-
-    ],
+    "saufen_files": [],
     "ids": {
         "guild_id": "",
         "hauptchat_id": "",

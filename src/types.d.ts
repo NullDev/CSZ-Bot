@@ -1,4 +1,3 @@
-
 import type { Snowflake, Client } from "discord.js";
 
 import type { BotContext } from "./context.js";
@@ -13,14 +12,14 @@ export type CommandFunction = (
     client: Client,
     message: ProcessableMessage,
     args: Array<string>,
-    context: BotContext
+    context: BotContext,
 ) => Promise<CommandResult>;
 
 export type ReactionHandler = (
     reactionEvent: MessageReaction,
     user: User,
     context: BotContext,
-    removal: boolean
+    removal: boolean,
 ) => Promise<void>;
 
 export type Mutable<T> = { -readonly [P in keyof T]: T[P] };
@@ -107,7 +106,6 @@ export interface Config {
     };
     ids: Record<ConfigIdKey, Snowflake>;
 }
-
 
 export type JsonValue =
     | JsonObject

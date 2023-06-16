@@ -1,6 +1,5 @@
 /* Disabled due to sequelize's DataTypes */
 
-
 import { Model, DataTypes, type Sequelize } from "sequelize";
 import type { Snowflake } from "discord.js";
 
@@ -22,7 +21,8 @@ export default class FadingMessage extends Model {
      */
     startFadingMessage(message: ProcessableMessage, deleteInMs: number) {
         this.beginTime = this.beginTime || new Date();
-        this.endTime = this.endTime || new Date(this.beginTime.valueOf() + deleteInMs);
+        this.endTime =
+            this.endTime || new Date(this.beginTime.valueOf() + deleteInMs);
         this.messageId = message.id;
         this.channelId = message.channel.id;
         this.guildId = message.guild.id;
@@ -35,38 +35,44 @@ export default class FadingMessage extends Model {
      * @param {number} deleteInMs The time in milliseconds when the message should be deleted
      * @returns {Promise<this>}
      */
-    static async newFadingMessage(message: ProcessableMessage, deleteInMs: number) {
+    static async newFadingMessage(
+        message: ProcessableMessage,
+        deleteInMs: number,
+    ) {
         const fadingMessage = await FadingMessage.create();
         await fadingMessage.startFadingMessage(message, deleteInMs);
     }
 
     static initialize(sequelize: Sequelize) {
-        this.init({
-            id: {
-                type: DataTypes.STRING(36),
-                defaultValue: () => crypto.randomUUID(),
-                primaryKey: true
+        this.init(
+            {
+                id: {
+                    type: DataTypes.STRING(36),
+                    defaultValue: () => crypto.randomUUID(),
+                    primaryKey: true,
+                },
+                messageId: {
+                    type: DataTypes.STRING(32), // Brudi discord nimmt hier einfach die Unix Time MS, was ist mit denen eigentlich
+                    allowNull: true,
+                },
+                channelId: {
+                    type: DataTypes.STRING(32),
+                    allowNull: true,
+                },
+                guildId: {
+                    type: DataTypes.STRING(32),
+                    allowNull: true,
+                },
+                beginTime: {
+                    type: DataTypes.DATE,
+                    allowNull: true,
+                },
+                endTime: {
+                    type: DataTypes.DATE,
+                    allowNull: true,
+                },
             },
-            messageId: {
-                type: DataTypes.STRING(32), // Brudi discord nimmt hier einfach die Unix Time MS, was ist mit denen eigentlich
-                allowNull: true
-            },
-            channelId: {
-                type: DataTypes.STRING(32),
-                allowNull: true
-            },
-            guildId: {
-                type: DataTypes.STRING(32),
-                allowNull: true
-            },
-            beginTime: {
-                type: DataTypes.DATE,
-                allowNull: true
-            },
-            endTime: {
-                type: DataTypes.DATE,
-                allowNull: true
-            }
-        }, { sequelize });
+            { sequelize },
+        );
     }
 }

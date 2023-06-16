@@ -5,14 +5,13 @@ import type { CommandFunction } from "../types.js";
 
 const config = getConfig();
 
-
 /**
  * Creates a pseudo randomly generated number
  * @param {number} min
  * @param {number} max
  * @returns {number} A pseudo randomly generated number
  */
-const pseudoRng = function(min: number, max: number): number {
+const pseudoRng = function (min: number, max: number): number {
     return Math.floor(Math.random() * max + min);
 };
 
@@ -24,12 +23,20 @@ const pseudoRng = function(min: number, max: number): number {
  *
  * @returns the error string
  */
-const checkParams = function(amount: number, sides: number): string | undefined {
+const checkParams = function (
+    amount: number,
+    sides: number,
+): string | undefined {
     if (!Number.isSafeInteger(amount) || !Number.isSafeInteger(sides)) {
         return "Bruder nimm ma bitte nur natürliche Zahlen (>0).";
     }
 
-    if (amount <= 0 || sides <= 0 || Number.isNaN(amount) || Number.isNaN(sides)) {
+    if (
+        amount <= 0 ||
+        sides <= 0 ||
+        Number.isNaN(amount) ||
+        Number.isNaN(sides)
+    ) {
         return "Du brauchst schon ein valides Argument...";
     }
 
@@ -52,7 +59,7 @@ const checkParams = function(amount: number, sides: number): string | undefined 
  *
  * @returns diceResult of the thrown dice
  */
-const diceResult = function(diceAmount: number, diceSides: number): number[] {
+const diceResult = function (diceAmount: number, diceSides: number): number[] {
     const res = [];
     for (let i = 0; i < diceAmount; ++i) {
         res.push(pseudoRng(1, diceSides));
@@ -68,7 +75,7 @@ const diceResult = function(diceAmount: number, diceSides: number): number[] {
  *
  * @returns {string} the constructed result
  */
-const constructResultStr = function(rolls: readonly number[]): string {
+const constructResultStr = function (rolls: readonly number[]): string {
     let res = "";
 
     for (let i = 0; i < rolls.length; ++i) {
@@ -81,7 +88,7 @@ const constructResultStr = function(rolls: readonly number[]): string {
 /**
  * Creates a dice throw (sequqnce)
  */
-export const run: CommandFunction = async(_client, message, args) => {
+export const run: CommandFunction = async (_client, message, args) => {
     let parsed = args[0]?.toLowerCase();
 
     // god i hate myself
@@ -105,14 +112,14 @@ export const run: CommandFunction = async(_client, message, args) => {
         timestamp: new Date().toISOString(),
         author: {
             name: `Würfel Resultat für ${message.author.username}`,
-            icon_url: message.author.displayAvatarURL()
+            icon_url: message.author.displayAvatarURL(),
         },
         color: pseudoRng(0, maxHexCol),
-        description: constructResultStr(diceResult(amount, sides))
+        description: constructResultStr(diceResult(amount, sides)),
     };
 
     await message.channel.send({
-        embeds: [embed]
+        embeds: [embed],
     });
     await message.delete();
 };

@@ -4,13 +4,14 @@ import instagramUrl from "instagram-url-direct";
 
 import { SpecialCommand, CommandResult } from "../command.js";
 
-
 const instagramOptions = {
-    uriPattern: /(?<uri>https?:\/\/(www\.)?instagram\.com\/(?:reel|tv|p)\/.*)\/.*/i,
+    uriPattern:
+        /(?<uri>https?:\/\/(www\.)?instagram\.com\/(?:reel|tv|p)\/.*)\/.*/i,
     headers: {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.5005.124 Safari/537.36 Edg/102.0.1245.44",
-        Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9"
-    }
+        "User-Agent":
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.5005.124 Safari/537.36 Edg/102.0.1245.44",
+        Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+    },
 } as const;
 
 export class InstagramLink implements SpecialCommand {
@@ -38,10 +39,12 @@ export class InstagramLink implements SpecialCommand {
 
         await message.reply({
             content: "Dein Dreckspost du Hund:",
-            files: [{
-                attachment: mediaUri,
-                name: "Drecksvideo.mp4"
-            }]
+            files: [
+                {
+                    attachment: mediaUri,
+                    name: "Drecksvideo.mp4",
+                },
+            ],
         });
         await message.suppressEmbeds(true);
     }

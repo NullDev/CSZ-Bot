@@ -1,6 +1,5 @@
 /* Disabled due to sequelize's DataTypes */
 
-
 import { Model, DataTypes, Op, type Sequelize } from "sequelize";
 import type { Snowflake } from "discord.js";
 
@@ -8,10 +7,7 @@ import log from "../../utils/logger.js";
 
 export type OneBasedMonth = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
 export function isOneBasedMonth(v: unknown): v is OneBasedMonth {
-    return typeof v === "number"
-    && Number.isInteger(v)
-    && v >= 1
-    && v <= 12;
+    return typeof v === "number" && Number.isInteger(v) && v >= 1 && v <= 12;
 }
 
 export default class Birthday extends Model {
@@ -20,27 +16,34 @@ export default class Birthday extends Model {
     declare day: number;
     declare month: OneBasedMonth;
 
-    static async insertBirthday(userId: Snowflake, day: number, month: OneBasedMonth) {
+    static async insertBirthday(
+        userId: Snowflake,
+        day: number,
+        month: OneBasedMonth,
+    ) {
         const isoBirthdayStr = `${month.toString().padStart(2, "0")}-${day
             .toString()
             .padStart(2, "0")}`;
 
-        log.debug(`Inserting Birthday for user ${userId} on YYYY-${isoBirthdayStr} (YYYY-MM-DD)`);
+        log.debug(
+            `Inserting Birthday for user ${userId} on YYYY-${isoBirthdayStr} (YYYY-MM-DD)`,
+        );
 
         const item = await Birthday.getBirthday(userId);
 
-        if(item !== null) throw new Error("Birthday for this user already exists");
+        if (item !== null)
+            throw new Error("Birthday for this user already exists");
 
         return Birthday.create({
             userId,
             day,
-            month
+            month,
         });
     }
 
     static async getBirthday(userId: Snowflake) {
         return Birthday.findOne({
-            where: { userId }
+            where: { userId },
         });
     }
 
@@ -50,47 +53,49 @@ export default class Birthday extends Model {
         return Birthday.findAll({
             where: {
                 day: {
-                    [Op.eq]: today.getDate()
+                    [Op.eq]: today.getDate(),
                 },
                 month: {
-                    [Op.eq]: zeroBasedMonth + 1
-                }
-            }
+                    [Op.eq]: zeroBasedMonth + 1,
+                },
+            },
         });
     }
 
     static initialize(sequelize: Sequelize) {
-        this.init({
-            id: {
-                type: DataTypes.STRING(36),
-                defaultValue: () => crypto.randomUUID(),
-                primaryKey: true
+        this.init(
+            {
+                id: {
+                    type: DataTypes.STRING(36),
+                    defaultValue: () => crypto.randomUUID(),
+                    primaryKey: true,
+                },
+                userId: {
+                    type: DataTypes.STRING(32),
+                    allowNull: false,
+                    unique: true,
+                },
+                day: {
+                    type: DataTypes.INTEGER,
+                    allowNull: false,
+                    validate: {
+                        min: 1,
+                        max: 31,
+                    },
+                },
+                month: {
+                    type: DataTypes.INTEGER,
+                    allowNull: false,
+                    validate: {
+                        min: 1,
+                        max: 12,
+                    },
+                },
             },
-            userId: {
-                type: DataTypes.STRING(32),
-                allowNull: false,
-                unique: true
+            {
+                sequelize,
+                modelName: "Birthday",
             },
-            day: {
-                type: DataTypes.INTEGER,
-                allowNull: false,
-                validate: {
-                    min: 1,
-                    max: 31
-                }
-            },
-            month: {
-                type: DataTypes.INTEGER,
-                allowNull: false,
-                validate: {
-                    min: 1,
-                    max: 12
-                }
-            }
-        },
-        {
-            sequelize,
-            modelName: "Birthday"
-        });
+        );
     }
 }

@@ -1,6 +1,5 @@
 /* Disabled due to sequelize's DataTypes */
 
-
 import { Model, DataTypes, type Sequelize } from "sequelize";
 import type { Snowflake } from "discord.js";
 
@@ -14,8 +13,8 @@ export default class GuildRagequit extends Model {
         const data = await GuildRagequit.findOne({
             where: {
                 guildId,
-                userId
-            }
+                userId,
+            },
         });
 
         return data?.numRagequits ?? 0;
@@ -30,15 +29,15 @@ export default class GuildRagequit extends Model {
         const data = await GuildRagequit.findOne({
             where: {
                 guildId,
-                userId
-            }
+                userId,
+            },
         });
 
         if (!data) {
             await GuildRagequit.create({
                 guildId,
                 userId,
-                numRagequits: 1
+                numRagequits: 1,
             });
             return;
         }
@@ -48,33 +47,36 @@ export default class GuildRagequit extends Model {
     }
 
     static initialize(sequelize: Sequelize) {
-        this.init({
-            id: {
-                type: DataTypes.STRING(36),
-                defaultValue: () => crypto.randomUUID(),
-                primaryKey: true
+        this.init(
+            {
+                id: {
+                    type: DataTypes.STRING(36),
+                    defaultValue: () => crypto.randomUUID(),
+                    primaryKey: true,
+                },
+                guildId: {
+                    type: DataTypes.STRING(32),
+                    allowNull: false,
+                },
+                userId: {
+                    type: DataTypes.STRING(32),
+                    allowNull: false,
+                },
+                numRagequits: {
+                    type: DataTypes.INTEGER(),
+                    defaultValue: 0,
+                    allowNull: false,
+                },
             },
-            guildId: {
-                type: DataTypes.STRING(32),
-                allowNull: false
+            {
+                sequelize,
+                indexes: [
+                    {
+                        unique: true,
+                        fields: ["guildId", "userId"],
+                    },
+                ],
             },
-            userId: {
-                type: DataTypes.STRING(32),
-                allowNull: false
-            },
-            numRagequits: {
-                type: DataTypes.INTEGER(),
-                defaultValue: 0,
-                allowNull: false
-            }
-        }, {
-            sequelize,
-            indexes: [
-                {
-                    unique: true,
-                    fields: ["guildId", "userId"]
-                }
-            ]
-        });
+        );
     }
 }

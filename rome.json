@@ -1,21 +1,21 @@
 {
-  "$schema": "https://docs.rome.tools/schemas/12.1.0/schema.json",
-  "organizeImports": {
-    "enabled": false
-  },
-  "formatter": {
-    "enabled": true,
-    "indentSize": 4,
-    "indentStyle": "space"
-  },
-  "vcs": {
-    "enabled": true,
-    "clientKind": "git"
-  },
-  "linter": {
-    "enabled": true,
-    "rules": {
-      "recommended": true
+    "$schema": "https://docs.rome.tools/schemas/12.1.0/schema.json",
+    "organizeImports": {
+        "enabled": false
+    },
+    "formatter": {
+        "enabled": true,
+        "indentSize": 4,
+        "indentStyle": "space"
+    },
+    "vcs": {
+        "enabled": true,
+        "clientKind": "git"
+    },
+    "linter": {
+        "enabled": true,
+        "rules": {
+            "recommended": true
+        }
     }
-  }
 }

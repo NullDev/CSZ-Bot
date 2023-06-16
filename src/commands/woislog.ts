@@ -4,7 +4,6 @@ import { WoisData } from "../handler/voiceStateUpdateHandler.js";
 import { ApplicationCommand, CommandResult } from "./command.js";
 import { BotContext } from "../context.js";
 
-
 export class WoisLog implements ApplicationCommand {
     name = "woislog";
     description = "Zeigt die letzen Aktivitäten im Woischat an";
@@ -15,17 +14,24 @@ export class WoisLog implements ApplicationCommand {
             .setDescription(this.description);
     }
 
-    async handleInteraction(command: CommandInteraction, _client: Client, _context: BotContext): Promise<CommandResult> {
-        const latestEvents = WoisData.latestEvents.filter(event => {
+    async handleInteraction(
+        command: CommandInteraction,
+        _client: Client,
+        _context: BotContext,
+    ): Promise<CommandResult> {
+        const latestEvents = WoisData.latestEvents.filter((event) => {
             return event.createdAt.getTime() > Date.now() - 2 * 60 * 1000;
         });
 
         if (latestEvents.length === 0) {
-            await command.reply({ content: "Es gab keine Aktivitäten in den letzten 2 Minuten", ephemeral: true });
+            await command.reply({
+                content: "Es gab keine Aktivitäten in den letzten 2 Minuten",
+                ephemeral: true,
+            });
             return;
         }
 
-        const latestEventsString = latestEvents.map(event => {
+        const latestEventsString = latestEvents.map((event) => {
             const { oldState, newState, createdAt } = event;
             const oldChannel = oldState.channel;
             const newChannel = newState.channel;
@@ -36,6 +42,9 @@ export class WoisLog implements ApplicationCommand {
         });
         // make string [] to string
         const latestEventsStringJoined = latestEventsString.join("\n");
-        await command.reply({ content: latestEventsStringJoined, ephemeral: true });
+        await command.reply({
+            content: latestEventsStringJoined,
+            ephemeral: true,
+        });
     }
 }

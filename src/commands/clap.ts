@@ -1,4 +1,13 @@
-import { CacheType, Client, CommandInteraction, GuildMember, Message, EmbedBuilder, SlashCommandBuilder, SlashCommandStringOption } from "discord.js";
+import {
+    CacheType,
+    Client,
+    CommandInteraction,
+    GuildMember,
+    Message,
+    EmbedBuilder,
+    SlashCommandBuilder,
+    SlashCommandStringOption,
+} from "discord.js";
 
 import { BotContext } from "../context.js";
 import type { ProcessableMessage } from "../handler/cmdHandler.js";
@@ -16,10 +25,10 @@ const clapify = (str: string): string =>
 const buildClap = (author: GuildMember, toClap: string) => {
     return new EmbedBuilder()
         .setDescription(`${clapify(toClap)}`)
-        .setColor(0x24283B)
+        .setColor(0x24283b)
         .setAuthor({
             name: `${author.displayName}`,
-            iconURL: author.displayAvatarURL()
+            iconURL: author.displayAvatarURL(),
         });
 };
 
@@ -29,13 +38,18 @@ export class ClapCommand implements MessageCommand, ApplicationCommand {
     applicationCommand = new SlashCommandBuilder()
         .setName(this.name)
         .setDescription(this.description)
-        .addStringOption(new SlashCommandStringOption()
-            .setName("text")
-            .setDescription(clapify("Dein clapped text"))
-            .setRequired(true)
+        .addStringOption(
+            new SlashCommandStringOption()
+                .setName("text")
+                .setDescription(clapify("Dein clapped text"))
+                .setRequired(true),
         );
 
-    async handleInteraction(command: CommandInteraction<CacheType>, _client: Client<boolean>, _context: BotContext): Promise<void> {
+    async handleInteraction(
+        command: CommandInteraction<CacheType>,
+        _client: Client<boolean>,
+        _context: BotContext,
+    ): Promise<void> {
         if (!command.isChatInputCommand()) {
             // TODO: Solve this on a type level
             return;
@@ -43,39 +57,44 @@ export class ClapCommand implements MessageCommand, ApplicationCommand {
 
         const author = command.guild?.members.resolve(command.user);
         const text = command.options.getString("text", true);
-        if(!author) {
+        if (!author) {
             throw new Error("Couldn't resolve guild member");
         }
 
         const clappedEmbed = buildClap(author, text);
         await command.reply({
-            embeds: [clappedEmbed]
+            embeds: [clappedEmbed],
         });
     }
 
-    async handleMessage(message: ProcessableMessage, _client: Client<boolean>, context: BotContext): Promise<void> {
+    async handleMessage(
+        message: ProcessableMessage,
+        _client: Client<boolean>,
+        context: BotContext,
+    ): Promise<void> {
         const author = message.guild.members.resolve(message.author);
         const { channel } = message;
 
         const replyRef = message.reference?.messageId;
         const isReply = replyRef !== undefined;
-        let content = message.content.slice(`${context.prefix.command}${this.name} `.length);
+        let content = message.content.slice(
+            `${context.prefix.command}${this.name} `.length,
+        );
         const hasContent = !!content && content.trim().length > 0;
 
-        if(!author) {
+        if (!author) {
             throw new Error("Couldn't resolve guild member");
         }
 
-        if(!isReply && !hasContent) {
+        if (!isReply && !hasContent) {
             await message.channel.send(clapify("Wo ist deine Nachricht?"));
             return;
         }
 
         let replyMessage: Message<boolean> | null = null;
-        if(isReply) {
+        if (isReply) {
             replyMessage = await message.channel.messages.fetch(replyRef);
-            if(!hasContent) {
-
+            if (!hasContent) {
                 content = replyMessage.content;
             }
 
@@ -86,14 +105,13 @@ export class ClapCommand implements MessageCommand, ApplicationCommand {
                 }),
                 message.delete(),
             ]);
-        }
-        else {
+        } else {
             const clappedEmbed = buildClap(author, content);
             await Promise.all([
                 channel.send({
-                    embeds: [clappedEmbed]
+                    embeds: [clappedEmbed],
                 }),
-                message.delete()
+                message.delete(),
             ]);
         }
     }

@@ -14,39 +14,39 @@ interface Booba {
 const boobas: Record<number, Booba> = {
     0: {
         description: "Knöpfe",
-        representation: ". ."
+        representation: ". .",
     },
     1: {
         description: "Toffifee",
-        representation: "○ ○"
+        representation: "○ ○",
     },
     2: {
         description: "Zwergtittchen",
-        representation: "◯ ◯"
+        representation: "◯ ◯",
     },
     3: {
         description: "Wird langsam was",
-        representation: "(Y)"
+        representation: "(Y)",
     },
     4: {
         description: "Süßtittchen",
-        representation: "(.Y.)"
+        representation: "(.Y.)",
     },
     5: {
         description: "Hand voll glück",
-        representation: "(.)(.)"
+        representation: "(.)(.)",
     },
     6: {
         description: "Booba",
-        representation: "( . )( . )"
+        representation: "( . )( . )",
     },
     7: {
         description: "Tellernippel",
-        representation: "⊚⊚"
+        representation: "⊚⊚",
     },
     8: {
         description: "Schlöpse",
-        representation: "UU"
+        representation: "UU",
     },
     9: {
         description: "Mega Schlöpse",
@@ -55,36 +55,35 @@ const boobas: Record<number, Booba> = {
         | |  | |
         | |  | |
         |\\_|  |\\_|
-        `
-
+        `,
     },
     10: {
         description: "Mommys Milkers",
-        representation: "（。 ㅅ  。）"
+        representation: "（。 ㅅ  。）",
     },
     11: {
         description: "Milchtüten",
-        representation: "( • )( • )"
+        representation: "( • )( • )",
     },
     12: {
         description: "Richtig dicke Titten",
-        representation: "(  .  )(  .  )"
+        representation: "(  .  )(  .  )",
     },
     13: {
         description: "Brachiale Ultramelonen",
-        representation: "(   .  )(   .   )"
+        representation: "(   .  )(   .   )",
     },
     14: {
         description: "Ach du dickes Erbgut",
-        representation: "(    .    )(    .    )"
+        representation: "(    .    )(    .    )",
     },
     15: {
         description: "Tod durch Booba",
-        representation: "(     .     )(     .     )"
+        representation: "(     .     )(     .     )",
     },
     16: {
         description: "Ich bin im Himmel",
-        representation: "(      .      )(      .      )"
+        representation: "(      .      )(      .      )",
     },
     17: {
         description: "Tod durch Booba",
@@ -95,29 +94,31 @@ const boobas: Record<number, Booba> = {
         ⠛⠿⠄⢰⠋⡉⠹⣿⣿⣿⣿⣿⣿⠙⣿⣿⣿⣿⣿⣿⡟⢁⠙⡆⢡⣿
         ⡆⠄⣤⠈⢣⣈⣠⣿⣿⣿⣿⣿⠏⣄⠻⣿⣿⣿⣿⣿⣆⣈⣴⠃⣿⣿
         ⢿⠄⣿⡇⠄⠙⠿⣿⡿⠿⢋⣥⣾⣿⣷⣌⠻⢿⣿⣿⡿⠟⣡⣾⣿⣿
-        `
-    }
+        `,
+    },
 };
 
-
-const sendBoob = async(user: User, message: ProcessableMessage, size: number, measurement: Date = new Date()): Promise<void> => {
+const sendBoob = async (
+    user: User,
+    message: ProcessableMessage,
+    size: number,
+    measurement: Date = new Date(),
+): Promise<void> => {
     const booba = boobas[size];
     if (!booba) {
         throw new Error(`Booba with size ${size} not defined`);
     }
 
     const measuredAt = formatTime(measurement);
-    await message.reply(`${booba.description} von ${user}, gemessen um ${measuredAt}:\n${booba.representation}`);
+    await message.reply(
+        `${booba.description} von ${user}, gemessen um ${measuredAt}:\n${booba.representation}`,
+    );
 };
 
-
-const isNewBiggestBoobs = async(size: number): Promise<boolean> => {
+const isNewBiggestBoobs = async (size: number): Promise<boolean> => {
     const oldLongest = await Boob.longestRecentMeasurement();
-    return oldLongest === null
-        ? true
-        : (oldLongest.size ?? -1) < size;
+    return oldLongest === null ? true : (oldLongest.size ?? -1) < size;
 };
-
 
 export class BoobCommand implements MessageCommand {
     name = "boob";
@@ -137,35 +138,51 @@ export class BoobCommand implements MessageCommand {
         "vorbau",
         "balkon",
         "hupe",
-        "hupen"
+        "hupen",
     ];
     description = "Zeigt dir die deine Boobs mit Größe an";
 
-    async handleMessage(message: ProcessableMessage, _client: Client): Promise<CommandResult> {
+    async handleMessage(
+        message: ProcessableMessage,
+        _client: Client,
+    ): Promise<CommandResult> {
         const { author } = message;
         const mention = message.mentions.users.first();
         const userToMeasure = mention !== undefined ? mention : author;
 
-        log.debug(`${author.id} wants to measure boob of user ${userToMeasure.id}`);
+        log.debug(
+            `${author.id} wants to measure boob of user ${userToMeasure.id}`,
+        );
 
-        const recentMeasurement = await Boob.fetchRecentMeasurement(userToMeasure);
+        const recentMeasurement = await Boob.fetchRecentMeasurement(
+            userToMeasure,
+        );
 
         if (recentMeasurement === null) {
-            log.debug(`No recent boob measuring of ${userToMeasure.id} found. Creating Measurement`);
+            log.debug(
+                `No recent boob measuring of ${userToMeasure.id} found. Creating Measurement`,
+            );
 
             const size = Math.floor(Math.random() * Object.keys(boobas).length);
 
             if (await isNewBiggestBoobs(size)) {
-                log.debug(`${userToMeasure} has the new biggest boobs with size ${size}`);
+                log.debug(
+                    `${userToMeasure} has the new biggest boobs with size ${size}`,
+                );
             }
 
             await Promise.all([
                 Boob.insertMeasurement(userToMeasure, size),
-                sendBoob(userToMeasure, message, size)
+                sendBoob(userToMeasure, message, size),
             ]);
             return;
         }
 
-        await sendBoob(userToMeasure, message, recentMeasurement.size, recentMeasurement.measuredAt);
+        await sendBoob(
+            userToMeasure,
+            message,
+            recentMeasurement.size,
+            recentMeasurement.measuredAt,
+        );
     }
 }

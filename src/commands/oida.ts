@@ -1,4 +1,9 @@
-import { type Client, type CommandInteraction, SlashCommandBuilder, SlashCommandStringOption } from "discord.js";
+import {
+    type Client,
+    type CommandInteraction,
+    SlashCommandBuilder,
+    SlashCommandStringOption,
+} from "discord.js";
 
 import AustrianTranslation from "../storage/model/AustrianTranslation.js";
 import type { ApplicationCommand } from "./command.js";
@@ -20,7 +25,9 @@ export class OidaCommand implements ApplicationCommand {
                     .setName("austrian")
                     .setDescriptionLocalization("en-US", "ösisch")
                     .setDescriptionLocalization("de", "ösisch")
-                    .setDescription("🇦🇹 Österreichische Bezeichnung. Darf Leerzeichen enthalten.")
+                    .setDescription(
+                        "🇦🇹 Österreichische Bezeichnung. Darf Leerzeichen enthalten.",
+                    ),
             )
             .addStringOption(
                 new SlashCommandStringOption()
@@ -28,7 +35,9 @@ export class OidaCommand implements ApplicationCommand {
                     .setName("german")
                     .setDescriptionLocalization("en-US", "piefkisch")
                     .setDescriptionLocalization("de", "piefkisch")
-                    .setDescription("🇩🇪 Deutsche Bezeichnung. Darf Leerzeichen enthalten.")
+                    .setDescription(
+                        "🇩🇪 Deutsche Bezeichnung. Darf Leerzeichen enthalten.",
+                    ),
             )
             .addStringOption(
                 new SlashCommandStringOption()
@@ -36,7 +45,7 @@ export class OidaCommand implements ApplicationCommand {
                     .setName("description")
                     .setDescriptionLocalization("en-US", "a beschreibung")
                     .setDescriptionLocalization("de", "a beschreibung")
-                    .setDescription("Eine Beschreibung, wenn du magst")
+                    .setDescription("Eine Beschreibung, wenn du magst"),
             );
     }
 
@@ -44,7 +53,11 @@ export class OidaCommand implements ApplicationCommand {
         return value.replaceAll(/\s+/g, " ").trim();
     }
 
-    async handleInteraction(command: CommandInteraction, _client: Client, context: BotContext) {
+    async handleInteraction(
+        command: CommandInteraction,
+        _client: Client,
+        context: BotContext,
+    ) {
         const cmd = ensureChatInputCommand(command);
 
         const addedBy = await context.guild.members.fetch(command.user);
@@ -60,14 +73,14 @@ export class OidaCommand implements ApplicationCommand {
             addedBy,
             this.normalizeTranslation(german),
             this.normalizeTranslation(austrian),
-            description ? this.normalizeTranslation(description) : null
+            description ? this.normalizeTranslation(description) : null,
         );
 
         await command.reply({
             content: `Daunkschei, I hab "${austrian}" hinzugefügt 🇦🇹`,
             allowedMentions: {
-                parse: []
-            }
+                parse: [],
+            },
         });
     }
 }

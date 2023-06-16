@@ -23,18 +23,19 @@ const getAdvice = (age: number) => {
 /**
  * Calculate a minimum moral age
  */
-export const run: CommandFunction = async(_client, message, args) => {
+export const run: CommandFunction = async (_client, message, args) => {
     if (args.length === 0) return "Wie wärs wenn du auch ein Alter angibst?";
 
     const parsedAge = Number(args[0]);
 
     if (
-        Number.isNaN(parsedAge)
-        || !Number.isFinite(parsedAge)
-        || parsedAge <= 0
-        || parsedAge > Number.MAX_SAFE_INTEGER
-        || !Number.isInteger(parsedAge)
-    ) return "Das ist kein gültiger positiver 64Bit Integer...";
+        Number.isNaN(parsedAge) ||
+        !Number.isFinite(parsedAge) ||
+        parsedAge <= 0 ||
+        parsedAge > Number.MAX_SAFE_INTEGER ||
+        !Number.isInteger(parsedAge)
+    )
+        return "Das ist kein gültiger positiver 64Bit Integer...";
 
     const advice = getAdvice(parsedAge);
     await message.channel.send(advice);

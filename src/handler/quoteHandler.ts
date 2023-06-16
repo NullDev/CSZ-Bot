@@ -1,4 +1,14 @@
-import { GuildMember, Message, MessageReaction, User, TextBasedChannel, GuildEmoji, ReactionEmoji, ChannelType, Channel } from "discord.js";
+import {
+    GuildMember,
+    Message,
+    MessageReaction,
+    User,
+    TextBasedChannel,
+    GuildEmoji,
+    ReactionEmoji,
+    ChannelType,
+    Channel,
+} from "discord.js";
 
 import type { BotContext } from "../context.js";
 import { getConfig } from "../utils/configHandler.js";
@@ -7,13 +17,13 @@ import { isNerd, isTrusted } from "../utils/userUtils.js";
 
 const quoteConfig = getConfig().bot_settings.quotes;
 const quoteThreshold = quoteConfig.quote_threshold;
-const isSourceChannelAllowed = (channelId: string) => !quoteConfig.blacklisted_channel_ids.includes(channelId);
-const isChannelAnonymous = async(context: BotContext, channel: Channel) => {
+const isSourceChannelAllowed = (channelId: string) =>
+    !quoteConfig.blacklisted_channel_ids.includes(channelId);
+const isChannelAnonymous = async (context: BotContext, channel: Channel) => {
     const anonChannels = quoteConfig.anonymous_channel_ids;
 
     let currentChannel: Channel | null = channel;
     do {
-
         currentChannel = await currentChannel.fetch();
         if (anonChannels.includes(currentChannel.id)) {
             return true;
@@ -27,10 +37,13 @@ const isChannelAnonymous = async(context: BotContext, channel: Channel) => {
 
     return false;
 };
-const isQuoteEmoji = (emoji: GuildEmoji | ReactionEmoji) => emoji.name === quoteConfig.emoji_name;
+const isQuoteEmoji = (emoji: GuildEmoji | ReactionEmoji) =>
+    emoji.name === quoteConfig.emoji_name;
 const isMemberAllowedToQuote = (member: GuildMember) => isNerd(member);
 
-const getMessageQuoter = async(message: Message): Promise<readonly GuildMember[]> => {
+const getMessageQuoter = async (
+    message: Message,
+): Promise<readonly GuildMember[]> => {
     const guild = message.guild;
     if (guild === null) {
         throw new Error("Guild is null");
@@ -50,24 +63,37 @@ const getMessageQuoter = async(message: Message): Promise<readonly GuildMember[]
         .filter((member): member is GuildMember => member !== null);
 };
 
-const isMessageAlreadyQuoted = (messageQuoter: readonly GuildMember[], context: BotContext): boolean => {
-    return messageQuoter.some(u => u.id === context.client.user.id);
+const isMessageAlreadyQuoted = (
+    messageQuoter: readonly GuildMember[],
+    context: BotContext,
+): boolean => {
+    return messageQuoter.some((u) => u.id === context.client.user.id);
 };
 
-const hasMessageEnoughQuotes = (messageQuoter: readonly GuildMember[]): boolean => {
-    return messageQuoter.reduce((prev, curr) => isTrusted(curr) ? prev + 2 : prev + 1, 0) >= quoteThreshold;
+const hasMessageEnoughQuotes = (
+    messageQuoter: readonly GuildMember[],
+): boolean => {
+    return (
+        messageQuoter.reduce(
+            (prev, curr) => (isTrusted(curr) ? prev + 2 : prev + 1),
+            0,
+        ) >= quoteThreshold
+    );
 };
-const isQuoterQuotingHimself = (quoter: GuildMember, messageAuthor: GuildMember) => quoter.id === messageAuthor.id;
+const isQuoterQuotingHimself = (
+    quoter: GuildMember,
+    messageAuthor: GuildMember,
+) => quoter.id === messageAuthor.id;
 const generateRandomColor = () => Math.floor(Math.random() * 16777215);
 
 const getTargetChannel = (sourceChannelId: string, context: BotContext) => {
     const targetChannelId =
-        quoteConfig.target_channel_overrides[sourceChannelId]
-        ?? quoteConfig.default_target_channel_id;
+        quoteConfig.target_channel_overrides[sourceChannelId] ??
+        quoteConfig.default_target_channel_id;
 
     return {
         id: targetChannelId,
-        channel: context.client.channels.cache.get(targetChannelId)
+        channel: context.client.channels.cache.get(targetChannelId),
     };
 };
 
@@ -79,13 +105,13 @@ const getQuoteeUsername = (author: GuildMember, quotee: User): string => {
     return quotee.username;
 };
 
-const createQuote = async(
+const createQuote = async (
     context: BotContext,
     quotedUser: GuildMember,
     quoter: readonly User[],
     referencedUser: GuildMember | null | undefined,
     quotedMessage: Message,
-    referencedMessage: Message | undefined
+    referencedMessage: Message | undefined,
 ) => {
     const getAuthor = async (user: GuildMember | null | undefined) => {
         return !user ||
@@ -150,8 +176,16 @@ const createQuote = async(
     };
 };
 
-export const quoteReactionHandler = async(event: MessageReaction, user: User, context: BotContext) => {
-    if (!isQuoteEmoji(event.emoji) || event.message.guildId === null || user.id === context.client.user.id) {
+export const quoteReactionHandler = async (
+    event: MessageReaction,
+    user: User,
+    context: BotContext,
+) => {
+    if (
+        !isQuoteEmoji(event.emoji) ||
+        event.message.guildId === null ||
+        user.id === context.client.user.id
+    ) {
         return;
     }
 
@@ -166,17 +200,27 @@ export const quoteReactionHandler = async(event: MessageReaction, user: User, co
         : undefined;
     const quotedUser = quotedMessage.member;
     const referencedUser = referencedMessage?.member;
-    const quotingMembers = (await getMessageQuoter(quotedMessage));
-    const quotingMembersAllowed = quotingMembers.filter(member => isMemberAllowedToQuote(member));
+    const quotingMembers = await getMessageQuoter(quotedMessage);
+    const quotingMembersAllowed = quotingMembers.filter((member) =>
+        isMemberAllowedToQuote(member),
+    );
 
     if (!quotedUser || !quoter) {
-        log.error("Something bad happend, there is something missing that shouldn't be missing");
+        log.error(
+            "Something bad happend, there is something missing that shouldn't be missing",
+        );
         return;
     }
 
-    log.debug(`[Quote] User tried to ${quoter.displayName} (${quoter.id}) quote user ${quotedUser.displayName} (${quotedUser.id}) on message ${quotedMessage.id}`);
+    log.debug(
+        `[Quote] User tried to ${quoter.displayName} (${quoter.id}) quote user ${quotedUser.displayName} (${quotedUser.id}) on message ${quotedMessage.id}`,
+    );
 
-    if (!isMemberAllowedToQuote(quoter) || !isSourceChannelAllowed(quotedMessage.channelId) || isMessageAlreadyQuoted(quotingMembers, context)) {
+    if (
+        !isMemberAllowedToQuote(quoter) ||
+        !isSourceChannelAllowed(quotedMessage.channelId) ||
+        isMessageAlreadyQuoted(quotingMembers, context)
+    ) {
         await event.users.remove(quoter);
 
         return;
@@ -186,8 +230,8 @@ export const quoteReactionHandler = async(event: MessageReaction, user: User, co
         await context.textChannels.hauptchat.send({
             content: `${quoter} der Lellek hat gerade versucht sich, selbst zu quoten. Was für ein Opfer!`,
             allowedMentions: {
-                users: [quoter.id]
-            }
+                users: [quoter.id],
+            },
         });
 
         await event.users.remove(quoter);
@@ -198,16 +242,30 @@ export const quoteReactionHandler = async(event: MessageReaction, user: User, co
         return;
     }
 
-    const { quote, reference } = await createQuote(context, quotedUser, quotingMembersAllowed.map(member => member.user), referencedUser, quotedMessage, referencedMessage);
-    const { id: targetChannelId, channel: targetChannel } = getTargetChannel(quotedMessage.channelId, context);
+    const { quote, reference } = await createQuote(
+        context,
+        quotedUser,
+        quotingMembersAllowed.map((member) => member.user),
+        referencedUser,
+        quotedMessage,
+        referencedMessage,
+    );
+    const { id: targetChannelId, channel: targetChannel } = getTargetChannel(
+        quotedMessage.channelId,
+        context,
+    );
 
     if (targetChannel === undefined) {
-        log.error(`channel ${targetChannelId} is configured as quote output channel but it doesn't exist`);
+        log.error(
+            `channel ${targetChannelId} is configured as quote output channel but it doesn't exist`,
+        );
         return;
     }
 
     if (!targetChannel.isTextBased()) {
-        log.error(`channel ${targetChannelId} is configured as quote output channel but it is not a text channel`);
+        log.error(
+            `channel ${targetChannelId} is configured as quote output channel but it is not a text channel`,
+        );
         return;
     }
 
@@ -226,13 +284,15 @@ export const quoteReactionHandler = async(event: MessageReaction, user: User, co
     if (reference !== undefined) {
         const quoteMessage = await targetChannel.send(reference);
         await quoteMessage.reply(quote);
-    }
-    else {
+    } else {
         await targetChannel.send(quote);
     }
 
     await quotedMessage.react(event.emoji);
-    if (quotedMessage.channel.isTextBased() && quotedMessage.channel.type === ChannelType.GuildText) {
+    if (
+        quotedMessage.channel.isTextBased() &&
+        quotedMessage.channel.type === ChannelType.GuildText
+    ) {
         await quotedMessage.reply("Ihr quoted echt jeden Scheiß, oder?");
     }
 };
