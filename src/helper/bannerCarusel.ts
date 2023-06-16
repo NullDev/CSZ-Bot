@@ -1,4 +1,4 @@
-import { BotContext } from "../context.js";
+import type { BotContext } from "../context.js";
 import path from "node:path";
 import { readdir } from "node:fs/promises";
 

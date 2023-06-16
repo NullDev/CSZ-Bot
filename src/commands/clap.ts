@@ -9,7 +9,7 @@ import {
     SlashCommandStringOption,
 } from "discord.js";
 
-import { BotContext } from "../context.js";
+import type { BotContext } from "../context.js";
 import type { ProcessableMessage } from "../handler/cmdHandler.js";
 import { ApplicationCommand, MessageCommand } from "./command.js";
 

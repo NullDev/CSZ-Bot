@@ -11,7 +11,7 @@ import {
 
 import { ApplicationCommand, CommandResult } from "./command.js";
 import { EhreGroups, EhrePoints, EhreVotes } from "../storage/model/Ehre.js";
-import { BotContext } from "../context.js";
+import type { BotContext } from "../context.js";
 
 function createUserPointString(e: EhrePoints) {
     return `<@${e.userId}> : ${e.points}`;

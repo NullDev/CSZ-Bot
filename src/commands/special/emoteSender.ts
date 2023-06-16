@@ -1,6 +1,6 @@
 import { Message, Client } from "discord.js";
 
-import { BotContext } from "../../context.js";
+import type { BotContext } from "../../context.js";
 import logger from "../../utils/logger.js";
 import { SpecialCommand, CommandResult } from "../command.js";
 

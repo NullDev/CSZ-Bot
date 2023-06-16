@@ -14,7 +14,7 @@ import {
 import log from "../utils/logger.js";
 import AdditionalMessageData from "../storage/model/AdditionalMessageData.js";
 import { getConfig } from "../utils/configHandler.js";
-import { BotContext } from "../context.js";
+import type { BotContext } from "../context.js";
 import { CommandFunction } from "../types.js";
 
 const config = getConfig();

@@ -6,7 +6,7 @@ import {
     SlashCommandStringOption,
 } from "discord.js";
 
-import { BotContext } from "../context.js";
+import type { BotContext } from "../context.js";
 import { ApplicationCommand } from "./command.js";
 import * as path from "node:path";
 import * as fs from "node:fs";

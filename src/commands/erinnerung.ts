@@ -14,7 +14,7 @@ import { MessageCommand, ApplicationCommand } from "./command.js";
 import logger from "../utils/logger.js";
 import Reminder, { ReminderAttributes } from "../storage/model/Reminder.js";
 import type { ProcessableMessage } from "../handler/cmdHandler.js";
-import { BotContext } from "../context.js";
+import type { BotContext } from "../context.js";
 import { ensureChatInputCommand } from "../utils/interactionUtils.js";
 
 const validateDate = (date: Date): true | string => {

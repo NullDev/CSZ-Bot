@@ -6,7 +6,7 @@ import { CommandResult, MessageCommand } from "./command.js";
 import log from "../utils/logger.js";
 import type { ProcessableMessage } from "../handler/cmdHandler.js";
 import { formatTime } from "../utils/dateUtils.js";
-import { BotContext } from "../context.js";
+import type { BotContext } from "../context.js";
 
 export type Radius = 1 | 2 | 3;
 

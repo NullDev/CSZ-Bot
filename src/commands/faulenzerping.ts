@@ -11,7 +11,7 @@ import {
     Snowflake,
 } from "discord.js";
 
-import { BotContext } from "../context.js";
+import type { BotContext } from "../context.js";
 import { ApplicationCommand } from "./command.js";
 import { isTrusted } from "../utils/userUtils.js";
 import { chunkArray } from "../utils/arrayUtils.js";

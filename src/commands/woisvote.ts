@@ -14,7 +14,7 @@ import { ApplicationCommand, CommandResult } from "./command.js";
 import moment from "moment";
 import WoisAction from "../storage/model/WoisAction.js";
 import { ReactionHandler } from "../types.js";
-import { BotContext } from "../context.js";
+import type { BotContext } from "../context.js";
 import logger from "../utils/logger.js";
 import { isWoisGang } from "../utils/userUtils.js";
 import { chunkArray } from "../utils/arrayUtils.js";

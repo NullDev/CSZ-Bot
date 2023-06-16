@@ -7,7 +7,7 @@ import {
 } from "discord.js";
 import { SlashCommandBuilder } from "discord.js";
 import { ApplicationCommand } from "./command.js";
-import { BotContext } from "../context.js";
+import type { BotContext } from "../context.js";
 import Ban from "../storage/model/Ban.js";
 
 export class BanListCommand implements ApplicationCommand {
