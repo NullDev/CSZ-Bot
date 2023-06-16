@@ -4,27 +4,31 @@ import {
     GuildMember,
     User,
     CacheType,
-    MessageComponentInteraction, ButtonStyle,
+    MessageComponentInteraction,
+    ButtonStyle,
     SlashCommandBuilder,
     SlashCommandStringOption,
     SlashCommandSubcommandBuilder,
     SlashCommandUserOption,
-    ComponentType
+    ComponentType,
+    AutocompleteInteraction,
 } from "discord.js";
 
-import { ApplicationCommand, CommandResult, UserInteraction } from "./command.js";
+import {
+    ApplicationCommand,
+    CommandResult,
+    UserInteraction,
+} from "./command.js";
 import Nicknames from "../storage/model/Nickname.js";
 import { isTrusted } from "../utils/userUtils.js";
 import logger from "../utils/logger.js";
 import { ensureChatInputCommand } from "../utils/interactionUtils.js";
-
 
 type Vote = "YES" | "NO";
 
 interface UserVote {
     readonly vote: Vote;
     readonly trusted: boolean;
-
 }
 
 function getWeightOfUserVote(vote: UserVote): number {
@@ -34,17 +38,16 @@ function getWeightOfUserVote(vote: UserVote): number {
 interface Suggestion {
     readonly nicknameUserID: string;
     readonly nickname: string;
-
 }
 
 const ongoingSuggestions: Record<string, Suggestion> = {};
 const idVoteMap: Record<string, Record<string, UserVote>> = {};
 
-const getUserVoteMap = (messageid: string): Record<string, UserVote> => {
-    if (idVoteMap[messageid] === undefined) {
-        idVoteMap[messageid] = {};
+const getUserVoteMap = (messageId: string): Record<string, UserVote> => {
+    if (idVoteMap[messageId] === undefined) {
+        idVoteMap[messageId] = {};
     }
-    return idVoteMap[messageid];
+    return idVoteMap[messageId];
 };
 
 export class Nickname implements ApplicationCommand {
@@ -64,14 +67,14 @@ export class Nickname implements ApplicationCommand {
                         new SlashCommandUserOption()
                             .setRequired(true)
                             .setName("user")
-                            .setDescription("Wem du tun willst")
+                            .setDescription("Wem du tun willst"),
                     )
                     .addStringOption(
                         new SlashCommandStringOption()
                             .setRequired(true)
                             .setName("nickname")
-                            .setDescription("Was du tun willst")
-                    )
+                            .setDescription("Was du tun willst"),
+                    ),
             )
             .addSubcommand(
                 new SlashCommandSubcommandBuilder()
@@ -81,14 +84,15 @@ export class Nickname implements ApplicationCommand {
                         new SlashCommandUserOption()
                             .setRequired(true)
                             .setName("user")
-                            .setDescription("Wem du tun willst")
+                            .setDescription("Wem du tun willst"),
                     )
                     .addStringOption(
                         new SlashCommandStringOption()
                             .setRequired(true)
                             .setName("nickname")
-                            .setDescription("Was du tun willst")
-                    )
+                            .setDescription("Den zu entfernenden Namen")
+                            .setAutocomplete(true),
+                    ),
             )
             .addSubcommand(
                 new SlashCommandSubcommandBuilder()
@@ -98,8 +102,8 @@ export class Nickname implements ApplicationCommand {
                         new SlashCommandUserOption()
                             .setRequired(true)
                             .setName("user")
-                            .setDescription("Wem du tun willst")
-                    )
+                            .setDescription("Wem du tun willst"),
+                    ),
             )
             .addSubcommand(
                 new SlashCommandSubcommandBuilder()
@@ -109,14 +113,13 @@ export class Nickname implements ApplicationCommand {
                         new SlashCommandUserOption()
                             .setRequired(true)
                             .setName("user")
-                            .setDescription("Wem du tun willst")
-                    )
+                            .setDescription("Wem du tun willst"),
+                    ),
             );
     }
 
     async handleInteraction(
         command: CommandInteraction,
-        _client: Client<boolean>,
     ): Promise<CommandResult> {
         const cmd = ensureChatInputCommand(command);
 
@@ -215,6 +218,30 @@ export class Nickname implements ApplicationCommand {
         }
     }
 
+    async autocomplete(interaction: AutocompleteInteraction) {
+        const subCommand = interaction.options.getSubcommand(true);
+        if (subCommand !== "delete") {
+            return;
+        }
+
+        // No .getUser("user") available
+        // https://discordjs.guide/slash-commands/autocomplete.html#accessing-other-values
+        const userId = interaction.options.get("user", true).value as string; // Snowflake of the user
+
+        const nicknames = await Nicknames.getNicknames(userId);
+
+        const focusedValue = interaction.options.getFocused();
+
+        const completions = nicknames
+            .filter((n) => n.nickName.startsWith(focusedValue))
+            .map((n) => ({
+                name: n.nickName,
+                value: n.nickName,
+            }));
+
+        await interaction.respond(completions);
+    }
+
     private static async createNickNameVote(
         command: CommandInteraction<CacheType>,
         user: User,
@@ -253,26 +280,26 @@ export class Nickname implements ApplicationCommand {
         };
     }
 
-
     async updateNickName(user: GuildMember, nickname: string | null) {
         await user.setNickname(nickname);
     }
 }
-
 
 export class NicknameButtonHandler implements UserInteraction {
     readonly ids = ["nicknameVoteYes", "nicknameVoteNo"];
     readonly name = "NicknameButtonhandler";
     readonly threshold = 7;
 
-
-    async handleInteraction(interaction: MessageComponentInteraction, _client: Client): Promise<void> {
+    async handleInteraction(
+        interaction: MessageComponentInteraction,
+    ): Promise<void> {
         const suggestion = ongoingSuggestions[interaction.message.id];
 
         if (suggestion === undefined) {
             await interaction.update({
-                content: "Ich find den Namensvorschlag nicht. Irgend ein Huso muss wohl den Bot neugestartet haben. Macht am besten ne Neue auf",
-                components: []
+                content:
+                    "Ich find den Namensvorschlag nicht. Irgend ein Huso muss wohl den Bot neugestartet haben. Macht am besten ne Neue auf",
+                components: [],
             });
             return;
         }
@@ -290,41 +317,58 @@ export class NicknameButtonHandler implements UserInteraction {
 
         const istrusted = isTrusted(member);
         if (interaction.customId === "nicknameVoteYes") {
-            userVoteMap[interaction.user.id] = { vote: "YES", trusted: istrusted };
-        }
-        else if (interaction.customId === "nicknameVoteNo") {
-            userVoteMap[interaction.user.id] = { vote: "NO", trusted: istrusted };
+            userVoteMap[interaction.user.id] = {
+                vote: "YES",
+                trusted: istrusted,
+            };
+        } else if (interaction.customId === "nicknameVoteNo") {
+            userVoteMap[interaction.user.id] = {
+                vote: "NO",
+                trusted: istrusted,
+            };
         }
         // evaluate the Uservotes
         const votes: UserVote[] = Object.values(userVoteMap);
         if (this.hasEnoughVotes(votes, "NO")) {
             await interaction.update({
                 content: `Der Vorschlag: \`${suggestion.nickname}\` für <@${suggestion.nicknameUserID}> war echt nicht so geil`,
-                components: []
+                components: [],
             });
             return;
         }
         if (this.hasEnoughVotes(votes, "YES")) {
             try {
-                await Nicknames.insertNickname(suggestion.nicknameUserID, suggestion.nickname);
-            }
-            catch (error) {
-                await interaction.update(`Würdet ihr Hurensöhne aufpassen, wüsstest ihr, dass für <@${suggestion.nicknameUserID}> \`${suggestion.nickname}\` bereits existiert.`);
+                await Nicknames.insertNickname(
+                    suggestion.nicknameUserID,
+                    suggestion.nickname,
+                );
+            } catch (error) {
+                await interaction.update(
+                    `Würdet ihr Hurensöhne aufpassen, wüsstest ihr, dass für <@${suggestion.nicknameUserID}> \`${suggestion.nickname}\` bereits existiert.`,
+                );
                 return;
             }
 
             await interaction.update({
                 content: `Für <@${suggestion.nicknameUserID}> ist jetzt \`${suggestion.nickname}\` in der Rotation`,
-                components: []
+                components: [],
             });
             return;
         }
-        await interaction.reply({ content: "Hast abgestimmt", ephemeral: true });
+        await interaction.reply({
+            content: "Hast abgestimmt",
+            ephemeral: true,
+        });
     }
 
     private hasEnoughVotes(votes: UserVote[], voteType: Vote) {
-        return votes.filter(vote => vote.vote === voteType).reduce((sum, uservote) => sum + getWeightOfUserVote(uservote), 0) >= this.threshold;
+        return (
+            votes
+                .filter((vote) => vote.vote === voteType)
+                .reduce(
+                    (sum, uservote) => sum + getWeightOfUserVote(uservote),
+                    0,
+                ) >= this.threshold
+        );
     }
 }
-
-

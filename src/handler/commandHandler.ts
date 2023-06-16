@@ -1,6 +1,7 @@
 import {
     APIApplicationCommand,
     ApplicationCommandPermissionType,
+    AutocompleteInteraction,
     Client,
     CommandInteraction,
     Interaction,
@@ -204,25 +205,47 @@ export const registerAllApplicationCommandsAsGuildCommands = async(
  * @param client client
  * @returns the handled command or an error if no matching command was found.
  */
-const commandInteractionHandler = (
+const commandInteractionHandler = async (
     command: CommandInteraction,
     client: Client,
     context: BotContext
-): Promise<unknown> => {
+): Promise<void> => {
     const matchingCommand = applicationCommands.find(
         cmd => cmd.name === command.commandName
     );
-    if (matchingCommand) {
-        log.debug(`Found a matching command ${matchingCommand.name}`);
-        return matchingCommand.handleInteraction(command, client, context);
+
+    if (!matchingCommand) {
+        throw new Error(
+            `Application Command ${command.commandName} with ID ${command.id} invoked, but not available`
+        );
     }
 
+    log.debug(`Found a matching command ${matchingCommand.name}`);
+    await matchingCommand.handleInteraction(command, client, context);
+};
 
-    return Promise.reject(
-        new Error(
-            `Application Command ${command.commandName} with ID ${command.id} invoked, but not available`
-        )
+const autocompleteInteractionHandler = async (
+    interaction: AutocompleteInteraction,
+    context: BotContext
+) => {
+    const matchingCommand = applicationCommands.find(
+        cmd => cmd.name === interaction.commandName
     );
+
+    if (!matchingCommand) {
+        throw new Error(
+            `Application Command ${interaction.commandName} with ID ${interaction.id} invoked, but not available`
+        );
+    }
+
+    if(!matchingCommand.autocomplete) {
+        throw new Error(
+            `Application Command ${interaction.commandName} with ID ${interaction.id} invoked, but no autocomplete function available`
+        );
+    }
+
+    log.debug(`Found a matching autocomplete handler for command ${matchingCommand.name}`);
+    await matchingCommand.autocomplete(interaction, context);
 };
 
 /**
@@ -348,6 +371,13 @@ export const handleInteractionEvent = (
         return commandInteractionHandler(
             interaction as CommandInteraction,
             client,
+            context
+        );
+    }
+
+    if (interaction.isAutocomplete()) {
+        return autocompleteInteractionHandler(
+            interaction,
             context
         );
     }

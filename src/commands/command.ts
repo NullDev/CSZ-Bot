@@ -1,6 +1,6 @@
 
 import { ContextMenuCommandBuilder, MessageComponentInteraction, PermissionsString, type SlashCommandBuilder } from "discord.js";
-import type { Client, CommandInteraction } from "discord.js";
+import type { AutocompleteInteraction, Client, CommandInteraction } from "discord.js";
 
 import type { ProcessableMessage } from "../handler/cmdHandler.js";
 import type { BotContext } from "../context.js";
@@ -40,6 +40,7 @@ interface AppCommand {
         client: Client,
         context: BotContext
     ): Promise<CommandResult>;
+    autocomplete?(interaction: AutocompleteInteraction, context: BotContext): Promise<void>;
 }
 
 // For a MessageCommand we require an additional modCommand property and a handler method
