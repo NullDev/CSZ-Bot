@@ -154,7 +154,7 @@ export class Saufen implements ApplicationCommand {
             return;
         }
 
-        const files = await this.getSoundFiles();
+        const files = (await this.getSoundFiles()).slice(0, 25);
 
         const focusedValue = interaction.options.getFocused();
         const completions = files
