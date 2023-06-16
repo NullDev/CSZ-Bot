@@ -1,6 +1,6 @@
-import { Message } from "discord.js";
+import type { Message } from "discord.js";
 import fetch from "node-fetch";
-import { SpecialCommand, CommandResult } from "../command.js";
+import type { SpecialCommand, CommandResult } from "../command.js";
 
 const proxitokInstance = "https://proxitok.pussthecat.org";
 // const downloadUrlRegex = /href=["'](\/download[^"']*)["']/;

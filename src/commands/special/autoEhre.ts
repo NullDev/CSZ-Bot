@@ -1,7 +1,7 @@
-import { Client } from "discord.js";
+import type { Client } from "discord.js";
 
 import type { ProcessableMessage } from "../../handler/cmdHandler.js";
-import { SpecialCommand, CommandResult } from "../command.js";
+import type { SpecialCommand, CommandResult } from "../command.js";
 import { EhreCommand } from "../ehre.js";
 
 export class AutoEhreCommand implements SpecialCommand {

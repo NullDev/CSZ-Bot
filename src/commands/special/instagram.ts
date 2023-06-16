@@ -1,8 +1,8 @@
-import { Message } from "discord.js";
+import type { Message } from "discord.js";
 // @ts-ignore
 import instagramUrl from "instagram-url-direct";
 
-import { SpecialCommand, CommandResult } from "../command.js";
+import type { SpecialCommand, CommandResult } from "../command.js";
 
 const instagramOptions = {
     uriPattern:

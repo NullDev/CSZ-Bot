@@ -1,8 +1,8 @@
-import { Message, Client } from "discord.js";
+import type { Message, Client } from "discord.js";
 
 import type { BotContext } from "../../context.js";
+import type { SpecialCommand, CommandResult } from "../command.js";
 import logger from "../../utils/logger.js";
-import { SpecialCommand, CommandResult } from "../command.js";
 
 export class EmoteSenderCommand implements SpecialCommand {
     name = "EmoteSender";

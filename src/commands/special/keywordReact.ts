@@ -1,7 +1,7 @@
-import { Client } from "discord.js";
+import type { Client } from "discord.js";
 
-import { ProcessableMessage } from "../../handler/cmdHandler.js";
-import { SpecialCommand, CommandResult } from "../command.js";
+import type { ProcessableMessage } from "../../handler/cmdHandler.js";
+import type { SpecialCommand, CommandResult } from "../command.js";
 
 // this is the former nixos.ts
 

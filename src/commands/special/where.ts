@@ -1,7 +1,7 @@
 import { Message, Client, cleanContent } from "discord.js";
 import nodeCanvas from "canvas";
 
-import { SpecialCommand } from "../command.js";
+import type { SpecialCommand } from "../command.js";
 import { countWords, substringAfter } from "../../utils/stringUtils.js";
 
 const { createCanvas, loadImage, registerFont } = nodeCanvas;
