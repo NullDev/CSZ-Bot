@@ -154,7 +154,7 @@ export class Saufen implements ApplicationCommand {
             return;
         }
 
-        const files = (await this.getSoundFiles()).slice(0, 25);
+        const files = await this.getSoundFiles();
 
         const focusedValue = interaction.options.getFocused();
         const completions = files
@@ -162,7 +162,8 @@ export class Saufen implements ApplicationCommand {
             .map((name) => ({
                 name,
                 value: name,
-            }));
+            }))
+            .slice(0, 25);
 
         await interaction.respond(completions);
     }
