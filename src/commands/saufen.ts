@@ -158,7 +158,7 @@ export class Saufen implements ApplicationCommand {
 
         const focusedValue = interaction.options.getFocused();
         const completions = files
-            .filter((f) => f.startsWith(focusedValue))
+            .filter((f) => f.includes(focusedValue))
             .map((name) => ({
                 name,
                 value: name,
