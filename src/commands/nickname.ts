@@ -230,7 +230,7 @@ export class Nickname implements ApplicationCommand {
         const focusedValue = interaction.options.getFocused();
 
         const completions = nicknames
-            .filter((n) => n.nickName.startsWith(focusedValue))
+            .filter((n) => n.nickName.includes(focusedValue))
             .map((n) => ({
                 name: n.nickName,
                 value: n.nickName,
