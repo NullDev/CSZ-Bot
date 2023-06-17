@@ -227,10 +227,10 @@ export class Nickname implements ApplicationCommand {
 
         const nicknames = await Nicknames.getNicknames(userId);
 
-        const focusedValue = interaction.options.getFocused();
+        const focusedValue = interaction.options.getFocused().toLowerCase();
 
         const completions = nicknames
-            .filter((n) => n.nickName.includes(focusedValue))
+            .filter((n) => n.nickName.toLowerCase().includes(focusedValue))
             .map((n) => ({
                 name: n.nickName,
                 value: n.nickName,
