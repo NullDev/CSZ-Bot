@@ -33,14 +33,19 @@ export class DoenerCommand implements MessageCommand {
         messageContent = messageContent.startsWith(".doener")
             ? messageContent.slice(".doener".length)
             : messageContent;
-        messageContent = messageContent.trim();
+        messageContent = messageContent.replace(/,/g, ".").trim();
 
-        const amount = Number(
-            messageContent
-                .replace(/,/g, ".")
-                .replace(/[^0-9.]/g, "")
-                .replace(/\.+/g, "."),
-        );
+        // extract float from message
+        const number =
+            /-?(\d+(?:\.\d+)?)/g.exec(messageContent)?.[0] ?? undefined;
+        if (number === undefined) {
+            await targetMessage.reply({
+                content: "Da is keine Zahl bruder.",
+            });
+            return;
+        }
+
+        const amount = Number(number);
 
         if (Number.isNaN(amount) || !Number.isFinite(amount)) {
             await targetMessage.reply({
