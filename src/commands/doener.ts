@@ -23,7 +23,12 @@ export class DoenerCommand implements MessageCommand {
             return undefined;
         }
 
-        const amount = Number(targetMessage.content.trim());
+        const amount = Number(
+            targetMessage.content
+                .trim()
+                .replace(/,/g, ".")
+                .replace(/[^0-9.]/g, ""),
+        );
 
         if (!Number.isNaN(amount) || !Number.isFinite(amount)) {
             await targetMessage.reply({
