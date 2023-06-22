@@ -23,11 +23,14 @@ export class DoenerCommand implements MessageCommand {
             return undefined;
         }
 
+        let messageContent = targetMessage.content.trim();
+        messageContent = messageContent.startsWith(".doener")
+            ? messageContent.slice(".doener".length)
+            : messageContent;
+        messageContent = messageContent.trim();
+
         const amount = Number(
-            targetMessage.content
-                .trim()
-                .replace(/,/g, ".")
-                .replace(/[^0-9.]/g, ""),
+            messageContent.replace(/,/g, ".").replace(/[^0-9.]/g, ""),
         );
 
         if (!Number.isNaN(amount) || !Number.isFinite(amount)) {
