@@ -30,10 +30,13 @@ export class DoenerCommand implements MessageCommand {
         messageContent = messageContent.trim();
 
         const amount = Number(
-            messageContent.replace(/,/g, ".").replace(/[^0-9.]/g, ""),
+            messageContent
+                .replace(/,/g, ".")
+                .replace(/[^0-9.]/g, "")
+                .replace(/\.+/g, "."),
         );
 
-        if (!Number.isNaN(amount) || !Number.isFinite(amount)) {
+        if (Number.isNaN(amount) || !Number.isFinite(amount)) {
             await targetMessage.reply({
                 content: "Bruder nimm ma bitte nur ordentliche Zahlen.",
             });
