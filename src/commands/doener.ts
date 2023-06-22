@@ -49,8 +49,8 @@ export class DoenerCommand implements MessageCommand {
         let boards = undefined;
         if (amount > 1000) {
             knives = (amount / 1000).toFixed(2);
-            if (amount % 1000 !== 0) {
-                boards = (amount % 1000).toFixed(2);
+            if (amount % 250 !== 0) {
+                boards = (amount % 250).toFixed(2);
             }
         }
 
