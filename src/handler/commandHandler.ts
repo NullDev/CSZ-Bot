@@ -44,6 +44,7 @@ import { UnbanCommand } from "../commands/modcommands/unban.js";
 import { PenisCommand } from "../commands/penis.js";
 import { BoobCommand } from "../commands/boobs.js";
 import { BonkCommand } from "../commands/bonk.js";
+import { DoenerCommand } from "../commands/doener.js";
 import { GoogleCommand } from "../commands/google.js";
 import { NischdaaaCommand } from "../commands/special/nischdaaa.js";
 import { AutoEhreCommand } from "../commands/special/autoEhre.js";
@@ -97,6 +98,7 @@ export const commands: readonly Command[] = [
     new PenisCommand(),
     new BoobCommand(),
     new BonkCommand(),
+    new DoenerCommand(),
     new GoogleCommand(),
     new Nickname(),
     new WoisLog(),
