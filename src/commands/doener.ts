@@ -4,6 +4,12 @@ import type { BotContext } from "../context.js";
 import type { ProcessableMessage } from "../handler/cmdHandler.js";
 import type { MessageCommand } from "./command.js";
 
+const prices = {
+    kebab: 5.5,
+    knife: 1000,
+    board: 250,
+};
+
 export class DoenerCommand implements MessageCommand {
     name = "doener";
     description = `
@@ -43,24 +49,38 @@ export class DoenerCommand implements MessageCommand {
             return;
         }
 
-        const kebabs = (amount / 5.5).toFixed(2);
+        const kebabs = (amount / prices.kebab).toFixed(2);
 
         let knives = undefined;
         let boards = undefined;
-        if (amount > 1000) {
-            if (amount % 1000 === 0) {
-                knives = (amount / 1000).toFixed(2);
+        if (amount >= prices.board * 0.75) {
+            if (amount % prices.knife === 0) {
+                knives = (amount / prices.knife).toFixed(2);
             } else {
-                knives = ((amount / 1000) | 0).toFixed(2);
-                boards = ((amount % 1000) / 250).toFixed(2);
+                knives = ((amount / prices.knife) | 0).toFixed(0);
+                boards = ((amount % prices.knife) / prices.board).toFixed(2);
             }
         }
 
+        const knivesStr =
+            knives === "1"
+                ? "1 Messerblock"
+                : knives !== undefined
+                ? `${knives} Messerblöcke`
+                : undefined;
+
+        const boardsStr =
+            boards !== undefined
+                ? boards === "1"
+                    ? "1 Schneidbrett"
+                    : `${boards} Schneidbretter`
+                : undefined;
+
         await targetMessage.reply({
             content:
-                knives !== undefined
-                    ? `Das sind ${kebabs} Döner bzw. ${knives} Messerblöcke ${
-                          boards ? `und ${boards} Schneidbretter` : ""
+                knivesStr !== undefined
+                    ? `Das sind ${kebabs} Döner bzw. ${knivesStr} ${
+                          boards ? `und ${boardsStr}` : ""
                       }.`
                     : `Das sind ${kebabs} Döner.`,
             allowedMentions: {
