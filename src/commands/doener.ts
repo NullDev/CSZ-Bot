@@ -10,6 +10,7 @@ const prices = {
     board: 250,
     fridge: 10_000,
     inkPerMonth: 1,
+    meal: 40,
 };
 
 export class DoenerCommand implements MessageCommand {
@@ -94,12 +95,19 @@ export class DoenerCommand implements MessageCommand {
                 : "";
 
         const inkStr =
-            Math.random() > 0.7
+            Math.random() > 0.4
                 ? `Davon könntest du ${
                       amount / prices.inkPerMonth
                   } Monate lang insgesamt unglaubliche ${
                       amount * 10
                   } Seiten mit HP-Druckertinte drucken.`
+                : "";
+
+        const mealStr =
+            Math.random() > 0.7
+                ? `Alternativ kannst du davon maximal ${(
+                      amount / prices.meal
+                  ).toFixed(0)} mal essen gehen.`
                 : "";
 
         await targetMessage.reply({
@@ -111,11 +119,12 @@ export class DoenerCommand implements MessageCommand {
                           }.`,
                           fridgeStr,
                           inkStr,
+                          mealStr,
                       ]
                           .filter((s) => !!s)
                           .join("\n")
                           .trim()
-                    : [`Das sind ${kebabs} Döner.`, inkStr]
+                    : [`Das sind ${kebabs} Döner.`, inkStr, mealStr]
                           .filter((s) => !!s)
                           .join("\n")
                           .trim(),
