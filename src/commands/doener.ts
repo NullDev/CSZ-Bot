@@ -12,6 +12,7 @@ const prices = {
 
 export class DoenerCommand implements MessageCommand {
     name = "doener";
+    aliases = ["döner"];
     description = `
     Rechnet Euro in Döner um. Alternative Währungen können mit angegeben werden.
     `.trim();
@@ -82,12 +83,24 @@ export class DoenerCommand implements MessageCommand {
                     : `${boards} Schneidbretter`
                 : undefined;
 
+        const fridgeStr =
+            amount > 10_000 * 0.75
+                ? `Falls du einen Kredit aufnehmen möchtest, wären das ${(
+                      amount / 10_000
+                  ).toFixed(1)} Kühlschränke.`
+                : "";
+
         await targetMessage.reply({
             content:
                 knivesStr !== undefined
-                    ? `Das sind ${kebabs} Döner bzw. ${knivesStr} ${
-                          boards ? `und ${boardsStr}` : ""
-                      }.`
+                    ? [
+                          `Das sind ${kebabs} Döner bzw. ${knivesStr}${
+                              boards ? ` und ${boardsStr}` : ""
+                          }.`,
+                          fridgeStr,
+                      ]
+                          .join("\n")
+                          .trim()
                     : `Das sind ${kebabs} Döner.`,
             allowedMentions: {
                 parse: [],
