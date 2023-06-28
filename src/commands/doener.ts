@@ -40,8 +40,9 @@ export class DoenerCommand implements MessageCommand {
 
         // extract float from message
         const number =
-            /(?:^|\s)-?(\d+(?:\.\d+)?)[€\$]?(?:\s|$)/g.exec(messageContent)?.[0] ??
-            undefined;
+            /(?:^|\s)-?(\d+(?:\.\d+)?)[€\$]?(?:\s|$)/g.exec(
+                messageContent,
+            )?.[0] ?? undefined;
         if (number === undefined) {
             await targetMessage.reply({
                 content: "Da is keine Zahl bruder.",
