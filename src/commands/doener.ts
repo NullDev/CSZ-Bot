@@ -6,8 +6,10 @@ import type { MessageCommand } from "./command.js";
 
 const prices = {
     kebab: 5.5,
-    knife: 1000,
+    knife: 1_000,
     board: 250,
+    fridge: 10_000,
+    inkPerMonth: 1,
 };
 
 export class DoenerCommand implements MessageCommand {
@@ -84,10 +86,19 @@ export class DoenerCommand implements MessageCommand {
                 : undefined;
 
         const fridgeStr =
-            amount > 10_000 * 0.75
+            amount > prices.fridge * 0.75
                 ? `Falls du einen Kredit aufnehmen möchtest, wären das ${(
-                      amount / 10_000
+                      amount / prices.fridge
                   ).toFixed(1)} Kühlschränke.`
+                : "";
+
+        const inkStr =
+            Math.random() > 0.7
+                ? `Davon könntest du ${
+                      amount / prices.inkPerMonth
+                  } Monate lang insgesamt unglaubliche ${
+                      amount * 10
+                  } Seiten mit HP-Druckertinte drucken.`
                 : "";
 
         await targetMessage.reply({
@@ -98,10 +109,15 @@ export class DoenerCommand implements MessageCommand {
                               boards ? ` und ${boardsStr}` : ""
                           }.`,
                           fridgeStr,
+                          inkStr,
                       ]
+                          .filter((s) => !!s)
                           .join("\n")
                           .trim()
-                    : `Das sind ${kebabs} Döner.`,
+                    : [`Das sind ${kebabs} Döner.`, inkStr]
+                          .filter((s) => !!s)
+                          .join("\n")
+                          .trim(),
             allowedMentions: {
                 parse: [],
             },
