@@ -54,7 +54,7 @@ export const run: CommandFunction = async (client, message, args, context) => {
         return "Bruder das ist keine Umfrage ಠ╭╮ಠ";
     if (
         !replyEmbed.author?.name.startsWith("Umfrage") &&
-        replyEmbed.author?.name.startsWith("Strawpoll")
+        !replyEmbed.author?.name.startsWith("Strawpoll")
     )
         return "Bruder das ist keine Umfrage ಠ╭╮ಠ";
     if (!replyMessage.editable)
