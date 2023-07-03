@@ -46,7 +46,7 @@
     "winston": "^3.9.0"
   },
   "devDependencies": {
-    "@ffprobe-installer/ffprobe": "^2.0.0",
+    "@ffprobe-installer/ffprobe": "^2.1.0",
     "@types/jsdom": "^21.1.1",
     "@types/minimist": "^1.2.2",
     "@types/node": "^20.3.3",
