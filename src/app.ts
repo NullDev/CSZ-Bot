@@ -259,15 +259,13 @@ client.once("ready", async (initializedClient) => {
                 ]),
         );
         cron("0 0 1 */2 *", cronOptions, async () => await rotate(botContext));
-
-        // When the application is ready, slash commands should be registered
-        await registerAllApplicationCommandsAsGuildCommands(botContext);
-
         cron("* * * * *", {}, async () => await ban.processBans(botContext));
 
         await poll.importPolls();
-
         cron("* * * * *", async () => await poll.processPolls(botContext));
+
+        // When the application is ready, slash commands should be registered
+        await registerAllApplicationCommandsAsGuildCommands(botContext);
 
         // Not awaiting this promise because it's basically an infinite loop (that can be cancelled)
         // Possible TODO: Refactor this to a cron job
