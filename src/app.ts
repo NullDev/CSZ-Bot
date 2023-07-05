@@ -94,7 +94,7 @@ process.on("unhandledRejection", (err: unknown, promise) => {
     log.error(err, `Unhandled rejection (promise: ${promise})`);
 });
 process.on("uncaughtException", (err, origin) => {
-    log.error(err, `Uncaught exception (origin: ${origin}`);
+    log.error(err, `Uncaught exception (origin: ${origin})`);
 });
 
 process.once("SIGTERM", (signal) => {
