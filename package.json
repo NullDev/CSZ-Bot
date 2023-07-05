@@ -10,6 +10,7 @@
     "test": "tsc --noEmit",
     "compile": "tsc --sourceMap false --removeComments true",
     "ci": "rome ci ./",
+    "format": "rome format --write ./",
     "lint": "rome check ./",
     "lint:fix": "rome check --apply ./",
     "dev": "npm run lint && npm run watch",
