@@ -189,14 +189,26 @@ const leetTask = async () => {
     log.info(`Auto-kick: ${membersToKick.size} members kicked.`);
 };
 
+login().then(
+    (client) => {
+        log.info(`Bot logged in as ${client.user.tag}`);
+        log.info(
+            `Got ${client.users.cache.size} users, in ${client.channels.cache.size} channels of ${client.guilds.cache.size} guilds`,
+        );
+        log.info(
+            `Prefixes: "${config.bot_settings.prefix.command_prefix}" and "${config.bot_settings.prefix.mod_prefix}"`,
+        );
+        client.user.setActivity(config.bot_settings.status);
+    },
+    (err) => {
+        log.error(err, "Token login was not successful");
+        log.error("Shutting down due to incorrect token...");
+        process.exit(1);
+    },
+);
+
 client.once("ready", async (initializedClient) => {
-    log.info(
-        `Got ${client.users.cache.size} users, in ${client.channels.cache.size} channels of ${client.guilds.cache.size} guilds`,
-    );
-
     try {
-        initializedClient.user.setActivity(config.bot_settings.status);
-
         botContext = await createBotContext(initializedClient);
         console.assert(!!botContext); // TODO: Remove once botContext is used
 
@@ -430,17 +442,3 @@ function login() {
         client.login(config.auth.bot_token);
     });
 }
-
-login().then(
-    (client) => {
-        log.info(`Bot logged in as ${client.user.tag}`);
-        log.info(
-            `Prefixes: "${config.bot_settings.prefix.command_prefix}" and "${config.bot_settings.prefix.mod_prefix}"`,
-        );
-    },
-    (err) => {
-        log.error(err, "Token login was not successful");
-        log.error("Shutting down due to incorrect token...");
-        process.exit(1);
-    },
-);
