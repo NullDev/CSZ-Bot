@@ -194,15 +194,12 @@ const leetTask = async () => {
 let firstRun = true;
 
 client.once("ready", async (initializedClient) => {
-    try {
-        log.info(
-            `Got ${client.users.cache.size} users, in ${client.channels.cache.size} channels of ${client.guilds.cache.size} guilds`,
-        );
+    log.info(
+        `Got ${client.users.cache.size} users, in ${client.channels.cache.size} channels of ${client.guilds.cache.size} guilds`,
+    );
 
-        const botUser = client.user;
-        if (botUser) {
-            botUser.setActivity(config.bot_settings.status);
-        }
+    try {
+        initializedClient.user.setActivity(config.bot_settings.status);
 
         botContext = await createBotContext(initializedClient);
         console.assert(!!botContext); // TODO: Remove once botContext is used
@@ -215,6 +212,7 @@ client.once("ready", async (initializedClient) => {
         const aoc = new AoCHandler(botContext);
         log.info("Starting Nickname Handler ");
         const nicknameHandler = new NicknameHandler(botContext);
+
         if (firstRun) {
             firstRun = false; // Hacky deadlock ...
             await storage.initialize(botContext);
