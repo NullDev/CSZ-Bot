@@ -56,7 +56,7 @@ console.log(
     "\n" +
         " ┌─────────┐\n" +
         ` │ CSZ Bot │ Copyright (c) ${new Date().getFullYear()} Users of the CSZ\n` +
-        " └─────────┘\n"
+        " └─────────┘\n",
 );
 
 let botContext: BotContext;
