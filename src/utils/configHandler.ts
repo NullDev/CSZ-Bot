@@ -32,8 +32,3 @@ export const getConfig = () => {
         return process.exit(1);
     }
 };
-
-export const getVersion = () => packageFile.version;
-export const getName = () => packageFile.name;
-export const getAuthor = () => packageFile.author;
-export const getDescription = () => packageFile.description;

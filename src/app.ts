@@ -48,20 +48,15 @@ import {
 import { ReactionHandler } from "./types.js";
 import { AoCHandler } from "./commands/aoc.js";
 import { rotate } from "./helper/bannerCarusel.js";
-const version = conf.getVersion();
-const appname = conf.getName();
-const devname = conf.getAuthor();
-const args = process.argv.slice(2);
 
-const splashPadding = 12 + appname.length + version.toString().length;
+const args = process.argv.slice(2);
 
 console.log(
     // rome-ignore lint/style/useTemplate: Seems to be more readable this way
     "\n" +
-        ` ┌${"─".repeat(splashPadding)}┐\n` +
-        ` │ Started ${appname} v${version} │\n` +
-        ` └${"─".repeat(splashPadding)}┘\n\n` +
-        ` Copyright (c) ${new Date().getFullYear()} ${devname}\n`,
+        " ┌─────────┐\n" +
+        ` │ CSZ Bot │ Copyright (c) ${new Date().getFullYear()} Users of the CSZ\n` +
+        " └─────────┘\n"
 );
 
 let botContext: BotContext;
