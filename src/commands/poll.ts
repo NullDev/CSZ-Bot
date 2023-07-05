@@ -278,106 +278,105 @@ export const importPolls = async () => {
     log.info(`Loaded ${count} polls from database`);
 };
 
+export const processPolls = async (context: BotContext) => {
+    const currentDate = new Date();
+    const pollsToFinish = delayedPolls.filter(
+        (delayedPoll) => currentDate >= delayedPoll.finishesAt,
+    );
+
+    const channel: TextChannel = context.textChannels.votes;
+
+    for (const element of pollsToFinish) {
+        const delayedPoll = element;
+        const message = await /** @type {import("discord.js").TextChannel} */ (
+            channel
+        ).messages.fetch(delayedPoll.pollId);
+
+        const users: Record<Snowflake, User> = {};
+        await Promise.all(
+            delayedPoll.reactions
+                .flat()
+                .filter(
+                    (x, uidi) =>
+                        delayedPoll.reactions.indexOf(
+                            // rome-ignore lint/suspicious/noExplicitAny: I don't know if this works
+                            x as any as string[],
+                        ) !== uidi,
+                )
+                .map(async (uidToResolve) => {
+                    users[uidToResolve] = await context.client.users.fetch(
+                        uidToResolve,
+                    );
+                }),
+        );
+
+        const fields: APIEmbedField[] = delayedPoll.reactions.map(
+            (value, i) => {
+                return {
+                    name: `${LETTERS[i]} ${delayedPoll.reactionMap[i]} (${value.length})`,
+                    value: value.map((uid) => users[uid]).join("\n") || "-",
+                    inline: false,
+                };
+            },
+        );
+
+        const embed = message.embeds[0];
+        if (embed === undefined) {
+            continue;
+        }
+        const embedDescription = embed.description;
+        if (embedDescription === null) {
+            continue;
+        }
+        const embedAuthor = embed.author;
+        if (embedAuthor === null) {
+            continue;
+        }
+
+        const question =
+            embedDescription.length > TEXT_LIMIT
+                ? `${embedDescription.slice(0, TEXT_LIMIT - 20)}...`
+                : embed.description;
+
+        const toSend: APIEmbed = {
+            description: `Zusammenfassung: ${question}`,
+            fields,
+            timestamp: new Date().toISOString(),
+            author: {
+                name: `${embedAuthor.name}`,
+                icon_url: embedAuthor.iconURL,
+            },
+            footer: {
+                text: `Gesamtabstimmungen: ${delayedPoll.reactions
+                    .map((x) => x.length)
+                    .reduce((a, b) => a + b)}`,
+            },
+        };
+
+        await channel.send({
+            embeds: [toSend],
+        });
+        await Promise.all(
+            message.reactions.cache.map((reaction) => reaction.remove()),
+        );
+        await message.react("✅");
+        delayedPolls.splice(delayedPolls.indexOf(delayedPoll), 1);
+
+        const messageData = await AdditionalMessageData.fromMessage(message);
+        const { customData } = messageData;
+        customData.delayedPollData = undefined;
+        messageData.customData = customData;
+        await messageData.save();
+    }
+};
+
 /**
  * Initialized crons for delayed polls
  */
 export const startCron = (context: BotContext) => {
     log.info("Scheduling Poll Cronjob...");
 
-    cron("* * * * *", async () => {
-        const currentDate = new Date();
-        const pollsToFinish = delayedPolls.filter(
-            (delayedPoll) => currentDate >= delayedPoll.finishesAt,
-        );
-
-        const channel: TextChannel = context.textChannels.votes;
-
-        for (const element of pollsToFinish) {
-            const delayedPoll = element;
-            const message =
-                await /** @type {import("discord.js").TextChannel} */ (
-                    channel
-                ).messages.fetch(delayedPoll.pollId);
-
-            const users: Record<Snowflake, User> = {};
-            await Promise.all(
-                delayedPoll.reactions
-                    .flat()
-                    .filter(
-                        (x, uidi) =>
-                            delayedPoll.reactions.indexOf(
-                                // rome-ignore lint/suspicious/noExplicitAny: I don't know if this works
-                                x as any as string[],
-                            ) !== uidi,
-                    )
-                    .map(async (uidToResolve) => {
-                        users[uidToResolve] = await context.client.users.fetch(
-                            uidToResolve,
-                        );
-                    }),
-            );
-
-            const fields: APIEmbedField[] = delayedPoll.reactions.map(
-                (value, i) => {
-                    return {
-                        name: `${LETTERS[i]} ${delayedPoll.reactionMap[i]} (${value.length})`,
-                        value: value.map((uid) => users[uid]).join("\n") || "-",
-                        inline: false,
-                    };
-                },
-            );
-
-            const embed = message.embeds[0];
-            if (embed === undefined) {
-                continue;
-            }
-            const embedDescription = embed.description;
-            if (embedDescription === null) {
-                continue;
-            }
-            const embedAuthor = embed.author;
-            if (embedAuthor === null) {
-                continue;
-            }
-
-            const question =
-                embedDescription.length > TEXT_LIMIT
-                    ? `${embedDescription.slice(0, TEXT_LIMIT - 20)}...`
-                    : embed.description;
-
-            const toSend: APIEmbed = {
-                description: `Zusammenfassung: ${question}`,
-                fields,
-                timestamp: new Date().toISOString(),
-                author: {
-                    name: `${embedAuthor.name}`,
-                    icon_url: embedAuthor.iconURL,
-                },
-                footer: {
-                    text: `Gesamtabstimmungen: ${delayedPoll.reactions
-                        .map((x) => x.length)
-                        .reduce((a, b) => a + b)}`,
-                },
-            };
-
-            await channel.send({
-                embeds: [toSend],
-            });
-            await Promise.all(
-                message.reactions.cache.map((reaction) => reaction.remove()),
-            );
-            await message.react("✅");
-            delayedPolls.splice(delayedPolls.indexOf(delayedPoll), 1);
-
-            const messageData = await AdditionalMessageData.fromMessage(
-                message,
-            );
-            const { customData } = messageData;
-            customData.delayedPollData = undefined;
-            messageData.customData = customData;
-            await messageData.save();
-        }
-    });
+    cron("* * * * *", async () => await processPolls(context));
 };
 
 export const description = `Erstellt eine Umfrage mit mehreren Antwortmöglichkeiten (standardmäßig mit Mehrfachauswahl) (maximal ${OPTION_LIMIT}).
