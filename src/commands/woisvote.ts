@@ -15,7 +15,7 @@ import type { ApplicationCommand, CommandResult } from "./command.js";
 import WoisAction from "../storage/model/WoisAction.js";
 import type { ReactionHandler } from "../types.js";
 import type { BotContext } from "../context.js";
-import logger from "../utils/logger.js";
+import log from "../utils/logger.js";
 import { isWoisGang } from "../utils/userUtils.js";
 import { chunkArray } from "../utils/arrayUtils.js";
 
@@ -205,7 +205,7 @@ export const woisVoteReactionHandler: ReactionHandler = async (
         interest,
     );
     if (!success) {
-        logger.error(
+        log.error(
             `Could not register interest for user ${user.id} in message ${message.id}`,
         );
     }

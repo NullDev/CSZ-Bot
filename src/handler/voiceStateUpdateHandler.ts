@@ -1,7 +1,7 @@
 import type { VoiceState } from "discord.js";
 import type { BotContext } from "../context.js";
 import { getConfig } from "../utils/configHandler.js";
-import logger from "../utils/logger.js";
+import log from "../utils/logger.js";
 
 const config = getConfig();
 
@@ -20,7 +20,7 @@ export async function checkVoiceUpdate(
     newState: VoiceState,
     _botContext: BotContext,
 ): Promise<void> {
-    logger.debug(
+    log.debug(
         `Voice update detected: ${oldState.channelId} -> ${newState.channelId}`,
     );
 

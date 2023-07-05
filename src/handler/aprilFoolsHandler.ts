@@ -3,7 +3,7 @@ import { Collection, GuildMember, Snowflake } from "discord.js";
 import type { BotContext } from "../context.js";
 import Boob from "../storage/model/Boob.js";
 import Penis from "../storage/model/Penis.js";
-import logger from "../utils/logger.js";
+import log from "../utils/logger.js";
 
 // Store old usernames. Hope the bot doesn't crash lol
 const tmpNicknameStore: Record<Snowflake, string> = {};
@@ -89,11 +89,11 @@ const logRenameResult = (result: PromiseSettledResult<GuildMember>[]) => {
         (p) => p.status === "rejected",
     ) as PromiseRejectedResult[];
 
-    logger.info(
+    log.info(
         `${fulfilled.length} users where renamed. ${rejected.length} renamings failed`,
     );
     for (const rejection of rejected) {
-        logger.error(`Rename failed because of: ${rejection.reason}`);
+        log.error(`Rename failed because of: ${rejection.reason}`);
     }
 };
 
@@ -102,7 +102,7 @@ export const startAprilFools = async (context: BotContext): Promise<void> => {
         const result = await shuffleAllNicknames(context);
         logRenameResult(result);
     } catch (err) {
-        logger.error("Could not perform april fools joke", err);
+        log.error(err, "Could not perform april fools joke");
     }
 };
 
@@ -111,6 +111,6 @@ export const endAprilFools = async (context: BotContext): Promise<void> => {
         const result = await resetAll(context);
         logRenameResult(result);
     } catch (err) {
-        logger.error("Could not end april fools joke", err);
+        log.error(err, "Could not end april fools joke");
     }
 };

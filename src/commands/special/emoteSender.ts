@@ -2,7 +2,7 @@ import type { Message, Client } from "discord.js";
 
 import type { BotContext } from "../../context.js";
 import type { SpecialCommand, CommandResult } from "../command.js";
-import logger from "../../utils/logger.js";
+import log from "../../utils/logger.js";
 
 export class EmoteSenderCommand implements SpecialCommand {
     name = "EmoteSender";
@@ -48,7 +48,7 @@ export class EmoteSenderCommand implements SpecialCommand {
 
         if (emotes.some((e) => e === undefined)) {
             // Continue, it might not be crucial if only one emote is missing
-            logger.warn(
+            log.warn(
                 `Some emotes for content '${trimmedContent}' could not be resolved`,
             );
         }

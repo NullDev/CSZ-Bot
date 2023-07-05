@@ -20,7 +20,7 @@ import type {
 } from "./command.js";
 import Nicknames from "../storage/model/Nickname.js";
 import { isTrusted } from "../utils/userUtils.js";
-import logger from "../utils/logger.js";
+import log from "../utils/logger.js";
 import { ensureChatInputCommand } from "../utils/interactionUtils.js";
 
 type Vote = "YES" | "NO";
@@ -209,7 +209,7 @@ export class Nickname implements ApplicationCommand {
             await cmd.reply("Das hätte nie passieren dürfen");
             return;
         } catch (e) {
-            logger.error(e);
+            log.error(e);
             await cmd.reply("Das hätte nie passieren dürfen");
             return;
         }

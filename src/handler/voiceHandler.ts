@@ -17,7 +17,7 @@ import {
 import type { VoiceChannel } from "discord.js";
 import * as gad from "get-audio-duration";
 
-import logger from "../utils/logger.js";
+import log from "../utils/logger.js";
 import type { BotContext } from "../context.js";
 
 const player = createAudioPlayer();
@@ -37,7 +37,7 @@ async function connectToHauptwois(
         await entersState(connection, VoiceConnectionStatus.Ready, 30_000);
         return connection;
     } catch (err) {
-        logger.error("Couldn't conenct to Hauptwois", err);
+        log.error("Couldn't conenct to Hauptwois", err);
         throw err;
     }
 }
@@ -58,6 +58,8 @@ export async function connectAndPlaySaufen(
     context: BotContext,
     filename?: string,
 ) {
+    log.debug("Entered `connectAndPlaySaufen`");
+
     const wois = context.voiceChannels.haupt_woischat;
     if (wois.members.size === 0) {
         return;
@@ -77,6 +79,6 @@ export async function connectAndPlaySaufen(
         await setTimeout(duration);
         connection.disconnect();
     } catch (err) {
-        logger.error("Could not play saufen", err);
+        log.error("Could not play saufen", err);
     }
 }

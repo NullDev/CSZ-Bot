@@ -74,7 +74,6 @@ import { isMessageInBotSpam } from "../utils/channelUtils.js";
 import type { BotContext } from "../context.js";
 import { WoisCommand } from "../commands/woisvote.js";
 import { ApplicationCommandCreationResponse } from "../types.js";
-import logger from "../utils/logger.js";
 // import { AoCCommand } from "../commands/aoc.js";
 import { BanListCommand } from "../commands/banlist.js";
 import { LinkRedirect } from "../commands/special/linkRedirect.js";
@@ -193,7 +192,7 @@ export const registerAllApplicationCommandsAsGuildCommands = async (
         const response = (await rest.put(url, {
             body: commandsToRegister,
         })) as ApplicationCommandCreationResponse[];
-        logger.info(`Registered ${response.length} guild commands`);
+        log.info(`Registered ${response.length} guild commands`);
     } catch (err) {
         log.error(
             err,
