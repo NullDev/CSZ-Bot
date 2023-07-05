@@ -133,11 +133,6 @@ export const processBans = async (context: BotContext) => {
     }
 };
 
-export const startCron = (context: BotContext) => {
-    log.info("Scheduling Ban Cronjob...");
-    cron("* * * * *", {}, async () => await processBans(context));
-};
-
 export const ban = async (
     client: Client,
     member: GuildMember,

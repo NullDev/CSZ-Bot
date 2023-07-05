@@ -264,9 +264,10 @@ client.once("ready", async (initializedClient) => {
             await registerAllApplicationCommandsAsGuildCommands(botContext);
         }
 
-        ban.startCron(botContext);
+        cron("* * * * *", {}, async () => await ban.processBans(botContext));
 
         await poll.importPolls();
+        
         poll.startCron(botContext);
 
         // Not awaiting this promise because it's basically an infinite loop (that can be cancelled)
