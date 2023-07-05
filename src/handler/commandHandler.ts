@@ -77,6 +77,7 @@ import { ApplicationCommandCreationResponse } from "../types.js";
 // import { AoCCommand } from "../commands/aoc.js";
 import { BanListCommand } from "../commands/banlist.js";
 import { LinkRedirect } from "../commands/special/linkRedirect.js";
+import { Vote2Command } from "../commands/vote2.js";
 
 const config = getConfig();
 
@@ -125,6 +126,7 @@ export const commands: readonly Command[] = [
     // new AoCCommand(),
     new BanListCommand(),
     new LinkRedirect(),
+    new Vote2Command(),
 ];
 export const interactions: readonly UserInteraction[] = [
     new NicknameButtonHandler(),
