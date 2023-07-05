@@ -1,5 +1,4 @@
 import parseOptions from "minimist";
-import cron from "croner";
 import {
     APIEmbed,
     APIEmbedField,
@@ -368,15 +367,6 @@ export const processPolls = async (context: BotContext) => {
         messageData.customData = customData;
         await messageData.save();
     }
-};
-
-/**
- * Initialized crons for delayed polls
- */
-export const startCron = (context: BotContext) => {
-    log.info("Scheduling Poll Cronjob...");
-
-    cron("* * * * *", async () => await processPolls(context));
 };
 
 export const description = `Erstellt eine Umfrage mit mehreren Antwortmöglichkeiten (standardmäßig mit Mehrfachauswahl) (maximal ${OPTION_LIMIT}).

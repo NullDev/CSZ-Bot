@@ -267,8 +267,8 @@ client.once("ready", async (initializedClient) => {
         cron("* * * * *", {}, async () => await ban.processBans(botContext));
 
         await poll.importPolls();
-        
-        poll.startCron(botContext);
+
+        cron("* * * * *", async () => await poll.processPolls(botContext));
 
         // Not awaiting this promise because it's basically an infinite loop (that can be cancelled)
         // Possible TODO: Refactor this to a cron job
