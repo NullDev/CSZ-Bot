@@ -16,7 +16,7 @@
     "dev": "npm run lint && npm run watch",
     "watch-node": "node --watch built/app.js",
     "watch-ts": "tsc -w",
-    "watch": "concurrently -k -n \"TS,N\" -c \"cyan.bold,green.bold\" \"npm run watch-ts\" \"npm run watch-node\""
+    "watch": "concurrently -k -n \"TS,N\" -c \"cyan,green\" \"npm run watch-ts\" \"npm run watch-node\""
   },
   "repository": {
     "type": "git",
