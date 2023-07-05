@@ -34,6 +34,24 @@ export class Vote2Command implements ApplicationCommand {
                 .setDescription("Die Frage")
                 .setRequired(true)
                 .setName("question"),
+        )
+        .addStringOption(
+            new SlashCommandStringOption()
+                .setDescription("Dauer der Umfrage")
+                .setRequired(true)
+                .setName("duration")
+                .addChoices(
+                    { name: "30 Sekunden", value: (30).toString() },
+                    { name: "5 Minuten", value: (60 * 5).toString() },
+                    {
+                        name: "2 Stunden",
+                        value: (60 * 60 * 2).toString(),
+                    },
+                    {
+                        name: "8 Stunden",
+                        value: (60 * 60 * 8).toString(),
+                    },
+                ),
         );
 
     async handleInteraction(
@@ -56,6 +74,8 @@ export class Vote2Command implements ApplicationCommand {
             });
             return;
         }
+
+        const duration = Number(command.options.getString("duration", true));
 
         const yesButton = new ButtonBuilder()
             .setCustomId("vote-yes")
@@ -87,7 +107,7 @@ export class Vote2Command implements ApplicationCommand {
 
         const collector = response.createMessageComponentCollector({
             componentType: ComponentType.Button,
-            time: 15_000,
+            time: duration * 1000,
         });
 
         collector.on("collect", async (interaction) => {
