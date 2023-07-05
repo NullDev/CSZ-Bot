@@ -16,6 +16,8 @@
         "editor.defaultFormatter": "rome.rome"
     },
     "cSpell.words": [
+        "wois",
+        "bday",
         "pino",
         "graphviz",
         "stempel",
@@ -32,6 +34,8 @@
         "faulenzerping",
         "labelfontcolor",
         "fontname",
-        "bgcolor"
+        "bgcolor",
+        "ragequit",
+        "woisvote"
     ]
 }
