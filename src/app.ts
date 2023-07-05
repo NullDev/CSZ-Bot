@@ -249,10 +249,15 @@ client.once("ready", async (initializedClient) => {
             cronOptions,
             async () => await endAprilFools(botContext),
         );
-        cron("1 0 * * *", cronOptions, async () => {
-            log.debug("Entered start ehreReset cronjob");
-            await Promise.all([EhrePoints.deflation(), EhreVotes.resetVotes()]);
-        });
+        cron(
+            "1 0 * * *",
+            cronOptions,
+            async () =>
+                await Promise.all([
+                    EhrePoints.deflation(),
+                    EhreVotes.resetVotes(),
+                ]),
+        );
         cron("0 0 1 */2 *", cronOptions, async () => await rotate(botContext));
 
         // When the application is ready, slash commands should be registered

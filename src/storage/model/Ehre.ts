@@ -3,6 +3,8 @@
 import { DataTypes, Model, Sequelize } from "sequelize";
 import { Snowflake } from "discord.js";
 
+import log from "../../utils/logger.js";
+
 export class EhreVotes extends Model {
     declare id: string;
     declare userId: string;
@@ -26,6 +28,8 @@ export class EhreVotes extends Model {
     }
 
     static async resetVotes() {
+        log.debug("Entered `EhreVotes#resetVotes`");
+
         return EhreVotes.destroy({
             where: {},
         });
@@ -99,6 +103,8 @@ export class EhrePoints extends Model {
     }
 
     static async deflation() {
+        log.debug("Entered `EhrePoints#deflation`");
+
         return EhrePoints.update(
             { points: Sequelize.literal("points * 0.98") },
             { where: {} },

@@ -89,10 +89,7 @@ export class ErinnerungCommand implements MessageCommand, ApplicationCommand {
                 )} dran erinnern. Außer ich kack ab lol, dann mach ich das später (vielleicht)`,
             );
         } catch (err) {
-            log.error(
-                err,
-                `Couldn't parse date from message ${time} due to`,
-            );
+            log.error(err, `Couldn't parse date from message ${time} due to`);
             await cmd.reply(
                 "Brudi was ist das denn für ne Datumsangabe? Gib was ordentliches an",
             );
@@ -217,9 +214,6 @@ export const reminderHandler = async (context: BotContext) => {
         (result) => result.status === "rejected",
     ) as PromiseRejectedResult[];
     for (const rejection of rejections) {
-        log.error(
-            rejection.reason,
-            "Couldn't retrieve reminders because of",
-        );
+        log.error(rejection.reason, "Couldn't retrieve reminders because of");
     }
 };
