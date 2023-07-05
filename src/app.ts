@@ -213,46 +213,47 @@ client.once("ready", async (initializedClient) => {
 
         cron("37 13 * * *", cronOptions, leetTask);
         cron("5 * * * *", cronOptions, clearWoisLogTask);
-        cron("1 0 * * *", cronOptions, async () => {
-            log.debug("Entered Birthday cronjob");
-            await birthday.checkBdays();
-        });
-        cron("0 20 1-25 12 *", cronOptions, async () => {
-            log.debug("Entered AoC cronjob");
-            await aoc.publishLeaderBoard();
-        });
-        cron("0 0 * * 0", cronOptions, async () => {
-            log.debug("Entered Nickname cronjob");
-            await nicknameHandler.rerollNicknames();
-        });
-        cron("36 0-23 * * FRI-SUN", cronOptions, async () => {
-            log.debug("Entered Saufen cronjob");
-            await connectAndPlaySaufen(botContext);
-        });
-        cron("* * * * *", cronOptions, async () => {
-            log.debug("Entered reminder cronjob");
-            await reminderHandler(botContext);
-        });
-        cron("* * * * *", cronOptions, async () => {
-            log.debug("Entered reminder cronjob");
-            await woisVoteScheduler(botContext);
-        });
-        cron("2022-04-01T00:00:00", cronOptions, async () => {
-            log.debug("Entered start april fools cronjob");
-            await startAprilFools(botContext);
-        });
-        cron("2022-04-02T00:00:00", cronOptions, async () => {
-            log.debug("Entered end april fools cronjob");
-            await endAprilFools(botContext);
-        });
+        cron("1 0 * * *", cronOptions, async () => await birthday.checkBdays());
+        cron(
+            "0 20 1-25 12 *",
+            cronOptions,
+            async () => await aoc.publishLeaderBoard(),
+        );
+        cron(
+            "0 0 * * 0",
+            cronOptions,
+            async () => await nicknameHandler.rerollNicknames(),
+        );
+        cron(
+            "36 0-23 * * FRI-SUN",
+            cronOptions,
+            async () => await connectAndPlaySaufen(botContext),
+        );
+        cron(
+            "* * * * *",
+            cronOptions,
+            async () => await reminderHandler(botContext),
+        );
+        cron(
+            "* * * * *",
+            cronOptions,
+            async () => await woisVoteScheduler(botContext),
+        );
+        cron(
+            "2022-04-01T00:00:00",
+            cronOptions,
+            async () => await startAprilFools(botContext),
+        );
+        cron(
+            "2022-04-02T00:00:00",
+            cronOptions,
+            async () => await endAprilFools(botContext),
+        );
         cron("1 0 * * *", cronOptions, async () => {
             log.debug("Entered start ehreReset cronjob");
             await Promise.all([EhrePoints.deflation(), EhreVotes.resetVotes()]);
         });
-        cron("0 0 1 */2 *", cronOptions, async () => {
-            log.debug("Rotating banners");
-            await rotate(botContext);
-        });
+        cron("0 0 1 */2 *", cronOptions, async () => await rotate(botContext));
 
         // When the application is ready, slash commands should be registered
         await registerAllApplicationCommandsAsGuildCommands(botContext);

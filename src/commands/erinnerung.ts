@@ -13,7 +13,7 @@ import * as chrono from "chrono-node";
 import type { MessageCommand, ApplicationCommand } from "./command.js";
 import type { ProcessableMessage } from "../handler/cmdHandler.js";
 import type { BotContext } from "../context.js";
-import logger from "../utils/logger.js";
+import log from "../utils/logger.js";
 import Reminder, { ReminderAttributes } from "../storage/model/Reminder.js";
 import { ensureChatInputCommand } from "../utils/interactionUtils.js";
 
@@ -89,7 +89,7 @@ export class ErinnerungCommand implements MessageCommand, ApplicationCommand {
                 )} dran erinnern. Außer ich kack ab lol, dann mach ich das später (vielleicht)`,
             );
         } catch (err) {
-            logger.error(
+            log.error(
                 err,
                 `Couldn't parse date from message ${time} due to`,
             );
@@ -144,7 +144,7 @@ export class ErinnerungCommand implements MessageCommand, ApplicationCommand {
                 )} dran erinnern. Außer ich kack ab lol, dann mach ich das später (vielleicht)`,
             );
         } catch (err) {
-            logger.error(
+            log.error(
                 err,
                 `Couldn't parse date from message ${message.content} due to`,
             );
@@ -201,12 +201,14 @@ const sendReminder = async (
             },
         });
     } catch (err) {
-        logger.error(err, "Couldn't send reminder. Removing it...");
+        log.error(err, "Couldn't send reminder. Removing it...");
     }
     await Reminder.removeReminder(reminder.id);
 };
 
 export const reminderHandler = async (context: BotContext) => {
+    log.debug("Entered `reminderHandler`");
+
     const reminders = await Reminder.getCurrentReminders();
     const results = await Promise.allSettled(
         reminders.map((reminder) => sendReminder(reminder, context)),
@@ -215,7 +217,7 @@ export const reminderHandler = async (context: BotContext) => {
         (result) => result.status === "rejected",
     ) as PromiseRejectedResult[];
     for (const rejection of rejections) {
-        logger.error(
+        log.error(
             rejection.reason,
             "Couldn't retrieve reminders because of",
         );

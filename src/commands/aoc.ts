@@ -151,6 +151,8 @@ export class AoCHandler {
     constructor(private readonly context: BotContext) {}
 
     async publishLeaderBoard() {
+        log.debug("Entered `AoCHandler#publishLeaderBoard`");
+
         const targetChannel = this.context.guild.channels.cache.get(
             aocConfig.targetChannelId,
         );

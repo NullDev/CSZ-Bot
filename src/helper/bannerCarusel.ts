@@ -2,6 +2,7 @@ import * as path from "node:path";
 import { readdir } from "node:fs/promises";
 
 import type { BotContext } from "../context.js";
+import log from "../utils/logger.js";
 
 const bannersDir = path.resolve("banners");
 
@@ -11,6 +12,8 @@ const pickRandomBanner = (files: string[]): string => {
 };
 
 export const rotate = async (context: BotContext) => {
+    log.debug("Rotating banners");
+
     const currentHash = context.guild.banner;
     const files = await readdir(bannersDir);
 

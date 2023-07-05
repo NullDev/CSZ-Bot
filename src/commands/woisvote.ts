@@ -212,6 +212,8 @@ export const woisVoteReactionHandler: ReactionHandler = async (
 };
 
 export const woisVoteScheduler = async (context: BotContext): Promise<void> => {
+    log.debug("Entered `woisVoteScheduler`");
+
     const woisAction = await WoisAction.getPendingWoisAction(new Date());
     if (woisAction === null) {
         return;

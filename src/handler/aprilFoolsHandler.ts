@@ -98,6 +98,8 @@ const logRenameResult = (result: PromiseSettledResult<GuildMember>[]) => {
 };
 
 export const startAprilFools = async (context: BotContext): Promise<void> => {
+    log.debug("Entered `startAprilFools`");
+
     try {
         const result = await shuffleAllNicknames(context);
         logRenameResult(result);
@@ -107,6 +109,8 @@ export const startAprilFools = async (context: BotContext): Promise<void> => {
 };
 
 export const endAprilFools = async (context: BotContext): Promise<void> => {
+    log.debug("Entered `endAprilFools`");
+
     try {
         const result = await resetAll(context);
         logRenameResult(result);
