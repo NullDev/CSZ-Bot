@@ -207,74 +207,54 @@ login().then(
     },
 );
 
+const scheduleCronjobs = async (context: BotContext) => {
+    const schedule = (pattern: string, callback: Function) => {
+        cron(
+            pattern,
+            {
+                timezone: "Europe/Berlin",
+            },
+            callback,
+        );
+    };
+
+    const birthday = new BdayHandler(context);
+    schedule("1 0 * * *", async () => await birthday.checkBdays());
+
+    const aoc = new AoCHandler(context);
+    schedule("0 20 1-25 12 *", async () => await aoc.publishLeaderBoard());
+
+    const nicknameHandler = new NicknameHandler(context);
+    schedule("0 0 * * 0", async () => await nicknameHandler.rerollNicknames());
+
+    schedule(
+        "36 0-23 * * FRI-SUN",
+        async () => await connectAndPlaySaufen(context),
+    );
+    schedule("* * * * *", async () => await reminderHandler(context));
+    schedule("* * * * *", async () => await woisVoteScheduler(context));
+    schedule("* * * * *", async () => await ban.processBans(context));
+    schedule("1 0 * * *", async () => await EhrePoints.deflation());
+    schedule("1 0 * * *", async () => await EhreVotes.resetVotes());
+    schedule("0 0 1 */2 *", async () => await rotate(context));
+    schedule("37 13 * * *", leetTask);
+    schedule("5 * * * *", clearWoisLogTask);
+
+    schedule("2022-04-01T00:00:00", async () => await startAprilFools(context));
+    schedule("2022-04-02T00:00:00", async () => await endAprilFools(context));
+
+    await poll.importPolls();
+    schedule("* * * * *", async () => await poll.processPolls(context));
+};
+
 client.once("ready", async (initializedClient) => {
     try {
         botContext = await createBotContext(initializedClient);
         console.assert(!!botContext); // TODO: Remove once botContext is used
 
-        const cronOptions = {
-            timezone: "Europe/Berlin",
-        } as const;
-
-        const birthday = new BdayHandler(botContext);
-        const aoc = new AoCHandler(botContext);
-        log.info("Starting Nickname Handler ");
-        const nicknameHandler = new NicknameHandler(botContext);
-
         await storage.initialize(botContext);
 
-        cron("37 13 * * *", cronOptions, leetTask);
-        cron("5 * * * *", cronOptions, clearWoisLogTask);
-        cron("1 0 * * *", cronOptions, async () => await birthday.checkBdays());
-        cron(
-            "0 20 1-25 12 *",
-            cronOptions,
-            async () => await aoc.publishLeaderBoard(),
-        );
-        cron(
-            "0 0 * * 0",
-            cronOptions,
-            async () => await nicknameHandler.rerollNicknames(),
-        );
-        cron(
-            "36 0-23 * * FRI-SUN",
-            cronOptions,
-            async () => await connectAndPlaySaufen(botContext),
-        );
-        cron(
-            "* * * * *",
-            cronOptions,
-            async () => await reminderHandler(botContext),
-        );
-        cron(
-            "* * * * *",
-            cronOptions,
-            async () => await woisVoteScheduler(botContext),
-        );
-        cron(
-            "2022-04-01T00:00:00",
-            cronOptions,
-            async () => await startAprilFools(botContext),
-        );
-        cron(
-            "2022-04-02T00:00:00",
-            cronOptions,
-            async () => await endAprilFools(botContext),
-        );
-        cron(
-            "1 0 * * *",
-            cronOptions,
-            async () =>
-                await Promise.all([
-                    EhrePoints.deflation(),
-                    EhreVotes.resetVotes(),
-                ]),
-        );
-        cron("0 0 1 */2 *", cronOptions, async () => await rotate(botContext));
-        cron("* * * * *", {}, async () => await ban.processBans(botContext));
-
-        await poll.importPolls();
-        cron("* * * * *", async () => await poll.processPolls(botContext));
+        await scheduleCronjobs(botContext);
 
         // When the application is ready, slash commands should be registered
         await registerAllApplicationCommandsAsGuildCommands(botContext);
