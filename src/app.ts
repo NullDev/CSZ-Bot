@@ -111,7 +111,7 @@ process.once("exit", (code) => {
     log.warn(`Process exited with code: ${code}`);
 });
 
-const clearWoisLogTask = async () => {
+const clearWoisLogTask = () => {
     WoisData.latestEvents = WoisData.latestEvents.filter(
         (event) => event.createdAt.getTime() > Date.now() - 2 * 60 * 1000,
     );
