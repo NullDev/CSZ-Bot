@@ -106,35 +106,36 @@ export const restoreRoles = async (user: GuildMember): Promise<boolean> => {
 
 // #endregion
 
+export const processBans = async (context: BotContext) => {
+    const now = new Date();
+
+    try {
+        const expiredBans = await Ban.findExpiredBans(now);
+
+        for (const expiredBan of expiredBans) {
+            log.debug(
+                `Expired Ban found by user ${expiredBan.userId}. Expired on ${expiredBan.bannedUntil}`,
+            );
+            const user = context.guild.members.cache.get(expiredBan.userId);
+            // No user, no problem
+            if (!user) continue;
+
+            await unban(user);
+
+            const msg = expiredBan.isSelfBan
+                ? "Glückwunsch! Dein selbst auferlegter Bann in der Coding Shitpost Zentrale ist beendet."
+                : "Glückwunsch! Dein Bann in der Coding Shitpost Zentrale ist beendet. Sei nächstes Mal einfach kein Hurensohn.";
+
+            await user.send(msg);
+        }
+    } catch (err) {
+        log.error(err, "Error processing bans.");
+    }
+};
+
 export const startCron = (context: BotContext) => {
     log.info("Scheduling Ban Cronjob...");
-
-    cron("* * * * *", {}, async () => {
-        const now = new Date();
-
-        try {
-            const expiredBans = await Ban.findExpiredBans(now);
-
-            for (const expiredBan of expiredBans) {
-                log.debug(
-                    `Expired Ban found by user ${expiredBan.userId}. Expired on ${expiredBan.bannedUntil}`,
-                );
-                const user = context.guild.members.cache.get(expiredBan.userId);
-                // No user, no problem
-                if (!user) continue;
-
-                await unban(user);
-
-                const msg = expiredBan.isSelfBan
-                    ? "Glückwunsch! Dein selbst auferlegter Bann in der Coding Shitpost Zentrale ist beendet."
-                    : "Glückwunsch! Dein Bann in der Coding Shitpost Zentrale ist beendet. Sei nächstes Mal einfach kein Hurensohn.";
-
-                await user.send(msg);
-            }
-        } catch (err) {
-            log.error(err, "Error in cron job");
-        }
-    });
+    cron("* * * * *", {}, async () => await processBans(context));
 };
 
 export const ban = async (
