@@ -101,15 +101,12 @@ process.on("unhandledRejection", (err: unknown, promise) => {
 process.on("uncaughtException", (err, origin) => {
     log.error(err, `Uncaught exception (origin: ${origin}`);
 });
-process.on("SIGTERM", (signal) => {
+
+process.once("SIGTERM", (signal) => {
     log.error(`Received Sigterm: ${signal}`);
     process.exit(1);
 });
-process.on("beforeExit", (code) => {
-    log.warn(`Process will exit with code: ${code}`);
-    process.exit(code);
-});
-process.on("exit", (code) => {
+process.once("exit", (code) => {
     log.warn(`Process exited with code: ${code}`);
 });
 
