@@ -23,7 +23,7 @@ export default class Nickname extends Model {
         nickName: string,
     ): Promise<Nickname> {
         log.debug(
-            `Inserting Nickname  for user ${userId}  Nickname: ${nickName}`,
+            `Inserting Nickname for user "${userId}" Nickname: "${nickName}"`,
         );
         if (await Nickname.nickNameExist(userId, nickName))
             throw new Error("Nickname already exists");

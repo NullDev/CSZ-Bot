@@ -1,39 +1,25 @@
-import * as winston from "winston";
+import { pino, type LoggerOptions } from "pino";
 
-// This is pretty much the default config taken from:
-// https://www.npmjs.com/package/winston
+const logLevel = process.env.LOG_LEVEL ?? "info";
 
-// Could be loaded via process.env, but honestly: who cares?
-const loggingDir = "logs";
+const nodeEnv = process.env.NODE_ENV ?? "development";
 
-const logger = winston.createLogger({
-    level: process.env.LOG_LEVEL ?? "info",
-    format: winston.format.json(),
-    transports: [
-        new winston.transports.File({
-            filename: `${loggingDir}/error.log`,
-            level: "error",
-        }),
-        new winston.transports.File({ filename: `${loggingDir}/combined.log` }),
-    ],
-});
+const loggingConfigs = {
+    development: {
+        level: logLevel,
+        transport: {
+            target: "pino-pretty",
+            options: {
+                colorize: true,
+                ignore: "pid,hostname",
+            },
+        },
+    },
+    production: {
+        level: logLevel,
+    },
+} as Record<string, LoggerOptions>;
 
-// if (process.env.NODE_ENV !== "production") {
-logger.add(
-    new winston.transports.Console({
-        format: winston.format.combine(
-            winston.format.errors({ stack: true }),
-            winston.format.colorize(),
-            winston.format.timestamp(),
-            winston.format.printf(
-                (info) =>
-                    `${info.timestamp} [${info.level}] ${info.message} ${
-                        info.stack || ""
-                    }`,
-            ),
-        ),
-    }),
-);
-// }
+const loggingConfig = loggingConfigs[nodeEnv];
 
-export default logger;
+export default pino(loggingConfig);

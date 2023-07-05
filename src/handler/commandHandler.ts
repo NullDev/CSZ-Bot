@@ -196,8 +196,8 @@ export const registerAllApplicationCommandsAsGuildCommands = async (
         logger.info(`Registered ${response.length} guild commands`);
     } catch (err) {
         log.error(
-            `Could not register application commands for guild ${context.guild.id}`,
             err,
+            `Could not register application commands for guild ${context.guild.id}`,
         );
     }
 };

@@ -301,7 +301,7 @@ export class StempelgraphCommand implements ApplicationCommand {
                 ],
             });
         } catch (err) {
-            log.error("Could not draw stempelgraph", err);
+            log.error(err, "Could not draw stempelgraph");
         }
     }
 }

@@ -121,7 +121,7 @@ const createEmbedFromLeaderBoard = (
     };
 
     log.info(
-        `[AoC] Created Fields for the butom ${
+        `[AoC] Created Fields for the bottom ${
             members.length - top.length
         } Members`,
     );

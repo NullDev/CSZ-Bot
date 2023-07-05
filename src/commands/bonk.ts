@@ -67,7 +67,7 @@ Usage: ${config.bot_settings.prefix.command_prefix}bonk
                 ],
             });
         } catch (err) {
-            log.error("Could not create where meme", err);
+            log.error(err, "Could not create where meme");
         }
     }
 }

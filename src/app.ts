@@ -96,10 +96,10 @@ const client = new Discord.Client({
 const reactionHandlers: ReactionHandler[] = [woisVoteReactionHandler];
 
 process.on("unhandledRejection", (err: unknown, promise) => {
-    log.error(`Unhandled rejection (promise: ${promise})`, err);
+    log.error(err, `Unhandled rejection (promise: ${promise})`);
 });
 process.on("uncaughtException", (err, origin) => {
-    log.error(`Uncaught exception (origin: ${origin}`, err);
+    log.error(err, `Uncaught exception (origin: ${origin}`);
 });
 process.on("SIGTERM", (signal) => {
     log.error(`Received Sigterm: ${signal}`);
@@ -195,7 +195,6 @@ let firstRun = true;
 
 client.once("ready", async (initializedClient) => {
     try {
-        log.info("Running...");
         log.info(
             `Got ${client.users.cache.size} users, in ${client.channels.cache.size} channels of ${client.guilds.cache.size} guilds`,
         );
@@ -303,7 +302,7 @@ client.once("ready", async (initializedClient) => {
             process.exit(0);
         }
     } catch (err) {
-        log.error("Error in Ready handler:", err);
+        log.error(err, "Error in Ready handler");
         process.exit(1);
     }
 });
@@ -317,7 +316,7 @@ client.on(
     "messageCreate",
     async (message) =>
         void messageCommandHandler(message, client, botContext).catch((err) =>
-            log.error(`[messageCreate] Error on message ${message.id}`, err),
+            log.error(err, `[messageCreate] Error on message ${message.id}`),
         ),
 );
 
@@ -327,8 +326,8 @@ client.on(
         void handleInteractionEvent(interaction, client, botContext).catch(
             (err) =>
                 log.error(
-                    `[interactionCreate] Error on interaction ${interaction.id}`,
                     err,
+                    `[interactionCreate] Error on interaction ${interaction.id}`,
                 ),
         ),
 );
@@ -378,8 +377,8 @@ client.on("guildMemberRemove", async (member) => {
         await GuildRagequit.incrementRagequit(member.guild.id, member.id);
     } catch (err) {
         log.error(
-            `[guildMemberRemove] Error on incrementing ragequit of ${member.id}`,
             err,
+            `[guildMemberRemove] Error on incrementing ragequit of ${member.id}`,
         );
     }
 });
@@ -388,7 +387,7 @@ client.on("messageCreate", async (message) => {
     try {
         await messageHandler(message, client, botContext);
     } catch (err) {
-        log.error(`[messageCreate] Error on message ${message.id}`, err);
+        log.error(err, `[messageCreate] Error on message ${message.id}`);
     }
 });
 
@@ -398,7 +397,7 @@ client.on("messageDelete", async (message) => {
             await messageDeleteHandler(message, client, botContext);
         }
     } catch (err) {
-        log.error(`[messageDelete] Error for ${message.id}`, err);
+        log.error(err, `[messageDelete] Error for ${message.id}`);
     }
 });
 
@@ -406,25 +405,23 @@ client.on("messageUpdate", async (_, newMessage) => {
     try {
         await messageHandler(newMessage as Message, client, botContext);
     } catch (err) {
-        log.error(`[messageUpdate] Error on message ${newMessage.id}`, err);
+        log.error(err, `[messageUpdate] Error on message ${newMessage.id}`);
     }
 });
 
-client.on("error", (e) => void log.error("Discord Client Error", e));
-client.on("warn", (w) => void log.warn("Discord Client Warning", w));
+client.on("error", (e) => void log.error(e, "Discord Client Error"));
+client.on("warn", (w) => void log.warn(w, "Discord Client Warning"));
 client.on("debug", (d) => {
     if (d.includes("Heartbeat")) {
         return;
     }
 
-    log.debug("Discord Client Debug d", d);
+    log.debug(d, "Discord Client Debug d");
 });
 client.on(
     "rateLimit",
     (rateLimitData) =>
-        void log.error(
-            `Discord Client RateLimit Shit: ${JSON.stringify(rateLimitData)}`,
-        ),
+        void log.error(rateLimitData, "Discord Client RateLimit Shit"),
 );
 client.on("invalidated", () => void log.debug("Client invalidated"));
 
@@ -478,8 +475,8 @@ login().then(
         );
     },
     (err) => {
-        log.error("Token login was not successful", err);
-        log.error("Shutting down due to incorrect token...\n\n");
+        log.error(err, "Token login was not successful");
+        log.error("Shutting down due to incorrect token...");
         process.exit(1);
     },
 );

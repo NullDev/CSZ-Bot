@@ -24,7 +24,7 @@ export async function initialize(botContext: BotContext) {
         logging: (sql) => {
             // currently way too noisy because of the fading messages
             if (!sql.includes(FadingMessage.tableName)) {
-                log.verbose(sql);
+                log.trace(sql);
             }
         },
     });

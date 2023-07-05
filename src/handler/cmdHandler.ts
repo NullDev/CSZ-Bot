@@ -140,7 +140,7 @@ export default async function (
         return response;
     } catch (err) {
         // Exception returned by the command handler
-        log.error("Error", err);
+        log.error(err, "Error");
         return "Sorry, irgendwas ist schief gegangen! =(";
     }
 }

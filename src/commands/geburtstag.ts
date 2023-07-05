@@ -61,7 +61,7 @@ export class GeburtstagCommand implements ApplicationCommand {
                 "Danke mein G, ich hab dein Geburtstag eingetragen!",
             );
         } catch (err) {
-            log.error("Geburtstag ist schief gelaufen", err);
+            log.error(err, "Geburtstag ist schief gelaufen");
             await command.reply(
                 "Shit, da ist was schief gegangen - hast du deinen Geburtstag schon eingetragen und bist so dumm das jetzt nochmal zu machen? Piss dich.",
             );

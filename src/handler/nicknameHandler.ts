@@ -32,7 +32,7 @@ export default class NicknameHandler {
                 ];
             await member.setNickname(randomizedNickname);
         } catch (err) {
-            log.error(`Couldn't update user '${userId}' nickname`, err);
+            log.error(err, `Couldn't update user '${userId}' nickname`);
         }
     }
 }

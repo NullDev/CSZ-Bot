@@ -39,6 +39,7 @@ export default class AdditionalMessageData extends Model {
         } catch (err: unknown) {
             if (err instanceof Error) {
                 log.error(
+                    err,
                     `Failed to fetch message from additional data [${JSON.stringify(
                         this,
                     )}]: ${err.message}`,

@@ -183,7 +183,7 @@ export class StempelkarteCommand implements ApplicationCommand {
                 files,
             });
         } catch (err) {
-            log.error("Could not send stempelkarten", err);
+            log.error(err, "Could not send stempelkarten");
         }
     }
 }

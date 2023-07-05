@@ -21,14 +21,14 @@ export const getConfig = () => {
     try {
         jsonString = fs.readFileSync(configPath, "utf8");
     } catch (e) {
-        log.error("Cannot read config file:", e);
+        log.error(e, "Cannot read config file");
         process.exit(1);
     }
 
     try {
         return JSON.parse(jsonString) as Config;
     } catch (e) {
-        log.error("Config is not valid JSON. Stopping...", e);
+        log.error(e, "Config is not valid JSON. Stopping...");
         return process.exit(1);
     }
 };

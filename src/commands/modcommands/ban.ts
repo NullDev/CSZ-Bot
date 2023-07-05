@@ -132,7 +132,7 @@ export const startCron = (context: BotContext) => {
                 await user.send(msg);
             }
         } catch (err) {
-            log.error("Error in cron job", err);
+            log.error(err, "Error in cron job");
         }
     });
 };
