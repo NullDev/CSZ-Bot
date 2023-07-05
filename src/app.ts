@@ -219,58 +219,40 @@ client.once("ready", async (initializedClient) => {
             firstRun = false; // Hacky deadlock ...
             await storage.initialize(botContext);
 
-            log.info("Scheduling 1338 Cronjob...");
             cron("37 13 * * *", cronOptions, leetTask);
-
             cron("5 * * * *", cronOptions, clearWoisLogTask);
-
-            log.info("Scheduling Birthday Cronjob...");
             cron("1 0 * * *", cronOptions, async () => {
                 log.debug("Entered Birthday cronjob");
                 await birthday.checkBdays();
             });
-            await birthday.checkBdays();
-
-            log.info("Scheduling Advent of Code Cronjob...");
             cron("0 20 1-25 12 *", cronOptions, async () => {
                 log.debug("Entered AoC cronjob");
                 await aoc.publishLeaderBoard();
             });
-
-            log.info("Scheduling Nickname Cronjob");
             cron("0 0 * * 0", cronOptions, async () => {
                 log.debug("Entered Nickname cronjob");
                 await nicknameHandler.rerollNicknames();
             });
-
-            log.info("Scheduling Saufen Cronjob");
             cron("36 0-23 * * FRI-SUN", cronOptions, async () => {
                 log.debug("Entered Saufen cronjob");
                 await connectAndPlaySaufen(botContext);
             });
-
-            log.info("Scheduling Reminder Cronjob");
             cron("* * * * *", cronOptions, async () => {
                 log.debug("Entered reminder cronjob");
                 await reminderHandler(botContext);
             });
-
-            log.info("Scheduling Woisvote Cronjob");
             cron("* * * * *", cronOptions, async () => {
                 log.debug("Entered reminder cronjob");
                 await woisVoteScheduler(botContext);
             });
-
             cron("2022-04-01T00:00:00", cronOptions, async () => {
                 log.debug("Entered start april fools cronjob");
                 await startAprilFools(botContext);
             });
-
             cron("2022-04-02T00:00:00", cronOptions, async () => {
                 log.debug("Entered end april fools cronjob");
                 await endAprilFools(botContext);
             });
-
             cron("1 0 * * *", cronOptions, async () => {
                 log.debug("Entered start ehreReset cronjob");
                 await Promise.all([
@@ -278,12 +260,10 @@ client.once("ready", async (initializedClient) => {
                     EhreVotes.resetVotes(),
                 ]);
             });
-
             cron("0 0 1 */2 *", cronOptions, async () => {
                 log.debug("Rotating banners");
                 await rotate(botContext);
             });
-
             // When the application is ready, slash commands should be registered
             await registerAllApplicationCommandsAsGuildCommands(botContext);
         }
