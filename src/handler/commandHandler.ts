@@ -268,10 +268,11 @@ const messageComponentInteractionHandler = async (
     const matchingInteraction = interactions.find((cmd) =>
         cmd.ids.find((id) => id === command.customId),
     );
+
     if (!matchingInteraction) {
-        throw new Error(
-            `Interaction ${command.customId} invoked, but not available`,
-        );
+        // No exception because there might be message components which are handled by different methods
+        // For example, using a createMessageComponentCollector
+        return;
     }
 
     log.debug(`Found a matching interaction ${matchingInteraction.name}`);
