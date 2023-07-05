@@ -13,9 +13,9 @@
     "lint": "rome check ./",
     "lint:fix": "rome check --apply ./",
     "dev": "npm run lint && npm run watch",
-    "watch-node": "nodemon built/app.js",
+    "watch-node": "node --watch built/app.js",
     "watch-ts": "tsc -w",
-    "watch": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"cyan.bold,green.bold\" \"npm run watch-ts\" \"npm run watch-node\""
+    "watch": "concurrently -k -p \"[{name}]\" -n \"TS,N\" -c \"cyan.bold,green.bold\" \"npm run watch-ts\" \"npm run watch-node\""
   },
   "repository": {
     "type": "git",
@@ -59,7 +59,7 @@
     "typescript": "^5.1.6"
   },
   "engines": {
-    "node": ">=18.16.0"
+    "node": ">=20.0.0"
   },
   "nodemonConfig": {
     "ignore": [
