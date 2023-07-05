@@ -22,7 +22,7 @@ export default async function (
     message: Message,
     _client: Client,
     context: BotContext,
-) {
+): Promise<void> {
     const nonBiased = message.content
         .replace(context.prefix.command, "")
         .replace(context.prefix.modCommand, "")

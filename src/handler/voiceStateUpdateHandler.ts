@@ -20,7 +20,7 @@ export async function checkVoiceUpdate(
     oldState: VoiceState,
     newState: VoiceState,
     _botContext: BotContext,
-) {
+): Promise<void> {
     logger.debug(
         `Voice update detected: ${oldState.channelId} -> ${newState.channelId}`,
     );

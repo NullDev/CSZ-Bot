@@ -388,7 +388,7 @@ export const handleInteractionEvent = async (
     interaction: Interaction,
     client: Client,
     context: BotContext,
-): Promise<unknown> => {
+): Promise<void> => {
     if (interaction.isCommand()) {
         return commandInteractionHandler(
             interaction as CommandInteraction,
@@ -402,11 +402,12 @@ export const handleInteractionEvent = async (
     }
 
     if (interaction.isMessageComponent()) {
-        return messageComponentInteractionHandler(
+        await messageComponentInteractionHandler(
             interaction as MessageComponentInteraction,
             client,
             context,
         );
+        return;
     }
 
     throw new Error("Not supported");
@@ -416,7 +417,7 @@ export const messageCommandHandler = async (
     message: Message,
     client: Client,
     context: BotContext,
-): Promise<unknown> => {
+): Promise<void> => {
     // Bots shall not be able to perform commands. High Security
     if (message.author.bot) {
         return;
@@ -437,9 +438,10 @@ export const messageCommandHandler = async (
     ) {
         const cmdString = message.content.split(/\s+/)[0].slice(1);
         if (cmdString) {
-            return commandMessageHandler(cmdString, message, client, context);
+            await commandMessageHandler(cmdString, message, client, context);
+            return;
         }
     }
 
-    return specialCommandHandler(message, client, context);
+    await specialCommandHandler(message, client, context);
 };

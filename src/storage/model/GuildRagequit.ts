@@ -25,7 +25,10 @@ export default class GuildRagequit extends Model {
      * @param {BigInt} guildId
      * @param {BigInt} userId
      */
-    static async incrementRagequit(guildId: Snowflake, userId: Snowflake) {
+    static async incrementRagequit(
+        guildId: Snowflake,
+        userId: Snowflake,
+    ): Promise<void> {
         const data = await GuildRagequit.findOne({
             where: {
                 guildId,

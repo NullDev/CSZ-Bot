@@ -292,36 +292,23 @@ client.once("ready", async (initializedClient) => {
  */
 client.on(
     "messageCreate",
-    async (message) =>
-        void messageCommandHandler(message, client, botContext).catch((err) =>
-            log.error(err, `[messageCreate] Error on message ${message.id}`),
-        ),
+    async (message) => await messageCommandHandler(message, client, botContext),
 );
 
 client.on(
     "interactionCreate",
-    (interaction) =>
-        void handleInteractionEvent(interaction, client, botContext).catch(
-            (err) =>
-                log.error(
-                    err,
-                    `[interactionCreate] Error on interaction ${interaction.id}`,
-                ),
-        ),
+    async (interaction) =>
+        await handleInteractionEvent(interaction, client, botContext),
 );
 
-client.on(
-    "guildCreate",
-    (guild) =>
-        void log.info(
-            `New guild joined: ${guild.name} (id: ${guild.id}) with ${guild.memberCount} members`,
-        ),
+client.on("guildCreate", (guild) =>
+    log.info(
+        `New guild joined: ${guild.name} (id: ${guild.id}) with ${guild.memberCount} members`,
+    ),
 );
 
-client.on(
-    "guildDelete",
-    (guild) =>
-        void log.info(`Deleted from guild: ${guild.name} (id: ${guild.id}).`),
+client.on("guildDelete", (guild) =>
+    log.info(`Deleted from guild: ${guild.name} (id: ${guild.id}).`),
 );
 
 client.on("guildMemberAdd", async (member) => {
@@ -350,24 +337,16 @@ client.on("guildMemberAdd", async (member) => {
     });
 });
 
-client.on("guildMemberRemove", async (member) => {
-    try {
-        await GuildRagequit.incrementRagequit(member.guild.id, member.id);
-    } catch (err) {
-        log.error(
-            err,
-            `[guildMemberRemove] Error on incrementing ragequit of ${member.id}`,
-        );
-    }
-});
+client.on(
+    "guildMemberRemove",
+    async (member) =>
+        await GuildRagequit.incrementRagequit(member.guild.id, member.id),
+);
 
-client.on("messageCreate", async (message) => {
-    try {
-        await messageHandler(message, client, botContext);
-    } catch (err) {
-        log.error(err, `[messageCreate] Error on message ${message.id}`);
-    }
-});
+client.on(
+    "messageCreate",
+    async (message) => await messageHandler(message, client, botContext),
+);
 
 client.on("messageDelete", async (message) => {
     try {
@@ -379,16 +358,14 @@ client.on("messageDelete", async (message) => {
     }
 });
 
-client.on("messageUpdate", async (_, newMessage) => {
-    try {
-        await messageHandler(newMessage as Message, client, botContext);
-    } catch (err) {
-        log.error(err, `[messageUpdate] Error on message ${newMessage.id}`);
-    }
-});
+client.on(
+    "messageUpdate",
+    async (_, newMessage) =>
+        await messageHandler(newMessage as Message, client, botContext),
+);
 
-client.on("error", (e) => void log.error(e, "Discord Client Error"));
-client.on("warn", (w) => void log.warn(w, "Discord Client Warning"));
+client.on("error", (e) => log.error(e, "Discord Client Error"));
+client.on("warn", (w) => log.warn(w, "Discord Client Warning"));
 client.on("debug", (d) => {
     if (d.includes("Heartbeat")) {
         return;
@@ -396,22 +373,33 @@ client.on("debug", (d) => {
 
     log.debug(d, "Discord Client Debug d");
 });
-client.on(
-    "rateLimit",
-    (rateLimitData) =>
-        void log.error(rateLimitData, "Discord Client RateLimit Shit"),
+client.on("rateLimit", (data) =>
+    log.error(data, "Discord Client RateLimit Shit"),
 );
-client.on("invalidated", () => void log.debug("Client invalidated"));
+client.on("invalidated", () => log.debug("Client invalidated"));
 
 // TODO: Refactor to include in reaction handlers
 client.on("messageReactionAdd", async (event, user) =>
     reactionHandler(event as MessageReaction, user as User, client, false),
 );
-client.on("messageReactionAdd", async (event, user) =>
-    quoteReactionHandler(event as MessageReaction, user as User, botContext),
+client.on(
+    "messageReactionAdd",
+    async (event, user) =>
+        await quoteReactionHandler(
+            event as MessageReaction,
+            user as User,
+            botContext,
+        ),
 );
-client.on("messageReactionRemove", async (event, user) =>
-    reactionHandler(event as MessageReaction, user as User, client, true),
+client.on(
+    "messageReactionRemove",
+    async (event, user) =>
+        await reactionHandler(
+            event as MessageReaction,
+            user as User,
+            client,
+            true,
+        ),
 );
 
 client.on("messageReactionAdd", async (event, user) => {
@@ -430,12 +418,14 @@ client.on("messageReactionRemove", async (event, user) => {
     }
 });
 
-client.on("voiceStateUpdate", async (oldState, newState) =>
-    checkVoiceUpdate(
-        oldState as VoiceState,
-        newState as VoiceState,
-        botContext,
-    ),
+client.on(
+    "voiceStateUpdate",
+    async (oldState, newState) =>
+        await checkVoiceUpdate(
+            oldState as VoiceState,
+            newState as VoiceState,
+            botContext,
+        ),
 );
 
 function login() {
