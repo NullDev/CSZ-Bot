@@ -1,6 +1,7 @@
 import { once } from "node:events";
 
 import {
+    APIEmbed,
     ActionRowBuilder,
     ButtonBuilder,
     ButtonComponent,
@@ -14,6 +15,7 @@ import {
     SlashCommandStringOption,
     Snowflake,
     cleanContent,
+    time,
 } from "discord.js";
 
 import type { ApplicationCommand, CommandResult } from "./command.js";
@@ -56,8 +58,6 @@ export class Vote2Command implements ApplicationCommand {
 
     async handleInteraction(
         command: CommandInteraction,
-        _client: Client<boolean>,
-        context: BotContext,
     ): Promise<CommandResult> {
         if (!command.isChatInputCommand()) {
             return;
@@ -75,7 +75,8 @@ export class Vote2Command implements ApplicationCommand {
             return;
         }
 
-        const duration = Number(command.options.getString("duration", true));
+        const durationStr = command.options.getString("duration", true);
+        const duration = Number(durationStr);
 
         const yesButton = new ButtonBuilder()
             .setCustomId("vote-yes")
@@ -86,9 +87,12 @@ export class Vote2Command implements ApplicationCommand {
             .setLabel("👎")
             .setStyle(ButtonStyle.Secondary);
 
-        const embed = {
-            description: `**${cleanContent(question, command.channel)}**`,
-            timestamp: new Date().toISOString(),
+        const end = new Date(Date.now() + duration * 1000);
+        const endStr = time(end, "R");
+
+        const embed: APIEmbed = {
+            title: cleanContent(question, command.channel),
+            description: `Umfrage endet ${endStr}`,
             color: 0x9400d3,
             footer: {
                 text: "Keine Stimmen bisher",
@@ -139,8 +143,9 @@ export class Vote2Command implements ApplicationCommand {
             embeds: [
                 {
                     ...embed,
+                    description: `Umfrage beendet. Sie lief ${durationStr}.`,
                     footer: {
-                        text: `Abstimmung beendet – ${collected.size} Stimmen insgesamt`,
+                        text: `${collected.size} Stimmen insgesamt`,
                     },
                 },
             ],
