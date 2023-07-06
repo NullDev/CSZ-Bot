@@ -11,6 +11,7 @@ import {
     Collection,
     CommandInteraction,
     ComponentType,
+    InteractionCollector,
     SlashCommandBuilder,
     SlashCommandStringOption,
     Snowflake,
@@ -141,9 +142,18 @@ export class Vote2Command implements ApplicationCommand {
             ],
         });
 
-        const collector = response.createMessageComponentCollector({
-            componentType: ComponentType.Button,
-            time: duration * 1000,
+        const collector: InteractionCollector<ButtonInteraction> =
+            response.createMessageComponentCollector({
+                componentType: ComponentType.Button,
+                time: duration * 1000,
+                filter: (i) => !collector.users.has(i.user.id),
+            });
+
+        collector.on("ignore", async (interaction) => {
+            await interaction.reply({
+                content: "Du hast bereits abgestimmt.",
+                ephemeral: true,
+            });
         });
 
         collector.on("collect", async (interaction) => {
@@ -164,9 +174,9 @@ export class Vote2Command implements ApplicationCommand {
             });
         });
 
-        const [collected] = (await once(collector, "end")) as [
-            Collection<Snowflake, ButtonInteraction>,
-        ];
+        await once(collector, "end");
+
+        const collected = collector.collected;
 
         const yesResponses = collected.filter((i) => i.customId === "vote-yes");
         const noResponses = collected.filter((i) => i.customId === "vote-no");
