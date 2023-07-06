@@ -142,16 +142,8 @@ export class Vote2Command implements ApplicationCommand {
         const votes = new Map<Snowflake, boolean>();
 
         const countInteraction = (interaction: ButtonInteraction) => {
-            switch (interaction.customId) {
-                case "vote-yes":
-                    votes.set(interaction.user.id, true);
-                    break;
-                case "vote-no":
-                    votes.set(interaction.user.id, false);
-                    break;
-                default:
-                    break;
-            }
+            const vote = interaction.customId === "vote-yes";
+            votes.set(interaction.user.id, vote);
         };
 
         const collector: InteractionCollector<ButtonInteraction> =
