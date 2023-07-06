@@ -33,25 +33,57 @@ export class Vote2Command implements ApplicationCommand {
         .setDescription(this.description)
         .addStringOption(
             new SlashCommandStringOption()
-                .setDescription("Die Frage")
+                .setDescription(
+                    "Die Frage oder worüber abgestimmt werden soll.",
+                )
                 .setRequired(true)
-                .setName("question"),
+                .setName("question")
+                .setNameLocalizations({
+                    de: "frage",
+                    "en-US": "question",
+                }),
         )
         .addStringOption(
             new SlashCommandStringOption()
                 .setDescription("Dauer der Umfrage")
                 .setRequired(true)
                 .setName("duration")
+                .setNameLocalizations({
+                    de: "dauer",
+                    "en-US": "duration",
+                })
                 .addChoices(
-                    { name: "30 Sekunden", value: (30).toString() },
-                    { name: "5 Minuten", value: (60 * 5).toString() },
+                    {
+                        name: "30 Sekunden",
+                        value: (30).toString(),
+                        name_localizations: {
+                            de: "30 Sekunden",
+                            "en-US": "30 seconds",
+                        },
+                    },
+                    {
+                        name: "5 Minuten",
+                        value: (60 * 5).toString(),
+                        name_localizations: {
+                            de: "5 Minuten",
+                            "en-US": "5 minutes",
+                        },
+                    },
                     {
                         name: "2 Stunden",
                         value: (60 * 60 * 2).toString(),
+                        name_localizations: {
+                            de: "2 Stunden",
+                            "en-US": "2 hours",
+                        },
                     },
                     {
                         name: "8 Stunden",
                         value: (60 * 60 * 8).toString(),
+                        name_localizations: {
+                            de: "8 Stunden",
+                            "en-US": "8 hours",
+                        },
                     },
                 ),
         );
@@ -92,7 +124,7 @@ export class Vote2Command implements ApplicationCommand {
 
         const embed: APIEmbed = {
             title: cleanContent(question, command.channel),
-            description: `Umfrage endet ${endStr}`,
+            description: `Anonyme Umfrage endet ${endStr}`,
             color: 0x9400d3,
             footer: {
                 text: "Keine Stimmen bisher",
@@ -143,7 +175,7 @@ export class Vote2Command implements ApplicationCommand {
             embeds: [
                 {
                     ...embed,
-                    description: `Umfrage beendet. Sie lief ${durationStr}.`,
+                    description: `Anonyme Umfrage lief ${durationStr} Sekunden.`,
                     footer: {
                         text: `${collected.size} Stimmen insgesamt`,
                     },
