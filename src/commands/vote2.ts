@@ -4,11 +4,8 @@ import {
     APIEmbed,
     ActionRowBuilder,
     ButtonBuilder,
-    ButtonComponent,
     ButtonInteraction,
     ButtonStyle,
-    Client,
-    Collection,
     CommandInteraction,
     ComponentType,
     InteractionCollector,
@@ -142,6 +139,21 @@ export class Vote2Command implements ApplicationCommand {
             ],
         });
 
+        const votes = new Map<Snowflake, boolean>();
+
+        const countInteraction = (interaction: ButtonInteraction) => {
+            switch (interaction.customId) {
+                case "vote-yes":
+                    votes.set(interaction.user.id, true);
+                    break;
+                case "vote-no":
+                    votes.set(interaction.user.id, false);
+                    break;
+                default:
+                    break;
+            }
+        };
+
         const collector: InteractionCollector<ButtonInteraction> =
             response.createMessageComponentCollector({
                 componentType: ComponentType.Button,
@@ -150,14 +162,18 @@ export class Vote2Command implements ApplicationCommand {
             });
 
         collector.on("ignore", async (interaction) => {
+            countInteraction(interaction);
+
             await interaction.reply({
-                content: "Du hast bereits abgestimmt.",
+                content: "Habe deine Stimme geändert.",
                 ephemeral: true,
             });
         });
 
         collector.on("collect", async (interaction) => {
-            interaction.reply({
+            countInteraction(interaction);
+
+            await interaction.reply({
                 content: "Danke für deine Stimme!",
                 ephemeral: true,
             });
@@ -176,10 +192,8 @@ export class Vote2Command implements ApplicationCommand {
 
         await once(collector, "end");
 
-        const collected = collector.collected;
-
-        const yesResponses = collected.filter((i) => i.customId === "vote-yes");
-        const noResponses = collected.filter((i) => i.customId === "vote-no");
+        const yesVotes = [...votes.values()].filter((v) => v).length;
+        const noVotes = votes.size - yesVotes;
 
         await response.edit({
             embeds: [
@@ -187,18 +201,14 @@ export class Vote2Command implements ApplicationCommand {
                     ...embed,
                     description: `Anonyme Umfrage lief ${durationStr} Sekunden.`,
                     footer: {
-                        text: `${collected.size} Stimmen insgesamt`,
+                        text: `${votes.size} Stimmen insgesamt`,
                     },
                 },
             ],
             components: [
                 new ActionRowBuilder<ButtonBuilder>().addComponents(
-                    yesButton
-                        .setLabel(`${yesResponses.size} 👍`)
-                        .setDisabled(true),
-                    noButton
-                        .setLabel(`${noResponses.size} 👎`)
-                        .setDisabled(true),
+                    yesButton.setLabel(`${yesVotes} 👍`).setDisabled(true),
+                    noButton.setLabel(`${noVotes} 👎`).setDisabled(true),
                 ),
             ],
         });
