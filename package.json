@@ -33,7 +33,7 @@
     "@resvg/resvg-js": "^2.4.1",
     "canvas": "^2.11.2",
     "chrono-node": "^2.6.4",
-    "croner": "^6.0.6",
+    "croner": "^6.0.7",
     "discord.js": "^14.11.0",
     "get-audio-duration": "^4.0.1",
     "graphviz-wasm": "^3.0.0",
