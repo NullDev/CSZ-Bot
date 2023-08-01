@@ -26,7 +26,7 @@ jobs:
 
     steps:
     - name: Deploy CSZ Bot
-      uses: appleboy/ssh-action@334f9259f2f8eb3376d33fa4c684fff373f2c2a6
+      uses: appleboy/ssh-action@55dabf81b49d4120609345970c91507e2d734799
       with:
         host: ${{ secrets.SSH_HOST }}
         username: ${{ secrets.SSH_USERNAME }}
