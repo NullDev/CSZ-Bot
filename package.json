@@ -34,7 +34,7 @@
     "canvas": "^2.11.2",
     "chrono-node": "^2.6.4",
     "croner": "^6.0.7",
-    "discord.js": "^14.11.0",
+    "discord.js": "^14.12.1",
     "get-audio-duration": "^4.0.1",
     "graphviz-wasm": "^3.0.0",
     "instagram-url-direct": "^1.0.13",
