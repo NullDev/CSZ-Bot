@@ -29,11 +29,7 @@
             "default_target_channel_id": ""
         },
         "ehre": {
-            "emoji_names": [
-                "ähre",
-                "aehre",
-                "pr0aehre"
-            ]
+            "emoji_names": ["ähre", "aehre", "pr0aehre"]
         }
     },
     "saufen_files": [],

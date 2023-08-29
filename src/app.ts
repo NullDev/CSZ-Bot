@@ -42,6 +42,7 @@ import { reminderHandler } from "./commands/erinnerung.js";
 import { endAprilFools, startAprilFools } from "./handler/aprilFoolsHandler.js";
 import { createBotContext, type BotContext } from "./context.js";
 import { EhrePoints, EhreVotes } from "./storage/model/Ehre.js";
+import { ehreReactionHandler } from "./commands/ehre.js";
 import {
     woisVoteReactionHandler,
     woisVoteScheduler,
@@ -94,6 +95,7 @@ const client = new Discord.Client({
 const reactionHandlers: ReactionHandler[] = [
     reactionHandler,
     quoteReactionHandler,
+    ehreReactionHandler,
     woisVoteReactionHandler,
 ];
 

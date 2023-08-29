@@ -3,6 +3,7 @@ import {
     CommandInteraction,
     InteractionReplyOptions,
     MessagePayload,
+    MessageReaction,
     SlashCommandBuilder,
     SlashCommandSubcommandBuilder,
     SlashCommandUserOption,
@@ -85,6 +86,47 @@ async function handleVote(voter: string, user: string) {
     await EhreVotes.insertVote(voter);
     await EhrePoints.addPoints(user, getVote(userInGroups, voter));
 }
+
+export const ehreReactionHandler = {
+    displayName: "Ehre Reaction Handler",
+    async execute(
+        reactionEvent: MessageReaction,
+        invoker: User,
+        context: BotContext,
+        reactionWasRemoved: boolean,
+    ): Promise<void> {
+        if (reactionWasRemoved) {
+            // Ehres can't be removed, they stay.
+            return;
+        }
+
+        const reactionName = reactionEvent.emoji.name;
+        if (!reactionName || !context.commandConfig.ehre.emojiNames.has(reactionName)) {
+            return; // Not an Ehre reaction
+        }
+
+        const ehrenmember = reactionEvent.message.member;
+        if (!ehrenmember) {
+            return;
+        }
+
+        const ehrenbruder = ehrenmember.user;
+        if (ehrenbruder.id === invoker.id) {
+            // When handling reactions, we don't remove all their points
+            return;
+        }
+
+        if (await EhreVotes.hasVoted(invoker.id)) {
+            // Same when the user already voted; just swallow it
+            return;
+        }
+
+        await handleVote(invoker.id, ehrenbruder.id);
+        await reactionEvent.message.reply(
+            `${invoker} hat ${ehrenbruder} geährt`,
+        );
+    },
+};
 
 export class EhreCommand implements ApplicationCommand {
     modCommand = false;
