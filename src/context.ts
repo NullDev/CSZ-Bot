@@ -39,6 +39,9 @@ export interface BotContext {
             maxNumberOfPings: number;
             minRequiredReactions: number;
         };
+        ehre: {
+            emojiNames: Set<string>;
+        };
     };
 
     roles: Record<RemoveSuffix<ConfigRoleId, "_role_id">, Role>;
@@ -160,6 +163,11 @@ export async function createBotContext(
                 minRequiredReactions: Number(
                     config.bot_settings.faulenzerping_min_required_reactions ??
                         "5",
+                ),
+            },
+            ehre: {
+                emojiNames: new Set(
+                    config.bot_settings.ehre?.emoji_names ?? ["aehre"],
                 ),
             },
         },

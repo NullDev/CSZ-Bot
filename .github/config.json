@@ -28,6 +28,13 @@
             "default_target_channel_id": "893179191556706386",
             "target_channel_overrides": []
         },
+        "ehre": {
+            "emoji_names": [
+                "ähre",
+                "aehre",
+                "pr0aehre"
+            ]
+        },
         "faulenzerping_allowed_role_ids": [
 
         ],

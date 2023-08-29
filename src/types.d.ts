@@ -106,6 +106,10 @@ export interface Config {
             default_target_channel_id: Snowflake;
             emoji_name: string;
         };
+
+        ehre: {
+            emoji_names: Array<string>;
+        };
     };
     ids: Record<ConfigIdKey, Snowflake>;
 }
