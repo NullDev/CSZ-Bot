@@ -369,6 +369,7 @@ client.on(
             event as MessageReaction,
             user as User,
             botContext,
+            false,
         ),
 );
 
