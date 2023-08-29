@@ -364,11 +364,14 @@ client.on("rateLimit", data =>
 client.on("invalidated", () => log.debug("Client invalidated"));
 
 client.on("messageReactionAdd", async (event, user) => {
-    const entireEvent = await event.fetch();
+    const [entireEvent, entireUser] = await Promise.all([
+        event.fetch(),
+        user.fetch(),
+    ]);
 
     for (const handler of reactionHandlers) {
         try {
-            await handler.execute(entireEvent, user as User, botContext, false);
+            await handler.execute(entireEvent, entireUser, botContext, false);
         } catch (err) {
             log.error(
                 err,
@@ -378,11 +381,14 @@ client.on("messageReactionAdd", async (event, user) => {
     }
 });
 client.on("messageReactionRemove", async (event, user) => {
-    const entireEvent = await event.fetch();
+    const [entireEvent, entireUser] = await Promise.all([
+        event.fetch(),
+        user.fetch(),
+    ]);
 
     for (const handler of reactionHandlers) {
         try {
-            await handler.execute(entireEvent, user as User, botContext, true);
+            await handler.execute(entireEvent, entireUser, botContext, true);
         } catch (err) {
             log.error(
                 err,
