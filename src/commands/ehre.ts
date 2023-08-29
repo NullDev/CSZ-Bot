@@ -14,8 +14,14 @@ import type { ApplicationCommand, CommandResult } from "./command.js";
 import type { BotContext } from "../context.js";
 import { EhreGroups, EhrePoints, EhreVotes } from "../storage/model/Ehre.js";
 
+const ehreFormatter = new Intl.NumberFormat("de-DE", {
+    style: "decimal",
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
+});
+
 function createUserPointString(e: EhrePoints) {
-    return `<@${e.userId}> : ${(Math.round(e.points * 100) / 10).toFixed(1)}`;
+    return `<@${e.userId}> : ${ehreFormatter.format(e.points)}`;
 }
 
 async function createEhreTable(
@@ -101,7 +107,10 @@ export const ehreReactionHandler = {
         }
 
         const reactionName = reactionEvent.emoji.name;
-        if (!reactionName || !context.commandConfig.ehre.emojiNames.has(reactionName)) {
+        if (
+            !reactionName ||
+            !context.commandConfig.ehre.emojiNames.has(reactionName)
+        ) {
             return; // Not an Ehre reaction
         }
 
