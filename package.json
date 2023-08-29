@@ -11,12 +11,9 @@
     "compile": "tsc --sourceMap false --removeComments true",
     "ci": "biome ci ./",
     "format": "biome format --write ./",
-    "lint": "biome check ./",
-    "lint:fix": "biome check --apply ./",
-    "dev": "npm run lint && npm run watch",
-    "watch-node": "node --watch built/app.js",
-    "watch-ts": "tsc -w",
-    "watch": "concurrently -k -n 'TS,N' -c 'cyan,green' 'npm run watch-ts' 'npm run watch-node'"
+    "lint": "biome lint ./",
+    "lint:fix": "biome lint --apply ./",
+    "watch": "concurrently -k -n 'TS,N' -c 'cyan,green' 'tsc -w' 'node --watch built/app.js'"
   },
   "repository": {
     "type": "git",
