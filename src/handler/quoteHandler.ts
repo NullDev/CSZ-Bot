@@ -183,7 +183,13 @@ export default {
         event: MessageReaction,
         user: User,
         context: BotContext,
+        removal: boolean,
     ): Promise<void> {
+        if (removal) {
+            // We don't support removing quotes, but the API of the reaction handlers will also call this on reaction removal
+            return;
+        }
+
         if (
             !isQuoteEmoji(event.emoji) ||
             event.message.guildId === null ||
