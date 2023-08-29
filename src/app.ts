@@ -245,7 +245,7 @@ const scheduleCronjobs = async (context: BotContext) => {
 client.once("ready", async (initializedClient) => {
     try {
         botContext = await createBotContext(initializedClient);
-        console.assert(!!botContext); // TODO: Remove once botContext is used
+        console.assert(!!botContext, "Bot context should be available"); // TODO: Remove once botContext is used
 
         await storage.initialize(botContext);
 
