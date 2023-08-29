@@ -20,17 +20,12 @@ export default {
         context: BotContext,
         reactionWasRemoved: boolean,
     ): Promise<void> {
-        const channel = context.client.channels.cache.get(
-            reactionEvent.message.channelId,
-        );
-        if (channel === undefined) {
-            throw new Error("Channel is undefined");
-        }
+        const channel = reactionEvent.message.channel;
         if (!channel.isTextBased()) {
             throw new Error("Channel is not text based");
         }
 
-        const message = await channel.messages.fetch(reactionEvent.message.id);
+        const message = await reactionEvent.message.fetch();
         const { guild } = message;
         if (guild === null) {
             throw new Error("Guild is null");
@@ -44,7 +39,7 @@ export default {
         const member = await guild.members.fetch(invoker.id);
 
         if (reactionEvent.emoji.name === "✅") {
-            if (member.id && member.id !== botUser?.id) {
+            if (member.id && member.id !== botUser.id) {
                 // Some roles, especially "C" are prefixed with a invisible whitespace to ensure they are not mentioned
                 // by accident.
                 const role = guild.roles.cache.find(
