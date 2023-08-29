@@ -29,6 +29,7 @@ import {
     checkVoiceUpdate,
 } from "./handler/voiceStateUpdateHandler.js";
 
+import type { ReactionHandler } from "./types.js";
 import {
     handleInteractionEvent,
     messageCommandHandler,
@@ -45,7 +46,6 @@ import {
     woisVoteReactionHandler,
     woisVoteScheduler,
 } from "./commands/woisvote.js";
-import { ReactionHandler } from "./types.js";
 import { AoCHandler } from "./commands/aoc.js";
 import { rotate } from "./helper/bannerCarusel.js";
 
@@ -93,6 +93,7 @@ const client = new Discord.Client({
  */
 const reactionHandlers: ReactionHandler[] = [
     reactionHandler,
+    quoteReactionHandler,
     woisVoteReactionHandler,
 ];
 
@@ -361,17 +362,6 @@ client.on("rateLimit", data =>
     log.error(data, "Discord Client RateLimit Shit"),
 );
 client.on("invalidated", () => log.debug("Client invalidated"));
-
-client.on(
-    "messageReactionAdd",
-    async (event, user) =>
-        await quoteReactionHandler.execute(
-            event as MessageReaction,
-            user as User,
-            botContext,
-            false,
-        ),
-);
 
 client.on("messageReactionAdd", async (event, user) => {
     for (const handler of reactionHandlers) {
