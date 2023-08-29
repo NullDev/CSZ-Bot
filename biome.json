@@ -17,5 +17,10 @@
         "rules": {
             "recommended": true
         }
+    },
+    "javascript": {
+        "formatter": {
+            "arrowParentheses": "asNeeded"
+        }
     }
 }
