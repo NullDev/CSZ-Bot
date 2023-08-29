@@ -1,6 +1,6 @@
 /* Disabled due to sequelize's DataTypes */
 
-import { DataTypes, Model, Sequelize } from "sequelize";
+import { DataTypes, Model, Op, Sequelize } from "sequelize";
 import { Snowflake } from "discord.js";
 
 import log from "../../utils/logger.js";
@@ -84,8 +84,10 @@ export class EhrePoints extends Model {
 
     static async getUserInGroups(): Promise<EhreGroups> {
         const { rows, count } = await EhrePoints.findAndCountAll({
+            where: { points: { [Op.gt]: 0 } },
             order: [["points", "DESC"]],
         });
+
         const splitterIndex = (count - 1) * 0.2 + 1;
         return {
             best: rows[0],
