@@ -10,10 +10,10 @@
     "cSpell.language": "de,en",
     "editor.formatOnSaveMode": "modificationsIfAvailable",
     "[javascript]": {
-        "editor.defaultFormatter": "rome.rome"
+        "editor.defaultFormatter": "biomejs.biome"
     },
     "[typescript]": {
-        "editor.defaultFormatter": "rome.rome"
+        "editor.defaultFormatter": "biomejs.biome"
     },
     "cSpell.words": [
         "wois",
