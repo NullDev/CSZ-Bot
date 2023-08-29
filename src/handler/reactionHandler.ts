@@ -37,14 +37,16 @@ export default {
         }
 
         const botUser = context.client.user;
-        if (message.author.id !== botUser?.id) return;
+        if (message.author.id !== botUser.id) {
+            return;
+        }
 
         const member = await guild.members.fetch(invoker.id);
 
         if (reactionEvent.emoji.name === "✅") {
             if (member.id && member.id !== botUser?.id) {
                 // Some roles, especially "C" are prefixed with a invisible whitespace to ensure they are not mentioned
-                // by accidence.
+                // by accident.
                 const role = guild.roles.cache.find(
                     r =>
                         r.name.replace(/[\u200B-\u200D\uFEFF]/g, "") ===
