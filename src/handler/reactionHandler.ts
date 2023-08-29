@@ -1,4 +1,4 @@
-import { Client, MessageReaction, User } from "discord.js";
+import type { MessageReaction, User } from "discord.js";
 
 import FadingMessage from "../storage/model/FadingMessage.js";
 import AdditionalMessageData from "../storage/model/AdditionalMessageData.js";
@@ -6,6 +6,7 @@ import AdditionalMessageData from "../storage/model/AdditionalMessageData.js";
 import log from "../utils/logger.js";
 import * as poll from "../commands/poll.js";
 import type { ProcessableMessage } from "./cmdHandler.js";
+import type { BotContext } from "../context.js";
 
 const pollEmojis = poll.EMOJI;
 const voteEmojis = ["👍", "👎"];
@@ -16,10 +17,10 @@ export default {
     async execute(
         reactionEvent: MessageReaction,
         user: User,
-        client: Client,
+        context: BotContext,
         removal: boolean,
     ): Promise<void> {
-        const channel = client.channels.cache.get(
+        const channel = context.client.channels.cache.get(
             reactionEvent.message.channelId,
         );
         if (channel === undefined) {
@@ -35,7 +36,7 @@ export default {
             throw new Error("Guild is null");
         }
 
-        const botUser = client.user;
+        const botUser = context.client.user;
         if (message.author.id !== botUser?.id) return;
 
         const member = await guild.members.fetch(user.id);

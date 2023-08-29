@@ -88,7 +88,13 @@ const client = new Discord.Client({
     ],
 });
 
-const reactionHandlers: ReactionHandler[] = [woisVoteReactionHandler];
+/**
+ * All of them will be executed in the given order, regardless of their result or if they throw an error.
+ */
+const reactionHandlers: ReactionHandler[] = [
+    reactionHandler,
+    woisVoteReactionHandler,
+];
 
 process.on("unhandledRejection", (err: unknown, promise) => {
     log.error(err, `Unhandled rejection (promise: ${promise})`);
@@ -361,15 +367,6 @@ client.on("rateLimit", (data) =>
 );
 client.on("invalidated", () => log.debug("Client invalidated"));
 
-// TODO: Refactor to include in reaction handlers
-client.on("messageReactionAdd", async (event, user) =>
-    reactionHandler.execute(
-        event as MessageReaction,
-        user as User,
-        client,
-        false,
-    ),
-);
 client.on(
     "messageReactionAdd",
     async (event, user) =>
@@ -377,16 +374,6 @@ client.on(
             event as MessageReaction,
             user as User,
             botContext,
-        ),
-);
-client.on(
-    "messageReactionRemove",
-    async (event, user) =>
-        await reactionHandler.execute(
-            event as MessageReaction,
-            user as User,
-            client,
-            true,
         ),
 );
 
@@ -400,7 +387,10 @@ client.on("messageReactionAdd", async (event, user) => {
                 false,
             );
         } catch (err) {
-            log.error(err, `Handler "${handler.displayName}" failed.`);
+            log.error(
+                err,
+                `Handler "${handler.displayName}" failed during "messageReactionAdd".`,
+            );
         }
     }
 });
@@ -414,7 +404,10 @@ client.on("messageReactionRemove", async (event, user) => {
                 true,
             );
         } catch (err) {
-            log.error(err, `Handler "${handler.displayName}" failed.`);
+            log.error(
+                err,
+                `Handler "${handler.displayName}" failed during "messageReactionRemove".`,
+            );
         }
     }
 });
