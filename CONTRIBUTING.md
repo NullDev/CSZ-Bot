@@ -21,4 +21,8 @@ If you require to persist some state, you are strongley encouraged to use our Da
 
 Models are defined in the [models directory](./src/storage/model) and **should always** use a uuid as surrogate key. However please make sure that you define also natural keys and unique constraints.
 
-We don't enforce any rules or model definitions further. The only thing that matters is: Keep your business logic seperated from the model. The Model is not an entity and shouldn't be.
+We don't enforce any rules or model definitions further. The only thing that matters is: Keep your business logic separated from the model. The Model is not an entity and shouldn't be.
+
+## Review Notes
+
+Keep in mind that your PR should be reviewable by a person with a BAC of 2.5 ‰ (as it _may_ happen).

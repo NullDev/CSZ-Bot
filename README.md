@@ -23,54 +23,67 @@ German description of the Discord Server:
 
 ## I want to make this stupid bot even worse
 
-Read: [Contributing.md](./CONTRIBUTING.md)
+Read: [CONTRIBUTING.md](./CONTRIBUTING.md)
 
 ## :wrench: Installation
 
-<sub>NodeJS Version: >=16.6.0</sub>
+<sub>NodeJS Version: >=20</sub>
 
 0. Terminal aufmachen und dorthin navigieren, wo man es downloaden möchte <br><br>
-1. Sichergehen, dass NodeJS installiert ist. Teste mit: <br>
-$ `node -v` <br>
-Wenn es eine Versionsnummer zurückgibt, ist NodeJS installiert.
- **Wenn nicht**, NodeJS <a href="https://nodejs.org/en/download/package-manager/">hier</a> downloaden. <br><br>
-2. Repository clonen und hinein navigieren. Wenn Git installiert ist: <br>
-$ `git clone https://github.com/NullDev/CSZ-Bot.git && cd $_` <br>
-Wenn nicht, <a href="https://github.com/NullDev/CSZ-Bot/archive/master.zip">hier</a> herunterladen und die ZIP extrahieren. <br>
-Dann in den Ordner navigieren.<br><br>
+1. Sichergehen, dass NodeJS installiert ist. Teste mit: `node -v` <br>
+    Wenn es eine Versionsnummer zurückgibt, ist NodeJS installiert.
+ **Wenn nicht**, NodeJS <a href="https://nodejs.org/en/download/package-manager/">hier</a> runterladen.
+2. Repository klinen und hinein navigieren. Wenn Git installiert ist:
+```sh
+git clone https://github.com/NullDev/CSZ-Bot.git && cd $_
+```
+Wenn nicht, <a href="https://github.com/NullDev/CSZ-Bot/archive/master.zip">hier</a> herunterladen und die ZIP extrahieren (Gott stehe dir bei) und dann in den Ordner navigieren.
 3. Dependencies installieren: <br>
-$ `npm ci`<br><br>
-4. Das Config-Template [config.template.json](https://github.com/NullDev/CSZ-Bot/blob/master/config.template.json) kopieren und als `config.json` einfügen. <br><br>
-5. Die frisch kopierte Config-Datei ausfüllen: <br>
+```sh
+npm ci
+```
+4. Das Config-Template [config.template.json](https://github.com/NullDev/CSZ-Bot/blob/master/config.template.json) kopieren und als `config.json` einfügen und bearbeiten:
+```sh
+cp config.template.json config.json
+$EDITOR config.json
+```
+5. Die frisch kopierte Config-Datei ausfüllen:
     - Um einen Bot zum Testen anzulegen, einfach den Instruktionen im [Discord Developer Portal](https://discord.com/developers/applications) folgen.
         - Die Applikation muss als "Bot" gesetzt werden.
         - Es müssen beide [Gateway Intents](https://discordjs.guide/popular-topics/intents.html#gateway-intents) eingeschalten werden.
         - Den Bot Token (**nicht** die Application-ID oder den Public-Key) [in die Config](https://github.com/NullDev/CSZ-Bot/blob/master/config.template.json#L3) unter `bot_token` kopieren.
         - Okay, die Application-ID muss doch mit [in die Config beim Feld `client_id`](https://github.com/NullDev/CSZ-Bot/blob/master/config.template.json#L4) rein.
-    - Um IDs kopieren zu können, den "Developer Mode" in den Discord Einstellungen aktivieren. Mit Rechtsklick kann man dann die IDs kopieren:
-        - Die ID [des Servers](https://github.com/NullDev/CSZ-Bot/blob/master/config.template.json#L31)
-        - Die ID für [den Hauptchat](https://github.com/NullDev/CSZ-Bot/blob/master/config.template.json#L32)
-        - Die ID für [den Banned-Channel](https://github.com/NullDev/CSZ-Bot/blob/master/config.template.json#L44)
-        - Die ID für [den Umfrage-Channel](https://github.com/NullDev/CSZ-Bot/blob/master/config.template.json#L45)
-        - Die ID für [den Wois-Channel](https://github.com/NullDev/CSZ-Bot/blob/master/config.template.json#L53)
-        - Die ID für [den Wois-Text-Channel](https://github.com/NullDev/CSZ-Bot/blob/master/config.template.json#L54)
+    - Um IDs kopieren zu können, den "Developer Mode" in den Discord Einstellungen aktivieren. Mit Rechtsklick kann man dann die IDs kopieren.
     - Es müssen folgende Rollen am Server angelegt werden:
-        - Moderator-Rolle ([Name der Rolle](https://github.com/NullDev/CSZ-Bot/blob/master/config.template.json#L12)) - CSZ Default: Moderader
-        - Default Rolle ([ID der Rolle](https://github.com/NullDev/CSZ-Bot/blob/master/config.template.json#L33)) - CSZ Default: Nerd
-        - Banned-Rolle ([ID der Rolle](https://github.com/NullDev/CSZ-Bot/blob/master/config.template.json#L22)) - CSZ Default: B&
-        - Geburtstags-Rolle ([ID der Rolle](https://github.com/NullDev/CSZ-Bot/blob/master/config.template.json#L35)) - CSZ Default: Geburtstagskind
-        - Gründerväter-Rolle ([ID der Rolle](https://github.com/NullDev/CSZ-Bot/blob/master/config.template.json#L38)) - CSZ Default: Gründerväter
-        - Trusted-Rolle ([ID der Rolle](https://github.com/NullDev/CSZ-Bot/blob/master/config.template.json#L40)) - CSZ Default: Trusted
-        - Rejoiner / Shame-Rolle ([ID der Rolle](https://github.com/NullDev/CSZ-Bot/blob/master/config.template.json#L42)) - CSZ Default: Rejoiner
-        - Gründerväter-Gebannt-Rolle ([ID der Rolle](https://github.com/NullDev/CSZ-Bot/blob/master/config.template.json#L39)) - CSZ Default: B&-Gründerväter
-        - Trusted-Gebannt-Rolle ([ID der Rolle](https://github.com/NullDev/CSZ-Bot/blob/master/config.template.json#L41)) - CSZ Default: B&-Trusted
-        - Woisgang-Rolle ([ID der Rolle](https://github.com/NullDev/CSZ-Bot/blob/master/config.template.json#L36)) - CSZ Default: woisgang<br><br>
-6. Das Script starten <br>
-$ `npm run watch`<br>
-<br><br>
+        - Moderator-Rolle - CSZ-Default: Moderader
+        - Default Rolle - CSZ-Default: Nerd
+        - Banned-Rolle - CSZ-Default: B&
+        - Geburtstags-Rolle - CSZ-Default: Geburtstagskind
+        - Gründerväter-Rolle - CSZ-Default: Gründerväter
+        - Trusted-Rolle - CSZ-Default: Trusted
+        - Rejoiner / Shame-Rolle - CSZ-Default: Rejoiner
+        - Gründerväter-Gebannt-Rolle - CSZ-Default: B&-Gründerväter
+        - Trusted-Gebannt-Rolle - CSZ-Default: B&-Trusted
+        - Woisgang-Rolle - CSZ-Default: woisgang
+        - ...und vielleicht noch ein paar Weitere, die du der Config entnehmen kannst.
+6. Das Script starten.
+
+    Mit Hot-Reload:
+```sh
+npm run watch
+```
+
+Ohne Hot-Reload:
+```sh
+npm run compile
+npm start
+```
+
 ## ❄ Nix
 Entweder via `nix-shell` oder `nix develop` letzteres benötigt Nix-Flake support.
 Nix-Flakes nutzen ohne diese eingeschaltet zu haben geht via:
 `nix --extra-experimental-features "flakes nix-command" develop`
+
+Wer auch immer einen Plan von Nix hat, kann das hier gerne weiter ausführen.
 
 <img height=auto width=100% src="https://repository-images.githubusercontent.com/231836048/9d94c400-2f6b-11ea-95d8-f9e72ddf020f">
