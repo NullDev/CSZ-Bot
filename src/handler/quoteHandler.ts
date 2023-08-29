@@ -181,11 +181,11 @@ export default {
 
     async execute(
         event: MessageReaction,
-        user: User,
+        invoker: User,
         context: BotContext,
-        removal: boolean,
+        reactionWasRemoved: boolean,
     ): Promise<void> {
-        if (removal) {
+        if (reactionWasRemoved) {
             // We don't support removing quotes, but the API of the reaction handlers will also call this on reaction removal
             return;
         }
@@ -193,12 +193,12 @@ export default {
         if (
             !isQuoteEmoji(event.emoji) ||
             event.message.guildId === null ||
-            user.id === context.client.user.id
+            invoker.id === context.client.user.id
         ) {
             return;
         }
 
-        const quoter = context.guild.members.cache.get(user.id);
+        const quoter = context.guild.members.cache.get(invoker.id);
 
         const sourceChannel = event.message.channel as TextBasedChannel;
         const quotedMessage = await sourceChannel.messages.fetch(

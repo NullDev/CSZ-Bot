@@ -157,9 +157,9 @@ export const woisVoteReactionHandler: ReactionHandler = {
     displayName: "Wois-Vote Reaction Handler",
     async execute(
         reactionEvent: MessageReaction,
-        user: User,
+        invoker: User,
         context: BotContext,
-        removal: boolean,
+        reactionWasRemoved: boolean,
     ): Promise<void> {
         const { message } = reactionEvent;
 
@@ -182,7 +182,7 @@ export const woisVoteReactionHandler: ReactionHandler = {
         // | 1       | 0      | 1       | 0                        |
         // | 0       | 1      | 1       | 0                        |
         // | 1       | 1      | 1       | X (cannot happen)        |
-        const interest = voteYes && !voteNo && !removal;
+        const interest = voteYes && !voteNo && !reactionWasRemoved;
 
         const woisAction = await WoisAction.getWoisActionByMessageId(
             message.id,
@@ -205,12 +205,13 @@ export const woisVoteReactionHandler: ReactionHandler = {
 
         const success = await WoisAction.registerInterst(
             message.id,
-            user.id,
+            invoker.id,
             interest,
         );
+
         if (!success) {
             log.error(
-                `Could not register interest for user ${user.id} in message ${message.id}`,
+                `Could not register interest for user ${invoker.id} in message ${message.id}`,
             );
         }
     },

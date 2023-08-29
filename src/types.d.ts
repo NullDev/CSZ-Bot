@@ -19,9 +19,9 @@ export interface ReactionHandler {
     displayName: string;
     execute(
         reactionEvent: MessageReaction,
-        user: User,
+        invoker: User,
         context: BotContext,
-        removal: boolean,
+        reactionWasRemoved: boolean,
     ): Promise<void>;
 }
 

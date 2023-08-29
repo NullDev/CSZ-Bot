@@ -16,9 +16,9 @@ export default {
     displayName: "Default Reaction Handler",
     async execute(
         reactionEvent: MessageReaction,
-        user: User,
+        invoker: User,
         context: BotContext,
-        removal: boolean,
+        reactionWasRemoved: boolean,
     ): Promise<void> {
         const channel = context.client.channels.cache.get(
             reactionEvent.message.channelId,
@@ -39,7 +39,7 @@ export default {
         const botUser = context.client.user;
         if (message.author.id !== botUser?.id) return;
 
-        const member = await guild.members.fetch(user.id);
+        const member = await guild.members.fetch(invoker.id);
 
         if (reactionEvent.emoji.name === "✅") {
             if (member.id && member.id !== botUser?.id) {
@@ -55,7 +55,7 @@ export default {
                     throw new Error(`Could not find role ${role}`);
                 }
 
-                if (role && removal) {
+                if (role && reactionWasRemoved) {
                     member.roles.remove(role.id).catch(log.error);
                 } else {
                     member.roles.add(role.id).catch(log.error);
@@ -69,7 +69,7 @@ export default {
             throw new Error("Could not find reaction name");
         }
 
-        if (pollVoteEmojis.includes(reactionName) && !removal) {
+        if (pollVoteEmojis.includes(reactionName) && !reactionWasRemoved) {
             const fromThisBot = member.id === botUser.id;
 
             if (fromThisBot) {
