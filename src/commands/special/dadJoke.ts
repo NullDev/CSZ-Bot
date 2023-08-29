@@ -59,7 +59,7 @@ export class DadJokeCommand implements SpecialCommand {
 
         // Note the whitespaces
         return Object.keys(this.matchPhrases).some(
-            (phrase) =>
+            phrase =>
                 msg.startsWith(`${phrase} `) &&
                 substringAfter(msg, `${phrase} `).length > 3,
         );
@@ -70,7 +70,7 @@ export class DadJokeCommand implements SpecialCommand {
         client: Client<boolean>,
     ): Promise<CommandResult> {
         const msg = message.content.toLowerCase();
-        const phrase = Object.keys(this.matchPhrases).find((p) =>
+        const phrase = Object.keys(this.matchPhrases).find(p =>
             msg.startsWith(p),
         );
         if (!phrase) return;
@@ -91,7 +91,7 @@ export class DadJokeCommand implements SpecialCommand {
                         : message.content.length,
                 )
                 .split(/\s+/)
-                .map((w) => w.trim());
+                .map(w => w.trim());
             const whoIs = cleanContent(
                 trimmedWords.join(" "),
                 message.channel,

@@ -74,7 +74,7 @@ export default async function (
     }
 
     const commandFile = commandArr.find(
-        (cmd) => cmd === `${command.toLowerCase()}.js`,
+        cmd => cmd === `${command.toLowerCase()}.js`,
     );
 
     if (commandFile === undefined) {
@@ -99,7 +99,7 @@ export default async function (
 
     if (
         isModCommand &&
-        !message.member.roles.cache.some((r) =>
+        !message.member.roles.cache.some(r =>
             config.bot_settings.moderator_roles.includes(r.name),
         )
     ) {
@@ -109,7 +109,7 @@ export default async function (
 
         if (
             message.member.roles.cache.some(
-                (r) => r.id === config.ids.banned_role_id,
+                r => r.id === config.ids.banned_role_id,
             )
         ) {
             return "Da haste aber Schwein gehabt";

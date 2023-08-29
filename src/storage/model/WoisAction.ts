@@ -106,7 +106,7 @@ export default class WoisAction
             } else {
                 // Filter instead of splice because a user might not be in the array
                 woisAction.interestedUsers = woisAction.interestedUsers.filter(
-                    (user) => user !== interestedUser,
+                    user => user !== interestedUser,
                 );
             }
 

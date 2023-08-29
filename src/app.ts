@@ -103,18 +103,18 @@ process.on("uncaughtException", (err, origin) => {
     log.error(err, `Uncaught exception (origin: ${origin})`);
 });
 
-process.once("SIGTERM", (signal) => {
+process.once("SIGTERM", signal => {
     log.error(`Received Sigterm: ${signal}`);
     process.exit(1);
 });
-process.once("exit", (code) => {
+process.once("exit", code => {
     client.destroy();
     log.warn(`Process exited with code: ${code}`);
 });
 
 const clearWoisLogTask = () => {
     WoisData.latestEvents = WoisData.latestEvents.filter(
-        (event) => event.createdAt.getTime() > Date.now() - 2 * 60 * 1000,
+        event => event.createdAt.getTime() > Date.now() - 2 * 60 * 1000,
     );
 };
 
@@ -127,25 +127,24 @@ const leetTask = async () => {
     );
 
     // Auto-kick members
-    const sadPinguEmote = csz.emojis.cache.find((e) => e.name === "sadpingu");
-    const dabEmote = csz.emojis.cache.find((e) => e.name === "Dab");
+    const sadPinguEmote = csz.emojis.cache.find(e => e.name === "sadpingu");
+    const dabEmote = csz.emojis.cache.find(e => e.name === "Dab");
 
     const membersToKick = (await csz.members.fetch())
         .filter(
-            (m) =>
+            m =>
                 m.joinedTimestamp !== null &&
                 Date.now() - m.joinedTimestamp >= 48 * 3_600_000,
         )
         .filter(
-            (m) =>
-                m.roles.cache.filter((r) => r.name !== "@everyone").size === 0,
+            m => m.roles.cache.filter(r => r.name !== "@everyone").size === 0,
         );
 
     log.info(
         `Identified ${
             membersToKick.size
         } members that should be kicked, these are: ${membersToKick
-            .map((m) => m.displayName)
+            .map(m => m.displayName)
             .join(",")}.`,
     );
 
@@ -167,21 +166,17 @@ const leetTask = async () => {
     // I don't have trust in this code, so ensure that we don't kick any regular members :harold:
     console.assert(
         false,
-        membersToKick.some((m) => m.roles.cache.some((r) => r.name === "Nerd")),
+        membersToKick.some(m => m.roles.cache.some(r => r.name === "Nerd")),
     );
 
-    const fetchedMembers = await Promise.all(
-        membersToKick.map((m) => m.fetch()),
-    );
-    if (
-        fetchedMembers.some((m) => m.roles.cache.some((r) => r.name === "Nerd"))
-    ) {
+    const fetchedMembers = await Promise.all(membersToKick.map(m => m.fetch()));
+    if (fetchedMembers.some(m => m.roles.cache.some(r => r.name === "Nerd"))) {
         throw new Error(
             "There were members that had the nerd role assigned. You probably didn't want to kick them.",
         );
     }
 
-    await Promise.all([...membersToKick.map((member) => member.kick())]);
+    await Promise.all([...membersToKick.map(member => member.kick())]);
 
     await hauptchat.send(
         `Hab grad ${membersToKick.size} Jocklerinos gekickt ${dabEmote}`,
@@ -191,7 +186,7 @@ const leetTask = async () => {
 };
 
 login().then(
-    (client) => {
+    client => {
         log.info(`Bot logged in as ${client.user.tag}`);
         log.info(
             `Got ${client.users.cache.size} users, in ${client.channels.cache.size} channels of ${client.guilds.cache.size} guilds`,
@@ -201,7 +196,7 @@ login().then(
         );
         client.user.setActivity(config.bot_settings.status);
     },
-    (err) => {
+    err => {
         log.error(err, "Token login was not successful");
         log.error("Shutting down due to incorrect token...");
         process.exit(1);
@@ -248,7 +243,7 @@ const scheduleCronjobs = async (context: BotContext) => {
     schedule("* * * * *", async () => await poll.processPolls(context));
 };
 
-client.once("ready", async (initializedClient) => {
+client.once("ready", async initializedClient => {
     try {
         botContext = await createBotContext(initializedClient);
         console.assert(!!botContext, "Bot context should be available"); // TODO: Remove once botContext is used
@@ -281,26 +276,26 @@ client.once("ready", async (initializedClient) => {
  */
 client.on(
     "messageCreate",
-    async (message) => await messageCommandHandler(message, client, botContext),
+    async message => await messageCommandHandler(message, client, botContext),
 );
 
 client.on(
     "interactionCreate",
-    async (interaction) =>
+    async interaction =>
         await handleInteractionEvent(interaction, client, botContext),
 );
 
-client.on("guildCreate", (guild) =>
+client.on("guildCreate", guild =>
     log.info(
         `New guild joined: ${guild.name} (id: ${guild.id}) with ${guild.memberCount} members`,
     ),
 );
 
-client.on("guildDelete", (guild) =>
+client.on("guildDelete", guild =>
     log.info(`Deleted from guild: ${guild.name} (id: ${guild.id}).`),
 );
 
-client.on("guildMemberAdd", async (member) => {
+client.on("guildMemberAdd", async member => {
     const numRagequits = await GuildRagequit.getNumRagequits(
         member.guild.id,
         member.id,
@@ -328,16 +323,16 @@ client.on("guildMemberAdd", async (member) => {
 
 client.on(
     "guildMemberRemove",
-    async (member) =>
+    async member =>
         await GuildRagequit.incrementRagequit(member.guild.id, member.id),
 );
 
 client.on(
     "messageCreate",
-    async (message) => await messageHandler(message, client, botContext),
+    async message => await messageHandler(message, client, botContext),
 );
 
-client.on("messageDelete", async (message) => {
+client.on("messageDelete", async message => {
     try {
         if (message.inGuild()) {
             await messageDeleteHandler(message, client, botContext);
@@ -353,16 +348,16 @@ client.on(
         await messageHandler(newMessage as Message, client, botContext),
 );
 
-client.on("error", (e) => log.error(e, "Discord Client Error"));
-client.on("warn", (w) => log.warn(w, "Discord Client Warning"));
-client.on("debug", (d) => {
+client.on("error", e => log.error(e, "Discord Client Error"));
+client.on("warn", w => log.warn(w, "Discord Client Warning"));
+client.on("debug", d => {
     if (d.includes("Heartbeat")) {
         return;
     }
 
     log.debug(d, "Discord Client Debug d");
 });
-client.on("rateLimit", (data) =>
+client.on("rateLimit", data =>
     log.error(data, "Discord Client RateLimit Shit"),
 );
 client.on("invalidated", () => log.debug("Client invalidated"));
@@ -423,7 +418,7 @@ client.on(
 );
 
 function login() {
-    return new Promise<Client<true>>((resolve) => {
+    return new Promise<Client<true>>(resolve => {
         client.once("ready", resolve);
         client.login(config.auth.bot_token);
     });

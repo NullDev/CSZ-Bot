@@ -8,7 +8,7 @@ import type { CommandFunction } from "../types.js";
 const config = getConfig();
 
 const isPollField = (field: APIEmbedField): boolean =>
-    !field.inline && poll.LETTERS.some((l) => field.name.startsWith(l));
+    !field.inline && poll.LETTERS.some(l => field.name.startsWith(l));
 
 /**
  * Extends an existing poll or strawpoll
@@ -62,7 +62,7 @@ export const run: CommandFunction = async (client, message, args, context) => {
     if (replyMessage.embeds[0].color !== 3066993)
         return "Bruder die Umfrage ist nicht erweiterbar (ง'̀-'́)ง";
 
-    const oldPollOptionFields = replyMessage.embeds[0].fields.filter((field) =>
+    const oldPollOptionFields = replyMessage.embeds[0].fields.filter(field =>
         isPollField(field),
     );
     if (oldPollOptionFields.length === poll.OPTION_LIMIT)
@@ -71,8 +71,8 @@ export const run: CommandFunction = async (client, message, args, context) => {
     const additionalPollOptions = args
         .join(" ")
         .split(";")
-        .map((e) => e.trim())
-        .filter((e) => e.replace(/\s/g, "") !== "");
+        .map(e => e.trim())
+        .filter(e => e.replace(/\s/g, "") !== "");
 
     if (!additionalPollOptions.length)
         return "Bruder da sind keine Antwortmöglichkeiten :c";
@@ -83,7 +83,7 @@ export const run: CommandFunction = async (client, message, args, context) => {
         return `Bruder mit deinen Antwortmöglichkeiten wird das Limit von ${poll.OPTION_LIMIT} überschritten!`;
     else if (
         additionalPollOptions.some(
-            (value) => value.length > poll.FIELD_VALUE_LIMIT,
+            value => value.length > poll.FIELD_VALUE_LIMIT,
         )
     )
         return `Bruder mindestens eine Antwortmöglichkeit ist länger als ${poll.FIELD_VALUE_LIMIT} Zeichen!`;
@@ -100,7 +100,7 @@ export const run: CommandFunction = async (client, message, args, context) => {
     );
 
     let metaFields = replyMessage.embeds[0].fields.filter(
-        (field) => !isPollField(field),
+        field => !isPollField(field),
     );
     const embed = EmbedBuilder.from(replyMessage.embeds[0]).data;
 
@@ -110,7 +110,7 @@ export const run: CommandFunction = async (client, message, args, context) => {
     ) {
         embed.color = 0xcd5c5c;
         metaFields = metaFields.filter(
-            (field) => !field.name.endsWith("Erweiterbar"),
+            field => !field.name.endsWith("Erweiterbar"),
         );
     }
 

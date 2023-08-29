@@ -39,7 +39,7 @@ export const run: CommandFunction = async (client, message, args, context) => {
     if (invokingUser.id === "371724846205239326")
         return "Aus Segurity lieber nicht dich bannen.";
 
-    if (invokingUser.roles.cache.some((r) => r.id === context.roles.banned.id))
+    if (invokingUser.roles.cache.some(r => r.id === context.roles.banned.id))
         return "Du bist bereits gebannt du Kek.";
 
     const existingBan = await Ban.findExisting(invokingUser);
@@ -63,7 +63,7 @@ export const run: CommandFunction = async (client, message, args, context) => {
 
     if (tilt) {
         const alarmEmote = message.guild?.emojis.cache.find(
-            (e) => e.name === "alarm",
+            e => e.name === "alarm",
         );
         await message.channel.send(
             `${alarmEmote} User ${invokingUser} ist getilted und gönnt sich eine kurze Auszeit bis ${time(

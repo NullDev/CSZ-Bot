@@ -46,7 +46,7 @@ export default {
                 // Some roles, especially "C" are prefixed with a invisible whitespace to ensure they are not mentioned
                 // by accidence.
                 const role = guild.roles.cache.find(
-                    (r) =>
+                    r =>
                         r.name.replace(/[\u200B-\u200D\uFEFF]/g, "") ===
                         message.content,
                 );
@@ -92,13 +92,13 @@ export default {
                 voteEmojis.includes(reactionName);
 
             const delayedPoll = poll.delayedPolls.find(
-                (x) => x.pollId === message.id,
+                x => x.pollId === message.id,
             );
             const isDelayedPoll = delayedPoll !== undefined;
 
             if (isStrawpoll) {
                 if (isDelayedPoll) {
-                    delayedPoll.reactions.forEach((reactionList) => {
+                    delayedPoll.reactions.forEach(reactionList => {
                         reactionList.forEach((x, i) => {
                             if (x === member.id) reactionList.splice(i);
                         });
@@ -108,7 +108,7 @@ export default {
                     delayedPollReactions.push(member.id);
                 }
 
-                const reactions = message.reactions.cache.filter((r) => {
+                const reactions = message.reactions.cache.filter(r => {
                     const emojiName = r.emoji.name;
                     return (
                         emojiName &&
@@ -119,14 +119,14 @@ export default {
                 });
 
                 await Promise.all(
-                    reactions.map((r) => r.users.remove(member.id)),
+                    reactions.map(r => r.users.remove(member.id)),
                 );
             } else if (isUmfrage) {
                 if (isDelayedPoll) {
                     const delayedPollReactions =
                         delayedPoll.reactions[voteEmojis.indexOf(reactionName)];
                     const hasVoted = delayedPollReactions.some(
-                        (x) => x === member.id,
+                        x => x === member.id,
                     );
                     if (!hasVoted) {
                         delayedPollReactions.push(member.id);
@@ -151,7 +151,7 @@ export default {
 
             // If it's a delayed poll, we clear all Reactions
             if (isDelayedPoll) {
-                const allUserReactions = message.reactions.cache.filter((r) => {
+                const allUserReactions = message.reactions.cache.filter(r => {
                     const emojiName = r.emoji.name;
                     return (
                         emojiName &&
@@ -160,7 +160,7 @@ export default {
                     );
                 });
                 await Promise.all(
-                    allUserReactions.map((r) => r.users.remove(member.id)),
+                    allUserReactions.map(r => r.users.remove(member.id)),
                 );
             }
 

@@ -70,7 +70,7 @@ const drawStempelkarteBackside = async (
     const canvas = createCanvas(backgroundImage.width, backgroundImage.height);
     const ctx = canvas.getContext("2d");
 
-    const avatarSourcesWithPlaceholders = avatars.map((url) =>
+    const avatarSourcesWithPlaceholders = avatars.map(url =>
         url ? loadImage(url) : Promise.reject(new Error("url is falsy")),
     );
 
@@ -133,14 +133,14 @@ export class StempelkarteCommand implements ApplicationCommand {
         const userOption = command.options.getUser("user") ?? command.user;
 
         const ofMember = command.guild?.members.cache.find(
-            (m) => m.id === userOption.id,
+            m => m.id === userOption.id,
         );
         if (!ofMember) {
             return;
         }
 
         const getUserById = (id: Snowflake) =>
-            command.guild?.members.cache.find((member) => member.id === id);
+            command.guild?.members.cache.find(member => member.id === id);
 
         const allInvitees = await Stempel.getStempelByInvitator(ofMember.id);
 
@@ -160,9 +160,9 @@ export class StempelkarteCommand implements ApplicationCommand {
 
         for (const invitees of inviteesChunked) {
             const avatarUrls = invitees
-                .map((s) => s.invitedMember)
+                .map(s => s.invitedMember)
                 .map(getUserById)
-                .map((member) => getAvatarUrlForMember(member));
+                .map(member => getAvatarUrlForMember(member));
 
             stempelkarten.push(
                 drawStempelkarteBackside(subjectAvatarUrl, avatarUrls),
@@ -170,7 +170,7 @@ export class StempelkarteCommand implements ApplicationCommand {
         }
 
         const results = (await Promise.allSettled(stempelkarten)).filter(
-            (result) => result.status === "fulfilled",
+            result => result.status === "fulfilled",
         ) as PromiseFulfilledResult<Buffer>[];
 
         const files = results.map((result, index) => ({

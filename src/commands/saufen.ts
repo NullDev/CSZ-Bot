@@ -134,7 +134,7 @@ export class Saufen implements ApplicationCommand {
             }
             case "list": {
                 const files = await this.getSoundFiles();
-                await command.reply(files.map((f) => `- ${f}`).join("\n"));
+                await command.reply(files.map(f => `- ${f}`).join("\n"));
                 return;
             }
             default:
@@ -144,8 +144,8 @@ export class Saufen implements ApplicationCommand {
 
     private async getSoundFiles() {
         return (await fs.readdir(soundDir, { withFileTypes: true }))
-            .filter((f) => f.isFile())
-            .map((f) => f.name);
+            .filter(f => f.isFile())
+            .map(f => f.name);
     }
 
     async autocomplete(interaction: AutocompleteInteraction) {
@@ -158,8 +158,8 @@ export class Saufen implements ApplicationCommand {
 
         const focusedValue = interaction.options.getFocused().toLowerCase();
         const completions = files
-            .filter((f) => f.toLowerCase().includes(focusedValue))
-            .map((name) => ({
+            .filter(f => f.toLowerCase().includes(focusedValue))
+            .map(name => ({
                 name,
                 value: name,
             }))

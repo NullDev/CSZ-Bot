@@ -123,7 +123,7 @@ export class Nickname implements ApplicationCommand {
         try {
             const option = cmd.options.getSubcommand();
             const commandUser = cmd.guild?.members.cache.find(
-                (m) => m.id === cmd.user.id,
+                m => m.id === cmd.user.id,
             );
             // We know that the user option is in every subcmd.
             const user = cmd.options.getUser("user", true);
@@ -159,7 +159,7 @@ export class Nickname implements ApplicationCommand {
                 await cmd.reply(
                     `Hab für den Brudi folgende Nicknames (${
                         nicknames.length
-                    }):\n${nicknames.map((n) => n.nickName).join(", ")}`,
+                    }):\n${nicknames.map(n => n.nickName).join(", ")}`,
                 );
                 return;
             } else if (option === "add") {
@@ -230,8 +230,8 @@ export class Nickname implements ApplicationCommand {
         const focusedValue = interaction.options.getFocused().toLowerCase();
 
         const completions = nicknames
-            .filter((n) => n.nickName.toLowerCase().includes(focusedValue))
-            .map((n) => ({
+            .filter(n => n.nickName.toLowerCase().includes(focusedValue))
+            .map(n => ({
                 name: n.nickName,
                 value: n.nickName,
             }));
@@ -361,7 +361,7 @@ export class NicknameButtonHandler implements UserInteraction {
     private hasEnoughVotes(votes: UserVote[], voteType: Vote) {
         return (
             votes
-                .filter((vote) => vote.vote === voteType)
+                .filter(vote => vote.vote === voteType)
                 .reduce(
                     (sum, uservote) => sum + getWeightOfUserVote(uservote),
                     0,

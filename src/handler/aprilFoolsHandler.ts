@@ -12,7 +12,7 @@ const renameMember = (
     member: GuildMember,
     name: string | null,
 ): Promise<GuildMember> =>
-    member.setNickname(name, "April Fools").catch((err) => {
+    member.setNickname(name, "April Fools").catch(err => {
         throw new Error(
             `Could not rename Member: ${member.id} to ${name} because of ${err}`,
         );
@@ -23,7 +23,7 @@ const resetAll = async (
 ): Promise<PromiseSettledResult<GuildMember>[]> => {
     const allMembers = await context.guild.members.fetch();
     return Promise.allSettled(
-        allMembers.map((member) =>
+        allMembers.map(member =>
             renameMember(member, tmpNicknameStore[member.id] ?? null),
         ),
     );
@@ -75,7 +75,7 @@ const shuffleAllNicknames = async (
     const shuffledNicknames = await createShuffledNicknames(allMembers);
 
     return Promise.allSettled(
-        allMembers.map((member) =>
+        allMembers.map(member =>
             renameMember(member, shuffledNicknames[member.id]),
         ),
     );
@@ -83,10 +83,10 @@ const shuffleAllNicknames = async (
 
 const logRenameResult = (result: PromiseSettledResult<GuildMember>[]) => {
     const fulfilled = result.filter(
-        (p) => p.status === "fulfilled",
+        p => p.status === "fulfilled",
     ) as PromiseFulfilledResult<GuildMember>[];
     const rejected = result.filter(
-        (p) => p.status === "rejected",
+        p => p.status === "rejected",
     ) as PromiseRejectedResult[];
 
     log.info(

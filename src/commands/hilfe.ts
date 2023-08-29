@@ -15,7 +15,7 @@ const getCommandMessageChunksMatchingLimit = (
 
     commands
         .sort((a, b) => a[0].localeCompare(b[0]))
-        .forEach((value) => {
+        .forEach(value => {
             if (
                 chunk[index] &&
                 chunk[index].length + (value[0].length + value[1].length + 10) >
@@ -75,8 +75,8 @@ export const run: CommandFunction = async (
 
     // New Class-based commands
     messageCommands
-        .filter((cmd) => !cmd.modCommand)
-        .forEach((cmd) => {
+        .filter(cmd => !cmd.modCommand)
+        .forEach(cmd => {
             const commandStr = context.prefix.command + cmd.name;
             commandObj[commandStr] = cmd.description;
         });
@@ -88,7 +88,7 @@ export const run: CommandFunction = async (
     const chunks = getCommandMessageChunksMatchingLimit(
         Object.entries(commandObj),
     );
-    await Promise.all(chunks.map((chunk) => message.author.send(chunk)));
+    await Promise.all(chunks.map(chunk => message.author.send(chunk)));
 
     // Add :envelope: reaction to authors message
     await message.react("✉"); // Send this last, so we only display a confirmation when everything actually worked

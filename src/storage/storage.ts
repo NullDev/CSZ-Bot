@@ -21,7 +21,7 @@ export async function initialize(botContext: BotContext) {
         dialect: "sqlite",
         storage: botContext.databasePath,
         logQueryParameters: true,
-        logging: (sql) => {
+        logging: sql => {
             // currently way too noisy because of the fading messages
             if (!sql.includes(FadingMessage.tableName)) {
                 log.trace(sql);

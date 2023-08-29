@@ -208,10 +208,10 @@ export const reminderHandler = async (context: BotContext) => {
 
     const reminders = await Reminder.getCurrentReminders();
     const results = await Promise.allSettled(
-        reminders.map((reminder) => sendReminder(reminder, context)),
+        reminders.map(reminder => sendReminder(reminder, context)),
     );
     const rejections = results.filter(
-        (result) => result.status === "rejected",
+        result => result.status === "rejected",
     ) as PromiseRejectedResult[];
     for (const rejection of rejections) {
         log.error(rejection.reason, "Couldn't retrieve reminders because of");

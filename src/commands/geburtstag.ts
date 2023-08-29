@@ -17,7 +17,7 @@ export class GeburtstagCommand implements ApplicationCommand {
     applicationCommand = new SlashCommandBuilder()
         .setName(this.name)
         .setDescription(this.description)
-        .addIntegerOption((option) =>
+        .addIntegerOption(option =>
             option
                 .setMinValue(1)
                 .setMaxValue(31)
@@ -25,7 +25,7 @@ export class GeburtstagCommand implements ApplicationCommand {
                 .setDescription("Tag")
                 .setRequired(true),
         )
-        .addIntegerOption((option) =>
+        .addIntegerOption(option =>
             option
                 .setMinValue(1)
                 .setMaxValue(12)

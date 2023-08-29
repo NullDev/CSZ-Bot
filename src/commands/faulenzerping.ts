@@ -57,7 +57,7 @@ export class FaulenzerPingCommand implements ApplicationCommand {
         let confirmation;
         try {
             confirmation = await response.awaitMessageComponent({
-                filter: (i) => i.user.id === command.user.id,
+                filter: i => i.user.id === command.user.id,
                 componentType: ComponentType.RoleSelect,
                 time: 1000 * 60,
             });
@@ -79,7 +79,7 @@ export class FaulenzerPingCommand implements ApplicationCommand {
 
         const { allowedRoleIds, maxNumberOfPings, minRequiredReactions } =
             context.commandConfig.faulenzerPing;
-        const roleIds = [...confirmation.roles.keys()].filter((roleId) =>
+        const roleIds = [...confirmation.roles.keys()].filter(roleId =>
             allowedRoleIds.has(roleId),
         );
         if (roleIds.length === 0) {
@@ -91,12 +91,12 @@ export class FaulenzerPingCommand implements ApplicationCommand {
         }
 
         const validRoles = (
-            await Promise.all(roleIds.map((r) => context.guild.roles.fetch(r)))
-        ).filter((role) => !!role) as Role[];
+            await Promise.all(roleIds.map(r => context.guild.roles.fetch(r)))
+        ).filter(role => !!role) as Role[];
 
         await response.edit({
             content: `Alles klar, nerve Faulenzer aus diesen Gruppen: ${validRoles
-                .map((v) => v.toString())
+                .map(v => v.toString())
                 .join(", ")}`,
             components: [],
         });
@@ -120,7 +120,7 @@ export class FaulenzerPingCommand implements ApplicationCommand {
         }
 
         const usersToNotify = [...usersInAllRoles.values()].filter(
-            (user) => !usersNotToNotify.has(user),
+            user => !usersNotToNotify.has(user),
         );
 
         if (usersToNotify.length > maxNumberOfPings) {
@@ -161,7 +161,7 @@ export class FaulenzerPingCommand implements ApplicationCommand {
         const userChunks = chunkArray(usersToNotify, 10);
         for (const users of userChunks) {
             const usersToNotifyMentions = users
-                .map((userId) => `<@${userId}>`)
+                .map(userId => `<@${userId}>`)
                 .join(" ");
 
             await originalMessage.reply({

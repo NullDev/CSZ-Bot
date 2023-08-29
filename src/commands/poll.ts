@@ -70,7 +70,7 @@ export const FIELD_VALUE_LIMIT = 1024;
 export const POLL_OPTION_SEPARATOR = " - ";
 export const POLL_OPTION_MAX_LENGTH =
     2 * FIELD_VALUE_LIMIT -
-    Math.max(...LETTERS.map((s) => s.length)) -
+    Math.max(...LETTERS.map(s => s.length)) -
     POLL_OPTION_SEPARATOR.length;
 export const OPTION_LIMIT = LETTERS.length;
 
@@ -133,8 +133,8 @@ export const run: CommandFunction = async (_client, message, args, context) => {
     const pollArray = parsedArgs
         .join(" ")
         .split(";")
-        .map((e) => e.trim())
-        .filter((e) => e.replace(/\s/g, "") !== "");
+        .map(e => e.trim())
+        .filter(e => e.replace(/\s/g, "") !== "");
 
     const question = pollArray[0];
     if (question.length > TEXT_LIMIT)
@@ -154,7 +154,7 @@ export const run: CommandFunction = async (_client, message, args, context) => {
         return "Bruder du musst schon mehr als eine Antwortmöglichkeit geben 🙄";
     else if (pollOptions.length > OPTION_LIMIT)
         return `Bitte gib nicht mehr als ${OPTION_LIMIT} Antwortmöglichkeiten an!`;
-    else if (pollOptions.some((value) => value.length > POLL_OPTION_MAX_LENGTH))
+    else if (pollOptions.some(value => value.length > POLL_OPTION_MAX_LENGTH))
         return `Bruder mindestens eine Antwortmöglichkeit ist länger als ${POLL_OPTION_MAX_LENGTH} Zeichen!`;
 
     const fields = pollOptions.map((o, i) => createOptionField(o, i));
@@ -266,7 +266,7 @@ export const run: CommandFunction = async (_client, message, args, context) => {
 export const importPolls = async () => {
     const additionalDatas = await AdditionalMessageData.findAll();
     let count = 0;
-    additionalDatas.forEach((additionalData) => {
+    additionalDatas.forEach(additionalData => {
         if (!additionalData.customData.delayedPollData) {
             return;
         }
@@ -280,7 +280,7 @@ export const importPolls = async () => {
 export const processPolls = async (context: BotContext) => {
     const currentDate = new Date();
     const pollsToFinish = delayedPolls.filter(
-        (delayedPoll) => currentDate >= delayedPoll.finishesAt,
+        delayedPoll => currentDate >= delayedPoll.finishesAt,
     );
 
     const channel: TextChannel = context.textChannels.votes;
@@ -302,7 +302,7 @@ export const processPolls = async (context: BotContext) => {
                             x as any as string[],
                         ) !== uidi,
                 )
-                .map(async (uidToResolve) => {
+                .map(async uidToResolve => {
                     users[uidToResolve] = await context.client.users.fetch(
                         uidToResolve,
                     );
@@ -313,7 +313,7 @@ export const processPolls = async (context: BotContext) => {
             (value, i) => {
                 return {
                     name: `${LETTERS[i]} ${delayedPoll.reactionMap[i]} (${value.length})`,
-                    value: value.map((uid) => users[uid]).join("\n") || "-",
+                    value: value.map(uid => users[uid]).join("\n") || "-",
                     inline: false,
                 };
             },
@@ -347,7 +347,7 @@ export const processPolls = async (context: BotContext) => {
             },
             footer: {
                 text: `Gesamtabstimmungen: ${delayedPoll.reactions
-                    .map((x) => x.length)
+                    .map(x => x.length)
                     .reduce((a, b) => a + b)}`,
             },
         };
@@ -356,7 +356,7 @@ export const processPolls = async (context: BotContext) => {
             embeds: [toSend],
         });
         await Promise.all(
-            message.reactions.cache.map((reaction) => reaction.remove()),
+            message.reactions.cache.map(reaction => reaction.remove()),
         );
         await message.react("✅");
         delayedPolls.splice(delayedPolls.indexOf(delayedPoll), 1);

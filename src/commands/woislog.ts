@@ -14,7 +14,7 @@ export class WoisLog implements ApplicationCommand {
     async handleInteraction(
         command: CommandInteraction,
     ): Promise<CommandResult> {
-        const latestEvents = WoisData.latestEvents.filter((event) => {
+        const latestEvents = WoisData.latestEvents.filter(event => {
             return event.createdAt.getTime() > Date.now() - 2 * 60 * 1000;
         });
 
@@ -26,7 +26,7 @@ export class WoisLog implements ApplicationCommand {
             return;
         }
 
-        const latestEventsString = latestEvents.map((event) => {
+        const latestEventsString = latestEvents.map(event => {
             const { oldState, newState, createdAt } = event;
             const oldChannel = oldState.channel;
             const newChannel = newState.channel;

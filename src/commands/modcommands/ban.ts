@@ -29,31 +29,31 @@ const config = getConfig();
 
 const assignBannedRoles = async (user: GuildMember): Promise<boolean> => {
     const defaultRole = user.guild.roles.cache.find(
-        (role) => role.id === config.ids.default_role_id,
+        role => role.id === config.ids.default_role_id,
     );
     const bannedRole = user.guild.roles.cache.find(
-        (role) => role.id === config.ids.banned_role_id,
+        role => role.id === config.ids.banned_role_id,
     );
 
     if (!defaultRole || !bannedRole) {
         return false;
     }
-    const currentRoles = [...user.roles.cache.map((r) => r.id)];
+    const currentRoles = [...user.roles.cache.map(r => r.id)];
     let newRoles = [...currentRoles, bannedRole.id].filter(
-        (r) => r !== config.ids.default_role_id,
+        r => r !== config.ids.default_role_id,
     );
 
     if (
-        user.roles.cache.find((r) => r.id === config.ids.gruendervaeter_role_id)
+        user.roles.cache.find(r => r.id === config.ids.gruendervaeter_role_id)
     ) {
         newRoles = newRoles.filter(
-            (r) => r !== config.ids.gruendervaeter_role_id,
+            r => r !== config.ids.gruendervaeter_role_id,
         );
         newRoles.push(config.ids.gruendervaeter_banned_role_id);
     }
 
-    if (user.roles.cache.find((r) => r.id === config.ids.trusted_role_id)) {
-        newRoles = newRoles.filter((r) => r !== config.ids.trusted_role_id);
+    if (user.roles.cache.find(r => r.id === config.ids.trusted_role_id)) {
+        newRoles = newRoles.filter(r => r !== config.ids.trusted_role_id);
         newRoles.push(config.ids.trusted_banned_role_id);
     }
 
@@ -64,36 +64,36 @@ const assignBannedRoles = async (user: GuildMember): Promise<boolean> => {
 export const restoreRoles = async (user: GuildMember): Promise<boolean> => {
     log.debug(`Restoring roles from user ${user.id}`);
     const defaultRole = user.guild.roles.cache.find(
-        (role) => role.id === config.ids.default_role_id,
+        role => role.id === config.ids.default_role_id,
     );
     const bannedRole = user.guild.roles.cache.find(
-        (role) => role.id === config.ids.banned_role_id,
+        role => role.id === config.ids.banned_role_id,
     );
 
     if (!defaultRole || !bannedRole) {
         return false;
     }
-    const currentRoles = [...user.roles.cache.map((r) => r.id)];
+    const currentRoles = [...user.roles.cache.map(r => r.id)];
     let newRoles = [...currentRoles, defaultRole.id].filter(
-        (r) => r !== config.ids.banned_role_id,
+        r => r !== config.ids.banned_role_id,
     );
 
     if (
         user.roles.cache.find(
-            (r) => r.id === config.ids.gruendervaeter_banned_role_id,
+            r => r.id === config.ids.gruendervaeter_banned_role_id,
         )
     ) {
         newRoles = newRoles.filter(
-            (r) => r !== config.ids.gruendervaeter_banned_role_id,
+            r => r !== config.ids.gruendervaeter_banned_role_id,
         );
         newRoles.push(config.ids.gruendervaeter_role_id);
     }
 
     if (
-        user.roles.cache.find((r) => r.id === config.ids.trusted_banned_role_id)
+        user.roles.cache.find(r => r.id === config.ids.trusted_banned_role_id)
     ) {
         newRoles = newRoles.filter(
-            (r) => r !== config.ids.trusted_banned_role_id,
+            r => r !== config.ids.trusted_banned_role_id,
         );
         newRoles.push(config.ids.trusted_role_id);
     }
@@ -154,9 +154,7 @@ export const ban = async (
 
     const existingBan = await Ban.findExisting(member.user);
     if (existingBan !== null) {
-        if (
-            member.roles.cache.some((r) => r.id === config.ids.banned_role_id)
-        ) {
+        if (member.roles.cache.some(r => r.id === config.ids.banned_role_id)) {
             return "Dieser User ist bereits gebannt du kek.";
         }
 

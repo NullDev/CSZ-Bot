@@ -47,9 +47,7 @@ async function createEhreTable(
                               {
                                   name: "Ehrenbrudis",
                                   value: userInGroups.middle
-                                      .map((user) =>
-                                          createUserPointString(user),
-                                      )
+                                      .map(user => createUserPointString(user))
                                       .join("\n"),
                                   inline: false,
                               },
@@ -60,9 +58,7 @@ async function createEhreTable(
                               {
                                   name: "Ehrenhafte User",
                                   value: userInGroups.bottom
-                                      .map((user) =>
-                                          createUserPointString(user),
-                                      )
+                                      .map(user => createUserPointString(user))
                                       .join("\n"),
                                   inline: false,
                               },
@@ -78,7 +74,7 @@ async function createEhreTable(
 function getVote(userInGroups: EhreGroups, voter: string): number {
     if (userInGroups.best?.userId === voter) {
         return 5;
-    } else if (userInGroups.middle.map((u) => u.userId).includes(voter)) {
+    } else if (userInGroups.middle.map(u => u.userId).includes(voter)) {
         return 2;
     }
     return 1;

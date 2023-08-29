@@ -215,7 +215,7 @@ const commandInteractionHandler = async (
     context: BotContext,
 ): Promise<void> => {
     const matchingCommand = applicationCommands.find(
-        (cmd) => cmd.name === command.commandName,
+        cmd => cmd.name === command.commandName,
     );
 
     if (!matchingCommand) {
@@ -233,7 +233,7 @@ const autocompleteInteractionHandler = async (
     context: BotContext,
 ) => {
     const matchingCommand = applicationCommands.find(
-        (cmd) => cmd.name === interaction.commandName,
+        cmd => cmd.name === interaction.commandName,
     );
 
     if (!matchingCommand) {
@@ -265,8 +265,8 @@ const messageComponentInteractionHandler = async (
     client: Client,
     context: BotContext,
 ): Promise<unknown> => {
-    const matchingInteraction = interactions.find((cmd) =>
-        cmd.ids.find((id) => id === command.customId),
+    const matchingInteraction = interactions.find(cmd =>
+        cmd.ids.find(id => id === command.customId),
     );
 
     if (!matchingInteraction) {
@@ -313,7 +313,7 @@ const commandMessageHandler = async (
     context: BotContext,
 ): Promise<unknown> => {
     const matchingCommand = messageCommands.find(
-        (cmd) =>
+        cmd =>
             cmd.name.toLowerCase() === commandString.toLowerCase() ||
             cmd.aliases?.includes(commandString.toLowerCase()),
     );
@@ -369,14 +369,14 @@ const specialCommandHandler = (
     client: Client,
     context: BotContext,
 ): Promise<unknown> => {
-    const commandCandidates = specialCommands.filter((p) =>
+    const commandCandidates = specialCommands.filter(p =>
         p.matches(message, context),
     );
     return Promise.all(
         commandCandidates
-            .filter((c) => Math.random() <= c.randomness)
-            .filter((c) => isCooledDown(c))
-            .map((c) => {
+            .filter(c => Math.random() <= c.randomness)
+            .filter(c => isCooledDown(c))
+            .map(c => {
                 log.info(
                     `User "${message.author.tag}" (${message.author}) performed special command: ${c.name}`,
                 );

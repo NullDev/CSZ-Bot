@@ -17,21 +17,21 @@ export default class BdayHandler {
         const todaysBirthdays = await Birthday.getTodaysBirthdays();
 
         const todaysBirthdaysAsMembers = todaysBirthdays
-            .map((b) => this.context.guild.members.cache.get(b.userId))
+            .map(b => this.context.guild.members.cache.get(b.userId))
             .filter(
-                (b) =>
+                b =>
                     b !== undefined &&
                     b.roles.cache.get(birthdayRole.id) === undefined,
             );
 
         const memberWithRoleThatDontHaveBirthday =
             this.context.guild.members.cache
-                .filter((m) => m.roles.cache.get(birthdayRole.id) !== undefined)
-                .filter((m) => !todaysBirthdays.some((b) => b.userId === m.id));
+                .filter(m => m.roles.cache.get(birthdayRole.id) !== undefined)
+                .filter(m => !todaysBirthdays.some(b => b.userId === m.id));
 
         if (todaysBirthdaysAsMembers.length > 0) {
             await Promise.all(
-                todaysBirthdaysAsMembers.map((member) =>
+                todaysBirthdaysAsMembers.map(member =>
                     member?.roles?.add(birthdayRole),
                 ),
             );
@@ -42,7 +42,7 @@ export default class BdayHandler {
         }
 
         for (const member of memberWithRoleThatDontHaveBirthday.values()) {
-            if (!member.roles.cache.find((t) => t.id === birthdayRole.id))
+            if (!member.roles.cache.find(t => t.id === birthdayRole.id))
                 continue;
 
             try {
@@ -78,7 +78,7 @@ export default class BdayHandler {
             wie schön dass wir beisammen sind,
             wir gratulieren ${plural ? "euch" : "dir"}, ${birthdayRole}
 
-            ${users.map((u) => u).join()}`.replaceAll(/\n\s+/g, "\n"),
+            ${users.map(u => u).join()}`.replaceAll(/\n\s+/g, "\n"),
         );
     }
 }

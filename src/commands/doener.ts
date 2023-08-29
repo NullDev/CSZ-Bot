@@ -121,11 +121,11 @@ export class DoenerCommand implements MessageCommand {
                           inkStr,
                           mealStr,
                       ]
-                          .filter((s) => !!s)
+                          .filter(s => !!s)
                           .join("\n")
                           .trim()
                     : [`Das sind ${kebabs} Döner.`, inkStr, mealStr]
-                          .filter((s) => !!s)
+                          .filter(s => !!s)
                           .join("\n")
                           .trim(),
             allowedMentions: {

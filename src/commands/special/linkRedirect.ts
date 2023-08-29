@@ -22,7 +22,7 @@ export class LinkRedirect implements SpecialCommand {
         const domains = Object.keys(linkMap);
         const content = message.content.toLowerCase();
         return domains.some(
-            (domain) =>
+            domain =>
                 content.includes(`https://${domain}`) ||
                 content.includes(`https://www.${domain}`),
         );
@@ -35,7 +35,7 @@ export class LinkRedirect implements SpecialCommand {
         const urls = message.content
             .toLowerCase()
             .split(" ")
-            .filter((word) => word.startsWith("https://"));
+            .filter(word => word.startsWith("https://"));
         if (urls.length === 0) return;
 
         const replacedUrls = urls
@@ -48,7 +48,7 @@ export class LinkRedirect implements SpecialCommand {
 
         const msg =
             "Public Service Announcement für nicht krebsige Links:\n" +
-            replacedUrls.map((u) => `<${u}>`).join("\n");
+            replacedUrls.map(u => `<${u}>`).join("\n");
         await message.reply({
             content: msg,
             allowedMentions: { repliedUser: false },
@@ -58,7 +58,7 @@ export class LinkRedirect implements SpecialCommand {
     private tryReplaceUrl(url: string): string | undefined {
         const domains = Object.keys(linkMap);
         const domain = domains.find(
-            (d) =>
+            d =>
                 url.startsWith(`https://${d}`) ||
                 url.startsWith(`https://www.${d}`),
         );

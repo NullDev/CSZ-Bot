@@ -29,7 +29,7 @@ const geringverdiener = (
     str.replace(
         /:([\w~]+):(?!\d+>)/gi,
         (_match, emojiName, _offset, wholeString) => {
-            const emote = emojiManager.cache.find((e) => e.name === emojiName);
+            const emote = emojiManager.cache.find(e => e.name === emojiName);
             if (emote) {
                 return `${emote}`;
             }

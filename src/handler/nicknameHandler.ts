@@ -21,12 +21,12 @@ export default class NicknameHandler {
     async updateNickname(userId: string, storedNicknames: string[]) {
         try {
             const member = this.context.guild.members.cache.find(
-                (m) => m.id === userId,
+                m => m.id === userId,
             );
             if (!member) return;
             const nicknames = [member.user.username, ...storedNicknames];
             const pickableNicknames = nicknames.filter(
-                (n) => n !== member.nickname,
+                n => n !== member.nickname,
             );
             const randomizedNickname =
                 pickableNicknames[

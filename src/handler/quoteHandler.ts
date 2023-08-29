@@ -49,7 +49,7 @@ const getMessageQuoter = async (
         throw new Error("Guild is null");
     }
     const fetchedMessage = await message.fetch(true);
-    const messageReaction = fetchedMessage.reactions.cache.find((r) =>
+    const messageReaction = fetchedMessage.reactions.cache.find(r =>
         isQuoteEmoji(r.emoji),
     );
     if (messageReaction === undefined) {
@@ -59,7 +59,7 @@ const getMessageQuoter = async (
     }
     const fetchedUsersOfReaction = await messageReaction.users.fetch();
     return fetchedUsersOfReaction
-        .map((user) => guild.members.resolve(user.id))
+        .map(user => guild.members.resolve(user.id))
         .filter((member): member is GuildMember => member !== null);
 };
 
@@ -67,7 +67,7 @@ const isMessageAlreadyQuoted = (
     messageQuoter: readonly GuildMember[],
     context: BotContext,
 ): boolean => {
-    return messageQuoter.some((u) => u.id === context.client.user.id);
+    return messageQuoter.some(u => u.id === context.client.user.id);
 };
 
 const hasMessageEnoughQuotes = (
@@ -144,7 +144,7 @@ const createQuote = async (
                         {
                             name: "zitiert von",
                             value: quoter
-                                .map((u) => getQuoteeUsername(quotedUser, u))
+                                .map(u => getQuoteeUsername(quotedUser, u))
                                 .join(", "),
                         },
                     ],
@@ -212,7 +212,7 @@ export default {
         const quotedUser = quotedMessage.member;
         const referencedUser = referencedMessage?.member;
         const quotingMembers = await getMessageQuoter(quotedMessage);
-        const quotingMembersAllowed = quotingMembers.filter((member) =>
+        const quotingMembersAllowed = quotingMembers.filter(member =>
             isMemberAllowedToQuote(member),
         );
 
@@ -256,7 +256,7 @@ export default {
         const { quote, reference } = await createQuote(
             context,
             quotedUser,
-            quotingMembersAllowed.map((member) => member.user),
+            quotingMembersAllowed.map(member => member.user),
             referencedUser,
             quotedMessage,
             referencedMessage,

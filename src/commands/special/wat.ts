@@ -17,7 +17,7 @@ export class WatCommand implements SpecialCommand {
         _client: Client<boolean>,
     ): Promise<CommandResult> {
         const watEmote = message.guild?.emojis.cache.find(
-            (e) => e.name === "wat",
+            e => e.name === "wat",
         );
         if (watEmote) {
             const messageRef = message.reference?.messageId;

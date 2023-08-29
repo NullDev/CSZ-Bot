@@ -13,8 +13,8 @@ async function deOidaLine(line: string): Promise<string> {
 
     const tokens = line
         .split(/\s+/)
-        .map((s) => s.trim().toLowerCase())
-        .filter((s) => s.length > 0);
+        .map(s => s.trim().toLowerCase())
+        .filter(s => s.length > 0);
 
     // We join adjacent tokens to terms that may come up in the database
     // We do longest token combinations first, so more precise translations can be matched. For example, when translating:
@@ -115,7 +115,7 @@ function* enumerateAdjacentTokens(tokens: string[]) {
 async function deOida(value: string): Promise<string> {
     const lines = value
         .split("\n")
-        .map((s) => s.trim())
+        .map(s => s.trim())
         .map(deOidaLine);
 
     const translatedLines = await Promise.all(lines);

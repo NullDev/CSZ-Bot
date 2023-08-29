@@ -4,7 +4,7 @@
  * @returns number of words
  */
 export function countWords(str: string): number {
-    return str.split(" ").filter((s) => s.trim().length > 0).length;
+    return str.split(" ").filter(s => s.trim().length > 0).length;
 }
 
 /**

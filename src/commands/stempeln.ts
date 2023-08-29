@@ -45,10 +45,10 @@ export class StempelCommand implements ApplicationCommand {
         _client: Client<boolean>,
     ): Promise<CommandResult> {
         const invitator = command.guild?.members.cache.find(
-            (m) => m.id === command.options.getUser("inviter", true).id,
+            m => m.id === command.options.getUser("inviter", true).id,
         );
         const invitedUser = command.guild?.members.cache.find(
-            (m) => m.id === command.user.id,
+            m => m.id === command.user.id,
         );
         if (!invitator || !invitedUser) {
             await command.reply("Bruder gib doch bitte richtige User an");

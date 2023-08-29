@@ -5,11 +5,11 @@ import { getConfig } from "./configHandler.js";
 const config = getConfig();
 
 function hasRoleByName(member: GuildMember, roleName: string): boolean {
-    return member.roles.cache.some((role) => role.name === roleName);
+    return member.roles.cache.some(role => role.name === roleName);
 }
 
 function hasAnyRoleByName(member: GuildMember, roleNames: string[]) {
-    return roleNames.some((role) => hasRoleByName(member, role));
+    return roleNames.some(role => hasRoleByName(member, role));
 }
 
 function hasRoleById(
@@ -18,7 +18,7 @@ function hasRoleById(
 ): boolean {
     return Array.isArray(member.roles)
         ? member.roles.includes(id)
-        : member.roles.cache.some((role) => role.id === id);
+        : member.roles.cache.some(role => role.id === id);
 }
 
 export function isMarcel(user: User): boolean {

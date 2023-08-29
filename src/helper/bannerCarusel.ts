@@ -30,7 +30,7 @@ export const rotate = async (context: BotContext) => {
     // If the set banner is not updated (= is the same as before), just pick
     // a new one.
     if (newHash === currentHash && files.length > 1) {
-        const secondTry = pickRandomBanner(files.filter((f) => f !== file));
+        const secondTry = pickRandomBanner(files.filter(f => f !== file));
         await context.guild.setBanner(secondTry);
     }
 };

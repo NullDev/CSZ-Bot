@@ -33,7 +33,7 @@ export class TriggerReactOnKeyword implements SpecialCommand {
         }
 
         const emote = message.guild.emojis.cache.find(
-            (e) => e.name === this.emoteName,
+            e => e.name === this.emoteName,
         );
         if (emote) {
             await message.react(emote);

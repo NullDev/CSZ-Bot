@@ -150,10 +150,10 @@ export class Vote2Command implements ApplicationCommand {
             response.createMessageComponentCollector({
                 componentType: ComponentType.Button,
                 time: duration * 1000,
-                filter: (i) => !collector.users.has(i.user.id),
+                filter: i => !collector.users.has(i.user.id),
             });
 
-        collector.on("ignore", async (interaction) => {
+        collector.on("ignore", async interaction => {
             countInteraction(interaction);
 
             await interaction.reply({
@@ -162,7 +162,7 @@ export class Vote2Command implements ApplicationCommand {
             });
         });
 
-        collector.on("collect", async (interaction) => {
+        collector.on("collect", async interaction => {
             countInteraction(interaction);
 
             await interaction.reply({
@@ -184,7 +184,7 @@ export class Vote2Command implements ApplicationCommand {
 
         await once(collector, "end");
 
-        const yesVotes = [...votes.values()].filter((v) => v).length;
+        const yesVotes = [...votes.values()].filter(v => v).length;
         const noVotes = votes.size - yesVotes;
 
         await response.edit({

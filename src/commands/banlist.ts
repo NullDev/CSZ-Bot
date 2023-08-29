@@ -32,7 +32,7 @@ export class BanListCommand implements ApplicationCommand {
         }
 
         const banMessage = bans
-            .map((b) => {
+            .map(b => {
                 const user = context.guild.members.cache.get(b.userId);
                 if (user === undefined) {
                     return "";
@@ -46,7 +46,7 @@ export class BanListCommand implements ApplicationCommand {
                     b.reason === null ? "" : `(Grund: ${b.reason})`;
                 return `${user}: ${untilString} ${reasonString}`;
             })
-            .filter((s) => s.length > 0)
+            .filter(s => s.length > 0)
             .join("\n");
 
         await command.reply({

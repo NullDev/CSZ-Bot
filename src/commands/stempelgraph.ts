@@ -108,19 +108,19 @@ async function drawStempelgraph(
         );
     }
     const inviterNodes = stempels
-        .map((s) => userInfo.get(s.inviter))
+        .map(s => userInfo.get(s.inviter))
         .filter((m): m is UserInfo => m !== undefined)
         .map(getMemberNode)
         .join(";\n");
 
     const inviteeNodes = stempels
-        .map((s) => userInfo.get(s.invitee))
+        .map(s => userInfo.get(s.invitee))
         .filter((s): s is UserInfo => s !== undefined)
         .map(getMemberNode)
         .join(";\n");
 
     const connections = stempels
-        .map((s) => `"${s.inviter.id}" -> "${s.invitee.id}"`)
+        .map(s => `"${s.inviter.id}" -> "${s.invitee.id}"`)
         .join(";\n");
 
     const dotSrc = `digraph {
@@ -218,7 +218,7 @@ export class StempelgraphCommand implements ApplicationCommand {
                 .setDescription("Die layout-engine für GraphViz")
                 .setRequired(false)
                 .addChoices(
-                    ...supportedLayoutEngines.map((e) => ({
+                    ...supportedLayoutEngines.map(e => ({
                         name: e,
                         value: e,
                     })),
@@ -247,8 +247,8 @@ export class StempelgraphCommand implements ApplicationCommand {
 
         const allUserIds = new Set<string>(
             stempels
-                .map((s) => s.invitator)
-                .concat(stempels.map((s) => s.invitedMember)),
+                .map(s => s.invitator)
+                .concat(stempels.map(s => s.invitedMember)),
         );
         log.debug(`All in all we have ${allUserIds.size} unique Stempler`);
 
@@ -256,7 +256,7 @@ export class StempelgraphCommand implements ApplicationCommand {
         log.debug(`All in all we have ${allUserIds.size} unique Stempler`);
 
         const namedStempels = stempels
-            .map((s) => ({
+            .map(s => ({
                 inviter: memberInfoMap.get(s.invitator),
                 invitee: memberInfoMap.get(s.invitedMember),
             }))

@@ -247,7 +247,7 @@ export const woisVoteScheduler = async (context: BotContext): Promise<void> => {
 
     const chunks = chunkArray(woisAction.interestedUsers, 10);
     for (const users of chunks) {
-        const mentions = users.map((userId) => `<@${userId}>`);
+        const mentions = users.map(userId => `<@${userId}>`);
         // It's okay for readability
 
         await woisMessage.reply({

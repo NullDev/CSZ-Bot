@@ -24,13 +24,13 @@ const randomSeed =
 const iocCalculator = function (s: string): number {
     const bigrams = new Map();
     const text = s.replace(/\s+/g, "");
-    [...text].forEach((c) =>
+    [...text].forEach(c =>
         bigrams.has(c) ? bigrams.set(c, bigrams.get(c) + 1) : bigrams.set(c, 1),
     );
 
     let sum = 0;
     // rome-ignore lint/suspicious/noAssignInExpressions: The creator of this bot wants tuff to be complicated, so this needs to have a side effect
-    bigrams.forEach((v) => (sum += v + (v - 1)));
+    bigrams.forEach(v => (sum += v + (v - 1)));
     return sum / (text.length * (text.length - 1));
 };
 
@@ -165,7 +165,7 @@ export class SdmCommand implements MessageCommand, ApplicationCommand {
         const args = substringAfter(message.cleanContent, this.name)
             .trim()
             .split(/\s+/g)
-            .filter((s) => !!s);
+            .filter(s => !!s);
 
         if (!args.length && !isReply) {
             await message.reply("Bruder da ist keine Frage :c");
@@ -181,8 +181,8 @@ export class SdmCommand implements MessageCommand, ApplicationCommand {
 
         const options = question
             .split(/,|;|\s+oder\s+/gi)
-            .map((s) => s.trim())
-            .filter((s) => !!s);
+            .map(s => s.trim())
+            .filter(s => !!s);
 
         if (options.length > 1) {
             const listFormatter = new Intl.ListFormat("de", {
@@ -235,7 +235,7 @@ export class SdmCommand implements MessageCommand, ApplicationCommand {
             const o5 = command.options.getString("o5", false);
 
             const options = [o1, o2, o3, o4, o5].filter(
-                (o) => o !== null,
+                o => o !== null,
             ) as string[];
 
             const msg = createSecureDecisionMessage(question, member, options);

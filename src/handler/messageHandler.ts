@@ -12,7 +12,7 @@ const getInlineReplies = (
     clientUser: ClientUser,
 ) => {
     return messageRef.channel.messages.cache.filter(
-        (m) =>
+        m =>
             m.author.id === clientUser.id &&
             m.reference?.messageId === messageRef.id,
     );
@@ -62,8 +62,8 @@ export default async function (
 
         if (reply) {
             const hasAlreadyReplied = message.channel.messages.cache
-                .filter((m) => m.content.includes(reply))
-                .some((m) => m.reference?.messageId === message.id);
+                .filter(m => m.content.includes(reply))
+                .some(m => m.reference?.messageId === message.id);
             if (!hasAlreadyReplied) {
                 await message.reply({
                     content: reply,

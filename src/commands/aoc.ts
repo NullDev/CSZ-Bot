@@ -143,7 +143,7 @@ const getLeaderBoard = async (): Promise<LeaderBoard> => {
         headers: {
             Cookie: `session=${aocConfig.sessionToken}`,
         },
-    }).then((r) => r.json())) as LeaderBoard;
+    }).then(r => r.json())) as LeaderBoard;
     return leaderBoard;
 };
 

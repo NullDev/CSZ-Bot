@@ -19,7 +19,7 @@ import { restoreRoles } from "./ban.js";
 const config = getConfig();
 
 export const unban = async (member: GuildMember) => {
-    if (member.roles.cache.some((r) => r.id === config.ids.default_role_id))
+    if (member.roles.cache.some(r => r.id === config.ids.default_role_id))
         return "Dieser User ist nicht gebannt du kek.";
 
     await Ban.remove(member.user);

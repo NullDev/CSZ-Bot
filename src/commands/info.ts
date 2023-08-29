@@ -21,7 +21,7 @@ import { assertNever } from "../utils/typeUtils.js";
 const fetchContributions = async (): Promise<Array<GitHubContributor>> => {
     return fetch("https://api.github.com/repos/NullDev/CSZ-Bot/contributors", {
         headers: { Accept: "application/vnd.github.v3+json" },
-    }).then((res) => res.json() as Promise<Array<GitHubContributor>>);
+    }).then(res => res.json() as Promise<Array<GitHubContributor>>);
 };
 
 const fetchLanguages = async (): Promise<Array<string>> => {
@@ -37,8 +37,8 @@ const fetchLanguages = async (): Promise<Array<string>> => {
 const getContributors = async (): Promise<string> => {
     const contributors = await fetchContributions();
     return `${contributors
-        .filter((c) => c.type === "User")
-        .map((c) => {
+        .filter(c => c.type === "User")
+        .map(c => {
             return c.login.replace("-", "‑"); // Replace normal hyphen with no-breaking hypen
         })
         .join(
