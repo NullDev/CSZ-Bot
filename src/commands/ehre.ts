@@ -15,7 +15,7 @@ import type { BotContext } from "../context.js";
 import { EhreGroups, EhrePoints, EhreVotes } from "../storage/model/Ehre.js";
 
 function createUserPointString(e: EhrePoints) {
-    return `<@${e.userId}> : ${(Math.round(e.points * 10) / 10).toFixed(1)}`;
+    return `<@${e.userId}> : ${(Math.round(e.points * 100) / 10).toFixed(1)}`;
 }
 
 async function createEhreTable(
