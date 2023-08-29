@@ -176,7 +176,7 @@ const createQuote = async (
     };
 };
 
-export const quoteReactionHandler = {
+export default {
     displayName: "Quote Reaction Handler",
 
     async execute(

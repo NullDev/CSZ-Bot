@@ -34,7 +34,7 @@ import {
     messageCommandHandler,
     registerAllApplicationCommandsAsGuildCommands,
 } from "./handler/commandHandler.js";
-import { quoteReactionHandler } from "./handler/quoteHandler.js";
+import quoteReactionHandler from "./handler/quoteHandler.js";
 import NicknameHandler from "./handler/nicknameHandler.js";
 import { connectAndPlaySaufen } from "./handler/voiceHandler.js";
 import { reminderHandler } from "./commands/erinnerung.js";
