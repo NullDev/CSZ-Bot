@@ -21,7 +21,7 @@ const ehreFormatter = new Intl.NumberFormat("de-DE", {
 });
 
 function createUserPointString(e: EhrePoints) {
-    return `<@${e.userId}> : ${ehreFormatter.format(e.points)}`;
+    return `<@${e.userId}> : ${ehreFormatter.format(e.points * 10)}`;
 }
 
 async function createEhreTable(
