@@ -11,159 +11,168 @@ const pollEmojis = poll.EMOJI;
 const voteEmojis = ["👍", "👎"];
 const pollVoteEmojis = pollEmojis.concat(voteEmojis);
 
-export default async function (
-    reactionEvent: MessageReaction,
-    user: User,
-    client: Client,
-    removal: boolean,
-): Promise<void> {
-    const channel = client.channels.cache.get(reactionEvent.message.channelId);
-    if (channel === undefined) {
-        throw new Error("Channel is undefined");
-    }
-    if (!channel.isTextBased()) {
-        throw new Error("Channel is not text based");
-    }
-
-    const message = await channel.messages.fetch(reactionEvent.message.id);
-    const { guild } = message;
-    if (guild === null) {
-        throw new Error("Guild is null");
-    }
-
-    const botUser = client.user;
-    if (message.author.id !== botUser?.id) return;
-
-    const member = await guild.members.fetch(user.id);
-
-    if (reactionEvent.emoji.name === "✅") {
-        if (member.id && member.id !== botUser?.id) {
-            // Some roles, especially "C" are prefixed with a invisible whitespace to ensure they are not mentioned
-            // by accidence.
-            const role = guild.roles.cache.find(
-                (r) =>
-                    r.name.replace(/[\u200B-\u200D\uFEFF]/g, "") ===
-                    message.content,
-            );
-
-            if (role === undefined) {
-                throw new Error(`Could not find role ${role}`);
-            }
-
-            if (role && removal) {
-                member.roles.remove(role.id).catch(log.error);
-            } else {
-                member.roles.add(role.id).catch(log.error);
-            }
+export default {
+    displayName: "Default Reaction Handler",
+    async execute(
+        reactionEvent: MessageReaction,
+        user: User,
+        client: Client,
+        removal: boolean,
+    ): Promise<void> {
+        const channel = client.channels.cache.get(
+            reactionEvent.message.channelId,
+        );
+        if (channel === undefined) {
+            throw new Error("Channel is undefined");
         }
-        return;
-    }
+        if (!channel.isTextBased()) {
+            throw new Error("Channel is not text based");
+        }
 
-    const reactionName = reactionEvent.emoji.name;
-    if (reactionName === null) {
-        throw new Error("Could not find reaction name");
-    }
+        const message = await channel.messages.fetch(reactionEvent.message.id);
+        const { guild } = message;
+        if (guild === null) {
+            throw new Error("Guild is null");
+        }
 
-    if (pollVoteEmojis.includes(reactionName) && !removal) {
-        const fromThisBot = member.id === botUser.id;
+        const botUser = client.user;
+        if (message.author.id !== botUser?.id) return;
 
-        if (fromThisBot) {
+        const member = await guild.members.fetch(user.id);
+
+        if (reactionEvent.emoji.name === "✅") {
+            if (member.id && member.id !== botUser?.id) {
+                // Some roles, especially "C" are prefixed with a invisible whitespace to ensure they are not mentioned
+                // by accidence.
+                const role = guild.roles.cache.find(
+                    (r) =>
+                        r.name.replace(/[\u200B-\u200D\uFEFF]/g, "") ===
+                        message.content,
+                );
+
+                if (role === undefined) {
+                    throw new Error(`Could not find role ${role}`);
+                }
+
+                if (role && removal) {
+                    member.roles.remove(role.id).catch(log.error);
+                } else {
+                    member.roles.add(role.id).catch(log.error);
+                }
+            }
             return;
         }
 
-        const embedAuthor = message.embeds[0].author;
-        if (embedAuthor === null) {
-            throw new Error("Embed author is null");
+        const reactionName = reactionEvent.emoji.name;
+        if (reactionName === null) {
+            throw new Error("Could not find reaction name");
         }
 
-        const isStrawpoll =
-            message.embeds.length === 1 &&
-            embedAuthor.name.indexOf("Strawpoll") >= 0 &&
-            pollEmojis.includes(reactionName);
+        if (pollVoteEmojis.includes(reactionName) && !removal) {
+            const fromThisBot = member.id === botUser.id;
 
-        const isUmfrage =
-            message.embeds.length === 1 &&
-            embedAuthor.name.indexOf("Umfrage") >= 0 &&
-            voteEmojis.includes(reactionName);
-
-        const delayedPoll = poll.delayedPolls.find(
-            (x) => x.pollId === message.id,
-        );
-        const isDelayedPoll = delayedPoll !== undefined;
-
-        if (isStrawpoll) {
-            if (isDelayedPoll) {
-                delayedPoll.reactions.forEach((reactionList) => {
-                    reactionList.forEach((x, i) => {
-                        if (x === member.id) reactionList.splice(i);
-                    });
-                });
-                const delayedPollReactions =
-                    delayedPoll.reactions[pollEmojis.indexOf(reactionName)];
-                delayedPollReactions.push(member.id);
+            if (fromThisBot) {
+                return;
             }
 
-            const reactions = message.reactions.cache.filter((r) => {
-                const emojiName = r.emoji.name;
-                return (
-                    emojiName &&
-                    r.users.cache.has(member.id) &&
-                    emojiName !== reactionEvent.emoji.name &&
-                    pollEmojis.includes(emojiName)
-                );
-            });
+            const embedAuthor = message.embeds[0].author;
+            if (embedAuthor === null) {
+                throw new Error("Embed author is null");
+            }
 
-            await Promise.all(reactions.map((r) => r.users.remove(member.id)));
-        } else if (isUmfrage) {
-            if (isDelayedPoll) {
-                const delayedPollReactions =
-                    delayedPoll.reactions[voteEmojis.indexOf(reactionName)];
-                const hasVoted = delayedPollReactions.some(
-                    (x) => x === member.id,
-                );
-                if (!hasVoted) {
+            const isStrawpoll =
+                message.embeds.length === 1 &&
+                embedAuthor.name.indexOf("Strawpoll") >= 0 &&
+                pollEmojis.includes(reactionName);
+
+            const isUmfrage =
+                message.embeds.length === 1 &&
+                embedAuthor.name.indexOf("Umfrage") >= 0 &&
+                voteEmojis.includes(reactionName);
+
+            const delayedPoll = poll.delayedPolls.find(
+                (x) => x.pollId === message.id,
+            );
+            const isDelayedPoll = delayedPoll !== undefined;
+
+            if (isStrawpoll) {
+                if (isDelayedPoll) {
+                    delayedPoll.reactions.forEach((reactionList) => {
+                        reactionList.forEach((x, i) => {
+                            if (x === member.id) reactionList.splice(i);
+                        });
+                    });
+                    const delayedPollReactions =
+                        delayedPoll.reactions[pollEmojis.indexOf(reactionName)];
                     delayedPollReactions.push(member.id);
-                } else {
-                    delayedPollReactions.splice(
-                        delayedPollReactions.indexOf(member.id),
-                        1,
-                    );
                 }
 
-                const msg = await message.channel.send(
-                    hasVoted
-                        ? "🗑 Deine Reaktion wurde gelöscht."
-                        : "💾 Deine Reaktion wurde gespeichert.",
+                const reactions = message.reactions.cache.filter((r) => {
+                    const emojiName = r.emoji.name;
+                    return (
+                        emojiName &&
+                        r.users.cache.has(member.id) &&
+                        emojiName !== reactionEvent.emoji.name &&
+                        pollEmojis.includes(emojiName)
+                    );
+                });
+
+                await Promise.all(
+                    reactions.map((r) => r.users.remove(member.id)),
                 );
-                await FadingMessage.newFadingMessage(
-                    msg as ProcessableMessage,
-                    2500,
+            } else if (isUmfrage) {
+                if (isDelayedPoll) {
+                    const delayedPollReactions =
+                        delayedPoll.reactions[voteEmojis.indexOf(reactionName)];
+                    const hasVoted = delayedPollReactions.some(
+                        (x) => x === member.id,
+                    );
+                    if (!hasVoted) {
+                        delayedPollReactions.push(member.id);
+                    } else {
+                        delayedPollReactions.splice(
+                            delayedPollReactions.indexOf(member.id),
+                            1,
+                        );
+                    }
+
+                    const msg = await message.channel.send(
+                        hasVoted
+                            ? "🗑 Deine Reaktion wurde gelöscht."
+                            : "💾 Deine Reaktion wurde gespeichert.",
+                    );
+                    await FadingMessage.newFadingMessage(
+                        msg as ProcessableMessage,
+                        2500,
+                    );
+                }
+            }
+
+            // If it's a delayed poll, we clear all Reactions
+            if (isDelayedPoll) {
+                const allUserReactions = message.reactions.cache.filter((r) => {
+                    const emojiName = r.emoji.name;
+                    return (
+                        emojiName &&
+                        r.users.cache.has(member.id) &&
+                        pollEmojis.includes(emojiName)
+                    );
+                });
+                await Promise.all(
+                    allUserReactions.map((r) => r.users.remove(member.id)),
                 );
             }
-        }
 
-        // If it's a delayed poll, we clear all Reactions
-        if (isDelayedPoll) {
-            const allUserReactions = message.reactions.cache.filter((r) => {
-                const emojiName = r.emoji.name;
-                return (
-                    emojiName &&
-                    r.users.cache.has(member.id) &&
-                    pollEmojis.includes(emojiName)
-                );
-            });
-            await Promise.all(
-                allUserReactions.map((r) => r.users.remove(member.id)),
+            const additionalData = await AdditionalMessageData.fromMessage(
+                message,
             );
+            // TODO
+            // @ts-ignore
+            const newCustomData = additionalData.customData;
+            newCustomData.delayedPollData = delayedPoll;
+            // @ts-ignore
+            additionalData.customData = newCustomData;
+            await additionalData.save();
         }
-
-        const additionalData = await AdditionalMessageData.fromMessage(message);
-        // TODO
-        // @ts-ignore
-        const newCustomData = additionalData.customData;
-        newCustomData.delayedPollData = delayedPoll;
-        // @ts-ignore
-        additionalData.customData = newCustomData;
-        await additionalData.save();
-    }
-}
+    },
+};

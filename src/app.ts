@@ -363,12 +363,17 @@ client.on("invalidated", () => log.debug("Client invalidated"));
 
 // TODO: Refactor to include in reaction handlers
 client.on("messageReactionAdd", async (event, user) =>
-    reactionHandler(event as MessageReaction, user as User, client, false),
+    reactionHandler.execute(
+        event as MessageReaction,
+        user as User,
+        client,
+        false,
+    ),
 );
 client.on(
     "messageReactionAdd",
     async (event, user) =>
-        await quoteReactionHandler(
+        await quoteReactionHandler.execute(
             event as MessageReaction,
             user as User,
             botContext,
@@ -377,7 +382,7 @@ client.on(
 client.on(
     "messageReactionRemove",
     async (event, user) =>
-        await reactionHandler(
+        await reactionHandler.execute(
             event as MessageReaction,
             user as User,
             client,
@@ -387,17 +392,30 @@ client.on(
 
 client.on("messageReactionAdd", async (event, user) => {
     for (const handler of reactionHandlers) {
-        await handler(
-            event as MessageReaction,
-            user as User,
-            botContext,
-            false,
-        );
+        try {
+            await handler.execute(
+                event as MessageReaction,
+                user as User,
+                botContext,
+                false,
+            );
+        } catch (err) {
+            log.error(err, `Handler "${handler.displayName}" failed.`);
+        }
     }
 });
 client.on("messageReactionRemove", async (event, user) => {
     for (const handler of reactionHandlers) {
-        await handler(event as MessageReaction, user as User, botContext, true);
+        try {
+            await handler.execute(
+                event as MessageReaction,
+                user as User,
+                botContext,
+                true,
+            );
+        } catch (err) {
+            log.error(err, `Handler "${handler.displayName}" failed.`);
+        }
     }
 });
 

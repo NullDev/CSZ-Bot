@@ -176,123 +176,127 @@ const createQuote = async (
     };
 };
 
-export const quoteReactionHandler = async (
-    event: MessageReaction,
-    user: User,
-    context: BotContext,
-) => {
-    if (
-        !isQuoteEmoji(event.emoji) ||
-        event.message.guildId === null ||
-        user.id === context.client.user.id
-    ) {
-        return;
-    }
+export const quoteReactionHandler = {
+    displayName: "Quote Reaction Handler",
 
-    const quoter = context.guild.members.cache.get(user.id);
+    async execute(
+        event: MessageReaction,
+        user: User,
+        context: BotContext,
+    ): Promise<void> {
+        if (
+            !isQuoteEmoji(event.emoji) ||
+            event.message.guildId === null ||
+            user.id === context.client.user.id
+        ) {
+            return;
+        }
 
-    const sourceChannel = event.message.channel as TextBasedChannel;
-    const quotedMessage = await sourceChannel.messages.fetch(event.message.id);
-    const messageReference = quotedMessage.reference;
-    const messageReferenceId = messageReference?.messageId;
-    const referencedMessage = messageReferenceId
-        ? await sourceChannel.messages.fetch(messageReferenceId)
-        : undefined;
-    const quotedUser = quotedMessage.member;
-    const referencedUser = referencedMessage?.member;
-    const quotingMembers = await getMessageQuoter(quotedMessage);
-    const quotingMembersAllowed = quotingMembers.filter((member) =>
-        isMemberAllowedToQuote(member),
-    );
+        const quoter = context.guild.members.cache.get(user.id);
 
-    if (!quotedUser || !quoter) {
-        log.error(
-            "Something bad happend, there is something missing that shouldn't be missing",
+        const sourceChannel = event.message.channel as TextBasedChannel;
+        const quotedMessage = await sourceChannel.messages.fetch(
+            event.message.id,
         );
-        return;
-    }
-
-    log.debug(
-        `[Quote] User tried to ${quoter.displayName} (${quoter.id}) quote user ${quotedUser.displayName} (${quotedUser.id}) on message ${quotedMessage.id}`,
-    );
-
-    if (
-        !isMemberAllowedToQuote(quoter) ||
-        !isSourceChannelAllowed(quotedMessage.channelId) ||
-        isMessageAlreadyQuoted(quotingMembers, context)
-    ) {
-        await event.users.remove(quoter);
-
-        return;
-    }
-
-    if (isQuoterQuotingHimself(quoter, quotedUser)) {
-        await context.textChannels.hauptchat.send({
-            content: `${quoter} der Lellek hat gerade versucht sich, selbst zu quoten. Was für ein Opfer!`,
-            allowedMentions: {
-                users: [quoter.id],
-            },
-        });
-
-        await event.users.remove(quoter);
-        return;
-    }
-
-    if (!hasMessageEnoughQuotes(quotingMembersAllowed)) {
-        return;
-    }
-
-    const { quote, reference } = await createQuote(
-        context,
-        quotedUser,
-        quotingMembersAllowed.map((member) => member.user),
-        referencedUser,
-        quotedMessage,
-        referencedMessage,
-    );
-    const { id: targetChannelId, channel: targetChannel } = getTargetChannel(
-        quotedMessage.channelId,
-        context,
-    );
-
-    if (targetChannel === undefined) {
-        log.error(
-            `channel ${targetChannelId} is configured as quote output channel but it doesn't exist`,
+        const messageReference = quotedMessage.reference;
+        const messageReferenceId = messageReference?.messageId;
+        const referencedMessage = messageReferenceId
+            ? await sourceChannel.messages.fetch(messageReferenceId)
+            : undefined;
+        const quotedUser = quotedMessage.member;
+        const referencedUser = referencedMessage?.member;
+        const quotingMembers = await getMessageQuoter(quotedMessage);
+        const quotingMembersAllowed = quotingMembers.filter((member) =>
+            isMemberAllowedToQuote(member),
         );
-        return;
-    }
 
-    if (!targetChannel.isTextBased()) {
-        log.error(
-            `channel ${targetChannelId} is configured as quote output channel but it is not a text channel`,
+        if (!quotedUser || !quoter) {
+            log.error(
+                "Something bad happend, there is something missing that shouldn't be missing",
+            );
+            return;
+        }
+
+        log.debug(
+            `[Quote] User tried to ${quoter.displayName} (${quoter.id}) quote user ${quotedUser.displayName} (${quotedUser.id}) on message ${quotedMessage.id}`,
         );
-        return;
-    }
 
-    // There is a small possibility that quotes will be quoted multiple times
-    // This comes from the fact, that we're checking the preconditions at the start
-    // of this function, then perform rather time-consuming tasks. In the meantime
-    // another quote event could sneak in and performing a quote itself.
-    // Therefore we're checking again whether the message is already quoted BEFORE
-    // sending the quote.
-    // This is a really dirty fix - not even a fix at all - but I'm to lazy to
-    // introduce some proper synchronization. Should work good enough for us.
-    if (isMessageAlreadyQuoted(quotingMembers, context)) {
-        return;
-    }
+        if (
+            !isMemberAllowedToQuote(quoter) ||
+            !isSourceChannelAllowed(quotedMessage.channelId) ||
+            isMessageAlreadyQuoted(quotingMembers, context)
+        ) {
+            await event.users.remove(quoter);
 
-    if (reference !== undefined) {
-        const quoteMessage = await targetChannel.send(reference);
-        await quoteMessage.reply(quote);
-    } else {
-        await targetChannel.send(quote);
-    }
+            return;
+        }
 
-    await quotedMessage.react(event.emoji);
-    if (
-        quotedMessage.channel.isTextBased() &&
-        quotedMessage.channel.type === ChannelType.GuildText
-    ) {
-        await quotedMessage.reply("Ihr quoted echt jeden Scheiß, oder?");
-    }
+        if (isQuoterQuotingHimself(quoter, quotedUser)) {
+            await context.textChannels.hauptchat.send({
+                content: `${quoter} der Lellek hat gerade versucht sich, selbst zu quoten. Was für ein Opfer!`,
+                allowedMentions: {
+                    users: [quoter.id],
+                },
+            });
+
+            await event.users.remove(quoter);
+            return;
+        }
+
+        if (!hasMessageEnoughQuotes(quotingMembersAllowed)) {
+            return;
+        }
+
+        const { quote, reference } = await createQuote(
+            context,
+            quotedUser,
+            quotingMembersAllowed.map((member) => member.user),
+            referencedUser,
+            quotedMessage,
+            referencedMessage,
+        );
+        const { id: targetChannelId, channel: targetChannel } =
+            getTargetChannel(quotedMessage.channelId, context);
+
+        if (targetChannel === undefined) {
+            log.error(
+                `channel ${targetChannelId} is configured as quote output channel but it doesn't exist`,
+            );
+            return;
+        }
+
+        if (!targetChannel.isTextBased()) {
+            log.error(
+                `channel ${targetChannelId} is configured as quote output channel but it is not a text channel`,
+            );
+            return;
+        }
+
+        // There is a small possibility that quotes will be quoted multiple times
+        // This comes from the fact, that we're checking the preconditions at the start
+        // of this function, then perform rather time-consuming tasks. In the meantime
+        // another quote event could sneak in and performing a quote itself.
+        // Therefore we're checking again whether the message is already quoted BEFORE
+        // sending the quote.
+        // This is a really dirty fix - not even a fix at all - but I'm to lazy to
+        // introduce some proper synchronization. Should work good enough for us.
+        if (isMessageAlreadyQuoted(quotingMembers, context)) {
+            return;
+        }
+
+        if (reference !== undefined) {
+            const quoteMessage = await targetChannel.send(reference);
+            await quoteMessage.reply(quote);
+        } else {
+            await targetChannel.send(quote);
+        }
+
+        await quotedMessage.react(event.emoji);
+        if (
+            quotedMessage.channel.isTextBased() &&
+            quotedMessage.channel.type === ChannelType.GuildText
+        ) {
+            await quotedMessage.reply("Ihr quoted echt jeden Scheiß, oder?");
+        }
+    },
 };

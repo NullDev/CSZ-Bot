@@ -153,62 +153,67 @@ export class WoisCommand implements ApplicationCommand {
     }
 }
 
-export const woisVoteReactionHandler: ReactionHandler = async (
-    reactionEvent: MessageReaction,
-    user: User,
-    context: BotContext,
-    removal: boolean,
-): Promise<void> => {
-    const { message } = reactionEvent;
+export const woisVoteReactionHandler: ReactionHandler = {
+    displayName: "Wois-Vote Reaction Handler",
+    async execute(
+        reactionEvent: MessageReaction,
+        user: User,
+        context: BotContext,
+        removal: boolean,
+    ): Promise<void> {
+        const { message } = reactionEvent;
 
-    const voteYes = reactionEvent.emoji.name === "👍";
-    const voteNo = reactionEvent.emoji.name === "👎";
-    // Some other emoji was used
-    if (!voteYes && !voteNo) {
-        return;
-    }
-    // We just need to save/update interest when a user votes with yes or removes a yes vote.
-    // No need to do anything when a user votes with no.
-    // Only ambigous case is when a user reacts with both yes and no. In this case we just keep the yes vote.
-    // | voteYes | voteNo | removal | interest                 |
-    // | ------- | ------ | ------- | ------------------------ |
-    // | 0       | 0      | 0       | X (cannot happen)        |
-    // | 1       | 0      | 0       | 1                        |
-    // | 0       | 1      | 0       | 0                        |
-    // | 1       | 1      | 0       | X (cannot happen)        |
-    // | 0       | 0      | 1       | X (cannot happen)        |
-    // | 1       | 0      | 1       | 0                        |
-    // | 0       | 1      | 1       | 0                        |
-    // | 1       | 1      | 1       | X (cannot happen)        |
-    const interest = voteYes && !voteNo && !removal;
+        const voteYes = reactionEvent.emoji.name === "👍";
+        const voteNo = reactionEvent.emoji.name === "👎";
+        // Some other emoji was used
+        if (!voteYes && !voteNo) {
+            return;
+        }
+        // We just need to save/update interest when a user votes with yes or removes a yes vote.
+        // No need to do anything when a user votes with no.
+        // Only ambigous case is when a user reacts with both yes and no. In this case we just keep the yes vote.
+        // | voteYes | voteNo | removal | interest                 |
+        // | ------- | ------ | ------- | ------------------------ |
+        // | 0       | 0      | 0       | X (cannot happen)        |
+        // | 1       | 0      | 0       | 1                        |
+        // | 0       | 1      | 0       | 0                        |
+        // | 1       | 1      | 0       | X (cannot happen)        |
+        // | 0       | 0      | 1       | X (cannot happen)        |
+        // | 1       | 0      | 1       | 0                        |
+        // | 0       | 1      | 1       | 0                        |
+        // | 1       | 1      | 1       | X (cannot happen)        |
+        const interest = voteYes && !voteNo && !removal;
 
-    const woisAction = await WoisAction.getWoisActionByMessageId(message.id);
-    if (woisAction === null) {
-        return;
-    }
-
-    // If the woisvote has not been created by a woisgang user, but we have two votes on it. PING DEM WOISGANG!
-    if (
-        !woisAction.isWoisgangAction &&
-        woisAction.interestedUsers.length === 1 &&
-        interest
-    ) {
-        const alertingMessage = await message.channel.messages.fetch(
+        const woisAction = await WoisAction.getWoisActionByMessageId(
             message.id,
         );
-        await pingWoisgang(alertingMessage, context.roles.woisgang);
-    }
+        if (woisAction === null) {
+            return;
+        }
 
-    const success = await WoisAction.registerInterst(
-        message.id,
-        user.id,
-        interest,
-    );
-    if (!success) {
-        log.error(
-            `Could not register interest for user ${user.id} in message ${message.id}`,
+        // If the woisvote has not been created by a woisgang user, but we have two votes on it. PING DEM WOISGANG!
+        if (
+            !woisAction.isWoisgangAction &&
+            woisAction.interestedUsers.length === 1 &&
+            interest
+        ) {
+            const alertingMessage = await message.channel.messages.fetch(
+                message.id,
+            );
+            await pingWoisgang(alertingMessage, context.roles.woisgang);
+        }
+
+        const success = await WoisAction.registerInterst(
+            message.id,
+            user.id,
+            interest,
         );
-    }
+        if (!success) {
+            log.error(
+                `Could not register interest for user ${user.id} in message ${message.id}`,
+            );
+        }
+    },
 };
 
 export const woisVoteScheduler = async (context: BotContext): Promise<void> => {

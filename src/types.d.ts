@@ -15,12 +15,15 @@ export type CommandFunction = (
     context: BotContext,
 ) => Promise<CommandResult>;
 
-export type ReactionHandler = (
-    reactionEvent: MessageReaction,
-    user: User,
-    context: BotContext,
-    removal: boolean,
-) => Promise<void>;
+export interface ReactionHandler {
+    displayName: string;
+    execute(
+        reactionEvent: MessageReaction,
+        user: User,
+        context: BotContext,
+        removal: boolean,
+    ): Promise<void>;
+}
 
 export type Mutable<T> = { -readonly [P in keyof T]: T[P] };
 type RequiredNotNull<T> = {
