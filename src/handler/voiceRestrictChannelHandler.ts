@@ -1,7 +1,7 @@
 import type { VoiceState } from "discord.js";
 import type { BotContext } from "../context.js";
 
-export async function checkVoiceUpdate(
+export async function checkActiveVoice(
     oldState: VoiceState,
     newState: VoiceState,
     _botContext: BotContext,
@@ -10,16 +10,16 @@ export async function checkVoiceUpdate(
     const hauptWoischat = _botContext.voiceChannels.haupt_woischat;
     const woisActiveRole = _botContext.roles.wois_active;
     const member = newState.member;
-    if(member === null) return;
+    if (member === null) return;
 
     const hasJoined = newState.channelId === hauptWoischat.id;
     const hasLeft = newState.channelId === hauptWoischat.id;
 
-    if(hasJoined) {
+    if (hasJoined) {
         await member.roles.add(woisActiveRole);
     }
 
-    if(hasLeft) {
+    if (hasLeft) {
         await member.roles.remove(woisActiveRole);
     }
 }

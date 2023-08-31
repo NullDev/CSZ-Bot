@@ -410,7 +410,11 @@ client.on(
             botContext,
         ),
 );
-client.on("voiceStateUpdate", async (oldState, newState) => await checkActiveVoice(oldState, newState, botContext));
+client.on(
+    "voiceStateUpdate",
+    async (oldState, newState) =>
+        await checkActiveVoice(oldState, newState, botContext),
+);
 
 function login() {
     return new Promise<Client<true>>(resolve => {
