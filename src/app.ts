@@ -49,6 +49,7 @@ import {
 } from "./commands/woisvote.js";
 import { AoCHandler } from "./commands/aoc.js";
 import { rotate } from "./helper/bannerCarusel.js";
+import { checkActiveVoice } from "./handler/voiceRestrictChannelHandler.js";
 
 const args = process.argv.slice(2);
 
@@ -409,6 +410,7 @@ client.on(
             botContext,
         ),
 );
+client.on("voiceStateUpdate", async (oldState, newState) => await checkActiveVoice(oldState, newState, botContext));
 
 function login() {
     return new Promise<Client<true>>(resolve => {

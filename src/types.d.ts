@@ -51,14 +51,16 @@ export type ConfigRoleId =
     | "trusted_banned_role_id"
     | "trusted_role_id"
     | "woisgang_role_id"
-    | "winner_role_id";
+    | "winner_role_id"
+    | "wois_active_role_id";
 
 export type ConfigTextChannelId =
     | "banned_channel_id"
     | "bot_log_channel_id"
     | "bot_spam_channel_id"
     | "hauptchat_id"
-    | "votes_channel_id";
+    | "votes_channel_id"
+    | "woischat_channel_id";
 
 export type ConfigVoiceChannelId = "haupt_woischat_id";
 
