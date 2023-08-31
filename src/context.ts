@@ -188,7 +188,6 @@ export async function createBotContext(
             trusted: ensureRole(config, guild, "trusted_role_id"),
             woisgang: ensureRole(config, guild, "woisgang_role_id"),
             winner: ensureRole(config, guild, "winner_role_id"),
-            wois_active: ensureRole(config, guild, "wois_active_role_id"),
         },
         textChannels: {
             banned: ensureTextChannel(config, guild, "banned_channel_id"),
@@ -196,7 +195,6 @@ export async function createBotContext(
             hauptchat: ensureTextChannel(config, guild, "hauptchat_id"),
             votes: ensureTextChannel(config, guild, "votes_channel_id"),
             bot_spam: ensureTextChannel(config, guild, "bot_spam_channel_id"),
-            woischat: ensureTextChannel(config, guild, "woischat_channel_id"),
         },
         voiceChannels: {
             haupt_woischat: ensureVoiceChannel(
