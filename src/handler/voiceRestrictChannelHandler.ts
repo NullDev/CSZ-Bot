@@ -13,7 +13,7 @@ export async function checkActiveVoice(
     if (member === null) return;
 
     const hasJoined = newState.channelId === hauptWoischat.id;
-    const hasLeft = newState.channelId === hauptWoischat.id;
+    const hasLeft = newState.channelId === null;
 
     if (hasJoined) {
         await member.roles.add(woisActiveRole);
