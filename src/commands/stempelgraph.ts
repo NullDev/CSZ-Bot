@@ -292,6 +292,11 @@ export class StempelgraphCommand implements ApplicationCommand {
                     "\n```",
             });
             */
+
+            await command.reply({
+                content: "```\n" + dotSrc + "\n```",
+                ephemeral: true,
+            });
             await command.reply({
                 files: [
                     {
@@ -301,10 +306,6 @@ export class StempelgraphCommand implements ApplicationCommand {
                 ],
             });
 
-            await command.reply({
-                content: "```\n" + dotSrc + "\n```",
-                ephemeral: true,
-            });
         } catch (err) {
             log.error(err, "Could not draw stempelgraph");
         }
