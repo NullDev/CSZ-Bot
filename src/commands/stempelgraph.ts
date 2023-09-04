@@ -125,26 +125,18 @@ async function drawStempelgraph(
 
     const dotSrc = `digraph {
         layout = ${engine};
-        # ${engine === "dot" ? "splines=line;" : ""}
-
-        bgcolor="#36393f";
-        fontcolor="#ffffff";
-        fontname="Monospace"
-        label="CSZ Social Graph";
-
+        bgcolor="#36393f"; fontcolor="#ffffff"; fontname="Monospace"; label="CSZ Social Graph";
         node [
-            color="#ffffff"
+            color="#ffffff",
             fontcolor="#ffffff",
             labelfontcolor="#ffffff",
             shape=box,
         ];
-
         edge [
-            color="#ffffff"
+            color="#ffffff",
             fontcolor="#ffffff",
             labelfontcolor="#ffffff",
         ];
-
         ${inviterNodes}
         ${inviteeNodes}
         ${connections}
