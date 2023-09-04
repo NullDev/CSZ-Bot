@@ -295,9 +295,6 @@ export class StempelgraphCommand implements ApplicationCommand {
 
             await command.reply({
                 content: "```\n" + dotSrc + "\n```",
-            });
-
-            await command.reply({
                 files: [
                     {
                         attachment: stempelGraph,
