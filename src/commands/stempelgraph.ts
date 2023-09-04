@@ -111,36 +111,36 @@ async function drawStempelgraph(
         .map(s => userInfo.get(s.inviter))
         .filter((m): m is UserInfo => m !== undefined)
         .map(getMemberNode)
-        .join(";\n");
+        .join(";");
 
     const inviteeNodes = stempels
         .map(s => userInfo.get(s.invitee))
         .filter((s): s is UserInfo => s !== undefined)
         .map(getMemberNode)
-        .join(";\n");
+        .join(";");
 
     const connections = stempels
         .map(s => `"${s.inviter.id}" -> "${s.invitee.id}"`)
-        .join(";\n");
+        .join(";");
 
     const dotSrc = `digraph {
-        layout = ${engine};
-        bgcolor="#36393f"; fontcolor="#ffffff"; fontname="Monospace"; label="CSZ Social Graph";
-        node [
-            color="#ffffff",
-            fontcolor="#ffffff",
-            labelfontcolor="#ffffff",
-            shape=box,
-        ];
-        edge [
-            color="#ffffff",
-            fontcolor="#ffffff",
-            labelfontcolor="#ffffff",
-        ];
-        ${inviterNodes}
-        ${inviteeNodes}
-        ${connections}
-    }`;
+	layout = ${engine};
+	bgcolor="#36393f"; fontcolor="#ffffff"; fontname="Monospace"; label="CSZ Social Graph";
+	node [
+		color="#ffffff",
+		fontcolor="#ffffff",
+		labelfontcolor="#ffffff",
+		shape=box,
+	];
+	edge [
+		color="#ffffff",
+		fontcolor="#ffffff",
+		labelfontcolor="#ffffff",
+	];
+	${inviterNodes}
+	${inviteeNodes}
+	${connections}
+}`;
 
     await graphviz.loadWASM();
     const svg = graphviz.layout(dotSrc, "svg", engine);
