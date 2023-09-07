@@ -3,19 +3,16 @@
   "private": true,
   "version": "0.1.0",
   "description": "Offizieller Bot der Coding Shitpost Zentrale",
-  "main": "built/app.js",
+  "module": "src/app.ts",
   "type": "module",
   "scripts": {
-    "start": "node --es-module-specifier-resolution=node built/app.js",
+    "start": "bun src/app.ts",
     "test": "tsc --noEmit",
-    "compile": "tsc --sourceMap false --removeComments true",
     "ci": "biome ci ./",
     "format": "biome format --write ./",
     "lint": "biome lint ./",
     "lint:fix": "biome lint --apply ./",
-    "watch-node": "node --watch built/app.js",
-    "watch-ts": "tsc -w",
-    "watch": "concurrently -k -n 'TS,N' -c 'cyan,green' \"npm run watch-ts\" \"npm run watch-node\""
+    "watch": "bun --watch src/app.ts"
   },
   "repository": {
     "type": "git",
@@ -54,7 +51,6 @@
     "@types/node-cron": "^3.0.8",
     "@types/node-fetch": "^2.6.4",
     "@types/sqlite3": "^3.1.8",
-    "concurrently": "^8.2.1",
     "pino-pretty": "^10.2.0",
     "typescript": "^5.2.2"
   },
