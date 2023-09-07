@@ -46,9 +46,7 @@ export class LinkRedirect implements SpecialCommand {
         // We could tweak the matches function instead.
         if (replacedUrls.length === 0) return;
 
-        const msg =
-            "Public Service Announcement für nicht krebsige Links:\n" +
-            replacedUrls.map(u => `<${u}>`).join("\n");
+        const msg = `Public Service Announcement für nicht krebsige Links:\n${replacedUrls.map(u => `<${u}>`).join("\n")}`;
         await message.reply({
             content: msg,
             allowedMentions: { repliedUser: false },

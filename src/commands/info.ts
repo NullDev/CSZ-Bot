@@ -48,7 +48,6 @@ const getContributors = async (): Promise<string> => {
 
 const getTechStackInfo = async (): Promise<string> => {
     return (
-        // biome-ignore lint/style/useTemplate: Better readability
         `**Programmiersprache\n** ${(await fetchLanguages()).join(",")} \n` +
         `**NodeJS Version\n** ${process.version} \n`
     );
@@ -56,7 +55,6 @@ const getTechStackInfo = async (): Promise<string> => {
 
 const getSystemInfo = (): string => {
     return (
-        // biome-ignore lint/style/useTemplate: Better readability
         `**PID\n** ${process.pid} \n` +
         `**Uptime\n** ${Math.floor(process.uptime())}s \n` +
         `**Platform\n** ${process.platform} \n` +

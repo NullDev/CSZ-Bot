@@ -8,7 +8,7 @@ export const run: CommandFunction = async (_client, message, _args) => {
         .filter(element => String(element.name).toLowerCase() !== "@everyone")
         .map(element => element.name);
 
-    await message.channel.send("Roles: \n\n" + roleNames.join(", "));
+    await message.channel.send(`Roles: \n\n${roleNames.join(", ")}`);
 };
 
 export const description = "Listet alle server rollen auf";
