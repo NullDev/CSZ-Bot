@@ -1,4 +1,4 @@
-FROM node:20-slim as dependency-base
+FROM oven/bun:latest as dependency-base
     WORKDIR /app
     RUN apt-get update -yqq \
         && apt-get install -yqq \
@@ -10,16 +10,13 @@ FROM node:20-slim as dependency-base
     COPY package*.json /app/
 
 FROM dependency-base as build
-    # Install dependencies (with dev-deps)
-    RUN npm ci
-
-    COPY . /app/
-    RUN npm run compile
+    # Install dependencies with dev-deps
+    RUN bun install
 
 FROM dependency-base as runtime-dependencies
-    RUN NODE_ENV=production npm ci
+    RUN NODE_ENV=production bun install
 
-FROM node:20-slim
+FROM oven/bun:latest
     WORKDIR /app
     RUN apt-get update -yqqq \
         && apt-get install -yqqq \
@@ -38,8 +35,6 @@ FROM node:20-slim
     RUN cp /usr/share/zoneinfo/${TZ} /etc/localtime
 
     COPY --from=runtime-dependencies /app/node_modules /app/node_modules
-    COPY --from=build /app/package.json /app/package.json
-    COPY --from=build /app/assets /app/assets
-    COPY --from=build /app/built /app/built
+    COPY ./ /app/
 
-    ENTRYPOINT ["node", "--es-module-specifier-resolution=node", "built/app.js"]
+    ENTRYPOINT ["bun", "src/app.ts"]
