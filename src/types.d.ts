@@ -107,7 +107,7 @@ export interface Config {
             emoji_name: string;
         };
 
-        delete_thread_messages_in_channels: Array<Snowflake>,
+        delete_thread_messages_in_channels: Array<Snowflake>;
 
         ehre: {
             emoji_names: Array<string>;
