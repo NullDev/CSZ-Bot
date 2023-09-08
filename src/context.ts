@@ -65,6 +65,8 @@ export interface BotContext {
         VoiceChannel
     >;
 
+    deleteThreadMessagesInChannels: Set<Snowflake>;
+
     rootDir: string;
     srcDir: string;
     databasePath: string;
@@ -203,6 +205,9 @@ export async function createBotContext(
                 "haupt_woischat_id",
             ),
         },
+        deleteThreadMessagesInChannels: new Set(
+            config.bot_settings.delete_thread_messages_in_channels,
+        ),
         rootDir: path.resolve(""),
         srcDir: path.resolve("built"),
         databasePath: path.resolve("storage.db"),
