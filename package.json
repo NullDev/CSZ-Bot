@@ -28,7 +28,7 @@
     "@discordjs/voice": "^0.16.0",
     "@resvg/resvg-js": "^2.4.1",
     "canvas": "^2.11.2",
-    "chrono-node": "^2.6.5",
+    "chrono-node": "^2.6.6",
     "croner": "^7.0.1",
     "discord.js": "^14.13.0",
     "get-audio-duration": "^4.0.1",
@@ -43,13 +43,12 @@
     "sqlite3": "~5.1.6"
   },
   "devDependencies": {
-    "@biomejs/biome": "^1.0.0",
+    "@biomejs/biome": "^1.1.2",
     "@ffprobe-installer/ffprobe": "^2.1.2",
     "@types/jsdom": "^21.1.2",
     "@types/minimist": "^1.2.2",
-    "@types/node": "^20.5.7",
+    "@types/node": "^20.5.9",
     "@types/node-cron": "^3.0.8",
-    "@types/node-fetch": "^2.6.4",
     "@types/sqlite3": "^3.1.8",
     "pino-pretty": "^10.2.0",
     "typescript": "^5.2.2"

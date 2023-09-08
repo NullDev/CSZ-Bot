@@ -182,7 +182,7 @@ export const registerAllApplicationCommandsAsGuildCommands = async (
                     permission: false,
                 },
             ],
-            // rome-ignore lint/suspicious/noExplicitAny: this is a discord.js bug
+            // biome-ignore lint/suspicious/noExplicitAny: this is a discord.js bug
         } as any;
         return commandCreationData;
     };

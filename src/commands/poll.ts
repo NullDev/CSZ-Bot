@@ -298,7 +298,7 @@ export const processPolls = async (context: BotContext) => {
                 .filter(
                     (x, uidi) =>
                         delayedPoll.reactions.indexOf(
-                            // rome-ignore lint/suspicious/noExplicitAny: I don't know if this works
+                            // biome-ignore lint/suspicious/noExplicitAny: I don't know if this works
                             x as any as string[],
                         ) !== uidi,
                 )

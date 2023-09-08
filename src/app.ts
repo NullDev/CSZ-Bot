@@ -53,7 +53,7 @@ import { rotate } from "./helper/bannerCarusel.js";
 const args = process.argv.slice(2);
 
 console.log(
-    // rome-ignore lint/style/useTemplate: Seems to be more readable this way
+    // biome-ignore lint/style/useTemplate: Seems to be more readable this way
     "\n" +
         " ┌─────────┐\n" +
         ` │ CSZ Bot │ Copyright (c) ${new Date().getFullYear()} Users of the CSZ\n` +
