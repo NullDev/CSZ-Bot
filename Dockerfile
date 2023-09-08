@@ -7,7 +7,7 @@ FROM oven/bun:latest as dependency-base
             libpixman-1-dev libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev \
         && apt-get clean -yqqq
 
-    COPY package*.json /app/
+    COPY package.json bun.lockb /app/
 
 FROM dependency-base as build
     # Install dependencies with dev-deps
