@@ -9,10 +9,6 @@ FROM oven/bun:latest as dependency-base
 
     COPY package.json bun.lockb /app/
 
-FROM dependency-base as build
-    # Install dependencies with dev-deps
-    RUN bun install
-
 FROM dependency-base as runtime-dependencies
     RUN NODE_ENV=production bun install
 
