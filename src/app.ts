@@ -49,6 +49,7 @@ import {
 } from "./commands/woisvote.js";
 import { AoCHandler } from "./commands/aoc.js";
 import { rotate } from "./helper/bannerCarusel.js";
+import deleteThreadMessagesHandler from "./handler/deleteThreadMessagesHandler.js";
 
 const args = process.argv.slice(2);
 
@@ -333,6 +334,11 @@ client.on(
 client.on(
     "messageCreate",
     async message => await messageHandler(message, client, botContext),
+);
+client.on(
+    "messageCreate",
+    async message =>
+        await deleteThreadMessagesHandler(message, client, botContext),
 );
 
 client.on("messageDelete", async message => {

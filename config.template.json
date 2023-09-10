@@ -28,6 +28,7 @@
             "target_channel_overrides": [],
             "default_target_channel_id": ""
         },
+        "delete_thread_messages_in_channels": [],
         "ehre": {
             "emoji_names": ["ähre", "aehre", "pr0aehre"]
         }
