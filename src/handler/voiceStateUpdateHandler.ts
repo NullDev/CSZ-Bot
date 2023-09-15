@@ -11,9 +11,9 @@ export interface VoiceUpdateEvent {
     createdAt: Date;
 }
 
-export class WoisData {
-    static latestEvents: VoiceUpdateEvent[] = [];
-}
+export const woisData = {
+    latestEvents: [] as VoiceUpdateEvent[],
+};
 
 export async function checkVoiceUpdate(
     oldState: VoiceState,
@@ -27,7 +27,7 @@ export async function checkVoiceUpdate(
     // User joined Channel
     if (oldState.channel === null && newState.channel !== null) {
         if (newState.channelId === config.ids.haupt_woischat) {
-            WoisData.latestEvents.push({
+            woisData.latestEvents.push({
                 oldState,
                 newState,
                 createdAt: new Date(),
@@ -39,7 +39,7 @@ export async function checkVoiceUpdate(
     if (oldState.channel !== null && newState.channel === null) {
         if (newState.channelId === config.ids.haupt_woischat) {
             // Add to latest events
-            WoisData.latestEvents.push({
+            woisData.latestEvents.push({
                 oldState,
                 newState,
                 createdAt: new Date(),
