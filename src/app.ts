@@ -208,7 +208,10 @@ login().then(
 );
 
 const scheduleCronjobs = async (context: BotContext) => {
-    const schedule = (pattern: string, callback: Function) => {
+    const schedule = (
+        pattern: string,
+        callback: Parameters<typeof cron>[1],
+    ) => {
         cron(
             pattern,
             {
