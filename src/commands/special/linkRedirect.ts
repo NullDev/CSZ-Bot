@@ -6,9 +6,14 @@ import type { SpecialCommand, CommandResult } from "../command.js";
 const linkMap: Record<string, string> = {
     // "reddit.com": "teddit.adminforge.de",
     // "old.reddit.com": "teddit.adminforge.de",
-    "tiktok.com": "proxitok.pabloferreiro.es",
-    "twitter.com": "nitter.adminforge.de",
-    "x.com": "nitter.adminforge.de",
+    // "tiktok.com": "proxitok.pabloferreiro.es",
+    "tiktok.com": "tok.timewaste.kellertreff.com",
+
+    // "twitter.com": "nitter.adminforge.de",
+    // "x.com": "nitter.adminforge.de",
+    "twitter.com": "nitter.timewaste.kellertreff.com",
+    "x.com": "nitter.timewaste.kellertreff.com",
+
     "medium.com": "scribe.rip",
     "quora.com": "quetre.iket.me",
 };
