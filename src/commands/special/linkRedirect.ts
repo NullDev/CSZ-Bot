@@ -7,7 +7,8 @@ const linkMap: Record<string, string> = {
     // "reddit.com": "teddit.adminforge.de",
     // "old.reddit.com": "teddit.adminforge.de",
     "tiktok.com": "proxitok.pabloferreiro.es",
-    // "twitter.com": "nitter.adminforge.de",
+    "twitter.com": "nitter.adminforge.de",
+    "x.com": "nitter.adminforge.de",
     "medium.com": "scribe.rip",
     "quora.com": "quetre.iket.me",
 };
