@@ -9,10 +9,10 @@ const linkMap: Record<string, string> = {
     // "tiktok.com": "proxitok.pabloferreiro.es",
     "tiktok.com": "tok.timewaste.kellertreff.com",
 
-    // "twitter.com": "nitter.adminforge.de",
-    // "x.com": "nitter.adminforge.de",
-    "twitter.com": "nitter.timewaste.kellertreff.com",
-    "x.com": "nitter.timewaste.kellertreff.com",
+    "twitter.com": "nitter.adminforge.de",
+    "x.com": "nitter.adminforge.de",
+    // "twitter.com": "nitter.timewaste.kellertreff.com",
+    // "x.com": "nitter.timewaste.kellertreff.com",
 
     "medium.com": "scribe.rip",
     "quora.com": "quetre.iket.me",
