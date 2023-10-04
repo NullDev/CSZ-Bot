@@ -41,7 +41,7 @@
     "libsodium-wrappers": "^0.7.13",
     "minimist": "^1.2.8",
     "moment": "^2.29.4",
-    "pino": "^8.15.4",
+    "pino": "^8.15.5",
     "sequelize": "^6.33.0",
     "sqlite3": "~5.1.6"
   },
@@ -54,7 +54,7 @@
     "@types/node-cron": "^3.0.9",
     "@types/sqlite3": "^3.1.9",
     "concurrently": "^8.2.1",
-    "pino-pretty": "^10.2.2",
+    "pino-pretty": "^10.2.3",
     "typescript": "^5.2.2"
   },
   "engines": {
