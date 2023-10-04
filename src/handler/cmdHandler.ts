@@ -83,7 +83,12 @@ export default async function (
 
     const commandPath = path.join(commandDir, commandFile);
 
-    const usedCommand = (await import(commandPath)) as {
+    // We need a file:// URL because in windows, paths begin with a drive letter,
+    // which is interpreted as the protocol.
+    const commandModuleUrl = new URL("file://");
+    commandModuleUrl.pathname = commandPath;
+
+    const usedCommand = (await import(commandModuleUrl.toString())) as {
         run: CommandFunction;
         description: string;
     };
