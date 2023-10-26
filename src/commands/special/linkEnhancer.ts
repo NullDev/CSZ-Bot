@@ -67,12 +67,12 @@ export class LinkEnhancer implements SpecialCommand {
 
         const enhancedUrls = this.enhanceAllUrls(urls, matchingConfigs);
 
-        // Workaround for archive.org links like https://web.archive.org/*/https://www.reddit.com/r/*
-        // We could tweak the matches function instead.
         if (
             enhancedUrls.enhancedEmbeds.length === 0 &&
             enhancedUrls.redirects.length === 0
         )
+            // Workaround for archive.org links like https://web.archive.org/*/https://www.reddit.com/r/*
+            // We could tweak the matches function instead.
             return;
 
         const redirects = enhancedUrls.redirects.map(u => `<${u}>`).join("\n");
@@ -84,6 +84,13 @@ export class LinkEnhancer implements SpecialCommand {
             content: msg,
             allowedMentions: { repliedUser: false },
         });
+
+        if (enhancedEmbeds.length > 0) {
+            // If we have enhanced embeds, we can suppress the original embeds.
+            // However it is possible, that the user posted more embeds than we enhanced.
+            // Don't care lol.
+            await message.suppressEmbeds();
+        }
     }
 
     private enhanceAllUrls(
