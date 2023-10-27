@@ -24,7 +24,7 @@ const linkMap: Record<string, LinkConfig> = {
         enhanceEmbed: "fxtwitter.com",
     },
     "instagram.com": {
-        enhanceEmbed: "ddinstagram.com",
+        enhanceEmbed: "instagramez.com",
     },
     "x.com": { redirectTo: "nitter.adminforge.de", enhanceEmbed: "fixupx.com" },
     // "twitter.com": { redirectTo: "nitter.timewaste.kellertreff.com" },
