@@ -4,7 +4,7 @@ import type { ProcessableMessage } from "../../handler/cmdHandler.js";
 import type { SpecialCommand, CommandResult } from "../command.js";
 
 type LinkConfig = {
-    redirectTo?: string;
+    redirectTo: string;
     enhanceEmbed?: string;
 };
 
@@ -22,9 +22,6 @@ const linkMap: Record<string, LinkConfig> = {
     "twitter.com": {
         redirectTo: "nitter.adminforge.de",
         enhanceEmbed: "fxtwitter.com",
-    },
-    "instagram.com": {
-        enhanceEmbed: "ddinstagram.com",
     },
     "x.com": { redirectTo: "nitter.adminforge.de", enhanceEmbed: "fixupx.com" },
     // "twitter.com": { redirectTo: "nitter.timewaste.kellertreff.com" },
@@ -111,9 +108,7 @@ export class LinkEnhancer implements SpecialCommand {
             const redirectTo = urlConfig.redirectTo;
             const enhancedEmbed = urlConfig.enhanceEmbed;
 
-            if (redirectTo !== undefined)
-                redirects.push(this.enhanceUrl(url, domain, redirectTo));
-
+            redirects.push(this.enhanceUrl(url, domain, redirectTo));
             if (enhancedEmbed !== undefined) {
                 enhancedEmbeds.push(
                     this.enhanceUrl(url, domain, enhancedEmbed),
