@@ -65,7 +65,6 @@ import { ErinnerungCommand } from "../commands/erinnerung.js";
 import { YoinkCommand } from "../commands/yoink.js";
 import { isProcessableMessage, ProcessableMessage } from "./cmdHandler.js";
 import { EmoteSenderCommand } from "../commands/special/emoteSender.js";
-import { InstagramLink } from "../commands/special/instagram.js";
 import { OidaCommand } from "../commands/oida.js";
 import { DeOidaCommand } from "../commands/deoida.js";
 import { EhreCommand } from "../commands/ehre.js";
@@ -119,7 +118,7 @@ export const commands: readonly Command[] = [
     new ErinnerungCommand(),
     new YoinkCommand(),
     new EmoteSenderCommand(),
-    new InstagramLink(),
+    // Broken: new InstagramLink(),
     new OidaCommand(),
     new DeOidaCommand(),
     new EhreCommand(),
