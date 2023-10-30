@@ -12,7 +12,7 @@ FROM oven/bun:latest as dependency-base
 FROM dependency-base as runtime-dependencies
     RUN NODE_ENV=production bun install
 
-FROM node:20-slim
+FROM node:21-slim
     WORKDIR /app
     RUN apt-get update -yqqq \
         && apt-get install -yqqq \
