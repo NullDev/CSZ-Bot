@@ -1,4 +1,4 @@
-FROM node:20-slim as dependency-base
+FROM node:21-slim as dependency-base
     WORKDIR /app
     RUN apt-get update -yqq \
         && apt-get install -yqq \
@@ -19,7 +19,7 @@ FROM dependency-base as build
 FROM dependency-base as runtime-dependencies
     RUN NODE_ENV=production npm ci
 
-FROM node:20-slim
+FROM node:21-slim
     WORKDIR /app
     RUN apt-get update -yqqq \
         && apt-get install -yqqq \
