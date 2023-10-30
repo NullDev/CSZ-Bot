@@ -16,6 +16,7 @@
         "editor.defaultFormatter": "biomejs.biome"
     },
     "cSpell.words": [
+        "proxitok",
         "wois",
         "bday",
         "pino",

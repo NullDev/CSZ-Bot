@@ -39,9 +39,9 @@ const createShuffledNicknames = async (
     members: Collection<Snowflake, GuildMember>,
 ): Promise<Record<Snowflake, string>> => {
     const shuffledNicknames: Record<Snowflake, string> = {};
-    Array.from(members.entries()).forEach(([id, member]) => {
+    for (const [id, member] of members.entries()) {
         tmpNicknameStore[id] = member.displayName;
-    });
+    }
 
     const averageCockSize: Record<Snowflake, number> =
         await Penis.getAveragePenisSizes();

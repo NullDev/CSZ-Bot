@@ -139,7 +139,7 @@ export const ban = async (
     reason: string,
     isSelfBan: boolean,
     duration?: number,
-): Promise<string | void> => {
+) => {
     log.debug(
         `Banning ${member.id} by ${banInvoker.id} because of ${reason} for ${duration}.`,
     );

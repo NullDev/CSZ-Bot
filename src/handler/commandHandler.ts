@@ -65,7 +65,6 @@ import { ErinnerungCommand } from "../commands/erinnerung.js";
 import { YoinkCommand } from "../commands/yoink.js";
 import { isProcessableMessage, ProcessableMessage } from "./cmdHandler.js";
 import { EmoteSenderCommand } from "../commands/special/emoteSender.js";
-import { InstagramLink } from "../commands/special/instagram.js";
 import { OidaCommand } from "../commands/oida.js";
 import { DeOidaCommand } from "../commands/deoida.js";
 import { EhreCommand } from "../commands/ehre.js";
@@ -76,7 +75,7 @@ import { WoisCommand } from "../commands/woisvote.js";
 import { ApplicationCommandCreationResponse } from "../types.js";
 // import { AoCCommand } from "../commands/aoc.js";
 import { BanListCommand } from "../commands/banlist.js";
-import { LinkRedirect } from "../commands/special/linkRedirect.js";
+import { LinkEnhancer } from "../commands/special/linkEnhancer.js";
 import { Vote2Command } from "../commands/vote2.js";
 
 const config = getConfig();
@@ -119,13 +118,13 @@ export const commands: readonly Command[] = [
     new ErinnerungCommand(),
     new YoinkCommand(),
     new EmoteSenderCommand(),
-    new InstagramLink(),
+    // Broken: new InstagramLink(),
     new OidaCommand(),
     new DeOidaCommand(),
     new EhreCommand(),
     // new AoCCommand(),
     new BanListCommand(),
-    new LinkRedirect(),
+    new LinkEnhancer(),
     new Vote2Command(),
 ];
 export const interactions: readonly UserInteraction[] = [
@@ -140,6 +139,7 @@ export const specialCommands =
     commands.filter<SpecialCommand>(isSpecialCommand);
 
 const lastSpecialCommands: Record<string, number> = specialCommands.reduce(
+    // biome-ignore lint/performance/noAccumulatingSpread: Whatever this does, someone wrote pretty cool code
     (acc, cmd) => ({ ...acc, [cmd.name]: 0 }),
     {},
 );

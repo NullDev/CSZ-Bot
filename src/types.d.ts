@@ -6,6 +6,7 @@ import type { ProcessableMessage } from "./handler/cmdHandler.js";
 /**
  * A string denotes the response to the message (for example a business error).
  */
+// biome-ignore lint/suspicious/noConfusingVoidType: It's ok here, since this is the return type of a promise.
 export type CommandResult = string | void;
 
 export type CommandFunction = (

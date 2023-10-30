@@ -31,7 +31,7 @@ const fetchLanguages = async (): Promise<Array<string>> => {
             headers: { Accept: "application/vnd.github.v3+json" },
         },
     );
-    return Object.keys((await res.json()) as {});
+    return Object.keys((await res.json()) as object);
 };
 
 const getContributors = async (): Promise<string> => {

@@ -195,7 +195,7 @@ export const run: CommandFunction = async (_client, message, args, context) => {
 
     const finishTime = new Date(new Date().valueOf() + delayTime * 60 * 1000);
     if (options.delayed) {
-        if (isNaN(delayTime) || delayTime <= 0) {
+        if (Number.isNaN(delayTime) || delayTime <= 0) {
             return "Bruder keine ungültigen Zeiten angeben 🙄";
         } else if (delayTime > 60 * 1000 * 24 * 7) {
             return "Bruder du kannst maximal 7 Tage auf ein Ergebnis warten 🙄";
@@ -238,6 +238,8 @@ export const run: CommandFunction = async (_client, message, args, context) => {
     if (options.delayed) {
         const reactionMap: string[] = [];
         const reactions: string[][] = [];
+
+        // biome-ignore lint/complexity/noForEach: We need the index here
         pollOptions.forEach((option, index) => {
             reactionMap[index] = option;
             reactions[index] = [];
@@ -266,14 +268,13 @@ export const run: CommandFunction = async (_client, message, args, context) => {
 export const importPolls = async () => {
     const additionalDatas = await AdditionalMessageData.findAll();
     let count = 0;
-    additionalDatas.forEach(additionalData => {
+    for (const additionalData of additionalDatas) {
         if (!additionalData.customData.delayedPollData) {
-            return;
+            continue;
         }
-
         delayedPolls.push(additionalData.customData.delayedPollData);
         count++;
-    });
+    }
     log.info(`Loaded ${count} polls from database`);
 };
 

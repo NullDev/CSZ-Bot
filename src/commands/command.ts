@@ -38,6 +38,7 @@ export interface UserInteraction {
 }
 
 // For the sake of simplicity, at the moment every command returns void
+// biome-ignore lint/suspicious/noConfusingVoidType: It's ok here, since this is the return type of a promise.
 export type CommandResult = void;
 
 // For ApplicationCommands we require a SlashCommandBuilder object to create the command and a handler method

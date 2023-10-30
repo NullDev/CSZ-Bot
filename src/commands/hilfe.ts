@@ -13,22 +13,22 @@ const getCommandMessageChunksMatchingLimit = (
     const chunk: string[] = [];
     let index = 0;
 
-    commands
-        .sort((a, b) => a[0].localeCompare(b[0]))
-        .forEach(value => {
-            if (
-                chunk[index] &&
-                chunk[index].length + (value[0].length + value[1].length + 10) >
-                    2000
-            ) {
-                chunk[index] += "```";
-                ++index;
-            }
-            if (!chunk[index]) {
-                chunk[index] = "```css\n";
-            }
-            chunk[index] += `${value[0]}: ${value[1]}\n\n`;
-        });
+    // TODO: Use toSorted once Node.js's types have it
+    const sortedCommands = commands.sort((a, b) => a[0].localeCompare(b[0]));
+    for (const value of sortedCommands) {
+        if (
+            chunk[index] &&
+            chunk[index].length + (value[0].length + value[1].length + 10) >
+                2000
+        ) {
+            chunk[index] += "```";
+            ++index;
+        }
+        if (!chunk[index]) {
+            chunk[index] = "```css\n";
+        }
+        chunk[index] += `${value[0]}: ${value[1]}\n\n`;
+    }
 
     chunk[index] += "```";
 
@@ -74,12 +74,11 @@ export const run: CommandFunction = async (
     }
 
     // New Class-based commands
-    messageCommands
-        .filter(cmd => !cmd.modCommand)
-        .forEach(cmd => {
-            const commandStr = context.prefix.command + cmd.name;
-            commandObj[commandStr] = cmd.description;
-        });
+    const userCommands = messageCommands.filter(cmd => !cmd.modCommand);
+    for (const cmd of userCommands) {
+        const commandStr = context.prefix.command + cmd.name;
+        commandObj[commandStr] = cmd.description;
+    }
 
     await message.author.send(
         `Hallo, ${message.author.username}!\n\nHier ist eine Liste mit Commands:\n\nBei Fragen kannst du dich über den Kanal #czs-Bot (<#902960751222853702>) an uns wenden!`,

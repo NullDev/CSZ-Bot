@@ -7,6 +7,7 @@ import {
     SlashCommandBuilder,
     SlashCommandSubcommandBuilder,
     SlashCommandUserOption,
+    TextChannel,
     User,
 } from "discord.js";
 
@@ -131,9 +132,17 @@ export const ehreReactionHandler = {
         }
 
         await handleVote(invoker.id, ehrenbruder.id);
-        await reactionEvent.message.reply(
-            `${invoker} hat ${ehrenbruder} geährt`,
-        );
+
+        const replyChannel = reactionEvent.message.channel;
+        const replyChannelHasSlowMode =
+            replyChannel.isTextBased() &&
+            (replyChannel as TextChannel).rateLimitPerUser > 0;
+
+        if (!replyChannelHasSlowMode) {
+            await reactionEvent.message.reply(
+                `${invoker} hat ${ehrenbruder} geährt`,
+            );
+        }
     },
 };
 

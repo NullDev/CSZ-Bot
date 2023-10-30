@@ -25,7 +25,7 @@ import * as poll from "./commands/poll.js";
 import GuildRagequit from "./storage/model/GuildRagequit.js";
 import reactionHandler from "./handler/reactionHandler.js";
 import {
-    WoisData,
+    woisData,
     checkVoiceUpdate,
 } from "./handler/voiceStateUpdateHandler.js";
 
@@ -117,7 +117,7 @@ process.once("exit", code => {
 });
 
 const clearWoisLogTask = () => {
-    WoisData.latestEvents = WoisData.latestEvents.filter(
+    woisData.latestEvents = woisData.latestEvents.filter(
         event => event.createdAt.getTime() > Date.now() - 2 * 60 * 1000,
     );
 };
@@ -208,7 +208,10 @@ login().then(
 );
 
 const scheduleCronjobs = async (context: BotContext) => {
-    const schedule = (pattern: string, callback: Function) => {
+    const schedule = (
+        pattern: string,
+        callback: Parameters<typeof cron>[1],
+    ) => {
         cron(
             pattern,
             {
