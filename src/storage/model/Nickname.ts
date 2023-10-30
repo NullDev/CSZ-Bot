@@ -60,6 +60,7 @@ export default class Nickname extends Model {
         return nicknames.reduce(
             (acc, cur) => ({
                 // Das ding
+                // biome-ignore lint/performance/noAccumulatingSpread: This should be ok.
                 ...acc, //                 VV
                 [cur.userId]: [...(acc[cur.userId] ?? []), cur.nickName],
             }),

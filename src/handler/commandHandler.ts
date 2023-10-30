@@ -139,6 +139,7 @@ export const specialCommands =
     commands.filter<SpecialCommand>(isSpecialCommand);
 
 const lastSpecialCommands: Record<string, number> = specialCommands.reduce(
+    // biome-ignore lint/performance/noAccumulatingSpread: Whatever this does, someone wrote pretty cool code
     (acc, cmd) => ({ ...acc, [cmd.name]: 0 }),
     {},
 );

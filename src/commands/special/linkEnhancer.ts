@@ -103,10 +103,12 @@ export class LinkEnhancer implements SpecialCommand {
         const redirects: string[] = [];
         const enhancedEmbeds: string[] = [];
 
-        urls.forEach(url => {
+        for (const url of urls) {
             const domain = url.split("/")[2];
             const urlConfig = config[domain];
-            if (urlConfig === undefined) return;
+            if (urlConfig === undefined) {
+                continue;
+            }
 
             const redirectTo = urlConfig.redirectTo;
             const enhancedEmbed = urlConfig.enhanceEmbed;
@@ -119,7 +121,7 @@ export class LinkEnhancer implements SpecialCommand {
                     this.enhanceUrl(url, domain, enhancedEmbed),
                 );
             }
-        });
+        }
 
         return { redirects, enhancedEmbeds };
     }
