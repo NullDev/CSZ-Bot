@@ -253,9 +253,8 @@ export const run: CommandFunction = async (_client, message, args, context) => {
             reactionMap,
         };
 
-        const additionalData = await AdditionalMessageData.fromMessage(
-            pollMessage,
-        );
+        const additionalData =
+            await AdditionalMessageData.fromMessage(pollMessage);
         const newCustomData = additionalData.customData;
         newCustomData.delayedPollData = delayedPollData;
         additionalData.customData = newCustomData;
@@ -304,9 +303,8 @@ export const processPolls = async (context: BotContext) => {
                         ) !== uidi,
                 )
                 .map(async uidToResolve => {
-                    users[uidToResolve] = await context.client.users.fetch(
-                        uidToResolve,
-                    );
+                    users[uidToResolve] =
+                        await context.client.users.fetch(uidToResolve);
                 }),
         );
 

@@ -91,9 +91,8 @@ export default class WoisAction
         interested: boolean,
     ): Promise<boolean> {
         try {
-            const woisAction = await WoisAction.getWoisActionByMessageId(
-                messageId,
-            );
+            const woisAction =
+                await WoisAction.getWoisActionByMessageId(messageId);
             if (!woisAction) return false;
 
             if (interested) {

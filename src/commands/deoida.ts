@@ -29,9 +29,8 @@ async function deOidaLine(line: string): Promise<string> {
     const aussieWordsToReplace = [];
 
     for (const translationCandidate of enumerateAdjacentTokens(tokens)) {
-        const germanTranslation = await AustrianTranslation.findTranslation(
-            translationCandidate,
-        );
+        const germanTranslation =
+            await AustrianTranslation.findTranslation(translationCandidate);
         if (germanTranslation) {
             // This is a rather dumb way of doing this.
             // Consider the example from above: "oida der fesche bursch han recht"

@@ -96,9 +96,8 @@ export class MockCommand implements MessageCommand, ApplicationCommand {
 
         let replyMessage: Message<boolean> | null = null;
         if (isReply) {
-            replyMessage = await message.channel.messages.fetch(
-                messageReference,
-            );
+            replyMessage =
+                await message.channel.messages.fetch(messageReference);
             if (!hasContent) {
                 content = replyMessage.content;
             }

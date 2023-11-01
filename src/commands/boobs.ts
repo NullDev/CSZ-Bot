@@ -154,9 +154,8 @@ export class BoobCommand implements MessageCommand {
             `${author.id} wants to measure boob of user ${userToMeasure.id}`,
         );
 
-        const recentMeasurement = await Boob.fetchRecentMeasurement(
-            userToMeasure,
-        );
+        const recentMeasurement =
+            await Boob.fetchRecentMeasurement(userToMeasure);
 
         if (recentMeasurement === null) {
             log.debug(
