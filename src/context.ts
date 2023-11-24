@@ -160,7 +160,7 @@ export async function createBotContext(
                 ),
                 maxNumberOfPings: Number(
                     config.bot_settings.faulenzerping_max_number_of_pings ??
-                        "10",
+                        "15",
                 ),
                 minRequiredReactions: Number(
                     config.bot_settings.faulenzerping_min_required_reactions ??
