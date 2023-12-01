@@ -89,7 +89,7 @@ export default class Nickname extends Model {
     }
 
     static initialize(sequelize: Sequelize) {
-        this.init(
+        Nickname.init(
             {
                 id: {
                     type: DataTypes.STRING(36),

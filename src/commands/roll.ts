@@ -11,7 +11,8 @@ const config = getConfig();
  * @param {number} max
  * @returns {number} A pseudo randomly generated number
  */
-const pseudoRng = (min: number, max: number): number => Math.floor(Math.random() * max + min);
+const pseudoRng = (min: number, max: number): number =>
+    Math.floor(Math.random() * max + min);
 
 /**
  * Return an error string if an error exists.
@@ -21,10 +22,7 @@ const pseudoRng = (min: number, max: number): number => Math.floor(Math.random()
  *
  * @returns the error string
  */
-const checkParams = (
-    amount: number,
-    sides: number,
-): string | undefined => {
+const checkParams = (amount: number, sides: number): string | undefined => {
     if (!Number.isSafeInteger(amount) || !Number.isSafeInteger(sides)) {
         return "Bruder nimm ma bitte nur natürliche Zahlen (>0).";
     }

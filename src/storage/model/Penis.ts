@@ -100,7 +100,7 @@ export default class Penis
     };
 
     static initialize(sequelize: Sequelize) {
-        this.init(
+        Penis.init(
             {
                 id: {
                     type: DataTypes.STRING(36),

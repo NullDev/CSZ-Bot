@@ -74,14 +74,18 @@ export const run: CommandFunction = async (client, message, args, context) => {
         .map(e => e.trim())
         .filter(e => e.replace(/\s/g, "") !== "");
 
-    if (!additionalPollOptions.length)
+    if (!additionalPollOptions.length) {
         return "Bruder da sind keine Antwortmöglichkeiten :c";
-    else if (
+    }
+
+    if (
         additionalPollOptions.length + oldPollOptionFields.length >
         poll.OPTION_LIMIT
-    )
+    ) {
         return `Bruder mit deinen Antwortmöglichkeiten wird das Limit von ${poll.OPTION_LIMIT} überschritten!`;
-    else if (
+    }
+
+    if (
         additionalPollOptions.some(
             value => value.length > poll.FIELD_VALUE_LIMIT,
         )

@@ -36,7 +36,7 @@ export class EhreVotes extends Model {
     }
 
     static initialize(sequelize: Sequelize) {
-        this.init(
+        EhreVotes.init(
             {
                 id: {
                     type: DataTypes.STRING(36),
@@ -63,7 +63,7 @@ export class EhrePoints extends Model {
     declare points: number;
 
     static async addPoints(userId: string, amount: number) {
-        const storedpoints = await this.findPoints(userId);
+        const storedpoints = await EhrePoints.findPoints(userId);
         if (storedpoints === null) {
             return EhrePoints.create({
                 userId,
@@ -114,7 +114,7 @@ export class EhrePoints extends Model {
     }
 
     static initialize(sequelize: Sequelize) {
-        this.init(
+        EhrePoints.init(
             {
                 id: {
                     type: DataTypes.STRING(36),

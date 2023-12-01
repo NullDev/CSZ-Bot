@@ -50,7 +50,7 @@ export default class GuildRagequit extends Model {
     }
 
     static initialize(sequelize: Sequelize) {
-        this.init(
+        GuildRagequit.init(
             {
                 id: {
                     type: DataTypes.STRING(36),

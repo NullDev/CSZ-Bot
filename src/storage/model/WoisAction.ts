@@ -118,7 +118,7 @@ export default class WoisAction
     }
 
     static initialize(sequelize: Sequelize) {
-        this.init(
+        WoisAction.init(
             {
                 id: {
                     type: DataTypes.STRING(36),

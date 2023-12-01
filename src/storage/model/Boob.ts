@@ -95,7 +95,7 @@ export default class Boob
     };
 
     static initialize(sequelize: Sequelize) {
-        this.init(
+        Boob.init(
             {
                 id: {
                     type: DataTypes.STRING(36),

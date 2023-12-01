@@ -72,7 +72,7 @@ export default class AdditionalMessageData extends Model {
     }
 
     static initialize(sequelize: Sequelize) {
-        this.init(
+        AdditionalMessageData.init(
             {
                 id: {
                     type: DataTypes.STRING(36),

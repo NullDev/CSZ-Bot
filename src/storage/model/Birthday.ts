@@ -63,7 +63,7 @@ export default class Birthday extends Model {
     }
 
     static initialize(sequelize: Sequelize) {
-        this.init(
+        Birthday.init(
             {
                 id: {
                     type: DataTypes.STRING(36),

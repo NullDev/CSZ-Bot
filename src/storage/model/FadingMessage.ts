@@ -44,7 +44,7 @@ export default class FadingMessage extends Model {
     }
 
     static initialize(sequelize: Sequelize) {
-        this.init(
+        FadingMessage.init(
             {
                 id: {
                     type: DataTypes.STRING(36),

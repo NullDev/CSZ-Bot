@@ -60,7 +60,7 @@ export default class AustrianTranslation extends Model {
     }
 
     static initialize(sequelize: Sequelize) {
-        this.init(
+        AustrianTranslation.init(
             {
                 id: {
                     type: DataTypes.INTEGER,

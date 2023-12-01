@@ -55,7 +55,7 @@ export default class Stempel
     }
 
     static initialize(sequelize: Sequelize) {
-        this.init(
+        Stempel.init(
             {
                 id: {
                     type: DataTypes.STRING(36),

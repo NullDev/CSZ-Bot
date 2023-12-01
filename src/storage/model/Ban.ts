@@ -62,7 +62,7 @@ export default class Ban
         });
 
     static initialize(sequelize: Sequelize) {
-        this.init(
+        Ban.init(
             {
                 id: {
                     type: DataTypes.STRING(36),

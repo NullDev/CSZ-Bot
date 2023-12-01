@@ -91,7 +91,7 @@ export default class Reminder
     }
 
     static initialize(sequelize: Sequelize) {
-        this.init(
+        Reminder.init(
             {
                 id: {
                     type: DataTypes.STRING(36),

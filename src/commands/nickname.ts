@@ -150,7 +150,9 @@ export class Nickname implements ApplicationCommand {
                 await this.updateNickName(member, null);
                 await cmd.reply("Ok Brudi. Hab alles gelöscht");
                 return;
-            } else if (option === "list") {
+            }
+
+            if (option === "list") {
                 const nicknames = await Nicknames.getNicknames(user.id);
                 if (nicknames.length === 0) {
                     await cmd.reply("Ne Brudi für den hab ich keine Nicknames");
@@ -162,7 +164,9 @@ export class Nickname implements ApplicationCommand {
                     }):\n${nicknames.map(n => n.nickName).join(", ")}`,
                 );
                 return;
-            } else if (option === "add") {
+            }
+
+            if (option === "add") {
                 if (!trusted) {
                     await cmd.reply("Hurensohn. Der Command ist nix für dich.");
                     return;
@@ -181,11 +185,14 @@ export class Nickname implements ApplicationCommand {
                     trusted,
                 );
                 //    await this.addNickname(command, user);
-            } else if (option === "delete") {
+            }
+
+            if (option === "delete") {
                 if (!trusted && !sameuser) {
                     await cmd.reply("Hurensohn. Der Command ist nix für dich.");
                     return;
                 }
+
                 // We don't violate the DRY principle, since we're referring to another subcommand object as in the "add" subcmd.
                 // Code is equal but knowledge differs.
                 const nickname = cmd.options.getString("nickname", true);
@@ -197,9 +204,11 @@ export class Nickname implements ApplicationCommand {
                     );
                     return;
                 }
+
                 if (member.nickname === nickname) {
                     await this.updateNickName(member, null);
                 }
+
                 await cmd.reply(
                     `Ok Brudi. Hab für ${user} ${nickname} gelöscht`,
                 );
