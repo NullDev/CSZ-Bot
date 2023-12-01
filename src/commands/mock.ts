@@ -17,7 +17,7 @@ import { ensureChatInputCommand } from "../utils/interactionUtils.js";
 /**
  * Randomly capitalize letters
  */
-const transform = function (c: string): string {
+const transform = (c: string): string => {
     if (c === "ß" || c === "ẞ") return c;
     return Math.random() < 0.5 ? c.toLowerCase() : c.toUpperCase();
 };

@@ -11,9 +11,7 @@ const config = getConfig();
  * @param {number} max
  * @returns {number} A pseudo randomly generated number
  */
-const pseudoRng = function (min: number, max: number): number {
-    return Math.floor(Math.random() * max + min);
-};
+const pseudoRng = (min: number, max: number): number => Math.floor(Math.random() * max + min);
 
 /**
  * Return an error string if an error exists.
@@ -23,10 +21,10 @@ const pseudoRng = function (min: number, max: number): number {
  *
  * @returns the error string
  */
-const checkParams = function (
+const checkParams = (
     amount: number,
     sides: number,
-): string | undefined {
+): string | undefined => {
     if (!Number.isSafeInteger(amount) || !Number.isSafeInteger(sides)) {
         return "Bruder nimm ma bitte nur natürliche Zahlen (>0).";
     }
@@ -59,7 +57,7 @@ const checkParams = function (
  *
  * @returns diceResult of the thrown dice
  */
-const diceResult = function (diceAmount: number, diceSides: number): number[] {
+const diceResult = (diceAmount: number, diceSides: number): number[] => {
     const res = [];
     for (let i = 0; i < diceAmount; ++i) {
         res.push(pseudoRng(1, diceSides));
@@ -75,7 +73,7 @@ const diceResult = function (diceAmount: number, diceSides: number): number[] {
  *
  * @returns {string} the constructed result
  */
-const constructResultStr = function (rolls: readonly number[]): string {
+const constructResultStr = (rolls: readonly number[]): string => {
     let res = "";
 
     for (let i = 0; i < rolls.length; ++i) {
