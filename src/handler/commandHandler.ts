@@ -73,7 +73,7 @@ import { isMessageInBotSpam } from "../utils/channelUtils.js";
 import type { BotContext } from "../context.js";
 import { WoisCommand } from "../commands/woisvote.js";
 import { ApplicationCommandCreationResponse } from "../types.js";
-// import { AoCCommand } from "../commands/aoc.js";
+import { AoCCommand } from "../commands/aoc.js";
 import { BanListCommand } from "../commands/banlist.js";
 import { LinkEnhancer } from "../commands/special/linkEnhancer.js";
 import { Vote2Command } from "../commands/vote2.js";
@@ -122,7 +122,7 @@ export const commands: readonly Command[] = [
     new OidaCommand(),
     new DeOidaCommand(),
     new EhreCommand(),
-    // new AoCCommand(),
+    new AoCCommand(),
     new BanListCommand(),
     new LinkEnhancer(),
     new Vote2Command(),
