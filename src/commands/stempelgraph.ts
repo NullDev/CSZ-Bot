@@ -25,7 +25,7 @@ const supportedLayoutEngines = [
     // "neato",
     // "osage",
 ] as const;
-type LayoutEngine = typeof supportedLayoutEngines[number];
+type LayoutEngine = (typeof supportedLayoutEngines)[number];
 
 interface StempelConnection {
     inviter: GuildMember;

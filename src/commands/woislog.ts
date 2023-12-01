@@ -33,7 +33,9 @@ export class WoisLog implements ApplicationCommand {
             const user = newState.member?.user;
             const oldChannelName = oldChannel ? oldChannel.name : "null";
             const newChannelName = newChannel ? newChannel.name : "null";
-            return `${createdAt.toLocaleString()} ${user?.username} moved from ${oldChannelName} to ${newChannelName}`;
+            return `${createdAt.toLocaleString()} ${
+                user?.username
+            } moved from ${oldChannelName} to ${newChannelName}`;
         });
         // make string [] to string
         const latestEventsStringJoined = latestEventsString.join("\n");

@@ -77,8 +77,8 @@ export class DoenerCommand implements MessageCommand {
             knives === "1"
                 ? "1 Messerblock"
                 : knives !== undefined
-                ? `${knives} Messerblöcke`
-                : undefined;
+                  ? `${knives} Messerblöcke`
+                  : undefined;
 
         const boardsStr =
             boards !== undefined
