@@ -5,7 +5,7 @@
     },
     "formatter": {
         "enabled": true,
-        "indentSize": 4,
+        "indentWidth": 4,
         "indentStyle": "space"
     },
     "vcs": {
