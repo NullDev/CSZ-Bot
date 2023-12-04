@@ -91,7 +91,7 @@ const createEmbedFromLeaderBoard = (
 ) => {
     log.info("[AoC] Creating Embed from leaderboard...");
 
-    const members = Object.values(lb.members).filter((m) => m.stars > 0);
+    const members = Object.values(lb.members).filter(m => m.stars > 0);
     members.sort((a, b) => b[order] - a[order]);
     const top: discord.EmbedField[] = members.slice(0, 6).map((m, i) => ({
         name: `${medals[i]} ${i + 1}. ${getNameString(m, userMap, false)}`,
