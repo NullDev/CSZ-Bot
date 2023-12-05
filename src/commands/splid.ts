@@ -17,6 +17,7 @@ import type { ApplicationCommand } from "./command.js";
 import { isTrusted } from "../utils/userUtils.js";
 import { ensureChatInputCommand } from "../utils/interactionUtils.js";
 import SplidGroup from "../storage/model/SplidGroup.js";
+import logger from "../utils/logger.js";
 
 export class SplidGroupCommand implements ApplicationCommand {
     modCommand = false;
@@ -49,7 +50,7 @@ export class SplidGroupCommand implements ApplicationCommand {
                         .setRequired(false)
                         .setName("description-long")
                         .setDescription(
-                            "Kurzbeschreibung der Splid-Gruppe. Maximal 1000 Zeichen.",
+                            "Lange Beschreibung der Splid-Gruppe. Maximal 1000 Zeichen.",
                         ),
                 ),
         )
@@ -147,41 +148,52 @@ export class SplidGroupCommand implements ApplicationCommand {
             return;
         }
 
-        const externalName = await getExternalGroupName(normalizedCode);
-        if (!externalName) {
+        try {
+            const externalName = await getExternalGroupName(normalizedCode);
+            if (!externalName) {
+                await command.reply({
+                    content: `Eine Splid-Gruppe mit dem Code \`${normalizedCode}\`konnte nicht gefunden werden. Hurensohn.`,
+                    ephemeral: true,
+                });
+                return;
+            }
+
+            const name =
+                command.options.getString("description-short", false) ??
+                externalName;
+
+            if (!name) {
+                await command.reply({
+                    content: "Der Name darf nicht leer sein du Hurensohn",
+                    ephemeral: true,
+                });
+                return;
+            }
+
+            const longDescription =
+                command.options.getString("description-long", false) ?? null;
+
+            const result = await SplidGroup.createSplidGroup(
+                command.user,
+                command.guild,
+                normalizedCode,
+                name,
+                longDescription,
+            );
+
+            await command.editReply({
+                content: `Ok Bruder, habe Splid-Gruppe **${result.shortDescription}** mit Invite-Code \`${normalizedCode}\` hinzugefügt.`,
+            });
+
+        } catch (err) {
             await command.reply({
-                content: `Eine Splid-Gruppe mit dem Code \`${normalizedCode}\`konnte nicht gefunden werden. Hurensohn.`,
+                content:
+                    "Hurensohn. Irgendwas ging schief. Schau mal in den Logs.",
                 ephemeral: true,
             });
+            logger.error(err, "Error while adding Splid group");
             return;
         }
-
-        const name =
-            command.options.getString("description-short", false) ??
-            externalName;
-
-        if (!name) {
-            await command.reply({
-                content: "Der Name darf nicht leer sein du Hurensohn",
-                ephemeral: true,
-            });
-            return;
-        }
-
-        const longDescription =
-            command.options.getString("description-long", false) ?? null;
-
-        const result = await SplidGroup.createSplidGroup(
-            command.user,
-            command.guild,
-            normalizedCode,
-            name,
-            longDescription,
-        );
-
-        await command.editReply({
-            content: `Ok Bruder, habe Splid-Gruppe **${result.shortDescription}** mit Invite-Code \`${normalizedCode}\` hinzugefügt.`,
-        });
     }
 
     async handleList(command: ChatInputCommandInteraction) {
