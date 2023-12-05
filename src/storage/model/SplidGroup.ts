@@ -98,27 +98,15 @@ export default class SplidGroup
                 sequelize,
                 indexes: [
                     {
-                        fields: [
-                            {
-                                name: "guildId",
-                            },
-                        ],
+                        fields: ["guildId"],
                     },
                     {
                         unique: true,
-                        fields: [
-                            {
-                                name: "shortDescription",
-                            },
-                        ],
+                        fields: ["shortDescription"],
                     },
                     {
                         unique: true,
-                        fields: [
-                            {
-                                name: "groupCode",
-                            },
-                        ],
+                        fields: ["groupCode", "guildId"],
                     },
                 ],
             },
