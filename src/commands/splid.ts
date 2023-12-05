@@ -1,27 +1,20 @@
 import {
-    ActionRowBuilder,
-    ApplicationCommandType,
     AutocompleteInteraction,
-    CacheType,
     ChatInputCommandInteraction,
     Client,
     CommandInteraction,
-    ComponentType,
-    ContextMenuCommandBuilder,
     EmbedBuilder,
-    Message,
-    Role,
-    RoleSelectMenuBuilder,
     SlashCommandBuilder,
     SlashCommandStringOption,
     SlashCommandSubcommandBuilder,
-    Snowflake,
 } from "discord.js";
+
+// @ts-ignore Types are somehow broken :shrug:
+import { SplidClient } from "splid-js";
 
 import type { BotContext } from "../context.js";
 import type { ApplicationCommand } from "./command.js";
 import { isTrusted } from "../utils/userUtils.js";
-import { chunkArray } from "../utils/arrayUtils.js";
 import { ensureChatInputCommand } from "../utils/interactionUtils.js";
 import SplidGroup from "../storage/model/SplidGroup.js";
 
@@ -134,8 +127,61 @@ export class SplidGroupCommand implements ApplicationCommand {
         }
     }
     async handleAdd(command: ChatInputCommandInteraction) {
-        command.deferReply();
-        throw new Error("Method not implemented.");
+        if (!command.guild || !command.member) {
+            return;
+        }
+
+        await command.deferReply();
+
+        const inviteCode = command.options.getString("invite-code", true);
+        const normalizedCode = inviteCode
+            .replace(/\s/g, "")
+            .toUpperCase()
+            .trim();
+
+        if (normalizedCode.length === 0) {
+            await command.reply({
+                content: "Invite-Code darf nicht leer sein.",
+                ephemeral: true,
+            });
+            return;
+        }
+
+        const externalName = await getExternalGroupName(normalizedCode);
+        if (!externalName) {
+            await command.reply({
+                content: `Eine Splid-Gruppe mit dem Code \`${normalizedCode}\`konnte nicht gefunden werden. Hurensohn.`,
+                ephemeral: true,
+            });
+            return;
+        }
+
+        const name =
+            command.options.getString("description-short", false) ??
+            externalName;
+
+        if (!name) {
+            await command.reply({
+                content: "Der Name darf nicht leer sein du Hurensohn",
+                ephemeral: true,
+            });
+            return;
+        }
+
+        const longDescription =
+            command.options.getString("description-long", false) ?? null;
+
+        const result = await SplidGroup.createSplidGroup(
+            command.user,
+            command.guild,
+            normalizedCode,
+            name,
+            longDescription,
+        );
+
+        await command.editReply({
+            content: `Ok Bruder, habe Splid-Gruppe **${result.shortDescription}** mit Invite-Code \`${normalizedCode}\` hinzugefügt.`,
+        });
     }
 
     async handleList(command: ChatInputCommandInteraction) {
@@ -212,4 +258,18 @@ export class SplidGroupCommand implements ApplicationCommand {
 
         await interaction.respond(completions);
     }
+}
+
+async function getExternalGroupName(
+    inviteCode: string,
+): Promise<string | undefined> {
+    const client = new SplidClient();
+    const groupRes = await client.group.getByInviteCode(inviteCode);
+    const groupInfoRes = await client.groupInfo.getByGroup(
+        groupRes.result.objectId,
+    );
+    return (
+        (groupInfoRes?.result?.results?.[0]?.name as string | undefined) ??
+        undefined
+    );
 }
