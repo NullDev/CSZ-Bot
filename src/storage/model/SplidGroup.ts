@@ -86,11 +86,11 @@ export default class SplidGroup
                     allowNull: false,
                 },
                 shortDescription: {
-                    type: DataTypes.STRING(255),
+                    type: DataTypes.STRING(69),
                     allowNull: false,
                 },
                 longDescription: {
-                    type: DataTypes.STRING(1024),
+                    type: DataTypes.STRING(1000),
                     allowNull: false,
                 },
             },

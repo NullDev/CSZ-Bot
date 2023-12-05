@@ -50,6 +50,7 @@ import { NischdaaaCommand } from "../commands/special/nischdaaa.js";
 import { AutoEhreCommand } from "../commands/special/autoEhre.js";
 import { SdmCommand } from "../commands/sdm.js";
 import { Nickname, NicknameButtonHandler } from "../commands/nickname.js";
+import { SplidGroupCommand } from "../commands/splid.js";
 import { WoisLog } from "../commands/woislog.js";
 import { FicktabelleCommand } from "../commands/ficktabelle.js";
 import { InviteCommand } from "../commands/invite.js";
@@ -100,6 +101,7 @@ export const commands: readonly Command[] = [
     new DoenerCommand(),
     new GoogleCommand(),
     new Nickname(),
+    new SplidGroupCommand(),
     new WoisLog(),
     new NischdaaaCommand(),
     new AutoEhreCommand(),
