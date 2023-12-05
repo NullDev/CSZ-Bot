@@ -1,7 +1,7 @@
 /* Disabled due to sequelize's DataTypes */
 
 import { Model, DataTypes, Sequelize, Optional } from "sequelize";
-import type { Snowflake, User } from "discord.js";
+import type { Guild, Snowflake, User } from "discord.js";
 
 import log from "../../utils/logger.js";
 
@@ -32,17 +32,17 @@ export default class SplidGroup
 
     static createSplidGroup = (
         creator: User,
-        guildId: string,
+        guild: Guild,
         groupCode: string,
         shortDescription: string,
         longDescription: string | null,
     ): Promise<SplidGroupAttributes> => {
         log.debug(
-            `Saving splid group, initiated by ${creator.id} on guild ${guildId} with group code ${groupCode}: "${shortDescription}"`,
+            `Saving splid group, initiated by ${creator} on guild ${guild} with group code ${groupCode}: "${shortDescription}"`,
         );
         return SplidGroup.create({
             creatorId: creator.id,
-            guildId,
+            guildId: guild.id,
             groupCode,
             shortDescription,
             longDescription,
