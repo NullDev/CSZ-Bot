@@ -262,7 +262,7 @@ export class SplidGroupCommand implements ApplicationCommand {
 
         await command.deferReply();
 
-        const memberData = await fetchMemberData(group);
+        const memberData = await fetchExternalMemberData(group);
 
         logger.info({ memberData }, "Member data");
 
@@ -315,7 +315,10 @@ type ExternalInfo = { name: string; objectId: string };
 async function getExternalGroupInfo(
     inviteCode: string,
 ): Promise<ExternalInfo | undefined> {
-    const client = new SplidClient();
+    const client = new SplidClient({
+        installationId: "b65aa4f8-b6d5-4b51-9df6-406ce2026b32", // TODO: Move to config
+    });
+
     const groupRes = await client.group.getByInviteCode(inviteCode);
     const groupId = groupRes.result.objectId;
 
@@ -342,17 +345,22 @@ async function getExternalGroupInfo(
     };
 }
 
-async function fetchMemberData(group: SplidGroup) {
-    const client = new SplidClient();
-    const membersRes = await client.person.getByGroup(
-        group.externalSplidGroupId,
-    );
+async function fetchExternalMemberData(group: SplidGroup) {
+    const client = new SplidClient({
+        installationId: "b65aa4f8-b6d5-4b51-9df6-406ce2026b32", // TODO: Move to config
+    });
+
+    const groupRes = await client.group.getByInviteCode(group.groupCode);
+    const groupId = groupRes.result.objectId;
+
+    const membersRes = await client.person.getByGroup(groupId);
 
     // biome-ignore lint/suspicious/noExplicitAny: splid-js's types are broken here
     const members: any[] = membersRes?.result?.results ?? [];
     return members.map(m => ({
         name: m.name as string,
         initials: m.initials as string,
-        objectId: m.objectId as string,
+        objectId: m.objectId as string, // this somehow doesn't cut it. We need to use the globalId
+        globalId: m.GlobalId as string,
     }));
 }
