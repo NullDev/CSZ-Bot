@@ -57,10 +57,10 @@ export default class SplidGroup
         });
     }
 
-    static async delete(id: string): Promise<void> {
+    static async deleteByInviteCode(groupCode: string): Promise<void> {
         await SplidGroup.destroy({
             where: {
-                id,
+                groupCode,
             },
         });
     }
@@ -101,6 +101,14 @@ export default class SplidGroup
                         fields: [
                             {
                                 name: "guildId",
+                            },
+                        ],
+                    },
+                    {
+                        unique: true,
+                        fields: [
+                            {
+                                name: "shortDescription",
                             },
                         ],
                     },
