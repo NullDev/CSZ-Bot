@@ -42,7 +42,7 @@ export class SplidGroupCommand implements ApplicationCommand {
                         .setRequired(false)
                         .setName("description-short")
                         .setDescription(
-                            "Kurzbeschreibung der Splid-Gruppe. Maximal 69 Zeichen. Default ist der Splid-Gruppen-Name.",
+                            "Name der Splid-Gruppe. Maximal 69 Zeichen. Unique. Default ist der Name der Splid-Gruppe.",
                         ),
                 )
                 .addStringOption(
@@ -70,6 +70,9 @@ export class SplidGroupCommand implements ApplicationCommand {
                         .setRequired(true)
                         .setName("invite-code")
                         .setDescription("Der Invite-Code der Splid-Gruppe")
+                        // TODO: Name or code?
+                        // .setName("description-short")
+                        // .setDescription("Der Name der Splid-Gruppe")
                         .setAutocomplete(true),
                 ),
         )
@@ -88,11 +91,7 @@ export class SplidGroupCommand implements ApplicationCommand {
                 ),
         );
 
-    async handleInteraction(
-        interaction: CommandInteraction,
-        client: Client,
-        context: BotContext,
-    ) {
+    async handleInteraction(interaction: CommandInteraction) {
         const command = ensureChatInputCommand(interaction);
         if (!command.guildId) {
             await command.reply({
@@ -132,8 +131,6 @@ export class SplidGroupCommand implements ApplicationCommand {
             return;
         }
 
-        await command.deferReply();
-
         const inviteCode = command.options.getString("invite-code", true);
         const normalizedCode = inviteCode
             .replace(/\s/g, "")
@@ -148,12 +145,13 @@ export class SplidGroupCommand implements ApplicationCommand {
             return;
         }
 
+        await command.deferReply();
+
         try {
             const externalName = await getExternalGroupName(normalizedCode);
             if (!externalName) {
-                await command.reply({
+                await command.editReply({
                     content: `Eine Splid-Gruppe mit dem Code \`${normalizedCode}\`konnte nicht gefunden werden. Hurensohn.`,
-                    ephemeral: true,
                 });
                 return;
             }
@@ -165,7 +163,6 @@ export class SplidGroupCommand implements ApplicationCommand {
             if (!name) {
                 await command.reply({
                     content: "Der Name darf nicht leer sein du Hurensohn",
-                    ephemeral: true,
                 });
                 return;
             }
@@ -184,12 +181,10 @@ export class SplidGroupCommand implements ApplicationCommand {
             await command.editReply({
                 content: `Ok Bruder, habe Splid-Gruppe **${result.shortDescription}** mit Invite-Code \`${normalizedCode}\` hinzugefügt.`,
             });
-
         } catch (err) {
-            await command.reply({
+            await command.editReply({
                 content:
                     "Hurensohn. Irgendwas ging schief. Schau mal in den Logs.",
-                ephemeral: true,
             });
             logger.error(err, "Error while adding Splid group");
             return;
@@ -197,11 +192,11 @@ export class SplidGroupCommand implements ApplicationCommand {
     }
 
     async handleList(command: ChatInputCommandInteraction) {
-        if (!command.guildId) {
+        if (!command.guild) {
             return;
         }
 
-        const groups = await SplidGroup.findAllGroups(command.guildId);
+        const groups = await SplidGroup.findAllGroups(command.guild);
 
         if (groups.length === 0) {
             await command.reply({
@@ -231,7 +226,29 @@ export class SplidGroupCommand implements ApplicationCommand {
     }
 
     async handleShow(command: ChatInputCommandInteraction) {
-        command.deferReply();
+        if (!command.guild || !command.member) {
+            return;
+        }
+        const code = command.options.getString("invite-code", true);
+        const group = await SplidGroup.findOneByCodeForGuild(
+            command.guild,
+            code,
+        );
+
+        if (!group) {
+            await command.reply({
+                content: `Es gibt keine Splid-Gruppe mit dem Code \`${code}\`. Hurensohn.`,
+                ephemeral: true,
+            });
+            return;
+        }
+
+        await command.deferReply();
+
+        const memberData = fetchMemberData(group);
+
+        logger.debug({ memberData }, "Member data");
+
         throw new Error("Method not implemented.");
     }
 
@@ -246,7 +263,7 @@ export class SplidGroupCommand implements ApplicationCommand {
     }
 
     async autocomplete(interaction: AutocompleteInteraction) {
-        if (!interaction.guildId) {
+        if (!interaction.guild) {
             return;
         }
 
@@ -255,7 +272,7 @@ export class SplidGroupCommand implements ApplicationCommand {
             return;
         }
 
-        const groups = await SplidGroup.findAllGroups(interaction.guildId);
+        const groups = await SplidGroup.findAllGroups(interaction.guild);
 
         const focusedValue = interaction.options.getFocused().toLowerCase();
 
@@ -285,3 +302,5 @@ async function getExternalGroupName(
         undefined
     );
 }
+
+async function fetchMemberData(group: SplidGroup) {}

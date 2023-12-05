@@ -49,10 +49,34 @@ export default class SplidGroup
         });
     };
 
-    static findAllGroups(guildId: Snowflake): Promise<SplidGroup[]> {
+    static findAllGroups(guild: Guild): Promise<SplidGroup[]> {
         return SplidGroup.findAll({
             where: {
-                guildId,
+                guildId: guild.id,
+            },
+        });
+    }
+
+    static findOneByCodeForGuild(
+        guild: Guild,
+        groupCode: string,
+    ): Promise<SplidGroup | null> {
+        return SplidGroup.findOne({
+            where: {
+                guildId: guild.id,
+                groupCode,
+            },
+        });
+    }
+
+    static findOneByDescriptionForGuild(
+        guild: Guild,
+        shortDescription: string,
+    ): Promise<SplidGroup | null> {
+        return SplidGroup.findOne({
+            where: {
+                guildId: guild.id,
+                shortDescription,
             },
         });
     }
@@ -91,7 +115,7 @@ export default class SplidGroup
                 },
                 longDescription: {
                     type: DataTypes.STRING(1000),
-                    allowNull: false,
+                    allowNull: true,
                 },
             },
             {
