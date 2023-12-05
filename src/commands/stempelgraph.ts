@@ -286,8 +286,6 @@ export class StempelgraphCommand implements ApplicationCommand {
             */
 
             await command.reply({
-                // biome-ignore lint/style/useTemplate: Better readability
-                // content: "```\n" + dotSrc + "\n```",
                 files: [
                     {
                         attachment: stempelGraph,
