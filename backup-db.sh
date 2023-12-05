@@ -2,4 +2,5 @@
 
 TODAY=$(date +"%Y-%m-%d")
 
-sqlite3 storage.db ".backup $TODAY-backup.db"
+mkdir -p backups
+sqlite3 storage.db ".backup backups/$TODAY-backup.db"
