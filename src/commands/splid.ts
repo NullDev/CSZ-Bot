@@ -310,9 +310,11 @@ export class SplidGroupCommand implements ApplicationCommand {
     }
 }
 
+type ExternalInfo = { name: string; objectId: string };
+
 async function getExternalGroupInfo(
     inviteCode: string,
-): Promise<{ name: string; objectId: string } | undefined> {
+): Promise<ExternalInfo | undefined> {
     const client = new SplidClient();
     const groupRes = await client.group.getByInviteCode(inviteCode);
     const groupId = groupRes.result.objectId;
@@ -342,10 +344,9 @@ async function getExternalGroupInfo(
 
 async function fetchMemberData(group: SplidGroup) {
     const client = new SplidClient();
-    const groupRes = await client.group.getByInviteCode(group.groupCode);
-    const groupId = groupRes.result.objectId;
-    // const groupInfoRes = await client.groupInfo.getByGroup(groupId);
-    const membersRes = await client.person.getByGroup(groupId);
+    const membersRes = await client.person.getByGroup(
+        group.externalSplidGroupId,
+    );
 
     // biome-ignore lint/suspicious/noExplicitAny: splid-js's types are broken here
     const members: any[] = membersRes?.result?.results ?? [];
