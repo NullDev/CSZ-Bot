@@ -7,6 +7,7 @@ import {
     CommandInteraction,
     ComponentType,
     ContextMenuCommandBuilder,
+    EmbedBuilder,
     Message,
     Role,
     RoleSelectMenuBuilder,
@@ -21,6 +22,7 @@ import type { ApplicationCommand } from "./command.js";
 import { isTrusted } from "../utils/userUtils.js";
 import { chunkArray } from "../utils/arrayUtils.js";
 import { ensureChatInputCommand } from "../utils/interactionUtils.js";
+import SplidGroup from "../storage/model/SplidGroup.js";
 
 export class SplidGroupCommand implements ApplicationCommand {
     name = "splid";
@@ -112,43 +114,68 @@ export class SplidGroupCommand implements ApplicationCommand {
             return;
         }
 
+        // TODO Constrain to certain channels?
+
         const subCommand = command.options.getSubcommand();
 
         switch (subCommand) {
             case "add":
-                return this.handleAdd(command, context);
+                return this.handleAdd(command);
             case "list":
-                return this.handleList(command, context);
+                return this.handleList(command);
             case "show":
-                return this.handleShow(command, context);
+                return this.handleShow(command);
             case "delete":
-                return this.handleDelete(command, context);
+                return this.handleDelete(command);
             default:
                 throw new Error(`Unknown subcommand ${subCommand}`);
         }
     }
-    async handleAdd(
-        command: ChatInputCommandInteraction<CacheType>,
-        context: BotContext,
-    ) {
+    async handleAdd(command: ChatInputCommandInteraction) {
+        command.deferReply();
         throw new Error("Method not implemented.");
     }
-    async handleList(
-        command: ChatInputCommandInteraction<CacheType>,
-        context: BotContext,
-    ) {
+
+    async handleList(command: ChatInputCommandInteraction) {
+        if (!command.guildId) {
+            return;
+        }
+
+        const groups = await SplidGroup.findAllGroups(command.guildId);
+
+        if (groups.length === 0) {
+            await command.reply({
+                content:
+                    "Es gibt noch keine Splid-Gruppen auf diesem Server. Füge eine mit `/splid add` hinzu.",
+                ephemeral: true,
+            });
+            return;
+        }
+
+        const groupsStr = groups.map(g =>
+            `**\`${g.groupCode}\`**: **${g.shortDescription}**\n${
+                g.longDescription ?? ""
+            }`.trim(),
+        );
+
+        await command.reply({
+            embeds: [
+                new EmbedBuilder({
+                    title: "Splid-Gruppen",
+                    description: groupsStr.join("\n\n"),
+                    footer: { text: "Füge eine neue mit `/splid add` hinzu." },
+                }),
+            ],
+            ephemeral: true,
+        });
+    }
+
+    async handleShow(command: ChatInputCommandInteraction) {
+        command.deferReply();
         throw new Error("Method not implemented.");
     }
-    async handleShow(
-        command: ChatInputCommandInteraction<CacheType>,
-        context: BotContext,
-    ) {
-        throw new Error("Method not implemented.");
-    }
-    async handleDelete(
-        command: ChatInputCommandInteraction<CacheType>,
-        context: BotContext,
-    ) {
+    async handleDelete(command: ChatInputCommandInteraction) {
+        const code = command.options.getString("invite-code");
         throw new Error("Method not implemented.");
     }
 }
