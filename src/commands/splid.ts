@@ -1,6 +1,7 @@
 import {
     ActionRowBuilder,
     ApplicationCommandType,
+    AutocompleteInteraction,
     CacheType,
     ChatInputCommandInteraction,
     Client,
@@ -177,5 +178,31 @@ export class SplidGroupCommand implements ApplicationCommand {
     async handleDelete(command: ChatInputCommandInteraction) {
         const code = command.options.getString("invite-code");
         throw new Error("Method not implemented.");
+    }
+
+    async autocomplete(interaction: AutocompleteInteraction) {
+        if (!interaction.guildId) {
+            return;
+        }
+
+        const subCommand = interaction.options.getSubcommand(true);
+        if (subCommand !== "delete" && subCommand !== "list") {
+            return;
+        }
+
+        const groups = await SplidGroup.findAllGroups(interaction.guildId);
+
+        const focusedValue = interaction.options.getFocused().toLowerCase();
+
+        const completions = groups
+            .filter(n =>
+                n.shortDescription.toLowerCase().includes(focusedValue),
+            )
+            .map(n => ({
+                name: n.shortDescription,
+                value: n.groupCode,
+            }));
+
+        await interaction.respond(completions);
     }
 }
