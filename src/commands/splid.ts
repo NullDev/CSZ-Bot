@@ -35,6 +35,12 @@ export class SplidGroupCommand implements ApplicationCommand {
                     new SlashCommandStringOption()
                         .setRequired(true)
                         .setName("invite-code")
+                        .setNameLocalizations({
+                            // name instead of code is intentional,
+                            // since autocomplete only shows the name (but sends the code)
+                            "en-US": "code",
+                            de: "einladungscode",
+                        })
                         .setDescription("Der Invite-Code der Splid-Gruppe"),
                 )
                 .addStringOption(
@@ -57,7 +63,7 @@ export class SplidGroupCommand implements ApplicationCommand {
         .addSubcommand(
             new SlashCommandSubcommandBuilder()
                 .setName("list")
-                .setDescription("Listet alle Splid-Gruppen auf"),
+                .setDescription("Listet alle Splid-Gruppen auf diesem Server"),
         )
         .addSubcommand(
             new SlashCommandSubcommandBuilder()
@@ -69,6 +75,12 @@ export class SplidGroupCommand implements ApplicationCommand {
                     new SlashCommandStringOption()
                         .setRequired(true)
                         .setName("invite-code")
+                        .setNameLocalizations({
+                            // name instead of code is intentional,
+                            // since autocomplete only shows the name (but sends the code)
+                            "en-US": "group",
+                            de: "gruppenname",
+                        })
                         .setDescription("Der Invite-Code der Splid-Gruppe")
                         // TODO: Name or code?
                         // .setName("description-short")
@@ -86,6 +98,10 @@ export class SplidGroupCommand implements ApplicationCommand {
                     new SlashCommandStringOption()
                         .setRequired(true)
                         .setName("invite-code")
+                        .setNameLocalizations({
+                            "en-US": "group",
+                            de: "gruppenname",
+                        })
                         .setDescription("Der Invite-Code der Splid-Gruppe")
                         .setAutocomplete(true),
                 ),
@@ -245,9 +261,9 @@ export class SplidGroupCommand implements ApplicationCommand {
 
         await command.deferReply();
 
-        const memberData = fetchMemberData(group);
+        const memberData = await fetchMemberData(group);
 
-        logger.debug({ memberData }, "Member data");
+        logger.info({ memberData }, "Member data");
 
         throw new Error("Method not implemented.");
     }
@@ -268,7 +284,11 @@ export class SplidGroupCommand implements ApplicationCommand {
         }
 
         const subCommand = interaction.options.getSubcommand(true);
-        if (subCommand !== "delete" && subCommand !== "list") {
+        if (
+            subCommand !== "delete" &&
+            subCommand !== "list" &&
+            subCommand !== "show"
+        ) {
             return;
         }
 
@@ -294,13 +314,28 @@ async function getExternalGroupName(
 ): Promise<string | undefined> {
     const client = new SplidClient();
     const groupRes = await client.group.getByInviteCode(inviteCode);
-    const groupInfoRes = await client.groupInfo.getByGroup(
-        groupRes.result.objectId,
-    );
+    const groupId = groupRes.result.objectId;
+
+    const groupInfoRes = await client.groupInfo.getByGroup(groupId);
+
     return (
         (groupInfoRes?.result?.results?.[0]?.name as string | undefined) ??
         undefined
     );
 }
 
-async function fetchMemberData(group: SplidGroup) {}
+async function fetchMemberData(group: SplidGroup) {
+    const client = new SplidClient();
+    const groupRes = await client.group.getByInviteCode(group.groupCode);
+    const groupId = groupRes.result.objectId;
+    // const groupInfoRes = await client.groupInfo.getByGroup(groupId);
+    const membersRes = await client.person.getByGroup(groupId);
+
+    // biome-ignore lint/suspicious/noExplicitAny: splid-js's types are broken here
+    const members: any[] = membersRes?.result?.results ?? [];
+    return members.map(m => ({
+        name: m.name as string,
+        initials: m.initials as string,
+        objectId: m.objectId as string,
+    }));
+}
