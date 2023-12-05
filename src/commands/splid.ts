@@ -345,7 +345,39 @@ async function getExternalGroupInfo(
     };
 }
 
-async function fetchExternalMemberData(group: SplidGroup) {
+type CacheEntry = {
+    created: number;
+    data: ReturnType<typeof fetchExternalMemberDataLive>;
+};
+const memberCache = new Map<string, CacheEntry>();
+const memberCacheRetentionMs = 1000 * 10;
+
+async function fetchExternalMemberData(
+    group: SplidGroup,
+): ReturnType<typeof fetchExternalMemberDataLive> {
+    const now = Date.now();
+    const cached = memberCache.get(group.groupCode);
+
+    if (cached) {
+        if (now - cached.created < memberCacheRetentionMs) {
+            return cached.data;
+        }
+        memberCache.delete(group.groupCode);
+    }
+
+    // Not awaiting, because we want cache the promise,
+    // so every client will get the result instantly and we don't block here plus we won't fetch the result twice
+    const data = fetchExternalMemberDataLive(group);
+
+    memberCache.set(group.groupCode, {
+        created: now,
+        data,
+    });
+
+    return data;
+}
+
+async function fetchExternalMemberDataLive(group: SplidGroup) {
     const client = new SplidClient({
         installationId: "b65aa4f8-b6d5-4b51-9df6-406ce2026b32", // TODO: Move to config
     });
