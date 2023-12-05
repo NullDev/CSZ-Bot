@@ -41,6 +41,7 @@
     "moment": "^2.29.4",
     "pino": "^8.16.2",
     "sequelize": "^6.35.1",
+    "splid-js": "^1.1.1",
     "sqlite3": "~5.1.6"
   },
   "devDependencies": {
