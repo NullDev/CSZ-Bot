@@ -176,9 +176,15 @@ export class SplidGroupCommand implements ApplicationCommand {
         command.deferReply();
         throw new Error("Method not implemented.");
     }
+
     async handleDelete(command: ChatInputCommandInteraction) {
-        const code = command.options.getString("invite-code");
-        throw new Error("Method not implemented.");
+        const code = command.options.getString("invite-code", true);
+
+        await SplidGroup.deleteByInviteCode(code);
+
+        await command.reply({
+            content: `Ok Bruder, habe Splid-Gruppe mit Invite-Code \`${code}\` gelöscht.`,
+        });
     }
 
     async autocomplete(interaction: AutocompleteInteraction) {
