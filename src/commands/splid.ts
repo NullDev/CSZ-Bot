@@ -26,6 +26,7 @@ import { ensureChatInputCommand } from "../utils/interactionUtils.js";
 import SplidGroup from "../storage/model/SplidGroup.js";
 
 export class SplidGroupCommand implements ApplicationCommand {
+    modCommand = false;
     name = "splid";
     description = "Managed ein bisschen Splid";
 
