@@ -10,6 +10,7 @@ export interface SplidGroupAttributes {
     creatorId: string;
     guildId: string;
     groupCode: string;
+    externalSplidGroupId: string;
     shortDescription: string;
     longDescription: string | null;
 }
@@ -24,6 +25,7 @@ export default class SplidGroup
     declare creatorId: Snowflake;
     declare guildId: Snowflake;
     declare groupCode: string;
+    declare externalSplidGroupId: string;
     declare shortDescription: string;
     declare longDescription: string | null;
 
@@ -34,6 +36,7 @@ export default class SplidGroup
         creator: User,
         guild: Guild,
         groupCode: string,
+        externalSplidGroupId: string,
         shortDescription: string,
         longDescription: string | null,
     ): Promise<SplidGroupAttributes> => {
@@ -44,6 +47,7 @@ export default class SplidGroup
             creatorId: creator.id,
             guildId: guild.id,
             groupCode,
+            externalSplidGroupId,
             shortDescription,
             longDescription,
         });
@@ -109,6 +113,10 @@ export default class SplidGroup
                     type: DataTypes.STRING(32),
                     allowNull: false,
                 },
+                externalSplidGroupId: {
+                    type: DataTypes.STRING(32),
+                    allowNull: false,
+                },
                 shortDescription: {
                     type: DataTypes.STRING(69),
                     allowNull: false,
@@ -127,6 +135,10 @@ export default class SplidGroup
                     {
                         unique: true,
                         fields: ["shortDescription"],
+                    },
+                    {
+                        unique: true,
+                        fields: ["externalSplidGroupId", "guildId"],
                     },
                     {
                         unique: true,

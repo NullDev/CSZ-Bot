@@ -164,8 +164,8 @@ export class SplidGroupCommand implements ApplicationCommand {
         await command.deferReply();
 
         try {
-            const externalName = await getExternalGroupName(normalizedCode);
-            if (!externalName) {
+            const externalInfo = await getExternalGroupInfo(normalizedCode);
+            if (!externalInfo) {
                 await command.editReply({
                     content: `Eine Splid-Gruppe mit dem Code \`${normalizedCode}\`konnte nicht gefunden werden. Hurensohn.`,
                 });
@@ -174,7 +174,7 @@ export class SplidGroupCommand implements ApplicationCommand {
 
             const name =
                 command.options.getString("description-short", false) ??
-                externalName;
+                externalInfo.name;
 
             if (!name) {
                 await command.reply({
@@ -190,6 +190,7 @@ export class SplidGroupCommand implements ApplicationCommand {
                 command.user,
                 command.guild,
                 normalizedCode,
+                externalInfo.objectId,
                 name,
                 longDescription,
             );
@@ -309,19 +310,34 @@ export class SplidGroupCommand implements ApplicationCommand {
     }
 }
 
-async function getExternalGroupName(
+async function getExternalGroupInfo(
     inviteCode: string,
-): Promise<string | undefined> {
+): Promise<{ name: string; objectId: string } | undefined> {
     const client = new SplidClient();
     const groupRes = await client.group.getByInviteCode(inviteCode);
     const groupId = groupRes.result.objectId;
 
     const groupInfoRes = await client.groupInfo.getByGroup(groupId);
 
-    return (
-        (groupInfoRes?.result?.results?.[0]?.name as string | undefined) ??
-        undefined
-    );
+    const info = groupInfoRes?.result?.results?.[0] ?? undefined;
+    if (!info) {
+        return undefined;
+    }
+
+    const name = (info.name as string | undefined) ?? undefined;
+    if (!name) {
+        return undefined;
+    }
+
+    const objectId = (info.objectId as string | undefined) ?? undefined;
+    if (!objectId) {
+        return undefined;
+    }
+
+    return {
+        name,
+        objectId,
+    };
 }
 
 async function fetchMemberData(group: SplidGroup) {
