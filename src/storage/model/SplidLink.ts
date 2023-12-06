@@ -1,6 +1,6 @@
 /* Disabled due to sequelize's DataTypes */
 
-import { Model, DataTypes, Sequelize, Optional } from "sequelize";
+import { Model, DataTypes, Sequelize, Optional, Op } from "sequelize";
 import type { Guild, Snowflake, User } from "discord.js";
 
 import log from "../../utils/logger.js";
@@ -46,11 +46,30 @@ export default class SplidLink
         });
     };
 
-    static matchUsers(
+    static async matchUsers(
         guild: Guild,
         splidIds: Set<string>,
-    ): Promise<Map<string, Snowflake | null>> {
-        throw new Error("Not implemented");
+    ): Promise<Map<string, Snowflake>> {
+        const availableLinks = await SplidLink.findAll({
+            where: {
+                guildId: guild.id,
+                externalSplidId: {
+                    [Op.in]: [...splidIds],
+                },
+            },
+        });
+
+        const result = new Map<string, Snowflake>();
+        for (const splidId of splidIds) {
+            const link = availableLinks.find(
+                link => link.externalSplidId === splidId,
+            );
+            if (link) {
+                result.set(splidId, link.discordUserId);
+            }
+        }
+
+        return result;
     }
 
     static async delete(guild: Guild, user: User): Promise<void> {

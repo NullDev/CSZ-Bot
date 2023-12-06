@@ -283,7 +283,7 @@ export class SplidGroupCommand implements ApplicationCommand {
                 new EmbedBuilder({
                     title: "Splid-Gruppen",
                     description: groupsStr.join("\n\n"),
-                    footer: { text: "Füge eine neue mit `/splid add` hinzu." },
+                    footer: { text: "Füge eine neue mit /splid add hinzu." },
                 }),
             ],
             ephemeral: true,
@@ -312,9 +312,38 @@ export class SplidGroupCommand implements ApplicationCommand {
 
         const memberData = await fetchExternalMemberData(group);
 
-        logger.info({ memberData }, "Member data");
+        const linkedAccounts = await SplidLink.matchUsers(
+            command.guild,
+            new Set(memberData.map(n => n.globalId)),
+        );
 
-        throw new Error("Method not implemented.");
+        function getPrintableDisplayName(splidAccount: SplidMember) {
+            const discordUser = linkedAccounts.get(splidAccount.globalId);
+            return discordUser ? userMention(discordUser) : splidAccount.name;
+        }
+
+        const memberList = memberData.map(n => {
+            return `- ${getPrintableDisplayName(n)}`;
+        });
+
+        const description = `${
+            group.longDescription ?? ""
+        }\n\nMitglieder:\n${memberList.join("\n")}`.trim();
+
+        await command.editReply({
+            embeds: [
+                new EmbedBuilder({
+                    title: group.shortDescription,
+                    description,
+                    // Field names cannot have mentions: https://stackoverflow.com/a/57112737
+                    // So we use the balance as name
+                    fields: memberData.map(n => ({
+                        name: "1337 €",
+                        value: getPrintableDisplayName(n),
+                    })),
+                }),
+            ],
+        });
     }
 
     async handleLink(command: ChatInputCommandInteraction) {
@@ -521,6 +550,38 @@ type CacheEntry = {
 const memberCache = new Map<string, CacheEntry>();
 const memberCacheRetentionMs = 1000 * 60;
 
+type SplidMember = {
+    name: string;
+    initials: string;
+    objectId: string;
+    globalId: string;
+};
+
+async function fetchExternalMemberDataLive(
+    group: SplidGroup,
+): Promise<SplidMember[]> {
+    const client = new SplidClient({
+        installationId: "b65aa4f8-b6d5-4b51-9df6-406ce2026b32", // TODO: Move to config
+    });
+
+    const groupRes = await client.group.getByInviteCode(group.groupCode);
+    const groupId = groupRes.result.objectId;
+
+    const membersRes = await client.person.getByGroup(groupId);
+
+    // biome-ignore lint/suspicious/noExplicitAny: splid-js's types are broken here
+    const members: any[] = membersRes?.result?.results ?? [];
+    return members.map(m => ({
+        name: m.name as string,
+        initials: m.initials as string,
+        objectId: m.objectId as string, // this somehow doesn't cut it. We need to use the globalId
+        globalId: m.GlobalId as string,
+    }));
+}
+
+//#region over-engineered caching
+
+// TODO: maybe make this a factory etc
 async function fetchExternalMemberData(
     group: SplidGroup,
 ): ReturnType<typeof fetchExternalMemberDataLive> {
@@ -546,22 +607,4 @@ async function fetchExternalMemberData(
     return data;
 }
 
-async function fetchExternalMemberDataLive(group: SplidGroup) {
-    const client = new SplidClient({
-        installationId: "b65aa4f8-b6d5-4b51-9df6-406ce2026b32", // TODO: Move to config
-    });
-
-    const groupRes = await client.group.getByInviteCode(group.groupCode);
-    const groupId = groupRes.result.objectId;
-
-    const membersRes = await client.person.getByGroup(groupId);
-
-    // biome-ignore lint/suspicious/noExplicitAny: splid-js's types are broken here
-    const members: any[] = membersRes?.result?.results ?? [];
-    return members.map(m => ({
-        name: m.name as string,
-        initials: m.initials as string,
-        objectId: m.objectId as string, // this somehow doesn't cut it. We need to use the globalId
-        globalId: m.GlobalId as string,
-    }));
-}
+//#region
