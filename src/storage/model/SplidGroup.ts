@@ -139,10 +139,10 @@ export default class SplidGroup
                         unique: true,
                         fields: ["shortDescription"],
                     },
-                    {
-                        unique: true,
-                        fields: ["externalSplidGroupId", "guildId"],
-                    },
+                    // {
+                    //     unique: true,
+                    //     fields: ["externalSplidGroupId", "guildId"],
+                    // },
                     {
                         unique: true,
                         fields: ["groupCode", "guildId"],
