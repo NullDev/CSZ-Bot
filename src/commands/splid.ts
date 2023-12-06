@@ -31,7 +31,7 @@ export class SplidGroupCommand implements ApplicationCommand {
         .setDescription(this.description)
         .addSubcommand(
             new SlashCommandSubcommandBuilder()
-                .setName("add")
+                .setName("add-group")
                 .setDescription("Fügt eine neue Splid-Gruppe hinzu")
                 .addStringOption(
                     new SlashCommandStringOption()
@@ -175,8 +175,8 @@ export class SplidGroupCommand implements ApplicationCommand {
         const subCommand = command.options.getSubcommand();
 
         switch (subCommand) {
-            case "add":
-                return this.handleAdd(command);
+            case "add-group":
+                return this.handleAddGroup(command);
             case "list":
                 return this.handleList(command);
             case "show":
@@ -190,7 +190,7 @@ export class SplidGroupCommand implements ApplicationCommand {
         }
     }
 
-    async handleAdd(command: ChatInputCommandInteraction) {
+    async handleAddGroup(command: ChatInputCommandInteraction) {
         if (!command.guild || !command.member) {
             return;
         }
