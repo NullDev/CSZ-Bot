@@ -16,6 +16,7 @@ import { EhrePoints, EhreVotes } from "./model/Ehre.js";
 import type { BotContext } from "../context.js";
 import WoisAction from "./model/WoisAction.js";
 import SplidGroup from "./model/SplidGroup.js";
+import SplidLink from "./model/SplidLink.js";
 
 export async function initialize(botContext: BotContext) {
     const sequelize = new Sequelize({
@@ -47,5 +48,6 @@ export async function initialize(botContext: BotContext) {
     EhreVotes.initialize(sequelize);
     WoisAction.initialize(sequelize);
     SplidGroup.initialize(sequelize);
+    SplidLink.initialize(sequelize);
     await sequelize.sync();
 }
