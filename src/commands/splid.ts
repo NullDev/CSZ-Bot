@@ -20,6 +20,7 @@ import { isTrusted } from "../utils/userUtils.js";
 import { ensureChatInputCommand } from "../utils/interactionUtils.js";
 import SplidGroup from "../storage/model/SplidGroup.js";
 import logger from "../utils/logger.js";
+import { log } from "console";
 
 export class SplidGroupCommand implements ApplicationCommand {
     modCommand = false;
@@ -334,18 +335,65 @@ export class SplidGroupCommand implements ApplicationCommand {
             case "delete":
             case "list":
             case "show": {
-                const focusedValue = interaction.options.getFocused();
-
                 const completions = await this.#getSplidGroupCompletions(
-                    focusedValue,
+                    interaction.options.getFocused(),
                     interaction.guild,
                 );
                 await interaction.respond(completions);
                 return;
             }
-            case "link":
-                return;
+            case "link": {
+                const focused = interaction.options.getFocused(true);
+
+                switch (focused.name) {
+                    case "invite-code": {
+                        const completions =
+                            await this.#getSplidGroupCompletions(
+                                focused.value,
+                                interaction.guild,
+                            );
+                        await interaction.respond(completions);
+                        return;
+                    }
+                    case "split-person": {
+                        const groupCode = interaction.options.getString(
+                            "invite-code",
+                            true,
+                        );
+
+                        const group = await SplidGroup.findOneByCodeForGuild(
+                            interaction.guild,
+                            groupCode,
+                        );
+                        if (!group) {
+                            return;
+                        }
+
+                        const memberData = await fetchExternalMemberData(group);
+
+                        const completions = memberData
+                            .filter(n =>
+                                n.name
+                                    .toLowerCase()
+                                    .includes(focused.value.toLowerCase()),
+                            )
+                            .map(n => ({
+                                name: n.name,
+                                value: n.globalId,
+                            }));
+
+                        await interaction.respond(completions);
+                        return;
+                    }
+                    default:
+                        logger.warn(
+                            `Cannot autocomplete "${focused.name}" for sub command "link"`,
+                        );
+                        return;
+                }
+            }
             default:
+                logger.warn(`Cannot autocomplete sub command "${subCommand}" `);
                 return;
         }
     }
