@@ -330,26 +330,24 @@ export class SplidGroupCommand implements ApplicationCommand {
         }
 
         const subCommand = interaction.options.getSubcommand(true);
-        if (
-            subCommand !== "delete" &&
-            subCommand !== "list" &&
-            subCommand !== "show" &&
-            subCommand !== "link"
-        ) {
-            return;
+        switch (subCommand) {
+            case "delete":
+            case "list":
+            case "show": {
+                const focusedValue = interaction.options.getFocused();
+
+                const completions = await this.#getSplidGroupCompletions(
+                    focusedValue,
+                    interaction.guild,
+                );
+                await interaction.respond(completions);
+                return;
+            }
+            case "link":
+                return;
+            default:
+                return;
         }
-
-        if (subCommand === "link") {
-            return;
-        }
-
-        const focusedValue = interaction.options.getFocused();
-
-        const completions = await this.#getSplidGroupCompletions(
-            focusedValue,
-            interaction.guild,
-        );
-        await interaction.respond(completions);
     }
 
     async #getSplidGroupCompletions(focusedValue: string, guild: Guild) {
