@@ -324,7 +324,7 @@ export class SplidGroupCommand implements ApplicationCommand {
     }
 
     async autocomplete(interaction: AutocompleteInteraction) {
-        if (!interaction.guild) {
+        if (!interaction.guild || !interaction.member) {
             return;
         }
 
@@ -332,7 +332,8 @@ export class SplidGroupCommand implements ApplicationCommand {
         if (
             subCommand !== "delete" &&
             subCommand !== "list" &&
-            subCommand !== "show"
+            subCommand !== "show" &&
+            subCommand !== "link"
         ) {
             return;
         }
@@ -394,7 +395,7 @@ type CacheEntry = {
     data: ReturnType<typeof fetchExternalMemberDataLive>;
 };
 const memberCache = new Map<string, CacheEntry>();
-const memberCacheRetentionMs = 1000 * 10;
+const memberCacheRetentionMs = 1000 * 60;
 
 async function fetchExternalMemberData(
     group: SplidGroup,
