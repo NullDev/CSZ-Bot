@@ -4,6 +4,7 @@ import {
     Client,
     CommandInteraction,
     EmbedBuilder,
+    Guild,
     SlashCommandBuilder,
     SlashCommandStringOption,
     SlashCommandSubcommandBuilder,
@@ -338,20 +339,33 @@ export class SplidGroupCommand implements ApplicationCommand {
             return;
         }
 
-        const groups = await SplidGroup.findAllGroups(interaction.guild);
+        if (subCommand === "link") {
+            return;
+        }
 
-        const focusedValue = interaction.options.getFocused().toLowerCase();
+        const focusedValue = interaction.options.getFocused();
 
-        const completions = groups
+        const completions = await this.#getSplidGroupCompletions(
+            focusedValue,
+            interaction.guild,
+        );
+        await interaction.respond(completions);
+    }
+
+    async #getSplidGroupCompletions(focusedValue: string, guild: Guild) {
+        const groups = await SplidGroup.findAllGroups(guild);
+
+        const focusedValueNormalized = focusedValue.toLowerCase();
+        return groups
             .filter(n =>
-                n.shortDescription.toLowerCase().includes(focusedValue),
+                n.shortDescription
+                    .toLowerCase()
+                    .includes(focusedValueNormalized),
             )
             .map(n => ({
                 name: n.shortDescription,
                 value: n.groupCode,
             }));
-
-        await interaction.respond(completions);
     }
 }
 
