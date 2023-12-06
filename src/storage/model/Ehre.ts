@@ -1,5 +1,3 @@
-/* Disabled due to sequelize's DataTypes */
-
 import { DataTypes, Model, Op, Sequelize } from "sequelize";
 import { Snowflake } from "discord.js";
 

@@ -1,5 +1,3 @@
-/* Disabled due to sequelize's DataTypes */
-
 import type { GuildMember, Snowflake } from "discord.js";
 import { DataTypes, Model, Op, Optional, Sequelize } from "sequelize";
 

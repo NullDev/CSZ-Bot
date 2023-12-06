@@ -1,5 +1,3 @@
-/* Disabled due to sequelize's DataTypes */
-
 import type { User, GuildMember } from "discord.js";
 import { Model, DataTypes, Sequelize, Optional, Op } from "sequelize";
 
