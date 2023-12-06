@@ -7,6 +7,7 @@ import {
     SlashCommandBuilder,
     SlashCommandStringOption,
     SlashCommandSubcommandBuilder,
+    SlashCommandUserOption,
 } from "discord.js";
 
 // @ts-ignore Types are somehow broken :shrug:
@@ -86,6 +87,49 @@ export class SplidGroupCommand implements ApplicationCommand {
                         // .setName("description-short")
                         // .setDescription("Der Name der Splid-Gruppe")
                         .setAutocomplete(true),
+                ),
+        )
+        .addSubcommand(
+            new SlashCommandSubcommandBuilder()
+                .setName("link")
+                .setDescription(
+                    "Verknüpft eine Splid-Person mit deinem Discord-Account",
+                )
+                .addStringOption(
+                    new SlashCommandStringOption()
+                        .setRequired(true)
+                        .setAutocomplete(true)
+                        .setName("invite-code")
+                        .setNameLocalizations({
+                            // name instead of code is intentional,
+                            // since autocomplete only shows the name (but sends the code)
+                            "en-US": "group",
+                            de: "gruppenname",
+                        })
+                        .setDescription("Der Invite-Code der Splid-Gruppe"),
+                )
+                .addStringOption(
+                    new SlashCommandStringOption()
+                        .setRequired(true)
+                        .setAutocomplete(true)
+                        .setName("split-person")
+                        .setNameLocalizations({
+                            // name instead of code is intentional,
+                            // since autocomplete only shows the name (but sends the code)
+                            "en-US": "person",
+                            de: "person",
+                        })
+                        .setDescription("Dein Name in der Splid-Gruppe"),
+                )
+                .addUserOption(
+                    new SlashCommandUserOption()
+                        .setRequired(true)
+                        .setName("discord-user")
+                        .setNameLocalizations({
+                            "en-US": "user",
+                            de: "user",
+                        })
+                        .setDescription("Der Discord-User"),
                 ),
         )
         .addSubcommand(
