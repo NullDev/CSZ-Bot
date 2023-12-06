@@ -330,6 +330,11 @@ export class SplidGroupCommand implements ApplicationCommand {
             group.longDescription ?? ""
         }\n\nMitglieder:\n${memberList.join("\n")}`.trim();
 
+        function getBalance(splidAccount: SplidMember): string {
+            // TODO: How do we get the balance? It seems that splid computes this on the client side?
+            return `${splidAccount.name.length} €`;
+        }
+
         await command.editReply({
             embeds: [
                 new EmbedBuilder({
@@ -338,7 +343,7 @@ export class SplidGroupCommand implements ApplicationCommand {
                     // Field names cannot have mentions: https://stackoverflow.com/a/57112737
                     // So we use the balance as name
                     fields: memberData.map(n => ({
-                        name: "1337 €",
+                        name: getBalance(n),
                         value: getPrintableDisplayName(n),
                     })),
                 }),
