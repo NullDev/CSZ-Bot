@@ -1,7 +1,6 @@
 import {
     AutocompleteInteraction,
     ChatInputCommandInteraction,
-    Client,
     CommandInteraction,
     EmbedBuilder,
     Guild,
@@ -9,18 +8,18 @@ import {
     SlashCommandStringOption,
     SlashCommandSubcommandBuilder,
     SlashCommandUserOption,
+    userMention,
 } from "discord.js";
 
 // @ts-ignore Types are somehow broken :shrug:
 import { SplidClient } from "splid-js";
 
-import type { BotContext } from "../context.js";
 import type { ApplicationCommand } from "./command.js";
 import { isTrusted } from "../utils/userUtils.js";
 import { ensureChatInputCommand } from "../utils/interactionUtils.js";
 import SplidGroup from "../storage/model/SplidGroup.js";
 import logger from "../utils/logger.js";
-import { log } from "console";
+import SplidLink from "../storage/model/SplidLink.js";
 
 export class SplidGroupCommand implements ApplicationCommand {
     modCommand = false;
@@ -182,12 +181,15 @@ export class SplidGroupCommand implements ApplicationCommand {
                 return this.handleList(command);
             case "show":
                 return this.handleShow(command);
+            case "link":
+                return this.handleLink(command);
             case "delete":
                 return this.handleDelete(command);
             default:
                 throw new Error(`Unknown subcommand ${subCommand}`);
         }
     }
+
     async handleAdd(command: ChatInputCommandInteraction) {
         if (!command.guild || !command.member) {
             return;
@@ -315,6 +317,67 @@ export class SplidGroupCommand implements ApplicationCommand {
         throw new Error("Method not implemented.");
     }
 
+    async handleLink(command: ChatInputCommandInteraction) {
+        if (!command.guild || !command.member) {
+            return;
+        }
+
+        const groupCode = command.options.getString("invite-code", true);
+        const group = await SplidGroup.findOneByCodeForGuild(
+            command.guild,
+            groupCode,
+        );
+
+        if (!group) {
+            await command.reply({
+                content: `Es gibt keine Splid-Gruppe mit dem Code \`${groupCode}\`. Hurensohn.`,
+                ephemeral: true,
+            });
+            return;
+        }
+
+        const splitPerson = command.options.getString("split-person", true);
+        const discordUser = command.options.getUser("discord-user", true);
+
+        await command.deferReply();
+
+        try {
+            const memberData = await fetchExternalMemberData(group);
+
+            const splidMember = memberData.find(
+                n => n.globalId === splitPerson,
+            );
+
+            if (!splidMember) {
+                await command.editReply({
+                    content: `Es gibt keine Splid-Person mit dem Namen "${splitPerson}" in der Gruppe "${group.shortDescription}" ¯\\_(ツ)_/¯`,
+                });
+                return;
+            }
+
+            const result = await SplidLink.createLink(
+                command.guild,
+                discordUser,
+                splidMember.globalId,
+            );
+
+            const mention = userMention(result.discordUserId);
+            await command.editReply({
+                content: `${mention} ist jetzt auf diesem Server nun mit ${splidMember.name} verknüpft.`,
+            });
+        } catch (err) {
+            await command.editReply({
+                content: "Irgendwas ging schief. Schau mal in den Logs.",
+            });
+
+            logger.error(
+                err,
+                "Error while linking Splid person with discord account on guild",
+            );
+            return;
+        }
+    }
+
     async handleDelete(command: ChatInputCommandInteraction) {
         const code = command.options.getString("invite-code", true);
 
@@ -385,6 +448,7 @@ export class SplidGroupCommand implements ApplicationCommand {
                         await interaction.respond(completions);
                         return;
                     }
+                    // discord-user will be autocompleted by the client automatically
                     default:
                         logger.warn(
                             `Cannot autocomplete "${focused.name}" for sub command "link"`,
