@@ -272,17 +272,19 @@ export class SplidGroupCommand implements ApplicationCommand {
             return;
         }
 
-        const groupsStr = groups.map(g =>
-            `**\`${g.groupCode}\`**: **${g.shortDescription}**\n${
-                g.longDescription ?? ""
-            }`.trim(),
-        );
+        const groupsStr = groups.map(g => {
+            const formatted = formatGroupCode(g.groupCode);
+            const link = `http://splid.net/j/${g.groupCode}`;
+            const desc = g.longDescription ?? "";
+
+            return `**[\`${formatted}\`](${link})**: **${g.shortDescription}**\n${desc}`.trim();
+        });
 
         await command.reply({
             embeds: [
                 new EmbedBuilder({
                     title: "Splid-Gruppen",
-                    description: groupsStr.join("\n\n"),
+                    description: groupsStr.join("\n"),
                     footer: { text: "Füge eine neue mit /splid add hinzu." },
                 }),
             ],
@@ -613,3 +615,13 @@ async function fetchExternalMemberData(
 }
 
 //#region
+
+function formatGroupCode(code: string) {
+    const normalized = code.replace(/\s/g, "").toUpperCase().trim();
+
+    const parts = [];
+    for (let i = 0; i < normalized.length; i += 3) {
+        parts.push(normalized.substring(i, i + 3));
+    }
+    return parts.join(" ");
+}
