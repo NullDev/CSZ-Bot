@@ -91,7 +91,7 @@ export default class SplidLink
                     },
                     {
                         unique: true,
-                        fields: ["guildId", "discordUserId"],
+                        fields: ["guildId", "discordUserId", "externalSplidId"],
                     },
                 ],
             },
