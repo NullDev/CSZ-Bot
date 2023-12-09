@@ -399,7 +399,7 @@ export class SplidGroupCommand implements ApplicationCommand {
 
             const mention = userMention(result.discordUserId);
             await command.editReply({
-                content: `${mention} ist jetzt auf diesem Server nun mit ${splidMember.name} verknüpft.`,
+                content: `${mention} ist jetzt in ${group.shortDescription} auf diesem Server mit ${splidMember.name} verknüpft.`,
             });
         } catch (err) {
             await command.editReply({
