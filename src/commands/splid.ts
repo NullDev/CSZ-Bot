@@ -341,7 +341,7 @@ export class SplidGroupCommand implements ApplicationCommand {
             embeds: [
                 new EmbedBuilder({
                     title: group.shortDescription,
-                    description,
+                    // description,
                     // Field names cannot have mentions: https://stackoverflow.com/a/57112737
                     // So we use the balance as name
                     fields: memberData.map(n => ({
