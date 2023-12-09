@@ -21,10 +21,11 @@ import SplidGroup from "../storage/model/SplidGroup.js";
 import logger from "../utils/logger.js";
 import SplidLink from "../storage/model/SplidLink.js";
 
-const numberFormatter = new Intl.NumberFormat("de-DE", {
-    style: "currency",
-    currency: "EUR",
-});
+const createNumberFormatter = (currency: string) =>
+    new Intl.NumberFormat("de-DE", {
+        style: "currency",
+        currency,
+    });
 
 export class SplidGroupCommand implements ApplicationCommand {
     modCommand = false;
@@ -331,7 +332,9 @@ export class SplidGroupCommand implements ApplicationCommand {
 
         function getBalance(splidAccount: SplidMember): string {
             // TODO: How do we get the balance? It seems that splid computes this on the client side?
-            return numberFormatter.format(splidAccount.name.length);
+            return createNumberFormatter("EUR").format(
+                splidAccount.name.length,
+            );
         }
 
         await command.editReply({
