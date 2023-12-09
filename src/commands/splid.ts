@@ -135,7 +135,7 @@ export class SplidGroupCommand implements ApplicationCommand {
         )
         .addSubcommand(
             new SlashCommandSubcommandBuilder()
-                .setName("delete")
+                .setName("delete-group")
                 .setDescription(
                     "Löscht eine Splid-Gruppe aus Discord. Die Gruppe an sich bleibt bestehen.",
                 )
@@ -183,8 +183,8 @@ export class SplidGroupCommand implements ApplicationCommand {
                 return this.handleShow(command);
             case "link":
                 return this.handleLink(command);
-            case "delete":
-                return this.handleDelete(command);
+            case "delete-group":
+                return this.handleDeleteGroup(command);
             default:
                 throw new Error(`Unknown subcommand ${subCommand}`);
         }
@@ -414,7 +414,7 @@ export class SplidGroupCommand implements ApplicationCommand {
         }
     }
 
-    async handleDelete(command: ChatInputCommandInteraction) {
+    async handleDeleteGroup(command: ChatInputCommandInteraction) {
         const code = command.options.getString("invite-code", true);
 
         await SplidGroup.deleteByInviteCode(code);
@@ -431,7 +431,7 @@ export class SplidGroupCommand implements ApplicationCommand {
 
         const subCommand = interaction.options.getSubcommand(true);
         switch (subCommand) {
-            case "delete":
+            case "delete-group":
             case "list":
             case "show": {
                 const completions = await this.#getSplidGroupCompletions(
