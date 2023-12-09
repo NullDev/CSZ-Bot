@@ -69,7 +69,7 @@ export class SplidGroupCommand implements ApplicationCommand {
         )
         .addSubcommand(
             new SlashCommandSubcommandBuilder()
-                .setName("show")
+                .setName("show-group")
                 .setDescription(
                     "Listet die aktuellen Mitglieder und Kontostände auf",
                 )
@@ -179,8 +179,8 @@ export class SplidGroupCommand implements ApplicationCommand {
                 return this.handleAddGroup(command);
             case "list":
                 return this.handleList(command);
-            case "show":
-                return this.handleShow(command);
+            case "show-group":
+                return this.handleShowGroup(command);
             case "link":
                 return this.handleLink(command);
             case "delete-group":
@@ -292,7 +292,7 @@ export class SplidGroupCommand implements ApplicationCommand {
         });
     }
 
-    async handleShow(command: ChatInputCommandInteraction) {
+    async handleShowGroup(command: ChatInputCommandInteraction) {
         if (!command.guild || !command.member) {
             return;
         }
@@ -433,7 +433,7 @@ export class SplidGroupCommand implements ApplicationCommand {
         switch (subCommand) {
             case "delete-group":
             case "list":
-            case "show": {
+            case "show-group": {
                 const completions = await this.#getSplidGroupCompletions(
                     interaction.options.getFocused(),
                     interaction.guild,
