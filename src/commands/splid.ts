@@ -324,14 +324,6 @@ export class SplidGroupCommand implements ApplicationCommand {
             return discordUser ? userMention(discordUser) : splidAccount.name;
         }
 
-        const memberList = memberData.map(n => {
-            return `- ${getPrintableDisplayName(n)}`;
-        });
-
-        const description = `${
-            group.longDescription ?? ""
-        }\n\nMitglieder:\n${memberList.join("\n")}`.trim();
-
         function getBalance(splidAccount: SplidMember): string {
             // TODO: How do we get the balance? It seems that splid computes this on the client side?
             return `${splidAccount.name.length} €`;
