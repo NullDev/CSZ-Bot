@@ -24,6 +24,7 @@ import SplidLink from "../storage/model/SplidLink.js";
 const createNumberFormatter = (currency: string) =>
     new Intl.NumberFormat("de-DE", {
         style: "currency",
+        signDisplay: "exceptZero",
         currency,
     });
 
