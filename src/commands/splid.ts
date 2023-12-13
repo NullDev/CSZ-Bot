@@ -325,17 +325,24 @@ export class SplidGroupCommand implements ApplicationCommand {
             new Set(memberData.map(n => n.globalId)),
         );
 
+        const accountBalances = await this.getMemberBalances(group, memberData);
+        if (!accountBalances) {
+            await command.editReply({
+                content: "Irgendwas ging schief. Schau mal in den Logs.",
+            });
+            return;
+        }
+
         function getPrintableDisplayName(splidAccount: SplidMember) {
             const discordUser = linkedAccounts.get(splidAccount.globalId);
             return discordUser ? userMention(discordUser) : splidAccount.name;
         }
 
-        function getBalance(splidAccount: SplidMember): string {
+        const getBalance = (splidAccount: SplidMember): string => {
             // TODO: How do we get the balance? It seems that splid computes this on the client side?
-            return createNumberFormatter("EUR").format(
-                splidAccount.name.length,
-            );
-        }
+            const balance = accountBalances[splidAccount.globalId] ?? 0;
+            return createNumberFormatter("EUR").format(balance);
+        };
 
         await command.editReply({
             embeds: [
@@ -351,6 +358,19 @@ export class SplidGroupCommand implements ApplicationCommand {
                 }),
             ],
         });
+    }
+
+    async getMemberBalances(
+        group: SplidGroup,
+        members: readonly SplidMember[],
+    ) {
+        const entries = await fetchGroupEntries(group);
+        if (!entries) {
+            return undefined;
+        }
+
+        const paymentMatrix = buildPaymentMatrix(members, entries);
+        return computeAccountBalances(members, paymentMatrix);
     }
 
     async handleLink(command: ChatInputCommandInteraction) {
@@ -615,6 +635,134 @@ async function fetchExternalMemberData(
 }
 
 //#region
+
+async function fetchGroupEntries(group: SplidGroup) {
+    const client = new SplidClient({
+        installationId: "b65aa4f8-b6d5-4b51-9df6-406ce2026b32", // TODO: Move to config
+    });
+
+    const groupRes = await client.group.getByInviteCode(group.groupCode);
+    const groupId = groupRes.result.objectId;
+    if (!groupId) {
+        return undefined;
+    }
+
+    const entriesRes = await client.entry.getByGroup(groupId);
+    const entries = entriesRes?.result?.results;
+    if (!entries) {
+        return undefined;
+    }
+    return entries as SplidEntry[];
+}
+
+type SplidEntry = {
+    title: string;
+    currencyCode: string;
+    primaryPayer: string;
+    items: {
+        P?: {
+            P?: Record<string /* global-id of user */, number /* fraction */>;
+        };
+        /** amount */
+        AM?: number;
+    }[];
+};
+
+function buildPaymentMatrix(
+    members: readonly SplidMember[],
+    entries: SplidEntry[],
+) {
+    const paymentMatrix = new Map(
+        members.map(m => [
+            m.globalId,
+            new Map(members.map(m => [m.globalId, 0])),
+        ]),
+    );
+    const membersMap = new Map(members.map(m => [m.globalId, m]));
+
+    for (const entry of entries) {
+        const primaryPayer = membersMap.get(entry.primaryPayer);
+        if (!primaryPayer) {
+            logger.warn(
+                `Could not find primary payer for entry "${entry.title}" (${entry.currencyCode}))`,
+            );
+            continue;
+        }
+
+        for (const item of entry.items) {
+            const partsMembers = item.P?.P;
+            if (!partsMembers) {
+                logger.warn(item, "No partsMembers");
+                continue;
+            }
+
+            const amount = item.AM;
+            if (!amount) {
+                logger.warn(item, "No amount");
+                continue;
+            }
+
+            logger.debug(
+                `${primaryPayer.name} paid for "${entry.title}" ${amount} ${entry.currencyCode}`,
+            );
+
+            for (const [memberId, parts] of Object.entries(partsMembers)) {
+                const member = membersMap.get(memberId);
+                if (!member) {
+                    logger.warn(`Could not find member for id ${memberId}`);
+                    continue;
+                }
+
+                logger.debug(
+                    `${primaryPayer.name} paid for ${member.name} ${
+                        amount * parts
+                    } ${entry.currencyCode}`,
+                );
+
+                const balanceRow = paymentMatrix.get(primaryPayer.globalId);
+                if (!balanceRow) {
+                    logger.warn(
+                        `Could not find balance row for ${primaryPayer.name}`,
+                    );
+                    continue;
+                }
+
+                const memberBalanceForPayer =
+                    balanceRow.get(member.globalId) ?? 0;
+                balanceRow.set(
+                    member.globalId,
+                    memberBalanceForPayer + amount * parts,
+                );
+            }
+        }
+    }
+    return paymentMatrix;
+}
+
+function computeAccountBalances(
+    members: readonly SplidMember[],
+    balanceMatrix: Map<string, Map<string, number>>,
+): Record<string, number> {
+    const balances: Record<string, number> = {};
+    for (const member of members) {
+        const payedForOthers = balanceMatrix.get(member.globalId);
+        let balance = 0;
+        for (const [otherId, payed] of balanceMatrix.entries()) {
+            const payedForMe = payed.get(member.globalId);
+            if (payedForMe !== undefined) {
+                balance -= payedForMe; // other payed for me
+            }
+
+            const payedForHim = payedForOthers?.get(otherId);
+            if (payedForHim !== undefined) {
+                balance += payedForHim; // me payed for him
+            }
+        }
+
+        balances[member.globalId] = balance;
+    }
+    return balances;
+}
 
 function formatGroupCode(code: string) {
     const normalized = code.replace(/\s/g, "").toUpperCase().trim();
