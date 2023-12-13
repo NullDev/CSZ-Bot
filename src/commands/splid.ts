@@ -345,17 +345,27 @@ export class SplidGroupCommand implements ApplicationCommand {
             return createNumberFormatter("EUR").format(balance);
         };
 
+        const descriptionPrefix = group.longDescription
+            ? `${group.longDescription}\n\n`
+            : "";
+
+        const description = memberData
+            .map(n => `${getPrintableDisplayName(n)}: \`${getBalance(n)}\``)
+            .join("\n");
+
         await command.editReply({
             embeds: [
                 new EmbedBuilder({
-                    title: group.shortDescription,
-                    // description,
+                    title: `Kontostände von ${group.shortDescription}`,
+                    description: descriptionPrefix + description,
+                    /*
                     // Field names cannot have mentions: https://stackoverflow.com/a/57112737
                     // So we use the balance as name
                     fields: memberData.map(n => ({
                         name: getBalance(n),
                         value: getPrintableDisplayName(n),
                     })),
+                    */
                 }),
             ],
         });
