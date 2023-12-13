@@ -1,5 +1,3 @@
-/* Disabled due to sequelize's DataTypes */
-
 import { Client, Snowflake, Message, ChannelType } from "discord.js";
 import { Model, Sequelize, DataTypes } from "sequelize";
 
@@ -72,7 +70,7 @@ export default class AdditionalMessageData extends Model {
     }
 
     static initialize(sequelize: Sequelize) {
-        this.init(
+        AdditionalMessageData.init(
             {
                 id: {
                     type: DataTypes.STRING(36),

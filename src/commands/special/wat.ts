@@ -23,9 +23,8 @@ export class WatCommand implements SpecialCommand {
             const messageRef = message.reference?.messageId;
             // If reply to message
             if (messageRef) {
-                const quotedMessage = await message.channel.messages.fetch(
-                    messageRef,
-                );
+                const quotedMessage =
+                    await message.channel.messages.fetch(messageRef);
                 await quotedMessage.react(watEmote);
                 return;
             }

@@ -1,5 +1,3 @@
-/* Disabled due to sequelize's DataTypes */
-
 import { Model, DataTypes, Sequelize, Optional, Op } from "sequelize";
 import type { User } from "discord.js";
 
@@ -91,7 +89,7 @@ export default class Reminder
     }
 
     static initialize(sequelize: Sequelize) {
-        this.init(
+        Reminder.init(
             {
                 id: {
                     type: DataTypes.STRING(36),

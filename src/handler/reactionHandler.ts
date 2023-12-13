@@ -162,9 +162,8 @@ export default {
                 );
             }
 
-            const additionalData = await AdditionalMessageData.fromMessage(
-                message,
-            );
+            const additionalData =
+                await AdditionalMessageData.fromMessage(message);
             // TODO
             // @ts-ignore
             const newCustomData = additionalData.customData;

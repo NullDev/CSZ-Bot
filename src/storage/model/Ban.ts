@@ -1,5 +1,3 @@
-/* Disabled due to sequelize's DataTypes */
-
 import type { User, GuildMember } from "discord.js";
 import { Model, DataTypes, Sequelize, Optional, Op } from "sequelize";
 
@@ -62,7 +60,7 @@ export default class Ban
         });
 
     static initialize(sequelize: Sequelize) {
-        this.init(
+        Ban.init(
             {
                 id: {
                     type: DataTypes.STRING(36),

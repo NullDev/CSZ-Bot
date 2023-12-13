@@ -1,5 +1,3 @@
-/* Disabled due to sequelize's DataTypes */
-
 import { Sequelize, Model, DataTypes, Optional } from "sequelize";
 import type { Snowflake } from "discord.js";
 
@@ -55,7 +53,7 @@ export default class Stempel
     }
 
     static initialize(sequelize: Sequelize) {
-        this.init(
+        Stempel.init(
             {
                 id: {
                     type: DataTypes.STRING(36),

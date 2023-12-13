@@ -1,5 +1,3 @@
-/* Disabled due to sequelize's DataTypes */
-
 import { User } from "discord.js";
 import moment from "moment";
 import { Model, DataTypes, Sequelize, Optional, Op } from "sequelize";
@@ -95,7 +93,7 @@ export default class Boob
     };
 
     static initialize(sequelize: Sequelize) {
-        this.init(
+        Boob.init(
             {
                 id: {
                     type: DataTypes.STRING(36),

@@ -82,9 +82,12 @@ async function createEhreTable(
 function getVote(userInGroups: EhreGroups, voter: string): number {
     if (userInGroups.best?.userId === voter) {
         return 5;
-    } else if (userInGroups.middle.map(u => u.userId).includes(voter)) {
+    }
+
+    if (userInGroups.middle.map(u => u.userId).includes(voter)) {
         return 2;
     }
+
     return 1;
 }
 

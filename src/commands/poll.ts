@@ -150,11 +150,14 @@ export const run: CommandFunction = async (_client, message, args, context) => {
 
     if (!pollOptions.length)
         return "Bruder da sind keine Antwortmöglichkeiten :c";
-    else if (pollOptions.length < 2 && !isExtendable)
+
+    if (pollOptions.length < 2 && !isExtendable)
         return "Bruder du musst schon mehr als eine Antwortmöglichkeit geben 🙄";
-    else if (pollOptions.length > OPTION_LIMIT)
+
+    if (pollOptions.length > OPTION_LIMIT)
         return `Bitte gib nicht mehr als ${OPTION_LIMIT} Antwortmöglichkeiten an!`;
-    else if (pollOptions.some(value => value.length > POLL_OPTION_MAX_LENGTH))
+
+    if (pollOptions.some(value => value.length > POLL_OPTION_MAX_LENGTH))
         return `Bruder mindestens eine Antwortmöglichkeit ist länger als ${POLL_OPTION_MAX_LENGTH} Zeichen!`;
 
     const fields = pollOptions.map((o, i) => createOptionField(o, i));
@@ -197,7 +200,9 @@ export const run: CommandFunction = async (_client, message, args, context) => {
     if (options.delayed) {
         if (Number.isNaN(delayTime) || delayTime <= 0) {
             return "Bruder keine ungültigen Zeiten angeben 🙄";
-        } else if (delayTime > 60 * 1000 * 24 * 7) {
+        }
+
+        if (delayTime > 60 * 1000 * 24 * 7) {
             return "Bruder du kannst maximal 7 Tage auf ein Ergebnis warten 🙄";
         }
 
@@ -253,9 +258,8 @@ export const run: CommandFunction = async (_client, message, args, context) => {
             reactionMap,
         };
 
-        const additionalData = await AdditionalMessageData.fromMessage(
-            pollMessage,
-        );
+        const additionalData =
+            await AdditionalMessageData.fromMessage(pollMessage);
         const newCustomData = additionalData.customData;
         newCustomData.delayedPollData = delayedPollData;
         additionalData.customData = newCustomData;
@@ -304,9 +308,8 @@ export const processPolls = async (context: BotContext) => {
                         ) !== uidi,
                 )
                 .map(async uidToResolve => {
-                    users[uidToResolve] = await context.client.users.fetch(
-                        uidToResolve,
-                    );
+                    users[uidToResolve] =
+                        await context.client.users.fetch(uidToResolve);
                 }),
         );
 

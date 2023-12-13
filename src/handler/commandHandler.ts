@@ -50,6 +50,7 @@ import { NischdaaaCommand } from "../commands/special/nischdaaa.js";
 import { AutoEhreCommand } from "../commands/special/autoEhre.js";
 import { SdmCommand } from "../commands/sdm.js";
 import { Nickname, NicknameButtonHandler } from "../commands/nickname.js";
+import { SplidGroupCommand } from "../commands/splid.js";
 import { WoisLog } from "../commands/woislog.js";
 import { FicktabelleCommand } from "../commands/ficktabelle.js";
 import { InviteCommand } from "../commands/invite.js";
@@ -73,7 +74,7 @@ import { isMessageInBotSpam } from "../utils/channelUtils.js";
 import type { BotContext } from "../context.js";
 import { WoisCommand } from "../commands/woisvote.js";
 import { ApplicationCommandCreationResponse } from "../types.js";
-// import { AoCCommand } from "../commands/aoc.js";
+import { AoCCommand } from "../commands/aoc.js";
 import { BanListCommand } from "../commands/banlist.js";
 import { LinkEnhancer } from "../commands/special/linkEnhancer.js";
 import { Vote2Command } from "../commands/vote2.js";
@@ -100,6 +101,7 @@ export const commands: readonly Command[] = [
     new DoenerCommand(),
     new GoogleCommand(),
     new Nickname(),
+    new SplidGroupCommand(),
     new WoisLog(),
     new NischdaaaCommand(),
     new AutoEhreCommand(),
@@ -122,7 +124,7 @@ export const commands: readonly Command[] = [
     new OidaCommand(),
     new DeOidaCommand(),
     new EhreCommand(),
-    // new AoCCommand(),
+    new AoCCommand(),
     new BanListCommand(),
     new LinkEnhancer(),
     new Vote2Command(),

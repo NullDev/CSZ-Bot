@@ -1,5 +1,3 @@
-/* Disabled due to sequelize's DataTypes */
-
 import { Model, DataTypes, type Sequelize } from "sequelize";
 import type { Snowflake } from "discord.js";
 
@@ -44,7 +42,7 @@ export default class FadingMessage extends Model {
     }
 
     static initialize(sequelize: Sequelize) {
-        this.init(
+        FadingMessage.init(
             {
                 id: {
                     type: DataTypes.STRING(36),

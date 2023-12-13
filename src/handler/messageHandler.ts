@@ -57,8 +57,8 @@ export default async function (
         const reply = shouldFlameUser
             ? "Was pingst du mich du Hurensohn :angry:"
             : shouldHonorUser
-            ? "Bruder, du bist ein ehrenhafter Typ. Bleib so stabil wie du bist :heart:"
-            : null;
+              ? "Bruder, du bist ein ehrenhafter Typ. Bleib so stabil wie du bist :heart:"
+              : null;
 
         if (reply) {
             const hasAlreadyReplied = message.channel.messages.cache

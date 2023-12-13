@@ -1,5 +1,3 @@
-/* Disabled due to sequelize's DataTypes */
-
 import { Sequelize, Model, DataTypes, Optional, Op } from "sequelize";
 import type { Snowflake } from "discord.js";
 
@@ -91,9 +89,8 @@ export default class WoisAction
         interested: boolean,
     ): Promise<boolean> {
         try {
-            const woisAction = await WoisAction.getWoisActionByMessageId(
-                messageId,
-            );
+            const woisAction =
+                await WoisAction.getWoisActionByMessageId(messageId);
             if (!woisAction) return false;
 
             if (interested) {
@@ -119,7 +116,7 @@ export default class WoisAction
     }
 
     static initialize(sequelize: Sequelize) {
-        this.init(
+        WoisAction.init(
             {
                 id: {
                     type: DataTypes.STRING(36),

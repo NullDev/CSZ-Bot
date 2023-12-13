@@ -111,9 +111,8 @@ export class PenisCommand implements MessageCommand {
             `${author.id} wants to measure penis of user ${userToMeasure.id}`,
         );
 
-        const recentMeasurement = await Penis.fetchRecentMeasurement(
-            userToMeasure,
-        );
+        const recentMeasurement =
+            await Penis.fetchRecentMeasurement(userToMeasure);
 
         if (recentMeasurement === null) {
             log.debug(

@@ -25,7 +25,7 @@ const supportedLayoutEngines = [
     // "neato",
     // "osage",
 ] as const;
-type LayoutEngine = typeof supportedLayoutEngines[number];
+type LayoutEngine = (typeof supportedLayoutEngines)[number];
 
 interface StempelConnection {
     inviter: GuildMember;
@@ -286,8 +286,6 @@ export class StempelgraphCommand implements ApplicationCommand {
             */
 
             await command.reply({
-                // biome-ignore lint/style/useTemplate: Better readability
-                content: "```\n" + dotSrc + "\n```",
                 files: [
                     {
                         attachment: stempelGraph,

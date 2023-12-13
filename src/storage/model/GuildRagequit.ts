@@ -1,5 +1,3 @@
-/* Disabled due to sequelize's DataTypes */
-
 import { Model, DataTypes, type Sequelize } from "sequelize";
 import type { Snowflake } from "discord.js";
 
@@ -50,7 +48,7 @@ export default class GuildRagequit extends Model {
     }
 
     static initialize(sequelize: Sequelize) {
-        this.init(
+        GuildRagequit.init(
             {
                 id: {
                     type: DataTypes.STRING(36),

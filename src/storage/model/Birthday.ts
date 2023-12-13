@@ -1,5 +1,3 @@
-/* Disabled due to sequelize's DataTypes */
-
 import { Model, DataTypes, Op, type Sequelize } from "sequelize";
 import type { Snowflake } from "discord.js";
 
@@ -63,7 +61,7 @@ export default class Birthday extends Model {
     }
 
     static initialize(sequelize: Sequelize) {
-        this.init(
+        Birthday.init(
             {
                 id: {
                     type: DataTypes.STRING(36),
