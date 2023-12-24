@@ -140,12 +140,19 @@ export const ehreReactionHandler = {
         const replyChannelHasSlowMode =
             replyChannel.isTextBased() &&
             (replyChannel as TextChannel).rateLimitPerUser > 0;
+        const replyChannelHasOverwrite =
+            replyChannel.isTextBased() &&
+            (replyChannel as TextChannel).permissionOverwrites.cache
+                .get(context.roles.default.id)
+                ?.deny?.has("SendMessages");
 
-        if (!replyChannelHasSlowMode) {
-            await reactionEvent.message.reply(
-                `${invoker} hat ${ehrenbruder} geährt`,
-            );
+        if (replyChannelHasSlowMode || replyChannelHasOverwrite) {
+            return;
         }
+
+        await reactionEvent.message.reply(
+            `${invoker} hat ${ehrenbruder} geährt`,
+        );
     },
 };
 
