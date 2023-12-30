@@ -49,10 +49,24 @@ export default class AustrianTranslation extends Model {
     ): Promise<AustrianTranslation | null> {
         return AustrianTranslation.findOne({
             where: {
-                austrian: {
-                    // we want like to be case-insensitive, we don't need a placeholder
-                    [Op.like]: austrian.trim().toLowerCase(),
-                },
+                [Op.or]: [
+                    {
+                        // we want like to be case-insensitive, we don't need a placeholder
+                        // We might have translations with punctuations in it, so we simply try to match the whole string against it
+                        austrian: {
+                            [Op.like]: austrian.trim().toLowerCase(),
+                        },
+                    },
+                    {
+                        // If we couldn't find a translation with the punctuations in it, we remove the special chars
+                        austrian: {
+                            [Op.like]: austrian
+                                .trim()
+                                .toLowerCase()
+                                .replace(/[^\w\s]/gu, ""),
+                        },
+                    },
+                ],
             },
         });
     }
