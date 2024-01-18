@@ -7,17 +7,21 @@ FROM node:21-slim as dependency-base
             libpixman-1-dev libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev \
         && apt-get clean -yqqq
 
-    COPY package*.json /app/
-
 FROM dependency-base as build
     # Install dependencies (with dev-deps)
-    RUN npm ci
+    RUN --mount=type=bind,source=package.json,target=package.json \
+        --mount=type=bind,source=package-lock.json,target=package-lock.json \
+        --mount=type=cache,target=/root/.npm \
+        npm ci
 
     COPY . /app/
     RUN npm run compile
 
 FROM dependency-base as runtime-dependencies
-    RUN NODE_ENV=production npm ci
+    RUN --mount=type=bind,source=package.json,target=package.json \
+        --mount=type=bind,source=package-lock.json,target=package-lock.json \
+        --mount=type=cache,target=/root/.npm \
+        NODE_ENV=production npm ci
 
 FROM node:21-slim
     WORKDIR /app
