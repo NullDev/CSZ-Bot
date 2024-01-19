@@ -1,6 +1,6 @@
 import * as fs from "node:fs/promises";
 
-import nodeCanvas from "canvas";
+import { createCanvas, loadImage } from "@napi-rs/canvas";
 import type { Client, GuildMember } from "discord.js";
 
 import type { CommandResult, MessageCommand } from "./command.js";
@@ -9,8 +9,6 @@ import log from "../utils/logger.js";
 import { getConfig } from "../utils/configHandler.js";
 
 const config = getConfig();
-
-const { createCanvas, loadImage } = nodeCanvas;
 
 const createBonkMeme = async (author: GuildMember): Promise<Buffer> => {
     const bonk = await fs.readFile("assets/bonk.png");
@@ -25,7 +23,7 @@ const createBonkMeme = async (author: GuildMember): Promise<Buffer> => {
     ctx.drawImage(avatarImage, 120, 90);
     ctx.drawImage(bonkImage, 0, 0);
 
-    return canvas.toBuffer();
+    return await canvas.encode("png");
 };
 
 export class BonkCommand implements MessageCommand {
