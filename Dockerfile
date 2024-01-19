@@ -3,8 +3,6 @@ FROM node:21-slim as dependency-base
     RUN apt-get update -yqq \
         && apt-get install -yqq \
             python3 build-essential pkg-config \
-            # https://github.com/Automattic/node-canvas/issues/1065#issuecomment-654706161
-            libpixman-1-dev libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev \
         && apt-get clean -yqqq
 
 FROM dependency-base as build
@@ -31,7 +29,6 @@ FROM node:21-slim
             fonts-noto-color-emoji \
             fontconfig \
             fonts-liberation \
-            libpixman-1-dev libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev \
         && apt-get clean -yqqq \
         && fc-cache -f -v
 
