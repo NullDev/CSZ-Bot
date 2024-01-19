@@ -76,7 +76,6 @@ import { WoisCommand } from "../commands/woisvote.js";
 import { ApplicationCommandCreationResponse } from "../types.js";
 import { AoCCommand } from "../commands/aoc.js";
 import { BanListCommand } from "../commands/banlist.js";
-import { LinkEnhancer } from "../commands/special/linkEnhancer.js";
 import { Vote2Command } from "../commands/vote2.js";
 
 const config = getConfig();
@@ -126,7 +125,6 @@ export const commands: readonly Command[] = [
     new EhreCommand(),
     new AoCCommand(),
     new BanListCommand(),
-    new LinkEnhancer(),
     new Vote2Command(),
 ];
 export const interactions: readonly UserInteraction[] = [

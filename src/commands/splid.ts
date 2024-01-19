@@ -334,23 +334,25 @@ export class SplidGroupCommand implements ApplicationCommand {
             return;
         }
 
-        function getPrintableDisplayName(splidAccount: SplidMember) {
+        function getDisplayName(splidAccount: SplidMember) {
             const discordUser = linkedAccounts.get(splidAccount.globalId);
             return discordUser ? userMention(discordUser) : splidAccount.name;
         }
 
-        const getBalance = (splidAccount: SplidMember): string => {
-            // TODO: How do we get the balance? It seems that splid computes this on the client side?
-            const balance = accountBalances[splidAccount.globalId] ?? 0;
-            return createNumberFormatter("EUR").format(balance);
+        const getBalance = (splidAccount: SplidMember): number => {
+            return accountBalances[splidAccount.globalId] ?? 0;
         };
 
         const descriptionPrefix = group.longDescription
             ? `${group.longDescription}\n\n`
             : "";
 
-        const description = memberData
-            .map(n => `${getPrintableDisplayName(n)}: \`${getBalance(n)}\``)
+        const formatter = createNumberFormatter("EUR");
+        const format = formatter.format.bind(formatter);
+
+        const description = [...memberData]
+            .sort((a, b) => getBalance(b) - getBalance(a))
+            .map(n => `${getDisplayName(n)}: \`${format(getBalance(n))}\``)
             .join("\n");
 
         await command.editReply({

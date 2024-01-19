@@ -7,10 +7,10 @@ FROM oven/bun:latest as dependency-base
             libpixman-1-dev libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev \
         && apt-get clean -yqqq
 
-    COPY package.json bun.lockb /app/
-
 FROM dependency-base as runtime-dependencies
-    RUN NODE_ENV=production bun install
+    RUN --mount=type=bind,source=package.json,target=package.json \
+        --mount=type=bind,source=bun.lockb,target=bun.lockb \
+        NODE_ENV=production bun install
 
 FROM node:21-slim
     WORKDIR /app
