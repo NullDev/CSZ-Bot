@@ -5,14 +5,10 @@ import { readFile } from "fs/promises";
 import type { SpecialCommand } from "../command.js";
 import { countWords, substringAfter } from "../../utils/stringUtils.js";
 
-
 if (process.env.NODE_ENV === "production") {
     // This is a simple detection if we're running inside docker
     // We assume that every developer that wants to use this feature has impact installed
-    GlobalFonts.register(
-        await readFile("assets/impact.ttf"),
-        "Impact",
-    );
+    GlobalFonts.register(await readFile("assets/impact.ttf"), "Impact");
 }
 
 export class WhereCommand implements SpecialCommand {
