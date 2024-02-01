@@ -9,9 +9,7 @@
             "command_prefix": ".",
             "mod_prefix": "~"
         },
-        "moderator_roles": [
-            "Moderader"
-        ],
+        "moderator_roles": ["Moderader"],
         "moderator_id": "893179190709477413",
         "ban_reason_channel_id": "893179190881452117",
         "woisping_limit": 7200,
@@ -19,9 +17,7 @@
         "quotes": {
             "emoji_name": "zitat",
             "emoji_id": "905042096724017212",
-            "allowed_group_ids": [
-                "893179190709477407"
-            ],
+            "allowed_group_ids": ["893179190709477407"],
             "quote_threshold": 2,
             "anonymous_channel_ids": [],
             "blacklisted_channel_ids": [],
@@ -30,15 +26,9 @@
         },
         "delete_thread_messages_in_channels": ["893179191556706384"],
         "ehre": {
-            "emoji_names": [
-                "ähre",
-                "aehre",
-                "pr0aehre"
-            ]
+            "emoji_names": ["ähre", "aehre", "pr0aehre"]
         },
-        "faulenzerping_allowed_role_ids": [
-
-        ],
+        "faulenzerping_allowed_role_ids": [],
         "faulenzerping_max_pings": 10,
         "faulenzerping_min_required_reactions": 5,
         "flame_trusted_user_on_bot_ping": false
@@ -50,7 +40,7 @@
         "banned_role_id": "893179190709477409",
         "bday_role_id": "893179190709477416",
         "woisgang_role_id": "893179190235508825",
-        "shame_role_id":  "893179190235508822",
+        "shame_role_id": "893179190235508822",
         "winner_role_id": "1045422896740311070",
 
         "bot_deny_role_id": "1025870480374247485",
