@@ -244,7 +244,6 @@ export const run: CommandFunction = async (_client, message, args, context) => {
         const reactionMap: string[] = [];
         const reactions: string[][] = [];
 
-        // biome-ignore lint/complexity/noForEach: We need the index here
         pollOptions.forEach((option, index) => {
             reactionMap[index] = option;
             reactions[index] = [];
