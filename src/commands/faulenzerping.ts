@@ -1,6 +1,7 @@
 import {
     ActionRowBuilder,
     ApplicationCommandType,
+    CacheType,
     Client,
     CommandInteraction,
     ComponentType,
@@ -8,6 +9,7 @@ import {
     Message,
     Role,
     RoleSelectMenuBuilder,
+    RoleSelectMenuInteraction,
     Snowflake,
 } from "discord.js";
 
@@ -54,7 +56,7 @@ export class FaulenzerPingCommand implements ApplicationCommand {
             ephemeral: true,
         });
 
-        let confirmation;
+        let confirmation: RoleSelectMenuInteraction<CacheType>;
         try {
             confirmation = await response.awaitMessageComponent({
                 filter: i => i.user.id === command.user.id,

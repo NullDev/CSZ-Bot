@@ -96,7 +96,6 @@ export default {
             if (isStrawpoll) {
                 if (isDelayedPoll) {
                     for (const reactionList of delayedPoll.reactions) {
-                        // biome-ignore lint/complexity/noForEach: We need the index here
                         reactionList.forEach((x, i) => {
                             if (x === member.id) reactionList.splice(i);
                         });
