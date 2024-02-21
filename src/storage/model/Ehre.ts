@@ -82,7 +82,7 @@ export class EhrePoints extends Model {
 
     static async getUserInGroups(): Promise<EhreGroups> {
         const { rows, count } = await EhrePoints.findAndCountAll({
-            where: { points: { [Op.gt]: 0 } },
+            where: { points: { [Op.gte]: 0.1 } },
             order: [["points", "DESC"]],
         });
 
