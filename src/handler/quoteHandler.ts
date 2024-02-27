@@ -239,7 +239,19 @@ export default {
 
         if (isQuoterQuotingHimself(quoter, quotedUser)) {
             await context.textChannels.hauptchat.send({
-                content: `${quoter} der Lellek hat gerade versucht sich, selbst zu quoten. Was für ein Opfer!`,
+                embeds: [
+                    {
+                        color: 0xe83e41,
+                        author: {
+                            name: quoter.displayName,
+                            icon_url:
+                                quoter.avatarURL({ forceStatic: true }) ??
+                                undefined,
+                        },
+                        title: `${quoter} der Lellek hat gerade versucht sich, selbst zu quoten. Was für ein Opfer!`,
+                        description: quotedMessage.cleanContent,
+                    },
+                ],
                 allowedMentions: {
                     users: [quoter.id],
                 },
