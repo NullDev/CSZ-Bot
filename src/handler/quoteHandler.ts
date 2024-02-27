@@ -249,7 +249,7 @@ export default {
                                 undefined,
                         },
                         title: `${quoter} der Lellek hat gerade versucht sich, selbst zu quoten. Was für ein Opfer!`,
-                        description: quotedMessage.cleanContent,
+                        description: `${quotedMessage.cleanContent}\n\n([link](${quotedMessage.url}))`,
                     },
                 ],
                 allowedMentions: {
