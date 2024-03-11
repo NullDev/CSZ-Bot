@@ -44,6 +44,7 @@ export default {
                 // by accident.
                 const role = guild.roles.cache.find(
                     r =>
+                        // biome-ignore lint/suspicious/noMisleadingCharacterClass: somebody wrote this and it seems right
                         r.name.replace(/[\u200B-\u200D\uFEFF]/g, "") ===
                         message.content,
                 );

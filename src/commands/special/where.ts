@@ -1,6 +1,7 @@
+import { readFile } from "node:fs/promises";
+
 import { type Message, type Client, cleanContent } from "discord.js";
 import { createCanvas, loadImage, GlobalFonts } from "@napi-rs/canvas";
-import { readFile } from "fs/promises";
 
 import type { SpecialCommand } from "../command.js";
 import { countWords, substringAfter } from "../../utils/stringUtils.js";
