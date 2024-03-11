@@ -1,16 +1,16 @@
 import {
     ActionRowBuilder,
     ApplicationCommandType,
-    CacheType,
-    Client,
-    CommandInteraction,
+    type CacheType,
+    type Client,
+    type CommandInteraction,
     ComponentType,
     ContextMenuCommandBuilder,
-    Message,
-    Role,
+    type Message,
+    type Role,
     RoleSelectMenuBuilder,
-    RoleSelectMenuInteraction,
-    Snowflake,
+    type RoleSelectMenuInteraction,
+    type Snowflake,
 } from "discord.js";
 
 import type { BotContext } from "../context.js";

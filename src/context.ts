@@ -1,22 +1,22 @@
 import path from "node:path";
 import {
     ChannelType,
-    Client,
-    Guild,
-    Role,
-    Snowflake,
-    TextChannel,
-    VoiceChannel,
+    type Client,
+    type Guild,
+    type Role,
+    type Snowflake,
+    type TextChannel,
+    type VoiceChannel,
 } from "discord.js";
 
 import { getConfig } from "./utils/configHandler.js";
-import {
+import type {
     Config,
     ConfigTextChannelId,
     ConfigVoiceChannelId,
     ConfigRoleId,
 } from "./types.js";
-import { RemoveOptionalSuffix, type RemoveSuffix } from "./utils/typeUtils.js";
+import type { RemoveOptionalSuffix, RemoveSuffix } from "./utils/typeUtils.js";
 
 /**
  * Object that's passed to every executed command to make it easier to access common channels without repeatedly retrieving stuff via IDs.

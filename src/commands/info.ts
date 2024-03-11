@@ -1,9 +1,9 @@
 import {
-    Client,
-    CommandInteraction,
-    Guild,
+    type Client,
+    type CommandInteraction,
+    type Guild,
     GuildPremiumTier,
-    APIEmbed,
+    type APIEmbed,
     ButtonStyle,
     SlashCommandBuilder,
     ComponentType,

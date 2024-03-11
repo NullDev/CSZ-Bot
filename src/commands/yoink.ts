@@ -1,8 +1,8 @@
 import {
-    Client,
-    CommandInteraction,
-    Guild,
-    TextBasedChannel,
+    type Client,
+    type CommandInteraction,
+    type Guild,
+    type TextBasedChannel,
     parseEmoji,
     SlashCommandBuilder,
     SlashCommandStringOption,

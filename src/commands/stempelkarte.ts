@@ -1,11 +1,11 @@
 import * as fs from "node:fs/promises";
 import { createCanvas, loadImage } from "@napi-rs/canvas";
 import {
-    ImageSize,
-    Client,
-    CommandInteraction,
-    GuildMember,
-    Snowflake,
+    type ImageSize,
+    type Client,
+    type CommandInteraction,
+    type GuildMember,
+    type Snowflake,
     SlashCommandBuilder,
     SlashCommandUserOption,
 } from "discord.js";

@@ -1,13 +1,13 @@
 import {
-    GuildMember,
-    Message,
-    MessageReaction,
-    User,
-    TextBasedChannel,
-    GuildEmoji,
-    ReactionEmoji,
+    type GuildMember,
+    type Message,
+    type MessageReaction,
+    type User,
+    type TextBasedChannel,
+    type GuildEmoji,
+    type ReactionEmoji,
     ChannelType,
-    Channel,
+    type Channel,
 } from "discord.js";
 
 import type { BotContext } from "../context.js";

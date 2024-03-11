@@ -1,4 +1,4 @@
-import { Client } from "discord.js";
+import type { Client } from "discord.js";
 
 import type { ProcessableMessage } from "../handler/cmdHandler.js";
 import type { MessageCommand } from "./command.js";

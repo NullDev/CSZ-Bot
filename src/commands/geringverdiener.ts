@@ -1,13 +1,13 @@
 import {
-    CacheType,
-    Client,
-    CommandInteraction,
-    GuildMember,
-    Message,
+    type CacheType,
+    type Client,
+    type CommandInteraction,
+    type GuildMember,
+    type Message,
     EmbedBuilder,
     SlashCommandBuilder,
     SlashCommandStringOption,
-    GuildEmojiManager,
+    type GuildEmojiManager,
 } from "discord.js";
 
 import type { BotContext } from "../context.js";

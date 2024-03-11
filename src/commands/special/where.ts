@@ -1,4 +1,4 @@
-import { Message, Client, cleanContent } from "discord.js";
+import { type Message, type Client, cleanContent } from "discord.js";
 import { createCanvas, loadImage, GlobalFonts } from "@napi-rs/canvas";
 import { readFile } from "fs/promises";
 

@@ -1,5 +1,5 @@
 import { DataTypes, Model, Op, Sequelize } from "sequelize";
-import { Snowflake } from "discord.js";
+import type { Snowflake } from "discord.js";
 
 import log from "../../utils/logger.js";
 

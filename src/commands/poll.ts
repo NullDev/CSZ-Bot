@@ -1,13 +1,13 @@
 import parseOptions from "minimist";
 import {
-    APIEmbed,
-    APIEmbedField,
+    type APIEmbed,
+    type APIEmbedField,
     cleanContent,
-    Snowflake,
-    TextChannel,
+    type Snowflake,
+    type TextChannel,
     time,
     TimestampStyles,
-    User,
+    type User,
 } from "discord.js";
 
 import log from "../utils/logger.js";

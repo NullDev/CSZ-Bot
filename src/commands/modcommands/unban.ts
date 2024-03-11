@@ -1,11 +1,11 @@
 import {
-    CommandInteraction,
-    GuildMember,
-    PermissionsString,
+    type CommandInteraction,
+    type GuildMember,
+    type PermissionsString,
     SlashCommandBuilder,
     SlashCommandUserOption,
 } from "discord.js";
-import { Message, Client } from "discord.js";
+import type { Message, Client } from "discord.js";
 
 import Ban from "../../storage/model/Ban.js";
 import { getConfig } from "../../utils/configHandler.js";

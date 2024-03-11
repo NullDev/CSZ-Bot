@@ -1,7 +1,7 @@
 import {
-    CacheType,
-    Client,
-    CommandInteraction,
+    type CacheType,
+    type Client,
+    type CommandInteraction,
     TimestampStyles,
     time,
 } from "discord.js";

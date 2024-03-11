@@ -1,17 +1,17 @@
 import { once } from "node:events";
 
 import {
-    APIEmbed,
+    type APIEmbed,
     ActionRowBuilder,
     ButtonBuilder,
-    ButtonInteraction,
+    type ButtonInteraction,
     ButtonStyle,
-    CommandInteraction,
+    type CommandInteraction,
     ComponentType,
-    InteractionCollector,
+    type InteractionCollector,
     SlashCommandBuilder,
     SlashCommandStringOption,
-    Snowflake,
+    type Snowflake,
     cleanContent,
     time,
 } from "discord.js";

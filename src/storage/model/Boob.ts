@@ -1,6 +1,6 @@
-import { User } from "discord.js";
+import type { User } from "discord.js";
 import moment from "moment";
-import { Model, DataTypes, Sequelize, Optional, Op } from "sequelize";
+import { Model, DataTypes, Sequelize, type Optional, Op } from "sequelize";
 
 import log from "../../utils/logger.js";
 

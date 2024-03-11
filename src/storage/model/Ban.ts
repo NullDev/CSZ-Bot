@@ -1,5 +1,5 @@
 import type { User, GuildMember } from "discord.js";
-import { Model, DataTypes, Sequelize, Optional, Op } from "sequelize";
+import { Model, DataTypes, type Sequelize, type Optional, Op } from "sequelize";
 
 import log from "../../utils/logger.js";
 

@@ -1,4 +1,4 @@
-import { Collection, GuildMember, Snowflake } from "discord.js";
+import type { Collection, GuildMember, Snowflake } from "discord.js";
 
 import type { BotContext } from "../context.js";
 import Boob from "../storage/model/Boob.js";

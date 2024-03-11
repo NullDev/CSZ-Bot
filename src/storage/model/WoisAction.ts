@@ -1,4 +1,4 @@
-import { Sequelize, Model, DataTypes, Optional, Op } from "sequelize";
+import { type Sequelize, Model, DataTypes, type Optional, Op } from "sequelize";
 import type { Snowflake } from "discord.js";
 
 export interface WoisActionAttributes {

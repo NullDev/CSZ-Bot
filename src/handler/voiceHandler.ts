@@ -3,15 +3,15 @@ import { setTimeout } from "node:timers/promises";
 import { readdir } from "node:fs/promises";
 
 import {
-    AudioPlayer,
+    type AudioPlayer,
     AudioPlayerStatus,
     createAudioPlayer,
     createAudioResource,
-    DiscordGatewayAdapterCreator,
+    type DiscordGatewayAdapterCreator,
     entersState,
     joinVoiceChannel,
     StreamType,
-    VoiceConnection,
+    type VoiceConnection,
     VoiceConnectionStatus,
 } from "@discordjs/voice";
 import type { VoiceChannel } from "discord.js";

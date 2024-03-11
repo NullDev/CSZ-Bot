@@ -1,7 +1,7 @@
 import {
-    Client,
-    CommandInteraction,
-    GuildMember,
+    type Client,
+    type CommandInteraction,
+    type GuildMember,
     SlashCommandBuilder,
     SlashCommandStringOption,
     SlashCommandUserOption,

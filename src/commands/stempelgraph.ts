@@ -1,10 +1,10 @@
 import graphviz from "graphviz-wasm";
 import {
-    Client,
-    CommandInteraction,
-    Guild,
-    GuildMember,
-    Snowflake,
+    type Client,
+    type CommandInteraction,
+    type Guild,
+    type GuildMember,
+    type Snowflake,
     SlashCommandBuilder,
     SlashCommandStringOption,
 } from "discord.js";

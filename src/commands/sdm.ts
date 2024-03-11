@@ -1,9 +1,9 @@
 import * as crypto from "node:crypto";
 import {
-    Client,
-    GuildMember,
-    CommandInteraction,
-    CacheType,
+    type Client,
+    type GuildMember,
+    type CommandInteraction,
+    type CacheType,
     SlashCommandBuilder,
     SlashCommandStringOption,
     SlashCommandSubcommandBuilder,

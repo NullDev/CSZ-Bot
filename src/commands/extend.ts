@@ -1,4 +1,4 @@
-import { APIEmbedField, EmbedBuilder, Message } from "discord.js";
+import { type APIEmbedField, EmbedBuilder, type Message } from "discord.js";
 
 import log from "../utils/logger.js";
 import { getConfig } from "../utils/configHandler.js";

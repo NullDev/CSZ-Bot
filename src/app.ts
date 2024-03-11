@@ -1,12 +1,12 @@
 import * as Discord from "discord.js";
 import {
-    Message,
+    type Message,
     MessageReaction,
     User,
-    VoiceState,
+    type VoiceState,
     GatewayIntentBits,
     Partials,
-    Client,
+    type Client,
 } from "discord.js";
 import cron from "croner";
 

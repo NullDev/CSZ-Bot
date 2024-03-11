@@ -1,4 +1,4 @@
-import { DataTypes, Model, Optional, Sequelize } from "sequelize";
+import { DataTypes, Model, type Optional, type Sequelize } from "sequelize";
 import type { Snowflake } from "discord.js";
 
 import log from "../../utils/logger.js";

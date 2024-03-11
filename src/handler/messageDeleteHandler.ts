@@ -1,4 +1,4 @@
-import { Client, Message } from "discord.js";
+import type { Client, Message } from "discord.js";
 
 import { getConfig } from "../utils/configHandler.js";
 import type { BotContext } from "../context.js";

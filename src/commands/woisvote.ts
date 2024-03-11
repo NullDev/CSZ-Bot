@@ -1,13 +1,13 @@
 import {
-    Client,
-    CommandInteraction,
-    Message,
-    MessageReaction,
-    Role,
+    type Client,
+    type CommandInteraction,
+    type Message,
+    type MessageReaction,
+    type Role,
     SlashCommandBuilder,
     SlashCommandStringOption,
-    TextBasedChannel,
-    User,
+    type TextBasedChannel,
+    type User,
 } from "discord.js";
 import moment from "moment";
 
