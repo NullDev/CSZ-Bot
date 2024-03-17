@@ -1,10 +1,10 @@
 import {
-    CacheType,
-    Client,
-    CommandInteraction,
+    type CacheType,
+    type Client,
+    type CommandInteraction,
     SlashCommandBuilder,
     SlashCommandStringOption,
-    TextBasedChannel,
+    type TextBasedChannel,
     TimestampStyles,
     time as formatTime,
 } from "discord.js";
@@ -14,7 +14,9 @@ import type { MessageCommand, ApplicationCommand } from "./command.js";
 import type { ProcessableMessage } from "../handler/cmdHandler.js";
 import type { BotContext } from "../context.js";
 import log from "../utils/logger.js";
-import Reminder, { ReminderAttributes } from "../storage/model/Reminder.js";
+import Reminder, {
+    type ReminderAttributes,
+} from "../storage/model/Reminder.js";
 import { ensureChatInputCommand } from "../utils/interactionUtils.js";
 
 const validateDate = (date: Date): true | string => {

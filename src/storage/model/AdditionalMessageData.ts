@@ -1,5 +1,10 @@
-import { Client, Snowflake, Message, ChannelType } from "discord.js";
-import { Model, Sequelize, DataTypes } from "sequelize";
+import {
+    type Client,
+    type Snowflake,
+    type Message,
+    ChannelType,
+} from "discord.js";
+import { Model, type Sequelize, DataTypes } from "sequelize";
 
 import log from "../../utils/logger.js";
 import type { JsonObject } from "../../types.js";

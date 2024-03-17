@@ -1,4 +1,4 @@
-import { APIEmbed, cleanContent } from "discord.js";
+import { type APIEmbed, cleanContent } from "discord.js";
 
 import { getConfig } from "../utils/configHandler.js";
 import type { CommandFunction } from "../types.js";

@@ -1,19 +1,23 @@
 import {
-    Client,
-    CommandInteraction,
-    InteractionReplyOptions,
-    MessagePayload,
-    MessageReaction,
+    type Client,
+    type CommandInteraction,
+    type InteractionReplyOptions,
+    type MessagePayload,
+    type MessageReaction,
     SlashCommandBuilder,
     SlashCommandSubcommandBuilder,
     SlashCommandUserOption,
-    TextChannel,
-    User,
+    type TextChannel,
+    type User,
 } from "discord.js";
 
 import type { ApplicationCommand, CommandResult } from "./command.js";
 import type { BotContext } from "../context.js";
-import { EhreGroups, EhrePoints, EhreVotes } from "../storage/model/Ehre.js";
+import {
+    type EhreGroups,
+    EhrePoints,
+    EhreVotes,
+} from "../storage/model/Ehre.js";
 
 const ehreFormatter = new Intl.NumberFormat("de-DE", {
     style: "decimal",

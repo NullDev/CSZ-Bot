@@ -1,4 +1,4 @@
-import { Client, Message, MessageType } from "discord.js";
+import { type Client, type Message, MessageType } from "discord.js";
 import type { BotContext } from "../context.js";
 
 export default async function (

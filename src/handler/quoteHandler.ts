@@ -1,13 +1,13 @@
 import {
-    GuildMember,
-    Message,
-    MessageReaction,
-    User,
-    TextBasedChannel,
-    GuildEmoji,
-    ReactionEmoji,
+    type GuildMember,
+    type Message,
+    type MessageReaction,
+    type User,
+    type TextBasedChannel,
+    type GuildEmoji,
+    type ReactionEmoji,
     ChannelType,
-    Channel,
+    type Channel,
 } from "discord.js";
 
 import type { BotContext } from "../context.js";
@@ -239,7 +239,19 @@ export default {
 
         if (isQuoterQuotingHimself(quoter, quotedUser)) {
             await context.textChannels.hauptchat.send({
-                content: `${quoter} der Lellek hat gerade versucht sich, selbst zu quoten. Was für ein Opfer!`,
+                embeds: [
+                    {
+                        color: 0xe83e41,
+                        author: {
+                            name: quoter.displayName,
+                            icon_url:
+                                quoter.avatarURL({ forceStatic: true }) ??
+                                undefined,
+                        },
+                        title: `${quoter.displayName} der Lellek hat gerade versucht sich, selbst zu quoten. Was für ein Opfer!`,
+                        description: `${quotedMessage.cleanContent}\n\n([link](${quotedMessage.url}))`,
+                    },
+                ],
                 allowedMentions: {
                     users: [quoter.id],
                 },

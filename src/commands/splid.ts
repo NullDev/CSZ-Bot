@@ -1,9 +1,9 @@
 import {
-    AutocompleteInteraction,
-    ChatInputCommandInteraction,
-    CommandInteraction,
+    type AutocompleteInteraction,
+    type ChatInputCommandInteraction,
+    type CommandInteraction,
     EmbedBuilder,
-    Guild,
+    type Guild,
     SlashCommandBuilder,
     SlashCommandStringOption,
     SlashCommandSubcommandBuilder,

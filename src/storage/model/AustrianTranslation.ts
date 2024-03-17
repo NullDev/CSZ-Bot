@@ -1,5 +1,5 @@
 import type { GuildMember, Snowflake } from "discord.js";
-import { DataTypes, Model, Op, Optional, Sequelize } from "sequelize";
+import { DataTypes, Model, Op, type Optional, type Sequelize } from "sequelize";
 
 import log from "../../utils/logger.js";
 

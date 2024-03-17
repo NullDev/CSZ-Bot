@@ -1,32 +1,32 @@
 import {
-    APIApplicationCommand,
+    type APIApplicationCommand,
     ApplicationCommandPermissionType,
-    AutocompleteInteraction,
-    Client,
-    CommandInteraction,
-    Interaction,
-    Message,
-    MessageComponentInteraction,
+    type AutocompleteInteraction,
+    type Client,
+    type CommandInteraction,
+    type Interaction,
+    type Message,
+    type MessageComponentInteraction,
     PermissionsBitField,
-    PermissionsString,
+    type PermissionsString,
     REST,
     Routes,
 } from "discord.js";
-import { GuildMember } from "discord.js";
+import type { GuildMember } from "discord.js";
 
 /**
  * Completely new bullish command handler it unifies slash commands and
  * message commands and relies on the "new commands"
  */
 import {
-    ApplicationCommand,
-    Command,
+    type ApplicationCommand,
+    type Command,
     isApplicationCommand,
     isMessageCommand,
     isSpecialCommand,
-    MessageCommand,
-    SpecialCommand,
-    UserInteraction,
+    type MessageCommand,
+    type SpecialCommand,
+    type UserInteraction,
 } from "../commands/command.js";
 import { InfoCommand } from "../commands/info.js";
 import { getConfig } from "../utils/configHandler.js";
@@ -64,7 +64,7 @@ import { GeburtstagCommand } from "../commands/geburtstag.js";
 import { Saufen } from "../commands/saufen.js";
 import { ErinnerungCommand } from "../commands/erinnerung.js";
 import { YoinkCommand } from "../commands/yoink.js";
-import { isProcessableMessage, ProcessableMessage } from "./cmdHandler.js";
+import { isProcessableMessage, type ProcessableMessage } from "./cmdHandler.js";
 import { EmoteSenderCommand } from "../commands/special/emoteSender.js";
 import { OidaCommand } from "../commands/oida.js";
 import { DeOidaCommand } from "../commands/deoida.js";
@@ -73,7 +73,7 @@ import { hasBotDenyRole } from "../utils/userUtils.js";
 import { isMessageInBotSpam } from "../utils/channelUtils.js";
 import type { BotContext } from "../context.js";
 import { WoisCommand } from "../commands/woisvote.js";
-import { ApplicationCommandCreationResponse } from "../types.js";
+import type { ApplicationCommandCreationResponse } from "../types.js";
 import { AoCCommand } from "../commands/aoc.js";
 import { BanListCommand } from "../commands/banlist.js";
 import { Vote2Command } from "../commands/vote2.js";

@@ -1,8 +1,8 @@
 import {
-    CommandInteraction,
-    GuildMember,
-    PermissionsString,
-    User,
+    type CommandInteraction,
+    type GuildMember,
+    type PermissionsString,
+    type User,
     SlashCommandBuilder,
     SlashCommandIntegerOption,
     SlashCommandStringOption,

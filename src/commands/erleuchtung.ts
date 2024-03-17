@@ -3,12 +3,12 @@
 // ================================ //
 
 import {
-    Client,
+    type Client,
     EmbedBuilder,
-    GuildMember,
+    type GuildMember,
     SlashCommandBuilder,
 } from "discord.js";
-import { CommandInteraction, CacheType } from "discord.js";
+import type { CommandInteraction, CacheType } from "discord.js";
 
 import type { ApplicationCommand, MessageCommand } from "./command.js";
 import type { ProcessableMessage } from "../handler/cmdHandler.js";

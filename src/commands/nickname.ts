@@ -1,16 +1,16 @@
 import {
-    CommandInteraction,
-    GuildMember,
-    User,
-    CacheType,
-    MessageComponentInteraction,
+    type CommandInteraction,
+    type GuildMember,
+    type User,
+    type CacheType,
+    type MessageComponentInteraction,
     ButtonStyle,
     SlashCommandBuilder,
     SlashCommandStringOption,
     SlashCommandSubcommandBuilder,
     SlashCommandUserOption,
     ComponentType,
-    AutocompleteInteraction,
+    type AutocompleteInteraction,
 } from "discord.js";
 
 import type {

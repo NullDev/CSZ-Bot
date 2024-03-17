@@ -1,8 +1,8 @@
 import moment from "moment";
 import {
-    CommandInteraction,
-    CacheType,
-    Client,
+    type CommandInteraction,
+    type CacheType,
+    type Client,
     SlashCommandBuilder,
 } from "discord.js";
 

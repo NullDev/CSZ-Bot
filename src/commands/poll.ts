@@ -1,13 +1,13 @@
 import parseOptions from "minimist";
 import {
-    APIEmbed,
-    APIEmbedField,
+    type APIEmbed,
+    type APIEmbedField,
     cleanContent,
-    Snowflake,
-    TextChannel,
+    type Snowflake,
+    type TextChannel,
     time,
     TimestampStyles,
-    User,
+    type User,
 } from "discord.js";
 
 import log from "../utils/logger.js";
@@ -244,7 +244,6 @@ export const run: CommandFunction = async (_client, message, args, context) => {
         const reactionMap: string[] = [];
         const reactions: string[][] = [];
 
-        // biome-ignore lint/complexity/noForEach: We need the index here
         pollOptions.forEach((option, index) => {
             reactionMap[index] = option;
             reactions[index] = [];

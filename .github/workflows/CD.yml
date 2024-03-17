@@ -26,7 +26,7 @@ jobs:
 
     steps:
     - name: Deploy CSZ Bot
-      uses: appleboy/ssh-action@8f949198563a347a01c65ffc60399aef2b59d4ab
+      uses: appleboy/ssh-action@029f5b4aeeeb58fdfe1410a5d17f967dacf36262
       env:
         DOCKER_BUILDKIT: 1
       with:

@@ -44,6 +44,7 @@ export default {
                 // by accident.
                 const role = guild.roles.cache.find(
                     r =>
+                        // biome-ignore lint/suspicious/noMisleadingCharacterClass: somebody wrote this and it seems right
                         r.name.replace(/[\u200B-\u200D\uFEFF]/g, "") ===
                         message.content,
                 );
@@ -96,7 +97,6 @@ export default {
             if (isStrawpoll) {
                 if (isDelayedPoll) {
                     for (const reactionList of delayedPoll.reactions) {
-                        // biome-ignore lint/complexity/noForEach: We need the index here
                         reactionList.forEach((x, i) => {
                             if (x === member.id) reactionList.splice(i);
                         });

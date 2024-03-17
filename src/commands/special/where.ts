@@ -1,17 +1,15 @@
-import { Message, Client, cleanContent } from "discord.js";
-import nodeCanvas from "canvas";
+import { readFile } from "node:fs/promises";
+
+import { type Message, type Client, cleanContent } from "discord.js";
+import { createCanvas, loadImage, GlobalFonts } from "@napi-rs/canvas";
 
 import type { SpecialCommand } from "../command.js";
 import { countWords, substringAfter } from "../../utils/stringUtils.js";
 
-const { createCanvas, loadImage, registerFont } = nodeCanvas;
-
 if (process.env.NODE_ENV === "production") {
     // This is a simple detection if we're running inside docker
     // We assume that every developer that wants to use this feature has impact installed
-    registerFont("assets/impact.ttf", {
-        family: "Impact",
-    });
+    GlobalFonts.register(await readFile("assets/impact.ttf"), "Impact");
 }
 
 export class WhereCommand implements SpecialCommand {
@@ -70,6 +68,6 @@ export class WhereCommand implements SpecialCommand {
         ctx.fillStyle = "#fff";
         ctx.fillText(text, textPos.x, textPos.y);
 
-        return canvas.toBuffer();
+        return await canvas.encode("png");
     }
 }

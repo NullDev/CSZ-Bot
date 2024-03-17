@@ -2,12 +2,12 @@ import * as fs from "node:fs/promises";
 import * as path from "node:path";
 
 import {
-    CacheType,
-    CommandInteraction,
+    type CacheType,
+    type CommandInteraction,
     SlashCommandBuilder,
     SlashCommandStringOption,
 } from "discord.js";
-import * as discord from "discord.js";
+import type * as discord from "discord.js";
 
 import type { BotContext } from "../context.js";
 import type { ApplicationCommand } from "./command.js";

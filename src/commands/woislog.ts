@@ -1,4 +1,4 @@
-import { CommandInteraction, SlashCommandBuilder } from "discord.js";
+import { type CommandInteraction, SlashCommandBuilder } from "discord.js";
 
 import type { ApplicationCommand, CommandResult } from "./command.js";
 import { woisData } from "../handler/voiceStateUpdateHandler.js";

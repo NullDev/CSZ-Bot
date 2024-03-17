@@ -1,7 +1,7 @@
 import {
-    Client,
-    CommandInteraction,
-    GuildMember,
+    type Client,
+    type CommandInteraction,
+    type GuildMember,
     SlashCommandBuilder,
     SlashCommandStringOption,
     SlashCommandUserOption,
@@ -78,16 +78,13 @@ export class GoogleCommand implements ApplicationCommand {
             "+",
         )})`;
 
-        let reply;
-        if (!dau) {
-            reply = replies[Math.floor(Math.random() * replies.length)].replace(
-                "{0}",
-                link,
+        const randomReply = replies[Math.floor(Math.random() * replies.length)];
+        let reply = randomReply.replace("{0}", link);
+        if (dau) {
+            reply = reply.replace(
+                "{1}",
+                `${dau?.nickname ?? dau?.displayName}`,
             );
-        } else {
-            reply = repliesWithUser[Math.floor(Math.random() * replies.length)]
-                .replace("{0}", link)
-                .replace("{1}", `${dau?.nickname ?? dau?.displayName}`);
         }
 
         const embed = buildEmbed(user, reply);

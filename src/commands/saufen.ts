@@ -2,14 +2,14 @@ import path from "node:path";
 import * as fs from "node:fs/promises";
 
 import {
-    CommandInteraction,
-    CacheType,
-    Client,
-    PermissionsString,
+    type CommandInteraction,
+    type CacheType,
+    type Client,
+    type PermissionsString,
     SlashCommandBuilder,
     SlashCommandStringOption,
     SlashCommandSubcommandBuilder,
-    AutocompleteInteraction,
+    type AutocompleteInteraction,
 } from "discord.js";
 
 import type { ApplicationCommand } from "./command.js";

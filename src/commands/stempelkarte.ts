@@ -1,11 +1,11 @@
 import * as fs from "node:fs/promises";
-import nodeCanvas from "canvas";
+import { createCanvas, loadImage } from "@napi-rs/canvas";
 import {
-    ImageSize,
-    Client,
-    CommandInteraction,
-    GuildMember,
-    Snowflake,
+    type ImageSize,
+    type Client,
+    type CommandInteraction,
+    type GuildMember,
+    type Snowflake,
     SlashCommandBuilder,
     SlashCommandUserOption,
 } from "discord.js";
@@ -14,8 +14,6 @@ import Stempel from "../storage/model/Stempel.js";
 import log from "../utils/logger.js";
 import type { ApplicationCommand, CommandResult } from "./command.js";
 import { chunkArray } from "../utils/arrayUtils.js";
-
-const { createCanvas, loadImage } = nodeCanvas;
 
 const stempelLocations = [
     // 1-3
@@ -106,7 +104,7 @@ const drawStempelkarteBackside = async (
         firmenstempelCenter.y - subjectAvatar.height / 2,
     );
 
-    return canvas.toBuffer();
+    return await canvas.encode("png");
 };
 
 export class StempelkarteCommand implements ApplicationCommand {

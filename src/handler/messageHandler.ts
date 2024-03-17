@@ -1,8 +1,8 @@
-import { Client, ClientUser, Message } from "discord.js";
+import type { Client, ClientUser, Message } from "discord.js";
 
 import cmdHandler, {
     isProcessableMessage,
-    ProcessableMessage,
+    type ProcessableMessage,
 } from "./cmdHandler.js";
 import type { BotContext } from "../context.js";
 import { isMarcel } from "../utils/userUtils.js";

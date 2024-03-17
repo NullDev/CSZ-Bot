@@ -1,7 +1,7 @@
 import {
-    CommandInteraction,
-    Client,
-    GuildMember,
+    type CommandInteraction,
+    type Client,
+    type GuildMember,
     SlashCommandBuilder,
     SlashCommandUserOption,
 } from "discord.js";

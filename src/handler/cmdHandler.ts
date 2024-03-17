@@ -1,9 +1,9 @@
 import fs from "node:fs/promises";
 import * as path from "node:path";
 
-import { Client, Guild, GuildMember, Message } from "discord.js";
+import type { Client, Guild, GuildMember, Message } from "discord.js";
 
-import { CommandFunction, CommandResult } from "../types.js";
+import type { CommandFunction, CommandResult } from "../types.js";
 import log from "../utils/logger.js";
 import { getConfig } from "../utils/configHandler.js";
 import * as ban from "../commands/modcommands/ban.js";

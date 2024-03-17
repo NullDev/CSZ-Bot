@@ -1,10 +1,10 @@
 import {
-    CacheType,
-    CommandInteraction,
-    Client,
-    Message,
+    type CacheType,
+    type CommandInteraction,
+    type Client,
+    type Message,
     EmbedBuilder,
-    GuildMember,
+    type GuildMember,
     SlashCommandBuilder,
     SlashCommandStringOption,
 } from "discord.js";

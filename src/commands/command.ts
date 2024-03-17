@@ -1,8 +1,8 @@
-import {
+import type {
     ContextMenuCommandBuilder,
     MessageComponentInteraction,
     PermissionsString,
-    type SlashCommandBuilder,
+    SlashCommandBuilder,
 } from "discord.js";
 import type {
     AutocompleteInteraction,

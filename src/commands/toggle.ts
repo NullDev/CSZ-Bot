@@ -1,4 +1,4 @@
-import { APIEmbedField, EmbedBuilder, Message } from "discord.js";
+import { type APIEmbedField, EmbedBuilder, type Message } from "discord.js";
 
 import type { CommandFunction } from "../types.js";
 import * as poll from "./poll.js";

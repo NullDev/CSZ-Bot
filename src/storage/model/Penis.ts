@@ -1,8 +1,8 @@
 import moment from "moment";
-import { Model, DataTypes, Sequelize, Optional, Op } from "sequelize";
+import { Model, DataTypes, Sequelize, type Optional, Op } from "sequelize";
 import type { User } from "discord.js";
 
-import { Radius } from "../../commands/penis.js";
+import type { Radius } from "../../commands/penis.js";
 import log from "../../utils/logger.js";
 
 export interface PenisAttributes {

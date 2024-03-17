@@ -1,9 +1,9 @@
 import * as crypto from "node:crypto";
 import {
-    Client,
-    GuildMember,
-    CommandInteraction,
-    CacheType,
+    type Client,
+    type GuildMember,
+    type CommandInteraction,
+    type CacheType,
     SlashCommandBuilder,
     SlashCommandStringOption,
     SlashCommandSubcommandBuilder,
@@ -38,7 +38,7 @@ const createSecureDecisionMessage = (
     // If yes / no
     if (options.length === 0) {
         const decision = crypto.randomInt(2);
-        let file;
+        let file: string;
         if (decision) {
             embed.setColor(0x2ecc71);
             file = "yes.png";
