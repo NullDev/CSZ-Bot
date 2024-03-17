@@ -16,6 +16,7 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
+      contents: read
       pull-requests: write
 
     steps:
@@ -29,7 +30,7 @@ jobs:
         bun-version: latest
 
     - run: bun install
-    - run: npm run ci
+    - run: bun ci
 
   build:
     name: Build + Smoke Test

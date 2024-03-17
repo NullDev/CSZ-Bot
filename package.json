@@ -10,7 +10,7 @@
     "test": "tsc --noEmit",
     "ci": "biome ci ./src",
     "format": "biome format --write ./src",
-    "lint": "biome lint ./",
+    "lint": "biome lint ./src",
     "lint:fix": "biome lint --apply ./src",
     "watch": "bun --watch src/app.ts"
   },

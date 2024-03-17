@@ -52,7 +52,7 @@ bun i
 ### GitHub Codespaces
 1. Klicke auf den grünen "Code"-Button
 2. Wähle den Tab "Codespaces"
-3. Klicke auf das "+" für einen neuen Code-Space
+3. Klicke auf das "+" für einen neuen Codespace
 4. Warte
 5. Weiter machen mit den [gemeinsamen Schritten](#gemeinsame-schritte) (siehe unten)
 
@@ -92,6 +92,13 @@ Ohne Hot-Reload:
 ```sh
 bun start
 ```
+
+### Housekeeping
+- Formatieren: `bun format`
+- Linten: `bun lint`
+- Fixbare Linter-Fehler automatisch fixen: `bun lint:fix`
+- CI-Checks lokal laufen lassen: `bun ci`
+- Unit-Tests ausführen:
 
 ## ❄ Nix
 Entweder via `nix-shell` oder `nix develop` letzteres benötigt Nix-Flake support.
