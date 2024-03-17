@@ -4,9 +4,6 @@ import * as path from "node:path";
 import log from "../utils/logger.js";
 import type { Config } from "../types.js";
 
-const packageFile = JSON.parse(
-    fs.readFileSync(path.resolve("package.json"), "utf-8"),
-);
 const configPath = path.resolve("config.json");
 
 export const getConfig = () => {
