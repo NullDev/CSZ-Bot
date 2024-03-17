@@ -13,15 +13,14 @@ import Boob from "./model/Boob.js";
 import Reminder from "./model/Reminder.js";
 import AustrianTranslation from "./model/AustrianTranslation.js";
 import { EhrePoints, EhreVotes } from "./model/Ehre.js";
-import type { BotContext } from "../context.js";
 import WoisAction from "./model/WoisAction.js";
 import SplidGroup from "./model/SplidGroup.js";
 import SplidLink from "./model/SplidLink.js";
 
-export async function initialize(botContext: BotContext) {
+export async function initialize(databasePath: string) {
     const sequelize = new Sequelize({
         dialect: "sqlite",
-        storage: botContext.databasePath,
+        storage: databasePath,
         logQueryParameters: true,
         logging: sql => {
             // currently way too noisy because of the fading messages
