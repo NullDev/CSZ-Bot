@@ -1,16 +1,11 @@
-FROM oven/bun:latest as dependency-base
+FROM oven/bun:latest as runtime-dependencies
     WORKDIR /app
-    RUN apt-get update -yqq \
-        && apt-get install -yqq \
-            python3 build-essential pkg-config \
-        && apt-get clean -yqqq
-
-FROM dependency-base as runtime-dependencies
     RUN --mount=type=bind,source=package.json,target=package.json \
         --mount=type=bind,source=bun.lockb,target=bun.lockb \
+        --mount=type=cache,target=/root/.bun/install/cache \
         NODE_ENV=production bun install
 
-FROM node:21-slim
+FROM oven/bun:latest
     WORKDIR /app
     RUN apt-get update -yqqq \
         && apt-get install -yqqq \
