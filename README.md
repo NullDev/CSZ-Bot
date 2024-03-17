@@ -27,6 +27,10 @@ Read: [CONTRIBUTING.md](./CONTRIBUTING.md)
 
 ## :wrench: Installation
 
+Du hast 2 Optionen: Lokale installation und GitHub Codespaces. Ersteres ist aufwändiger. Bei letzterem musst du deine Config am besten abspeichern, weil die bei den Codespaces nach der Zeit verloren geht.
+
+### Lokale Installation
+
 <sub>bun Version: >=1.irgendwas</sub>
 
 1. Terminal aufmachen und dorthin navigieren, wo man es downloaden möchte
@@ -43,12 +47,22 @@ Wenn nicht, [hier](https://github.com/NullDev/CSZ-Bot/archive/master.zip) herunt
 bun i
 ```
 
-5. Das Config-Template [config.template.json](https://github.com/NullDev/CSZ-Bot/blob/master/config.template.json) kopieren und als `config.json` einfügen und bearbeiten:
+5. Weiter machen mit den [gemeinsamen Schritten](#gemeinsame-schritte) (siehe unten)
+
+### GitHub Codespaces
+1. Klicke auf den grünen "Code"-Button
+2. Wähle den Tab "Codespaces"
+3. Klicke auf das "+" für einen neuen Code-Space
+4. Warte
+5. Weiter machen mit den [gemeinsamen Schritten](#gemeinsame-schritte) (siehe unten)
+
+### Gemeinsame Schritte
+1. Das Config-Template [config.template.json](https://github.com/NullDev/CSZ-Bot/blob/master/config.template.json) kopieren und als `config.json` einfügen und bearbeiten:
 ```sh
 cp config.template.json config.json
 $EDITOR config.json
 ```
-6. Die frisch kopierte Config-Datei ausfüllen:
+2. Die frisch kopierte Config-Datei ausfüllen:
     - Um einen Bot zum Testen anzulegen, einfach den Instruktionen im [Discord Developer Portal](https://discord.com/developers/applications) folgen.
         - Die Applikation muss als "Bot" gesetzt werden.
         - Es müssen beide [Gateway Intents](https://discordjs.guide/popular-topics/intents.html#gateway-intents) eingeschalten werden.
@@ -67,7 +81,7 @@ $EDITOR config.json
         - Trusted-Gebannt-Rolle - CSZ-Default: B&-Trusted
         - Woisgang-Rolle - CSZ-Default: woisgang
         - ...und vielleicht noch ein paar Weitere, die du der Config entnehmen kannst.
-7. Das Script starten.
+3. Das Script starten.
 
 Mit Hot-Reload:
 ```sh
