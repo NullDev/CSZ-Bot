@@ -27,7 +27,7 @@ Read: [CONTRIBUTING.md](./CONTRIBUTING.md)
 
 ## :wrench: Installation
 
-Du hast 2 Optionen: Lokale installation und GitHub Codespaces. Ersteres ist aufwändiger. Bei letzterem musst du deine Config am besten abspeichern, weil die bei den Codespaces nach der Zeit verloren geht.
+Du hast 2 Optionen: Lokale installation und GitHub Codespaces. Ersteres ist aufwändiger. Bei letzterem musst du deine Config am besten abspeichern, weil sie bei Codespaces irgendwan zusammen mit dem Codespace gelöscht wird.
 
 ### Lokale Installation
 
