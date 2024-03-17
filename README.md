@@ -40,7 +40,7 @@ Wenn nicht, [hier](https://github.com/NullDev/CSZ-Bot/archive/master.zip) herunt
 
 4. Dependencies installieren: <br>
 ```sh
-npm ci
+bun i
 ```
 
 5. Das Config-Template [config.template.json](https://github.com/NullDev/CSZ-Bot/blob/master/config.template.json) kopieren und als `config.json` einfügen und bearbeiten:
