@@ -2,7 +2,7 @@
     "explorer.fileNesting.enabled": true,
     "explorer.fileNesting.patterns": {
         "tsconfig.json": "tsconfig.*.json",
-        "package.json": "package-lock.json, .npmrc, yarn.lock, .yarnrc, .nvmrc",
+        "package.json": "package-lock.json, .npmrc, yarn.lock, .yarnrc, .nvmrc, bun.lockb",
         "flake.nix": "flake.lock",
         "*.ts": "$(capture).test.ts"
     },

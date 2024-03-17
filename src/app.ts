@@ -1,8 +1,6 @@
 import * as Discord from "discord.js";
 import {
     type Message,
-    MessageReaction,
-    User,
     type VoiceState,
     GatewayIntentBits,
     Partials,
@@ -50,15 +48,23 @@ import {
 import { AoCHandler } from "./commands/aoc.js";
 import { rotate } from "./helper/bannerCarusel.js";
 import deleteThreadMessagesHandler from "./handler/deleteThreadMessagesHandler.js";
+import * as terminal from "./terminal.js";
 
 const args = process.argv.slice(2);
+
+const prodMode =
+    process.env.NODE_ENV === "production"
+        ? ` ${terminal.highlightWarn(" production ")} mode`
+        : "";
+
+const cszBot = terminal.highlight(" CSZ Bot ");
 
 console.log(
     // biome-ignore lint/style/useTemplate: Seems to be more readable this way
     "\n" +
-        " ┌─────────┐\n" +
-        ` │ CSZ Bot │ Copyright (c) ${new Date().getFullYear()} Users of the CSZ\n` +
-        " └─────────┘\n",
+        " ┌───────────┐\n" +
+        ` │ ${cszBot} │ Copyright (c) ${new Date().getFullYear()} Users of the CSZ\n` +
+        ` └───────────┘${prodMode}\n`,
 );
 
 let botContext: BotContext;
@@ -255,7 +261,7 @@ client.once("ready", async initializedClient => {
         botContext = await createBotContext(initializedClient);
         console.assert(!!botContext, "Bot context should be available"); // TODO: Remove once botContext is used
 
-        await storage.initialize(botContext);
+        await storage.initialize(botContext.databasePath);
 
         await scheduleCronjobs(botContext);
 
