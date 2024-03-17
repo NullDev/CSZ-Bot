@@ -8,9 +8,9 @@ const configPath = path.resolve("config.json");
 
 export const getConfig = () => {
     if (!fs.existsSync(configPath)) {
-        log.error(
-            "Config does not exist! Make sure you copy config.template.json and paste it as 'config.json'. Then configure it.",
-        );
+        log.error("Config does not exist. Copy the config template and configure it according to the README:");
+        log.error("cp config.template.json config.json");
+        log.error("code config.json");
         process.exit(1);
     }
 
