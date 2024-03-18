@@ -209,7 +209,7 @@ export async function createBotContext(
             config.bot_settings.delete_thread_messages_in_channels,
         ),
         rootDir: path.resolve(""),
-        srcDir: path.resolve("built"),
+        srcDir: path.resolve("src"),
         databasePath: path.resolve("storage.db"),
     };
 }
