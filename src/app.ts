@@ -70,8 +70,15 @@ console.log(
 let botContext: BotContext;
 
 log.info("Started.");
-
 const config = conf.getConfig();
+
+if (!config.auth.bot_token) {
+    log.error(
+        "No bot token found in config. Make sure to set `auth.bot_token` and `auth.client_id` in `config.json`",
+    );
+    process.exit(1);
+}
+
 const client = new Discord.Client({
     partials: [Partials.Message, Partials.Reaction, Partials.User],
     allowedMentions: {
