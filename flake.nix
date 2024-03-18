@@ -9,14 +9,14 @@
     flake = false;
   };
 
-  outputs = { self, nixpkgs, flake-utils, ... }:
+  outputs = { nixpkgs, flake-utils, ... }:
     flake-utils.lib.eachDefaultSystem (system:
       let pkgs = nixpkgs.legacyPackages.${system}; in
-      rec {
+      {
         devShell = pkgs.mkShell {
           buildInputs = with pkgs; [
+            bun
             nixpkgs-fmt
-            nodejs
             pixman
             pkg-config
             cairo
