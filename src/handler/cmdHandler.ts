@@ -73,9 +73,10 @@ export default async function (
         }
     }
 
-    const commandFile = commandArr.find(
-        cmd => cmd === `${command.toLowerCase()}.js`,
-    );
+    const commandFile = commandArr.find(cmd => {
+        const normalized = command.toLowerCase();
+        return cmd === `${normalized}.js` || cmd === `${normalized}.ts`;
+    });
 
     if (commandFile === undefined) {
         return;
