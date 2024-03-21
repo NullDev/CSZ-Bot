@@ -45,7 +45,7 @@ export const run: CommandFunction = async (
     context,
 ) => {
     const commandObj: Record<string, string> = {};
-    const commandDir = path.join(context.srcDir, "commands");
+    const commandDir = context.commandDir;
 
     const files = await fs.readdir(commandDir);
     for (const file of files) {

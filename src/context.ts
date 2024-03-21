@@ -71,6 +71,8 @@ export interface BotContext {
     srcDir: string;
     databasePath: string;
     bannersDir: string;
+    soundsDir: string;
+    commandDir: string;
     // TODO: Add some user assertions like isMod and isTrusted
 }
 
@@ -213,5 +215,7 @@ export async function createBotContext(
         srcDir: path.resolve("src"),
         databasePath: path.resolve("storage.db"),
         bannersDir: path.resolve("banners"),
+        soundsDir: path.resolve("sounds"),
+        commandDir: path.resolve("src/commands"),
     };
 }
