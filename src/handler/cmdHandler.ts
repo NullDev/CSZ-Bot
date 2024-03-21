@@ -60,8 +60,8 @@ export default async function (
 
     const commandArr = [];
     const commandDir = isModCommand
-        ? path.join(context.srcDir, "commands", "modcommands")
-        : path.join(context.srcDir, "commands");
+        ? context.modCommandDir
+        : context.commandDir;
 
     const files = await fs.readdir(commandDir);
     for (const file of files) {

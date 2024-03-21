@@ -148,7 +148,10 @@ export class Saufen implements ApplicationCommand {
             .map(f => f.name);
     }
 
-    async autocomplete(interaction: AutocompleteInteraction, context: BotContext) {
+    async autocomplete(
+        interaction: AutocompleteInteraction,
+        context: BotContext,
+    ) {
         const subCommand = interaction.options.getSubcommand(true);
         if (subCommand !== "select") {
             return;
