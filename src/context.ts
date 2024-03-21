@@ -212,6 +212,6 @@ export async function createBotContext(
         rootDir: path.resolve(""),
         srcDir: path.resolve("src"),
         databasePath: path.resolve("storage.db"),
-        bannersDir: path.resolve("assets/banners"),
+        bannersDir: path.resolve("banners"),
     };
 }
