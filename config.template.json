@@ -51,6 +51,7 @@
         "trusted_role_id": "",
         "trusted_banned_role_id": "",
         "shame_role_id": "",
+        "emotifizierer_role_id": "",
 
         "banned_channel_id": "",
         "votes_channel_id": "",
