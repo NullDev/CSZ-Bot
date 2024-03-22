@@ -10,7 +10,6 @@
             "mod_prefix": "~"
         },
         "moderator_roles": ["Moderader"],
-        "moderator_id": "893179190709477413",
         "ban_reason_channel_id": "893179190881452117",
         "woisping_limit": 7200,
         "woisping_threshold": 2,

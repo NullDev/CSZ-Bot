@@ -86,7 +86,6 @@ export interface Config {
 
         flame_trusted_user_on_bot_ping?: boolean;
 
-        moderator_id: Snowflake;
         ban_reason_channel_id: Snowflake;
         moderator_roles: Array<string>;
 
