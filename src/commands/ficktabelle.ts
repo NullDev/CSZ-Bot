@@ -2,9 +2,6 @@ import type { Client } from "discord.js";
 
 import type { MessageCommand } from "./command.js";
 import type { ProcessableMessage } from "../handler/cmdHandler.js";
-import { getConfig } from "../utils/configHandler.js";
-
-const config = getConfig();
 
 const FICKTABELLE_URL =
     "https://cdn.discordapp.com/attachments/620721921767505942/636149543154614272/20160901-164533-Kovrtep-id1487186.png";
@@ -28,7 +25,7 @@ const warnings = [
 
 export class FicktabelleCommand implements MessageCommand {
     name = "ficktabelle";
-    description = `Sendet die Ficktabelle.\nBenutzung: ${config.bot_settings.prefix.command_prefix}ficktabelle`;
+    description = "Sendet die Ficktabelle.";
 
     async handleMessage(
         message: ProcessableMessage,
