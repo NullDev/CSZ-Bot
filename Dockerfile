@@ -18,7 +18,6 @@ FROM oven/bun:latest
 
     ENV NODE_ENV=production
 
-    RUN cp /usr/share/zoneinfo/${TZ} /etc/localtime
     ENV TZ 'Europe/Berlin'
 
     COPY --from=runtime-dependencies /app/node_modules /app/node_modules
