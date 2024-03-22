@@ -11,8 +11,6 @@ import { hasBotDenyRole } from "../utils/userUtils.js";
 import { isMessageInBotSpam } from "../utils/channelUtils.js";
 import type { BotContext } from "../context.js";
 
-const config = getConfig();
-
 /**
  * A message that the bot can pass to command handlers.
  * For example, it ensures that there is a member (and it's not a DM)
@@ -113,7 +111,7 @@ export default async function (
 
         if (
             message.member.roles.cache.some(
-                r => r.id === config.ids.banned_role_id,
+                r => r.id === context.roles.banned.id,
             )
         ) {
             return "Da haste aber Schwein gehabt";
