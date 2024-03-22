@@ -17,10 +17,9 @@ FROM oven/bun:latest
         && fc-cache -f -v
 
     ENV NODE_ENV=production
-    EXPOSE 3000
 
-    ENV TZ 'Europe/Berlin'
     RUN cp /usr/share/zoneinfo/${TZ} /etc/localtime
+    ENV TZ 'Europe/Berlin'
 
     COPY --from=runtime-dependencies /app/node_modules /app/node_modules
     COPY ./ /app/
