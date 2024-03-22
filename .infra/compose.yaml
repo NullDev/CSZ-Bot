@@ -1,9 +1,8 @@
-
 services:
   bot:
     container_name: csz-bot
     restart: unless-stopped
-    build: .
+    image: csz-bot
     volumes:
       - ./config.json:/app/config.json:ro
       - ./aoc.config.json:/app/aoc.config.json:ro
