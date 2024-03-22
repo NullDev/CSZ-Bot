@@ -105,9 +105,7 @@ export default async function (
 
     if (
         isModCommand &&
-        !message.member.roles.cache.some(r =>
-            config.bot_settings.moderator_roles.includes(r.name),
-        )
+        !message.member.roles.cache.some(r => context.moderatorRoles.has(r.id))
     ) {
         log.warn(
             `User "${message.author.tag}" (${message.author}) tried mod command "${cmdPrefix}${command}" and was denied`,

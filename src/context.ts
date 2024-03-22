@@ -45,6 +45,7 @@ export interface BotContext {
     };
 
     roles: Record<RemoveSuffix<ConfigRoleId, "_role_id">, Role>;
+    moderatorRoles: Set<Snowflake>;
 
     // This type is rather "complex"
     // That's due to the channel IDs in the config not being named consistent (sometimes ends with _channel_id, sometimes with _id only)
@@ -77,8 +78,6 @@ export interface BotContext {
     // TODO: Add some user assertions like isMod and isTrusted
 }
 
-// #region Ensure Channels
-
 function ensureRole<T extends ConfigRoleId>(
     config: Config,
     guild: Guild,
@@ -94,6 +93,18 @@ function ensureRole<T extends ConfigRoleId>(
 
     return role;
 }
+
+function ensureRoleByDisplayName(guild: Guild, displayName: string): Role {
+    const role = guild.roles.cache.find(role => role.name === displayName);
+    if (!role)
+        throw new Error(
+            `Role "${displayName}" not found in guild "${guild.id}"`,
+        );
+    return role;
+}
+
+// #region Ensure Channels
+
 function ensureTextChannel<T extends ConfigTextChannelId>(
     config: Config,
     guild: Guild,
@@ -195,6 +206,11 @@ export async function createBotContext(
             woisgang: ensureRole(config, guild, "woisgang_role_id"),
             winner: ensureRole(config, guild, "winner_role_id"),
         },
+        moderatorRoles: new Set([
+            ...config.bot_settings.moderator_roles.map(
+                name => ensureRoleByDisplayName(guild, name).id,
+            ),
+        ]),
         textChannels: {
             banned: ensureTextChannel(config, guild, "banned_channel_id"),
             bot_log: ensureTextChannel(config, guild, "bot_log_channel_id"),
