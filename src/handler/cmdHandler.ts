@@ -48,8 +48,8 @@ export default async function (
     }
 
     const cmdPrefix = isModCommand
-        ? config.bot_settings.prefix.mod_prefix
-        : config.bot_settings.prefix.command_prefix;
+        ? context.prefix.modCommand
+        : context.prefix.command;
 
     const args = message.content.slice(cmdPrefix.length).trim().split(/\s+/g);
     const rawCommandName = args.shift();
