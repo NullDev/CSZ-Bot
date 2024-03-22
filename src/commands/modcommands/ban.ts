@@ -149,8 +149,9 @@ export const ban = async (
     if (
         member.id === "371724846205239326" ||
         (botUser && member.id === botUser.id)
-    )
+    ) {
         return "Fick dich bitte.";
+    }
 
     const existingBan = await Ban.findExisting(member.user);
     if (existingBan !== null) {
