@@ -9,3 +9,8 @@ node_modules
 *.md
 docker-compose.yml
 logs
+biome.json
+LICENSE
+flake.*
+shell.nix
+*.template.json
