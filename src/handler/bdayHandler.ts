@@ -2,6 +2,8 @@ import type { GuildMember, Role } from "discord.js";
 
 import log from "../utils/logger.js";
 import Birthday from "../storage/model/Birthday.js";
+import * as birthday from "../storage/birthday.js";
+
 import type { BotContext } from "../context.js";
 
 export default class BdayHandler {
@@ -14,7 +16,8 @@ export default class BdayHandler {
         log.debug("Entered `BdayHandler#checkBdays`");
 
         const birthdayRole = this.context.roles.bday;
-        const todaysBirthdays = await Birthday.getTodaysBirthdays();
+        // const todaysBirthdays = await Birthday.getTodaysBirthdays();
+        const todaysBirthdays = await birthday.getTodaysBirthdays();
 
         const todaysBirthdaysAsMembers = todaysBirthdays
             .map(b => this.context.guild.members.cache.get(b.userId))

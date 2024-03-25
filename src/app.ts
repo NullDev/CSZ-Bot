@@ -17,6 +17,7 @@ import messageDeleteHandler from "./handler/messageDeleteHandler.js";
 import BdayHandler from "./handler/bdayHandler.js";
 import * as fadingMessageHandler from "./handler/fadingMessageHandler.js";
 import * as storage from "./storage/storage.js";
+import * as kysely from "./storage/kysely.js";
 
 import * as ban from "./commands/modcommands/ban.js";
 import * as poll from "./commands/poll.js";
@@ -269,6 +270,7 @@ client.once("ready", async initializedClient => {
         console.assert(!!botContext, "Bot context should be available"); // TODO: Remove once botContext is used
 
         await storage.initialize(botContext.databasePath);
+        await kysely.connectToDb(botContext.databasePath);
 
         await scheduleCronjobs(botContext);
 
