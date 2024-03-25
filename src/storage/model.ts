@@ -122,3 +122,9 @@ export interface GuildRagequitTable {
     createdAt: ColumnType<string, string, never>;
     updatedAt: ColumnType<string, string, never>;
 }
+/*
+{
+    unique: true,
+    fields: ["guildId", "userId"],
+},
+*/
