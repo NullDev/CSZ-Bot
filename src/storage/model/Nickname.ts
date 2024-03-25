@@ -1,8 +1,6 @@
 import { DataTypes, Model, type Optional, type Sequelize } from "sequelize";
 import type { Snowflake } from "discord.js";
 
-import log from "../../utils/logger.js";
-
 export interface NicknameAttributes {
     id: string;
     userId: string;
@@ -16,21 +14,6 @@ export default class Nickname extends Model {
     declare userId: string;
     declare nickName: string;
 
-    static async insertNickname(
-        userId: Snowflake,
-        nickName: string,
-    ): Promise<Nickname> {
-        log.debug(
-            `Inserting Nickname for user "${userId}" Nickname: "${nickName}"`,
-        );
-        if (await Nickname.nickNameExist(userId, nickName))
-            throw new Error("Nickname already exists");
-        return Nickname.create({
-            userId,
-            nickName,
-        });
-    }
-
     static getNicknames(userId: Snowflake): Promise<Nickname[]> {
         return Nickname.findAll({
             where: {
@@ -38,54 +21,6 @@ export default class Nickname extends Model {
             },
         });
     }
-
-    static async nickNameExist(userId: Snowflake, nickname: string) {
-        return (
-            (
-                await Nickname.findAll({
-                    where: {
-                        userId,
-                        nickName: nickname,
-                    },
-                })
-            ).length > 0
-        );
-    }
-
-    static async allUsersAndNames() {
-        const nicknames = await Nickname.findAll();
-
-        return nicknames.reduce(
-            (acc, cur) => ({
-                // Das ding
-                // biome-ignore lint/performance/noAccumulatingSpread: This should be ok.
-                ...acc, //                 VV
-                [cur.userId]: [...(acc[cur.userId] ?? []), cur.nickName],
-            }),
-            {} as Record<Snowflake, string[]>,
-        );
-    }
-
-    static deleteNickName(
-        userId: Snowflake,
-        nickName: string,
-    ): Promise<number> {
-        return Nickname.destroy({
-            where: {
-                userId,
-                nickName,
-            },
-        });
-    }
-
-    static deleteNickNames(userId: Snowflake): Promise<number> {
-        return Nickname.destroy({
-            where: {
-                userId,
-            },
-        });
-    }
-
     static initialize(sequelize: Sequelize) {
         Nickname.init(
             {

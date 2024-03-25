@@ -22,6 +22,7 @@ import Nicknames from "../storage/model/Nickname.js";
 import { isTrusted } from "../utils/userUtils.js";
 import log from "../utils/logger.js";
 import { ensureChatInputCommand } from "../utils/interactionUtils.js";
+import * as nickName from "../storage/nickName.js";
 
 type Vote = "YES" | "NO";
 
@@ -35,8 +36,8 @@ function getWeightOfUserVote(vote: UserVote): number {
 }
 
 interface Suggestion {
-    readonly nicknameUserID: string;
-    readonly nickname: string;
+    readonly nickNameUserId: string;
+    readonly nickName: string;
 }
 
 const ongoingSuggestions: Record<string, Suggestion> = {};
@@ -146,7 +147,7 @@ export class Nickname implements ApplicationCommand {
                     );
                     return;
                 }
-                await Nicknames.deleteNickNames(user.id);
+                await nickName.deleteAllNickNames(user);
                 await this.updateNickName(member, null);
                 await cmd.reply("Ok Brudi. Hab alles gelöscht");
                 return;
@@ -172,7 +173,7 @@ export class Nickname implements ApplicationCommand {
                     return;
                 }
                 const nickname = cmd.options.getString("nickname", true);
-                if (await Nicknames.nickNameExist(user.id, nickname)) {
+                if (await nickName.nickNameExist(user.id, nickname)) {
                     await cmd.reply(
                         `Würdest du Hurensohn aufpassen, wüsstest du, dass für ${user} '${nickname}' bereits existiert.`,
                     );
@@ -196,7 +197,7 @@ export class Nickname implements ApplicationCommand {
                 // We don't violate the DRY principle, since we're referring to another subcommand object as in the "add" subcmd.
                 // Code is equal but knowledge differs.
                 const nickname = cmd.options.getString("nickname", true);
-                await Nicknames.deleteNickName(user.id, nickname);
+                await nickName.deleteNickName(user, nickname);
                 const member = cmd.guild?.members.cache.get(user.id);
                 if (!member) {
                     await cmd.reply(
@@ -278,7 +279,10 @@ export class Nickname implements ApplicationCommand {
         });
 
         const message = await command.fetchReply();
-        ongoingSuggestions[message.id] = { nicknameUserID: user.id, nickname };
+        ongoingSuggestions[message.id] = {
+            nickNameUserId: user.id,
+            nickName: nickname,
+        };
 
         getUserVoteMap(message.id)[user.id] = {
             vote: "YES",
@@ -337,26 +341,26 @@ export class NicknameButtonHandler implements UserInteraction {
         const votes: UserVote[] = Object.values(userVoteMap);
         if (this.hasEnoughVotes(votes, "NO")) {
             await interaction.update({
-                content: `Der Vorschlag: \`${suggestion.nickname}\` für <@${suggestion.nicknameUserID}> war echt nicht so geil`,
+                content: `Der Vorschlag: \`${suggestion.nickName}\` für <@${suggestion.nickNameUserId}> war echt nicht so geil`,
                 components: [],
             });
             return;
         }
         if (this.hasEnoughVotes(votes, "YES")) {
             try {
-                await Nicknames.insertNickname(
-                    suggestion.nicknameUserID,
-                    suggestion.nickname,
+                await nickName.insertNickname(
+                    suggestion.nickNameUserId,
+                    suggestion.nickName,
                 );
             } catch (error) {
                 await interaction.update(
-                    `Würdet ihr Hurensöhne aufpassen, wüsstest ihr, dass für <@${suggestion.nicknameUserID}> \`${suggestion.nickname}\` bereits existiert.`,
+                    `Würdet ihr Hurensöhne aufpassen, wüsstest ihr, dass für <@${suggestion.nickNameUserId}> \`${suggestion.nickName}\` bereits existiert.`,
                 );
                 return;
             }
 
             await interaction.update({
-                content: `Für <@${suggestion.nicknameUserID}> ist jetzt \`${suggestion.nickname}\` in der Rotation`,
+                content: `Für <@${suggestion.nickNameUserId}> ist jetzt \`${suggestion.nickName}\` in der Rotation`,
                 components: [],
             });
             return;

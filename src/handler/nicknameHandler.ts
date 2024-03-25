@@ -1,4 +1,4 @@
-import Nicknames from "../storage/model/Nickname.js";
+import * as nickName from "../storage/nickName.js";
 import log from "../utils/logger.js";
 import type { BotContext } from "../context.js";
 
@@ -9,7 +9,7 @@ export default class NicknameHandler {
         log.debug("Entered `rerollNicknames`");
 
         const allUsersAndNames = Object.entries(
-            await Nicknames.allUsersAndNames(),
+            await nickName.allUsersAndNames(),
         );
 
         const updateTasks = allUsersAndNames.map(([userId, nicknames]) =>
