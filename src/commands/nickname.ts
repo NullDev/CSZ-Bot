@@ -18,7 +18,6 @@ import type {
     CommandResult,
     UserInteraction,
 } from "./command.js";
-import Nicknames from "../storage/model/Nickname.js";
 import { isTrusted } from "../utils/userUtils.js";
 import log from "../utils/logger.js";
 import { ensureChatInputCommand } from "../utils/interactionUtils.js";
@@ -154,7 +153,7 @@ export class Nickname implements ApplicationCommand {
             }
 
             if (option === "list") {
-                const nicknames = await Nicknames.getNicknames(user.id);
+                const nicknames = await nickName.getNicknames(user.id);
                 if (nicknames.length === 0) {
                     await cmd.reply("Ne Brudi für den hab ich keine Nicknames");
                     return;
@@ -235,7 +234,7 @@ export class Nickname implements ApplicationCommand {
         // https://discordjs.guide/slash-commands/autocomplete.html#accessing-other-values
         const userId = interaction.options.get("user", true).value as string; // Snowflake of the user
 
-        const nicknames = await Nicknames.getNicknames(userId);
+        const nicknames = await nickName.getNicknames(userId);
 
         const focusedValue = interaction.options.getFocused().toLowerCase();
 

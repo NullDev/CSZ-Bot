@@ -85,3 +85,14 @@ export async function deleteAllNickNames(
 ): Promise<void> {
     await ctx.deleteFrom("nickName").where("userId", "=", user.id).execute();
 }
+
+export function getNicknames(
+    userId: Snowflake,
+    ctx = db(),
+): Promise<NickName[]> {
+    return ctx
+        .selectFrom("nickName")
+        .where("userId", "=", userId)
+        .selectAll()
+        .execute();
+}
