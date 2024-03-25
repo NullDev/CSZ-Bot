@@ -25,4 +25,3 @@ export interface BirthdayTable {
     createdAt: ColumnType<string, string, never>;
     updatedAt: ColumnType<string, string, never>;
 }
-
