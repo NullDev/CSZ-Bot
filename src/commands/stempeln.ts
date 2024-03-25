@@ -1,20 +1,12 @@
 import {
     type CommandInteraction,
     type Client,
-    type GuildMember,
     SlashCommandBuilder,
     SlashCommandUserOption,
 } from "discord.js";
 
 import type { ApplicationCommand, CommandResult } from "./command.js";
-import Stempel from "../storage/model/Stempel.js";
-
-const stempelUser = async (
-    invitator: GuildMember,
-    invitedMember: GuildMember,
-): Promise<boolean> => {
-    return Stempel.insertStempel(invitator.id, invitedMember.id);
-};
+import * as stempel from "../storage/stempel.js";
 
 const replies = [
     "Der Bruder {0} hat den neuen Bruder {1} eingeladen und du hast dies so eben bestätigt!",
@@ -67,7 +59,7 @@ export class StempelCommand implements ApplicationCommand {
             return;
         }
 
-        const isNewInvite = await stempelUser(invitator, invitedUser);
+        const isNewInvite = await stempel.insertStempel(invitator, invitedUser);
         if (isNewInvite) {
             const reply = replies[Math.floor(Math.random() * replies.length)]
                 .replace("{0}", invitator.toString())
