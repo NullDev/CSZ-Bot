@@ -1,7 +1,7 @@
 // @ts-ignore
 import type { Client, User } from "discord.js";
 
-import Penis from "../storage/model/Penis.js";
+import * as penis from "../storage/penis.js";
 import type { CommandResult, MessageCommand } from "./command.js";
 import log from "../utils/logger.js";
 import type { ProcessableMessage } from "../handler/cmdHandler.js";
@@ -37,8 +37,8 @@ const sendPenis = async (
 };
 
 const isNewLongestDick = async (size: number): Promise<boolean> => {
-    const oldLongest = await Penis.longestRecentMeasurement();
-    return oldLongest === null ? true : (oldLongest.size ?? -1) < size;
+    const oldLongest = (await penis.longestRecentMeasurement()) ?? -1;
+    return oldLongest < size;
 };
 
 /**
@@ -112,9 +112,9 @@ export class PenisCommand implements MessageCommand {
         );
 
         const recentMeasurement =
-            await Penis.fetchRecentMeasurement(userToMeasure);
+            await penis.fetchRecentMeasurement(userToMeasure);
 
-        if (recentMeasurement === null) {
+        if (recentMeasurement === undefined) {
             log.debug(
                 `No recent measuring of ${userToMeasure.id} found. Creating Measurement`,
             );
@@ -135,7 +135,7 @@ export class PenisCommand implements MessageCommand {
             }
 
             await Promise.all([
-                Penis.insertMeasurement(userToMeasure, size, diameter),
+                penis.insertMeasurement(userToMeasure, size, diameter),
                 sendPenis(userToMeasure, message, size, diameter),
             ]);
             return;
@@ -146,7 +146,7 @@ export class PenisCommand implements MessageCommand {
             message,
             recentMeasurement.size,
             recentMeasurement.diameter,
-            recentMeasurement.measuredAt,
+            new Date(recentMeasurement.measuredAt),
         );
     }
 }

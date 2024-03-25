@@ -2,6 +2,7 @@ import type { Snowflake } from "discord.js";
 import type { ColumnType, GeneratedAlways, Selectable } from "kysely";
 
 import type { OneBasedMonth } from "./birthday.js";
+import type { Radius } from "../commands/penis.js";
 
 export interface Database {
     birthdays: BirthdayTable;
@@ -10,6 +11,7 @@ export interface Database {
     splidGroups: SplidGroupTable;
     guildRageQuits: GuildRagequitTable;
     nickNames: NickNameTable;
+    penis: PenisTable;
 }
 
 export type Uuid = string;
@@ -144,3 +146,32 @@ export interface NickNameTable {
     createdAt: ColumnType<string, string, never>;
     updatedAt: ColumnType<string, string, never>;
 }
+
+export type Penis = Selectable<PenisTable>;
+export interface PenisTable {
+    // Cannot use GeneratedAlways because sequelize generated the ID on the client side
+    // id: GeneratedAlways<Uuid>;
+    id: ColumnType<Uuid, Uuid, never>;
+
+    userId: Snowflake;
+    // TODO: Date is not supported by the DB driver
+    measuredAt: ColumnType<string, string, never>;
+    size: number;
+    diameter: Radius;
+
+    // TODO: These don't seem to be taken care of by the database, so we need to insert them manually
+    // Also, Date is not supported by the DB driver
+    createdAt: ColumnType<string, string, never>;
+    updatedAt: ColumnType<string, string, never>;
+}
+/*
+{
+    using: "BTREE",
+    fields: [
+        {
+            name: "measuredAt",
+            order: "ASC",
+        },
+    ],
+},
+*/
