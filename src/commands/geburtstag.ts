@@ -7,7 +7,6 @@ import {
 } from "discord.js";
 
 import type { ApplicationCommand } from "./command.js";
-import { isOneBasedMonth } from "../storage/model/Birthday.js";
 import log from "../utils/logger.js";
 import * as birthday from "../storage/birthday.js";
 
@@ -47,7 +46,9 @@ export class GeburtstagCommand implements ApplicationCommand {
         const day = command.options.getInteger("day", true);
         const month = command.options.getInteger("month", true);
 
-        if (!isOneBasedMonth(month)) return;
+        if (!birthday.isOneBasedMonth(month)) {
+            return;
+        }
 
         const date = moment(`${month}-${day}`, "MM-DD");
 

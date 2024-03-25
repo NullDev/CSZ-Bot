@@ -1,7 +1,7 @@
 import type { Snowflake } from "discord.js";
 import type { ColumnType, GeneratedAlways, Selectable } from "kysely";
 
-import type { OneBasedMonth } from "./model/Birthday";
+import type { OneBasedMonth } from "./birthday.js";
 
 export interface Database {
     birthdays: BirthdayTable;
