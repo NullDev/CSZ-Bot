@@ -1,6 +1,7 @@
 import * as nickName from "../storage/nickName.js";
 import log from "../utils/logger.js";
 import type { BotContext } from "../context.js";
+import type { NickName } from "../storage/model.js";
 
 export default class NicknameHandler {
     constructor(private readonly context: BotContext) {}
@@ -18,16 +19,20 @@ export default class NicknameHandler {
         await Promise.all(updateTasks);
     }
 
-    async updateNickname(userId: string, storedNicknames: string[]) {
+    async updateNickname(userId: string, storedNicknames: NickName[]) {
+        const member = this.context.guild.members.cache.find(
+            m => m.id === userId,
+        );
+        if (!member) {
+            return;
+        }
+
         try {
-            const member = this.context.guild.members.cache.find(
-                m => m.id === userId,
-            );
-            if (!member) return;
-            const nicknames = [member.user.username, ...storedNicknames];
+            const nicknames = [member.user.username, ...storedNicknames.map(n => n.nickName)];
             const pickableNicknames = nicknames.filter(
                 n => n !== member.nickname,
             );
+
             const randomizedNickname =
                 pickableNicknames[
                     Math.floor(Math.random() * pickableNicknames.length)

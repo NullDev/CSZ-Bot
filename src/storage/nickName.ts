@@ -54,17 +54,9 @@ export async function nickNameExist(
 
 export async function allUsersAndNames(
     ctx = db(),
-): Promise<Record<Snowflake, string[]>> {
+): Promise<Record<Snowflake, NickName[]>> {
     const allNicks = await ctx.selectFrom("nickNames").selectAll().execute();
-    return allNicks.reduce(
-        (acc, cur) => ({
-            // Das ding
-            // biome-ignore lint/performance/noAccumulatingSpread: This should be ok.
-            ...acc, //                 VV
-            [cur.userId]: [...(acc[cur.userId] ?? []), cur.nickName],
-        }),
-        {} as Record<Snowflake, string[]>,
-    );
+    return Object.groupBy(allNicks, nick => nick.userId);
 }
 
 export async function deleteNickName(
