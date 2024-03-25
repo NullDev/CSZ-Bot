@@ -19,7 +19,6 @@ import { isTrusted } from "../utils/userUtils.js";
 import { ensureChatInputCommand } from "../utils/interactionUtils.js";
 import SplidGroup from "../storage/model/SplidGroup.js";
 import logger from "../utils/logger.js";
-import SplidLink from "../storage/model/SplidLink.js";
 import * as splidLink from "../storage/splidLink.js";
 
 const createNumberFormatter = (currency: string) =>
