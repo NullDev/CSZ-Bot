@@ -1,8 +1,8 @@
 import type { Collection, GuildMember, Snowflake } from "discord.js";
 
 import type { BotContext } from "../context.js";
-import Boob from "../storage/model/Boob.js";
 import * as penis from "../storage/penis.js";
+import * as boob from "../storage/boob.js";
 import log from "../utils/logger.js";
 
 // Store old usernames. Hope the bot doesn't crash lol
@@ -46,7 +46,7 @@ const createShuffledNicknames = async (
     const averageCockSize: Record<Snowflake, number> =
         await penis.getAveragePenisSizes();
     const averageBoobSize: Record<Snowflake, number> =
-        await Boob.getAverageBoobSizes();
+        await boob.getAverageBoobSizes();
     const biasFnId = (id: Snowflake): number =>
         Math.random() * (averageCockSize[id] ?? 0.01) +
         (averageBoobSize[id] ?? 0.01);

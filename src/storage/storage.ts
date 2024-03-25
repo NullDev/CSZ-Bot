@@ -4,7 +4,6 @@ import AdditionalMessageData from "./model/AdditionalMessageData.js";
 import FadingMessage from "./model/FadingMessage.js";
 import Ban from "./model/Ban.js";
 import log from "../utils/logger.js";
-import Boob from "./model/Boob.js";
 import Reminder from "./model/Reminder.js";
 import AustrianTranslation from "./model/AustrianTranslation.js";
 import { EhrePoints, EhreVotes } from "./model/Ehre.js";
@@ -28,7 +27,6 @@ export async function initialize(databasePath: string) {
     FadingMessage.initialize(sequelize);
     AdditionalMessageData.initialize(sequelize);
     Ban.initialize(sequelize);
-    Boob.initialize(sequelize);
     Reminder.initialize(sequelize);
     AustrianTranslation.initialize(sequelize);
     EhrePoints.initialize(sequelize);

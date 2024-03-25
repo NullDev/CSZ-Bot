@@ -12,6 +12,7 @@ export interface Database {
     guildRageQuits: GuildRagequitTable;
     nickNames: NickNameTable;
     penis: PenisTable;
+    boobs: BoobTable;
 }
 
 export type Uuid = string;
@@ -158,6 +159,34 @@ export interface PenisTable {
     measuredAt: ColumnType<string, string, never>;
     size: number;
     diameter: Radius;
+
+    // TODO: These don't seem to be taken care of by the database, so we need to insert them manually
+    // Also, Date is not supported by the DB driver
+    createdAt: ColumnType<string, string, never>;
+    updatedAt: ColumnType<string, string, never>;
+}
+/*
+{
+    using: "BTREE",
+    fields: [
+        {
+            name: "measuredAt",
+            order: "ASC",
+        },
+    ],
+},
+*/
+
+export type Boob = Selectable<BoobTable>;
+export interface BoobTable {
+    // Cannot use GeneratedAlways because sequelize generated the ID on the client side
+    // id: GeneratedAlways<Uuid>;
+    id: ColumnType<Uuid, Uuid, never>;
+
+    userId: Snowflake;
+    // TODO: Date is not supported by the DB driver
+    measuredAt: ColumnType<string, string, never>;
+    size: number;
 
     // TODO: These don't seem to be taken care of by the database, so we need to insert them manually
     // Also, Date is not supported by the DB driver
