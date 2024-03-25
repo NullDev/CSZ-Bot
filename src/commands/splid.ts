@@ -20,6 +20,7 @@ import { ensureChatInputCommand } from "../utils/interactionUtils.js";
 import SplidGroup from "../storage/model/SplidGroup.js";
 import logger from "../utils/logger.js";
 import SplidLink from "../storage/model/SplidLink.js";
+import * as splidLink from "../storage/splidLink.js";
 
 const createNumberFormatter = (currency: string) =>
     new Intl.NumberFormat("de-DE", {
@@ -321,7 +322,7 @@ export class SplidGroupCommand implements ApplicationCommand {
 
         const memberData = await fetchExternalMemberData(group);
 
-        const linkedAccounts = await SplidLink.matchUsers(
+        const linkedAccounts = await splidLink.matchUsers(
             command.guild,
             new Set(memberData.map(n => n.globalId)),
         );
@@ -424,7 +425,7 @@ export class SplidGroupCommand implements ApplicationCommand {
                 return;
             }
 
-            const result = await SplidLink.createLink(
+            const result = await splidLink.createLink(
                 command.guild,
                 discordUser,
                 splidMember.globalId,

@@ -1,8 +1,6 @@
 import { Model, DataTypes, type Sequelize, type Optional, Op } from "sequelize";
 import type { Guild, Snowflake, User } from "discord.js";
 
-import log from "../../utils/logger.js";
-
 export interface SplidLinkAttributes {
     id: string;
 
@@ -28,56 +26,6 @@ export default class SplidLink
 
     declare readonly createdAt: Date;
     declare readonly updatedAt: Date;
-
-    static createLink = (
-        guild: Guild,
-        user: User,
-        externalSplidId: string,
-    ): Promise<SplidLinkAttributes> => {
-        log.debug(
-            `Linking splid UUID "${externalSplidId}" with discord user ${user} on guild ${guild}`,
-        );
-        return SplidLink.create({
-            guildId: guild.id,
-            discordUserId: user.id,
-            externalSplidId,
-        });
-    };
-
-    static async matchUsers(
-        guild: Guild,
-        splidIds: Set<string>,
-    ): Promise<Map<string, Snowflake>> {
-        const availableLinks = await SplidLink.findAll({
-            where: {
-                guildId: guild.id,
-                externalSplidId: {
-                    [Op.in]: [...splidIds],
-                },
-            },
-        });
-
-        const result = new Map<string, Snowflake>();
-        for (const splidId of splidIds) {
-            const link = availableLinks.find(
-                link => link.externalSplidId === splidId,
-            );
-            if (link) {
-                result.set(splidId, link.discordUserId);
-            }
-        }
-
-        return result;
-    }
-
-    static async delete(guild: Guild, user: User): Promise<void> {
-        await SplidLink.destroy({
-            where: {
-                guildId: guild.id,
-                discordUserId: user.id,
-            },
-        });
-    }
 
     static initialize(sequelize: Sequelize) {
         SplidLink.init(

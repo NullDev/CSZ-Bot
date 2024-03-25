@@ -1,4 +1,4 @@
-import type { GuildMember, Snowflake } from "discord.js";
+import type { GuildMember } from "discord.js";
 
 import type { Stempel } from "./model.js";
 import db from "./kysely.js";
