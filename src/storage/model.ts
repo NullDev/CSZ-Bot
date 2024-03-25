@@ -66,7 +66,6 @@ export interface SplidLinkTable {
     updatedAt: ColumnType<string, string, never>;
 }
 
-
 export type SplidGroup = Selectable<SplidGroupTable>;
 
 export interface SplidGroupTable {
@@ -87,3 +86,22 @@ export interface SplidGroupTable {
     createdAt: ColumnType<string, string, never>;
     updatedAt: ColumnType<string, string, never>;
 }
+/*
+indexes: [
+    {
+        fields: ["guildId"],
+    },
+    {
+        unique: true,
+        fields: ["shortDescription"],
+    },
+    // {
+    //     unique: true,
+    //     fields: ["externalSplidGroupId", "guildId"],
+    // },
+    {
+        unique: true,
+        fields: ["groupCode", "guildId"],
+    },
+],
+*/

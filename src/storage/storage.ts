@@ -12,7 +12,6 @@ import Reminder from "./model/Reminder.js";
 import AustrianTranslation from "./model/AustrianTranslation.js";
 import { EhrePoints, EhreVotes } from "./model/Ehre.js";
 import WoisAction from "./model/WoisAction.js";
-import SplidGroup from "./model/SplidGroup.js";
 
 export async function initialize(databasePath: string) {
     const sequelize = new Sequelize({
@@ -41,6 +40,5 @@ export async function initialize(databasePath: string) {
     EhrePoints.initialize(sequelize);
     EhreVotes.initialize(sequelize);
     WoisAction.initialize(sequelize);
-    SplidGroup.initialize(sequelize);
     await sequelize.sync();
 }

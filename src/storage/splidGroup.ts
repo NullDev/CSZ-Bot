@@ -38,8 +38,44 @@ export function createSplidGroup(
 
 export function findOneByCodeForGuild(
     guild: Guild,
+    groupCode: string,
+    ctx = db(),
+): Promise<SplidGroup | undefined> {
+    return ctx
+        .selectFrom("splidGroups")
+        .where("guildId", "=", guild.id)
+        .where("groupCode", "=", groupCode)
+        .selectAll()
+        .executeTakeFirst();
+}
+
+export function findOneByDescriptionForGuild(
+    guild: Guild,
     shortDescription: string,
     ctx = db(),
-) {
-    
+): Promise<SplidGroup | undefined> {
+    return ctx
+        .selectFrom("splidGroups")
+        .where("guildId", "=", guild.id)
+        .where("shortDescription", "=", shortDescription)
+        .selectAll()
+        .executeTakeFirst();
+}
+
+export function findAllGroups(guild: Guild, ctx = db()): Promise<SplidGroup[]> {
+    return ctx
+        .selectFrom("splidGroups")
+        .where("guildId", "=", guild.id)
+        .selectAll()
+        .execute();
+}
+
+export async function deleteByInviteCode(
+    groupCode: string,
+    ctx = db(),
+): Promise<void> {
+    await ctx
+        .deleteFrom("splidGroups")
+        .where("groupCode", "=", groupCode)
+        .execute();
 }

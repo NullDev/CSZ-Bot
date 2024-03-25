@@ -15,9 +15,9 @@ import {
 import { SplidClient } from "splid-js";
 
 import type { ApplicationCommand } from "./command.js";
+import type { SplidGroup } from "../storage/model.js";
 import { isTrusted } from "../utils/userUtils.js";
 import { ensureChatInputCommand } from "../utils/interactionUtils.js";
-import SplidGroup from "../storage/model/SplidGroup.js";
 import logger from "../utils/logger.js";
 import * as splidLink from "../storage/splidLink.js";
 import * as splidGroup from "../storage/splidGroup.js";
@@ -269,7 +269,7 @@ export class SplidGroupCommand implements ApplicationCommand {
             return;
         }
 
-        const groups = await SplidGroup.findAllGroups(command.guild);
+        const groups = await splidGroup.findAllGroups(command.guild);
 
         if (groups.length === 0) {
             await command.reply({
@@ -305,7 +305,7 @@ export class SplidGroupCommand implements ApplicationCommand {
             return;
         }
         const code = command.options.getString("invite-code", true);
-        const group = await SplidGroup.findOneByCodeForGuild(
+        const group = await splidGroup.findOneByCodeForGuild(
             command.guild,
             code,
         );
@@ -393,7 +393,7 @@ export class SplidGroupCommand implements ApplicationCommand {
         }
 
         const groupCode = command.options.getString("invite-code", true);
-        const group = await SplidGroup.findOneByCodeForGuild(
+        const group = await splidGroup.findOneByCodeForGuild(
             command.guild,
             groupCode,
         );
@@ -451,7 +451,7 @@ export class SplidGroupCommand implements ApplicationCommand {
     async handleDeleteGroup(command: ChatInputCommandInteraction) {
         const code = command.options.getString("invite-code", true);
 
-        await SplidGroup.deleteByInviteCode(code);
+        await splidGroup.deleteByInviteCode(code);
 
         await command.reply({
             content: `Ok Bruder, habe Splid-Gruppe mit Invite-Code \`${code}\` gelöscht.`,
@@ -494,7 +494,7 @@ export class SplidGroupCommand implements ApplicationCommand {
                             true,
                         );
 
-                        const group = await SplidGroup.findOneByCodeForGuild(
+                        const group = await splidGroup.findOneByCodeForGuild(
                             interaction.guild,
                             groupCode,
                         );
@@ -533,7 +533,7 @@ export class SplidGroupCommand implements ApplicationCommand {
     }
 
     async #getSplidGroupCompletions(focusedValue: string, guild: Guild) {
-        const groups = await SplidGroup.findAllGroups(guild);
+        const groups = await splidGroup.findAllGroups(guild);
 
         const focusedValueNormalized = focusedValue.toLowerCase();
         return groups
