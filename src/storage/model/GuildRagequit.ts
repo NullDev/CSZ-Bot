@@ -7,22 +7,6 @@ export default class GuildRagequit extends Model {
     declare userId: Snowflake;
     declare numRagequits: number;
 
-    static async getNumRagequits(guildId: Snowflake, userId: Snowflake) {
-        const data = await GuildRagequit.findOne({
-            where: {
-                guildId,
-                userId,
-            },
-        });
-
-        return data?.numRagequits ?? 0;
-    }
-
-    /**
-     *
-     * @param {BigInt} guildId
-     * @param {BigInt} userId
-     */
     static async incrementRagequit(
         guildId: Snowflake,
         userId: Snowflake,

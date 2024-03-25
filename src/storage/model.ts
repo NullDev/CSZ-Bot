@@ -8,6 +8,7 @@ export interface Database {
     stempels: StempelTable;
     splidLinks: SplidLinkTable;
     splidGroups: SplidGroupTable;
+    guildRageQuits: GuildRagequitTable;
 }
 
 export type Uuid = string;
@@ -105,3 +106,19 @@ indexes: [
     },
 ],
 */
+
+export type GuildRagequit = Selectable<GuildRagequitTable>;
+export interface GuildRagequitTable {
+    // Cannot use GeneratedAlways because sequelize generated the ID on the client side
+    // id: GeneratedAlways<Uuid>;
+    id: ColumnType<Uuid, Uuid, never>;
+
+    guildId: Snowflake;
+    userId: Snowflake;
+    numRagequits: number;
+
+    // TODO: These don't seem to be taken care of by the database, so we need to insert them manually
+    // Also, Date is not supported by the DB driver
+    createdAt: ColumnType<string, string, never>;
+    updatedAt: ColumnType<string, string, never>;
+}

@@ -50,7 +50,7 @@ import { AoCHandler } from "./commands/aoc.js";
 import { rotate } from "./helper/bannerCarusel.js";
 import deleteThreadMessagesHandler from "./handler/deleteThreadMessagesHandler.js";
 import * as terminal from "./terminal.js";
-import { getAll } from "./storage/birthday.js";
+import * as guildRageQuit from "./storage/guildRageQuit.js";
 
 const args = process.argv.slice(2);
 
@@ -319,11 +319,12 @@ client.on("guildDelete", guild =>
 );
 
 client.on("guildMemberAdd", async member => {
-    const numRagequits = await GuildRagequit.getNumRagequits(
-        member.guild.id,
-        member.id,
+    const numRageQuits = await guildRageQuit.getNumRageQuits(
+        member.guild,
+        member,
     );
-    if (numRagequits === 0) {
+
+    if (numRageQuits === 0) {
         return;
     }
 
@@ -336,7 +337,7 @@ client.on("guildMemberAdd", async member => {
 
     await botContext.textChannels.hauptchat.send({
         content: `Haha, schau mal einer guck wer wieder hergekommen ist! ${member} hast es aber nicht lange ohne uns ausgehalten. ${
-            numRagequits > 1 ? `Und das schon zum ${numRagequits}. mal` : ""
+            numRageQuits > 1 ? `Und das schon zum ${numRageQuits}. mal` : ""
         }`,
         allowedMentions: {
             users: [member.id],
@@ -346,8 +347,7 @@ client.on("guildMemberAdd", async member => {
 
 client.on(
     "guildMemberRemove",
-    async member =>
-        await GuildRagequit.incrementRagequit(member.guild.id, member.id),
+    async member => await guildRageQuit.incrementRageQuit(member.guild, member),
 );
 
 client.on(
