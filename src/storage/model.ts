@@ -9,7 +9,7 @@ export interface Database {
     splidLinks: SplidLinkTable;
     splidGroups: SplidGroupTable;
     guildRageQuits: GuildRagequitTable;
-    nickName: NickNameTable;
+    nickNames: NickNameTable;
 }
 
 export type Uuid = string;

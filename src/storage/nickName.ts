@@ -26,7 +26,7 @@ export async function insertNickname(
 
     const now = new Date().toISOString();
     return ctx
-        .insertInto("nickName")
+        .insertInto("nickNames")
         .values({
             id: crypto.randomUUID(),
             userId,
@@ -44,7 +44,7 @@ export async function nickNameExist(
     ctx = db(),
 ) {
     const { nicks } = await ctx
-        .selectFrom("nickName")
+        .selectFrom("nickNames")
         .where("userId", "=", userId)
         .where("nickName", "=", nickName)
         .select(({ fn }) => fn.countAll<number>().as("nicks"))
@@ -55,7 +55,7 @@ export async function nickNameExist(
 export async function allUsersAndNames(
     ctx = db(),
 ): Promise<Record<Snowflake, string[]>> {
-    const allNicks = await ctx.selectFrom("nickName").selectAll().execute();
+    const allNicks = await ctx.selectFrom("nickNames").selectAll().execute();
     return allNicks.reduce(
         (acc, cur) => ({
             // Das ding
@@ -73,7 +73,7 @@ export async function deleteNickName(
     ctx = db(),
 ): Promise<void> {
     await ctx
-        .deleteFrom("nickName")
+        .deleteFrom("nickNames")
         .where("userId", "=", user.id)
         .where("nickName", "=", nickName)
         .execute();
@@ -83,7 +83,7 @@ export async function deleteAllNickNames(
     user: User,
     ctx = db(),
 ): Promise<void> {
-    await ctx.deleteFrom("nickName").where("userId", "=", user.id).execute();
+    await ctx.deleteFrom("nickNames").where("userId", "=", user.id).execute();
 }
 
 export function getNicknames(
@@ -91,7 +91,7 @@ export function getNicknames(
     ctx = db(),
 ): Promise<NickName[]> {
     return ctx
-        .selectFrom("nickName")
+        .selectFrom("nickNames")
         .where("userId", "=", userId)
         .selectAll()
         .execute();
