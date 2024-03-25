@@ -20,6 +20,7 @@ import { ensureChatInputCommand } from "../utils/interactionUtils.js";
 import SplidGroup from "../storage/model/SplidGroup.js";
 import logger from "../utils/logger.js";
 import * as splidLink from "../storage/splidLink.js";
+import * as splidGroup from "../storage/splidGroup.js";
 
 const createNumberFormatter = (currency: string) =>
     new Intl.NumberFormat("de-DE", {
@@ -241,7 +242,7 @@ export class SplidGroupCommand implements ApplicationCommand {
             const longDescription =
                 command.options.getString("description-long", false) ?? null;
 
-            const result = await SplidGroup.createSplidGroup(
+            const result = await splidGroup.createSplidGroup(
                 command.user,
                 command.guild,
                 normalizedCode,

@@ -32,27 +32,6 @@ export default class SplidGroup
     declare readonly createdAt: Date;
     declare readonly updatedAt: Date;
 
-    static createSplidGroup = (
-        creator: User,
-        guild: Guild,
-        groupCode: string,
-        externalSplidGroupId: string,
-        shortDescription: string,
-        longDescription: string | null,
-    ): Promise<SplidGroupAttributes> => {
-        log.debug(
-            `Saving splid group, initiated by ${creator} on guild ${guild} with group code ${groupCode}: "${shortDescription}"`,
-        );
-        return SplidGroup.create({
-            creatorId: creator.id,
-            guildId: guild.id,
-            groupCode,
-            // externalSplidGroupId,
-            shortDescription,
-            longDescription,
-        });
-    };
-
     static findAllGroups(guild: Guild): Promise<SplidGroup[]> {
         return SplidGroup.findAll({
             where: {
