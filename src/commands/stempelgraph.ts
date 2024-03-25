@@ -12,7 +12,7 @@ import { Resvg } from "@resvg/resvg-js";
 
 import type { ApplicationCommand, CommandResult } from "./command.js";
 import type { BotContext } from "../context.js";
-import Stempel from "../storage/model/Stempel.js";
+import * as stempel from "../storage/stempel.js";
 import log from "../utils/logger.js";
 import { isMod, isTrusted } from "../utils/userUtils.js";
 
@@ -234,7 +234,7 @@ export class StempelgraphCommand implements ApplicationCommand {
             return;
         }
 
-        const stempels = await Stempel.findAll();
+        const stempels = await stempel.findAll();
         log.debug(`Found ${stempels.length} Stempels`);
 
         const allUserIds = new Set<string>(

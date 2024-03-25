@@ -3,7 +3,6 @@ import { Sequelize } from "sequelize";
 import AdditionalMessageData from "./model/AdditionalMessageData.js";
 import FadingMessage from "./model/FadingMessage.js";
 import GuildRagequit from "./model/GuildRagequit.js";
-import Stempel from "./model/Stempel.js";
 import Ban from "./model/Ban.js";
 import log from "../utils/logger.js";
 import Penis from "./model/Penis.js";
@@ -34,7 +33,6 @@ export async function initialize(databasePath: string) {
     FadingMessage.initialize(sequelize);
     AdditionalMessageData.initialize(sequelize);
     GuildRagequit.initialize(sequelize);
-    Stempel.initialize(sequelize);
     Ban.initialize(sequelize);
     Penis.initialize(sequelize);
     Boob.initialize(sequelize);

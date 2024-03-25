@@ -38,3 +38,7 @@ export function getStempelByInvitator(
         .selectAll()
         .execute();
 }
+
+export function findAll(ctx = db()): Promise<Stempel[]> {
+    return ctx.selectFrom("stempels").selectAll().execute();
+}
