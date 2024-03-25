@@ -3,7 +3,7 @@ import type { Client } from "discord.js";
 import type { BotContext } from "../context.js";
 import type { ProcessableMessage } from "../handler/cmdHandler.js";
 import type { MessageCommand } from "./command.js";
-import AustrianTranslation from "../storage/model/AustrianTranslation.js";
+import * as austrianTranslation from "../storage/austrianTranslation.js";
 
 async function deOidaLine(line: string): Promise<string> {
     // We cannot just split all words using \s*. That could tear apart words or translations like "fescher bub"
@@ -30,7 +30,7 @@ async function deOidaLine(line: string): Promise<string> {
 
     for (const translationCandidate of enumerateAdjacentTokens(tokens)) {
         const germanTranslation =
-            await AustrianTranslation.findTranslation(translationCandidate);
+            await austrianTranslation.findTranslation(translationCandidate);
         if (germanTranslation) {
             // This is a rather dumb way of doing this.
             // Consider the example from above: "oida der fesche bursch han recht"

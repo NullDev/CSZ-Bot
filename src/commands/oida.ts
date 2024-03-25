@@ -5,7 +5,7 @@ import {
     SlashCommandStringOption,
 } from "discord.js";
 
-import AustrianTranslation from "../storage/model/AustrianTranslation.js";
+import * as austrianTranslation from "../storage/austrianTranslation.js";
 import type { ApplicationCommand } from "./command.js";
 import type { BotContext } from "../context.js";
 import { ensureChatInputCommand } from "../utils/interactionUtils.js";
@@ -67,7 +67,7 @@ export class OidaCommand implements ApplicationCommand {
         const german = cmd.options.getString("german", true); // assertion because it is required
         const description = cmd.options.getString("description", false);
 
-        await AustrianTranslation.persistOrUpdate(
+        await austrianTranslation.persistOrUpdate(
             addedBy,
             this.normalizeTranslation(german),
             this.normalizeTranslation(austrian),

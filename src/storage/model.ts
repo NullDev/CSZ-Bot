@@ -13,6 +13,7 @@ export interface Database {
     nickNames: NickNameTable;
     penis: PenisTable;
     boobs: BoobTable;
+    austrianTranslations: AustrianTranslationTable;
 }
 
 export type Uuid = string;
@@ -202,5 +203,32 @@ export interface BoobTable {
             order: "ASC",
         },
     ],
+},
+*/
+
+export type AustrianTranslation = Selectable<AustrianTranslationTable>;
+export interface AustrianTranslationTable {
+    // Cannot use GeneratedAlways because sequelize generated the ID on the client side
+    // id: GeneratedAlways<Uuid>;
+    id: ColumnType<Uuid, Uuid, never>;
+
+    addedByUserId: string;
+    austrian: string;
+    german: string;
+    description: string | null;
+
+    // TODO: These don't seem to be taken care of by the database, so we need to insert them manually
+    // Also, Date is not supported by the DB driver
+    createdAt: ColumnType<string, string, never>;
+    updatedAt: ColumnType<string, string, never>;
+}
+/*
+{
+    unique: true,
+    fields: ["austrian"],
+},
+{
+    unique: false,
+    fields: ["german"],
 },
 */
