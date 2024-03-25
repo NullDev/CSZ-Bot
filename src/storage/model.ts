@@ -16,11 +16,18 @@ export interface Database {
     austrianTranslations: AustrianTranslationTable;
 }
 
+export interface AuditedTable {
+    // TODO: These don't seem to be taken care of by the database, so we need to insert them manually
+    // Also, Date is not supported by the DB driver
+    createdAt: ColumnType<string, string, never>;
+    updatedAt: ColumnType<string, string, never>;
+}
+
 export type Uuid = string;
 
 export type Birthday = Selectable<BirthdayTable>;
 
-export interface BirthdayTable {
+export interface BirthdayTable extends AuditedTable {
     // Cannot use GeneratedAlways because sequelize generated the ID on the client side
     // id: GeneratedAlways<Uuid>;
     id: ColumnType<Uuid, Uuid, never>;
@@ -28,32 +35,22 @@ export interface BirthdayTable {
     userId: Snowflake;
     month: OneBasedMonth;
     day: number;
-
-    // TODO: These don't seem to be taken care of by the database, so we need to insert them manually
-    // Also, Date is not supported by the DB driver
-    createdAt: ColumnType<string, string, never>;
-    updatedAt: ColumnType<string, string, never>;
 }
 
 export type Stempel = Selectable<StempelTable>;
 
-export interface StempelTable {
+export interface StempelTable extends AuditedTable {
     // Cannot use GeneratedAlways because sequelize generated the ID on the client side
     // id: GeneratedAlways<Uuid>;
     id: ColumnType<Uuid, Uuid, never>;
 
     invitator: Snowflake;
     invitedMember: Snowflake;
-
-    // TODO: These don't seem to be taken care of by the database, so we need to insert them manually
-    // Also, Date is not supported by the DB driver
-    createdAt: ColumnType<string, string, never>;
-    updatedAt: ColumnType<string, string, never>;
 }
 
 export type SplidLink = Selectable<SplidLinkTable>;
 
-export interface SplidLinkTable {
+export interface SplidLinkTable extends AuditedTable {
     // Cannot use GeneratedAlways because sequelize generated the ID on the client side
     // id: GeneratedAlways<Uuid>;
     id: ColumnType<Uuid, Uuid, never>;
@@ -65,16 +62,11 @@ export interface SplidLinkTable {
     guildId: Snowflake;
     discordUserId: Snowflake;
     externalSplidId: string;
-
-    // TODO: These don't seem to be taken care of by the database, so we need to insert them manually
-    // Also, Date is not supported by the DB driver
-    createdAt: ColumnType<string, string, never>;
-    updatedAt: ColumnType<string, string, never>;
 }
 
 export type SplidGroup = Selectable<SplidGroupTable>;
 
-export interface SplidGroupTable {
+export interface SplidGroupTable extends AuditedTable {
     // Cannot use GeneratedAlways because sequelize generated the ID on the client side
     // id: GeneratedAlways<Uuid>;
     id: ColumnType<Uuid, Uuid, never>;
@@ -86,11 +78,6 @@ export interface SplidGroupTable {
     // externalSplidGroupId: string;
     shortDescription: string;
     longDescription: string | null;
-
-    // TODO: These don't seem to be taken care of by the database, so we need to insert them manually
-    // Also, Date is not supported by the DB driver
-    createdAt: ColumnType<string, string, never>;
-    updatedAt: ColumnType<string, string, never>;
 }
 /*
 indexes: [
@@ -113,7 +100,7 @@ indexes: [
 */
 
 export type GuildRagequit = Selectable<GuildRagequitTable>;
-export interface GuildRagequitTable {
+export interface GuildRagequitTable extends AuditedTable {
     // Cannot use GeneratedAlways because sequelize generated the ID on the client side
     // id: GeneratedAlways<Uuid>;
     id: ColumnType<Uuid, Uuid, never>;
@@ -121,11 +108,6 @@ export interface GuildRagequitTable {
     guildId: Snowflake;
     userId: Snowflake;
     numRagequits: number;
-
-    // TODO: These don't seem to be taken care of by the database, so we need to insert them manually
-    // Also, Date is not supported by the DB driver
-    createdAt: ColumnType<string, string, never>;
-    updatedAt: ColumnType<string, string, never>;
 }
 /*
 {
@@ -135,22 +117,17 @@ export interface GuildRagequitTable {
 */
 
 export type NickName = Selectable<NickNameTable>;
-export interface NickNameTable {
+export interface NickNameTable extends AuditedTable {
     // Cannot use GeneratedAlways because sequelize generated the ID on the client side
     // id: GeneratedAlways<Uuid>;
     id: ColumnType<Uuid, Uuid, never>;
 
     userId: Snowflake;
     nickName: string;
-
-    // TODO: These don't seem to be taken care of by the database, so we need to insert them manually
-    // Also, Date is not supported by the DB driver
-    createdAt: ColumnType<string, string, never>;
-    updatedAt: ColumnType<string, string, never>;
 }
 
 export type Penis = Selectable<PenisTable>;
-export interface PenisTable {
+export interface PenisTable extends AuditedTable {
     // Cannot use GeneratedAlways because sequelize generated the ID on the client side
     // id: GeneratedAlways<Uuid>;
     id: ColumnType<Uuid, Uuid, never>;
@@ -160,11 +137,6 @@ export interface PenisTable {
     measuredAt: ColumnType<string, string, never>;
     size: number;
     diameter: Radius;
-
-    // TODO: These don't seem to be taken care of by the database, so we need to insert them manually
-    // Also, Date is not supported by the DB driver
-    createdAt: ColumnType<string, string, never>;
-    updatedAt: ColumnType<string, string, never>;
 }
 /*
 {
@@ -179,7 +151,7 @@ export interface PenisTable {
 */
 
 export type Boob = Selectable<BoobTable>;
-export interface BoobTable {
+export interface BoobTable extends AuditedTable {
     // Cannot use GeneratedAlways because sequelize generated the ID on the client side
     // id: GeneratedAlways<Uuid>;
     id: ColumnType<Uuid, Uuid, never>;
@@ -188,11 +160,6 @@ export interface BoobTable {
     // TODO: Date is not supported by the DB driver
     measuredAt: ColumnType<string, string, never>;
     size: number;
-
-    // TODO: These don't seem to be taken care of by the database, so we need to insert them manually
-    // Also, Date is not supported by the DB driver
-    createdAt: ColumnType<string, string, never>;
-    updatedAt: ColumnType<string, string, never>;
 }
 /*
 {
@@ -207,7 +174,7 @@ export interface BoobTable {
 */
 
 export type AustrianTranslation = Selectable<AustrianTranslationTable>;
-export interface AustrianTranslationTable {
+export interface AustrianTranslationTable extends AuditedTable {
     // Cannot use GeneratedAlways because sequelize generated the ID on the client side
     // id: GeneratedAlways<Uuid>;
     id: ColumnType<Uuid, Uuid, never>;
@@ -216,11 +183,6 @@ export interface AustrianTranslationTable {
     austrian: string;
     german: string;
     description: string | null;
-
-    // TODO: These don't seem to be taken care of by the database, so we need to insert them manually
-    // Also, Date is not supported by the DB driver
-    createdAt: ColumnType<string, string, never>;
-    updatedAt: ColumnType<string, string, never>;
 }
 /*
 {
