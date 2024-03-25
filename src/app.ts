@@ -50,6 +50,7 @@ import { AoCHandler } from "./commands/aoc.js";
 import { rotate } from "./helper/bannerCarusel.js";
 import deleteThreadMessagesHandler from "./handler/deleteThreadMessagesHandler.js";
 import * as terminal from "./terminal.js";
+import { getAll } from "./storage/birthday.js";
 
 const args = process.argv.slice(2);
 
