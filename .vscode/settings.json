@@ -32,6 +32,8 @@
         "osage",
         "rejoiner",
         "faulenzer",
+        "kysely",
+        "sqlite",
         "brudi",
         "faulenzerping",
         "labelfontcolor",
