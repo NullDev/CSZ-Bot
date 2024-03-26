@@ -1,4 +1,4 @@
-import type { Message, PartialMessage, Snowflake, User } from "discord.js";
+import type { Message, Snowflake } from "discord.js";
 import { sql } from "kysely";
 
 import type { AdditionalMessageData } from "./model.js";
@@ -75,4 +75,8 @@ export function destroyForMessage(message: Message, ctx = db()) {
         .where("channelId", "=", message.channelId)
         .where("messageId", "=", message.id)
         .execute();
+}
+
+export function findAll(ctx = db()): Promise<AdditionalMessageData[]> {
+    return ctx.selectFrom("additionalMessageData").selectAll().execute();
 }

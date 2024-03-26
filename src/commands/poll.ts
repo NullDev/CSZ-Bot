@@ -11,7 +11,6 @@ import {
 } from "discord.js";
 
 import log from "../utils/logger.js";
-import AdditionalMessageData from "../storage/model/AdditionalMessageData.js";
 import * as additionalMessageData from "../storage/additionalMessageData.js";
 import { getConfig } from "../utils/configHandler.js";
 import type { BotContext } from "../context.js";
@@ -278,13 +277,15 @@ export const run: CommandFunction = async (_client, message, args, context) => {
 };
 
 export const importPolls = async () => {
-    const additionalDatas = await AdditionalMessageData.findAll();
+    const additionalDatas = await additionalMessageData.findAll();
     let count = 0;
     for (const additionalData of additionalDatas) {
-        if (!additionalData.customData.delayedPollData) {
+        const customData = JSON.parse(additionalData.customData);
+
+        if (!customData.delayedPollData) {
             continue;
         }
-        delayedPolls.push(additionalData.customData.delayedPollData);
+        delayedPolls.push(customData.delayedPollData);
         count++;
     }
     log.info(`Loaded ${count} polls from database`);
