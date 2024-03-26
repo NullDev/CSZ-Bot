@@ -122,6 +122,7 @@ process.on("uncaughtException", (err, origin) => {
 
 process.once("SIGTERM", signal => {
     log.error(`Received Sigterm: ${signal}`);
+    kysely.disconnectFromDb();
     process.exit(1);
 });
 process.once("exit", code => {
