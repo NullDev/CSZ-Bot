@@ -6,12 +6,10 @@
     "body": [
       "import { sql, type Kysely } from \"kysely\";",
       "",
-      "// biome-ignore lint/suspicious/noExplicitAny: needed",
       "export async function up(db: Kysely<any>): Promise<void> {",
       "  await db.schema${0}",
       "}",
       "",
-      "// biome-ignore lint/suspicious/noExplicitAny: needed",
       "export async function down(db: Kysely<any>): Promise<void> {",
       "  // TODO: Implement",
       "}"

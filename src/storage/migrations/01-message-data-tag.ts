@@ -1,6 +1,5 @@
 import { sql, type Kysely } from "kysely";
 
-// biome-ignore lint/suspicious/noExplicitAny: needed
 export async function up(db: Kysely<any>): Promise<void> {
     await db.schema.dropTable("additionalMessageData").execute();
     await db.schema
@@ -49,7 +48,6 @@ export async function up(db: Kysely<any>): Promise<void> {
     await createUpdatedAtTrigger(db, "additionalMessageData");
 }
 
-// biome-ignore lint/suspicious/noExplicitAny: needed
 function createUpdatedAtTrigger(db: Kysely<any>, tableName: string) {
     return sql
         .raw(`
@@ -64,7 +62,6 @@ function createUpdatedAtTrigger(db: Kysely<any>, tableName: string) {
         .execute(db);
 }
 
-// biome-ignore lint/suspicious/noExplicitAny: needed
 export async function down(db: Kysely<any>): Promise<void> {
     throw new Error("Not supported lol");
 }

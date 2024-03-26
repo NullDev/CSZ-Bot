@@ -1,6 +1,5 @@
 import { sql, type Kysely } from "kysely";
 
-// biome-ignore lint/suspicious/noExplicitAny: needed
 export async function up(db: Kysely<any>): Promise<void> {
     // Initial schema that originated from sequelize
     // obtained from production database using ".schema" command
@@ -217,7 +216,6 @@ export async function up(db: Kysely<any>): Promise<void> {
     );
 }
 
-// biome-ignore lint/suspicious/noExplicitAny: needed
 export async function down(db: Kysely<any>): Promise<void> {
     throw new Error("Not supported lol");
 }

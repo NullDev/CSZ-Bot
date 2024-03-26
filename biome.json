@@ -22,5 +22,19 @@
         "formatter": {
             "arrowParentheses": "asNeeded"
         }
-    }
+    },
+    "overrides": [
+        {
+            "include": [
+                "src/storage/migrations/**"
+            ],
+            "linter": {
+                "rules": {
+                    "suspicious": {
+                        "noExplicitAny": "off"
+                    }
+                }
+            }
+        }
+    ]
 }
