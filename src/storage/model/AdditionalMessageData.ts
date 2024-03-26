@@ -9,6 +9,8 @@ import { Model, type Sequelize, DataTypes } from "sequelize";
 import log from "../../utils/logger.js";
 import type { JsonObject } from "../../types.js";
 
+// TODO: Add some kind of "type" tag, so different commands can retrieve their data independently
+
 export default class AdditionalMessageData extends Model {
     declare id: string;
     declare messageId: Snowflake;
