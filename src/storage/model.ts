@@ -20,6 +20,7 @@ export interface Database {
     woisActions: WoisActionTable;
     additionalMessageData: AdditionalMessageDataTable;
     bans: BanTable;
+    reminders: ReminderTable;
 }
 
 export interface AuditedTable {
@@ -294,4 +295,31 @@ export interface BanTable extends AuditedTable {
         },
     ],
 },
+*/
+
+export type Reminder = Selectable<ReminderTable>;
+export interface ReminderTable extends AuditedTable {
+    // Cannot use GeneratedAlways because sequelize generated the ID on the client side
+    // id: GeneratedAlways<Uuid>;
+    id: ColumnType<Uuid, Uuid, never>;
+
+    guildId: Snowflake;
+    channelId: Snowflake;
+    userId: Snowflake;
+
+    // TODO: Date is not supported by the DB driver
+    remindAt: ColumnType<string, string, string>;
+    messageId: Snowflake | null;
+    reminderNote: string | null;
+}
+/*
+{
+    using: "BTREE",
+    fields: [
+        {
+            name: "remindAt",
+            order: "ASC",
+        },
+    ],
+}
 */
