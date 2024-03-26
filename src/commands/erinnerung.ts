@@ -203,8 +203,6 @@ const sendReminder = async (reminder: Reminder, context: BotContext) => {
 };
 
 export const reminderHandler = async (context: BotContext) => {
-    log.debug("Entered `reminderHandler`");
-
     const reminders = await reminderService.getCurrentReminders();
     const results = await Promise.allSettled(
         reminders.map(reminder => sendReminder(reminder, context)),
