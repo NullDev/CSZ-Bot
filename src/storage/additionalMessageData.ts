@@ -1,11 +1,15 @@
 import type { Message, Snowflake } from "discord.js";
 import { sql } from "kysely";
 
-import type { AdditionalMessageData } from "./model.js";
+import type { AdditionalMessageData, DataUsage } from "./model.js";
 import type { JsonObject } from "../types.js";
 import db from "./db.js";
 
-export async function getForMessage(message: Message, ctx = db()) {
+export async function getForMessage(
+    message: Message,
+    usage: DataUsage,
+    ctx = db(),
+) {
     if (!message.guild) {
         throw new Error(
             "Cannot associate data with message outside of a guild",
@@ -13,20 +17,20 @@ export async function getForMessage(message: Message, ctx = db()) {
     }
     const res = await ctx
         .selectFrom("additionalMessageData")
-        .where("guildId", "=", message.guildId)
-        .where("channelId", "=", message.channelId)
         .where("messageId", "=", message.id)
+        .where("usage", "=", usage)
         .selectAll()
         .executeTakeFirst();
 
     return res === undefined
         ? undefined
-        : { ...res, customData: JSON.parse(res.customData) as JsonObject };
+        : { ...res, customData: JSON.parse(res.payload) as JsonObject };
 }
 
 export async function upsertForMessage(
     message: Message,
-    customData: JsonObject,
+    usage: DataUsage,
+    payload: JsonObject,
     ctx = db(),
 ) {
     if (!message.guild) {
@@ -38,45 +42,39 @@ export async function upsertForMessage(
     await ctx
         .insertInto("additionalMessageData")
         .values({
-            id: crypto.randomUUID(),
             guildId: message.guildId as Snowflake,
             channelId: message.channelId,
             messageId: message.id,
-            customData: JSON.stringify(customData),
-            createdAt: sql`current_timestamp`,
-            updatedAt: sql`current_timestamp`,
+            usage,
+            payload: JSON.stringify(payload),
         })
         .onConflict(oc =>
             oc.columns(["guildId", "channelId", "messageId"]).doUpdateSet({
-                customData: JSON.stringify(customData),
+                payload: JSON.stringify(payload),
             }),
         )
         .execute();
 }
 
-export async function setCustomData(
-    id: AdditionalMessageData["id"],
-    data: JsonObject,
+export async function destroyForMessage(
+    message: Message,
+    usage: DataUsage,
     ctx = db(),
-): Promise<void> {
+) {
     await ctx
-        .updateTable("additionalMessageData")
-        .where("id", "=", id)
-        .set({
-            customData: JSON.stringify(data),
-        })
-        .execute();
-}
-
-export function destroyForMessage(message: Message, ctx = db()) {
-    return ctx
         .deleteFrom("additionalMessageData")
-        .where("guildId", "=", message.guildId)
-        .where("channelId", "=", message.channelId)
         .where("messageId", "=", message.id)
+        .where("usage", "=", usage)
         .execute();
 }
 
-export function findAll(ctx = db()): Promise<AdditionalMessageData[]> {
-    return ctx.selectFrom("additionalMessageData").selectAll().execute();
+export function findAll(
+    usage: DataUsage,
+    ctx = db(),
+): Promise<AdditionalMessageData[]> {
+    return ctx
+        .selectFrom("additionalMessageData")
+        .where("usage", "=", usage)
+        .selectAll()
+        .execute();
 }

@@ -248,25 +248,23 @@ export interface WoisActionTable extends AuditedTable {
     isWoisgangAction: boolean;
 }
 
+export type DataUsage = "DELAYED_POLL";
+
 export type AdditionalMessageData = Selectable<AdditionalMessageDataTable>;
 // TODO: Add some kind of "type" tag, so different commands can retrieve their data independently
-export interface AdditionalMessageDataTable extends AuditedTable {
-    // Cannot use GeneratedAlways because sequelize generated the ID on the client side
-    // id: GeneratedAlways<Uuid>;
-    id: ColumnType<Uuid, Uuid, never>;
+export interface AdditionalMessageDataTable {
+    id: GeneratedAlways<number>;
 
     guildId: Snowflake;
     channelId: Snowflake;
     messageId: Snowflake;
+    usage: DataUsage;
     // TODO: JSON types are currently not supported by the DB driver
-    customData: ColumnType<string, string, string>; // JsonObject;
+    payload: ColumnType<string, string, string>; // JsonObject;
+
+    createdAt: ColumnType<string, never, never>;
+    updatedAt: ColumnType<string, never, never>;
 }
-/*
-{
-    unique: true,
-    fields: ["guildId", "channelId", "messageId"],
-},
-*/
 
 export type Ban = Selectable<BanTable>;
 export interface BanTable extends AuditedTable {

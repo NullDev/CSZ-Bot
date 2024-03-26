@@ -14,6 +14,7 @@ import log from "../utils/logger.js";
 import * as additionalMessageData from "../storage/additionalMessageData.js";
 import type { BotContext } from "../context.js";
 import type { CommandFunction } from "../types.js";
+import { DataUsage } from "../storage/model.js";
 
 export const LETTERS = [
     ":regional_indicator_a:",
@@ -254,35 +255,24 @@ export const run: CommandFunction = async (_client, message, args, context) => {
             reactionMap,
         };
 
-        // TODO: transaction
-        const additionalData =
-            await additionalMessageData.getForMessage(pollMessage);
-
-        if (additionalData === undefined) {
-            await additionalMessageData.upsertForMessage(pollMessage, {
-                delayedPollData,
-            });
-        } else {
-            await additionalMessageData.setCustomData(additionalData.id, {
-                ...additionalData.customData,
-                delayedPollData,
-            });
-        }
-
+        await additionalMessageData.upsertForMessage(
+            pollMessage,
+            "DELAYED_POLL",
+            delayedPollData,
+        );
         delayedPolls.push(delayedPollData);
     }
 };
 
 export const importPolls = async () => {
-    const additionalDatas = await additionalMessageData.findAll();
+    const additionalDatas = await additionalMessageData.findAll("DELAYED_POLL");
     let count = 0;
     for (const additionalData of additionalDatas) {
-        const customData = JSON.parse(additionalData.customData);
-
-        if (!customData.delayedPollData) {
+        const delayedPollData = JSON.parse(additionalData.payload);
+        if (!delayedPollData) {
             continue;
         }
-        delayedPolls.push(customData.delayedPollData);
+        delayedPolls.push(delayedPollData);
         count++;
     }
     log.info(`Loaded ${count} polls from database`);
@@ -371,7 +361,7 @@ export const processPolls = async (context: BotContext) => {
         await message.react("✅");
         delayedPolls.splice(delayedPolls.indexOf(delayedPoll), 1);
 
-        await additionalMessageData.destroyForMessage(message);
+        await additionalMessageData.destroyForMessage(message, "DELAYED_POLL");
     }
 };
 

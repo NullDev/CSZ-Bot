@@ -162,9 +162,11 @@ export default {
                 );
             }
 
-            await additionalMessageData.upsertForMessage(message, {
-                delayedPollData: delayedPoll,
-            });
+            await additionalMessageData.upsertForMessage(
+                message,
+                "DELAYED_POLL",
+                delayedPoll,
+            );
         }
     },
 };
