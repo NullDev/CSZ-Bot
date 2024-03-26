@@ -40,6 +40,8 @@ export class BanListCommand implements ApplicationCommand {
             .filter(s => s.length > 0)
             .join("\n");
 
+        log.info({ banMessage }, "Bans");
+
         await command.reply({
             content: banMessage,
         });
