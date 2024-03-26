@@ -4,7 +4,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     await db.schema.dropTable("additionalMessageData").execute();
     await db.schema
         .createTable("additionalMessageData")
-        .addColumn("id", "integer", c => c.primaryKey())
+        .addColumn("id", "integer", c => c.primaryKey().autoIncrement())
         .addColumn("guildId", "text", c => c.notNull())
         .addColumn("channelId", "text", c => c.notNull())
         .addColumn("messageId", "text", c => c.notNull())
@@ -62,6 +62,6 @@ function createUpdatedAtTrigger(db: Kysely<any>, tableName: string) {
         .execute(db);
 }
 
-export async function down(db: Kysely<any>): Promise<void> {
+export async function down(_db: Kysely<any>): Promise<void> {
     throw new Error("Not supported lol");
 }
