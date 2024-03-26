@@ -148,7 +148,7 @@ export default {
             }
 
             // If it's a delayed poll, we clear all Reactions
-            if (isDelayedPoll) {
+            if (isDelayedPoll && delayedPoll !== undefined) {
                 const allUserReactions = message.reactions.cache.filter(r => {
                     const emojiName = r.emoji.name;
                     return (
@@ -160,13 +160,13 @@ export default {
                 await Promise.all(
                     allUserReactions.map(r => r.users.remove(member.id)),
                 );
-            }
 
-            await additionalMessageData.upsertForMessage(
-                message,
-                "DELAYED_POLL",
-                delayedPoll,
-            );
+                await additionalMessageData.upsertForMessage(
+                    message,
+                    "DELAYED_POLL",
+                    JSON.stringify(delayedPoll),
+                );
+            }
         }
     },
 };
