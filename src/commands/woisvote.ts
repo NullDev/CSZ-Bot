@@ -8,11 +8,12 @@ import {
     SlashCommandStringOption,
     type TextBasedChannel,
     type User,
+    type Snowflake,
 } from "discord.js";
 import moment from "moment";
 
 import type { ApplicationCommand, CommandResult } from "./command.js";
-import WoisAction from "../storage/model/WoisAction.js";
+import * as woisAction from "../storage/woisAction.js";
 import type { ReactionHandler } from "../types.js";
 import type { BotContext } from "../context.js";
 import log from "../utils/logger.js";
@@ -110,11 +111,11 @@ export class WoisCommand implements ApplicationCommand {
         }
 
         const start = moment(timeForWois).subtract(6, "hours");
-        const existingWoisVote = await WoisAction.getWoisActionInRange(
+        const existingWoisVote = await woisAction.getWoisActionInRange(
             start.toDate(),
             timeForWois.toDate(),
         );
-        if (existingWoisVote !== null) {
+        if (existingWoisVote !== undefined) {
             await command.reply(
                 `Es gibt bereits einen Woisvote für ${moment(
                     existingWoisVote.date,
@@ -135,8 +136,8 @@ export class WoisCommand implements ApplicationCommand {
             await pingWoisgang(woisMessage, context.roles.woisgang);
         }
 
-        const result = await WoisAction.insertWoisAction(
-            woisMessage.id,
+        const result = await woisAction.insertWoisAction(
+            woisMessage,
             reason,
             timeForWois.toDate(),
             isWoisgangVote,
@@ -184,17 +185,15 @@ export const woisVoteReactionHandler: ReactionHandler = {
         // | 1       | 1      | 1       | X (cannot happen)        |
         const interest = voteYes && !voteNo && !reactionWasRemoved;
 
-        const woisAction = await WoisAction.getWoisActionByMessageId(
-            message.id,
-        );
-        if (woisAction === null) {
+        const action = await woisAction.getWoisActionByMessage(message);
+        if (action === undefined) {
             return;
         }
 
         // If the woisvote has not been created by a woisgang user, but we have two votes on it. PING DEM WOISGANG!
         if (
-            !woisAction.isWoisgangAction &&
-            woisAction.interestedUsers.length === 1 &&
+            !action.isWoisgangAction &&
+            action.interestedUsers.length === 1 &&
             interest
         ) {
             const alertingMessage = await message.channel.messages.fetch(
@@ -203,9 +202,9 @@ export const woisVoteReactionHandler: ReactionHandler = {
             await pingWoisgang(alertingMessage, context.roles.woisgang);
         }
 
-        const success = await WoisAction.registerInterst(
-            message.id,
-            invoker.id,
+        const success = await woisAction.registerInterest(
+            message,
+            invoker,
             interest,
         );
 
@@ -220,8 +219,8 @@ export const woisVoteReactionHandler: ReactionHandler = {
 export const woisVoteScheduler = async (context: BotContext): Promise<void> => {
     log.debug("Entered `woisVoteScheduler`");
 
-    const woisAction = await WoisAction.getPendingWoisAction(new Date());
-    if (woisAction === null) {
+    const pendingAction = await woisAction.getPendingWoisAction(new Date());
+    if (pendingAction === undefined) {
         return;
     }
 
@@ -231,22 +230,22 @@ export const woisVoteScheduler = async (context: BotContext): Promise<void> => {
     }
 
     const woisMessage = await channel.send(
-        `Yoooo, es ist Zeit für das angekündigte Wois. Denk dran, der Grund war: ${woisAction.reason}`,
+        `Yoooo, es ist Zeit für das angekündigte Wois. Denk dran, der Grund war: ${pendingAction.reason}`,
     );
 
     // We remove woisvote from the database immediately before anything goes wrong and we spam pings.
-    await WoisAction.destroy({
-        where: {
-            id: woisAction.id,
-        },
-    });
+    await woisAction.destroy(pendingAction.id);
 
-    if (woisAction.interestedUsers.length === 0) {
+    const interestedUsers = JSON.parse(
+        pendingAction.interestedUsers,
+    ) as Snowflake[];
+
+    if (interestedUsers.length === 0) {
         // No one wants wois
         return;
     }
 
-    const chunks = chunkArray(woisAction.interestedUsers, 10);
+    const chunks = chunkArray(interestedUsers, 10);
     for (const users of chunks) {
         const mentions = users.map(userId => `<@${userId}>`);
         // It's okay for readability

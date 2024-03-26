@@ -17,6 +17,7 @@ export interface Database {
     ehreVotes: EhreVotesTable;
     ehrePoints: EhrePointsTable;
     fadingMessages: FadingMessageTable;
+    woisActions: WoisActionTable;
 }
 
 export interface AuditedTable {
@@ -29,7 +30,6 @@ export interface AuditedTable {
 export type Uuid = string;
 
 export type Birthday = Selectable<BirthdayTable>;
-
 export interface BirthdayTable extends AuditedTable {
     // Cannot use GeneratedAlways because sequelize generated the ID on the client side
     // id: GeneratedAlways<Uuid>;
@@ -41,7 +41,6 @@ export interface BirthdayTable extends AuditedTable {
 }
 
 export type Stempel = Selectable<StempelTable>;
-
 export interface StempelTable extends AuditedTable {
     // Cannot use GeneratedAlways because sequelize generated the ID on the client side
     // id: GeneratedAlways<Uuid>;
@@ -52,7 +51,6 @@ export interface StempelTable extends AuditedTable {
 }
 
 export type SplidLink = Selectable<SplidLinkTable>;
-
 export interface SplidLinkTable extends AuditedTable {
     // Cannot use GeneratedAlways because sequelize generated the ID on the client side
     // id: GeneratedAlways<Uuid>;
@@ -68,7 +66,6 @@ export interface SplidLinkTable extends AuditedTable {
 }
 
 export type SplidGroup = Selectable<SplidGroupTable>;
-
 export interface SplidGroupTable extends AuditedTable {
     // Cannot use GeneratedAlways because sequelize generated the ID on the client side
     // id: GeneratedAlways<Uuid>;
@@ -230,4 +227,20 @@ export interface FadingMessageTable extends AuditedTable {
     // TODO: Date is not supported by the DB driver
     beginTime: ColumnType<string, string, never>;
     endTime: ColumnType<string, string, never>;
+}
+
+export type WoisAction = Selectable<WoisActionTable>;
+export interface WoisActionTable extends AuditedTable {
+    // Cannot use GeneratedAlways because sequelize generated the ID on the client side
+    // id: GeneratedAlways<Uuid>;
+    id: ColumnType<Uuid, Uuid, never>;
+
+    messageId: Snowflake; // unique: true,
+    reason: string;
+    // TODO: Date is not supported by the DB driver
+    date: ColumnType<string, string, never>;
+
+    // TODO: JSON types are currently not supported by the DB driver
+    interestedUsers: ColumnType<string, string, string>; // Snowflake[];
+    isWoisgangAction: boolean;
 }
