@@ -2,6 +2,7 @@ import { promises as fs } from "node:fs";
 import * as path from "node:path";
 
 import type { CommandFunction } from "../../types.js";
+import { replacePrefixPlaceholders } from "../hilfe.js";
 
 /**
  * Enlists all mod-commands with descriptions
@@ -36,7 +37,10 @@ export const run: CommandFunction = async (
 
             const module = await import(modulePath);
 
-            commandObj[commandStr] = module.description;
+            commandObj[commandStr] = replacePrefixPlaceholders(
+                module.description,
+                context,
+            );
         }
     }
 
@@ -44,7 +48,7 @@ export const run: CommandFunction = async (
     for (const [commandName, description] of Object.entries(commandObj)) {
         commandText += commandName;
         commandText += ":\n";
-        commandText += description;
+        commandText += replacePrefixPlaceholders(description, context);
         commandText += "\n\n";
     }
 

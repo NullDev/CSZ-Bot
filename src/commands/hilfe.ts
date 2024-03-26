@@ -1,8 +1,9 @@
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
 
-import { messageCommands } from "../handler/commandHandler.js";
 import type { CommandFunction } from "../types.js";
+import type { BotContext } from "../context.js";
+import { messageCommands } from "../handler/commandHandler.js";
 
 /**
  * Retrieves commands in chunks that doesn't affect message limit
@@ -68,7 +69,10 @@ export const run: CommandFunction = async (
                 const commandStr =
                     context.prefix.command +
                     file.toLowerCase().replace(/\.js/gi, "");
-                commandObj[commandStr] = module.description;
+                commandObj[commandStr] = replacePrefixPlaceholders(
+                    module.description,
+                    context,
+                );
             }
         }
     }
@@ -77,7 +81,10 @@ export const run: CommandFunction = async (
     const userCommands = messageCommands.filter(cmd => !cmd.modCommand);
     for (const cmd of userCommands) {
         const commandStr = context.prefix.command + cmd.name;
-        commandObj[commandStr] = cmd.description;
+        commandObj[commandStr] = replacePrefixPlaceholders(
+            cmd.description,
+            context,
+        );
     }
 
     await message.author.send(
@@ -92,5 +99,14 @@ export const run: CommandFunction = async (
     // Add :envelope: reaction to authors message
     await message.react("✉"); // Send this last, so we only display a confirmation when everything actually worked
 };
+
+export function replacePrefixPlaceholders(
+    helpText: string,
+    context: BotContext,
+): string {
+    return helpText
+        .replace("$MOD_COMMAND_PREFIX$", context.prefix.modCommand)
+        .replace("$COMMAND_PREFIX$", context.prefix.command);
+}
 
 export const description = "Listet alle commands auf";
