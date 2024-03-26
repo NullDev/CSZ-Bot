@@ -12,11 +12,8 @@ import {
 
 import log from "../utils/logger.js";
 import * as additionalMessageData from "../storage/additionalMessageData.js";
-import { getConfig } from "../utils/configHandler.js";
 import type { BotContext } from "../context.js";
 import type { CommandFunction } from "../types.js";
-
-const config = getConfig();
 
 export const LETTERS = [
     ":regional_indicator_a:",
@@ -379,7 +376,7 @@ export const processPolls = async (context: BotContext) => {
 };
 
 export const description = `Erstellt eine Umfrage mit mehreren Antwortmöglichkeiten (standardmäßig mit Mehrfachauswahl) (maximal ${OPTION_LIMIT}).
-Usage: ${config.bot_settings.prefix.command_prefix}poll [Optionen?] [Hier die Frage] ; [Antwort 1] ; [Antwort 2] ; [...]
+Usage: $COMMAND_PREFIX$poll [Optionen?] [Hier die Frage] ; [Antwort 1] ; [Antwort 2] ; [...]
 Optionen:
 \t-c, --channel
 \t\t\tSendet die Umfrage in den Umfragenchannel, um den Slowmode zu umgehen

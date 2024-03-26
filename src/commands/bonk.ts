@@ -6,9 +6,6 @@ import type { Client, GuildMember } from "discord.js";
 import type { CommandResult, MessageCommand } from "./command.js";
 import type { ProcessableMessage } from "../handler/cmdHandler.js";
 import log from "../utils/logger.js";
-import { getConfig } from "../utils/configHandler.js";
-
-const config = getConfig();
 
 const createBonkMeme = async (author: GuildMember): Promise<Buffer> => {
     const bonk = await fs.readFile("assets/bonk.png");
@@ -30,9 +27,9 @@ export class BonkCommand implements MessageCommand {
     name = "bonk";
     aliases = ["bong"];
     description = `Bonkt einen Nutzer und ersetzt den rechten gelben Hund mit dem Avatar des Nutzers.
-Usage: ${config.bot_settings.prefix.command_prefix}bonk
-       ${config.bot_settings.prefix.command_prefix}bonk @ShadowByte#1337
-       Oder auf eine Nachricht mit ${config.bot_settings.prefix.command_prefix}bonk antworten.`;
+Usage: $COMMAND_PREFIX$bonk
+       $COMMAND_PREFIX$bonk @ShadowByte#1337
+       Oder auf eine Nachricht mit $COMMAND_PREFIX$bonk antworten.`;
 
     async handleMessage(
         message: ProcessableMessage,

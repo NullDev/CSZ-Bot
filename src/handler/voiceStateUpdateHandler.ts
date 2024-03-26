@@ -1,9 +1,6 @@
 import type { VoiceState } from "discord.js";
 import type { BotContext } from "../context.js";
-import { getConfig } from "../utils/configHandler.js";
 import log from "../utils/logger.js";
-
-const config = getConfig();
 
 export interface VoiceUpdateEvent {
     oldState: VoiceState;
@@ -18,15 +15,17 @@ export const woisData = {
 export async function checkVoiceUpdate(
     oldState: VoiceState,
     newState: VoiceState,
-    _botContext: BotContext,
+    context: BotContext,
 ): Promise<void> {
     log.debug(
         `Voice update detected: ${oldState.channelId} -> ${newState.channelId}`,
     );
 
+    const mainVoiceId = context.voiceChannels.haupt_woischat.id;
+
     // User joined Channel
     if (oldState.channel === null && newState.channel !== null) {
-        if (newState.channelId === config.ids.haupt_woischat) {
+        if (newState.channelId === mainVoiceId) {
             woisData.latestEvents.push({
                 oldState,
                 newState,
@@ -37,7 +36,7 @@ export async function checkVoiceUpdate(
 
     // user left channel
     if (oldState.channel !== null && newState.channel === null) {
-        if (newState.channelId === config.ids.haupt_woischat) {
+        if (newState.channelId === mainVoiceId) {
             // Add to latest events
             woisData.latestEvents.push({
                 oldState,

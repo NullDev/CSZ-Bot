@@ -3,10 +3,7 @@ import moment from "moment";
 
 import type { CommandFunction } from "../types.js";
 import * as banService from "../storage/ban.js";
-import { getConfig } from "../utils/configHandler.js";
 import * as ban from "./modcommands/ban.js";
-
-const config = getConfig();
 
 export const run: CommandFunction = async (client, message, args, context) => {
     let input = args?.[0]?.trim() ?? "8";
@@ -86,9 +83,10 @@ export const run: CommandFunction = async (client, message, args, context) => {
 
     await message.author.send(`Du hast dich selber von der Coding Shitpost Zentrale gebannt!
 Du wirst entbannt in: ${durationHumanized}
-Falls du doch vorzeitig entbannt entbannt werden möchtest, kannst du dich im <#${config.ids.banned_channel_id}> Channel melden.
+Falls du doch vorzeitig entbannt entbannt werden möchtest, kannst du dich im ${context.textChannels.banned} Channel melden.
 
 Haddi & xD™`);
 };
 
-export const description = `Bannt den ausführenden User indem er ihn von allen Channels ausschließt.\nBenutzung: ${config.bot_settings.prefix.command_prefix}selfban [Dauer in Stunden = 8; tilt; 0 = manuelle Entbannung durch Moderader nötig]`;
+export const description =
+    "Bannt den ausführenden User indem er ihn von allen Channels ausschließt.\nBenutzung: $COMMAND_PREFIX$selfban [Dauer in Stunden = 8; tilt; 0 = manuelle Entbannung durch Moderader nötig]";

@@ -2,9 +2,6 @@ import parseOptions from "minimist";
 import { cleanContent } from "discord.js";
 
 import type { CommandFunction } from "../types.js";
-import { getConfig } from "../utils/configHandler.js";
-
-const config = getConfig();
 
 /**
  * Creates a new poll (vote; yes/no)
@@ -53,7 +50,7 @@ export const run: CommandFunction = async (_client, message, args, context) => {
 };
 
 export const description = `Erstellt eine Umfrage (ja/nein).
-Usage: ${config.bot_settings.prefix.command_prefix}vote [Optionen?] [Hier die Frage]
+Usage: $COMMAND_PREFIX$vote [Optionen?] [Hier die Frage]
 Optionen:
 \t-c, --channel
 \t\t\tSendet die Umfrage in den Umfragenchannel, um den Slowmode zu umgehen`;

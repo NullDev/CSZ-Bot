@@ -5,7 +5,6 @@ import type { Client, Guild, GuildMember, Message } from "discord.js";
 
 import type { CommandFunction, CommandResult } from "../types.js";
 import log from "../utils/logger.js";
-import { getConfig } from "../utils/configHandler.js";
 import * as ban from "../commands/modcommands/ban.js";
 import { hasBotDenyRole } from "../utils/userUtils.js";
 import { isMessageInBotSpam } from "../utils/channelUtils.js";

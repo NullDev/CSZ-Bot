@@ -1,9 +1,6 @@
 import { type APIEmbed, cleanContent } from "discord.js";
 
-import { getConfig } from "../utils/configHandler.js";
 import type { CommandFunction } from "../types.js";
-
-const config = getConfig();
 
 /**
  * Creates a pseudo randomly generated number
@@ -122,6 +119,6 @@ export const run: CommandFunction = async (_client, message, args) => {
 
 export const description = `
 Wirft x beliebig viele Würfel mit y vielen Seiten.
-Usage: ${config.bot_settings.prefix.command_prefix}roll xdy
+Usage: $COMMAND_PREFIX$roll xdy
 Mit x als die Anzahl der Würfel (<11) und y als die Menge der Seiten der Würfel (<=100)
 `.trim();

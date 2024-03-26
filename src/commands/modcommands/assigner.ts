@@ -1,8 +1,5 @@
 import type { CommandFunction } from "../../types.js";
 import log from "../../utils/logger.js";
-import { getConfig } from "../../utils/configHandler.js";
-
-const config = getConfig();
 
 /**
  * Creates an assigner message
@@ -28,4 +25,5 @@ export const run: CommandFunction = async (_client, message, args) => {
     await Promise.all(validRoles.map(drawRole));
 };
 
-export const description = `Startet den assigner mit gegebenen Rollen \nBenutzung: ${config.bot_settings.prefix.mod_prefix}assigner [rolle 1] [rolle 2] [...]`;
+export const description =
+    "Startet den assigner mit gegebenen Rollen \nBenutzung: $MOD_COMMAND_PREFIX$assigner [rolle 1] [rolle 2] [...]";

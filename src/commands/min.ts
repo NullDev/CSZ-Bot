@@ -1,7 +1,4 @@
-import { getConfig } from "../utils/configHandler.js";
 import type { CommandFunction } from "../types.js";
-
-const config = getConfig();
 
 const getAdvice = (age: number) => {
     if (age <= 13) {
@@ -41,4 +38,5 @@ export const run: CommandFunction = async (_client, message, args) => {
     await message.channel.send(advice);
 };
 
-export const description = `Gibt dir die Moralisch vertretbare Altersgrenze für den Geschlechtsakt basierend auf deinem Alter zurück. \nUsage: ${config.bot_settings.prefix.command_prefix}min [dein Alter]`;
+export const description =
+    "Gibt dir die Moralisch vertretbare Altersgrenze für den Geschlechtsakt basierend auf deinem Alter zurück. \nUsage: $COMMAND_PREFIX$min [dein Alter]";

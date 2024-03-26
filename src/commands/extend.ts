@@ -1,11 +1,8 @@
 import { type APIEmbedField, EmbedBuilder, type Message } from "discord.js";
 
 import log from "../utils/logger.js";
-import { getConfig } from "../utils/configHandler.js";
 import * as poll from "./poll.js";
 import type { CommandFunction } from "../types.js";
-
-const config = getConfig();
 
 const isPollField = (field: APIEmbedField): boolean =>
     !field.inline && poll.LETTERS.some(l => field.name.startsWith(l));
@@ -132,4 +129,4 @@ export const run: CommandFunction = async (client, message, args, context) => {
     await message.delete();
 };
 
-export const description = `Nutzbar als Reply auf eine mit --extendable erstellte Umfrage, um eine/mehrere Antwortmöglichkeit/en hinzuzüfgen. Die Anzahl der bestehenden und neuen Antwortmöglichkeiten darf ${poll.OPTION_LIMIT} nicht übersteigen.\nUsage: ${config.bot_settings.prefix.command_prefix}extend [Antwort 1] ; [...]`;
+export const description = `Nutzbar als Reply auf eine mit --extendable erstellte Umfrage, um eine/mehrere Antwortmöglichkeit/en hinzuzüfgen. Die Anzahl der bestehenden und neuen Antwortmöglichkeiten darf ${poll.OPTION_LIMIT} nicht übersteigen.\nUsage: $COMMAND_PREFIX$extend [Antwort 1] ; [...]`;

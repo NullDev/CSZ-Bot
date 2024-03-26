@@ -1,9 +1,6 @@
 import type { Client, Message } from "discord.js";
 
-import { getConfig } from "../utils/configHandler.js";
 import type { BotContext } from "../context.js";
-
-const config = getConfig();
 
 const deleteInlineRepliesFromBot = (
     messageRef: Message<true>,
@@ -22,17 +19,13 @@ const deleteInlineRepliesFromBot = (
 export default async function (
     message: Message<true>,
     client: Client,
-    _context: BotContext,
+    context: BotContext,
 ) {
     if (message.author && message.author.id !== client.user?.id) {
         if (message.content) {
             const isNormalCommand =
-                message.content.startsWith(
-                    config.bot_settings.prefix.command_prefix,
-                ) ||
-                message.content.startsWith(
-                    config.bot_settings.prefix.mod_prefix,
-                );
+                message.content.startsWith(context.prefix.command) ||
+                message.content.startsWith(context.prefix.modCommand);
 
             if (isNormalCommand) {
                 await deleteInlineRepliesFromBot(message, client);
