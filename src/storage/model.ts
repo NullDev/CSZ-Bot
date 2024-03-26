@@ -259,8 +259,9 @@ export interface AdditionalMessageDataTable {
     channelId: Snowflake;
     messageId: Snowflake;
     usage: DataUsage;
-    // TODO: JSON types are currently not supported by the DB driver
-    payload: ColumnType<string, string, string>; // JsonObject;
+
+    /** Just a string, so the specific use-case can decide on how to save the data. */
+    payload: string;
 
     createdAt: ColumnType<string, never, never>;
     updatedAt: ColumnType<string, never, never>;

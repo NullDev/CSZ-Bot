@@ -1,8 +1,6 @@
 import type { Message, Snowflake } from "discord.js";
-import { sql } from "kysely";
 
 import type { AdditionalMessageData, DataUsage } from "./model.js";
-import type { JsonObject } from "../types.js";
 import db from "./db.js";
 
 export async function getForMessage(
@@ -15,22 +13,19 @@ export async function getForMessage(
             "Cannot associate data with message outside of a guild",
         );
     }
-    const res = await ctx
+
+    return await ctx
         .selectFrom("additionalMessageData")
         .where("messageId", "=", message.id)
         .where("usage", "=", usage)
         .selectAll()
         .executeTakeFirst();
-
-    return res === undefined
-        ? undefined
-        : { ...res, customData: JSON.parse(res.payload) as JsonObject };
 }
 
 export async function upsertForMessage(
     message: Message,
     usage: DataUsage,
-    payload: JsonObject,
+    payload: string,
     ctx = db(),
 ) {
     if (!message.guild) {
@@ -46,11 +41,11 @@ export async function upsertForMessage(
             channelId: message.channelId,
             messageId: message.id,
             usage,
-            payload: JSON.stringify(payload),
+            payload,
         })
         .onConflict(oc =>
             oc.columns(["guildId", "channelId", "messageId"]).doUpdateSet({
-                payload: JSON.stringify(payload),
+                payload,
             }),
         )
         .execute();

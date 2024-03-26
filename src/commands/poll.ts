@@ -258,7 +258,7 @@ export const run: CommandFunction = async (_client, message, args, context) => {
         await additionalMessageData.upsertForMessage(
             pollMessage,
             "DELAYED_POLL",
-            delayedPollData,
+            JSON.stringify(delayedPollData),
         );
         delayedPolls.push(delayedPollData);
     }

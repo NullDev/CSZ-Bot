@@ -10,7 +10,7 @@ export async function up(db: Kysely<any>): Promise<void> {
         .addColumn("channelId", "text", c => c.notNull())
         .addColumn("messageId", "text", c => c.notNull())
         .addColumn("usage", "integer", c => c.notNull())
-        .addColumn("payload", "json", c => c.notNull())
+        .addColumn("payload", "text", c => c.notNull())
         .addColumn("createdAt", "timestamp", c =>
             c.notNull().defaultTo(sql`CURRENT_TIMESTAMP`),
         )
