@@ -3,6 +3,7 @@ import type { Snowflake, User } from "discord.js";
 import type { EhrePoints } from "./model.js";
 import db from "./kysely.js";
 import log from "../utils/logger.js";
+import { sql } from "kysely";
 
 export async function hasVoted(
     userId: Snowflake,
@@ -24,8 +25,8 @@ export async function insertVote(userId: Snowflake, ctx = db()) {
         .values({
             id: crypto.randomUUID(),
             userId,
-            createdAt: now,
-            updatedAt: now,
+            createdAt: sql`current_timestamp`,
+            updatedAt: sql`current_timestamp`,
         })
         .execute();
 }
@@ -38,13 +39,13 @@ export async function addPoints(userId: Snowflake, amount: number, ctx = db()) {
             id: crypto.randomUUID(),
             userId,
             points: amount,
-            createdAt: now,
-            updatedAt: now,
+            createdAt: sql`current_timestamp`,
+            updatedAt: sql`current_timestamp`,
         })
         .onConflict(oc =>
             oc.columns(["userId"]).doUpdateSet(us => ({
                 points: us.eb("points", "+", amount),
-                updatedAt: now,
+                updatedAt: sql`current_timestamp`,
             })),
         )
         .returningAll()

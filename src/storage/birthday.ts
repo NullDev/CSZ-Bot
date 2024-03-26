@@ -1,4 +1,5 @@
 import type { Snowflake } from "discord.js";
+import { sql } from "kysely";
 
 import type { Birthday } from "./model.js";
 import db from "./kysely.js";
@@ -39,8 +40,8 @@ export function insertBirthday(
             day,
             month,
             userId,
-            createdAt: now,
-            updatedAt: now,
+            createdAt:  sql`current_timestamp`,
+            updatedAt:  sql`current_timestamp`,
         })
         .onConflict(oc =>
             oc.column("userId").doUpdateSet({

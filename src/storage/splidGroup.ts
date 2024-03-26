@@ -1,4 +1,5 @@
 import type { Guild, User } from "discord.js";
+import { sql } from "kysely";
 
 import type { SplidGroup } from "./model.js";
 import db from "./kysely.js";
@@ -29,8 +30,8 @@ export function createSplidGroup(
             // externalSplidGroupId,
             shortDescription,
             longDescription,
-            createdAt: now,
-            updatedAt: now,
+            createdAt: sql`current_timestamp`,
+            updatedAt: sql`current_timestamp`,
         })
         .returningAll()
         .executeTakeFirstOrThrow();

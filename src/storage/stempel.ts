@@ -1,4 +1,5 @@
 import type { GuildMember } from "discord.js";
+import { sql } from "kysely";
 
 import type { Stempel } from "./model.js";
 import db from "./kysely.js";
@@ -19,8 +20,8 @@ export async function insertStempel(
             id: crypto.randomUUID(),
             invitator: invitator.id,
             invitedMember: invitedMember.id,
-            createdAt: now,
-            updatedAt: now,
+            createdAt: sql`current_timestamp`,
+            updatedAt: sql`current_timestamp`,
         })
         .returning("id")
         .executeTakeFirst();

@@ -1,5 +1,6 @@
 import moment from "moment";
 import type { Snowflake, User } from "discord.js";
+import { sql } from "kysely";
 
 import type { Boob } from "./model.js";
 
@@ -23,8 +24,8 @@ export function insertMeasurement(
             userId: user.id,
             size,
             measuredAt: measuredAt.toISOString(),
-            createdAt: now,
-            updatedAt: now,
+            createdAt:  sql`current_timestamp`,
+            updatedAt:  sql`current_timestamp`,
         })
         .returningAll()
         .executeTakeFirstOrThrow();

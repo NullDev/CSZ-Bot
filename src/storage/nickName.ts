@@ -1,10 +1,8 @@
 import type {
-    Guild,
-    GuildMember,
-    PartialGuildMember,
     Snowflake,
     User,
 } from "discord.js";
+import { sql } from "kysely";
 
 import type { NickName } from "./model.js";
 import db from "./kysely.js";
@@ -31,8 +29,8 @@ export async function insertNickname(
             id: crypto.randomUUID(),
             userId,
             nickName,
-            createdAt: now,
-            updatedAt: now,
+            createdAt: sql`current_timestamp`,
+            updatedAt: sql`current_timestamp`,
         })
         .returningAll()
         .executeTakeFirstOrThrow();

@@ -1,4 +1,5 @@
 import type { GuildMember } from "discord.js";
+import { sql } from "kysely";
 
 import type { AustrianTranslation } from "./model.js";
 
@@ -25,8 +26,8 @@ export function persistOrUpdate(
             austrian,
             german,
             description,
-            createdAt: now,
-            updatedAt: now,
+            createdAt:  sql`current_timestamp`,
+            updatedAt:  sql`current_timestamp`,
         })
         .onConflict(oc =>
             oc.column("austrian").doUpdateSet({

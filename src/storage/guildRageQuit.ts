@@ -1,4 +1,5 @@
 import type { Guild, GuildMember, PartialGuildMember } from "discord.js";
+import { sql } from "kysely";
 
 import type { GuildRagequit } from "./model.js";
 import db from "./kysely.js";
@@ -32,13 +33,13 @@ export async function incrementRageQuit(
             guildId: guild.id,
             userId: member.id,
             numRagequits: 1,
-            createdAt: now,
-            updatedAt: now,
+            createdAt:  sql`current_timestamp`,
+            updatedAt:  sql`current_timestamp`,
         })
         .onConflict(oc =>
             oc.columns(["guildId", "userId"]).doUpdateSet(us => ({
                 numRagequits: us.eb("numRagequits", "+", 1),
-                updatedAt: now,
+                updatedAt:  sql`current_timestamp`,
             })),
         )
         .returningAll()

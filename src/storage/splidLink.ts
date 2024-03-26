@@ -1,4 +1,5 @@
 import type { Guild, Snowflake, User } from "discord.js";
+import { sql } from "kysely";
 
 import type { SplidLink } from "./model.js";
 import db from "./kysely.js";
@@ -23,8 +24,8 @@ export function createLink(
             guildId: guild.id,
             discordUserId: user.id,
             externalSplidId,
-            createdAt: now,
-            updatedAt: now,
+            createdAt: sql`current_timestamp`,
+            updatedAt: sql`current_timestamp`,
         })
         .returningAll()
         .executeTakeFirstOrThrow();
