@@ -26,9 +26,9 @@ export async function connectToDb(databasePath: string) {
                 duration: e.queryDurationMillis,
             };
             if (e.level === "error") {
-                log.error(info, "Error durin query");
+                log.error(info, "Error during query");
             } else {
-                log.debug(info, "Query: %s");
+                log.debug(info, "Query");
             }
         },
     });
