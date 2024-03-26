@@ -118,6 +118,8 @@ export const processBans = async (context: BotContext) => {
             const user = context.guild.members.cache.get(expiredBan.userId);
             // No user, no problem
             if (!user) {
+                // Karteileiche detected, remove without noticing
+                await banService.remove(expiredBan.userId);
                 continue;
             }
 

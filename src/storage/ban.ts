@@ -51,10 +51,10 @@ export function findExisting(
 }
 
 export async function remove(
-    user: User | GuildMember,
+    userId: Snowflake,
     ctx = db(),
 ): Promise<void> {
-    await ctx.deleteFrom("bans").where("userId", "=", user.id).execute();
+    await ctx.deleteFrom("bans").where("userId", "=", userId).execute();
 }
 
 export async function findExpiredBans(now: Date, ctx = db()): Promise<Ban[]> {
