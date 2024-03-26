@@ -1,7 +1,7 @@
 import type { MessageReaction, User } from "discord.js";
 
-import FadingMessage from "../storage/model/FadingMessage.js";
 import AdditionalMessageData from "../storage/model/AdditionalMessageData.js";
+import * as fadingMessage from "../storage/fadingMessage.js";
 
 import log from "../utils/logger.js";
 import * as poll from "../commands/poll.js";
@@ -140,7 +140,7 @@ export default {
                             ? "🗑 Deine Reaktion wurde gelöscht."
                             : "💾 Deine Reaktion wurde gespeichert.",
                     );
-                    await FadingMessage.newFadingMessage(
+                    await fadingMessage.startFadingMessage(
                         msg as ProcessableMessage,
                         2500,
                     );

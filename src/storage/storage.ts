@@ -1,7 +1,6 @@
 import { Sequelize } from "sequelize";
 
 import AdditionalMessageData from "./model/AdditionalMessageData.js";
-import FadingMessage from "./model/FadingMessage.js";
 import Ban from "./model/Ban.js";
 import log from "../utils/logger.js";
 import Reminder from "./model/Reminder.js";
@@ -12,17 +11,11 @@ export async function initialize(databasePath: string) {
         dialect: "sqlite",
         storage: databasePath,
         logQueryParameters: true,
-        logging: sql => {
-            // currently way too noisy because of the fading messages
-            if (!sql.includes(FadingMessage.tableName)) {
-                log.trace(sql);
-            }
-        },
+        logging: sql => log.trace(sql),
     });
 
     log.info("Initializing Database Schemas...");
 
-    FadingMessage.initialize(sequelize);
     AdditionalMessageData.initialize(sequelize);
     Ban.initialize(sequelize);
     Reminder.initialize(sequelize);

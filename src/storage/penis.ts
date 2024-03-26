@@ -19,8 +19,6 @@ export function insertMeasurement(
         `Saving Penis Measurement for user ${user.id} with size ${size} from ${measuredAt}`,
     );
 
-    const now = new Date().toISOString();
-
     return ctx
         .insertInto("penis")
         .values({

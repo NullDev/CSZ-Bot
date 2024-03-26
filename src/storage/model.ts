@@ -16,6 +16,7 @@ export interface Database {
     austrianTranslations: AustrianTranslationTable;
     ehreVotes: EhreVotesTable;
     ehrePoints: EhrePointsTable;
+    fadingMessages: FadingMessageTable;
 }
 
 export interface AuditedTable {
@@ -214,4 +215,19 @@ export interface EhrePointsTable extends AuditedTable {
 
     userId: Snowflake; // unique: true,
     points: number;
+}
+
+export type FadingMessage = Selectable<FadingMessageTable>;
+export interface FadingMessageTable extends AuditedTable {
+    // Cannot use GeneratedAlways because sequelize generated the ID on the client side
+    // id: GeneratedAlways<Uuid>;
+    id: ColumnType<Uuid, Uuid, never>;
+
+    messageId: Snowflake;
+    channelId: Snowflake;
+    guildId: Snowflake;
+
+    // TODO: Date is not supported by the DB driver
+    beginTime: ColumnType<string, string, never>;
+    endTime: ColumnType<string, string, never>;
 }
