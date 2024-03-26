@@ -1,22 +1,30 @@
-import { Database } from "bun:sqlite";
-import { Kysely } from "kysely";
+import { Database as SqliteDatabase } from "bun:sqlite";
+import { fileURLToPath } from "node:url";
+import * as fs from "node:fs/promises";
+import * as path from "node:path";
+
+import { FileMigrationProvider, Kysely, Migrator } from "kysely";
 import { BunSqliteDialect } from "kysely-bun-sqlite";
 
-import type { Database as Model } from "./model.js";
+import type { Database } from "./model.js";
 import log from "../utils/logger.js";
 
-let kysely: Kysely<Model>;
+let kysely: Kysely<Database>;
 
 export default () => kysely;
 
 export async function connectToDb(databasePath: string) {
-    const nativeDb = new Database(databasePath);
-    const db = new Kysely<Model>({
+    const nativeDb = new SqliteDatabase(databasePath);
+    const db = new Kysely<Database>({
         dialect: new BunSqliteDialect({
             database: nativeDb,
         }),
     });
-    log.info("Connected to database (kysely).");
+
+    log.info("Connected to database.");
+
+    await runMigrationsIfNeeded(db);
+
     kysely = db;
 }
 
@@ -24,5 +32,39 @@ export async function disconnectFromDb() {
     log.info("Disconnecting from database...");
 
     await kysely?.destroy();
-    kysely = undefined as unknown as Kysely<Model>;
-  }
+    kysely = undefined as unknown as Kysely<Database>;
+}
+
+async function runMigrationsIfNeeded(db: Kysely<Database>) {
+    const migrationFolder = fileURLToPath(
+        new URL("./migrations", import.meta.url).toString(),
+    );
+
+    const migrator = new Migrator({
+        db,
+        provider: new FileMigrationProvider({ fs, path, migrationFolder }),
+    });
+
+    const allMigrations = await migrator.getMigrations();
+    const pendingMigrations = allMigrations.filter(m => !m.executedAt).length;
+
+    if (pendingMigrations > 0) {
+        log.info("Running %d migrations.", pendingMigrations);
+
+        const { error, results } = await migrator.migrateToLatest();
+        const errors = results?.filter(r => r.status === "Error");
+        if (errors) {
+            for (const e of errors) {
+                log.error("Migration %s failed.", e.migrationName);
+            }
+        }
+
+        if (error) {
+            log.error("Failed to migrate. Exiting.");
+            log.error(error);
+            process.exit(1);
+        }
+
+        log.info("Migrations done.");
+    }
+}
