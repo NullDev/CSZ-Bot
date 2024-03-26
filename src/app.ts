@@ -68,7 +68,7 @@ console.log(
 
 let botContext: BotContext;
 
-log.info("Started.");
+log.info("Bot starting up...");
 const config = conf.getConfig();
 
 if (!config.auth.bot_token) {
@@ -204,7 +204,7 @@ const leetTask = async () => {
 
 login().then(
     client => {
-        log.info(`Bot logged in as ${client.user.tag}`);
+        log.info(`Logged in as ${client.user.tag}`);
         log.info(
             `Got ${client.users.cache.size} users, in ${client.channels.cache.size} channels of ${client.guilds.cache.size} guilds`,
         );
