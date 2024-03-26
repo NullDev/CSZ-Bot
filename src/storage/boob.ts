@@ -24,8 +24,8 @@ export function insertMeasurement(
             userId: user.id,
             size,
             measuredAt: measuredAt.toISOString(),
-            createdAt:  sql`current_timestamp`,
-            updatedAt:  sql`current_timestamp`,
+            createdAt: sql`current_timestamp`,
+            updatedAt: sql`current_timestamp`,
         })
         .returningAll()
         .executeTakeFirstOrThrow();

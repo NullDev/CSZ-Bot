@@ -33,7 +33,7 @@ export default class Ban
         reason: string | null = null,
     ): Promise<void> => {
         log.debug(
-            `Saving Ban for user ${user} until ${until} (Selfban: ${isSelfBan}, Reason: ${reason})`,
+            `Saving Ban for user ${user} until ${until} (is self ban: ${isSelfBan}, reason: ${reason})`,
         );
         await Ban.upsert({
             userId: user.id,

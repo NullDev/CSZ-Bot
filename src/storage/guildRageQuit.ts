@@ -33,13 +33,13 @@ export async function incrementRageQuit(
             guildId: guild.id,
             userId: member.id,
             numRagequits: 1,
-            createdAt:  sql`current_timestamp`,
-            updatedAt:  sql`current_timestamp`,
+            createdAt: sql`current_timestamp`,
+            updatedAt: sql`current_timestamp`,
         })
         .onConflict(oc =>
             oc.columns(["guildId", "userId"]).doUpdateSet(us => ({
                 numRagequits: us.eb("numRagequits", "+", 1),
-                updatedAt:  sql`current_timestamp`,
+                updatedAt: sql`current_timestamp`,
             })),
         )
         .returningAll()

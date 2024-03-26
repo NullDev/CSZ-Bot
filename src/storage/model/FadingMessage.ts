@@ -15,16 +15,18 @@ export default class FadingMessage extends Model {
      * Starts a fading message object
      * @param {import("discord.js").Message} message
      * @param {Number} deleteInMs The time in milliseconds when the message should be deleted
-     * @returns {Promise<this>}
      */
-    startFadingMessage(message: ProcessableMessage, deleteInMs: number) {
+    async startFadingMessage(
+        message: ProcessableMessage,
+        deleteInMs: number,
+    ): Promise<void> {
         this.beginTime = this.beginTime || new Date();
         this.endTime =
             this.endTime || new Date(this.beginTime.valueOf() + deleteInMs);
         this.messageId = message.id;
         this.channelId = message.channel.id;
         this.guildId = message.guild.id;
-        return this.save();
+        await this.save();
     }
 
     /**
@@ -36,7 +38,7 @@ export default class FadingMessage extends Model {
     static async newFadingMessage(
         message: ProcessableMessage,
         deleteInMs: number,
-    ) {
+    ): Promise<void> {
         const fadingMessage = await FadingMessage.create();
         await fadingMessage.startFadingMessage(message, deleteInMs);
     }

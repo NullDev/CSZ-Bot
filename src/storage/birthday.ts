@@ -40,8 +40,8 @@ export function insertBirthday(
             day,
             month,
             userId,
-            createdAt:  sql`current_timestamp`,
-            updatedAt:  sql`current_timestamp`,
+            createdAt: sql`current_timestamp`,
+            updatedAt: sql`current_timestamp`,
         })
         .onConflict(oc =>
             oc.column("userId").doUpdateSet({

@@ -26,8 +26,8 @@ export function persistOrUpdate(
             austrian,
             german,
             description,
-            createdAt:  sql`current_timestamp`,
-            updatedAt:  sql`current_timestamp`,
+            createdAt: sql`current_timestamp`,
+            updatedAt: sql`current_timestamp`,
         })
         .onConflict(oc =>
             oc.column("austrian").doUpdateSet({

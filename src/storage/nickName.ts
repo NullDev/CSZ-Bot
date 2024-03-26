@@ -1,7 +1,4 @@
-import type {
-    Snowflake,
-    User,
-} from "discord.js";
+import type { Snowflake, User } from "discord.js";
 import { sql } from "kysely";
 
 import type { NickName } from "./model.js";
