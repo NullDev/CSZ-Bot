@@ -1,5 +1,4 @@
 import type { GuildMember } from "discord.js";
-import { sql } from "kysely";
 
 import type { AustrianTranslation } from "./model.js";
 
@@ -21,13 +20,10 @@ export function persistOrUpdate(
     return ctx
         .insertInto("austrianTranslations")
         .values({
-            id: crypto.randomUUID(),
             addedByUserId: addedBy.id,
             austrian,
             german,
             description,
-            createdAt: sql`current_timestamp`,
-            updatedAt: sql`current_timestamp`,
         })
         .onConflict(oc =>
             oc.column("austrian").doUpdateSet({

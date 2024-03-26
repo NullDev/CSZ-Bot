@@ -50,10 +50,7 @@ export function findExisting(
         .executeTakeFirst();
 }
 
-export async function remove(
-    userId: Snowflake,
-    ctx = db(),
-): Promise<void> {
+export async function remove(userId: Snowflake, ctx = db()): Promise<void> {
     await ctx.deleteFrom("bans").where("userId", "=", userId).execute();
 }
 

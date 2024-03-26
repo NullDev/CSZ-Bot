@@ -11,10 +11,10 @@ export async function up(db: Kysely<any>): Promise<void> {
         .addColumn("usage", "integer", c => c.notNull())
         .addColumn("payload", "text", c => c.notNull())
         .addColumn("createdAt", "timestamp", c =>
-            c.notNull().defaultTo(sql`CURRENT_TIMESTAMP`),
+            c.notNull().defaultTo(sql`current_timestamp`),
         )
         .addColumn("updatedAt", "timestamp", c =>
-            c.notNull().defaultTo(sql`CURRENT_TIMESTAMP`),
+            c.notNull().defaultTo(sql`current_timestamp`),
         )
         .execute();
 
@@ -51,13 +51,13 @@ export async function up(db: Kysely<any>): Promise<void> {
 function createUpdatedAtTrigger(db: Kysely<any>, tableName: string) {
     return sql
         .raw(`
-    CREATE TRIGGER ${tableName}_updatedAt
-    AFTER UPDATE ON ${tableName} FOR EACH ROW
-    BEGIN
-        UPDATE ${tableName}
-        SET updatedAt = CURRENT_TIMESTAMP
-        WHERE id = old.id;
-    END;
+    create trigger ${tableName}_updatedAt
+    after update on ${tableName} for each row
+    begin
+        update ${tableName}
+        set updatedAt = current_timestamp
+        where id = old.id;
+    end;
     `)
         .execute(db);
 }

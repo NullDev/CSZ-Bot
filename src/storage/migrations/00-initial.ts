@@ -216,6 +216,6 @@ export async function up(db: Kysely<any>): Promise<void> {
     );
 }
 
-export async function down(db: Kysely<any>): Promise<void> {
+export async function down(_db: Kysely<any>): Promise<void> {
     throw new Error("Not supported lol");
 }

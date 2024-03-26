@@ -19,15 +19,11 @@ export async function insertNickname(
         throw new Error("Nickname already exists");
     }
 
-    const now = new Date().toISOString();
     return ctx
         .insertInto("nickNames")
         .values({
-            id: crypto.randomUUID(),
             userId,
             nickName,
-            createdAt: sql`current_timestamp`,
-            updatedAt: sql`current_timestamp`,
         })
         .returningAll()
         .executeTakeFirstOrThrow();

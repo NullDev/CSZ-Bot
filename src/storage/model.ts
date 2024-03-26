@@ -120,13 +120,14 @@ export interface GuildRagequitTable extends AuditedTable {
 */
 
 export type NickName = Selectable<NickNameTable>;
-export interface NickNameTable extends AuditedTable {
-    // Cannot use GeneratedAlways because sequelize generated the ID on the client side
-    // id: GeneratedAlways<Uuid>;
-    id: ColumnType<Uuid, Uuid, never>;
+export interface NickNameTable {
+    id: GeneratedAlways<number>;
 
     userId: Snowflake;
     nickName: string;
+
+    createdAt: ColumnType<string, never, never>;
+    updatedAt: ColumnType<string, never, never>;
 }
 
 export type Penis = Selectable<PenisTable>;
@@ -177,44 +178,37 @@ export interface BoobTable extends AuditedTable {
 */
 
 export type AustrianTranslation = Selectable<AustrianTranslationTable>;
-export interface AustrianTranslationTable extends AuditedTable {
-    // Cannot use GeneratedAlways because sequelize generated the ID on the client side
-    // id: GeneratedAlways<Uuid>;
-    id: ColumnType<Uuid, Uuid, never>;
+export interface AustrianTranslationTable {
+    id: GeneratedAlways<number>;
 
-    addedByUserId: string;
+    addedByUserId: Snowflake;
     austrian: string;
     german: string;
     description: string | null;
+
+    createdAt: ColumnType<string, never, never>;
+    updatedAt: ColumnType<string, never, never>;
 }
-/*
-{
-    unique: true,
-    fields: ["austrian"],
-},
-{
-    unique: false,
-    fields: ["german"],
-},
-*/
 
 export type EhreVotes = Selectable<EhreVotesTable>;
-export interface EhreVotesTable extends AuditedTable {
-    // Cannot use GeneratedAlways because sequelize generated the ID on the client side
-    // id: GeneratedAlways<Uuid>;
-    id: ColumnType<Uuid, Uuid, never>;
+export interface EhreVotesTable {
+    id: GeneratedAlways<number>;
 
-    userId: Snowflake; // unique: true,
+    userId: Snowflake;
+
+    createdAt: ColumnType<string, never, never>;
+    updatedAt: ColumnType<string, never, never>;
 }
 
 export type EhrePoints = Selectable<EhrePointsTable>;
-export interface EhrePointsTable extends AuditedTable {
-    // Cannot use GeneratedAlways because sequelize generated the ID on the client side
-    // id: GeneratedAlways<Uuid>;
-    id: ColumnType<Uuid, Uuid, never>;
+export interface EhrePointsTable {
+    id: GeneratedAlways<number>;
 
-    userId: Snowflake; // unique: true,
+    userId: Snowflake;
     points: number;
+
+    createdAt: ColumnType<string, never, never>;
+    updatedAt: ColumnType<string, never, never>;
 }
 
 export type FadingMessage = Selectable<FadingMessageTable>;

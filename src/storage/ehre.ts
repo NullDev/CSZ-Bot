@@ -23,28 +23,22 @@ export async function insertVote(userId: Snowflake, ctx = db()) {
     await ctx
         .insertInto("ehreVotes")
         .values({
-            id: crypto.randomUUID(),
             userId,
-            createdAt: sql`current_timestamp`,
-            updatedAt: sql`current_timestamp`,
         })
         .execute();
 }
 
-export async function addPoints(userId: Snowflake, amount: number, ctx = db()) {
+export async function addPoints(userId: Snowflake, points: number, ctx = db()) {
     const now = new Date().toISOString();
     await ctx
         .insertInto("ehrePoints")
         .values({
-            id: crypto.randomUUID(),
             userId,
-            points: amount,
-            createdAt: sql`current_timestamp`,
-            updatedAt: sql`current_timestamp`,
+            points,
         })
         .onConflict(oc =>
             oc.columns(["userId"]).doUpdateSet(us => ({
-                points: us.eb("points", "+", amount),
+                points: us.eb("points", "+", points),
                 updatedAt: sql`current_timestamp`,
             })),
         )
