@@ -68,6 +68,7 @@ jobs:
         docker run \
           --rm \
           -e NODE_ENV=development \
+          -e DATABASE_PATH=:memory: \
           -v "$PWD/config.json:/app/config.json" \
           -v "$PWD/aoc.config.json:/app/aoc.config.json" \
           csz-bot:latest --dry-run
