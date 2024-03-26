@@ -1,7 +1,7 @@
-import type { GuildMember, Message, Snowflake, User } from "discord.js";
+import type { Snowflake, User } from "discord.js";
 import { sql } from "kysely";
 
-import type { Ban, Reminder } from "./model.js";
+import type { Reminder } from "./model.js";
 
 import db from "./db.js";
 import log from "../utils/logger.js";
@@ -39,17 +39,12 @@ export async function insertMessageReminder(
     await ctx
         .insertInto("reminders")
         .values({
-            id: crypto.randomUUID(),
-
             userId: user.id,
             remindAt: remindAt.toISOString(),
             messageId,
             channelId,
             guildId,
             reminderNote: null,
-
-            createdAt: sql`current_timestamp`,
-            updatedAt: sql`current_timestamp`,
         })
         .execute();
 }
@@ -69,17 +64,12 @@ export async function insertStaticReminder(
     await ctx
         .insertInto("reminders")
         .values({
-            id: crypto.randomUUID(),
-
             userId: user.id,
             remindAt: remindAt.toISOString(),
             channelId,
             guildId,
             reminderNote,
             messageId: null,
-
-            createdAt: sql`current_timestamp`,
-            updatedAt: sql`current_timestamp`,
         })
         .execute();
 }

@@ -158,7 +158,7 @@ export class StempelkarteCommand implements ApplicationCommand {
 
         for (const invitees of inviteesChunked) {
             const avatarUrls = invitees
-                .map(s => s.invitedMember)
+                .map(s => s.invitedMemberId)
                 .map(getUserById)
                 .map(member => getAvatarUrlForMember(member));
 

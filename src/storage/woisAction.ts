@@ -14,14 +14,11 @@ export async function insertWoisAction(
     const res = await ctx
         .insertInto("woisActions")
         .values({
-            id: crypto.randomUUID(),
             messageId: message.id,
             reason,
             date: date.toISOString(),
             interestedUsers: JSON.stringify([]),
             isWoisgangAction,
-            createdAt: sql`current_timestamp`,
-            updatedAt: sql`current_timestamp`,
         })
         .returningAll()
         .executeTakeFirst();

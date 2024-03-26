@@ -239,8 +239,8 @@ export class StempelgraphCommand implements ApplicationCommand {
 
         const allUserIds = new Set<string>(
             stempels
-                .map(s => s.invitator)
-                .concat(stempels.map(s => s.invitedMember)),
+                .map(s => s.inviterId)
+                .concat(stempels.map(s => s.invitedMemberId)),
         );
         log.debug(`All in all we have ${allUserIds.size} unique Stempler`);
 
@@ -249,8 +249,8 @@ export class StempelgraphCommand implements ApplicationCommand {
 
         const namedStempels = stempels
             .map(s => ({
-                inviter: memberInfoMap.get(s.invitator),
-                invitee: memberInfoMap.get(s.invitedMember),
+                inviter: memberInfoMap.get(s.inviterId),
+                invitee: memberInfoMap.get(s.invitedMemberId),
             }))
             .filter(
                 (s): s is StempelConnection =>

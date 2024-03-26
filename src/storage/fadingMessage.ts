@@ -14,15 +14,12 @@ export function startFadingMessage(
     return ctx
         .insertInto("fadingMessages")
         .values({
-            id: crypto.randomUUID(),
             beginTime: now.toISOString(),
             // adding milliseconds to a date is a hassle in sqlite, so we're doing it in JS
             endTime: new Date(now.getTime() + deleteInMs).toDateString(),
-            messageId: message.id,
-            channelId: message.channel.id,
             guildId: message.guild.id,
-            createdAt: sql`current_timestamp`,
-            updatedAt: sql`current_timestamp`,
+            channelId: message.channel.id,
+            messageId: message.id,
         })
         .returningAll()
         .executeTakeFirstOrThrow();

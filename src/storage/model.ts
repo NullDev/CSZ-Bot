@@ -1,5 +1,10 @@
 import type { Snowflake } from "discord.js";
-import type { ColumnType, GeneratedAlways, Selectable } from "kysely";
+import type {
+    ColumnType,
+    Generated,
+    GeneratedAlways,
+    Selectable,
+} from "kysely";
 
 import type { OneBasedMonth } from "./birthday.js";
 import type { Radius } from "../commands/penis.js";
@@ -23,24 +28,14 @@ export interface Database {
     reminders: ReminderTable;
 }
 
-/** Base interface for tables where the db doesn't maintain updatedAt and createdAt (and thus, must be filled in by the user) */
-export interface LegacyAuditedTable {
-    // TODO: These don't seem to be taken care of by the database, so we need to insert them manually
-    // Also, Date is not supported by the DB driver
-    createdAt: ColumnType<string, string, never>;
-    updatedAt: ColumnType<string, string, never>;
-}
 export interface AuditedTable {
     createdAt: GeneratedAlways<string>;
     updatedAt: GeneratedAlways<string>;
 }
 
-export type Uuid = string;
-
 export type Birthday = Selectable<BirthdayTable>;
-export interface BirthdayTable extends LegacyAuditedTable {
-    // Cannot use GeneratedAlways because sequelize generated the ID on the client side
-    id: ColumnType<Uuid, Uuid, never>;
+export interface BirthdayTable extends AuditedTable {
+    id: GeneratedAlways<number>;
 
     userId: Snowflake;
     month: OneBasedMonth;
@@ -48,18 +43,16 @@ export interface BirthdayTable extends LegacyAuditedTable {
 }
 
 export type Stempel = Selectable<StempelTable>;
-export interface StempelTable extends LegacyAuditedTable {
-    // Cannot use GeneratedAlways because sequelize generated the ID on the client side
-    id: ColumnType<Uuid, Uuid, never>;
+export interface StempelTable extends AuditedTable {
+    id: GeneratedAlways<number>;
 
-    invitator: Snowflake;
-    invitedMember: Snowflake;
+    inviterId: Snowflake;
+    invitedMemberId: Snowflake;
 }
 
 export type SplidLink = Selectable<SplidLinkTable>;
-export interface SplidLinkTable extends LegacyAuditedTable {
-    // Cannot use GeneratedAlways because sequelize generated the ID on the client side
-    id: ColumnType<Uuid, Uuid, never>;
+export interface SplidLinkTable extends AuditedTable {
+    id: GeneratedAlways<number>;
 
     /**
      * We scope the link to the guild for privacy reasons.
@@ -71,9 +64,8 @@ export interface SplidLinkTable extends LegacyAuditedTable {
 }
 
 export type SplidGroup = Selectable<SplidGroupTable>;
-export interface SplidGroupTable extends LegacyAuditedTable {
-    // Cannot use GeneratedAlways because sequelize generated the ID on the client side
-    id: ColumnType<Uuid, Uuid, never>;
+export interface SplidGroupTable extends AuditedTable {
+    id: GeneratedAlways<number>;
 
     creatorId: Snowflake;
     guildId: Snowflake;
@@ -83,41 +75,15 @@ export interface SplidGroupTable extends LegacyAuditedTable {
     shortDescription: string;
     longDescription: string | null;
 }
-/*
-indexes: [
-    {
-        fields: ["guildId"],
-    },
-    {
-        unique: true,
-        fields: ["shortDescription"],
-    },
-    // {
-    //     unique: true,
-    //     fields: ["externalSplidGroupId", "guildId"],
-    // },
-    {
-        unique: true,
-        fields: ["groupCode", "guildId"],
-    },
-],
-*/
 
 export type GuildRagequit = Selectable<GuildRagequitTable>;
-export interface GuildRagequitTable extends LegacyAuditedTable {
-    // Cannot use GeneratedAlways because sequelize generated the ID on the client side
-    id: ColumnType<Uuid, Uuid, never>;
+export interface GuildRagequitTable extends AuditedTable {
+    id: GeneratedAlways<number>;
 
     guildId: Snowflake;
     userId: Snowflake;
-    numRagequits: number;
+    numRageQuits: Generated<number>;
 }
-/*
-{
-    unique: true,
-    fields: ["guildId", "userId"],
-},
-*/
 
 export type NickName = Selectable<NickNameTable>;
 export interface NickNameTable extends AuditedTable {
@@ -128,49 +94,23 @@ export interface NickNameTable extends AuditedTable {
 }
 
 export type Penis = Selectable<PenisTable>;
-export interface PenisTable extends LegacyAuditedTable {
-    // Cannot use GeneratedAlways because sequelize generated the ID on the client side
-    id: ColumnType<Uuid, Uuid, never>;
+export interface PenisTable extends AuditedTable {
+    id: GeneratedAlways<number>;
 
     userId: Snowflake;
-    // TODO: Date is not supported by the DB driver
-    measuredAt: ColumnType<string, string, never>;
     size: number;
     diameter: Radius;
+    measuredAt: Generated<string>; // TODO: Date is not supported by the DB driver
 }
-/*
-{
-    using: "BTREE",
-    fields: [
-        {
-            name: "measuredAt",
-            order: "ASC",
-        },
-    ],
-},
-*/
 
 export type Boob = Selectable<BoobTable>;
-export interface BoobTable extends LegacyAuditedTable {
-    // Cannot use GeneratedAlways because sequelize generated the ID on the client side
-    id: ColumnType<Uuid, Uuid, never>;
+export interface BoobTable extends AuditedTable {
+    id: GeneratedAlways<number>;
 
     userId: Snowflake;
-    // TODO: Date is not supported by the DB driver
-    measuredAt: ColumnType<string, string, never>;
     size: number;
+    measuredAt: Generated<string>; // TODO: Date is not supported by the DB driver
 }
-/*
-{
-    using: "BTREE",
-    fields: [
-        {
-            name: "measuredAt",
-            order: "ASC",
-        },
-    ],
-},
-*/
 
 export type AustrianTranslation = Selectable<AustrianTranslationTable>;
 export interface AustrianTranslationTable extends AuditedTable {
@@ -198,28 +138,24 @@ export interface EhrePointsTable extends AuditedTable {
 }
 
 export type FadingMessage = Selectable<FadingMessageTable>;
-export interface FadingMessageTable extends LegacyAuditedTable {
-    // Cannot use GeneratedAlways because sequelize generated the ID on the client side
-    id: ColumnType<Uuid, Uuid, never>;
+export interface FadingMessageTable extends AuditedTable {
+    id: GeneratedAlways<number>;
 
-    messageId: Snowflake;
-    channelId: Snowflake;
     guildId: Snowflake;
+    channelId: Snowflake;
+    messageId: Snowflake;
 
-    // TODO: Date is not supported by the DB driver
-    beginTime: ColumnType<string, string, never>;
-    endTime: ColumnType<string, string, never>;
+    beginTime: ColumnType<string, string, never>; // TODO: Date is not supported by the DB driver
+    endTime: ColumnType<string, string, never>; // TODO: Date is not supported by the DB driver
 }
 
 export type WoisAction = Selectable<WoisActionTable>;
-export interface WoisActionTable extends LegacyAuditedTable {
-    // Cannot use GeneratedAlways because sequelize generated the ID on the client side
-    id: ColumnType<Uuid, Uuid, never>;
+export interface WoisActionTable extends AuditedTable {
+    id: GeneratedAlways<number>;
 
     messageId: Snowflake; // unique: true,
     reason: string;
-    // TODO: Date is not supported by the DB driver
-    date: ColumnType<string, string, never>;
+    date: ColumnType<string, string, never>; // TODO: Date is not supported by the DB driver
 
     // TODO: JSON types are currently not supported by the DB driver
     interestedUsers: ColumnType<string, string, string>; // Snowflake[];
@@ -229,7 +165,6 @@ export interface WoisActionTable extends LegacyAuditedTable {
 export type DataUsage = "DELAYED_POLL";
 
 export type AdditionalMessageData = Selectable<AdditionalMessageDataTable>;
-// TODO: Add some kind of "type" tag, so different commands can retrieve their data independently
 export interface AdditionalMessageDataTable extends AuditedTable {
     id: GeneratedAlways<number>;
 
@@ -243,55 +178,26 @@ export interface AdditionalMessageDataTable extends AuditedTable {
 }
 
 export type Ban = Selectable<BanTable>;
-export interface BanTable extends LegacyAuditedTable {
-    // Cannot use GeneratedAlways because sequelize generated the ID on the client side
-    id: ColumnType<Uuid, Uuid, never>;
+export interface BanTable extends AuditedTable {
+    id: GeneratedAlways<number>;
 
     userId: Snowflake;
     reason: string | null;
 
-    // TODO: Date is not supported by the DB driver
-    bannedUntil: ColumnType<string | null, string | null, string | null>;
+    bannedUntil: ColumnType<string | null, string | null, string | null>; // TODO: Date is not supported by the DB driver
     isSelfBan: boolean;
 }
-/*
-{
-    unique: true,
-    fields: ["userId"],
-},
-{
-    using: "BTREE",
-    fields: [
-        {
-            name: "bannedUntil",
-            order: "ASC",
-        },
-    ],
-},
-*/
 
 export type Reminder = Selectable<ReminderTable>;
-export interface ReminderTable extends LegacyAuditedTable {
-    // Cannot use GeneratedAlways because sequelize generated the ID on the client side
-    id: ColumnType<Uuid, Uuid, never>;
+export interface ReminderTable extends AuditedTable {
+    id: GeneratedAlways<number>;
 
     guildId: Snowflake;
     channelId: Snowflake;
+    messageId: Snowflake | null;
+
     userId: Snowflake;
 
-    // TODO: Date is not supported by the DB driver
-    remindAt: ColumnType<string, string, string>;
-    messageId: Snowflake | null;
+    remindAt: ColumnType<string, string, string>; // TODO: Date is not supported by the DB driver
     reminderNote: string | null;
 }
-/*
-{
-    using: "BTREE",
-    fields: [
-        {
-            name: "remindAt",
-            order: "ASC",
-        },
-    ],
-}
-*/

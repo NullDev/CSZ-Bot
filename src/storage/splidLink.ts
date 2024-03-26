@@ -1,5 +1,4 @@
 import type { Guild, Snowflake, User } from "discord.js";
-import { sql } from "kysely";
 
 import type { SplidLink } from "./model.js";
 import db from "./db.js";
@@ -20,12 +19,9 @@ export function createLink(
     return ctx
         .insertInto("splidLinks")
         .values({
-            id: crypto.randomUUID(),
             guildId: guild.id,
             discordUserId: user.id,
             externalSplidId,
-            createdAt: sql`current_timestamp`,
-            updatedAt: sql`current_timestamp`,
         })
         .returningAll()
         .executeTakeFirstOrThrow();

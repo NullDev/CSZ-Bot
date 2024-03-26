@@ -1,10 +1,7 @@
 import type { Guild, GuildMember, PartialGuildMember } from "discord.js";
 import { sql } from "kysely";
 
-import type { GuildRagequit } from "./model.js";
 import db from "./db.js";
-
-import log from "../utils/logger.js";
 
 export async function getNumRageQuits(
     guild: Guild,
@@ -15,9 +12,9 @@ export async function getNumRageQuits(
         .selectFrom("guildRageQuits")
         .where("guildId", "=", guild.id)
         .where("userId", "=", user.id)
-        .select("numRagequits")
+        .select("numRageQuits")
         .executeTakeFirst();
-    return res?.numRagequits ?? 0;
+    return res?.numRageQuits ?? 0;
 }
 
 export async function incrementRageQuit(
@@ -25,20 +22,15 @@ export async function incrementRageQuit(
     member: GuildMember | PartialGuildMember,
     ctx = db(),
 ): Promise<void> {
-    const now = new Date().toISOString();
     await ctx
         .insertInto("guildRageQuits")
         .values({
-            id: crypto.randomUUID(),
             guildId: guild.id,
             userId: member.id,
-            numRagequits: 1,
-            createdAt: sql`current_timestamp`,
-            updatedAt: sql`current_timestamp`,
         })
         .onConflict(oc =>
             oc.columns(["guildId", "userId"]).doUpdateSet(us => ({
-                numRagequits: us.eb("numRagequits", "+", 1),
+                numRageQuits: us.eb("numRageQuits", "+", 1),
                 updatedAt: sql`current_timestamp`,
             })),
         )

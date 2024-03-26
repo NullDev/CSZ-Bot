@@ -1,6 +1,5 @@
 import moment from "moment";
 import type { Snowflake, User } from "discord.js";
-import { sql } from "kysely";
 
 import type { Boob } from "./model.js";
 
@@ -16,16 +15,11 @@ export function insertMeasurement(
     log.debug(
         `Saving Boob Measurement for user ${user.id} with size ${size} from ${measuredAt}`,
     );
-    const now = new Date().toISOString();
     return ctx
         .insertInto("boobs")
         .values({
-            id: crypto.randomUUID(),
             userId: user.id,
             size,
-            measuredAt: measuredAt.toISOString(),
-            createdAt: sql`current_timestamp`,
-            updatedAt: sql`current_timestamp`,
         })
         .returningAll()
         .executeTakeFirstOrThrow();
@@ -37,9 +31,8 @@ export function fetchRecentMeasurement(
 ): Promise<Boob | undefined> {
     const startToday = moment().startOf("days").toISOString();
     const startTomorrow = moment().add(1, "days").startOf("days").toISOString();
-
     return ctx
-        .selectFrom("penis")
+        .selectFrom("boobs")
         .where("userId", "=", user.id)
         .where("measuredAt", ">=", startToday)
         .where("measuredAt", "<", startTomorrow)

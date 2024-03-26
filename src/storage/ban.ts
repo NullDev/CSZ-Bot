@@ -21,13 +21,10 @@ export async function persistOrUpdate(
     await ctx
         .insertInto("bans")
         .values({
-            id: crypto.randomUUID(),
             userId: user.id,
             bannedUntil,
             reason,
             isSelfBan,
-            createdAt: sql`current_timestamp`,
-            updatedAt: sql`current_timestamp`,
         })
         .onConflict(oc =>
             oc.column("userId").doUpdateSet({

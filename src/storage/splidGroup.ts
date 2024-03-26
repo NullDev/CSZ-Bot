@@ -23,15 +23,12 @@ export function createSplidGroup(
     return ctx
         .insertInto("splidGroups")
         .values({
-            id: crypto.randomUUID(),
             creatorId: creator.id,
             guildId: guild.id,
             groupCode,
             // externalSplidGroupId,
             shortDescription,
             longDescription,
-            createdAt: sql`current_timestamp`,
-            updatedAt: sql`current_timestamp`,
         })
         .returningAll()
         .executeTakeFirstOrThrow();
