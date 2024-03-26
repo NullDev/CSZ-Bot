@@ -3,7 +3,7 @@ import { sql } from "kysely";
 
 import type { AdditionalMessageData } from "./model.js";
 import type { JsonObject } from "../types.js";
-import db from "./kysely.js";
+import db from "./db.js";
 
 export async function getForMessage(message: Message, ctx = db()) {
     if (!message.guild) {

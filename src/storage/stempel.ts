@@ -2,7 +2,7 @@ import type { GuildMember } from "discord.js";
 import { sql } from "kysely";
 
 import type { Stempel } from "./model.js";
-import db from "./kysely.js";
+import db from "./db.js";
 
 /**
  * @returns true/false depending if the invitedMember is already in the database

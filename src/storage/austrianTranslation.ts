@@ -3,7 +3,7 @@ import { sql } from "kysely";
 
 import type { AustrianTranslation } from "./model.js";
 
-import db from "./kysely.js";
+import db from "./db.js";
 import log from "../utils/logger.js";
 
 export function persistOrUpdate(

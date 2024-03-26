@@ -15,7 +15,7 @@ import type { ApplicationCommand, CommandResult } from "./command.js";
 import type { BotContext } from "../context.js";
 import type { EhrePoints } from "../storage/model.js";
 import * as ehre from "../storage/ehre.js";
-import db from "../storage/kysely.js";
+import db from "../storage/db.js";
 
 const ehreFormatter = new Intl.NumberFormat("de-DE", {
     style: "decimal",

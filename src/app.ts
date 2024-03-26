@@ -16,7 +16,7 @@ import messageHandler from "./handler/messageHandler.js";
 import messageDeleteHandler from "./handler/messageDeleteHandler.js";
 import BdayHandler from "./handler/bdayHandler.js";
 import * as fadingMessageHandler from "./handler/fadingMessageHandler.js";
-import * as kysely from "./storage/kysely.js";
+import * as kysely from "./storage/db.js";
 
 import * as ban from "./commands/modcommands/ban.js";
 import * as poll from "./commands/poll.js";

@@ -2,7 +2,7 @@ import type { Snowflake } from "discord.js";
 import { sql } from "kysely";
 
 import type { Birthday } from "./model.js";
-import db from "./kysely.js";
+import db from "./db.js";
 
 export function getBirthday(
     userId: Snowflake,

@@ -19,3 +19,10 @@ export async function connectToDb(databasePath: string) {
     log.info("Connected to database (kysely).");
     kysely = db;
 }
+
+export async function disconnectFromDb() {
+    log.info("Disconnecting from database...");
+
+    await kysely?.destroy();
+    kysely = undefined as unknown as Kysely<Model>;
+  }

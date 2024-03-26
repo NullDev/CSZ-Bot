@@ -3,7 +3,7 @@ import { sql } from "kysely";
 
 import type { ProcessableMessage } from "../handler/cmdHandler.js";
 import type { FadingMessage } from "./model.js";
-import db from "./kysely.js";
+import db from "./db.js";
 
 export function startFadingMessage(
     message: ProcessableMessage,

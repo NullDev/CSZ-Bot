@@ -2,7 +2,7 @@ import type { Guild, GuildMember, PartialGuildMember } from "discord.js";
 import { sql } from "kysely";
 
 import type { GuildRagequit } from "./model.js";
-import db from "./kysely.js";
+import db from "./db.js";
 
 import log from "../utils/logger.js";
 
