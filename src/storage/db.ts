@@ -20,10 +20,15 @@ export async function connectToDb(databasePath: string) {
             database: nativeDb,
         }),
         log: e => {
+            const info = {
+                sql: e.query.sql,
+                params: e.query.parameters,
+                duration: e.queryDurationMillis,
+            };
             if (e.level === "error") {
-                log.error(e.query, "Error durin query");
+                log.error(info, "Error durin query");
             } else {
-                log.debug(e.query, "Query: %s");
+                log.debug(info, "Query: %s");
             }
         },
     });
