@@ -8,7 +8,7 @@ export async function up(db: Kysely<any>): Promise<void> {
         .addColumn("id", "integer", c => c.primaryKey())
         .addColumn("guildId", "text", c => c.notNull())
         .addColumn("channelId", "text", c => c.notNull())
-        .addColumn("messageId", "text", c => c.notNull().unique())
+        .addColumn("messageId", "text", c => c.notNull())
         .addColumn("usage", "integer", c => c.notNull())
         .addColumn("payload", "json", c => c.notNull())
         .addColumn("createdAt", "timestamp", c =>
