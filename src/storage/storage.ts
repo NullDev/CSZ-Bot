@@ -5,7 +5,6 @@ import FadingMessage from "./model/FadingMessage.js";
 import Ban from "./model/Ban.js";
 import log from "../utils/logger.js";
 import Reminder from "./model/Reminder.js";
-import { EhrePoints, EhreVotes } from "./model/Ehre.js";
 import WoisAction from "./model/WoisAction.js";
 
 export async function initialize(databasePath: string) {
@@ -27,8 +26,6 @@ export async function initialize(databasePath: string) {
     AdditionalMessageData.initialize(sequelize);
     Ban.initialize(sequelize);
     Reminder.initialize(sequelize);
-    EhrePoints.initialize(sequelize);
-    EhreVotes.initialize(sequelize);
     WoisAction.initialize(sequelize);
     await sequelize.sync();
 }

@@ -39,7 +39,6 @@ import { connectAndPlaySaufen } from "./handler/voiceHandler.js";
 import { reminderHandler } from "./commands/erinnerung.js";
 import { endAprilFools, startAprilFools } from "./handler/aprilFoolsHandler.js";
 import { createBotContext, type BotContext } from "./context.js";
-import { EhrePoints, EhreVotes } from "./storage/model/Ehre.js";
 import { ehreReactionHandler } from "./commands/ehre.js";
 import {
     woisVoteReactionHandler,
@@ -50,6 +49,7 @@ import { rotate } from "./helper/bannerCarusel.js";
 import deleteThreadMessagesHandler from "./handler/deleteThreadMessagesHandler.js";
 import * as terminal from "./terminal.js";
 import * as guildRageQuit from "./storage/guildRageQuit.js";
+import * as ehre from "./storage/ehre.js";
 
 const args = process.argv.slice(2);
 
@@ -251,8 +251,8 @@ const scheduleCronjobs = async (context: BotContext) => {
     schedule("* * * * *", async () => await reminderHandler(context));
     schedule("* * * * *", async () => await woisVoteScheduler(context));
     schedule("* * * * *", async () => await ban.processBans(context));
-    schedule("1 0 * * *", async () => await EhrePoints.deflation());
-    schedule("1 0 * * *", async () => await EhreVotes.resetVotes());
+    schedule("1 0 * * *", async () => await ehre.runDeflation());
+    schedule("1 0 * * *", async () => await ehre.resetVotes());
     schedule("0 0 1 */2 *", async () => await rotate(context));
     schedule("37 13 * * *", leetTask);
     schedule("5 * * * *", clearWoisLogTask);

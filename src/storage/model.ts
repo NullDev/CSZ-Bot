@@ -14,6 +14,8 @@ export interface Database {
     penis: PenisTable;
     boobs: BoobTable;
     austrianTranslations: AustrianTranslationTable;
+    ehreVotes: EhreVotesTable;
+    ehrePoints: EhrePointsTable;
 }
 
 export interface AuditedTable {
@@ -194,3 +196,22 @@ export interface AustrianTranslationTable extends AuditedTable {
     fields: ["german"],
 },
 */
+
+export type EhreVotes = Selectable<EhreVotesTable>;
+export interface EhreVotesTable extends AuditedTable {
+    // Cannot use GeneratedAlways because sequelize generated the ID on the client side
+    // id: GeneratedAlways<Uuid>;
+    id: ColumnType<Uuid, Uuid, never>;
+
+    userId: Snowflake; // unique: true,
+}
+
+export type EhrePoints = Selectable<EhrePointsTable>;
+export interface EhrePointsTable extends AuditedTable {
+    // Cannot use GeneratedAlways because sequelize generated the ID on the client side
+    // id: GeneratedAlways<Uuid>;
+    id: ColumnType<Uuid, Uuid, never>;
+
+    userId: Snowflake; // unique: true,
+    points: number;
+}
