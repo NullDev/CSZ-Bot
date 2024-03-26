@@ -15,6 +15,7 @@ import type { ApplicationCommand, CommandResult } from "./command.js";
 import type { BotContext } from "../context.js";
 import type { EhrePoints } from "../storage/model.js";
 import * as ehre from "../storage/ehre.js";
+import db from "../storage/kysely.js";
 
 const ehreFormatter = new Intl.NumberFormat("de-DE", {
     style: "decimal",
@@ -93,9 +94,13 @@ function getVote(userInGroups: ehre.EhreGroups, voter: string): number {
 }
 
 async function handleVote(voter: string, user: string) {
-    const userInGroups = await ehre.getUserInGroups();
-    await ehre.insertVote(voter);
-    await ehre.addPoints(user, getVote(userInGroups, voter));
+    db()
+        .transaction()
+        .execute(async tx => {
+            const userInGroups = await ehre.getUserInGroups(tx);
+            await ehre.insertVote(voter, tx);
+            await ehre.addPoints(user, getVote(userInGroups, voter), tx);
+        });
 }
 
 export const ehreReactionHandler = {
