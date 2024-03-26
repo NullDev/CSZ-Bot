@@ -11,10 +11,9 @@ import cron from "croner";
 import * as conf from "./utils/configHandler.js";
 import log from "./utils/logger.js";
 
-// Handler
 import messageHandler from "./handler/messageHandler.js";
 import messageDeleteHandler from "./handler/messageDeleteHandler.js";
-import BdayHandler from "./handler/bdayHandler.js";
+import { checkBirthdays } from "./handler/bdayHandler.js";
 import * as fadingMessageHandler from "./handler/fadingMessageHandler.js";
 import * as kysely from "./storage/db.js";
 
@@ -33,7 +32,7 @@ import {
     registerAllApplicationCommandsAsGuildCommands,
 } from "./handler/commandHandler.js";
 import quoteReactionHandler from "./handler/quoteHandler.js";
-import NicknameHandler from "./handler/nicknameHandler.js";
+import { rerollNicknames } from "./handler/nicknameHandler.js";
 import { connectAndPlaySaufen } from "./handler/voiceHandler.js";
 import { reminderHandler } from "./commands/erinnerung.js";
 import { endAprilFools, startAprilFools } from "./handler/aprilFoolsHandler.js";
@@ -43,7 +42,7 @@ import {
     woisVoteReactionHandler,
     woisVoteScheduler,
 } from "./commands/woisvote.js";
-import { AoCHandler } from "./commands/aoc.js";
+import { publishAocLeaderBoard } from "./commands/aoc.js";
 import { rotate } from "./helper/bannerCarusel.js";
 import deleteThreadMessagesHandler from "./handler/deleteThreadMessagesHandler.js";
 import * as terminal from "./terminal.js";
@@ -235,14 +234,14 @@ const scheduleCronjobs = async (context: BotContext) => {
         );
     };
 
-    const birthday = new BdayHandler(context);
-    schedule("1 0 * * *", async () => await birthday.checkBdays());
+    schedule("1 0 * * *", async () => await checkBirthdays(context));
 
-    const aoc = new AoCHandler(context);
-    schedule("0 20 1-25 12 *", async () => await aoc.publishLeaderBoard());
+    schedule(
+        "0 20 1-25 12 *",
+        async () => await publishAocLeaderBoard(context),
+    );
 
-    const nicknameHandler = new NicknameHandler(context);
-    schedule("0 0 * * 0", async () => await nicknameHandler.rerollNicknames());
+    schedule("0 0 * * 0", async () => await rerollNicknames(context));
 
     schedule(
         "36 0-23 * * FRI-SUN",

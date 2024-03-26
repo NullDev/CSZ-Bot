@@ -147,29 +147,25 @@ const getLeaderBoard = async (): Promise<LeaderBoard> => {
     return leaderBoard;
 };
 
-export class AoCHandler {
-    constructor(private readonly context: BotContext) {}
+export async function publishAocLeaderBoard(context: BotContext) {
+    log.debug("Entered `AoCHandler#publishLeaderBoard`");
 
-    async publishLeaderBoard() {
-        log.debug("Entered `AoCHandler#publishLeaderBoard`");
-
-        const targetChannel = this.context.guild.channels.cache.get(
-            aocConfig.targetChannelId,
-        );
-        if (!targetChannel) {
-            log.error(`Target channel ${aocConfig.targetChannelId} not found`);
-            return;
-        }
-
-        const channel = targetChannel as discord.ThreadChannel;
-        const leaderBoard = await getLeaderBoard();
-        const embed = createEmbedFromLeaderBoard(
-            aocConfig.userMap,
-            leaderBoard,
-            "local_score",
-        );
-        return channel.send({ embeds: [embed] });
+    const targetChannel = context.guild.channels.cache.get(
+        aocConfig.targetChannelId,
+    );
+    if (!targetChannel) {
+        log.error(`Target channel ${aocConfig.targetChannelId} not found`);
+        return;
     }
+
+    const channel = targetChannel as discord.ThreadChannel;
+    const leaderBoard = await getLeaderBoard();
+    const embed = createEmbedFromLeaderBoard(
+        aocConfig.userMap,
+        leaderBoard,
+        "local_score",
+    );
+    return channel.send({ embeds: [embed] });
 }
 
 export class AoCCommand implements ApplicationCommand {
