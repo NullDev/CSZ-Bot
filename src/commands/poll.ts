@@ -12,6 +12,7 @@ import {
 
 import log from "../utils/logger.js";
 import AdditionalMessageData from "../storage/model/AdditionalMessageData.js";
+import * as additionalMessageData from "../storage/additionalMessageData.js";
 import { getConfig } from "../utils/configHandler.js";
 import type { BotContext } from "../context.js";
 import type { CommandFunction } from "../types.js";
@@ -257,12 +258,20 @@ export const run: CommandFunction = async (_client, message, args, context) => {
             reactionMap,
         };
 
+        // TODO: transaction
         const additionalData =
-            await AdditionalMessageData.fromMessage(pollMessage);
-        const newCustomData = additionalData.customData;
-        newCustomData.delayedPollData = delayedPollData;
-        additionalData.customData = newCustomData;
-        await additionalData.save();
+            await additionalMessageData.getForMessage(pollMessage);
+
+        if (additionalData === undefined) {
+            await additionalMessageData.upsertForMessage(pollMessage, {
+                delayedPollData,
+            });
+        } else {
+            await additionalMessageData.setCustomData(additionalData.id, {
+                ...additionalData.customData,
+                delayedPollData,
+            });
+        }
 
         delayedPolls.push(delayedPollData);
     }
@@ -364,11 +373,7 @@ export const processPolls = async (context: BotContext) => {
         await message.react("✅");
         delayedPolls.splice(delayedPolls.indexOf(delayedPoll), 1);
 
-        const messageData = await AdditionalMessageData.fromMessage(message);
-        const { customData } = messageData;
-        customData.delayedPollData = undefined;
-        messageData.customData = customData;
-        await messageData.save();
+        await additionalMessageData.destroyForMessage(message);
     }
 };
 

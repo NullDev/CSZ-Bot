@@ -18,6 +18,7 @@ export interface Database {
     ehrePoints: EhrePointsTable;
     fadingMessages: FadingMessageTable;
     woisActions: WoisActionTable;
+    additionalMessageData: AdditionalMessageDataTable;
 }
 
 export interface AuditedTable {
@@ -244,3 +245,23 @@ export interface WoisActionTable extends AuditedTable {
     interestedUsers: ColumnType<string, string, string>; // Snowflake[];
     isWoisgangAction: boolean;
 }
+
+export type AdditionalMessageData = Selectable<AdditionalMessageDataTable>;
+// TODO: Add some kind of "type" tag, so different commands can retrieve their data independently
+export interface AdditionalMessageDataTable extends AuditedTable {
+    // Cannot use GeneratedAlways because sequelize generated the ID on the client side
+    // id: GeneratedAlways<Uuid>;
+    id: ColumnType<Uuid, Uuid, never>;
+
+    guildId: Snowflake;
+    channelId: Snowflake;
+    messageId: Snowflake;
+    // TODO: JSON types are currently not supported by the DB driver
+    customData: ColumnType<string, string, string>; // JsonObject;
+}
+/*
+{
+    unique: true,
+    fields: ["guildId", "channelId", "messageId"],
+},
+*/

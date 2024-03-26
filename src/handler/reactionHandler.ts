@@ -1,6 +1,6 @@
 import type { MessageReaction, User } from "discord.js";
 
-import AdditionalMessageData from "../storage/model/AdditionalMessageData.js";
+import * as additionalMessageData from "../storage/additionalMessageData.js";
 import * as fadingMessage from "../storage/fadingMessage.js";
 
 import log from "../utils/logger.js";
@@ -162,15 +162,9 @@ export default {
                 );
             }
 
-            const additionalData =
-                await AdditionalMessageData.fromMessage(message);
-            // TODO
-            // @ts-ignore
-            const newCustomData = additionalData.customData;
-            newCustomData.delayedPollData = delayedPoll;
-            // @ts-ignore
-            additionalData.customData = newCustomData;
-            await additionalData.save();
+            await additionalMessageData.upsertForMessage(message, {
+                delayedPollData: delayedPoll,
+            });
         }
     },
 };
