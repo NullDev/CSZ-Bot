@@ -19,6 +19,13 @@ export async function connectToDb(databasePath: string) {
         dialect: new BunSqliteDialect({
             database: nativeDb,
         }),
+        log: e => {
+            if (e.level === "error") {
+                log.error(e.query, "Error durin query");
+            } else {
+                log.debug(e.query, "Query: %s");
+            }
+        },
     });
 
     log.info("Connected to database.");
