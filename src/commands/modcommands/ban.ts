@@ -10,7 +10,7 @@ import {
 } from "discord.js";
 import type { Client } from "discord.js";
 
-import Ban from "../../storage/model/Ban.js";
+import * as banService from "../../storage/ban.js";
 import { getConfig } from "../../utils/configHandler.js";
 import type {
     ApplicationCommand,
@@ -109,7 +109,7 @@ export const processBans = async (context: BotContext) => {
     const now = new Date();
 
     try {
-        const expiredBans = await Ban.findExpiredBans(now);
+        const expiredBans = await banService.findExpiredBans(now);
 
         for (const expiredBan of expiredBans) {
             log.debug(
@@ -117,7 +117,9 @@ export const processBans = async (context: BotContext) => {
             );
             const user = context.guild.members.cache.get(expiredBan.userId);
             // No user, no problem
-            if (!user) continue;
+            if (!user) {
+                continue;
+            }
 
             await unban(user);
 
@@ -153,7 +155,7 @@ export const ban = async (
         return "Fick dich bitte.";
     }
 
-    const existingBan = await Ban.findExisting(member.user);
+    const existingBan = await banService.findExisting(member.user);
     if (existingBan !== null) {
         if (member.roles.cache.some(r => r.id === config.ids.banned_role_id)) {
             return "Dieser User ist bereits gebannt du kek.";
@@ -191,7 +193,7 @@ export const ban = async (
         });
     }
 
-    await Ban.persistOrUpdate(member, unbanAt, isSelfBan, reason);
+    await banService.persistOrUpdate(member, unbanAt, isSelfBan, reason);
 
     await member.send(`Du wurdest von der Coding Shitpost Zentrale gebannt!
 ${!reason ? "Es wurde kein Banngrund angegeben." : `Banngrund: ${reason}`}

@@ -8,7 +8,7 @@ import {
 import { SlashCommandBuilder } from "discord.js";
 import type { ApplicationCommand } from "./command.js";
 import type { BotContext } from "../context.js";
-import Ban from "../storage/model/Ban.js";
+import * as banService from "../storage/ban.js";
 
 export class BanListCommand implements ApplicationCommand {
     name = "banlist";
@@ -22,7 +22,7 @@ export class BanListCommand implements ApplicationCommand {
         _client: Client<boolean>,
         context: BotContext,
     ): Promise<void> {
-        const bans = await Ban.findAll();
+        const bans = await banService.findAll();
 
         if (bans.length === 0) {
             await command.reply({
@@ -40,7 +40,10 @@ export class BanListCommand implements ApplicationCommand {
                 const untilString = `Bis ${
                     b.bannedUntil === null
                         ? "auf weiteres"
-                        : time(b.bannedUntil, TimestampStyles.RelativeTime)
+                        : time(
+                              new Date(b.bannedUntil),
+                              TimestampStyles.RelativeTime,
+                          )
                 }`;
                 const reasonString =
                     b.reason === null ? "" : `(Grund: ${b.reason})`;

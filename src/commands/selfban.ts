@@ -2,7 +2,7 @@ import { time, TimestampStyles } from "discord.js";
 import moment from "moment";
 
 import type { CommandFunction } from "../types.js";
-import Ban from "../storage/model/Ban.js";
+import * as banService from "../storage/ban.js";
 import { getConfig } from "../utils/configHandler.js";
 import * as ban from "./modcommands/ban.js";
 
@@ -36,14 +36,18 @@ export const run: CommandFunction = async (client, message, args, context) => {
     }
 
     const invokingUser = message.member;
-    if (invokingUser.id === "371724846205239326")
+    if (invokingUser.id === "371724846205239326") {
         return "Aus Segurity lieber nicht dich bannen.";
+    }
 
-    if (invokingUser.roles.cache.some(r => r.id === context.roles.banned.id))
+    if (invokingUser.roles.cache.some(r => r.id === context.roles.banned.id)) {
         return "Du bist bereits gebannt du Kek.";
+    }
 
-    const existingBan = await Ban.findExisting(invokingUser);
-    if (existingBan) return "Du bist bereits gebannt";
+    const existingBan = await banService.findExisting(invokingUser);
+    if (existingBan) {
+        return "Du bist bereits gebannt";
+    }
 
     const err = await ban.ban(
         client,
@@ -53,7 +57,10 @@ export const run: CommandFunction = async (client, message, args, context) => {
         true,
         durationInHours,
     );
-    if (err) return err;
+
+    if (err) {
+        return err;
+    }
 
     const targetTime = new Date(Date.now() + durationInMinutes * 60 * 1000);
     const durationHumanized =

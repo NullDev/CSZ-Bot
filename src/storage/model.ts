@@ -19,6 +19,7 @@ export interface Database {
     fadingMessages: FadingMessageTable;
     woisActions: WoisActionTable;
     additionalMessageData: AdditionalMessageDataTable;
+    bans: BanTable;
 }
 
 export interface AuditedTable {
@@ -263,5 +264,34 @@ export interface AdditionalMessageDataTable extends AuditedTable {
 {
     unique: true,
     fields: ["guildId", "channelId", "messageId"],
+},
+*/
+
+export type Ban = Selectable<BanTable>;
+export interface BanTable extends AuditedTable {
+    // Cannot use GeneratedAlways because sequelize generated the ID on the client side
+    // id: GeneratedAlways<Uuid>;
+    id: ColumnType<Uuid, Uuid, never>;
+
+    userId: Snowflake;
+    reason: string | null;
+
+    // TODO: Date is not supported by the DB driver
+    bannedUntil: ColumnType<string | null, string | null, string | null>;
+    isSelfBan: boolean;
+}
+/*
+{
+    unique: true,
+    fields: ["userId"],
+},
+{
+    using: "BTREE",
+    fields: [
+        {
+            name: "bannedUntil",
+            order: "ASC",
+        },
+    ],
 },
 */

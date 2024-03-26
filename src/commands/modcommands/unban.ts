@@ -7,7 +7,7 @@ import {
 } from "discord.js";
 import type { Message, Client } from "discord.js";
 
-import Ban from "../../storage/model/Ban.js";
+import * as banService from "../../storage/ban.js";
 import { getConfig } from "../../utils/configHandler.js";
 import type {
     ApplicationCommand,
@@ -22,7 +22,7 @@ export const unban = async (member: GuildMember) => {
     if (member.roles.cache.some(r => r.id === config.ids.default_role_id))
         return "Dieser User ist nicht gebannt du kek.";
 
-    await Ban.remove(member.user);
+    await banService.remove(member.user);
 
     const result = await restoreRoles(member);
     if (!result)
