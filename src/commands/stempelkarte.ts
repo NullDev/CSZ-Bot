@@ -10,8 +10,8 @@ import {
     SlashCommandUserOption,
 } from "discord.js";
 
-import Stempel from "../storage/model/Stempel.js";
-import log from "../utils/logger.js";
+import * as stempel from "../storage/stempel.js";
+import log from "@log";
 import type { ApplicationCommand, CommandResult } from "./command.js";
 import { chunkArray } from "../utils/arrayUtils.js";
 
@@ -140,7 +140,7 @@ export class StempelkarteCommand implements ApplicationCommand {
         const getUserById = (id: Snowflake) =>
             command.guild?.members.cache.find(member => member.id === id);
 
-        const allInvitees = await Stempel.getStempelByInvitator(ofMember.id);
+        const allInvitees = await stempel.getStempelByInvitator(ofMember);
 
         if (allInvitees.length === 0) {
             await command.reply({
@@ -158,7 +158,7 @@ export class StempelkarteCommand implements ApplicationCommand {
 
         for (const invitees of inviteesChunked) {
             const avatarUrls = invitees
-                .map(s => s.invitedMember)
+                .map(s => s.invitedMemberId)
                 .map(getUserById)
                 .map(member => getAvatarUrlForMember(member));
 

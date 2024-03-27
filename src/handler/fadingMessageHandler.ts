@@ -2,18 +2,18 @@ import { setInterval } from "node:timers/promises";
 
 import type { Client, TextChannel } from "discord.js";
 
-import log from "../utils/logger.js";
-import FadingMessage from "../storage/model/FadingMessage.js";
+import log from "@log";
+import * as fadingMessage from "../storage/fadingMessage.js";
 
 let isLooping = false;
 
 const fadingMessageDeleteLoop = async (client: Client) => {
-    const fadingMessages = await FadingMessage.findAll();
-    const currentTime = new Date();
+    const now = new Date();
+    const fadingMessages = await fadingMessage.findPendingForDeletion(now);
+    const toRemove = [];
+
     for (const fadingMessage of fadingMessages) {
-        if (currentTime < fadingMessage.endTime) {
-            continue;
-        }
+        toRemove.push(fadingMessage.id);
 
         try {
             const guild = await client.guilds.fetch(fadingMessage.guildId);
@@ -31,10 +31,9 @@ const fadingMessageDeleteLoop = async (client: Client) => {
                     `Failed to handle FadingMessage [${fadingMessage.id}] properly: ${error.stack}`,
                 );
             }
-        } finally {
-            await fadingMessage.destroy();
         }
     }
+    await fadingMessage.destroyMultiple(toRemove);
 };
 
 const loopWrapper = async (client: Client) => {

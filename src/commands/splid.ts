@@ -9,17 +9,19 @@ import {
     SlashCommandSubcommandBuilder,
     SlashCommandUserOption,
     userMention,
+    type Client,
 } from "discord.js";
 
 // @ts-ignore Types are somehow broken :shrug:
 import { SplidClient } from "splid-js";
 
+import type { BotContext } from "../context.js";
 import type { ApplicationCommand } from "./command.js";
-import { isTrusted } from "../utils/userUtils.js";
+import type { SplidGroup } from "../storage/model.js";
 import { ensureChatInputCommand } from "../utils/interactionUtils.js";
-import SplidGroup from "../storage/model/SplidGroup.js";
-import logger from "../utils/logger.js";
-import SplidLink from "../storage/model/SplidLink.js";
+import logger from "@log";
+import * as splidLink from "../storage/splidLink.js";
+import * as splidGroup from "../storage/splidGroup.js";
 
 const createNumberFormatter = (currency: string) =>
     new Intl.NumberFormat("de-DE", {
@@ -159,7 +161,11 @@ export class SplidGroupCommand implements ApplicationCommand {
                 ),
         );
 
-    async handleInteraction(interaction: CommandInteraction) {
+    async handleInteraction(
+        interaction: CommandInteraction,
+        _client: Client,
+        context: BotContext,
+    ) {
         const command = ensureChatInputCommand(interaction);
         if (!command.guildId) {
             await command.reply({
@@ -169,7 +175,7 @@ export class SplidGroupCommand implements ApplicationCommand {
             return;
         }
 
-        if (!command.member || !isTrusted(command.member)) {
+        if (!command.member || !context.roleGuard.isTrusted(command.member)) {
             await command.reply({
                 content: "Hurensohn. Der Command ist nix für dich.",
                 ephemeral: true,
@@ -241,11 +247,10 @@ export class SplidGroupCommand implements ApplicationCommand {
             const longDescription =
                 command.options.getString("description-long", false) ?? null;
 
-            const result = await SplidGroup.createSplidGroup(
+            const result = await splidGroup.createSplidGroup(
                 command.user,
                 command.guild,
                 normalizedCode,
-                externalInfo.objectId,
                 name,
                 longDescription,
             );
@@ -268,7 +273,7 @@ export class SplidGroupCommand implements ApplicationCommand {
             return;
         }
 
-        const groups = await SplidGroup.findAllGroups(command.guild);
+        const groups = await splidGroup.findAllGroups(command.guild);
 
         if (groups.length === 0) {
             await command.reply({
@@ -304,7 +309,7 @@ export class SplidGroupCommand implements ApplicationCommand {
             return;
         }
         const code = command.options.getString("invite-code", true);
-        const group = await SplidGroup.findOneByCodeForGuild(
+        const group = await splidGroup.findOneByCodeForGuild(
             command.guild,
             code,
         );
@@ -321,7 +326,7 @@ export class SplidGroupCommand implements ApplicationCommand {
 
         const memberData = await fetchExternalMemberData(group);
 
-        const linkedAccounts = await SplidLink.matchUsers(
+        const linkedAccounts = await splidLink.matchUsers(
             command.guild,
             new Set(memberData.map(n => n.globalId)),
         );
@@ -392,7 +397,7 @@ export class SplidGroupCommand implements ApplicationCommand {
         }
 
         const groupCode = command.options.getString("invite-code", true);
-        const group = await SplidGroup.findOneByCodeForGuild(
+        const group = await splidGroup.findOneByCodeForGuild(
             command.guild,
             groupCode,
         );
@@ -424,7 +429,7 @@ export class SplidGroupCommand implements ApplicationCommand {
                 return;
             }
 
-            const result = await SplidLink.createLink(
+            const result = await splidLink.createLink(
                 command.guild,
                 discordUser,
                 splidMember.globalId,
@@ -450,7 +455,7 @@ export class SplidGroupCommand implements ApplicationCommand {
     async handleDeleteGroup(command: ChatInputCommandInteraction) {
         const code = command.options.getString("invite-code", true);
 
-        await SplidGroup.deleteByInviteCode(code);
+        await splidGroup.deleteByInviteCode(code);
 
         await command.reply({
             content: `Ok Bruder, habe Splid-Gruppe mit Invite-Code \`${code}\` gelöscht.`,
@@ -493,7 +498,7 @@ export class SplidGroupCommand implements ApplicationCommand {
                             true,
                         );
 
-                        const group = await SplidGroup.findOneByCodeForGuild(
+                        const group = await splidGroup.findOneByCodeForGuild(
                             interaction.guild,
                             groupCode,
                         );
@@ -532,7 +537,7 @@ export class SplidGroupCommand implements ApplicationCommand {
     }
 
     async #getSplidGroupCompletions(focusedValue: string, guild: Guild) {
-        const groups = await SplidGroup.findAllGroups(guild);
+        const groups = await splidGroup.findAllGroups(guild);
 
         const focusedValueNormalized = focusedValue.toLowerCase();
         return groups

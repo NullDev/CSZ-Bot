@@ -19,7 +19,7 @@ import {
 import type { ApplicationCommand, CommandResult } from "./command.js";
 import type { BotContext } from "../context.js";
 
-import log from "../utils/logger.js";
+import log from "@log";
 
 export class Vote2Command implements ApplicationCommand {
     modCommand = false;

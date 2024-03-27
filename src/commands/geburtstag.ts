@@ -7,8 +7,8 @@ import {
 } from "discord.js";
 
 import type { ApplicationCommand } from "./command.js";
-import Birthday, { isOneBasedMonth } from "../storage/model/Birthday.js";
-import log from "../utils/logger.js";
+import log from "@log";
+import * as birthday from "../storage/birthday.js";
 
 export class GeburtstagCommand implements ApplicationCommand {
     name = "geburtstag";
@@ -46,7 +46,9 @@ export class GeburtstagCommand implements ApplicationCommand {
         const day = command.options.getInteger("day", true);
         const month = command.options.getInteger("month", true);
 
-        if (!isOneBasedMonth(month)) return;
+        if (!birthday.isOneBasedMonth(month)) {
+            return;
+        }
 
         const date = moment(`${month}-${day}`, "MM-DD");
 
@@ -56,7 +58,7 @@ export class GeburtstagCommand implements ApplicationCommand {
         }
 
         try {
-            await Birthday.insertBirthday(command.user.id, day, month);
+            await birthday.insertBirthday(command.user.id, day, month);
             await command.reply(
                 "Danke mein G, ich hab dein Geburtstag eingetragen!",
             );

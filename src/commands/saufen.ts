@@ -14,7 +14,7 @@ import {
 
 import type { ApplicationCommand } from "./command.js";
 import type { BotContext } from "../context.js";
-import { connectAndPlaySaufen, soundDir } from "../handler/voiceHandler.js";
+import { connectAndPlaySaufen } from "../handler/voiceHandler.js";
 import { assertNever } from "../utils/typeUtils.js";
 
 type SubCommand = "los" | "add" | "list" | "select";
@@ -112,7 +112,7 @@ export class Saufen implements ApplicationCommand {
                     command.options.getString("sound", true),
                 );
                 const targetPath = path.resolve(
-                    soundDir,
+                    context.soundsDir,
                     path.basename(soundUrl.pathname),
                 );
 
@@ -133,7 +133,7 @@ export class Saufen implements ApplicationCommand {
                 return;
             }
             case "list": {
-                const files = await this.getSoundFiles();
+                const files = await this.#getSoundFiles(context.soundsDir);
                 await command.reply(files.map(f => `- ${f}`).join("\n"));
                 return;
             }
@@ -142,19 +142,22 @@ export class Saufen implements ApplicationCommand {
         }
     }
 
-    private async getSoundFiles() {
+    async #getSoundFiles(soundDir: string) {
         return (await fs.readdir(soundDir, { withFileTypes: true }))
             .filter(f => f.isFile())
             .map(f => f.name);
     }
 
-    async autocomplete(interaction: AutocompleteInteraction) {
+    async autocomplete(
+        interaction: AutocompleteInteraction,
+        context: BotContext,
+    ) {
         const subCommand = interaction.options.getSubcommand(true);
         if (subCommand !== "select") {
             return;
         }
 
-        const files = await this.getSoundFiles();
+        const files = await this.#getSoundFiles(context.soundsDir);
 
         const focusedValue = interaction.options.getFocused().toLowerCase();
         const completions = files

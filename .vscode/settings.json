@@ -16,7 +16,9 @@
         "editor.defaultFormatter": "biomejs.biome"
     },
     "cSpell.words": [
+        "austrian",
         "splid",
+        "emotifizierer",
         "proxitok",
         "wois",
         "bday",
@@ -32,12 +34,15 @@
         "osage",
         "rejoiner",
         "faulenzer",
+        "kysely",
+        "sqlite",
         "brudi",
         "faulenzerping",
         "labelfontcolor",
         "fontname",
         "bgcolor",
         "ragequit",
-        "woisvote"
+        "woisvote",
+        "quotee"
     ]
 }

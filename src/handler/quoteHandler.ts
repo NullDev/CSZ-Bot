@@ -12,14 +12,15 @@ import {
 
 import type { BotContext } from "../context.js";
 import { getConfig } from "../utils/configHandler.js";
-import log from "../utils/logger.js";
-import { isNerd, isTrusted } from "../utils/userUtils.js";
+import log from "@log";
 
 const quoteConfig = getConfig().bot_settings.quotes;
 const quoteThreshold = quoteConfig.quote_threshold;
+
 const isSourceChannelAllowed = (channelId: string) =>
     !quoteConfig.blacklisted_channel_ids.includes(channelId);
-const isChannelAnonymous = async (context: BotContext, channel: Channel) => {
+
+const isChannelAnonymous = async (_context: BotContext, channel: Channel) => {
     const anonChannels = quoteConfig.anonymous_channel_ids;
 
     let currentChannel: Channel | null = channel;
@@ -37,9 +38,9 @@ const isChannelAnonymous = async (context: BotContext, channel: Channel) => {
 
     return false;
 };
+
 const isQuoteEmoji = (emoji: GuildEmoji | ReactionEmoji) =>
     emoji.name === quoteConfig.emoji_name;
-const isMemberAllowedToQuote = (member: GuildMember) => isNerd(member);
 
 const getMessageQuoter = async (
     message: Message,
@@ -71,19 +72,23 @@ const isMessageAlreadyQuoted = (
 };
 
 const hasMessageEnoughQuotes = (
+    context: BotContext,
     messageQuoter: readonly GuildMember[],
 ): boolean => {
     return (
         messageQuoter.reduce(
-            (prev, curr) => (isTrusted(curr) ? prev + 2 : prev + 1),
+            (prev, curr) =>
+                context.roleGuard.isTrusted(curr) ? prev + 2 : prev + 1,
             0,
         ) >= quoteThreshold
     );
 };
+
 const isQuoterQuotingHimself = (
     quoter: GuildMember,
     messageAuthor: GuildMember,
 ) => quoter.id === messageAuthor.id;
+
 const generateRandomColor = () => Math.floor(Math.random() * 16777215);
 
 const getTargetChannel = (sourceChannelId: string, context: BotContext) => {
@@ -212,13 +217,13 @@ export default {
         const quotedUser = quotedMessage.member;
         const referencedUser = referencedMessage?.member;
         const quotingMembers = await getMessageQuoter(quotedMessage);
-        const quotingMembersAllowed = quotingMembers.filter(member =>
-            isMemberAllowedToQuote(member),
+        const quotingMembersAllowed = quotingMembers.filter(
+            context.roleGuard.isNerd,
         );
 
         if (!quotedUser || !quoter) {
             log.error(
-                "Something bad happend, there is something missing that shouldn't be missing",
+                "Something bad happened, there is something missing that shouldn't be missing",
             );
             return;
         }
@@ -228,7 +233,7 @@ export default {
         );
 
         if (
-            !isMemberAllowedToQuote(quoter) ||
+            !context.roleGuard.isNerd(quoter) ||
             !isSourceChannelAllowed(quotedMessage.channelId) ||
             isMessageAlreadyQuoted(quotingMembers, context)
         ) {
@@ -261,7 +266,7 @@ export default {
             return;
         }
 
-        if (!hasMessageEnoughQuotes(quotingMembersAllowed)) {
+        if (!hasMessageEnoughQuotes(context, quotingMembersAllowed)) {
             return;
         }
 

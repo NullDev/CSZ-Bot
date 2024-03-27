@@ -2,8 +2,8 @@ import type { Client, User } from "discord.js";
 
 import type { ProcessableMessage } from "../handler/cmdHandler.js";
 import type { CommandResult, MessageCommand } from "./command.js";
-import Boob from "../storage/model/Boob.js";
-import log from "../utils/logger.js";
+import * as boob from "../storage/boob.js";
+import log from "@log";
 import { formatTime } from "../utils/dateUtils.js";
 
 interface Booba {
@@ -116,8 +116,8 @@ const sendBoob = async (
 };
 
 const isNewBiggestBoobs = async (size: number): Promise<boolean> => {
-    const oldLongest = await Boob.longestRecentMeasurement();
-    return oldLongest === null ? true : (oldLongest.size ?? -1) < size;
+    const oldLongest = (await boob.longestRecentMeasurement()) ?? -1;
+    return oldLongest < size;
 };
 
 export class BoobCommand implements MessageCommand {
@@ -155,9 +155,9 @@ export class BoobCommand implements MessageCommand {
         );
 
         const recentMeasurement =
-            await Boob.fetchRecentMeasurement(userToMeasure);
+            await boob.fetchRecentMeasurement(userToMeasure);
 
-        if (recentMeasurement === null) {
+        if (recentMeasurement === undefined) {
             log.debug(
                 `No recent boob measuring of ${userToMeasure.id} found. Creating Measurement`,
             );
@@ -171,7 +171,7 @@ export class BoobCommand implements MessageCommand {
             }
 
             await Promise.all([
-                Boob.insertMeasurement(userToMeasure, size),
+                boob.insertMeasurement(userToMeasure, size),
                 sendBoob(userToMeasure, message, size),
             ]);
             return;
@@ -181,7 +181,7 @@ export class BoobCommand implements MessageCommand {
             userToMeasure,
             message,
             recentMeasurement.size,
-            recentMeasurement.measuredAt,
+            new Date(recentMeasurement.measuredAt),
         );
     }
 }

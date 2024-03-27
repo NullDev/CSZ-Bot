@@ -4,14 +4,10 @@ import * as path from "node:path";
 import type { Client, Guild, GuildMember, Message } from "discord.js";
 
 import type { CommandFunction, CommandResult } from "../types.js";
-import log from "../utils/logger.js";
-import { getConfig } from "../utils/configHandler.js";
+import log from "@log";
 import * as ban from "../commands/modcommands/ban.js";
-import { hasBotDenyRole } from "../utils/userUtils.js";
 import { isMessageInBotSpam } from "../utils/channelUtils.js";
 import type { BotContext } from "../context.js";
-
-const config = getConfig();
 
 /**
  * A message that the bot can pass to command handlers.
@@ -40,7 +36,10 @@ export default async function (
 ): Promise<CommandResult> {
     if (message.author.bot) return;
 
-    if (hasBotDenyRole(message.member) && !isMessageInBotSpam(message)) {
+    if (
+        context.roleGuard.hasBotDenyRole(message.member) &&
+        !isMessageInBotSpam(message)
+    ) {
         await message.member.send(
             "Du hast dich scheinbar beschissen verhalten und darfst daher keine Befehle in diesem Channel ausführen!",
         );
@@ -48,8 +47,8 @@ export default async function (
     }
 
     const cmdPrefix = isModCommand
-        ? config.bot_settings.prefix.mod_prefix
-        : config.bot_settings.prefix.command_prefix;
+        ? context.prefix.modCommand
+        : context.prefix.command;
 
     const args = message.content.slice(cmdPrefix.length).trim().split(/\s+/g);
     const rawCommandName = args.shift();
@@ -60,8 +59,8 @@ export default async function (
 
     const commandArr = [];
     const commandDir = isModCommand
-        ? path.join(context.srcDir, "commands", "modcommands")
-        : path.join(context.srcDir, "commands");
+        ? context.modCommandDir
+        : context.commandDir;
 
     const files = await fs.readdir(commandDir);
     for (const file of files) {
@@ -73,9 +72,10 @@ export default async function (
         }
     }
 
-    const commandFile = commandArr.find(
-        cmd => cmd === `${command.toLowerCase()}.js`,
-    );
+    const commandFile = commandArr.find(cmd => {
+        const normalized = command.toLowerCase();
+        return cmd === `${normalized}.js` || cmd === `${normalized}.ts`;
+    });
 
     if (commandFile === undefined) {
         return;
@@ -104,9 +104,7 @@ export default async function (
 
     if (
         isModCommand &&
-        !message.member.roles.cache.some(r =>
-            config.bot_settings.moderator_roles.includes(r.name),
-        )
+        !message.member.roles.cache.some(r => context.moderatorRoles.has(r.id))
     ) {
         log.warn(
             `User "${message.author.tag}" (${message.author}) tried mod command "${cmdPrefix}${command}" and was denied`,
@@ -114,7 +112,7 @@ export default async function (
 
         if (
             message.member.roles.cache.some(
-                r => r.id === config.ids.banned_role_id,
+                r => r.id === context.roles.banned.id,
             )
         ) {
             return "Da haste aber Schwein gehabt";
@@ -122,6 +120,7 @@ export default async function (
 
         await ban.ban(
             client,
+            context,
             message.member,
             message.member,
             "Lol",

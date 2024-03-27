@@ -29,8 +29,7 @@ import {
     type UserInteraction,
 } from "../commands/command.js";
 import { InfoCommand } from "../commands/info.js";
-import { getConfig } from "../utils/configHandler.js";
-import log from "../utils/logger.js";
+import log from "@log";
 import { TriggerReactOnKeyword } from "../commands/special/keywordReact.js";
 import { WhereCommand } from "../commands/special/where.js";
 import { DadJokeCommand } from "../commands/special/dadJoke.js";
@@ -69,7 +68,6 @@ import { EmoteSenderCommand } from "../commands/special/emoteSender.js";
 import { OidaCommand } from "../commands/oida.js";
 import { DeOidaCommand } from "../commands/deoida.js";
 import { EhreCommand } from "../commands/ehre.js";
-import { hasBotDenyRole } from "../utils/userUtils.js";
 import { isMessageInBotSpam } from "../utils/channelUtils.js";
 import type { BotContext } from "../context.js";
 import { WoisCommand } from "../commands/woisvote.js";
@@ -77,8 +75,6 @@ import type { ApplicationCommandCreationResponse } from "../types.js";
 import { AoCCommand } from "../commands/aoc.js";
 import { BanListCommand } from "../commands/banlist.js";
 import { Vote2Command } from "../commands/vote2.js";
-
-const config = getConfig();
 
 export const commands: readonly Command[] = [
     new InfoCommand(),
@@ -177,7 +173,7 @@ export const registerAllApplicationCommandsAsGuildCommands = async (
             // Somehow, this permission thing does not make any sense, that's why we assert to `any`
             permissions: [
                 {
-                    id: config.ids.bot_deny_role_id,
+                    id: context.roles.bot_deny.id,
                     type: ApplicationCommandPermissionType.Role,
                     permission: false,
                 },
@@ -318,7 +314,10 @@ const commandMessageHandler = async (
             cmd.aliases?.includes(commandString.toLowerCase()),
     );
 
-    if (hasBotDenyRole(message.member) && !isMessageInBotSpam(message)) {
+    if (
+        context.roleGuard.hasBotDenyRole(message.member) &&
+        !isMessageInBotSpam(message)
+    ) {
         await message.member.send(
             "Du hast dich scheinbar beschissen verhalten und darfst daher keine Befehle in diesem Channel ausführen!",
         );
@@ -341,7 +340,7 @@ const commandMessageHandler = async (
             }
 
             return Promise.all([
-                ban(client, member, botUser, "Lol", false, 0.08),
+                ban(client, context, member, botUser, "Lol", false, 0.08),
                 message.reply({
                     content: `Tut mir leid, ${message.author}. Du hast nicht genügend Rechte um dieses Command zu verwenden, dafür gibt's erstmal mit dem Willkürhammer einen auf den Deckel.`,
                 }),
@@ -430,10 +429,9 @@ export const messageCommandHandler = async (
         return;
     }
 
-    // TODO: The Prefix is now completely irrelevant, since the commands itself define
-    // their permission.
-    const plebPrefix = config.bot_settings.prefix.command_prefix;
-    const modPrefix = config.bot_settings.prefix.mod_prefix;
+    // TODO: The Prefix is now completely irrelevant, since the commands itself define their permission.
+    const plebPrefix = context.prefix.command;
+    const modPrefix = context.prefix.modCommand;
     if (
         message.content.startsWith(plebPrefix) ||
         message.content.startsWith(modPrefix)

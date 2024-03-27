@@ -5,7 +5,6 @@ import cmdHandler, {
     type ProcessableMessage,
 } from "./cmdHandler.js";
 import type { BotContext } from "../context.js";
-import { isMarcel } from "../utils/userUtils.js";
 
 const getInlineReplies = (
     messageRef: ProcessableMessage,
@@ -44,12 +43,11 @@ export default async function (
     ) {
         // Trusted users should be familiar with the bot, they should know how to use it
         // Maybe, we don't want to flame them, since that can make the chat pretty noisy
-        // Unless you are a Marcel
 
         const shouldFlameUser =
             context.rawConfig.bot_settings.flame_trusted_user_on_bot_ping ||
-            !message.member.roles.cache.has(context.roles.trusted.id) ||
-            isMarcel(message.member.user);
+            !context.roleGuard.isTrusted(message.member);
+
         const shouldHonorUser = message.member.roles.cache.has(
             context.roles.winner.id,
         );

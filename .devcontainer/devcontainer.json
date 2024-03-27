@@ -1,5 +1,6 @@
 {
-    "image": "mcr.microsoft.com/devcontainers/typescript-node:20",
+    "name": "Bun",
+    "image": "ghcr.io/nhaef/devcontainer-bun:latest",
     "customizations": {
         "vscode": {
             "extensions": [
@@ -10,6 +11,6 @@
             ]
         }
     },
-    "postCreateCommand": "npm ci",
-    "remoteUser": "node"
+    "postCreateCommand": "bun i",
+    "remoteUser": "bun"
 }

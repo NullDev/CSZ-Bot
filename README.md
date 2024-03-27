@@ -3,7 +3,7 @@
 [![CSZ Discord](https://img.shields.io/discord/618781839338897443?color=%237289DA&label=CSZ%20Discord&logo=discord&logoColor=white)](https://discord.gg/csz)
 
 <p align="center">
-<img height="150" width="auto" src="https://cdn.discordapp.com/icons/618781839338897443/a_82f94d024985d290862ef86ada2f2ef1.gif?size=128" /><br>
+<img height="150" width="auto" src="hiergüligenlinkeinfügen" /><br>
 Official Coding Shitpost Central Discord Bot
 </p>
 
@@ -19,7 +19,7 @@ German description of the Discord Server:
 
 <sub>I'm sorry</sub>
 
-<hr>
+---
 
 ## I want to make this stupid bot even worse
 
@@ -27,27 +27,42 @@ Read: [CONTRIBUTING.md](./CONTRIBUTING.md)
 
 ## :wrench: Installation
 
-<sub>NodeJS Version: >=20</sub>
+Du hast 2 Optionen: [Lokale installation](#lokale-installation) und [GitHub Codespaces](#github-codespaces). Ersteres ist aufwändiger. Bei letzterem musst du deine Config am besten abspeichern, weil sie bei Codespaces irgendwan zusammen mit dem Codespace gelöscht wird.
 
-0. Terminal aufmachen und dorthin navigieren, wo man es downloaden möchte <br><br>
-1. Sichergehen, dass NodeJS installiert ist. Teste mit: `node -v` <br>
-    Wenn es eine Versionsnummer zurückgibt, ist NodeJS installiert.
- **Wenn nicht**, NodeJS <a href="https://nodejs.org/en/download/package-manager/">hier</a> runterladen.
-2. Repository klinen und hinein navigieren. Wenn Git installiert ist:
+### Lokale Installation
+
+<sub>bun Version: >=1.irgendwas</sub>
+
+1. Terminal aufmachen und dorthin navigieren, wo man es downloaden möchte
+2. Sichergehen, dass [bun](https://bun.sh) installiert ist. Teste mit: `bun --version`. Wenn es eine Versionsnummer zurückgibt, ist bun installiert.
+ **Wenn nicht**, bun [hier](https://bun.sh) runterladen.
+3. Repository klonen und hinein navigieren. Wenn Git installiert ist:
 ```sh
 git clone https://github.com/NullDev/CSZ-Bot.git && cd $_
 ```
-Wenn nicht, <a href="https://github.com/NullDev/CSZ-Bot/archive/master.zip">hier</a> herunterladen und die ZIP extrahieren (Gott stehe dir bei) und dann in den Ordner navigieren.
-3. Dependencies installieren: <br>
+Wenn nicht, [hier](https://github.com/NullDev/CSZ-Bot/archive/master.zip) herunterladen und die ZIP extrahieren (Gott stehe dir bei) und dann in den Ordner navigieren.
+
+4. Dependencies installieren: <br>
 ```sh
-npm ci
+bun i
 ```
-4. Das Config-Template [config.template.json](https://github.com/NullDev/CSZ-Bot/blob/master/config.template.json) kopieren und als `config.json` einfügen und bearbeiten:
+
+5. Weiter machen mit den [gemeinsamen Schritten](#gemeinsame-schritte) (siehe unten)
+
+### GitHub Codespaces
+1. Klicke auf den grünen "Code"-Button
+2. Wähle den Tab "Codespaces"
+3. Klicke auf das "+" für einen neuen Codespace
+4. Warte
+5. Weiter machen mit den [gemeinsamen Schritten](#gemeinsame-schritte) (siehe unten)
+
+### Gemeinsame Schritte
+1. Das Config-Template [config.template.json](https://github.com/NullDev/CSZ-Bot/blob/master/config.template.json) kopieren und als `config.json` einfügen und bearbeiten:
 ```sh
 cp config.template.json config.json
 $EDITOR config.json
 ```
-5. Die frisch kopierte Config-Datei ausfüllen:
+2. Die frisch kopierte Config-Datei ausfüllen:
     - Um einen Bot zum Testen anzulegen, einfach den Instruktionen im [Discord Developer Portal](https://discord.com/developers/applications) folgen.
         - Die Applikation muss als "Bot" gesetzt werden.
         - Es müssen beide [Gateway Intents](https://discordjs.guide/popular-topics/intents.html#gateway-intents) eingeschalten werden.
@@ -66,18 +81,24 @@ $EDITOR config.json
         - Trusted-Gebannt-Rolle - CSZ-Default: B&-Trusted
         - Woisgang-Rolle - CSZ-Default: woisgang
         - ...und vielleicht noch ein paar Weitere, die du der Config entnehmen kannst.
-6. Das Script starten.
+3. Das Script starten.
 
-    Mit Hot-Reload:
+Mit Hot-Reload:
 ```sh
-npm run watch
+bun watch
 ```
 
 Ohne Hot-Reload:
 ```sh
-npm run compile
-npm start
+bun start
 ```
+
+### Housekeeping
+- Formatieren: `bun format`
+- Linten: `bun lint`
+- Fixbare Linter-Fehler automatisch fixen: `bun lint:fix`
+- CI-Checks lokal laufen lassen: `bun ci`
+- Unit-Tests ausführen:
 
 ## ❄ Nix
 Entweder via `nix-shell` oder `nix develop` letzteres benötigt Nix-Flake support.

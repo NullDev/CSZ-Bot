@@ -2,11 +2,8 @@ import { time, TimestampStyles } from "discord.js";
 import moment from "moment";
 
 import type { CommandFunction } from "../types.js";
-import Ban from "../storage/model/Ban.js";
-import { getConfig } from "../utils/configHandler.js";
+import * as banService from "../storage/ban.js";
 import * as ban from "./modcommands/ban.js";
-
-const config = getConfig();
 
 export const run: CommandFunction = async (client, message, args, context) => {
     let input = args?.[0]?.trim() ?? "8";
@@ -36,24 +33,32 @@ export const run: CommandFunction = async (client, message, args, context) => {
     }
 
     const invokingUser = message.member;
-    if (invokingUser.id === "371724846205239326")
+    if (invokingUser.id === "371724846205239326") {
         return "Aus Segurity lieber nicht dich bannen.";
+    }
 
-    if (invokingUser.roles.cache.some(r => r.id === context.roles.banned.id))
+    if (invokingUser.roles.cache.some(r => r.id === context.roles.banned.id)) {
         return "Du bist bereits gebannt du Kek.";
+    }
 
-    const existingBan = await Ban.findExisting(invokingUser);
-    if (existingBan) return "Du bist bereits gebannt";
+    const existingBan = await banService.findExisting(invokingUser);
+    if (existingBan) {
+        return "Du bist bereits gebannt";
+    }
 
     const err = await ban.ban(
         client,
+        context,
         invokingUser,
         invokingUser,
         "Selbstauferlegt",
         true,
         durationInHours,
     );
-    if (err) return err;
+
+    if (err) {
+        return err;
+    }
 
     const targetTime = new Date(Date.now() + durationInMinutes * 60 * 1000);
     const durationHumanized =
@@ -79,9 +84,10 @@ export const run: CommandFunction = async (client, message, args, context) => {
 
     await message.author.send(`Du hast dich selber von der Coding Shitpost Zentrale gebannt!
 Du wirst entbannt in: ${durationHumanized}
-Falls du doch vorzeitig entbannt entbannt werden möchtest, kannst du dich im <#${config.ids.banned_channel_id}> Channel melden.
+Falls du doch vorzeitig entbannt entbannt werden möchtest, kannst du dich im ${context.textChannels.banned} Channel melden.
 
 Haddi & xD™`);
 };
 
-export const description = `Bannt den ausführenden User indem er ihn von allen Channels ausschließt.\nBenutzung: ${config.bot_settings.prefix.command_prefix}selfban [Dauer in Stunden = 8; tilt; 0 = manuelle Entbannung durch Moderader nötig]`;
+export const description =
+    "Bannt den ausführenden User indem er ihn von allen Channels ausschließt.\nBenutzung: $COMMAND_PREFIX$selfban [Dauer in Stunden = 8; tilt; 0 = manuelle Entbannung durch Moderader nötig]";

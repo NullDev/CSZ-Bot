@@ -1,7 +1,7 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 
-import log from "../utils/logger.js";
+import log from "@log";
 import type { Config } from "../types.js";
 
 const configPath = path.resolve("config.json");
@@ -9,8 +9,10 @@ const configPath = path.resolve("config.json");
 export const getConfig = () => {
     if (!fs.existsSync(configPath)) {
         log.error(
-            "Config does not exist! Make sure you copy config.template.json and paste it as 'config.json'. Then configure it.",
+            "Config does not exist. Copy the config template and configure it according to the README:",
         );
+        log.error("cp config.template.json config.json");
+        log.error("code config.json");
         process.exit(1);
     }
 
@@ -29,3 +31,6 @@ export const getConfig = () => {
         return process.exit(1);
     }
 };
+
+export const databasePath =
+    process.env.DATABASE_PATH ?? path.resolve("storage.db");

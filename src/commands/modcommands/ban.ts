@@ -1,3 +1,4 @@
+import moment from "moment";
 import {
     type CommandInteraction,
     type GuildMember,
@@ -10,8 +11,7 @@ import {
 } from "discord.js";
 import type { Client } from "discord.js";
 
-import Ban from "../../storage/model/Ban.js";
-import { getConfig } from "../../utils/configHandler.js";
+import * as banService from "../../storage/ban.js";
 import type {
     ApplicationCommand,
     CommandResult,
@@ -19,20 +19,20 @@ import type {
 } from "../command.js";
 import type { ProcessableMessage } from "../../handler/cmdHandler.js";
 import type { BotContext } from "../../context.js";
-import log from "../../utils/logger.js";
-import moment from "moment";
+import log from "@log";
 import { unban } from "./unban.js";
-
-const config = getConfig();
 
 // #region Banned User Role Assignment
 
-const assignBannedRoles = async (user: GuildMember): Promise<boolean> => {
+async function assignBannedRoles(
+    context: BotContext,
+    user: GuildMember,
+): Promise<boolean> {
     const defaultRole = user.guild.roles.cache.find(
-        role => role.id === config.ids.default_role_id,
+        role => role.id === context.roles.default.id,
     );
     const bannedRole = user.guild.roles.cache.find(
-        role => role.id === config.ids.banned_role_id,
+        role => role.id === context.roles.banned.id,
     );
 
     if (!defaultRole || !bannedRole) {
@@ -40,34 +40,33 @@ const assignBannedRoles = async (user: GuildMember): Promise<boolean> => {
     }
     const currentRoles = [...user.roles.cache.map(r => r.id)];
     let newRoles = [...currentRoles, bannedRole.id].filter(
-        r => r !== config.ids.default_role_id,
+        r => r !== context.roles.default.id,
     );
 
-    if (
-        user.roles.cache.find(r => r.id === config.ids.gruendervaeter_role_id)
-    ) {
-        newRoles = newRoles.filter(
-            r => r !== config.ids.gruendervaeter_role_id,
-        );
-        newRoles.push(config.ids.gruendervaeter_banned_role_id);
+    if (user.roles.cache.find(r => r.id === context.roles.gruendervaeter.id)) {
+        newRoles = newRoles.filter(r => r !== context.roles.gruendervaeter.id);
+        newRoles.push(context.roles.gruendervaeter_banned.id);
     }
 
-    if (user.roles.cache.find(r => r.id === config.ids.trusted_role_id)) {
-        newRoles = newRoles.filter(r => r !== config.ids.trusted_role_id);
-        newRoles.push(config.ids.trusted_banned_role_id);
+    if (user.roles.cache.find(r => r.id === context.roles.trusted.id)) {
+        newRoles = newRoles.filter(r => r !== context.roles.trusted.id);
+        newRoles.push(context.roles.trusted_banned.id);
     }
 
     await user.edit({ roles: newRoles });
     return true;
-};
+}
 
-export const restoreRoles = async (user: GuildMember): Promise<boolean> => {
+export async function restoreRoles(
+    context: BotContext,
+    user: GuildMember,
+): Promise<boolean> {
     log.debug(`Restoring roles from user ${user.id}`);
     const defaultRole = user.guild.roles.cache.find(
-        role => role.id === config.ids.default_role_id,
+        role => role.id === context.roles.default.id,
     );
     const bannedRole = user.guild.roles.cache.find(
-        role => role.id === config.ids.banned_role_id,
+        role => role.id === context.roles.banned.id,
     );
 
     if (!defaultRole || !bannedRole) {
@@ -75,33 +74,29 @@ export const restoreRoles = async (user: GuildMember): Promise<boolean> => {
     }
     const currentRoles = [...user.roles.cache.map(r => r.id)];
     let newRoles = [...currentRoles, defaultRole.id].filter(
-        r => r !== config.ids.banned_role_id,
+        r => r !== context.roles.banned.id,
     );
 
     if (
         user.roles.cache.find(
-            r => r.id === config.ids.gruendervaeter_banned_role_id,
+            r => r.id === context.roles.gruendervaeter_banned.id,
         )
     ) {
         newRoles = newRoles.filter(
-            r => r !== config.ids.gruendervaeter_banned_role_id,
+            r => r !== context.roles.gruendervaeter_banned.id,
         );
-        newRoles.push(config.ids.gruendervaeter_role_id);
+        newRoles.push(context.roles.gruendervaeter.id);
     }
 
-    if (
-        user.roles.cache.find(r => r.id === config.ids.trusted_banned_role_id)
-    ) {
-        newRoles = newRoles.filter(
-            r => r !== config.ids.trusted_banned_role_id,
-        );
-        newRoles.push(config.ids.trusted_role_id);
+    if (user.roles.cache.find(r => r.id === context.roles.trusted_banned.id)) {
+        newRoles = newRoles.filter(r => r !== context.roles.trusted_banned.id);
+        newRoles.push(context.roles.trusted.id);
     }
 
     await user.edit({ roles: newRoles });
 
     return true;
-};
+}
 
 // #endregion
 
@@ -109,7 +104,7 @@ export const processBans = async (context: BotContext) => {
     const now = new Date();
 
     try {
-        const expiredBans = await Ban.findExpiredBans(now);
+        const expiredBans = await banService.findExpiredBans(now);
 
         for (const expiredBan of expiredBans) {
             log.debug(
@@ -117,9 +112,13 @@ export const processBans = async (context: BotContext) => {
             );
             const user = context.guild.members.cache.get(expiredBan.userId);
             // No user, no problem
-            if (!user) continue;
+            if (!user) {
+                // Karteileiche detected, remove without noticing
+                await banService.remove(expiredBan.userId);
+                continue;
+            }
 
-            await unban(user);
+            await unban(context, user);
 
             const msg = expiredBan.isSelfBan
                 ? "Glückwunsch! Dein selbst auferlegter Bann in der Coding Shitpost Zentrale ist beendet."
@@ -132,14 +131,15 @@ export const processBans = async (context: BotContext) => {
     }
 };
 
-export const ban = async (
+export async function ban(
     client: Client,
+    context: BotContext,
     member: GuildMember,
     banInvoker: GuildMember | User,
     reason: string,
     isSelfBan: boolean,
     duration?: number,
-) => {
+) {
     log.debug(
         `Banning ${member.id} by ${banInvoker.id} because of ${reason} for ${duration}.`,
     );
@@ -149,19 +149,20 @@ export const ban = async (
     if (
         member.id === "371724846205239326" ||
         (botUser && member.id === botUser.id)
-    )
+    ) {
         return "Fick dich bitte.";
+    }
 
-    const existingBan = await Ban.findExisting(member.user);
+    const existingBan = await banService.findExisting(member.user);
     if (existingBan !== null) {
-        if (member.roles.cache.some(r => r.id === config.ids.banned_role_id)) {
+        if (member.roles.cache.some(r => r.id === context.roles.banned.id)) {
             return "Dieser User ist bereits gebannt du kek.";
         }
 
-        return "Dieser nutzer ist laut Datenbank gebannt, ihm fehlt aber die Rolle. Fix das.";
+        return "Dieser Nutzer ist laut Datenbank gebannt, ihm fehlt aber die Rolle. Fix das.";
     }
 
-    const result = await assignBannedRoles(member);
+    const result = await assignBannedRoles(context, member);
     if (!result) return "Fehler beim Bannen. Bitte kontaktiere einen Admin.";
 
     const unbanAt =
@@ -173,7 +174,7 @@ export const ban = async (
         : undefined;
 
     const banReasonChannel = member.guild.channels.resolve(
-        config.ids.bot_log_channel_id,
+        context.textChannels.bot_log.id,
     );
     if (banReasonChannel?.isTextBased()) {
         await banReasonChannel.send({
@@ -190,15 +191,15 @@ export const ban = async (
         });
     }
 
-    await Ban.persistOrUpdate(member, unbanAt, isSelfBan, reason);
+    await banService.persistOrUpdate(member, unbanAt, isSelfBan, reason);
 
     await member.send(`Du wurdest von der Coding Shitpost Zentrale gebannt!
 ${!reason ? "Es wurde kein Banngrund angegeben." : `Banngrund: ${reason}`}
-Falls du Fragen zu dem Bann hast, kannst du dich im <#${
-        config.ids.banned_channel_id
-    }> Channel ausheulen.
+Falls du Fragen zu dem Bann hast, kannst du dich im ${
+        context.textChannels.banned
+    } Channel ausheulen.
 Lg & xD™`);
-};
+}
 
 export class BanCommand implements ApplicationCommand, MessageCommand {
     name = "ban";
@@ -237,6 +238,7 @@ export class BanCommand implements ApplicationCommand, MessageCommand {
     async handleInteraction(
         command: CommandInteraction,
         client: Client<boolean>,
+        context: BotContext,
     ): Promise<void> {
         if (!command.isChatInputCommand()) {
             // TODO: Solve this on a type level
@@ -267,6 +269,7 @@ export class BanCommand implements ApplicationCommand, MessageCommand {
 
         const err = await ban(
             client,
+            context,
             userAsGuildMember,
             invokingUser,
             reason,
@@ -293,6 +296,7 @@ export class BanCommand implements ApplicationCommand, MessageCommand {
     async handleMessage(
         message: ProcessableMessage,
         client: Client<boolean>,
+        context: BotContext,
     ): Promise<CommandResult> {
         const user = message.mentions.users.first();
         const invokingUser = message.author;
@@ -333,6 +337,7 @@ export class BanCommand implements ApplicationCommand, MessageCommand {
 
         const err = await ban(
             client,
+            context,
             userAsGuildMember,
             invokingUser,
             reason,

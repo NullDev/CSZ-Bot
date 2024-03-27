@@ -1,4 +1,4 @@
-import { mkdirSync } from "node:fs";
+import { mkdir } from "node:fs/promises";
 
 import { pino, type LoggerOptions } from "pino";
 
@@ -7,7 +7,7 @@ const nodeEnv = process.env.NODE_ENV ?? "development";
 
 const logDir = "logs";
 
-mkdirSync(logDir, { recursive: true });
+await mkdir(logDir, { recursive: true });
 
 const loggingConfigs = {
     development: {

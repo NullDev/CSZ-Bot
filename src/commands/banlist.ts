@@ -8,7 +8,9 @@ import {
 import { SlashCommandBuilder } from "discord.js";
 import type { ApplicationCommand } from "./command.js";
 import type { BotContext } from "../context.js";
-import Ban from "../storage/model/Ban.js";
+import * as banService from "../storage/ban.js";
+import type { Ban } from "../storage/model.js";
+import log from "@log";
 
 export class BanListCommand implements ApplicationCommand {
     name = "banlist";
@@ -22,7 +24,7 @@ export class BanListCommand implements ApplicationCommand {
         _client: Client<boolean>,
         context: BotContext,
     ): Promise<void> {
-        const bans = await Ban.findAll();
+        const bans = await banService.findAll();
 
         if (bans.length === 0) {
             await command.reply({
@@ -31,27 +33,34 @@ export class BanListCommand implements ApplicationCommand {
             return;
         }
 
+        log.info(bans, "Bans");
+
         const banMessage = bans
-            .map(b => {
-                const user = context.guild.members.cache.get(b.userId);
-                if (user === undefined) {
-                    return "";
-                }
-                const untilString = `Bis ${
-                    b.bannedUntil === null
-                        ? "auf weiteres"
-                        : time(b.bannedUntil, TimestampStyles.RelativeTime)
-                }`;
-                const reasonString =
-                    b.reason === null ? "" : `(Grund: ${b.reason})`;
-                return `${user}: ${untilString} ${reasonString}`;
-            })
+            .map(b => BanListCommand.#getBanLine(context, b))
             .filter(s => s.length > 0)
             .join("\n");
+
+        log.info({ banMessage }, "Bans");
 
         await command.reply({
             content: banMessage,
         });
         return;
+    }
+
+    static #getBanLine(context: BotContext, ban: Ban): string {
+        const user = context.guild.members.cache.get(ban.userId);
+        if (user === undefined) {
+            return "";
+        }
+
+        const untilString = `Bis ${
+            ban.bannedUntil === null
+                ? "auf weiteres"
+                : time(new Date(ban.bannedUntil), TimestampStyles.RelativeTime)
+        }`;
+        const reasonString =
+            ban.reason === null ? "" : `(Grund: ${ban.reason})`;
+        return `${user}: ${untilString} ${reasonString}`;
     }
 }

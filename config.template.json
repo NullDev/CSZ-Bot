@@ -9,7 +9,6 @@
             "command_prefix": ".",
             "mod_prefix": "~"
         },
-        "moderator_id": "",
         "ban_reason_channel_id": "624931933758947343",
         "moderator_roles": ["Moderator"],
         "woisping_limit": 7200,
@@ -51,6 +50,7 @@
         "trusted_role_id": "",
         "trusted_banned_role_id": "",
         "shame_role_id": "",
+        "emotifizierer_role_id": "",
 
         "banned_channel_id": "",
         "votes_channel_id": "",

@@ -7,27 +7,27 @@ import {
 } from "discord.js";
 import type { Message, Client } from "discord.js";
 
-import Ban from "../../storage/model/Ban.js";
-import { getConfig } from "../../utils/configHandler.js";
+import * as banService from "../../storage/ban.js";
 import type {
     ApplicationCommand,
     CommandResult,
     MessageCommand,
 } from "../command.js";
 import { restoreRoles } from "./ban.js";
+import type { BotContext } from "../../context.js";
 
-const config = getConfig();
-
-export const unban = async (member: GuildMember) => {
-    if (member.roles.cache.some(r => r.id === config.ids.default_role_id))
+export async function unban(context: BotContext, member: GuildMember) {
+    if (member.roles.cache.some(r => r.id === context.roles.default.id)) {
         return "Dieser User ist nicht gebannt du kek.";
+    }
 
-    await Ban.remove(member.user);
+    await banService.remove(member.user.id);
 
-    const result = await restoreRoles(member);
-    if (!result)
+    const result = await restoreRoles(context, member);
+    if (!result) {
         return "Ich konnte die Rollen nicht wiederherstellen. Bitte kontaktiere einen Admin.";
-};
+    }
+}
 
 export class UnbanCommand implements ApplicationCommand, MessageCommand {
     name = "unban";
@@ -48,6 +48,7 @@ export class UnbanCommand implements ApplicationCommand, MessageCommand {
     async handleInteraction(
         command: CommandInteraction,
         _client: Client<boolean>,
+        context: BotContext,
     ): Promise<CommandResult> {
         const user = command.options.getUser("user", true);
 
@@ -60,7 +61,7 @@ export class UnbanCommand implements ApplicationCommand, MessageCommand {
             return;
         }
 
-        const err = await unban(userAsGuildMember);
+        const err = await unban(context, userAsGuildMember);
 
         if (err) {
             await command.reply({
@@ -77,6 +78,7 @@ export class UnbanCommand implements ApplicationCommand, MessageCommand {
     async handleMessage(
         message: Message,
         _client: Client<boolean>,
+        context: BotContext,
     ): Promise<CommandResult> {
         const user = message.mentions.users.first();
 
@@ -92,7 +94,7 @@ export class UnbanCommand implements ApplicationCommand, MessageCommand {
             return;
         }
 
-        const err = await unban(userAsGuildMember);
+        const err = await unban(context, userAsGuildMember);
 
         if (err) {
             await message.reply({

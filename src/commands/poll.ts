@@ -10,13 +10,10 @@ import {
     type User,
 } from "discord.js";
 
-import log from "../utils/logger.js";
-import AdditionalMessageData from "../storage/model/AdditionalMessageData.js";
-import { getConfig } from "../utils/configHandler.js";
+import log from "@log";
+import * as additionalMessageData from "../storage/additionalMessageData.js";
 import type { BotContext } from "../context.js";
 import type { CommandFunction } from "../types.js";
-
-const config = getConfig();
 
 export const LETTERS = [
     ":regional_indicator_a:",
@@ -257,25 +254,24 @@ export const run: CommandFunction = async (_client, message, args, context) => {
             reactionMap,
         };
 
-        const additionalData =
-            await AdditionalMessageData.fromMessage(pollMessage);
-        const newCustomData = additionalData.customData;
-        newCustomData.delayedPollData = delayedPollData;
-        additionalData.customData = newCustomData;
-        await additionalData.save();
-
+        await additionalMessageData.upsertForMessage(
+            pollMessage,
+            "DELAYED_POLL",
+            JSON.stringify(delayedPollData),
+        );
         delayedPolls.push(delayedPollData);
     }
 };
 
 export const importPolls = async () => {
-    const additionalDatas = await AdditionalMessageData.findAll();
+    const additionalDatas = await additionalMessageData.findAll("DELAYED_POLL");
     let count = 0;
     for (const additionalData of additionalDatas) {
-        if (!additionalData.customData.delayedPollData) {
+        const delayedPollData = JSON.parse(additionalData.payload);
+        if (!delayedPollData) {
             continue;
         }
-        delayedPolls.push(additionalData.customData.delayedPollData);
+        delayedPolls.push(delayedPollData);
         count++;
     }
     log.info(`Loaded ${count} polls from database`);
@@ -349,9 +345,9 @@ export const processPolls = async (context: BotContext) => {
                 icon_url: embedAuthor.iconURL,
             },
             footer: {
-                text: `Gesamtabstimmungen: ${delayedPoll.reactions
-                    .map(x => x.length)
-                    .reduce((a, b) => a + b)}`,
+                text: `Gesamtabstimmungen: ${Math.sumExact(
+                    delayedPoll.reactions.map(x => x.length),
+                )}`,
             },
         };
 
@@ -364,16 +360,12 @@ export const processPolls = async (context: BotContext) => {
         await message.react("✅");
         delayedPolls.splice(delayedPolls.indexOf(delayedPoll), 1);
 
-        const messageData = await AdditionalMessageData.fromMessage(message);
-        const { customData } = messageData;
-        customData.delayedPollData = undefined;
-        messageData.customData = customData;
-        await messageData.save();
+        await additionalMessageData.destroyForMessage(message, "DELAYED_POLL");
     }
 };
 
 export const description = `Erstellt eine Umfrage mit mehreren Antwortmöglichkeiten (standardmäßig mit Mehrfachauswahl) (maximal ${OPTION_LIMIT}).
-Usage: ${config.bot_settings.prefix.command_prefix}poll [Optionen?] [Hier die Frage] ; [Antwort 1] ; [Antwort 2] ; [...]
+Usage: $COMMAND_PREFIX$poll [Optionen?] [Hier die Frage] ; [Antwort 1] ; [Antwort 2] ; [...]
 Optionen:
 \t-c, --channel
 \t\t\tSendet die Umfrage in den Umfragenchannel, um den Slowmode zu umgehen

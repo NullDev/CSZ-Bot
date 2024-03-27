@@ -13,11 +13,9 @@ import {
 
 import type { ApplicationCommand, CommandResult } from "./command.js";
 import type { BotContext } from "../context.js";
-import {
-    type EhreGroups,
-    EhrePoints,
-    EhreVotes,
-} from "../storage/model/Ehre.js";
+import type { EhrePoints } from "../storage/model.js";
+import * as ehre from "../storage/ehre.js";
+import db from "../storage/db.js";
 
 const ehreFormatter = new Intl.NumberFormat("de-DE", {
     style: "decimal",
@@ -32,7 +30,7 @@ function createUserPointString(e: EhrePoints) {
 async function createEhreTable(
     context: BotContext,
 ): Promise<MessagePayload | InteractionReplyOptions> {
-    const userInGroups = await EhrePoints.getUserInGroups();
+    const userInGroups = await ehre.getUserInGroups();
 
     return {
         embeds: [
@@ -83,7 +81,7 @@ async function createEhreTable(
     };
 }
 
-function getVote(userInGroups: EhreGroups, voter: string): number {
+function getVote(userInGroups: ehre.EhreGroups, voter: string): number {
     if (userInGroups.best?.userId === voter) {
         return 5;
     }
@@ -96,9 +94,13 @@ function getVote(userInGroups: EhreGroups, voter: string): number {
 }
 
 async function handleVote(voter: string, user: string) {
-    const userInGroups = await EhrePoints.getUserInGroups();
-    await EhreVotes.insertVote(voter);
-    await EhrePoints.addPoints(user, getVote(userInGroups, voter));
+    db()
+        .transaction()
+        .execute(async tx => {
+            const userInGroups = await ehre.getUserInGroups(tx);
+            await ehre.insertVote(voter, tx);
+            await ehre.addPoints(user, getVote(userInGroups, voter), tx);
+        });
 }
 
 export const ehreReactionHandler = {
@@ -133,7 +135,7 @@ export const ehreReactionHandler = {
             return;
         }
 
-        if (await EhreVotes.hasVoted(invoker.id)) {
+        if (await ehre.hasVoted(invoker.id)) {
             // Same when the user already voted; just swallow it
             return;
         }
@@ -190,15 +192,11 @@ export class EhreCommand implements ApplicationCommand {
         ehrenbruder: User,
     ): Promise<string> {
         if (thankingUser.id === ehrenbruder.id) {
-            await EhrePoints.destroy({
-                where: {
-                    userId: ehrenbruder,
-                },
-            });
+            await ehre.removeEhrePoints(ehrenbruder);
             return "Willst dich selber ähren? Dreckiger Abschaum. Sowas verdient einfach keinen Respekt!";
         }
 
-        if (await EhreVotes.hasVoted(thankingUser.id)) {
+        if (await ehre.hasVoted(thankingUser.id)) {
             return "Ey, Einmal pro tag. Nicht gierig werden";
         }
 

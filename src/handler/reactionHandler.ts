@@ -1,9 +1,9 @@
 import type { MessageReaction, User } from "discord.js";
 
-import FadingMessage from "../storage/model/FadingMessage.js";
-import AdditionalMessageData from "../storage/model/AdditionalMessageData.js";
+import * as additionalMessageData from "../storage/additionalMessageData.js";
+import * as fadingMessage from "../storage/fadingMessage.js";
 
-import log from "../utils/logger.js";
+import log from "@log";
 import * as poll from "../commands/poll.js";
 import type { ProcessableMessage } from "./cmdHandler.js";
 import type { BotContext } from "../context.js";
@@ -140,7 +140,7 @@ export default {
                             ? "🗑 Deine Reaktion wurde gelöscht."
                             : "💾 Deine Reaktion wurde gespeichert.",
                     );
-                    await FadingMessage.newFadingMessage(
+                    await fadingMessage.startFadingMessage(
                         msg as ProcessableMessage,
                         2500,
                     );
@@ -148,7 +148,7 @@ export default {
             }
 
             // If it's a delayed poll, we clear all Reactions
-            if (isDelayedPoll) {
+            if (isDelayedPoll && delayedPoll !== undefined) {
                 const allUserReactions = message.reactions.cache.filter(r => {
                     const emojiName = r.emoji.name;
                     return (
@@ -160,17 +160,13 @@ export default {
                 await Promise.all(
                     allUserReactions.map(r => r.users.remove(member.id)),
                 );
-            }
 
-            const additionalData =
-                await AdditionalMessageData.fromMessage(message);
-            // TODO
-            // @ts-ignore
-            const newCustomData = additionalData.customData;
-            newCustomData.delayedPollData = delayedPoll;
-            // @ts-ignore
-            additionalData.customData = newCustomData;
-            await additionalData.save();
+                await additionalMessageData.upsertForMessage(
+                    message,
+                    "DELAYED_POLL",
+                    JSON.stringify(delayedPoll),
+                );
+            }
         }
     },
 };

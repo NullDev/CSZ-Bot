@@ -11,17 +11,18 @@ import {
     SlashCommandUserOption,
     ComponentType,
     type AutocompleteInteraction,
+    type Client,
 } from "discord.js";
 
+import type { BotContext } from "../context.js";
 import type {
     ApplicationCommand,
     CommandResult,
     UserInteraction,
 } from "./command.js";
-import Nicknames from "../storage/model/Nickname.js";
-import { isTrusted } from "../utils/userUtils.js";
-import log from "../utils/logger.js";
+import log from "@log";
 import { ensureChatInputCommand } from "../utils/interactionUtils.js";
+import * as nickName from "../storage/nickName.js";
 
 type Vote = "YES" | "NO";
 
@@ -35,8 +36,8 @@ function getWeightOfUserVote(vote: UserVote): number {
 }
 
 interface Suggestion {
-    readonly nicknameUserID: string;
-    readonly nickname: string;
+    readonly nickNameUserId: string;
+    readonly nickName: string;
 }
 
 const ongoingSuggestions: Record<string, Suggestion> = {};
@@ -117,6 +118,8 @@ export class Nickname implements ApplicationCommand {
 
     async handleInteraction(
         command: CommandInteraction,
+        _client: Client,
+        context: BotContext,
     ): Promise<CommandResult> {
         const cmd = ensureChatInputCommand(command);
 
@@ -127,7 +130,8 @@ export class Nickname implements ApplicationCommand {
             );
             // We know that the user option is in every subcmd.
             const user = cmd.options.getUser("user", true);
-            const trusted = commandUser && isTrusted(commandUser);
+            const trusted =
+                commandUser && context.roleGuard.isTrusted(commandUser);
             const sameuser = user.id === commandUser?.user.id;
 
             if (option === "deleteall") {
@@ -146,14 +150,14 @@ export class Nickname implements ApplicationCommand {
                     );
                     return;
                 }
-                await Nicknames.deleteNickNames(user.id);
+                await nickName.deleteAllNickNames(user);
                 await this.updateNickName(member, null);
                 await cmd.reply("Ok Brudi. Hab alles gelöscht");
                 return;
             }
 
             if (option === "list") {
-                const nicknames = await Nicknames.getNicknames(user.id);
+                const nicknames = await nickName.getNicknames(user.id);
                 if (nicknames.length === 0) {
                     await cmd.reply("Ne Brudi für den hab ich keine Nicknames");
                     return;
@@ -172,13 +176,13 @@ export class Nickname implements ApplicationCommand {
                     return;
                 }
                 const nickname = cmd.options.getString("nickname", true);
-                if (await Nicknames.nickNameExist(user.id, nickname)) {
+                if (await nickName.nickNameExist(user.id, nickname)) {
                     await cmd.reply(
                         `Würdest du Hurensohn aufpassen, wüsstest du, dass für ${user} '${nickname}' bereits existiert.`,
                     );
                     return;
                 }
-                return Nickname.createNickNameVote(
+                return Nickname.#createNickNameVote(
                     command,
                     user,
                     nickname,
@@ -196,7 +200,7 @@ export class Nickname implements ApplicationCommand {
                 // We don't violate the DRY principle, since we're referring to another subcommand object as in the "add" subcmd.
                 // Code is equal but knowledge differs.
                 const nickname = cmd.options.getString("nickname", true);
-                await Nicknames.deleteNickName(user.id, nickname);
+                await nickName.deleteNickName(user, nickname);
                 const member = cmd.guild?.members.cache.get(user.id);
                 if (!member) {
                     await cmd.reply(
@@ -234,7 +238,7 @@ export class Nickname implements ApplicationCommand {
         // https://discordjs.guide/slash-commands/autocomplete.html#accessing-other-values
         const userId = interaction.options.get("user", true).value as string; // Snowflake of the user
 
-        const nicknames = await Nicknames.getNicknames(userId);
+        const nicknames = await nickName.getNicknames(userId);
 
         const focusedValue = interaction.options.getFocused().toLowerCase();
 
@@ -248,7 +252,7 @@ export class Nickname implements ApplicationCommand {
         await interaction.respond(completions);
     }
 
-    private static async createNickNameVote(
+    static async #createNickNameVote(
         command: CommandInteraction<CacheType>,
         user: User,
         nickname: string,
@@ -278,7 +282,10 @@ export class Nickname implements ApplicationCommand {
         });
 
         const message = await command.fetchReply();
-        ongoingSuggestions[message.id] = { nicknameUserID: user.id, nickname };
+        ongoingSuggestions[message.id] = {
+            nickNameUserId: user.id,
+            nickName: nickname,
+        };
 
         getUserVoteMap(message.id)[user.id] = {
             vote: "YES",
@@ -298,6 +305,8 @@ export class NicknameButtonHandler implements UserInteraction {
 
     async handleInteraction(
         interaction: MessageComponentInteraction,
+        _client: Client,
+        context: BotContext,
     ): Promise<void> {
         const suggestion = ongoingSuggestions[interaction.message.id];
 
@@ -321,42 +330,43 @@ export class NicknameButtonHandler implements UserInteraction {
             return;
         }
 
-        const istrusted = isTrusted(member);
+        const isTrusted = context.roleGuard.isTrusted(member);
         if (interaction.customId === "nicknameVoteYes") {
             userVoteMap[interaction.user.id] = {
                 vote: "YES",
-                trusted: istrusted,
+                trusted: isTrusted,
             };
         } else if (interaction.customId === "nicknameVoteNo") {
             userVoteMap[interaction.user.id] = {
                 vote: "NO",
-                trusted: istrusted,
+                trusted: isTrusted,
             };
         }
-        // evaluate the Uservotes
+
+        // evaluate the user votes
         const votes: UserVote[] = Object.values(userVoteMap);
-        if (this.hasEnoughVotes(votes, "NO")) {
+        if (this.#hasEnoughVotes(votes, "NO")) {
             await interaction.update({
-                content: `Der Vorschlag: \`${suggestion.nickname}\` für <@${suggestion.nicknameUserID}> war echt nicht so geil`,
+                content: `Der Vorschlag: \`${suggestion.nickName}\` für <@${suggestion.nickNameUserId}> war echt nicht so geil`,
                 components: [],
             });
             return;
         }
-        if (this.hasEnoughVotes(votes, "YES")) {
+        if (this.#hasEnoughVotes(votes, "YES")) {
             try {
-                await Nicknames.insertNickname(
-                    suggestion.nicknameUserID,
-                    suggestion.nickname,
+                await nickName.insertNickname(
+                    suggestion.nickNameUserId,
+                    suggestion.nickName,
                 );
             } catch (error) {
                 await interaction.update(
-                    `Würdet ihr Hurensöhne aufpassen, wüsstest ihr, dass für <@${suggestion.nicknameUserID}> \`${suggestion.nickname}\` bereits existiert.`,
+                    `Würdet ihr Hurensöhne aufpassen, wüsstest ihr, dass für <@${suggestion.nickNameUserId}> \`${suggestion.nickName}\` bereits existiert.`,
                 );
                 return;
             }
 
             await interaction.update({
-                content: `Für <@${suggestion.nicknameUserID}> ist jetzt \`${suggestion.nickname}\` in der Rotation`,
+                content: `Für <@${suggestion.nickNameUserId}> ist jetzt \`${suggestion.nickName}\` in der Rotation`,
                 components: [],
             });
             return;
@@ -367,14 +377,10 @@ export class NicknameButtonHandler implements UserInteraction {
         });
     }
 
-    private hasEnoughVotes(votes: UserVote[], voteType: Vote) {
-        return (
-            votes
-                .filter(vote => vote.vote === voteType)
-                .reduce(
-                    (sum, uservote) => sum + getWeightOfUserVote(uservote),
-                    0,
-                ) >= this.threshold
-        );
+    #hasEnoughVotes(votes: UserVote[], voteType: Vote) {
+        const mappedVotes = votes
+            .filter(vote => vote.vote === voteType)
+            .map(getWeightOfUserVote);
+        return Math.sumExact(mappedVotes) >= this.threshold;
     }
 }

@@ -13,10 +13,10 @@ import * as chrono from "chrono-node";
 import type { MessageCommand, ApplicationCommand } from "./command.js";
 import type { ProcessableMessage } from "../handler/cmdHandler.js";
 import type { BotContext } from "../context.js";
-import log from "../utils/logger.js";
-import Reminder, {
-    type ReminderAttributes,
-} from "../storage/model/Reminder.js";
+import log from "@log";
+import * as reminderService from "../storage/reminders.js";
+import type { Reminder } from "../storage/model.js";
+
 import { ensureChatInputCommand } from "../utils/interactionUtils.js";
 
 const validateDate = (date: Date): true | string => {
@@ -77,7 +77,7 @@ export class ErinnerungCommand implements MessageCommand, ApplicationCommand {
                 return;
             }
 
-            await Reminder.insertStaticReminder(
+            await reminderService.insertStaticReminder(
                 cmd.user,
                 cmd.channelId,
                 cmd.guildId,
@@ -129,7 +129,7 @@ export class ErinnerungCommand implements MessageCommand, ApplicationCommand {
                 throw new Error("GuildId is undefined");
             }
 
-            await Reminder.insertMessageReminder(
+            await reminderService.insertMessageReminder(
                 message.member.user,
                 messageId,
                 refMessage.channelId,
@@ -154,10 +154,7 @@ export class ErinnerungCommand implements MessageCommand, ApplicationCommand {
     }
 }
 
-const sendReminder = async (
-    reminder: ReminderAttributes,
-    context: BotContext,
-) => {
+const sendReminder = async (reminder: Reminder, context: BotContext) => {
     try {
         // Not using `context.guild`, so we can keep reminders cross-guild
         const guild = context.client.guilds.cache.get(reminder.guildId);
@@ -186,7 +183,7 @@ const sendReminder = async (
                     users: [user.id],
                 },
             });
-            await Reminder.removeReminder(reminder.id);
+            await reminderService.removeReminder(reminder.id);
             return;
         }
 
@@ -202,13 +199,11 @@ const sendReminder = async (
     } catch (err) {
         log.error(err, "Couldn't send reminder. Removing it...");
     }
-    await Reminder.removeReminder(reminder.id);
+    await reminderService.removeReminder(reminder.id);
 };
 
 export const reminderHandler = async (context: BotContext) => {
-    log.debug("Entered `reminderHandler`");
-
-    const reminders = await Reminder.getCurrentReminders();
+    const reminders = await reminderService.getCurrentReminders();
     const results = await Promise.allSettled(
         reminders.map(reminder => sendReminder(reminder, context)),
     );

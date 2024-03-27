@@ -17,11 +17,10 @@ import {
 import type { VoiceChannel } from "discord.js";
 import * as gad from "get-audio-duration";
 
-import log from "../utils/logger.js";
+import log from "@log";
 import type { BotContext } from "../context.js";
 
 const player = createAudioPlayer();
-export const soundDir = path.resolve("sounds");
 
 async function connectToHauptwois(
     woisChannel: VoiceChannel,
@@ -37,7 +36,7 @@ async function connectToHauptwois(
         await entersState(connection, VoiceConnectionStatus.Ready, 30_000);
         return connection;
     } catch (err) {
-        log.error("Couldn't conenct to Hauptwois", err);
+        log.error("Couldn't connect to Hauptwois", err);
         throw err;
     }
 }
@@ -65,11 +64,11 @@ export async function connectAndPlaySaufen(
         return;
     }
 
-    const files = await readdir(soundDir);
+    const files = await readdir(context.soundsDir);
 
     const fileToPlay =
         filename ?? files[Math.floor(Math.random() * files.length)];
-    const file = path.resolve(soundDir, fileToPlay);
+    const file = path.resolve(context.soundsDir, fileToPlay);
     try {
         const duration = (await gad.getAudioDurationInSeconds(file)) * 1000;
         await playSaufen(file, duration);
