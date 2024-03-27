@@ -19,7 +19,7 @@ import type {
 } from "../command.js";
 import type { ProcessableMessage } from "../../handler/cmdHandler.js";
 import type { BotContext } from "../../context.js";
-import log from "../../utils/logger.js";
+import log from "@log";
 import { unban } from "./unban.js";
 
 // #region Banned User Role Assignment

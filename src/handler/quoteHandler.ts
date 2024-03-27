@@ -12,7 +12,7 @@ import {
 
 import type { BotContext } from "../context.js";
 import { getConfig } from "../utils/configHandler.js";
-import log from "../utils/logger.js";
+import log from "@log";
 
 const quoteConfig = getConfig().bot_settings.quotes;
 const quoteThreshold = quoteConfig.quote_threshold;

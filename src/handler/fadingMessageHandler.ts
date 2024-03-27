@@ -2,7 +2,7 @@ import { setInterval } from "node:timers/promises";
 
 import type { Client, TextChannel } from "discord.js";
 
-import log from "../utils/logger.js";
+import log from "@log";
 import * as fadingMessage from "../storage/fadingMessage.js";
 
 let isLooping = false;

@@ -3,7 +3,7 @@ import type { Guild, Snowflake, User } from "discord.js";
 import type { SplidLink } from "./model.js";
 import db from "./db.js";
 
-import log from "../utils/logger.js";
+import log from "@log";
 
 export function createLink(
     guild: Guild,

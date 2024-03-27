@@ -11,7 +11,7 @@ import {
 } from "discord.js";
 
 import * as stempel from "../storage/stempel.js";
-import log from "../utils/logger.js";
+import log from "@log";
 import type { ApplicationCommand, CommandResult } from "./command.js";
 import { chunkArray } from "../utils/arrayUtils.js";
 

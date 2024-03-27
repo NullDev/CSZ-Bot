@@ -1,5 +1,5 @@
 import * as nickName from "../storage/nickName.js";
-import log from "../utils/logger.js";
+import log from "@log";
 import type { BotContext } from "../context.js";
 
 export async function rerollNicknames(context: BotContext) {

@@ -3,7 +3,7 @@ import type { Snowflake, User } from "discord.js";
 import type { NickName } from "./model.js";
 import db from "./db.js";
 
-import log from "../utils/logger.js";
+import log from "@log";
 
 export async function insertNickname(
     userId: Snowflake,

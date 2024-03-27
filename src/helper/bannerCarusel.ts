@@ -2,7 +2,7 @@ import * as path from "node:path";
 import { readdir } from "node:fs/promises";
 
 import type { BotContext } from "../context.js";
-import log from "../utils/logger.js";
+import log from "@log";
 
 const pickRandomBanner = (bannersDir: string, files: string[]): string => {
     const newBanner = files[Math.floor(Math.random() * files.length)];

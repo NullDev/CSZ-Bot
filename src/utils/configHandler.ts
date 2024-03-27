@@ -1,7 +1,7 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 
-import log from "../utils/logger.js";
+import log from "@log";
 import type { Config } from "../types.js";
 
 const configPath = path.resolve("config.json");

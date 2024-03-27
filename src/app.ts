@@ -9,7 +9,7 @@ import {
 import cron from "croner";
 
 import * as conf from "./utils/configHandler.js";
-import log from "./utils/logger.js";
+import log from "@log";
 
 import "./polyfills.js";
 

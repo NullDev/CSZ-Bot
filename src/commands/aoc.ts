@@ -12,7 +12,7 @@ import type * as discord from "discord.js";
 import type { BotContext } from "../context.js";
 import type { ApplicationCommand } from "./command.js";
 
-import log from "../utils/logger.js";
+import log from "@log";
 
 const aocConfigPath = path.resolve("aoc.config.json");
 

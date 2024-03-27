@@ -5,7 +5,7 @@ import type { Radius } from "../commands/penis.js";
 import type { Penis } from "./model.js";
 
 import db from "./db.js";
-import log from "../utils/logger.js";
+import log from "@log";
 
 export function insertMeasurement(
     user: User,

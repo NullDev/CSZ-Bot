@@ -7,7 +7,7 @@ import {
 } from "discord.js";
 
 import type { ApplicationCommand } from "./command.js";
-import log from "../utils/logger.js";
+import log from "@log";
 import * as birthday from "../storage/birthday.js";
 
 export class GeburtstagCommand implements ApplicationCommand {

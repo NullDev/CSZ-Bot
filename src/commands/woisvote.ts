@@ -16,7 +16,7 @@ import type { ApplicationCommand, CommandResult } from "./command.js";
 import * as woisAction from "../storage/woisAction.js";
 import type { ReactionHandler } from "../types.js";
 import type { BotContext } from "../context.js";
-import log from "../utils/logger.js";
+import log from "@log";
 import { chunkArray } from "../utils/arrayUtils.js";
 
 const defaultWoisTime = "20:00";

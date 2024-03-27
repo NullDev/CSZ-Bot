@@ -4,7 +4,7 @@ import * as path from "node:path";
 import type { Client, Guild, GuildMember, Message } from "discord.js";
 
 import type { CommandFunction, CommandResult } from "../types.js";
-import log from "../utils/logger.js";
+import log from "@log";
 import * as ban from "../commands/modcommands/ban.js";
 import { isMessageInBotSpam } from "../utils/channelUtils.js";
 import type { BotContext } from "../context.js";

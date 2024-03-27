@@ -29,7 +29,7 @@ import {
     type UserInteraction,
 } from "../commands/command.js";
 import { InfoCommand } from "../commands/info.js";
-import log from "../utils/logger.js";
+import log from "@log";
 import { TriggerReactOnKeyword } from "../commands/special/keywordReact.js";
 import { WhereCommand } from "../commands/special/where.js";
 import { DadJokeCommand } from "../commands/special/dadJoke.js";

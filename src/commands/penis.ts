@@ -3,7 +3,7 @@ import type { Client, User } from "discord.js";
 
 import * as penis from "../storage/penis.js";
 import type { CommandResult, MessageCommand } from "./command.js";
-import log from "../utils/logger.js";
+import log from "@log";
 import type { ProcessableMessage } from "../handler/cmdHandler.js";
 import { formatTime } from "../utils/dateUtils.js";
 import type { BotContext } from "../context.js";

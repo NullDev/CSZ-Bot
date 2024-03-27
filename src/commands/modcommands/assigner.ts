@@ -1,5 +1,5 @@
 import type { CommandFunction } from "../../types.js";
-import log from "../../utils/logger.js";
+import log from "@log";
 
 /**
  * Creates an assigner message

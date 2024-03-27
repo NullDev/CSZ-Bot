@@ -3,7 +3,7 @@ import type { Client, User } from "discord.js";
 import type { ProcessableMessage } from "../handler/cmdHandler.js";
 import type { CommandResult, MessageCommand } from "./command.js";
 import * as boob from "../storage/boob.js";
-import log from "../utils/logger.js";
+import log from "@log";
 import { formatTime } from "../utils/dateUtils.js";
 
 interface Booba {

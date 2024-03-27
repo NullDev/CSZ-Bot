@@ -3,7 +3,7 @@ import type { Guild, User } from "discord.js";
 import type { SplidGroup } from "./model.js";
 import db from "./db.js";
 
-import log from "../utils/logger.js";
+import log from "@log";
 
 export function createSplidGroup(
     creator: User,

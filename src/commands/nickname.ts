@@ -20,7 +20,7 @@ import type {
     CommandResult,
     UserInteraction,
 } from "./command.js";
-import log from "../utils/logger.js";
+import log from "@log";
 import { ensureChatInputCommand } from "../utils/interactionUtils.js";
 import * as nickName from "../storage/nickName.js";
 

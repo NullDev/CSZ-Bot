@@ -10,7 +10,7 @@ import type { ApplicationCommand } from "./command.js";
 import type { BotContext } from "../context.js";
 import * as banService from "../storage/ban.js";
 import type { Ban } from "../storage/model.js";
-import log from "../utils/logger.js";
+import log from "@log";
 
 export class BanListCommand implements ApplicationCommand {
     name = "banlist";

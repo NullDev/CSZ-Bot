@@ -17,7 +17,7 @@ import {
 import type { VoiceChannel } from "discord.js";
 import * as gad from "get-audio-duration";
 
-import log from "../utils/logger.js";
+import log from "@log";
 import type { BotContext } from "../context.js";
 
 const player = createAudioPlayer();

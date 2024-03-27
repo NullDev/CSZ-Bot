@@ -5,7 +5,7 @@ import type { Client, GuildMember } from "discord.js";
 
 import type { CommandResult, MessageCommand } from "./command.js";
 import type { ProcessableMessage } from "../handler/cmdHandler.js";
-import log from "../utils/logger.js";
+import log from "@log";
 
 const createBonkMeme = async (author: GuildMember): Promise<Buffer> => {
     const bonk = await fs.readFile("assets/bonk.png");
