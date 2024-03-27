@@ -238,33 +238,24 @@ const scheduleCronjobs = async (context: BotContext) => {
         );
     };
 
-    schedule("1 0 * * *", async () => await checkBirthdays(context));
-
-    schedule(
-        "0 20 1-25 12 *",
-        async () => await publishAocLeaderBoard(context),
-    );
-
-    schedule("0 0 * * 0", async () => await rerollNicknames(context));
-
-    schedule(
-        "36 0-23 * * FRI-SUN",
-        async () => await connectAndPlaySaufen(context),
-    );
-    schedule("* * * * *", async () => await reminderHandler(context));
-    schedule("* * * * *", async () => await woisVoteScheduler(context));
-    schedule("* * * * *", async () => await ban.processBans(context));
-    schedule("1 0 * * *", async () => await ehre.runDeflation());
-    schedule("1 0 * * *", async () => await ehre.resetVotes());
-    schedule("0 0 1 */2 *", async () => await rotate(context));
+    schedule("1 0 * * *", () => checkBirthdays(context));
+    schedule("0 20 1-25 12 *", () => publishAocLeaderBoard(context));
+    schedule("0 0 * * 0", () => rerollNicknames(context));
+    schedule("36 0-23 * * FRI-SUN", () => connectAndPlaySaufen(context));
+    schedule("* * * * *", () => reminderHandler(context));
+    schedule("* * * * *", () => woisVoteScheduler(context));
+    schedule("* * * * *", () => ban.processBans(context));
+    schedule("1 0 * * *", () => ehre.runDeflation());
+    schedule("1 0 * * *", () => ehre.resetVotes());
+    schedule("0 0 1 */2 *", () => rotate(context));
     schedule("37 13 * * *", leetTask);
     schedule("5 * * * *", clearWoisLogTask);
 
-    schedule("2022-04-01T00:00:00", async () => await startAprilFools(context));
-    schedule("2022-04-02T00:00:00", async () => await endAprilFools(context));
+    schedule("2022-04-01T00:00:00", () => startAprilFools(context));
+    schedule("2022-04-02T00:00:00", () => endAprilFools(context));
 
     await poll.importPolls();
-    schedule("* * * * *", async () => await poll.processPolls(context));
+    schedule("* * * * *", () => poll.processPolls(context));
 };
 
 client.once("ready", async initializedClient => {
