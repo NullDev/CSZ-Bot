@@ -32,20 +32,21 @@ import { scheduleCronjobs } from "./handler/cronjobs.js";
 
 const args = process.argv.slice(2);
 
-const prodMode =
-    process.env.NODE_ENV === "production"
-        ? ` ${terminal.highlightWarn(" production ")} mode`
-        : "";
+{
+    const prodMode =
+        process.env.NODE_ENV === "production"
+            ? ` ${terminal.highlightWarn(" production ")} mode`
+            : "";
 
-const cszBot = terminal.highlight(" CSZ Bot ");
+    const cszBot = terminal.highlight(" CSZ Bot ");
+    const year = new Date().getFullYear();
 
-console.log(
-    // biome-ignore lint/style/useTemplate: Seems to be more readable this way
-    "\n" +
-        " ┌───────────┐\n" +
-        ` │ ${cszBot} │ Copyright (c) ${new Date().getFullYear()} Users of the CSZ\n` +
-        ` └───────────┘${prodMode}\n`,
-);
+    console.log();
+    console.log(" ┌───────────┐");
+    console.log(` │ ${cszBot} │ Copyright (c) ${year} Users of the CSZ`);
+    console.log(` └───────────┘${prodMode}`);
+    console.log();
+}
 
 let botContext: BotContext;
 
