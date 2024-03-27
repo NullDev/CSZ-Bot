@@ -70,7 +70,6 @@ export interface BotContext {
 
     rootDir: string;
     srcDir: string;
-    databasePath: string;
     bannersDir: string;
     soundsDir: string;
     commandDir: string;
@@ -230,7 +229,6 @@ export async function createBotContext(
         ),
         rootDir: path.resolve(""),
         srcDir: path.resolve("src"),
-        databasePath: process.env.DATABASE_PATH ?? path.resolve("storage.db"),
         bannersDir: path.resolve("banners"),
         soundsDir: path.resolve("sounds"),
         commandDir: path.resolve("src/commands"),

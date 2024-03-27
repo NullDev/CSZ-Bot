@@ -78,6 +78,8 @@ if (!config.auth.bot_token) {
     process.exit(1);
 }
 
+await kysely.connectToDb(conf.databasePath);
+
 const client = new Discord.Client({
     partials: [Partials.Message, Partials.Reaction, Partials.User],
     allowedMentions: {
@@ -267,8 +269,6 @@ client.once("ready", async initializedClient => {
     try {
         botContext = await createBotContext(initializedClient);
         console.assert(!!botContext, "Bot context should be available"); // TODO: Remove once botContext is used
-
-        await kysely.connectToDb(botContext.databasePath);
 
         await scheduleCronjobs(botContext);
 

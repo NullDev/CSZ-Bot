@@ -31,3 +31,6 @@ export const getConfig = () => {
         return process.exit(1);
     }
 };
+
+export const databasePath =
+    process.env.DATABASE_PATH ?? path.resolve("storage.db");
