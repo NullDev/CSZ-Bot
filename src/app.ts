@@ -1,12 +1,7 @@
 import * as Discord from "discord.js";
-import {
-    type Message,
-    type VoiceState,
-    GatewayIntentBits,
-    Partials,
-    type Client,
-} from "discord.js";
-import cron from "croner";
+import { GatewayIntentBits, Partials, type Client } from "discord.js";
+
+import type { ReactionHandler } from "./types.js";
 
 import * as conf from "./utils/configHandler.js";
 import log from "@log";
@@ -15,41 +10,25 @@ import "./polyfills.js";
 
 import messageHandler from "./handler/messageHandler.js";
 import messageDeleteHandler from "./handler/messageDeleteHandler.js";
-import { checkBirthdays } from "./handler/bdayHandler.js";
 import * as fadingMessageHandler from "./handler/fadingMessageHandler.js";
 import * as kysely from "./storage/db.js";
 
-import * as ban from "./commands/modcommands/ban.js";
-import * as poll from "./commands/poll.js";
 import reactionHandler from "./handler/reactionHandler.js";
-import {
-    woisData,
-    checkVoiceUpdate,
-} from "./handler/voiceStateUpdateHandler.js";
+import { checkVoiceUpdate } from "./handler/voiceStateUpdateHandler.js";
 
-import type { ReactionHandler } from "./types.js";
 import {
     handleInteractionEvent,
     messageCommandHandler,
     registerAllApplicationCommandsAsGuildCommands,
 } from "./handler/commandHandler.js";
 import quoteReactionHandler from "./handler/quoteHandler.js";
-import { rerollNicknames } from "./handler/nicknameHandler.js";
-import { connectAndPlaySaufen } from "./handler/voiceHandler.js";
-import { reminderHandler } from "./commands/erinnerung.js";
-import { endAprilFools, startAprilFools } from "./handler/aprilFoolsHandler.js";
 import { createBotContext, type BotContext } from "./context.js";
 import { ehreReactionHandler } from "./commands/ehre.js";
-import {
-    woisVoteReactionHandler,
-    woisVoteScheduler,
-} from "./commands/woisvote.js";
-import { publishAocLeaderBoard } from "./commands/aoc.js";
-import { rotate } from "./helper/bannerCarusel.js";
+import { woisVoteReactionHandler } from "./commands/woisvote.js";
 import deleteThreadMessagesHandler from "./handler/deleteThreadMessagesHandler.js";
 import * as terminal from "./terminal.js";
 import * as guildRageQuit from "./storage/guildRageQuit.js";
-import * as ehre from "./storage/ehre.js";
+import { scheduleCronjobs } from "./handler/cronjobs.js";
 
 const args = process.argv.slice(2);
 
@@ -124,7 +103,7 @@ process.on("uncaughtException", (err, origin) => {
 });
 
 process.once("SIGTERM", signal => {
-    log.error(`Received Sigterm: ${signal}`);
+    log.fatal(`Received Sigterm: ${signal}`);
     process.exit(1);
 });
 process.once("exit", code => {
@@ -132,79 +111,6 @@ process.once("exit", code => {
     kysely.disconnectFromDb();
     log.warn(`Process exited with code: ${code}`);
 });
-
-const clearWoisLogTask = () => {
-    woisData.latestEvents = woisData.latestEvents.filter(
-        event => event.createdAt.getTime() > Date.now() - 2 * 60 * 1000,
-    );
-};
-
-const leetTask = async () => {
-    const { hauptchat } = botContext.textChannels;
-    const csz = botContext.guild;
-
-    await hauptchat.send(
-        "Es ist `13:37` meine Kerle.\nBleibt hydriert! :grin: :sweat_drops:",
-    );
-
-    // Auto-kick members
-    const sadPinguEmote = csz.emojis.cache.find(e => e.name === "sadpingu");
-    const dabEmote = csz.emojis.cache.find(e => e.name === "Dab");
-
-    const membersToKick = (await csz.members.fetch())
-        .filter(
-            m =>
-                m.joinedTimestamp !== null &&
-                Date.now() - m.joinedTimestamp >= 48 * 3_600_000,
-        )
-        .filter(
-            m => m.roles.cache.filter(r => r.name !== "@everyone").size === 0,
-        );
-
-    log.info(
-        `Identified ${
-            membersToKick.size
-        } members that should be kicked, these are: ${membersToKick
-            .map(m => m.displayName)
-            .join(",")}.`,
-    );
-
-    if (membersToKick.size === 0) {
-        await hauptchat.send(
-            `Heute leider keine Jocklerinos gekickt ${sadPinguEmote}`,
-        );
-        return;
-    }
-
-    // We don't have trust in this code, so ensure that we don't kick any regular members :harold:
-    if (membersToKick.size > 5) {
-        // I think we don't need to kick more than 5 members at a time. If so, it is probably a bug and we don't want to to do that
-        throw new Error(
-            `You probably didn't want to kick ${membersToKick.size} members, or?`,
-        );
-    }
-
-    // I don't have trust in this code, so ensure that we don't kick any regular members :harold:
-    console.assert(
-        false,
-        membersToKick.some(m => m.roles.cache.some(r => r.name === "Nerd")),
-    );
-
-    const fetchedMembers = await Promise.all(membersToKick.map(m => m.fetch()));
-    if (fetchedMembers.some(m => m.roles.cache.some(r => r.name === "Nerd"))) {
-        throw new Error(
-            "There were members that had the nerd role assigned. You probably didn't want to kick them.",
-        );
-    }
-
-    await Promise.all([...membersToKick.map(member => member.kick())]);
-
-    await hauptchat.send(
-        `Hab grad ${membersToKick.size} Jocklerinos gekickt ${dabEmote}`,
-    );
-
-    log.info(`Auto-kick: ${membersToKick.size} members kicked.`);
-};
 
 login().then(
     client => {
@@ -223,40 +129,6 @@ login().then(
         process.exit(1);
     },
 );
-
-const scheduleCronjobs = async (context: BotContext) => {
-    const schedule = (
-        pattern: string,
-        callback: Parameters<typeof cron>[1],
-    ) => {
-        cron(
-            pattern,
-            {
-                timezone: "Europe/Berlin",
-            },
-            callback,
-        );
-    };
-
-    schedule("1 0 * * *", () => checkBirthdays(context));
-    schedule("0 20 1-25 12 *", () => publishAocLeaderBoard(context));
-    schedule("0 0 * * 0", () => rerollNicknames(context));
-    schedule("36 0-23 * * FRI-SUN", () => connectAndPlaySaufen(context));
-    schedule("* * * * *", () => reminderHandler(context));
-    schedule("* * * * *", () => woisVoteScheduler(context));
-    schedule("* * * * *", () => ban.processBans(context));
-    schedule("1 0 * * *", () => ehre.runDeflation());
-    schedule("1 0 * * *", () => ehre.resetVotes());
-    schedule("0 0 1 */2 *", () => rotate(context));
-    schedule("37 13 * * *", leetTask);
-    schedule("5 * * * *", clearWoisLogTask);
-
-    schedule("2022-04-01T00:00:00", () => startAprilFools(context));
-    schedule("2022-04-02T00:00:00", () => endAprilFools(context));
-
-    await poll.importPolls();
-    schedule("* * * * *", () => poll.processPolls(context));
-};
 
 client.once("ready", async initializedClient => {
     try {
@@ -376,11 +248,10 @@ client.on("debug", d => {
     if (d.includes("Heartbeat")) {
         return;
     }
-
     log.debug(d, "Discord Client Debug d");
 });
 client.on("rateLimit", data =>
-    log.error(data, "Discord Client RateLimit Shit"),
+    log.error(data, "Discord client rate limit reached"),
 );
 client.on("invalidated", () => log.debug("Client invalidated"));
 

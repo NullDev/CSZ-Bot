@@ -46,3 +46,9 @@ export async function checkVoiceUpdate(
         }
     }
 }
+
+export const clearWoisLogTask = (_context: BotContext) => {
+    woisData.latestEvents = woisData.latestEvents.filter(
+        event => event.createdAt.getTime() > Date.now() - 2 * 60 * 1000,
+    );
+};
