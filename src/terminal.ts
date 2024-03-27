@@ -1,17 +1,16 @@
-const color = {
-    whiteBright: (s: string) => `\u001B[97m${s}\u001B[39m`,
-    bgRed: (s: string) => `\u001B[41m${s}\u001B[49m`,
-    bgYellow: (s: string) => `\u001B[43m${s}\u001B[49m`,
-    bgCyan: (s: string) => `\u001B[46m${s}\u001B[49m`,
-    black: (s: string) => `\u001B[30m${s}\u001B[39m`,
-};
+import { styleText } from "node:util";
+
+// TODO: Remove when node typings are updated (this would be around Node.js 22)
+declare module "node:util" {
+    function styleText(style: string, text: string): string;
+}
 
 export function highlight(s: string): string {
-    return color.bgCyan(color.whiteBright(s));
+    return styleText("bgCyan", styleText("whiteBright", s));
 }
 export function highlightError(s: string) {
-    return color.whiteBright(color.bgRed(s));
+    return styleText("bgRed", styleText("whiteBright", s));
 }
 export function highlightWarn(s: string) {
-    return color.black(color.bgYellow(s));
+    return styleText("bgYellow", styleText("black", s));
 }
