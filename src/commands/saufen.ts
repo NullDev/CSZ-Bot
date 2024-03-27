@@ -133,7 +133,7 @@ export class Saufen implements ApplicationCommand {
                 return;
             }
             case "list": {
-                const files = await this.getSoundFiles(context.soundsDir);
+                const files = await this.#getSoundFiles(context.soundsDir);
                 await command.reply(files.map(f => `- ${f}`).join("\n"));
                 return;
             }
@@ -142,7 +142,7 @@ export class Saufen implements ApplicationCommand {
         }
     }
 
-    private async getSoundFiles(soundDir: string) {
+    async #getSoundFiles(soundDir: string) {
         return (await fs.readdir(soundDir, { withFileTypes: true }))
             .filter(f => f.isFile())
             .map(f => f.name);
@@ -157,7 +157,7 @@ export class Saufen implements ApplicationCommand {
             return;
         }
 
-        const files = await this.getSoundFiles(context.soundsDir);
+        const files = await this.#getSoundFiles(context.soundsDir);
 
         const focusedValue = interaction.options.getFocused().toLowerCase();
         const completions = files

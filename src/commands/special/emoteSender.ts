@@ -18,12 +18,12 @@ export class EmoteSenderCommand implements SpecialCommand {
         kk: ["pepeOK", "pepeOK"],
     };
 
-    private trimMessage(message: Message): string {
+    #trimMessage(message: Message): string {
         return message.content.toLowerCase().trim();
     }
 
     matches(message: Message<boolean>): boolean {
-        const trimmedContent = this.trimMessage(message);
+        const trimmedContent = this.#trimMessage(message);
         return Object.keys(this.emotes).some(
             emote => emote === trimmedContent.toLowerCase(),
         );
@@ -34,7 +34,7 @@ export class EmoteSenderCommand implements SpecialCommand {
         _client: Client<boolean>,
         context: BotContext,
     ): Promise<CommandResult> {
-        const trimmedContent = this.trimMessage(message);
+        const trimmedContent = this.#trimMessage(message);
         const pickedEmotes: string[] | undefined = this.emotes[trimmedContent];
         if (pickedEmotes === undefined) {
             throw new Error(

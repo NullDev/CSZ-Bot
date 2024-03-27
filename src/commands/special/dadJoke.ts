@@ -32,7 +32,7 @@ export class DadJokeCommand implements SpecialCommand {
         austrian: ["Und i bin da #BOTNAME# oida", "Oida #WHOIS#, was geht?"],
     };
 
-    private getRandomAnswer(
+    #getRandomAnswer(
         config: PhraseConfig,
         slotConfig: Record<Slot, string>,
     ): string {
@@ -101,7 +101,7 @@ export class DadJokeCommand implements SpecialCommand {
                 BOTNAME: client.user?.username ?? "Bot",
             };
 
-            const answer = this.getRandomAnswer(attributes, slots);
+            const answer = this.#getRandomAnswer(attributes, slots);
 
             await message.reply({
                 content: answer,

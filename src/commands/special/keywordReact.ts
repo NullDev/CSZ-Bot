@@ -21,7 +21,7 @@ export class TriggerReactOnKeyword implements SpecialCommand {
     async handleSpecialMessage(
         message: ProcessableMessage,
     ): Promise<CommandResult> {
-        if (this.isEmoji(this.emoteName)) {
+        if (this.#isEmoji(this.emoteName)) {
             await message.react(this.emoteName);
             return;
         }
@@ -36,7 +36,7 @@ export class TriggerReactOnKeyword implements SpecialCommand {
         throw new Error(`${this.emoteName} emote not found`);
     }
 
-    private isEmoji(str: string): boolean {
+    #isEmoji(str: string): boolean {
         return /\p{Extended_Pictographic}/u.test(str);
     }
 }

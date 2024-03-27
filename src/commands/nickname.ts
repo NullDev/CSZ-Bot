@@ -182,7 +182,7 @@ export class Nickname implements ApplicationCommand {
                     );
                     return;
                 }
-                return Nickname.createNickNameVote(
+                return Nickname.#createNickNameVote(
                     command,
                     user,
                     nickname,
@@ -252,7 +252,7 @@ export class Nickname implements ApplicationCommand {
         await interaction.respond(completions);
     }
 
-    private static async createNickNameVote(
+    static async #createNickNameVote(
         command: CommandInteraction<CacheType>,
         user: User,
         nickname: string,
@@ -345,14 +345,14 @@ export class NicknameButtonHandler implements UserInteraction {
 
         // evaluate the user votes
         const votes: UserVote[] = Object.values(userVoteMap);
-        if (this.hasEnoughVotes(votes, "NO")) {
+        if (this.#hasEnoughVotes(votes, "NO")) {
             await interaction.update({
                 content: `Der Vorschlag: \`${suggestion.nickName}\` für <@${suggestion.nickNameUserId}> war echt nicht so geil`,
                 components: [],
             });
             return;
         }
-        if (this.hasEnoughVotes(votes, "YES")) {
+        if (this.#hasEnoughVotes(votes, "YES")) {
             try {
                 await nickName.insertNickname(
                     suggestion.nickNameUserId,
@@ -377,7 +377,7 @@ export class NicknameButtonHandler implements UserInteraction {
         });
     }
 
-    private hasEnoughVotes(votes: UserVote[], voteType: Vote) {
+    #hasEnoughVotes(votes: UserVote[], voteType: Vote) {
         const mappedVotes = votes
             .filter(vote => vote.vote === voteType)
             .map(getWeightOfUserVote);
