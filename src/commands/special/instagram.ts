@@ -1,5 +1,4 @@
 import type { Message } from "discord.js";
-// @ts-ignore
 import instagramUrl from "instagram-url-direct";
 
 import type { SpecialCommand, CommandResult } from "../command.js";
@@ -21,6 +20,9 @@ export class InstagramLink implements SpecialCommand {
     cooldownTime = 0;
 
     matches(message: Message<boolean>): boolean {
+        // TODO: Refactor this to URLPattern once bun ships with it:
+        // https://developer.mozilla.org/en-US/docs/Web/API/URL_Pattern_API
+
         // https://www.instagram.com/reel/Ce_kSwnIlA8/
         // https://www.instagram.com/tv/CfOBVIsFpyg/
         // https://www.instagram.com/p/CfOCQKhj7UC/?__a=1
