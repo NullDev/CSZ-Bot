@@ -11,3 +11,8 @@ if (typeof Math.sumExact !== "function") {
     // intentionally very cheap implementation. But does the thing.
     Math.sumExact = (values: number[]) => values.reduce((a, b) => a + b, 0);
 }
+
+// @ts-ignore: Property "UrlPattern" does not exist
+if (!globalThis.URLPattern) {
+    await import("urlpattern-polyfill");
+}
