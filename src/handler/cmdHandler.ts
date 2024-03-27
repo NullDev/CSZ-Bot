@@ -118,6 +118,7 @@ export default async function (
 
         await ban.ban(
             client,
+            context,
             message.member,
             message.member,
             "Lol",

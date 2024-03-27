@@ -48,6 +48,7 @@ export const run: CommandFunction = async (client, message, args, context) => {
 
     const err = await ban.ban(
         client,
+        context,
         invokingUser,
         invokingUser,
         "Selbstauferlegt",
