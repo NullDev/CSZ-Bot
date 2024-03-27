@@ -77,7 +77,6 @@ export interface BotContext {
     soundsDir: string;
     commandDir: string;
     modCommandDir: string;
-    // TODO: Add some user assertions like isMod and isTrusted
 
     roleGuard: {
         isMod: (member: GuildMember) => boolean;
