@@ -1,7 +1,7 @@
 import type { Message } from "discord.js";
-import instagramUrl from "instagram-url-direct";
 
 import type { SpecialCommand, CommandResult } from "../command.js";
+import * as instagram from "../../utils/instagram.js";
 
 const instagramOptions = {
     uriPattern:
@@ -20,6 +20,10 @@ export class InstagramLink implements SpecialCommand {
     cooldownTime = 0;
 
     matches(message: Message<boolean>): boolean {
+        if (!instagram.isAvailable()) {
+            return false;
+        }
+
         // TODO: Refactor this to URLPattern once bun ships with it:
         // https://developer.mozilla.org/en-US/docs/Web/API/URL_Pattern_API
 
@@ -35,15 +39,22 @@ export class InstagramLink implements SpecialCommand {
 
         const postUri = message.content.replace("http://", "https://");
 
-        const links = await instagramUrl(postUri);
-
-        const mediaUri = links.url_list[0];
+        const result = await instagram.downloadInstagramContent(postUri);
+        if (!result.success) {
+            const failureReaction = message.guild?.emojis.cache.find(
+                e => e.name === "sadge",
+            );
+            if (failureReaction) {
+                await message.react(failureReaction);
+            }
+            return;
+        }
 
         await message.reply({
             content: "Dein Dreckspost du Hund:",
             files: [
                 {
-                    attachment: mediaUri,
+                    attachment: result.mediaUrl,
                     name: "Drecksvideo.mp4",
                 },
             ],

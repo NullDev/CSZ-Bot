@@ -3,6 +3,10 @@ services:
     container_name: csz-bot
     restart: unless-stopped
     image: csz-bot
+    environment:
+      - LOG_LEVEL=debug
+    env_file:
+      - .env
     volumes:
       - ./config.json:/app/config.json:ro
       - ./aoc.config.json:/app/aoc.config.json:ro

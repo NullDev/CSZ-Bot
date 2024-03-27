@@ -20,7 +20,8 @@ node_modules/
 *.tgz
 
 .env
-.env.test
+.env.*
+!.env.*.example
 
 dist
 .cache/

@@ -75,6 +75,7 @@ import type { ApplicationCommandCreationResponse } from "../types.js";
 import { AoCCommand } from "../commands/aoc.js";
 import { BanListCommand } from "../commands/banlist.js";
 import { Vote2Command } from "../commands/vote2.js";
+import { InstagramLink } from "src/commands/special/instagram.js";
 
 export const commands: readonly Command[] = [
     new InfoCommand(),
@@ -115,7 +116,7 @@ export const commands: readonly Command[] = [
     new ErinnerungCommand(),
     new YoinkCommand(),
     new EmoteSenderCommand(),
-    // Broken: new InstagramLink(),
+    new InstagramLink(),
     new OidaCommand(),
     new DeOidaCommand(),
     new EhreCommand(),
