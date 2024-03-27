@@ -98,7 +98,7 @@ async function drawStempelgraph(
     stempels: StempelConnection[],
     engine: LayoutEngine,
     userInfo: Map<GuildMember, UserInfo>,
-): Promise<[Buffer, string]> {
+): Promise<Buffer> {
     for (const stempel of stempels) {
         log.debug(`${stempel.inviter} --> ${stempel.invitee}`);
     }
@@ -145,7 +145,7 @@ async function drawStempelgraph(
     await graphviz.loadWASM();
     const svg = graphviz.layout(dotSrc, "svg", engine);
 
-    return [convertToImage(svg), dotSrc];
+    return convertToImage(svg);
 }
 
 async function fetchMemberInfo(
@@ -270,20 +270,11 @@ export class StempelgraphCommand implements ApplicationCommand {
             "dot") as LayoutEngine;
 
         try {
-            const [stempelGraph, dotSrc] = await drawStempelgraph(
+            const stempelGraph = await drawStempelgraph(
                 namedStempels,
                 engine,
                 graphUserInfo,
             );
-
-            /*
-            await command.reply({
-                content:
-                    "```\n" +
-                    JSON.stringify([...graphUserInfo.entries()], null, "  ") +
-                    "\n```",
-            });
-            */
 
             await command.reply({
                 files: [

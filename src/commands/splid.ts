@@ -246,7 +246,6 @@ export class SplidGroupCommand implements ApplicationCommand {
                 command.user,
                 command.guild,
                 normalizedCode,
-                externalInfo.objectId,
                 name,
                 longDescription,
             );

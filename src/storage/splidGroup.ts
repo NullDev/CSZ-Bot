@@ -1,5 +1,4 @@
 import type { Guild, User } from "discord.js";
-import { sql } from "kysely";
 
 import type { SplidGroup } from "./model.js";
 import db from "./db.js";
@@ -10,7 +9,6 @@ export function createSplidGroup(
     creator: User,
     guild: Guild,
     groupCode: string,
-    externalSplidGroupId: string,
     shortDescription: string,
     longDescription: string | null,
     ctx = db(),
@@ -19,7 +17,6 @@ export function createSplidGroup(
         `Saving splid group, initiated by ${creator} on guild ${guild} with group code ${groupCode}: "${shortDescription}"`,
     );
 
-    const now = new Date().toISOString();
     return ctx
         .insertInto("splidGroups")
         .values({

@@ -19,7 +19,7 @@ const quoteConfig = getConfig().bot_settings.quotes;
 const quoteThreshold = quoteConfig.quote_threshold;
 const isSourceChannelAllowed = (channelId: string) =>
     !quoteConfig.blacklisted_channel_ids.includes(channelId);
-const isChannelAnonymous = async (context: BotContext, channel: Channel) => {
+const isChannelAnonymous = async (_context: BotContext, channel: Channel) => {
     const anonChannels = quoteConfig.anonymous_channel_ids;
 
     let currentChannel: Channel | null = channel;

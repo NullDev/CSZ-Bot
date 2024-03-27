@@ -15,7 +15,6 @@ export function createLink(
         `Linking splid UUID "${externalSplidId}" with discord user ${user} on guild ${guild}`,
     );
 
-    const now = new Date().toISOString();
     return ctx
         .insertInto("splidLinks")
         .values({

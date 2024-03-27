@@ -1,5 +1,4 @@
-import type { GuildMember, Message, Snowflake, User } from "discord.js";
-import { sql } from "kysely";
+import type { GuildMember, Snowflake, User } from "discord.js";
 
 import type { Ban } from "./model.js";
 

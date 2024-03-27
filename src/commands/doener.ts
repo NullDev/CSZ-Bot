@@ -23,7 +23,7 @@ export class DoenerCommand implements MessageCommand {
     async handleMessage(
         message: ProcessableMessage,
         _client: Client<boolean>,
-        context: BotContext,
+        _context: BotContext,
     ): Promise<void> {
         const targetMessage = message.reference?.messageId
             ? await message.channel.messages.fetch(message.reference.messageId)

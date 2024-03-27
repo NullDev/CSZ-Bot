@@ -19,7 +19,6 @@ export async function hasVoted(
 }
 
 export async function insertVote(userId: Snowflake, ctx = db()) {
-    const now = new Date().toISOString();
     await ctx
         .insertInto("ehreVotes")
         .values({
@@ -29,7 +28,6 @@ export async function insertVote(userId: Snowflake, ctx = db()) {
 }
 
 export async function addPoints(userId: Snowflake, points: number, ctx = db()) {
-    const now = new Date().toISOString();
     await ctx
         .insertInto("ehrePoints")
         .values({

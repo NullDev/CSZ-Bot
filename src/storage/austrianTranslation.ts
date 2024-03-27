@@ -16,7 +16,6 @@ export function persistOrUpdate(
         `Saving austrian translation for user ${addedBy}. German: ${german}; Austrian: ${austrian}`,
     );
 
-    const now = new Date().toISOString();
     return ctx
         .insertInto("austrianTranslations")
         .values({

@@ -14,7 +14,6 @@ import log from "../utils/logger.js";
 import * as additionalMessageData from "../storage/additionalMessageData.js";
 import type { BotContext } from "../context.js";
 import type { CommandFunction } from "../types.js";
-import { DataUsage } from "../storage/model.js";
 
 export const LETTERS = [
     ":regional_indicator_a:",

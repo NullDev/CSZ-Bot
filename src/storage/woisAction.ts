@@ -1,5 +1,4 @@
 import type { Message, PartialMessage, Snowflake, User } from "discord.js";
-import { sql } from "kysely";
 
 import type { WoisAction } from "./model.js";
 import db from "./db.js";

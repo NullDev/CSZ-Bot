@@ -1,5 +1,4 @@
 import type { Snowflake, User } from "discord.js";
-import { sql } from "kysely";
 
 import type { Reminder } from "./model.js";
 

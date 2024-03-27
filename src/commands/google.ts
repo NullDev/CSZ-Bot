@@ -14,10 +14,6 @@ const replies = [
     "Nichtmal googeln kannst du: {0}",
     "Googlen wär einfacher gewesen: {0}",
 ];
-const repliesWithUser = [
-    "{1} is zu dumm zum googlen. Hier das was du  Google fragen wolltest:  {0}",
-    "Hätte {1} den browser aufgemacht und {0} eingegeben",
-];
 
 const buildEmbed = (member: GuildMember, reply: string) => {
     return {

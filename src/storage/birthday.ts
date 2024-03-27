@@ -31,7 +31,6 @@ export function insertBirthday(
     month: OneBasedMonth,
     ctx = db(),
 ): Promise<Birthday> {
-    const now = new Date().toISOString();
     return ctx
         .insertInto("birthdays")
         .values({

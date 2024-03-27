@@ -28,7 +28,7 @@ export class FaulenzerPingCommand implements ApplicationCommand {
 
     async handleInteraction(
         command: CommandInteraction,
-        client: Client,
+        _client: Client,
         context: BotContext,
     ) {
         if (!command.isMessageContextMenuCommand()) {
