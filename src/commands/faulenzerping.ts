@@ -15,7 +15,6 @@ import {
 
 import type { BotContext } from "../context.js";
 import type { ApplicationCommand } from "./command.js";
-import { isTrusted } from "../utils/userUtils.js";
 import { chunkArray } from "../utils/arrayUtils.js";
 
 export class FaulenzerPingCommand implements ApplicationCommand {
@@ -35,7 +34,7 @@ export class FaulenzerPingCommand implements ApplicationCommand {
             return;
         }
 
-        if (!command.member || !isTrusted(command.member)) {
+        if (!command.member || !context.roleGuard.isTrusted(command.member)) {
             await command.reply({
                 content:
                     "Du bist nicht berechtigt, diesen Command zu benutzen.",

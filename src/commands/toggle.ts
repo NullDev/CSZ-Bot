@@ -2,7 +2,6 @@ import { type APIEmbedField, EmbedBuilder, type Message } from "discord.js";
 
 import type { CommandFunction } from "../types.js";
 import * as poll from "./poll.js";
-import { isMod } from "../utils/userUtils.js";
 
 const isPollField = (field: APIEmbedField): boolean =>
     !field.inline && poll.LETTERS.some(l => field.name.startsWith(l));
@@ -49,7 +48,10 @@ const toggleSdm = async (message: Message) => {
  * Extends an existing poll or strawpoll
  */
 export const run: CommandFunction = async (_client, message, args, context) => {
-    if (!isMod(message.member)) return;
+    if (!context.roleGuard.isMod(message.member)) {
+        return;
+    }
+
     const reference = message.reference;
     const referenceMessageId = reference?.messageId;
     if (!reference || !referenceMessageId) {

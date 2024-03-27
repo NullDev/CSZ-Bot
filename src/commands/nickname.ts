@@ -11,14 +11,15 @@ import {
     SlashCommandUserOption,
     ComponentType,
     type AutocompleteInteraction,
+    type Client,
 } from "discord.js";
 
+import type { BotContext } from "../context.js";
 import type {
     ApplicationCommand,
     CommandResult,
     UserInteraction,
 } from "./command.js";
-import { isTrusted } from "../utils/userUtils.js";
 import log from "../utils/logger.js";
 import { ensureChatInputCommand } from "../utils/interactionUtils.js";
 import * as nickName from "../storage/nickName.js";
@@ -117,6 +118,8 @@ export class Nickname implements ApplicationCommand {
 
     async handleInteraction(
         command: CommandInteraction,
+        _client: Client,
+        context: BotContext,
     ): Promise<CommandResult> {
         const cmd = ensureChatInputCommand(command);
 
@@ -127,7 +130,8 @@ export class Nickname implements ApplicationCommand {
             );
             // We know that the user option is in every subcmd.
             const user = cmd.options.getUser("user", true);
-            const trusted = commandUser && isTrusted(commandUser);
+            const trusted =
+                commandUser && context.roleGuard.isTrusted(commandUser);
             const sameuser = user.id === commandUser?.user.id;
 
             if (option === "deleteall") {
@@ -301,6 +305,8 @@ export class NicknameButtonHandler implements UserInteraction {
 
     async handleInteraction(
         interaction: MessageComponentInteraction,
+        _client: Client,
+        context: BotContext,
     ): Promise<void> {
         const suggestion = ongoingSuggestions[interaction.message.id];
 
@@ -324,19 +330,20 @@ export class NicknameButtonHandler implements UserInteraction {
             return;
         }
 
-        const istrusted = isTrusted(member);
+        const isTrusted = context.roleGuard.isTrusted(member);
         if (interaction.customId === "nicknameVoteYes") {
             userVoteMap[interaction.user.id] = {
                 vote: "YES",
-                trusted: istrusted,
+                trusted: isTrusted,
             };
         } else if (interaction.customId === "nicknameVoteNo") {
             userVoteMap[interaction.user.id] = {
                 vote: "NO",
-                trusted: istrusted,
+                trusted: isTrusted,
             };
         }
-        // evaluate the Uservotes
+
+        // evaluate the user votes
         const votes: UserVote[] = Object.values(userVoteMap);
         if (this.hasEnoughVotes(votes, "NO")) {
             await interaction.update({
@@ -375,7 +382,7 @@ export class NicknameButtonHandler implements UserInteraction {
             votes
                 .filter(vote => vote.vote === voteType)
                 .reduce(
-                    (sum, uservote) => sum + getWeightOfUserVote(uservote),
+                    (sum, userVotes) => sum + getWeightOfUserVote(userVotes),
                     0,
                 ) >= this.threshold
         );

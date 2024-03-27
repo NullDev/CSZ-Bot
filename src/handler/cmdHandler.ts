@@ -6,7 +6,6 @@ import type { Client, Guild, GuildMember, Message } from "discord.js";
 import type { CommandFunction, CommandResult } from "../types.js";
 import log from "../utils/logger.js";
 import * as ban from "../commands/modcommands/ban.js";
-import { hasBotDenyRole } from "../utils/userUtils.js";
 import { isMessageInBotSpam } from "../utils/channelUtils.js";
 import type { BotContext } from "../context.js";
 
@@ -37,7 +36,10 @@ export default async function (
 ): Promise<CommandResult> {
     if (message.author.bot) return;
 
-    if (hasBotDenyRole(message.member) && !isMessageInBotSpam(message)) {
+    if (
+        context.roleGuard.hasBotDenyRole(message.member) &&
+        !isMessageInBotSpam(message)
+    ) {
         await message.member.send(
             "Du hast dich scheinbar beschissen verhalten und darfst daher keine Befehle in diesem Channel ausführen!",
         );

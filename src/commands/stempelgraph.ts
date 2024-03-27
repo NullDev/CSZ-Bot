@@ -14,7 +14,6 @@ import type { ApplicationCommand, CommandResult } from "./command.js";
 import type { BotContext } from "../context.js";
 import * as stempel from "../storage/stempel.js";
 import log from "../utils/logger.js";
-import { isMod, isTrusted } from "../utils/userUtils.js";
 
 const supportedLayoutEngines = [
     "circo",
@@ -169,20 +168,20 @@ async function fetchMemberInfo(
 function getRoles(context: BotContext, member: GuildMember): RoleInGraph[] {
     const res: RoleInGraph[] = [];
 
-    // TODO: Das Zeug hier aufräumen am besten ins userUtils Modul. Soon:tm:
-    if (member.roles.cache.has(context.roles.woisgang.id)) {
+    // TODO: Mehr in die roleGuards
+    if (context.roleGuard.isWoisGang(member)) {
         res.push("woisgang");
     }
-    if (isTrusted(member)) {
+    if (context.roleGuard.isTrusted(member)) {
         res.push("trusted");
     }
-    if (member.roles.cache.has(context.roles.gruendervaeter.id)) {
+    if (context.roleGuard.isGruendervater(member)) {
         res.push("gruendervaeter");
     }
-    if (member.roles.cache.has("856269806969421844")) {
+    if (context.roleGuard.isRejoiner(member)) {
         res.push("rejoiner");
     }
-    if (isMod(member)) {
+    if (context.roleGuard.isMod(member)) {
         res.push("moderator");
     }
     if (member.roles.cache.has("620762567568130089")) {

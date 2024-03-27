@@ -68,7 +68,6 @@ import { EmoteSenderCommand } from "../commands/special/emoteSender.js";
 import { OidaCommand } from "../commands/oida.js";
 import { DeOidaCommand } from "../commands/deoida.js";
 import { EhreCommand } from "../commands/ehre.js";
-import { hasBotDenyRole } from "../utils/userUtils.js";
 import { isMessageInBotSpam } from "../utils/channelUtils.js";
 import type { BotContext } from "../context.js";
 import { WoisCommand } from "../commands/woisvote.js";
@@ -315,7 +314,10 @@ const commandMessageHandler = async (
             cmd.aliases?.includes(commandString.toLowerCase()),
     );
 
-    if (hasBotDenyRole(message.member) && !isMessageInBotSpam(message)) {
+    if (
+        context.roleGuard.hasBotDenyRole(message.member) &&
+        !isMessageInBotSpam(message)
+    ) {
         await message.member.send(
             "Du hast dich scheinbar beschissen verhalten und darfst daher keine Befehle in diesem Channel ausführen!",
         );

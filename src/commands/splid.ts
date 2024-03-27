@@ -9,14 +9,15 @@ import {
     SlashCommandSubcommandBuilder,
     SlashCommandUserOption,
     userMention,
+    type Client,
 } from "discord.js";
 
 // @ts-ignore Types are somehow broken :shrug:
 import { SplidClient } from "splid-js";
 
+import type { BotContext } from "../context.js";
 import type { ApplicationCommand } from "./command.js";
 import type { SplidGroup } from "../storage/model.js";
-import { isTrusted } from "../utils/userUtils.js";
 import { ensureChatInputCommand } from "../utils/interactionUtils.js";
 import logger from "../utils/logger.js";
 import * as splidLink from "../storage/splidLink.js";
@@ -160,7 +161,11 @@ export class SplidGroupCommand implements ApplicationCommand {
                 ),
         );
 
-    async handleInteraction(interaction: CommandInteraction) {
+    async handleInteraction(
+        interaction: CommandInteraction,
+        _client: Client,
+        context: BotContext,
+    ) {
         const command = ensureChatInputCommand(interaction);
         if (!command.guildId) {
             await command.reply({
@@ -170,7 +175,7 @@ export class SplidGroupCommand implements ApplicationCommand {
             return;
         }
 
-        if (!command.member || !isTrusted(command.member)) {
+        if (!command.member || !context.roleGuard.isTrusted(command.member)) {
             await command.reply({
                 content: "Hurensohn. Der Command ist nix für dich.",
                 ephemeral: true,

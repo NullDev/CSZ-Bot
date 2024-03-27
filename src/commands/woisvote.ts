@@ -17,7 +17,6 @@ import * as woisAction from "../storage/woisAction.js";
 import type { ReactionHandler } from "../types.js";
 import type { BotContext } from "../context.js";
 import log from "../utils/logger.js";
-import { isWoisGang } from "../utils/userUtils.js";
 import { chunkArray } from "../utils/arrayUtils.js";
 
 const defaultWoisTime = "20:00";
@@ -99,7 +98,7 @@ export class WoisCommand implements ApplicationCommand {
             command.options.getString("zeitpunkt", false) ?? defaultWoisTime;
         const timeForWois = moment(time, "HH:mm");
         const member = context.guild.members.cache.get(command.user.id);
-        const isWoisgangVote = member && isWoisGang(member);
+        const isWoisgangVote = member && context.roleGuard.isWoisGang(member);
 
         if (timeForWois.isBefore(moment())) {
             await command.reply({

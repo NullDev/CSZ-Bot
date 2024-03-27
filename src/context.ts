@@ -1,15 +1,17 @@
 import path from "node:path";
-import {
-    ChannelType,
-    type Client,
-    type Guild,
-    type Role,
-    type Snowflake,
-    type TextChannel,
-    type VoiceChannel,
-} from "discord.js";
 
-import { getConfig } from "./utils/configHandler.js";
+import type {
+    GuildMember,
+    Client,
+    Guild,
+    Role,
+    Snowflake,
+    TextChannel,
+    VoiceChannel,
+    APIInteractionGuildMember,
+} from "discord.js";
+import { ChannelType } from "discord.js";
+
 import type {
     Config,
     ConfigTextChannelId,
@@ -17,6 +19,7 @@ import type {
     ConfigRoleId,
 } from "./types.js";
 import type { RemoveOptionalSuffix, RemoveSuffix } from "./utils/typeUtils.js";
+import { getConfig } from "./utils/configHandler.js";
 
 /**
  * Object that's passed to every executed command to make it easier to access common channels without repeatedly retrieving stuff via IDs.
@@ -75,6 +78,27 @@ export interface BotContext {
     commandDir: string;
     modCommandDir: string;
     // TODO: Add some user assertions like isMod and isTrusted
+
+    roleGuard: {
+        isMod: (member: GuildMember) => boolean;
+        isNerd: (member: GuildMember | APIInteractionGuildMember) => boolean;
+        isTrusted: (member: GuildMember | APIInteractionGuildMember) => boolean;
+        isGruendervater: (
+            member: GuildMember | APIInteractionGuildMember,
+        ) => boolean;
+        isWoisGang: (
+            member: GuildMember | APIInteractionGuildMember,
+        ) => boolean;
+        isEmotifizierer: (
+            member: GuildMember | APIInteractionGuildMember,
+        ) => boolean;
+        hasBotDenyRole: (
+            member: GuildMember | APIInteractionGuildMember,
+        ) => boolean;
+        isRejoiner: (
+            member: GuildMember | APIInteractionGuildMember,
+        ) => boolean;
+    };
 }
 
 function ensureRole<T extends ConfigRoleId>(
@@ -233,5 +257,41 @@ export async function createBotContext(
         soundsDir: path.resolve("sounds"),
         commandDir: path.resolve("src/commands"),
         modCommandDir: path.resolve("src/commands/modcommands"),
+
+        roleGuard: {
+            isMod: member =>
+                hasAnyRoleByName(member, config.bot_settings.moderator_roles),
+            isNerd: member => hasRoleById(member, config.ids.default_role_id),
+            isTrusted: member =>
+                hasRoleById(member, config.ids.trusted_role_id) ||
+                hasRoleById(member, config.ids.trusted_banned_role_id),
+            isGruendervater: member =>
+                hasRoleById(member, config.ids.gruendervaeter_role_id) ||
+                hasRoleById(member, config.ids.gruendervaeter_banned_role_id),
+            isWoisGang: member =>
+                hasRoleById(member, config.ids.woisgang_role_id),
+            isEmotifizierer: member =>
+                hasRoleById(member, config.ids.emotifizierer_role_id),
+            hasBotDenyRole: member =>
+                hasRoleById(member, config.ids.bot_deny_role_id),
+            isRejoiner: member => hasRoleById(member, config.ids.shame_role_id),
+        },
     };
+
+    function hasRoleByName(member: GuildMember, roleName: string): boolean {
+        return member.roles.cache.some(role => role.name === roleName);
+    }
+
+    function hasAnyRoleByName(member: GuildMember, roleNames: string[]) {
+        return roleNames.some(role => hasRoleByName(member, role));
+    }
+
+    function hasRoleById(
+        member: GuildMember | APIInteractionGuildMember,
+        id: string,
+    ): boolean {
+        return Array.isArray(member.roles)
+            ? member.roles.includes(id)
+            : member.roles.cache.some(role => role.id === id);
+    }
 }

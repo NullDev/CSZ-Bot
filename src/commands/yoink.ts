@@ -10,7 +10,7 @@ import {
 
 import type { ApplicationCommand, MessageCommand } from "./command.js";
 import type { ProcessableMessage } from "../handler/cmdHandler.js";
-import { isEmotifizierer, isMod } from "../utils/userUtils.js";
+import type { BotContext } from "../context.js";
 import { ensureChatInputCommand } from "../utils/interactionUtils.js";
 
 /**
@@ -38,11 +38,16 @@ export class YoinkCommand implements MessageCommand, ApplicationCommand {
     async handleInteraction(
         command: CommandInteraction<"cached">,
         _client: Client,
+        context: BotContext,
     ): Promise<void> {
         const cmd = ensureChatInputCommand(command);
 
         const author = command.guild?.members.cache.get(cmd.member.user.id);
-        if (!author || (!isEmotifizierer(author) && !isMod(author))) {
+        if (
+            !author ||
+            (!context.roleGuard.isEmotifizierer(author) &&
+                !context.roleGuard.isMod(author))
+        ) {
             await command.reply("Bist nicht cool genug");
             return;
         }
@@ -62,6 +67,7 @@ export class YoinkCommand implements MessageCommand, ApplicationCommand {
     async handleMessage(
         message: ProcessableMessage,
         _client: Client,
+        context: BotContext,
     ): Promise<void> {
         // parse options
         const guildMember = message.guild.members.cache.get(
@@ -69,7 +75,8 @@ export class YoinkCommand implements MessageCommand, ApplicationCommand {
         );
         if (
             !guildMember ||
-            (!isEmotifizierer(guildMember) && !isMod(guildMember))
+            (!context.roleGuard.isEmotifizierer(guildMember) &&
+                !context.roleGuard.isMod(guildMember))
         ) {
             await message.channel.send("Bist nicht cool genug");
             return;
