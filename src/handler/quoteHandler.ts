@@ -16,8 +16,10 @@ import log from "../utils/logger.js";
 
 const quoteConfig = getConfig().bot_settings.quotes;
 const quoteThreshold = quoteConfig.quote_threshold;
+
 const isSourceChannelAllowed = (channelId: string) =>
     !quoteConfig.blacklisted_channel_ids.includes(channelId);
+
 const isChannelAnonymous = async (_context: BotContext, channel: Channel) => {
     const anonChannels = quoteConfig.anonymous_channel_ids;
 
@@ -36,6 +38,7 @@ const isChannelAnonymous = async (_context: BotContext, channel: Channel) => {
 
     return false;
 };
+
 const isQuoteEmoji = (emoji: GuildEmoji | ReactionEmoji) =>
     emoji.name === quoteConfig.emoji_name;
 

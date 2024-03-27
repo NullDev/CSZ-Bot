@@ -422,11 +422,7 @@ client.on("messageReactionRemove", async (event, user) => {
 client.on(
     "voiceStateUpdate",
     async (oldState, newState) =>
-        await checkVoiceUpdate(
-            oldState,
-            newState,
-            botContext,
-        ),
+        await checkVoiceUpdate(oldState, newState, botContext),
 );
 
 function login() {
