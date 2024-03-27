@@ -1,5 +1,3 @@
-import type { Client } from "discord.js";
-
 import type { ProcessableMessage } from "../../handler/cmdHandler.js";
 import type { SpecialCommand, CommandResult } from "../command.js";
 
@@ -8,16 +6,13 @@ import type { SpecialCommand, CommandResult } from "../command.js";
 export class TriggerReactOnKeyword implements SpecialCommand {
     name = "ReactTrigger";
     description = "Trigger a Bot reaction on keyword";
-    randomness: number;
     cooldownTime = 300000;
-    keyword: string;
-    emoteName: string;
 
-    constructor(keyword: string, emote: string, randomness = 0.2) {
-        this.keyword = keyword;
-        this.emoteName = emote;
-        this.randomness = randomness;
-    }
+    constructor(
+        public readonly keyword: string,
+        public readonly emoteName: string,
+        public readonly randomness = 0.2,
+    ) {}
 
     matches(message: ProcessableMessage): boolean {
         return message.content.toLowerCase().includes(this.keyword);
@@ -25,7 +20,6 @@ export class TriggerReactOnKeyword implements SpecialCommand {
 
     async handleSpecialMessage(
         message: ProcessableMessage,
-        _client: Client<boolean>,
     ): Promise<CommandResult> {
         if (this.isEmoji(this.emoteName)) {
             await message.react(this.emoteName);
