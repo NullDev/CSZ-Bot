@@ -288,7 +288,7 @@ export async function createBotContext(
 
     function hasRoleById(
         member: GuildMember | APIInteractionGuildMember,
-        id: string,
+        id: Snowflake,
     ): boolean {
         return Array.isArray(member.roles)
             ? member.roles.includes(id)

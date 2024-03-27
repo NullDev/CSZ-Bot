@@ -11,6 +11,8 @@ import cron from "croner";
 import * as conf from "./utils/configHandler.js";
 import log from "./utils/logger.js";
 
+import "./polyfills.js";
+
 import messageHandler from "./handler/messageHandler.js";
 import messageDeleteHandler from "./handler/messageDeleteHandler.js";
 import { checkBirthdays } from "./handler/bdayHandler.js";
