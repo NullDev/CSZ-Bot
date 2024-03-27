@@ -363,7 +363,11 @@ client.on("messageDelete", async message => {
 client.on(
     "messageUpdate",
     async (_, newMessage) =>
-        await messageHandler(newMessage as Message, client, botContext),
+        await messageHandler(
+            newMessage.partial ? await newMessage.fetch() : newMessage,
+            client,
+            botContext,
+        ),
 );
 
 client.on("error", e => log.error(e, "Discord Client Error"));
@@ -419,8 +423,8 @@ client.on(
     "voiceStateUpdate",
     async (oldState, newState) =>
         await checkVoiceUpdate(
-            oldState as VoiceState,
-            newState as VoiceState,
+            oldState,
+            newState,
             botContext,
         ),
 );
