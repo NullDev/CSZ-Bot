@@ -1,5 +1,6 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
+import { parseArgs } from "node:util";
 
 import log from "@log";
 import type { Config } from "../types.js";
@@ -37,3 +38,12 @@ export const databasePath =
 
 export const rapidApiInstagramApiKey =
     process.env.RAPID_API_INSTAGRAM_API_KEY || undefined;
+
+export const args = parseArgs({
+    options: {
+        "dry-run": {
+            type: "boolean",
+            description: "Run the bot in dry-run mode",
+        },
+    },
+});

@@ -29,8 +29,7 @@ import deleteThreadMessagesHandler from "./handler/deleteThreadMessagesHandler.j
 import * as terminal from "./terminal.js";
 import * as guildRageQuit from "./storage/guildRageQuit.js";
 import { scheduleCronjobs } from "./handler/cronjobs.js";
-
-const args = process.argv.slice(2);
+import { args } from "./utils/configHandler.js";
 
 {
     const prodMode =
@@ -146,7 +145,7 @@ client.once("ready", async initializedClient => {
         void fadingMessageHandler.startLoop(client);
 
         log.info("Bot successfully started");
-        if (args.includes("--dry-run")) {
+        if (args.values["dry-run"]) {
             process.exit(0);
         }
     } catch (err) {
