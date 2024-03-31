@@ -7,6 +7,7 @@ import { FileMigrationProvider, Kysely, Migrator } from "kysely";
 import { BunSqliteDialect } from "kysely-bun-sqlite";
 
 import type { Database } from "./model.js";
+import { assertNever } from "../utils/typeUtils.js";
 import log from "@log";
 
 let kysely: Kysely<Database>;
@@ -25,10 +26,15 @@ export async function connectToDb(databasePath: string) {
                 params: e.query.parameters,
                 duration: e.queryDurationMillis,
             };
-            if (e.level === "error") {
-                log.error(info, "Error during query");
-            } else {
-                log.debug(info, "Query");
+            switch (e.level) {
+                case "error":
+                    log.error(info, "Error running query");
+                    break;
+                case "query":
+                    log.debug(info, "DB Query");
+                    break;
+                default:
+                    assertNever(e);
             }
         },
     });
