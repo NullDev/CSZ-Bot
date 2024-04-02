@@ -17,3 +17,53 @@ export function formatTime(time: Date) {
 export function formatDateTime(dateTime: Date) {
     return dateTimeFormatter.format(dateTime);
 }
+
+const durationFormatters = {
+    [1000 * 60 * 60 * 24 * 365]: Intl.NumberFormat("de-DE", {
+        style: "unit",
+        unit: "duration-year",
+    }),
+    [1000 * 60 * 60 * 24 * 30]: Intl.NumberFormat("de-DE", {
+        style: "unit",
+        unit: "duration-month",
+    }),
+    [1000 * 60 * 60 * 24 * 7]: Intl.NumberFormat("de-DE", {
+        style: "unit",
+        unit: "duration-week",
+    }),
+    [1000 * 60 * 60 * 24]: Intl.NumberFormat("de-DE", {
+        style: "unit",
+        unit: "duration-day",
+    }),
+    [1000 * 60 * 60]: Intl.NumberFormat("de-DE", {
+        style: "unit",
+        unit: "duration-hour",
+    }),
+    [1000 * 60]: Intl.NumberFormat("de-DE", {
+        style: "unit",
+        unit: "duration-minute",
+    }),
+    [1000]: Intl.NumberFormat("de-DE", {
+        style: "unit",
+        unit: "duration-second",
+    }),
+    [0]: Intl.NumberFormat("de-DE", {
+        style: "unit",
+        unit: "duration-millisecond",
+    }),
+};
+
+const defaultDurationFormatter = durationFormatters[1000];
+
+/** Replacement for moment.humanize() */
+export function formatDuration(seconds: number) {
+    for (const [thresholdStr, formatter] of Object.entries(
+        durationFormatters,
+    )) {
+        const threshold = Number(thresholdStr);
+        if (seconds >= threshold) {
+            return formatter.format(seconds / threshold);
+        }
+    }
+    return defaultDurationFormatter.format(seconds);
+}
