@@ -138,7 +138,7 @@ export async function ban(
     banInvoker: GuildMember | User,
     reason: string,
     isSelfBan: boolean,
-    duration?: number,
+    duration: number | null,
 ) {
     log.debug(
         `Banning ${member.id} by ${banInvoker.id} because of ${reason} for ${duration}.`,
@@ -166,9 +166,10 @@ export async function ban(
     if (!result) return "Fehler beim Bannen. Bitte kontaktiere einen Admin.";
 
     const unbanAt =
-        duration === undefined || duration === 0
-            ? null // never
+        duration === null
+            ? null // infinite ban
             : new Date(Date.now() + duration * 60 * 60 * 1000);
+
     const humanReadableDuration = duration
         ? moment.duration(duration, "hours").locale("de").humanize()
         : undefined;
@@ -322,6 +323,7 @@ export class BanCommand implements ApplicationCommand, MessageCommand {
         const messageAfterCommand = message.content
             .substring(message.content.indexOf(this.name) + this.name.length)
             .trim();
+
         let reason = "Willkür";
         if (message.reference) {
             if (messageAfterCommand.trim().length > 0) {
@@ -342,6 +344,7 @@ export class BanCommand implements ApplicationCommand, MessageCommand {
             invokingUser,
             reason,
             false,
+            null,
         );
 
         if (err) {
