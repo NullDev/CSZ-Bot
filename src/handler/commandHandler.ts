@@ -276,7 +276,7 @@ const messageComponentInteractionHandler = async (
     return matchingInteraction.handleInteraction(command, client, context);
 };
 
-const checkPermissions = (
+const hasPermissions = (
     member: GuildMember,
     permissions: ReadonlyArray<PermissionsString>,
 ): boolean => {
@@ -329,26 +329,19 @@ const commandMessageHandler = async (
         return;
     }
 
-    if (matchingCommand.requiredPermissions) {
-        const member = message.guild.members.cache.get(message.author.id);
-        if (
-            member &&
-            !checkPermissions(member, matchingCommand.requiredPermissions)
-        ) {
-            const botUser = client.user;
-            if (!botUser) {
-                throw new Error("Bot user not found");
-            }
+    const invoker = message.member;
 
-            return Promise.all([
-                ban(client, context, member, botUser, "Lol", false, 0.08),
-                message.reply({
-                    content: `Tut mir leid, ${message.author}. Du hast nicht genügend Rechte um dieses Command zu verwenden, dafür gibt's erstmal mit dem Willkürhammer einen auf den Deckel.`,
-                }),
-            ]);
-        }
+    if (hasPermissions(invoker, matchingCommand.requiredPermissions ?? [])) {
+        return matchingCommand.handleMessage(message, client, context);
     }
-    return matchingCommand.handleMessage(message, client, context);
+
+    return Promise.all([
+        // Ban the member that has not the required permissions
+        ban(client, context, invoker, context.client.user, "Lol", false, 0.08),
+        message.reply({
+            content: `Tut mir leid, ${message.author}. Du hast nicht genügend Rechte um dieses Command zu verwenden, dafür gibt's erstmal mit dem Willkürhammer einen auf den Deckel.`,
+        }),
+    ]);
 };
 
 const isCooledDown = (command: SpecialCommand) => {
