@@ -45,6 +45,16 @@ export interface BotContext {
         ehre: {
             emojiNames: Set<string>;
         };
+        quote: {
+            allowedGroupIds: Set<Snowflake>;
+            anonymousChannelIds: Set<Snowflake>;
+            anonymousCategoryIds: Set<Snowflake>;
+            blacklistedChannelIds: Set<Snowflake>;
+            quoteVoteThreshold: number;
+            targetChannelOverrides: Record<Snowflake, Snowflake>;
+            defaultTargetChannelId: Snowflake;
+            emojiName: string;
+        };
     };
 
     roles: Record<RemoveSuffix<ConfigRoleId, "_role_id">, Role>;
@@ -208,6 +218,26 @@ export async function createBotContext(
                 emojiNames: new Set(
                     config.bot_settings.ehre?.emoji_names ?? ["aehre"],
                 ),
+            },
+            quote: {
+                allowedGroupIds: new Set(
+                    config.bot_settings.quotes.allowed_group_ids,
+                ),
+                anonymousCategoryIds: new Set(
+                    config.bot_settings.quotes.anonymous_category_ids,
+                ),
+                anonymousChannelIds: new Set(
+                    config.bot_settings.quotes.anonymous_channel_ids,
+                ),
+                blacklistedChannelIds: new Set(
+                    config.bot_settings.quotes.blacklisted_channel_ids,
+                ),
+                quoteVoteThreshold: config.bot_settings.quotes.quote_threshold ?? 2,
+                targetChannelOverrides:
+                    config.bot_settings.quotes.target_channel_overrides,
+                defaultTargetChannelId:
+                    config.bot_settings.quotes.default_target_channel_id,
+                emojiName: config.bot_settings.quotes.emoji_name,
             },
         },
         roles: {
