@@ -8,6 +8,7 @@ import {
     type ReactionEmoji,
     ChannelType,
     type Channel,
+    type Snowflake,
 } from "discord.js";
 
 import type { BotContext } from "../context.js";
@@ -86,7 +87,7 @@ const isQuoterQuotingHimself = (
 
 const generateRandomColor = () => Math.floor(Math.random() * 16777215);
 
-const getTargetChannel = (sourceChannelId: string, context: BotContext) => {
+const getTargetChannel = (sourceChannelId: Snowflake, context: BotContext) => {
     const targetChannelId =
         quoteConfig.target_channel_overrides[sourceChannelId] ??
         quoteConfig.default_target_channel_id;
