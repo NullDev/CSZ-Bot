@@ -13,6 +13,7 @@ import {
     Routes,
 } from "discord.js";
 import type { GuildMember } from "discord.js";
+import * as banService from "../service/banService.js";
 
 /**
  * Completely new bullish command handler it unifies slash commands and
@@ -38,7 +39,7 @@ import { TikTokLink } from "../commands/special/tiktok.js";
 import { StempelCommand } from "../commands/stempeln.js";
 import { StempelgraphCommand } from "../commands/stempelgraph.js";
 import { StempelkarteCommand } from "../commands/stempelkarte.js";
-import { ban, BanCommand } from "../commands/modcommands/ban.js";
+import { BanCommand } from "../commands/modcommands/ban.js";
 import { UnbanCommand } from "../commands/modcommands/unban.js";
 import { PenisCommand } from "../commands/penis.js";
 import { BoobCommand } from "../commands/boobs.js";
@@ -337,7 +338,14 @@ const commandMessageHandler = async (
 
     return Promise.all([
         // Ban the member that has not the required permissions
-        ban(client, context, invoker, context.client.user, "Lol", false, 0.08),
+        banService.banUser(
+            context,
+            invoker,
+            context.client.user,
+            "Lol",
+            false,
+            0.08,
+        ),
         message.reply({
             content: `Tut mir leid, ${message.author}. Du hast nicht genügend Rechte um dieses Command zu verwenden, dafür gibt's erstmal mit dem Willkürhammer einen auf den Deckel.`,
         }),

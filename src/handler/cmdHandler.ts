@@ -4,10 +4,10 @@ import * as path from "node:path";
 import type { Client, Guild, GuildMember, Message } from "discord.js";
 
 import type { CommandFunction, CommandResult } from "../types.js";
-import log from "@log";
-import * as ban from "../commands/modcommands/ban.js";
-import { isMessageInBotSpam } from "../utils/channelUtils.js";
 import type { BotContext } from "../context.js";
+import log from "@log";
+import * as banService from "../service/banService.js";
+import { isMessageInBotSpam } from "../utils/channelUtils.js";
 
 /**
  * A message that the bot can pass to command handlers.
@@ -118,8 +118,7 @@ export default async function (
             return "Da haste aber Schwein gehabt";
         }
 
-        await ban.ban(
-            client,
+        await banService.banUser(
             context,
             message.member,
             message.member,

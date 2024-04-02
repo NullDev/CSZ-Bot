@@ -2,8 +2,7 @@ import { time, TimestampStyles } from "discord.js";
 import moment from "moment";
 
 import type { CommandFunction } from "../types.js";
-import * as banService from "../storage/ban.js";
-import * as ban from "./modcommands/ban.js";
+import * as banService from "../service/banService.js";
 
 export const run: CommandFunction = async (client, message, args, context) => {
     let input = args?.[0]?.trim() ?? "8";
@@ -41,13 +40,11 @@ export const run: CommandFunction = async (client, message, args, context) => {
         return "Du bist bereits gebannt du Kek.";
     }
 
-    const existingBan = await banService.findExisting(invokingUser);
-    if (existingBan) {
+    if (await banService.isBanned(invokingUser)) {
         return "Du bist bereits gebannt";
     }
 
-    const err = await ban.ban(
-        client,
+    const err = await banService.banUser(
         context,
         invokingUser,
         invokingUser,
@@ -61,15 +58,19 @@ export const run: CommandFunction = async (client, message, args, context) => {
     }
 
     const targetTime = new Date(Date.now() + durationInMinutes * 60 * 1000);
-    const durationHumanized =
+    const unbannedAtMessage =
         durationInMinutes === 0
-            ? "manuell durch Moderader"
-            : time(targetTime, TimestampStyles.RelativeTime);
+            ? "Du wirst manuell durch einen Moderader entbannt"
+            : `Du wirst entbannt ${time(
+                  targetTime,
+                  TimestampStyles.RelativeTime,
+              )}`;
 
     if (tilt) {
         const alarmEmote = message.guild?.emojis.cache.find(
             e => e.name === "alarm",
         );
+
         await message.channel.send(
             `${alarmEmote} User ${invokingUser} ist getilted und gönnt sich eine kurze Auszeit bis ${time(
                 targetTime,
@@ -78,12 +79,12 @@ export const run: CommandFunction = async (client, message, args, context) => {
         );
     } else {
         await message.channel.send(
-            `User ${invokingUser} hat sich selber gebannt!\nEntbannen ${durationHumanized}`,
+            `User ${invokingUser} hat sich selber gebannt!\n ${unbannedAtMessage}`,
         );
     }
 
     await message.author.send(`Du hast dich selber von der Coding Shitpost Zentrale gebannt!
-Du wirst entbannt in: ${durationHumanized}
+${unbannedAtMessage}
 Falls du doch vorzeitig entbannt entbannt werden möchtest, kannst du dich im ${context.textChannels.banned} Channel melden.
 
 Haddi & xD™`);

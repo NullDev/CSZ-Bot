@@ -11,7 +11,7 @@ import { publishAocLeaderBoard } from "../commands/aoc.js";
 import { rotate } from "../helper/bannerCarusel.js";
 import { clearWoisLogTask } from "./voiceStateUpdateHandler.js";
 import { leetTask } from "./purge.js";
-import { processBans } from "../commands/modcommands/ban.js";
+import { processBans } from "../service/banService.js";
 
 import * as poll from "../commands/poll.js";
 import * as ehre from "../storage/ehre.js";
