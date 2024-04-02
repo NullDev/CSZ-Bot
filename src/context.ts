@@ -45,16 +45,7 @@ export interface BotContext {
         ehre: {
             emojiNames: Set<string>;
         };
-        quote: {
-            allowedGroupIds: Set<Snowflake>;
-            anonymousChannelIds: Set<Snowflake>;
-            anonymousCategoryIds: Set<Snowflake>;
-            blacklistedChannelIds: Set<Snowflake>;
-            quoteVoteThreshold: number;
-            targetChannelOverrides: Record<Snowflake, Snowflake>;
-            defaultTargetChannelId: Snowflake;
-            emojiName: string;
-        };
+        quote: QuoteConfig;
     };
 
     roles: Record<RemoveSuffix<ConfigRoleId, "_role_id">, Role>;
@@ -108,6 +99,17 @@ export interface BotContext {
             member: GuildMember | APIInteractionGuildMember,
         ) => boolean;
     };
+}
+
+export interface QuoteConfig {
+    allowedGroupIds: Set<Snowflake>;
+    anonymousChannelIds: Set<Snowflake>;
+    anonymousCategoryIds: Set<Snowflake>;
+    blacklistedChannelIds: Set<Snowflake>;
+    quoteVoteThreshold: number;
+    targetChannelOverrides: Record<Snowflake, Snowflake>;
+    defaultTargetChannelId: Snowflake;
+    emojiName: string;
 }
 
 function ensureRole<T extends ConfigRoleId>(
@@ -232,7 +234,8 @@ export async function createBotContext(
                 blacklistedChannelIds: new Set(
                     config.bot_settings.quotes.blacklisted_channel_ids,
                 ),
-                quoteVoteThreshold: config.bot_settings.quotes.quote_threshold ?? 2,
+                quoteVoteThreshold:
+                    config.bot_settings.quotes.quote_threshold ?? 2,
                 targetChannelOverrides:
                     config.bot_settings.quotes.target_channel_overrides,
                 defaultTargetChannelId:

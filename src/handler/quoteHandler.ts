@@ -11,23 +11,16 @@ import {
     type Snowflake,
 } from "discord.js";
 
-import type { BotContext } from "../context.js";
-import { getConfig } from "../utils/configHandler.js";
+import type { BotContext, QuoteConfig } from "../context.js";
 import log from "@log";
 
-const quoteConfig = getConfig().bot_settings.quotes;
-const quoteThreshold = quoteConfig.quote_threshold;
-
-const isSourceChannelAllowed = (channelId: string) =>
-    !quoteConfig.blacklisted_channel_ids.includes(channelId);
-
-const isChannelAnonymous = async (_context: BotContext, channel: Channel) => {
-    const anonChannels = quoteConfig.anonymous_channel_ids;
+const isChannelAnonymous = async (context: BotContext, channel: Channel) => {
+    const anonChannels = context.commandConfig.quote.anonymousChannelIds;
 
     let currentChannel: Channel | null = channel;
     do {
         currentChannel = await currentChannel.fetch();
-        if (anonChannels.includes(currentChannel.id)) {
+        if (anonChannels.has(currentChannel.id)) {
             return true;
         }
 
@@ -40,10 +33,15 @@ const isChannelAnonymous = async (_context: BotContext, channel: Channel) => {
     return false;
 };
 
-const isQuoteEmoji = (emoji: GuildEmoji | ReactionEmoji) =>
-    emoji.name === quoteConfig.emoji_name;
+const isQuoteEmoji = (
+    quoteConfig: QuoteConfig,
+    emoji: GuildEmoji | ReactionEmoji,
+) => {
+    return emoji.name === quoteConfig.emojiName;
+};
 
 const getMessageQuoter = async (
+    quoteConfig: QuoteConfig,
     message: Message,
 ): Promise<readonly GuildMember[]> => {
     const guild = message.guild;
@@ -52,8 +50,9 @@ const getMessageQuoter = async (
     }
     const fetchedMessage = await message.fetch(true);
     const messageReaction = fetchedMessage.reactions.cache.find(r =>
-        isQuoteEmoji(r.emoji),
+        isQuoteEmoji(quoteConfig, r.emoji),
     );
+
     if (messageReaction === undefined) {
         throw new Error(
             "A message has been quoted but the reaction could not be found",
@@ -76,8 +75,13 @@ const hasMessageEnoughQuotes = (
     context: BotContext,
     messageQuoter: readonly GuildMember[],
 ): boolean => {
-    const weightedVotes = messageQuoter.map(q => context.roleGuard.isTrusted(q) ? 2 : 1);
-    return Math.sumExact(weightedVotes) >= quoteThreshold;
+    const weightedVotes = messageQuoter.map(q =>
+        context.roleGuard.isTrusted(q) ? 2 : 1,
+    );
+    return (
+        Math.sumExact(weightedVotes) >=
+        context.commandConfig.quote.quoteVoteThreshold
+    );
 };
 
 const isQuoterQuotingHimself = (
@@ -88,9 +92,11 @@ const isQuoterQuotingHimself = (
 const generateRandomColor = () => Math.floor(Math.random() * 16777215);
 
 const getTargetChannel = (sourceChannelId: Snowflake, context: BotContext) => {
+    const { targetChannelOverrides, defaultTargetChannelId } =
+        context.commandConfig.quote;
+
     const targetChannelId =
-        quoteConfig.target_channel_overrides[sourceChannelId] ??
-        quoteConfig.default_target_channel_id;
+        targetChannelOverrides[sourceChannelId] ?? defaultTargetChannelId;
 
     return {
         id: targetChannelId,
@@ -191,8 +197,10 @@ export default {
             return;
         }
 
+        const quoteConfig = context.commandConfig.quote;
+
         if (
-            !isQuoteEmoji(event.emoji) ||
+            !isQuoteEmoji(quoteConfig, event.emoji) ||
             event.message.guildId === null ||
             invoker.id === context.client.user.id
         ) {
@@ -212,7 +220,10 @@ export default {
             : undefined;
         const quotedUser = quotedMessage.member;
         const referencedUser = referencedMessage?.member;
-        const quotingMembers = await getMessageQuoter(quotedMessage);
+        const quotingMembers = await getMessageQuoter(
+            quoteConfig,
+            quotedMessage,
+        );
         const quotingMembersAllowed = quotingMembers.filter(
             context.roleGuard.isNerd,
         );
@@ -230,11 +241,10 @@ export default {
 
         if (
             !context.roleGuard.isNerd(quoter) ||
-            !isSourceChannelAllowed(quotedMessage.channelId) ||
+            quoteConfig.blacklistedChannelIds.has(quotedMessage.channelId) ||
             isMessageAlreadyQuoted(quotingMembers, context)
         ) {
             await event.users.remove(quoter);
-
             return;
         }
 
