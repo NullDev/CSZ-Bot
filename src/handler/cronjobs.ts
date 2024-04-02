@@ -1,4 +1,4 @@
-import cron from "croner";
+import cron, { type CronOptions } from "croner";
 
 import type { BotContext } from "../context.js";
 import { checkBirthdays } from "./bdayHandler.js";
@@ -16,20 +16,15 @@ import { processBans } from "../commands/modcommands/ban.js";
 import * as poll from "../commands/poll.js";
 import * as ehre from "../storage/ehre.js";
 
-export const scheduleCronjobs = async (context: BotContext) => {
-    const schedule = (
-        pattern: string,
-        callback: Parameters<typeof cron>[1],
-    ) => {
-        cron(
-            pattern,
-            {
-                timezone: "Europe/Berlin",
-            },
-            callback,
-        );
-    };
+const options = {
+    timezone: "Europe/Berlin",
+} satisfies CronOptions;
 
+const schedule = (pattern: string, callback: Parameters<typeof cron>[1]) => {
+    cron(pattern, options, callback);
+};
+
+export const scheduleCronjobs = async (context: BotContext) => {
     schedule("1 0 * * *", () => checkBirthdays(context));
     schedule("0 20 1-25 12 *", () => publishAocLeaderBoard(context));
     schedule("0 0 * * 0", () => rerollNicknames(context));
