@@ -9,6 +9,8 @@ import {
     type TextBasedChannel,
     type User,
     type Snowflake,
+    time,
+    TimestampStyles,
 } from "discord.js";
 import moment from "moment";
 
@@ -30,9 +32,10 @@ const createWoisMessage = async (
     channel: TextBasedChannel,
 ): Promise<Message> => {
     const woisMessage = await channel.send(
-        `${woisVoteConstant}\nWois um ${moment(date).format(
-            "HH:mm",
-        )} Uhr. Grund: ${reason}. Bock?`,
+        `${woisVoteConstant}\nWois in ${time(
+            date,
+            TimestampStyles.ShortDateTime,
+        )}. Grund: ${reason}. Bock?`,
     );
     await woisMessage.react("👍");
     await woisMessage.react("👎");

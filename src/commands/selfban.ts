@@ -1,5 +1,4 @@
 import { time, TimestampStyles } from "discord.js";
-import moment from "moment";
 
 import type { CommandFunction } from "../types.js";
 import * as banService from "../service/banService.js";
@@ -25,9 +24,7 @@ export const run: CommandFunction = async (client, message, args, context) => {
         return "Ach komm, für wie dumm hälst du mich?";
     }
 
-    const momentDuration = moment.duration(durationInMinutes, "minutes");
-
-    if (durationInHours < 1.0 / 60.0 || !momentDuration.isValid()) {
+    if (durationInHours < 1.0 / 60.0) {
         return "Bitte eine gültige Dauer Δₜ in Stunden angeben; Δₜ ∈ [0.0167, ∞) ∩ ℝ";
     }
 

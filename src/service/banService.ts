@@ -1,8 +1,8 @@
-import moment from "moment";
 import type { GuildMember, User } from "discord.js";
 import type { BotContext } from "../context.js";
 
 import * as ban from "../storage/ban.js";
+import { formatDuration } from "../utils/dateUtils.js";
 
 import log from "@log";
 
@@ -79,7 +79,7 @@ export async function banUser(
             : new Date(Date.now() + duration * 60 * 60 * 1000);
 
     const humanReadableDuration = duration
-        ? moment.duration(duration, "hours").locale("de").humanize()
+        ? formatDuration(duration / 60 / 60)
         : undefined;
 
     const banReasonChannel = member.guild.channels.resolve(
