@@ -18,52 +18,86 @@ export function formatDateTime(dateTime: Date) {
     return dateTimeFormatter.format(dateTime);
 }
 
-const durationFormatters = {
-    [1000 * 60 * 60 * 24 * 365]: Intl.NumberFormat("de-DE", {
-        style: "unit",
-        unit: "year",
-    }),
-    [1000 * 60 * 60 * 24 * 30]: Intl.NumberFormat("de-DE", {
-        style: "unit",
-        unit: "month",
-    }),
-    [1000 * 60 * 60 * 24 * 7]: Intl.NumberFormat("de-DE", {
-        style: "unit",
-        unit: "week",
-    }),
-    [1000 * 60 * 60 * 24]: Intl.NumberFormat("de-DE", {
-        style: "unit",
-        unit: "day",
-    }),
-    [1000 * 60 * 60]: Intl.NumberFormat("de-DE", {
-        style: "unit",
-        unit: "hour",
-    }),
-    [1000 * 60]: Intl.NumberFormat("de-DE", {
-        style: "unit",
-        unit: "minute",
-    }),
-    [1000]: Intl.NumberFormat("de-DE", {
-        style: "unit",
-        unit: "second",
-    }),
-    [0]: Intl.NumberFormat("de-DE", {
-        style: "unit",
-        unit: "millisecond",
-    }),
-};
+/**
+ *  Values taken from:
+ * https://tc39.es/proposal-unified-intl-numberformat/section6/locales-currencies-tz_proposed_out.html#sec-issanctionedsimpleunitidentifier
+ */
+type Unit =
+    | "year"
+    | "month"
+    | "week"
+    | "day"
+    | "hour"
+    | "minute"
+    | "second"
+    | "millisecond";
 
-const defaultDurationFormatter = durationFormatters[1000];
+const durationFormatters = {
+    year: {
+        threshold: 1000 * 60 * 60 * 24 * 365,
+        formatter: new Intl.NumberFormat("de-DE", {
+            style: "unit",
+            unit: "year",
+        }),
+    },
+    month: {
+        threshold: 1000 * 60 * 60 * 24 * 30,
+        formatter: new Intl.NumberFormat("de-DE", {
+            style: "unit",
+            unit: "month",
+        }),
+    },
+    week: {
+        threshold: 1000 * 60 * 60 * 24 * 7,
+        formatter: new Intl.NumberFormat("de-DE", {
+            style: "unit",
+            unit: "week",
+        }),
+    },
+    day: {
+        threshold: 1000 * 60 * 60 * 24,
+        formatter: new Intl.NumberFormat("de-DE", {
+            style: "unit",
+            unit: "day",
+        }),
+    },
+    hour: {
+        threshold: 1000 * 60 * 60,
+        formatter: new Intl.NumberFormat("de-DE", {
+            style: "unit",
+            unit: "hour",
+        }),
+    },
+    minute: {
+        threshold: 1000 * 60,
+        formatter: new Intl.NumberFormat("de-DE", {
+            style: "unit",
+            unit: "minute",
+        }),
+    },
+    second: {
+        threshold: 1000,
+        formatter: new Intl.NumberFormat("de-DE", {
+            style: "unit",
+            unit: "second",
+        }),
+    },
+    millisecond: {
+        threshold: 1,
+        formatter: new Intl.NumberFormat("de-DE", {
+            style: "unit",
+            unit: "millisecond",
+        }),
+    },
+} satisfies Record<Unit, { threshold: number; formatter: Intl.NumberFormat }>;
 
 /** Replacement for moment.humanize() */
 export function formatDuration(seconds: number) {
-    for (const [thresholdStr, formatter] of Object.entries(
-        durationFormatters,
-    )) {
-        const threshold = Number(thresholdStr);
-        if (seconds >= threshold) {
+    const ms = seconds * 1000;
+    for (const { threshold, formatter } of Object.values(durationFormatters)) {
+        if (ms >= threshold) {
             return formatter.format(seconds / threshold);
         }
     }
-    return defaultDurationFormatter.format(seconds);
+    return durationFormatters.second.formatter.format(seconds);
 }
