@@ -21,35 +21,35 @@ export function formatDateTime(dateTime: Date) {
 const durationFormatters = {
     [1000 * 60 * 60 * 24 * 365]: Intl.NumberFormat("de-DE", {
         style: "unit",
-        unit: "duration-year",
+        unit: "year",
     }),
     [1000 * 60 * 60 * 24 * 30]: Intl.NumberFormat("de-DE", {
         style: "unit",
-        unit: "duration-month",
+        unit: "month",
     }),
     [1000 * 60 * 60 * 24 * 7]: Intl.NumberFormat("de-DE", {
         style: "unit",
-        unit: "duration-week",
+        unit: "week",
     }),
     [1000 * 60 * 60 * 24]: Intl.NumberFormat("de-DE", {
         style: "unit",
-        unit: "duration-day",
+        unit: "day",
     }),
     [1000 * 60 * 60]: Intl.NumberFormat("de-DE", {
         style: "unit",
-        unit: "duration-hour",
+        unit: "hour",
     }),
     [1000 * 60]: Intl.NumberFormat("de-DE", {
         style: "unit",
-        unit: "duration-minute",
+        unit: "minute",
     }),
     [1000]: Intl.NumberFormat("de-DE", {
         style: "unit",
-        unit: "duration-second",
+        unit: "second",
     }),
     [0]: Intl.NumberFormat("de-DE", {
         style: "unit",
-        unit: "duration-millisecond",
+        unit: "millisecond",
     }),
 };
 
