@@ -75,13 +75,8 @@ const hasMessageEnoughQuotes = (
     context: BotContext,
     messageQuoter: readonly GuildMember[],
 ): boolean => {
-    return (
-        messageQuoter.reduce(
-            (prev, curr) =>
-                context.roleGuard.isTrusted(curr) ? prev + 2 : prev + 1,
-            0,
-        ) >= quoteThreshold
-    );
+    const weightedVotes = messageQuoter.map(q => context.roleGuard.isTrusted(q) ? 2 : 1);
+    return Math.sumExact(weightedVotes) >= quoteThreshold;
 };
 
 const isQuoterQuotingHimself = (
