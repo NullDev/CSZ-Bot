@@ -154,7 +154,7 @@ export async function ban(
     }
 
     const existingBan = await banService.findExisting(member.user);
-    if (existingBan !== null) {
+    if (existingBan !== undefined) {
         if (member.roles.cache.some(r => r.id === context.roles.banned.id)) {
             return "Dieser User ist bereits gebannt du kek.";
         }
