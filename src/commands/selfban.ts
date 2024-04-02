@@ -21,7 +21,7 @@ export const run: CommandFunction = async (client, message, args, context) => {
     const durationInHours = durationInMinutes / 60;
 
     if (durationInMinutes < 0) {
-        return "Ach komm, für wie dumm hälst du mich?";
+        return "Ach komm, für wie dumm hältst du mich?";
     }
 
     if (durationInHours < 1.0 / 60.0) {
@@ -82,7 +82,7 @@ export const run: CommandFunction = async (client, message, args, context) => {
 
     await message.author.send(`Du hast dich selber von der Coding Shitpost Zentrale gebannt!
 ${unbannedAtMessage}
-Falls du doch vorzeitig entbannt entbannt werden möchtest, kannst du dich im ${context.textChannels.banned} Channel melden.
+Falls du doch vorzeitig entbannt werden möchtest, kannst du dich im ${context.textChannels.banned} Channel melden.
 
 Haddi & xD™`);
 };
