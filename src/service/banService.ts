@@ -71,7 +71,9 @@ export async function banUser(
     }
 
     const result = await assignBannedRoles(context, member);
-    if (!result) return "Fehler beim Bannen. Bitte kontaktiere einen Admin.";
+    if (!result) {
+        return "Fehler beim Bannen. Bitte kontaktiere einen Admin.";
+    }
 
     const unbanAt =
         durationInHours === null
@@ -157,6 +159,7 @@ async function assignBannedRoles(
     if (!defaultRole || !bannedRole) {
         return false;
     }
+
     const currentRoles = [...user.roles.cache.map(r => r.id)];
     let newRoles = [...currentRoles, bannedRole.id].filter(
         r => r !== context.roles.default.id,
@@ -190,6 +193,7 @@ async function restoreRoles(
     if (!defaultRole || !bannedRole) {
         return false;
     }
+
     const currentRoles = [...user.roles.cache.map(r => r.id)];
     let newRoles = [...currentRoles, defaultRole.id].filter(
         r => r !== context.roles.banned.id,
@@ -212,7 +216,6 @@ async function restoreRoles(
     }
 
     await user.edit({ roles: newRoles });
-
     return true;
 }
 
