@@ -1,4 +1,4 @@
-import type { GuildMember, User } from "discord.js";
+import { time, type GuildMember, type User, TimestampStyles } from "discord.js";
 import type { BotContext } from "../context.js";
 
 import * as ban from "../storage/ban.js";
@@ -47,10 +47,10 @@ export async function banUser(
     banInvoker: GuildMember | User,
     reason: string,
     isSelfBan: boolean,
-    duration: number | null,
+    durationInHours: number | null,
 ) {
     log.debug(
-        `Banning ${member.id} by ${banInvoker.id} because of ${reason} for ${duration}.`,
+        `Banning ${member.id} by ${banInvoker.id} because of ${reason} for ${durationInHours}.`,
     );
 
     // No Shadow ban :(
@@ -74,12 +74,12 @@ export async function banUser(
     if (!result) return "Fehler beim Bannen. Bitte kontaktiere einen Admin.";
 
     const unbanAt =
-        duration === null
+        durationInHours === null
             ? null // infinite ban
-            : new Date(Date.now() + duration * 60 * 60 * 1000);
+            : new Date(Date.now() + durationInHours * 60 * 60 * 1000);
 
-    const humanReadableDuration = duration
-        ? formatDuration(duration / 60 / 60)
+    const humanReadableDuration = durationInHours
+        ? formatDuration(durationInHours / 60 / 60)
         : undefined;
 
     const banReasonChannel = member.guild.channels.resolve(
@@ -103,11 +103,31 @@ export async function banUser(
     await ban.persistOrUpdate(member, unbanAt, isSelfBan, reason);
 
     const bannedChannel = context.textChannels.banned;
+    if (isSelfBan) {
+        const unbannedAtMessage =
+            durationInHours === 0
+                ? "Du wirst manuell durch einen Moderader entbannt"
+                : `Du wirst entbannt ${time(
+                      Date.now() + (durationInHours ?? 0) * 60 * 60 * 1000,
+                      TimestampStyles.RelativeTime,
+                  )}`;
 
-    await member.send(`Du wurdest von der Coding Shitpost Zentrale gebannt!
-${!reason ? "Es wurde kein Banngrund angegeben." : `Banngrund: ${reason}`}
-Falls du Fragen zu dem Bann hast, kannst du dich in ${bannedChannel} ausheulen.
-Lg & xD™`);
+        await member.send(`Du hast dich selber von der Coding Shitpost Zentrale gebannt!
+${unbannedAtMessage}
+Falls du doch vorzeitig entbannt werden möchtest, kannst du dich im ${bannedChannel} Channel melden.
+
+Haddi & xD™
+`);
+    } else {
+        await member.send(`Du wurdest von der Coding Shitpost Zentrale gebannt!
+        ${
+            !reason
+                ? "Es wurde kein Banngrund angegeben."
+                : `Banngrund: ${reason}`
+        }
+        Falls du Fragen zu dem Bann hast, kannst du dich in ${bannedChannel} ausheulen.
+        Lg & xD™`);
+    }
 }
 
 export async function unBanUser(

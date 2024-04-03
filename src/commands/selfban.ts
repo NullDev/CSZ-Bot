@@ -54,20 +54,12 @@ export const run: CommandFunction = async (client, message, args, context) => {
         return err;
     }
 
-    const targetTime = new Date(Date.now() + durationInMinutes * 60 * 1000);
-    const unbannedAtMessage =
-        durationInMinutes === 0
-            ? "Du wirst manuell durch einen Moderader entbannt"
-            : `Du wirst entbannt ${time(
-                  targetTime,
-                  TimestampStyles.RelativeTime,
-              )}`;
-
     if (tilt) {
         const alarmEmote = message.guild?.emojis.cache.find(
             e => e.name === "alarm",
         );
 
+        const targetTime = new Date(Date.now() + durationInMinutes * 60 * 1000);
         await message.channel.send(
             `${alarmEmote} User ${invokingUser} ist getilted und gönnt sich eine kurze Auszeit bis ${time(
                 targetTime,
@@ -75,16 +67,17 @@ export const run: CommandFunction = async (client, message, args, context) => {
             )}. ${alarmEmote}`,
         );
     } else {
+        const unbannedAtMessage =
+            durationInHours === 0
+                ? `${invokingUser} wird manuell durch einen Moderader entbannt`
+                : `${invokingUser} wird entbannt ${time(
+                      Date.now() + (durationInHours ?? 0) * 60 * 60 * 1000,
+                      TimestampStyles.RelativeTime,
+                  )}`;
         await message.channel.send(
             `User ${invokingUser} hat sich selber gebannt!\n ${unbannedAtMessage}`,
         );
     }
-
-    await message.author.send(`Du hast dich selber von der Coding Shitpost Zentrale gebannt!
-${unbannedAtMessage}
-Falls du doch vorzeitig entbannt werden möchtest, kannst du dich im ${context.textChannels.banned} Channel melden.
-
-Haddi & xD™`);
 };
 
 export const description =
