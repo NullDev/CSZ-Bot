@@ -1,0 +1,17 @@
+# EXAMPLE USAGE:
+#
+#   Refer for explanation to following link:
+#   https://github.com/evilmartians/lefthook/blob/master/docs/configuration.md
+#
+pre-push:
+  commands:
+    lint:
+      tags: frontend security
+      run: bun run lint
+
+pre-commit:
+  parallel: true
+  commands:
+    format:
+      glob: "*.{js,ts}"
+      run: bun run format
