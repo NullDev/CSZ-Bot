@@ -91,10 +91,7 @@ export async function banUser(
         const unbannedAtMessage =
             durationInHours === 0 || durationInHours === null
                 ? "Du wirst manuell durch einen Moderader entbannt"
-                : `Du wirst entbannt ${time(
-                      Date.now() + durationInHours * 60 * 60 * 1000,
-                      TimestampStyles.RelativeTime,
-                  )}`;
+                : `Du wirst entbannt in: ${time(unbanAt, TimestampStyles.RelativeTime)}`;
 
         await member.send(`Du hast dich selber von der Coding Shitpost Zentrale gebannt!
 ${unbannedAtMessage}
