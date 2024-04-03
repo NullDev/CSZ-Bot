@@ -89,9 +89,12 @@ export async function banUser(
     const nagChannel = context.textChannels.banned;
     if (isSelfBan) {
         const unbannedAtMessage =
-            durationInHours === 0 || durationInHours === null
+            unbanAt === null
                 ? "Du wirst manuell durch einen Moderader entbannt"
-                : `Du wirst entbannt in: ${time(unbanAt, TimestampStyles.RelativeTime)}`;
+                : `Du wirst entbannt ${time(
+                      unbanAt,
+                      TimestampStyles.RelativeTime,
+                  )}`;
 
         await member.send(`Du hast dich selber von der Coding Shitpost Zentrale gebannt!
 ${unbannedAtMessage}
