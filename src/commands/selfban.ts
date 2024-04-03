@@ -54,12 +54,13 @@ export const run: CommandFunction = async (client, message, args, context) => {
         return err;
     }
 
+    const targetTime = new Date(Date.now() + durationInMinutes * 60 * 1000);
+
     if (tilt) {
         const alarmEmote = message.guild?.emojis.cache.find(
             e => e.name === "alarm",
         );
 
-        const targetTime = new Date(Date.now() + durationInMinutes * 60 * 1000);
         await message.channel.send(
             `${alarmEmote} User ${invokingUser} ist getilted und gönnt sich eine kurze Auszeit bis ${time(
                 targetTime,
@@ -69,11 +70,12 @@ export const run: CommandFunction = async (client, message, args, context) => {
     } else {
         const unbannedAtMessage =
             durationInHours === 0
-                ? `${invokingUser} wird manuell durch einen Moderader entbannt`
+                ? `${invokingUser} wird manuell durch einen Moderader entbannt.`
                 : `${invokingUser} wird entbannt ${time(
-                      Date.now() + (durationInHours ?? 0) * 60 * 60 * 1000,
+                      targetTime,
                       TimestampStyles.RelativeTime,
-                  )}`;
+                  )}.`;
+
         await message.channel.send(
             `User ${invokingUser} hat sich selber gebannt!\n ${unbannedAtMessage}`,
         );
