@@ -21,6 +21,7 @@
             pkg-config
             cairo
             pango
+            biome
           ] ++ lib.optionals stdenv.isDarwin (with darwin.apple_sdk.frameworks; [
             CoreText
           ]);

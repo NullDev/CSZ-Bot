@@ -89,10 +89,10 @@ export async function banUser(
     const nagChannel = context.textChannels.banned;
     if (isSelfBan) {
         const unbannedAtMessage =
-            durationInHours === 0 || durationInHours === null
+            unbanAt === null
                 ? "Du wirst manuell durch einen Moderader entbannt"
                 : `Du wirst entbannt ${time(
-                      Date.now() + durationInHours * 60 * 60 * 1000,
+                      unbanAt,
                       TimestampStyles.RelativeTime,
                   )}`;
 
