@@ -94,6 +94,7 @@ bun start
 ```
 
 ### Housekeeping
+Formatieren und Linten passiert durch lefthook automatisch beim Committen/Pushen. Manuell kannst du das machen:
 - Formatieren: `bun format`
 - Linten: `bun lint`
 - Fixbare Linter-Fehler automatisch fixen: `bun lint:fix`
