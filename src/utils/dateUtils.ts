@@ -96,8 +96,8 @@ export function formatDuration(seconds: number) {
     const ms = seconds * 1000;
     for (const { threshold, formatter } of Object.values(durationFormatters)) {
         if (ms >= threshold) {
-            return formatter.format(seconds / threshold);
+            return formatter.format(ms / threshold);
         }
     }
-    return durationFormatters.second.formatter.format(seconds);
+    return durationFormatters.second.formatter.format(ms);
 }
