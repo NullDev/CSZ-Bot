@@ -41,6 +41,8 @@ export async function connectToDb(databasePath: string) {
 
     log.info("Connected to database.");
 
+    nativeDb.query("PRAGMA foreign_keys = ON");
+
     await runMigrationsIfNeeded(db);
 
     kysely = db;
