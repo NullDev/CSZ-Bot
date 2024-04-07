@@ -11,3 +11,13 @@ pre-commit:
     format:
       glob: "*.{js,ts}"
       run: bun run format
+
+skip_output:
+  - meta
+  - summary
+  - empty_summary
+  - success
+  - execution
+  - execution_out
+  - execution_info
+  - skips
