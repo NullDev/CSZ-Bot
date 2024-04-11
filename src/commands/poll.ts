@@ -1,4 +1,5 @@
-import parseOptions from "minimist";
+import { parseArgs, type ParseArgsConfig } from "node:util";
+
 import {
     type APIEmbed,
     type APIEmbedField,
@@ -107,27 +108,49 @@ export const createOptionField = (
     return { name: firstTextBlock, value: secondTextBlock, inline: false };
 };
 
+const argsConfig = {
+    options: {
+        channel: {
+            type: "boolean",
+            short: "c",
+            default: false,
+            multiple: false,
+        },
+        extendable: {
+            type: "boolean",
+            short: "e",
+            default: false,
+            multiple: false,
+        },
+        straw: {
+            type: "boolean",
+            short: "s",
+            default: false,
+            multiple: false,
+        },
+        delayed: {
+            type: "string",
+            short: "d",
+            default: false,
+            multiple: false,
+        },
+    },
+    allowPositionals: true,
+} satisfies ParseArgsConfig;
+
 /**
  * Creates a new poll (multiple answers) or straw poll (single selection)
  */
 export const run: CommandFunction = async (_client, message, args, context) => {
-    const options = parseOptions(args, {
-        boolean: ["channel", "extendable", "straw"],
-        string: ["delayed"],
-        alias: {
-            channel: "c",
-            extendable: "e",
-            straw: "s",
-            delayed: "d",
-        },
-    });
+    const { values: options, positionals } = parseArgs({ ...argsConfig, args });
 
-    const parsedArgs = options._;
     const delayTime = Number(options.delayed);
 
-    if (!parsedArgs.length) return "Bruder da ist keine Umfrage :c";
+    if (positionals.length === 0) {
+        return "Bruder da ist keine Umfrage :c";
+    }
 
-    const pollArray = parsedArgs
+    const pollArray = positionals
         .join(" ")
         .split(";")
         .map(e => e.trim())
@@ -145,17 +168,21 @@ export const run: CommandFunction = async (_client, message, args, context) => {
         pollOptionsTextLength += pollOption.length;
     }
 
-    if (!pollOptions.length)
+    if (!pollOptions.length) {
         return "Bruder da sind keine Antwortmöglichkeiten :c";
+    }
 
-    if (pollOptions.length < 2 && !isExtendable)
+    if (pollOptions.length < 2 && !isExtendable) {
         return "Bruder du musst schon mehr als eine Antwortmöglichkeit geben 🙄";
+    }
 
-    if (pollOptions.length > OPTION_LIMIT)
+    if (pollOptions.length > OPTION_LIMIT) {
         return `Bitte gib nicht mehr als ${OPTION_LIMIT} Antwortmöglichkeiten an!`;
+    }
 
-    if (pollOptions.some(value => value.length > POLL_OPTION_MAX_LENGTH))
+    if (pollOptions.some(value => value.length > POLL_OPTION_MAX_LENGTH)) {
         return `Bruder mindestens eine Antwortmöglichkeit ist länger als ${POLL_OPTION_MAX_LENGTH} Zeichen!`;
+    }
 
     const fields = pollOptions.map((o, i) => createOptionField(o, i));
 

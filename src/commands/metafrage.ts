@@ -1,18 +1,23 @@
-import parseOptions from "minimist";
+import { parseArgs, type ParseArgsConfig } from "node:util";
 
 import type { CommandFunction } from "../types.js";
+
+const argsConfig = {
+    options: {
+        english: {
+            type: "boolean",
+            short: "c",
+            default: false,
+            multiple: false,
+        },
+    },
+} satisfies ParseArgsConfig;
 
 /**
  * Sends instructions on how to ask better questions
  */
 export const run: CommandFunction = async (_client, message, args) => {
-    // parse options
-    const options = parseOptions(args, {
-        boolean: ["english"],
-        alias: {
-            english: "e",
-        },
-    });
+    const { values: options } = parseArgs({ ...argsConfig, args });
 
     if (args.length === 0 || (args.length === 1 && options.english)) {
         // insult collections, feel free to expand
