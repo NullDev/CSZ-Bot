@@ -1,26 +1,31 @@
-import parseOptions from "minimist";
+import { parseArgs, type ParseArgsConfig } from "node:util";
 import { cleanContent } from "discord.js";
 
 import type { CommandFunction } from "../types.js";
+
+const argsConfig = {
+    options: {
+        channel: {
+            type: "boolean",
+            short: "c",
+            default: false,
+            multiple: false,
+        },
+    },
+    allowPositionals: true,
+} satisfies ParseArgsConfig;
 
 /**
  * Creates a new poll (vote; yes/no)
  */
 export const run: CommandFunction = async (_client, message, args, context) => {
-    const options = parseOptions(args, {
-        boolean: ["channel"],
-        alias: {
-            channel: "c",
-        },
-    });
+    const { values: options, positionals } = parseArgs({ ...argsConfig, args });
 
-    const parsedArgs = options._;
-
-    if (!parsedArgs.length) {
+    if (positionals.length === 0) {
         return "Bruder da ist keine Frage :c";
     }
 
-    const question = parsedArgs.join(" ");
+    const question = positionals.join(" ");
     if (question.length > 4096) {
         return "Bruder die Frage ist ja länger als mein Schwanz :c";
     }
