@@ -131,7 +131,6 @@ const argsConfig = {
         delayed: {
             type: "string",
             short: "d",
-            default: false,
             multiple: false,
         },
     },
@@ -143,8 +142,6 @@ const argsConfig = {
  */
 export const run: CommandFunction = async (_client, message, args, context) => {
     const { values: options, positionals } = parseArgs({ ...argsConfig, args });
-
-    const delayTime = Number(options.delayed);
 
     if (positionals.length === 0) {
         return "Bruder da ist keine Umfrage :c";
@@ -219,9 +216,12 @@ export const run: CommandFunction = async (_client, message, args, context) => {
         });
         embed.color = 0x2ecc71;
     }
+    let finishTime = undefined;
 
-    const finishTime = new Date(new Date().valueOf() + delayTime * 60 * 1000);
     if (options.delayed) {
+        const delayTime = Number(options.delayed);
+        finishTime = new Date(Date.now() + delayTime * 60 * 1000);
+
         if (Number.isNaN(delayTime) || delayTime <= 0) {
             return "Bruder keine ungültigen Zeiten angeben 🙄";
         }
@@ -264,7 +264,7 @@ export const run: CommandFunction = async (_client, message, args, context) => {
     await message.delete();
     await Promise.all(pollOptions.map((_e, i) => pollMessage.react(EMOJI[i])));
 
-    if (options.delayed) {
+    if (finishTime) {
         const reactionMap: string[] = [];
         const reactions: string[][] = [];
 
