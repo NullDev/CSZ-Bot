@@ -48,6 +48,7 @@ export type ConfigRoleId =
     | "default_role_id"
     | "gruendervaeter_banned_role_id"
     | "gruendervaeter_role_id"
+    | "role_deny_role_id"
     | "shame_role_id"
     | "trusted_banned_role_id"
     | "trusted_role_id"

@@ -41,6 +41,7 @@
         "bday_role_id": "",
         "woisgang_role_id": "",
         "winner_role_id": "",
+        "role_deny_role_id": "",
 
         "bot_deny_role_id": "",
         "bot_spam_channel_id": "",

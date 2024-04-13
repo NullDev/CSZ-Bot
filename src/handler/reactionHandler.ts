@@ -56,6 +56,9 @@ export default {
                 if (role && reactionWasRemoved) {
                     member.roles.remove(role.id).catch(log.error);
                 } else {
+                    // Users with role deny ID shall not assign themselves roles. Don't care about removing them.
+                    if (context.roleGuard.hasRoleDenyRole(member)) return;
+
                     member.roles.add(role.id).catch(log.error);
                 }
             }

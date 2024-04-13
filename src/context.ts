@@ -95,6 +95,9 @@ export interface BotContext {
         hasBotDenyRole: (
             member: GuildMember | APIInteractionGuildMember,
         ) => boolean;
+        hasRoleDenyRole: (
+            member: GuildMember | APIInteractionGuildMember,
+        ) => boolean;
         isRejoiner: (
             member: GuildMember | APIInteractionGuildMember,
         ) => boolean;
@@ -255,6 +258,7 @@ export async function createBotContext(
                 "gruendervaeter_banned_role_id",
             ),
             gruendervaeter: ensureRole(config, guild, "gruendervaeter_role_id"),
+            role_deny: ensureRole(config, guild, "role_deny_role_id"),
             shame: ensureRole(config, guild, "shame_role_id"),
             trusted_banned: ensureRole(config, guild, "trusted_banned_role_id"),
             trusted: ensureRole(config, guild, "trusted_role_id"),
@@ -306,6 +310,8 @@ export async function createBotContext(
                 hasRoleById(member, config.ids.emotifizierer_role_id),
             hasBotDenyRole: member =>
                 hasRoleById(member, config.ids.bot_deny_role_id),
+            hasRoleDenyRole: member =>
+                hasRoleById(member, config.ids.role_deny_role_id),
             isRejoiner: member => hasRoleById(member, config.ids.shame_role_id),
         },
     };
