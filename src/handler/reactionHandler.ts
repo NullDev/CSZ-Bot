@@ -58,7 +58,11 @@ export default {
                 } else {
                     // Users with role deny ID shall not assign themselves roles. Don't care about removing them.
                     if (context.roleGuard.hasRoleDenyRole(member)) {
-                        await message.reactions.cache.users.remove(member.id);
+                        const reaction = await message.reactions.cache
+                            .get("✅");
+                        if(reaction === undefined) return;
+
+                        await reaction.users.remove(member.id);
                         return;
                     }
 
