@@ -1,0 +1,21 @@
+name: Config Fixup
+
+on:
+  workflow_dispatch:
+
+jobs:
+
+  fixup:
+    name: Config Fixup
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Deploy CSZ Bot
+      uses: appleboy/ssh-action@029f5b4aeeeb58fdfe1410a5d17f967dacf36262
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        key: ${{ secrets.SSH_KEY }}
+        port: ${{ secrets.SSH_PORT }}
+        script: |
+          sed -i '/"ids": {/a         "role_deny_role_id": "676833310911102976",' /home/csc/config.json
