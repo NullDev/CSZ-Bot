@@ -381,6 +381,6 @@ export class NicknameButtonHandler implements UserInteraction {
         const mappedVotes = votes
             .filter(vote => vote.vote === voteType)
             .map(getWeightOfUserVote);
-        return Math.sumExact(mappedVotes) >= this.threshold;
+        return Math.sumPrecise(mappedVotes) >= this.threshold;
     }
 }

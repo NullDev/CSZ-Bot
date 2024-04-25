@@ -79,7 +79,7 @@ const hasMessageEnoughQuotes = (
         context.roleGuard.isTrusted(q) ? 2 : 1,
     );
     return (
-        Math.sumExact(weightedVotes) >=
+        Math.sumPrecise(weightedVotes) >=
         context.commandConfig.quote.quoteVoteThreshold
     );
 };

@@ -372,7 +372,7 @@ export const processPolls = async (context: BotContext) => {
                 icon_url: embedAuthor.iconURL,
             },
             footer: {
-                text: `Gesamtabstimmungen: ${Math.sumExact(
+                text: `Gesamtabstimmungen: ${Math.sumPrecise(
                     delayedPoll.reactions.map(x => x.length),
                 )}`,
             },
