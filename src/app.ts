@@ -1,5 +1,6 @@
 import * as Discord from "discord.js";
 import { GatewayIntentBits, Partials, type Client } from "discord.js";
+import * as sentry from "@sentry/node";
 
 import type { ReactionHandler } from "./types.js";
 
@@ -51,6 +52,12 @@ let botContext: BotContext;
 
 log.info("Bot starting up...");
 const config = conf.getConfig();
+
+if (config.sentry?.dsn) {
+    sentry.init({
+        dsn: config.sentry?.dsn,
+    });
+}
 
 if (!config.auth.bot_token) {
     log.error(

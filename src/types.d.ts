@@ -78,6 +78,10 @@ export interface Config {
         client_id: string;
     };
 
+    sentry?: {
+        dsn?: string;
+    };
+
     bot_settings: {
         status: string;
         prefix: {
