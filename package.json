@@ -34,7 +34,6 @@
     "discord.js": "^14.15.2",
     "get-audio-duration": "^4.0.1",
     "graphviz-wasm": "^3.0.2",
-    "instagram-url-direct": "^1.0.15",
     "jsdom": "^24.0.0",
     "kysely": "^0.27.3",
     "kysely-bun-sqlite": "^0.3.2",
