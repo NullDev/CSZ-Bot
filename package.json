@@ -28,7 +28,7 @@
     "@discordjs/voice": "^0.17.0",
     "@napi-rs/canvas": "^0.1.52",
     "@resvg/resvg-js": "^2.6.2",
-    "@sentry/bun": "^8.0.0",
+    "@sentry/bun": "^8.2.0",
     "chrono-node": "^2.7.5",
     "croner": "^8.0.2",
     "discord.js": "^14.15.2",
