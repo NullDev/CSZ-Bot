@@ -9,7 +9,6 @@ FROM oven/bun:latest
     WORKDIR /app
     RUN apt-get update -yqqq \
         && apt-get install -yqqq \
-            ffmpeg \
             fonts-noto-color-emoji \
             fontconfig \
             fonts-liberation \
