@@ -1,10 +1,15 @@
 import {
-    type CommandInteraction,
-    type PermissionsString,
     SlashCommandBuilder,
     SlashCommandUserOption,
+    ChatInputCommandInteraction,
 } from "discord.js";
-import type { Message, Client } from "discord.js";
+import type {
+    Message,
+    Client,
+    CommandInteraction,
+    PermissionsString,
+    Interaction,
+} from "discord.js";
 
 import type {
     ApplicationCommand,
@@ -36,6 +41,11 @@ export class UnbanCommand implements ApplicationCommand, MessageCommand {
         _client: Client<boolean>,
         context: BotContext,
     ): Promise<CommandResult> {
+        if (!(command instanceof ChatInputCommandInteraction)) {
+            // TODO: handle this on a type level
+            return;
+        }
+
         const user = command.options.getUser("user", true);
 
         const userAsGuildMember = command.guild?.members.resolve(user);

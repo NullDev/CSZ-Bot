@@ -393,11 +393,7 @@ export const handleInteractionEvent = async (
     context: BotContext,
 ): Promise<void> => {
     if (interaction.isCommand()) {
-        return commandInteractionHandler(
-            interaction as CommandInteraction,
-            client,
-            context,
-        );
+        return commandInteractionHandler(interaction, client, context);
     }
 
     if (interaction.isAutocomplete()) {

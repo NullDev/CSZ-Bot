@@ -3,6 +3,7 @@ import {
     type Client,
     SlashCommandBuilder,
     SlashCommandUserOption,
+    ChatInputCommandInteraction,
 } from "discord.js";
 
 import type { ApplicationCommand, CommandResult } from "./command.js";
@@ -36,6 +37,11 @@ export class StempelCommand implements ApplicationCommand {
         command: CommandInteraction,
         _client: Client<boolean>,
     ): Promise<CommandResult> {
+        if (!(command instanceof ChatInputCommandInteraction)) {
+            // TODO: handle this on a type level
+            return;
+        }
+
         const invitator = command.guild?.members.cache.find(
             m => m.id === command.options.getUser("inviter", true).id,
         );
