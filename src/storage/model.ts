@@ -26,6 +26,7 @@ export interface Database {
     additionalMessageData: AdditionalMessageDataTable;
     bans: BanTable;
     reminders: ReminderTable;
+    loot: LootTable;
 }
 
 export interface AuditedTable {
@@ -200,4 +201,17 @@ export interface ReminderTable extends AuditedTable {
 
     remindAt: ColumnType<string, string, string>; // TODO: Date is not supported by the DB driver
     reminderNote: string | null;
+}
+
+export type Loot = Selectable<LootTable>;
+export interface LootTable extends AuditedTable {
+    id: GeneratedAlways<number>;
+
+    displayName: string;
+    validUntil: ColumnType<string, string, string>; // TODO: Date is not supported by the DB driver
+    winnerId: string | null;
+    guildId: Snowflake;
+    channelId: Snowflake;
+    messageId: Snowflake;
+    usedImage: string | null;
 }
