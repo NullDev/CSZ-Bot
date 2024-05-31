@@ -9,6 +9,7 @@ export async function up(db: Kysely<any>): Promise<void> {
         .addColumn("lootKindId", "integer", c => c.notNull())
         .addColumn("validUntil", "timestamp", c => c.notNull())
         .addColumn("winnerId", "text")
+        .addColumn("claimedAt", "timestamp")
         .addColumn("guildId", "text", c => c.notNull())
         .addColumn("channelId", "text", c => c.notNull())
         .addColumn("messageId", "text", c => c.notNull())

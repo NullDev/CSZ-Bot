@@ -45,5 +45,23 @@ export async function findOfMessage(message: Message<true>, ctx = db()) {
         .selectFrom("loot")
         .where("messageId", "=", message.id)
         .selectAll()
-        .execute();
+        .executeTakeFirst();
+}
+
+export async function assignUserToLootDrop(
+    user: User,
+    message: Message,
+    now: Date,
+    ctx = db(),
+) {
+    return await ctx
+        .updateTable("loot")
+        .set({
+            winnerId: user.id,
+            claimedAt: now.toISOString(),
+        })
+        .where("messageId", "=", message.id)
+        .where("validUntil", ">", now.toISOString())
+        .returningAll()
+        .executeTakeFirstOrThrow();
 }

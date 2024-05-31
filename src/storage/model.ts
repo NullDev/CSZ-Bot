@@ -212,6 +212,7 @@ export interface LootTable extends AuditedTable {
     lootKindId: number;
     validUntil: ColumnType<string, string, string>; // TODO: Date is not supported by the DB driver
     winnerId: string | null;
+    claimedAt: ColumnType<string | null, string | null, string | null>; // TODO: Date is not supported by the DB driver
     guildId: Snowflake;
     channelId: Snowflake;
     messageId: Snowflake;
