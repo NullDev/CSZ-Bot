@@ -2,9 +2,15 @@ import type { Message, User } from "discord.js";
 
 import db from "./db.js";
 
+export interface LootTemplate {
+    id: number;
+    displayName: string;
+    description: string;
+    asset: string | null;
+}
+
 export async function createLoot(
-    displayName: string,
-    usedImage: string | null,
+    template: LootTemplate,
     validUntil: Date,
     message: Message<true> | null,
     ctx = db(),
@@ -12,9 +18,11 @@ export async function createLoot(
     return await ctx
         .insertInto("loot")
         .values({
-            displayName,
+            displayName: template.displayName,
+            description: template.description,
+            lootKindId: template.id,
             validUntil: validUntil.toISOString(),
-            usedImage,
+            usedImage: template.asset,
             winnerId: null,
             guildId: message?.guildId ?? "",
             channelId: message?.channelId ?? "",

@@ -5,6 +5,8 @@ export async function up(db: Kysely<any>): Promise<void> {
         .createTable("loot")
         .addColumn("id", "integer", c => c.primaryKey().autoIncrement())
         .addColumn("displayName", "text", c => c.notNull())
+        .addColumn("description", "text", c => c.notNull())
+        .addColumn("lootKindId", "integer", c => c.notNull())
         .addColumn("validUntil", "timestamp", c => c.notNull())
         .addColumn("winnerId", "text")
         .addColumn("guildId", "text", c => c.notNull())
