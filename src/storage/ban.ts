@@ -16,7 +16,7 @@ export async function persistOrUpdate(
         `Saving Ban for user ${user} until ${until} (is self ban: ${isSelfBan}, reason: ${reason})`,
     );
 
-    const bannedUntil = until === null ? null : until.toISOString();
+    const bannedUntil = until?.toISOString();
     await ctx
         .insertInto("bans")
         .values({
