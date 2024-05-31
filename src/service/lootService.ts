@@ -69,7 +69,7 @@ async function postLootDrop(channel: GuildChannel) {
         ],
     });
 
-    const entry = await loot.createLoot(template, validUntil, message);
+    await loot.createLoot(template, validUntil, message);
 
     const collector = message.createMessageComponentCollector({
         componentType: ComponentType.Button,
@@ -123,24 +123,22 @@ async function postLootDrop(channel: GuildChannel) {
     await once(collector, "end");
 
     const l = await loot.findOfMessage(message);
-    if (!l) {
+    if (!l?.winnerId) {
         return;
     }
 
-    if (l.winnerId === null) {
-        const original = message.embeds[0];
-        await message.edit({
-            embeds: [
-                {
-                    ...original,
-                    description:
-                        "Keiner war schnell genug, um es sich zu schnappen :(",
-                    footer: {
-                        text: "❌ Niemand war schnell genug",
-                    },
+    const original = message.embeds[0];
+    await message.edit({
+        embeds: [
+            {
+                ...original,
+                description:
+                    "Keiner war schnell genug, um es sich zu schnappen :(",
+                footer: {
+                    text: "❌ Niemand war schnell genug",
                 },
-            ],
-            components: [],
-        });
-    }
+            },
+        ],
+        components: [],
+    });
 }
