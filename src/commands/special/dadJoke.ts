@@ -3,6 +3,7 @@ import { type Client, cleanContent } from "discord.js";
 import type { ProcessableMessage } from "../../handler/cmdHandler.js";
 import type { SpecialCommand, CommandResult } from "../command.js";
 import { substringAfter } from "../../utils/stringUtils.js";
+import { randomEntry } from "../../utils/arrayUtils.js";
 
 type Lang = "german" | "austrian";
 
@@ -37,8 +38,7 @@ export class DadJokeCommand implements SpecialCommand {
         slotConfig: Record<Slot, string>,
     ): string {
         const langArr = this.answers[config.lang];
-        const randomIdx = Math.floor(Math.random() * langArr.length);
-        let randomMessage = langArr[randomIdx];
+        let randomMessage = randomEntry(langArr);
 
         if (randomMessage.includes("#")) {
             for (const slot of Object.keys(slotConfig)) {

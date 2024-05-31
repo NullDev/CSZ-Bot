@@ -8,6 +8,7 @@ import {
 
 import type { ApplicationCommand, CommandResult } from "./command.js";
 import * as stempel from "../storage/stempel.js";
+import { randomEntry } from "../utils/arrayUtils.js";
 
 const replies = [
     "Der Bruder {0} hat den neuen Bruder {1} eingeladen und du hast dies so eben bestätigt!",
@@ -67,7 +68,7 @@ export class StempelCommand implements ApplicationCommand {
 
         const isNewInvite = await stempel.insertStempel(invitator, invitedUser);
         if (isNewInvite) {
-            const reply = replies[Math.floor(Math.random() * replies.length)]
+            const reply = randomEntry(replies)
                 .replace("{0}", invitator.toString())
                 .replace("{1}", invitedUser.toString());
             await command.reply({

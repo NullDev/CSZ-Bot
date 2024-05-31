@@ -17,6 +17,7 @@ import {
 import type { VoiceChannel } from "discord.js";
 import * as gad from "get-audio-duration";
 
+import { randomEntry } from "../utils/arrayUtils.js";
 import log from "@log";
 import type { BotContext } from "../context.js";
 
@@ -66,8 +67,7 @@ export async function connectAndPlaySaufen(
 
     const files = await readdir(context.soundsDir);
 
-    const fileToPlay =
-        filename ?? files[Math.floor(Math.random() * files.length)];
+    const fileToPlay = filename ?? randomEntry(files);
     const file = path.resolve(context.soundsDir, fileToPlay);
     try {
         const duration = (await gad.getAudioDurationInSeconds(file)) * 1000;

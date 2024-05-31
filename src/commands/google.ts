@@ -8,6 +8,7 @@ import {
 } from "discord.js";
 
 import type { ApplicationCommand, CommandResult } from "./command.js";
+import { randomEntry } from "src/utils/arrayUtils.js";
 
 const replies = [
     "Da bitte, dein Suchergebnis, du Opfer: {0}",
@@ -74,7 +75,7 @@ export class GoogleCommand implements ApplicationCommand {
             "+",
         )})`;
 
-        const randomReply = replies[Math.floor(Math.random() * replies.length)];
+        const randomReply = randomEntry(replies);
         let reply = randomReply.replace("{0}", link);
         if (dau) {
             reply = reply.replace(

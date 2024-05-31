@@ -8,3 +8,7 @@ export function chunkArray<T>(array: readonly T[], chunkSize: number): T[][] {
 
     return result;
 }
+
+export function randomEntry<T>(array: readonly T[]): T {
+    return array[(array.length * Math.random()) | 0];
+}

@@ -2,6 +2,7 @@ import type { Client } from "discord.js";
 
 import type { MessageCommand } from "./command.js";
 import type { ProcessableMessage } from "../handler/cmdHandler.js";
+import { randomEntry } from "../utils/arrayUtils.js";
 
 const FICKTABELLE_URL =
     "https://cdn.discordapp.com/attachments/620721921767505942/636149543154614272/20160901-164533-Kovrtep-id1487186.png";
@@ -36,23 +37,13 @@ export class FicktabelleCommand implements MessageCommand {
                 {
                     image: { url: FICKTABELLE_URL },
                     author: {
-                        name: `${message.author.username} ${
-                            titles[
-                                Math.max(
-                                    0,
-                                    Math.floor(Math.random() * titles.length),
-                                )
-                            ]
-                        }`,
+                        name: `${message.author.username} ${randomEntry(
+                            titles,
+                        )}`,
                         icon_url: message.author.displayAvatarURL(),
                     },
                     footer: {
-                        text: warnings[
-                            Math.max(
-                                0,
-                                Math.floor(Math.random() * warnings.length),
-                            )
-                        ],
+                        text: randomEntry(warnings),
                     },
                 },
             ],
