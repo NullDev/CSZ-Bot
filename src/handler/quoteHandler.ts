@@ -89,7 +89,7 @@ const isQuoterQuotingHimself = (
     messageAuthor: GuildMember,
 ) => quoter.id === messageAuthor.id;
 
-const generateRandomColor = () => Math.floor(Math.random() * 16777215);
+const generateRandomColor = () => Math.floor(Math.random() * 0xffffff);
 
 const getTargetChannel = (sourceChannelId: Snowflake, context: BotContext) => {
     const { targetChannelOverrides, defaultTargetChannelId } =
