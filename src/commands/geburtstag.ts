@@ -50,8 +50,7 @@ export class GeburtstagCommand implements ApplicationCommand {
         }
 
         const date = birthday.formatDate(month, day);
-
-        if (!date.isValid()) {
+        if (!isValidDate(date)) {
             await command.reply("Ach komm, für wie blöd hältst du mich?");
             return;
         }
@@ -68,4 +67,9 @@ export class GeburtstagCommand implements ApplicationCommand {
             );
         }
     }
+}
+
+function isValidDate(mmDd: string): boolean {
+    const isoDate = new Date(`2000-${mmDd}`);
+    return Number.isNaN(isoDate.getTime());
 }

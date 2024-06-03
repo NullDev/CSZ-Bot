@@ -62,5 +62,7 @@ export function isOneBasedMonth(v: unknown): v is OneBasedMonth {
 }
 
 export function formatDate(month: OneBasedMonth, day: number) {
-    return `${month.toString().padStart(2, "0")}-${day.toString().padStart(2, "0")}`;
+    const m = month.toString().padStart(2, "0");
+    const d = day.toString().padStart(2, "0");
+    return `${m}-${d}`;
 }
