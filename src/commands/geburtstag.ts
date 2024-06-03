@@ -1,4 +1,3 @@
-import moment from "moment";
 import {
     type CommandInteraction,
     type CacheType,
@@ -50,7 +49,7 @@ export class GeburtstagCommand implements ApplicationCommand {
             return;
         }
 
-        const date = moment(`${month}-${day}`, "MM-DD");
+        const date = birthday.formatDate(month, day);
 
         if (!date.isValid()) {
             await command.reply("Ach komm, für wie blöd hältst du mich?");
