@@ -89,9 +89,7 @@ export class DoenerCommand implements MessageCommand {
 
         const fridgeStr =
             amount > prices.fridge * 0.75
-                ? `Falls du einen Kredit aufnehmen möchtest, wären das ${(
-                      amount / prices.fridge
-                  ).toFixed(1)} Kühlschränke.`
+                ? `Falls du einen Kredit aufnehmen möchtest, wären das ${(amount / prices.fridge).toFixed(1)} Kühlschränke.`
                 : "";
 
         const inkStr =
@@ -105,9 +103,7 @@ export class DoenerCommand implements MessageCommand {
 
         const mealStr =
             Math.random() > 0.7
-                ? `Alternativ kannst du davon maximal ${(
-                      amount / prices.meal
-                  ).toFixed(0)} mal essen gehen.`
+                ? `Alternativ kannst du davon maximal ${(amount / prices.meal).toFixed(0)} mal essen gehen.`
                 : "";
 
         await targetMessage.reply({
