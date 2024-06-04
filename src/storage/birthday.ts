@@ -60,3 +60,9 @@ export type OneBasedMonth = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
 export function isOneBasedMonth(v: unknown): v is OneBasedMonth {
     return typeof v === "number" && Number.isInteger(v) && v >= 1 && v <= 12;
 }
+
+export function formatDate(month: OneBasedMonth, day: number) {
+    const m = month.toString().padStart(2, "0");
+    const d = day.toString().padStart(2, "0");
+    return `${m}-${d}`;
+}

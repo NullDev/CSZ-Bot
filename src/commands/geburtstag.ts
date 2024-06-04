@@ -1,4 +1,3 @@
-import moment from "moment";
 import {
     type CommandInteraction,
     type CacheType,
@@ -50,9 +49,8 @@ export class GeburtstagCommand implements ApplicationCommand {
             return;
         }
 
-        const date = moment(`${month}-${day}`, "MM-DD");
-
-        if (!date.isValid()) {
+        const date = birthday.formatDate(month, day);
+        if (!isValidDate(date)) {
             await command.reply("Ach komm, für wie blöd hältst du mich?");
             return;
         }
@@ -69,4 +67,9 @@ export class GeburtstagCommand implements ApplicationCommand {
             );
         }
     }
+}
+
+function isValidDate(mmDd: string): boolean {
+    const isoDate = new Date(`2000-${mmDd}`);
+    return Number.isNaN(isoDate.getTime());
 }
