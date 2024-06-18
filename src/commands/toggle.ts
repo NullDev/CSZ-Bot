@@ -47,7 +47,7 @@ const toggleSdm = async (message: Message) => {
 /**
  * Extends an existing poll or strawpoll
  */
-export const run: CommandFunction = async (_client, message, args, context) => {
+export const run: CommandFunction = async (message, args, context) => {
     if (!context.roleGuard.isMod(message.member)) {
         return;
     }

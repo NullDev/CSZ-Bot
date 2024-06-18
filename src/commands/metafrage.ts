@@ -1,6 +1,7 @@
 import { parseArgs, type ParseArgsConfig } from "node:util";
 
 import type { CommandFunction } from "../types.js";
+import { randomEntry } from "src/utils/arrayUtils.js";
 
 const argsConfig = {
     options: {
@@ -16,7 +17,7 @@ const argsConfig = {
 /**
  * Sends instructions on how to ask better questions
  */
-export const run: CommandFunction = async (_client, message, args) => {
+export const run: CommandFunction = async (message, args) => {
     const { values: options } = parseArgs({ ...argsConfig, args });
 
     if (args.length === 0 || (args.length === 1 && options.english)) {
@@ -35,30 +36,16 @@ export const run: CommandFunction = async (_client, message, args) => {
             "you troglodyte!",
             "even my brother is more capable and he's a retard!",
         ];
-        // by default, just pick the first or a fixed insult, just in case
-        let choice = 0;
-        let insult = "Idiot!";
 
-        if (!options.english) {
-            // insult user, then explain meta questions
-            choice = Math.max(
-                choice,
-                Math.floor(Math.random() * germanInsults.length),
-            );
-            insult = germanInsults[choice];
-            await message.channel.send(
-                `Hör auf, Metafragen zu stellen, ${insult}\nDas ist reine Zeitverschwendung und hindert uns nur daran, ~~uns zu beleidigen~~ an echten Problemen zu arbeiten.\nFür Tipps zum besser machen: <http://metafrage.de>`,
-            );
-        } else {
-            // insult user, then explain meta questions - but this time in english!
-            choice = Math.max(
-                choice,
-                Math.floor(Math.random() * englishInsults.length),
-            );
-            insult = englishInsults[choice];
-
+        if (options.english) {
+            const insult = randomEntry(englishInsults);
             await message.channel.send(
                 `Stop asking meta questions, ${insult}\nIt's a waste of time and stops us from ~~insulting each other~~ working on real problems.\nHere's a few hints on how to do it better: <https://metaquestion.net>`,
+            );
+        } else {
+            const insult = randomEntry(germanInsults);
+            await message.channel.send(
+                `Hör auf, Metafragen zu stellen, ${insult}\nDas ist reine Zeitverschwendung und hindert uns nur daran, ~~uns zu beleidigen~~ an echten Problemen zu arbeiten.\nFür Tipps zum besser machen: <http://metafrage.de>`,
             );
         }
     } else {

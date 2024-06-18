@@ -67,7 +67,6 @@ export class Saufen implements ApplicationCommand {
 
     async handleInteraction(
         command: CommandInteraction<CacheType>,
-        _client: Client<boolean>,
         context: BotContext,
     ): Promise<void> {
         if (!command.isChatInputCommand()) {

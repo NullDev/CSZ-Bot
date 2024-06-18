@@ -18,7 +18,7 @@ const argsConfig = {
 /**
  * Creates a new poll (vote; yes/no)
  */
-export const run: CommandFunction = async (_client, message, args, context) => {
+export const run: CommandFunction = async (message, args, context) => {
     const { values: options, positionals } = parseArgs({ ...argsConfig, args });
 
     if (positionals.length === 0) {

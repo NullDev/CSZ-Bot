@@ -1,4 +1,5 @@
 import * as nickName from "../storage/nickName.js";
+import { randomEntry } from "../utils/arrayUtils.js";
 import log from "@log";
 import type { BotContext } from "../context.js";
 
@@ -23,11 +24,8 @@ async function updateNickname(
         if (!member) return;
         const nicknames = [member.user.username, ...storedNicknames];
         const pickableNicknames = nicknames.filter(n => n !== member.nickname);
-        const randomizedNickname =
-            pickableNicknames[
-                Math.floor(Math.random() * pickableNicknames.length)
-            ];
-        await member.setNickname(randomizedNickname);
+        const randomNickname = randomEntry(pickableNicknames);
+        await member.setNickname(randomNickname);
     } catch (err) {
         log.error(err, `Couldn't update user '${userId}' nickname`);
     }

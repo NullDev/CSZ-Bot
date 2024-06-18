@@ -8,6 +8,7 @@ import {
     type Snowflake,
     SlashCommandBuilder,
     SlashCommandUserOption,
+    ChatInputCommandInteraction,
 } from "discord.js";
 
 import * as stempel from "../storage/stempel.js";
@@ -126,8 +127,12 @@ export class StempelkarteCommand implements ApplicationCommand {
 
     async handleInteraction(
         command: CommandInteraction,
-        _client: Client<boolean>,
     ): Promise<CommandResult> {
+        if (!(command instanceof ChatInputCommandInteraction)) {
+            // TODO: handle this on a type level
+            return;
+        }
+
         const userOption = command.options.getUser("user") ?? command.user;
 
         const ofMember = command.guild?.members.cache.find(

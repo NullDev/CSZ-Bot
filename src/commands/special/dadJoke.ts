@@ -1,8 +1,10 @@
-import { type Client, cleanContent } from "discord.js";
+import { cleanContent } from "discord.js";
 
 import type { ProcessableMessage } from "../../handler/cmdHandler.js";
 import type { SpecialCommand, CommandResult } from "../command.js";
+import type { BotContext } from "src/context.js";
 import { substringAfter } from "../../utils/stringUtils.js";
+import { randomEntry } from "../../utils/arrayUtils.js";
 
 type Lang = "german" | "austrian";
 
@@ -37,8 +39,7 @@ export class DadJokeCommand implements SpecialCommand {
         slotConfig: Record<Slot, string>,
     ): string {
         const langArr = this.answers[config.lang];
-        const randomIdx = Math.floor(Math.random() * langArr.length);
-        let randomMessage = langArr[randomIdx];
+        let randomMessage = randomEntry(langArr);
 
         if (randomMessage.includes("#")) {
             for (const slot of Object.keys(slotConfig)) {
@@ -67,7 +68,7 @@ export class DadJokeCommand implements SpecialCommand {
 
     async handleSpecialMessage(
         message: ProcessableMessage,
-        client: Client<boolean>,
+        context: BotContext,
     ): Promise<CommandResult> {
         const msg = message.content.toLowerCase();
         const phrase = Object.keys(this.matchPhrases).find(p =>
@@ -98,7 +99,7 @@ export class DadJokeCommand implements SpecialCommand {
             ).trim();
             const slots: Record<Slot, string> = {
                 WHOIS: whoIs,
-                BOTNAME: client.user?.username ?? "Bot",
+                BOTNAME: context.client.user.username ?? "Bot",
             };
 
             const answer = this.#getRandomAnswer(attributes, slots);

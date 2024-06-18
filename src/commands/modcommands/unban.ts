@@ -1,10 +1,15 @@
 import {
-    type CommandInteraction,
-    type PermissionsString,
     SlashCommandBuilder,
     SlashCommandUserOption,
+    ChatInputCommandInteraction,
 } from "discord.js";
-import type { Message, Client } from "discord.js";
+import type {
+    Message,
+    Client,
+    CommandInteraction,
+    PermissionsString,
+    Interaction,
+} from "discord.js";
 
 import type {
     ApplicationCommand,
@@ -33,9 +38,13 @@ export class UnbanCommand implements ApplicationCommand, MessageCommand {
 
     async handleInteraction(
         command: CommandInteraction,
-        _client: Client<boolean>,
         context: BotContext,
     ): Promise<CommandResult> {
+        if (!(command instanceof ChatInputCommandInteraction)) {
+            // TODO: handle this on a type level
+            return;
+        }
+
         const user = command.options.getUser("user", true);
 
         const userAsGuildMember = command.guild?.members.resolve(user);
@@ -63,7 +72,6 @@ export class UnbanCommand implements ApplicationCommand, MessageCommand {
     }
     async handleMessage(
         message: Message,
-        _client: Client<boolean>,
         context: BotContext,
     ): Promise<CommandResult> {
         const user = message.mentions.users.first();

@@ -12,7 +12,7 @@ import "./polyfills.js";
 import messageHandler from "./handler/messageHandler.js";
 import messageDeleteHandler from "./handler/messageDeleteHandler.js";
 import * as fadingMessageHandler from "./handler/fadingMessageHandler.js";
-import * as kysely from "./storage/db.js";
+import * as kysely from "./storage/db/db.js";
 
 import reactionHandler from "./handler/reactionHandler.js";
 import { checkVoiceUpdate } from "./handler/voiceStateUpdateHandler.js";
@@ -168,13 +168,12 @@ client.once("ready", async initializedClient => {
  */
 client.on(
     "messageCreate",
-    async message => await messageCommandHandler(message, client, botContext),
+    async message => await messageCommandHandler(message, botContext),
 );
 
 client.on(
     "interactionCreate",
-    async interaction =>
-        await handleInteractionEvent(interaction, client, botContext),
+    async interaction => await handleInteractionEvent(interaction, botContext),
 );
 
 client.on("guildCreate", guild =>
@@ -221,18 +220,17 @@ client.on(
 
 client.on(
     "messageCreate",
-    async message => await messageHandler(message, client, botContext),
+    async message => await messageHandler(message, botContext),
 );
 client.on(
     "messageCreate",
-    async message =>
-        await deleteThreadMessagesHandler(message, client, botContext),
+    async message => await deleteThreadMessagesHandler(message, botContext),
 );
 
 client.on("messageDelete", async message => {
     try {
         if (message.inGuild()) {
-            await messageDeleteHandler(message, client, botContext);
+            await messageDeleteHandler(message, botContext);
         }
     } catch (err) {
         log.error(err, `[messageDelete] Error for ${message.id}`);
@@ -244,7 +242,6 @@ client.on(
     async (_, newMessage) =>
         await messageHandler(
             newMessage.partial ? await newMessage.fetch() : newMessage,
-            client,
             botContext,
         ),
 );

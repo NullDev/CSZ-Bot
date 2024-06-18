@@ -4,11 +4,7 @@ import type {
     PermissionsString,
     SlashCommandBuilder,
 } from "discord.js";
-import type {
-    AutocompleteInteraction,
-    Client,
-    CommandInteraction,
-} from "discord.js";
+import type { AutocompleteInteraction, CommandInteraction } from "discord.js";
 
 import type { ProcessableMessage } from "../handler/cmdHandler.js";
 import type { BotContext } from "../context.js";
@@ -32,7 +28,6 @@ export interface UserInteraction {
     readonly name: string;
     handleInteraction(
         command: MessageComponentInteraction,
-        client: Client,
         context: BotContext,
     ): Promise<void>;
 }
@@ -49,7 +44,6 @@ interface AppCommand {
     >;
     handleInteraction(
         command: CommandInteraction,
-        client: Client,
         context: BotContext,
     ): Promise<CommandResult>;
     autocomplete?(
@@ -62,7 +56,6 @@ interface AppCommand {
 interface MsgCommand {
     handleMessage(
         message: ProcessableMessage,
-        client: Client,
         context: BotContext,
     ): Promise<CommandResult>;
 }
@@ -73,7 +66,6 @@ interface SpcalCommand {
     cooldownTime?: number;
     handleSpecialMessage(
         message: ProcessableMessage,
-        client: Client,
         context: BotContext,
     ): Promise<CommandResult>;
     matches(message: ProcessableMessage, context: BotContext): boolean;

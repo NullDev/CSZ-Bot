@@ -81,7 +81,7 @@ const constructResultStr = (rolls: readonly number[]): string => {
 /**
  * Creates a dice throw (sequqnce)
  */
-export const run: CommandFunction = async (_client, message, args) => {
+export const run: CommandFunction = async (message, args) => {
     let parsed = args[0]?.toLowerCase();
 
     // god i hate myself

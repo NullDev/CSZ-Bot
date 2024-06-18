@@ -1,8 +1,8 @@
 import type { Snowflake, User } from "discord.js";
 
-import type { Reminder } from "./model.js";
+import type { Reminder } from "./db/model.js";
 
-import db from "./db.js";
+import db from "./db/db.js";
 import log from "@log";
 
 export async function removeReminder(

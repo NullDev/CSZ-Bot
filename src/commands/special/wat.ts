@@ -12,10 +12,7 @@ export class WatCommand implements SpecialCommand {
         return message.content.toLowerCase() === "wat";
     }
 
-    async handleSpecialMessage(
-        message: Message,
-        _client: Client<boolean>,
-    ): Promise<CommandResult> {
+    async handleSpecialMessage(message: Message): Promise<CommandResult> {
         const watEmote = message.guild?.emojis.cache.find(
             e => e.name === "wat",
         );

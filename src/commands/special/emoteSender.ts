@@ -31,7 +31,6 @@ export class EmoteSenderCommand implements SpecialCommand {
 
     async handleSpecialMessage(
         message: Message,
-        _client: Client<boolean>,
         context: BotContext,
     ): Promise<CommandResult> {
         const trimmedContent = this.#trimMessage(message);

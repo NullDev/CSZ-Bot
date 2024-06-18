@@ -17,7 +17,7 @@ import { SplidClient } from "splid-js";
 
 import type { BotContext } from "../context.js";
 import type { ApplicationCommand } from "./command.js";
-import type { SplidGroup } from "../storage/model.js";
+import type { SplidGroup } from "../storage/db/model.js";
 import { ensureChatInputCommand } from "../utils/interactionUtils.js";
 import logger from "@log";
 import * as splidLink from "../storage/splidLink.js";
@@ -163,7 +163,6 @@ export class SplidGroupCommand implements ApplicationCommand {
 
     async handleInteraction(
         interaction: CommandInteraction,
-        _client: Client,
         context: BotContext,
     ) {
         const command = ensureChatInputCommand(interaction);

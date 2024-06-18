@@ -1,8 +1,7 @@
 import type { GuildMember, Snowflake, User } from "discord.js";
 
-import type { Ban } from "./model.js";
-
-import db from "./db.js";
+import type { Ban } from "./db/model.js";
+import db from "./db/db.js";
 import log from "@log";
 
 export async function persistOrUpdate(
@@ -16,7 +15,7 @@ export async function persistOrUpdate(
         `Saving Ban for user ${user} until ${until} (is self ban: ${isSelfBan}, reason: ${reason})`,
     );
 
-    const bannedUntil = until === null ? null : until.toISOString();
+    const bannedUntil = until?.toISOString();
     await ctx
         .insertInto("bans")
         .values({

@@ -3,10 +3,12 @@ import {
     type Client,
     SlashCommandBuilder,
     SlashCommandUserOption,
+    ChatInputCommandInteraction,
 } from "discord.js";
 
 import type { ApplicationCommand, CommandResult } from "./command.js";
 import * as stempel from "../storage/stempel.js";
+import { randomEntry } from "../utils/arrayUtils.js";
 
 const replies = [
     "Der Bruder {0} hat den neuen Bruder {1} eingeladen und du hast dies so eben bestätigt!",
@@ -34,8 +36,12 @@ export class StempelCommand implements ApplicationCommand {
 
     async handleInteraction(
         command: CommandInteraction,
-        _client: Client<boolean>,
     ): Promise<CommandResult> {
+        if (!(command instanceof ChatInputCommandInteraction)) {
+            // TODO: handle this on a type level
+            return;
+        }
+
         const invitator = command.guild?.members.cache.find(
             m => m.id === command.options.getUser("inviter", true).id,
         );
@@ -61,7 +67,7 @@ export class StempelCommand implements ApplicationCommand {
 
         const isNewInvite = await stempel.insertStempel(invitator, invitedUser);
         if (isNewInvite) {
-            const reply = replies[Math.floor(Math.random() * replies.length)]
+            const reply = randomEntry(replies)
                 .replace("{0}", invitator.toString())
                 .replace("{1}", invitedUser.toString());
             await command.reply({

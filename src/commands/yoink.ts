@@ -37,7 +37,6 @@ export class YoinkCommand implements MessageCommand, ApplicationCommand {
 
     async handleInteraction(
         command: CommandInteraction<"cached">,
-        _client: Client,
         context: BotContext,
     ): Promise<void> {
         const cmd = ensureChatInputCommand(command);
@@ -66,7 +65,6 @@ export class YoinkCommand implements MessageCommand, ApplicationCommand {
 
     async handleMessage(
         message: ProcessableMessage,
-        _client: Client,
         context: BotContext,
     ): Promise<void> {
         // parse options
