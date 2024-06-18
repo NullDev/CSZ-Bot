@@ -27,11 +27,11 @@ const lootTemplates: loot.LootTemplate[] = [
         id: 1,
         displayName: "Niedliche Kadse",
         description: "Awww",
-        asset: "assets/loot/1-kadse.jpg"
+        asset: "assets/loot/1-kadse.jpg",
     },
 ];
 
-async function postLootDrop(channel: GuildChannel) {
+export async function postLootDrop(channel: GuildChannel) {
     if (!channel.isTextBased()) {
         return;
     }

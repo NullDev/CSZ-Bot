@@ -1,6 +1,6 @@
 import type { Message, User } from "discord.js";
 
-import db from "./db.js";
+import db from "./db/db.js";
 
 export interface LootTemplate {
     id: number;
