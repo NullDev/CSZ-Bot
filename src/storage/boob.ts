@@ -4,6 +4,7 @@ import type { Snowflake, User } from "discord.js";
 
 import type { Boob } from "./db/model.js";
 
+import { getStartAndEndDay } from "../utils/dateUtils.js";
 import db from "./db/db.js";
 import log from "@log";
 
@@ -24,20 +25,6 @@ export function insertMeasurement(
         })
         .returningAll()
         .executeTakeFirstOrThrow();
-}
-
-function getStartAndEndDay(
-    instant: Temporal.Instant,
-    timeZone = "Europe/Berlin",
-) {
-    const today = Temporal.PlainDate.from(instant.toZonedDateTimeISO(timeZone));
-    const tomorrow = today.add({ days: 1 });
-
-    const startOfToday = today.toZonedDateTime({ timeZone: "Europe/Berlin" });
-    const startOfTomorrow = tomorrow.toZonedDateTime({
-        timeZone: "Europe/Berlin",
-    });
-    return { startOfToday, startOfTomorrow };
 }
 
 export function fetchRecentMeasurement(
