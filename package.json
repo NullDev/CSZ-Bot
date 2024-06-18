@@ -26,6 +26,7 @@
   "homepage": "https://github.com/NullDev/CSZ-Bot#readme",
   "dependencies": {
     "@discordjs/voice": "^0.17.0",
+    "@js-temporal/polyfill": "^0.4.4",
     "@napi-rs/canvas": "^0.1.53",
     "@resvg/resvg-js": "^2.6.2",
     "@sentry/bun": "^8.9.2",
