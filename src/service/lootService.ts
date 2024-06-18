@@ -81,7 +81,7 @@ async function postLootDrop(channel: GuildChannel) {
                 title: "Geschenk",
                 description: `Ein Geschenk ist aufgetaucht! Öffne es schnell, in ${timeoutSeconds} Sekunden ist es weg!`,
                 image: {
-                    url: "unopened.gif",
+                    url: "attachment://unopened.gif",
                 },
             },
         ],
@@ -132,7 +132,7 @@ async function postLootDrop(channel: GuildChannel) {
                     description: template.description,
                     image: attachment
                         ? {
-                              url: "opened.gif",
+                              url: "attachment://opened.gif",
                           }
                         : undefined,
                     footer: {
