@@ -100,8 +100,8 @@ export function replacePrefixPlaceholders(
     context: BotContext,
 ): string {
     return helpText
-        .replace("$MOD_COMMAND_PREFIX$", context.prefix.modCommand)
-        .replace("$COMMAND_PREFIX$", context.prefix.command);
+        .replaceAll("$MOD_COMMAND_PREFIX$", context.prefix.modCommand)
+        .replaceAll("$COMMAND_PREFIX$", context.prefix.command);
 }
 
 export const description = "Listet alle commands auf";

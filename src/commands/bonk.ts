@@ -28,7 +28,7 @@ export class BonkCommand implements MessageCommand {
     aliases = ["bong"];
     description = `Bonkt einen Nutzer und ersetzt den rechten gelben Hund mit dem Avatar des Nutzers.
 Usage: $COMMAND_PREFIX$bonk
-       $COMMAND_PREFIX$bonk @ShadowByte#1337
+       $COMMAND_PREFIX$bonk @nullping
        Oder auf eine Nachricht mit $COMMAND_PREFIX$bonk antworten.`;
 
     async handleMessage(message: ProcessableMessage): Promise<CommandResult> {
