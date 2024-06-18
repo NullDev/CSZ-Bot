@@ -7,6 +7,7 @@ import {
     ButtonStyle,
     ChannelType,
     ComponentType,
+    type TextChannel,
     type GuildChannel,
 } from "discord.js";
 
@@ -69,9 +70,20 @@ const lootTemplates: loot.LootTemplate[] = [
         description: "Benutze ihn weise!",
         asset: "assets/loot/06-krankschreibung.jpg",
     },
+    {
+        id: 7,
+        displayName: "Würfelwurf",
+        titleText: "Einen Wurf mit einem Würfel",
+        description: "🎲",
+        asset: "assets/loot/07-wurfelwurf.jpg",
+        specialAction: async (_content, interaction, channel, _loot) => {
+            const rollService = await import("./rollService.js");
+            await rollService.rollInChannel(interaction.user, channel, 1, 6);
+        },
+    },
     // Ideas:
     // Trichter, Pfeffi, Private Krankenversicherung, Ayran, eine Heiligsprechung von Jesus höchstpersönlich, eine Grafikkarte aus der Zukunft, Vogerlsalat
-    // Special Loots mit besonderer Aktion? Ban für 2 Minuten? Timeout? Erleuchtung? Einen Würfelwurf? Sonderrolle, die man nur mit Geschenk gewinnen kann und jedes Mal weitergereicht wird?
+    // Special Loots mit besonderer Aktion? Ban für 2 Minuten? Timeout? Erleuchtung? Sonderrolle, die man nur mit Geschenk gewinnen kann und jedes Mal weitergereicht wird?
 ];
 
 export async function runDropAttempt(context: BotContext) {
@@ -193,7 +205,12 @@ async function postLootDrop(context: BotContext, channel: GuildChannel) {
         });
 
         if (template.specialAction) {
-            await template.specialAction(context, interaction, claimedLoot);
+            await template.specialAction(
+                context,
+                interaction,
+                channel as TextChannel,
+                claimedLoot,
+            );
         }
     });
 
