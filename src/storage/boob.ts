@@ -1,4 +1,5 @@
-import moment from "moment";
+import { Temporal } from "@js-temporal/polyfill"; // TODO: Remove once bun ships temporal
+
 import type { Snowflake, User } from "discord.js";
 
 import type { Boob } from "./db/model.js";
@@ -25,17 +26,32 @@ export function insertMeasurement(
         .executeTakeFirstOrThrow();
 }
 
+function getStartAndEndDay(
+    instant: Temporal.Instant,
+    timeZone = "Europe/Berlin",
+) {
+    const today = Temporal.PlainDate.from(instant.toZonedDateTimeISO(timeZone));
+    const tomorrow = today.add({ days: 1 });
+
+    const startOfToday = today.toZonedDateTime({ timeZone: "Europe/Berlin" });
+    const startOfTomorrow = tomorrow.toZonedDateTime({
+        timeZone: "Europe/Berlin",
+    });
+    return { startOfToday, startOfTomorrow };
+}
+
 export function fetchRecentMeasurement(
     user: User,
     ctx = db(),
 ): Promise<Boob | undefined> {
-    const startToday = moment().startOf("days").toISOString();
-    const startTomorrow = moment().add(1, "days").startOf("days").toISOString();
+    const now = Temporal.Now.instant();
+    const { startOfToday, startOfTomorrow } = getStartAndEndDay(now);
+
     return ctx
         .selectFrom("boobs")
         .where("userId", "=", user.id)
-        .where("measuredAt", ">=", startToday)
-        .where("measuredAt", "<", startTomorrow)
+        .where("measuredAt", ">=", startOfToday.toString())
+        .where("measuredAt", "<", startOfTomorrow.toString())
         .selectAll()
         .executeTakeFirst();
 }
@@ -43,12 +59,12 @@ export function fetchRecentMeasurement(
 export async function longestRecentMeasurement(
     ctx = db(),
 ): Promise<number | undefined> {
-    const startToday = moment().startOf("days").toISOString();
-    const startTomorrow = moment().add(1, "days").startOf("days").toISOString();
+    const now = Temporal.Now.instant();
+    const { startOfToday, startOfTomorrow } = getStartAndEndDay(now);
     const res = await ctx
         .selectFrom("boobs")
-        .where("measuredAt", ">=", startToday)
-        .where("measuredAt", "<", startTomorrow)
+        .where("measuredAt", ">=", startOfToday.toString())
+        .where("measuredAt", "<", startOfTomorrow.toString())
         .select(({ eb }) => eb.fn.max<number>("size").as("maxSize"))
         .executeTakeFirst();
     return res?.maxSize ?? undefined;
