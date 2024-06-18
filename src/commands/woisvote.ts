@@ -1,5 +1,6 @@
+import { Temporal } from "@js-temporal/polyfill"; // TODO: Remove once bun ships temporal
+
 import {
-    type Client,
     type CommandInteraction,
     type Message,
     type MessageReaction,
@@ -12,7 +13,6 @@ import {
     time,
     TimestampStyles,
 } from "discord.js";
-import moment from "moment";
 
 import type { ApplicationCommand, CommandResult } from "./command.js";
 import * as woisAction from "../storage/woisAction.js";
@@ -98,11 +98,13 @@ export class WoisCommand implements ApplicationCommand {
         const reason = command.options.getString("grund", true);
         const time =
             command.options.getString("zeitpunkt", false) ?? defaultWoisTime;
-        const timeForWois = moment(time, "HH:mm");
-        const member = context.guild.members.cache.get(command.user.id);
-        const isWoisgangVote = member && context.roleGuard.isWoisGang(member);
 
-        if (timeForWois.isBefore(moment())) {
+        const plainTime = Temporal.PlainTime.from(time);
+
+        const now = Temporal.Now.plainDateTimeISO();
+        const timeForWois = now.withPlainTime(plainTime);
+
+        if (now.until(timeForWois).sign === -1) {
             await command.reply({
                 content:
                     "Sorry, ich kann einen Woisping nur in der Zukunft ausführen. Zeitreisen müssen erst noch erfunden werden.",
@@ -111,16 +113,17 @@ export class WoisCommand implements ApplicationCommand {
             return;
         }
 
-        const start = moment(timeForWois).subtract(6, "hours");
+        const member = context.guild.members.cache.get(command.user.id);
+        const isWoisgangVote = member && context.roleGuard.isWoisGang(member);
+
         const existingWoisVote = await woisAction.getWoisActionInRange(
-            start.toDate(),
-            timeForWois.toDate(),
+            new Date(timeForWois.subtract({ hours: 6 }).toString()),
+            new Date(timeForWois.toString()),
         );
         if (existingWoisVote !== undefined) {
+            const nextDate = Temporal.PlainDateTime.from(existingWoisVote.date);
             await command.reply(
-                `Es gibt bereits einen Woisvote für ${moment(
-                    existingWoisVote.date,
-                ).format("HH:mm")} Uhr. Geh doch da hin: ${
+                `Es gibt bereits einen Woisvote für ${nextDate.toPlainTime().toString()} Uhr. Geh doch da hin: ${
                     existingWoisVote.messageId
                 }`,
             );
@@ -129,7 +132,7 @@ export class WoisCommand implements ApplicationCommand {
 
         const woisMessage = await createWoisMessage(
             reason,
-            timeForWois.toDate(),
+            new Date(timeForWois.toString()),
             command.channel,
         );
 
@@ -140,7 +143,7 @@ export class WoisCommand implements ApplicationCommand {
         const result = await woisAction.insertWoisAction(
             woisMessage,
             reason,
-            timeForWois.toDate(),
+            new Date(timeForWois.toString()),
             isWoisgangVote,
         );
         if (!result) {
