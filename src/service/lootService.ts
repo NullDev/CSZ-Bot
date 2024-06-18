@@ -9,8 +9,6 @@ import {
     type GuildChannel,
 } from "discord.js";
 
-import type { BotContext } from "../context.js";
-
 import { randomEntry } from "../utils/arrayUtils.js";
 import * as loot from "../storage/loot.js";
 
@@ -29,7 +27,7 @@ const lootTemplates: loot.LootTemplate[] = [
         id: 1,
         displayName: "Niedliche Kadse",
         description: "Awww",
-        asset: null, // "assets/loot/"
+        asset: "assets/loot/1-kadse.jpg"
     },
 ];
 
