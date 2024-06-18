@@ -75,7 +75,7 @@ const lootTemplates: loot.LootTemplate[] = [
         displayName: "Würfelwurf",
         titleText: "Einen Wurf mit einem Würfel",
         description: "🎲",
-        asset: "assets/loot/07-wurfelwurf.jpg",
+        asset: "assets/loot/07-wuerfelwurf.jpg",
         specialAction: async (_content, interaction, channel, _loot) => {
             const rollService = await import("./rollService.js");
             await rollService.rollInChannel(interaction.user, channel, 1, 6);
