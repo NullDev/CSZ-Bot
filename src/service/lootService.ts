@@ -100,10 +100,10 @@ export async function runDropAttempt(context: BotContext) {
     log.info(
         `Dice was ${dice}, which is lower than configured ${lootConfig.dropChance}. Dropping loot to ${targetChannel.name}!`,
     );
-    await postLootDrop(targetChannel);
+    await postLootDrop(context, targetChannel);
 }
 
-async function postLootDrop(channel: GuildChannel) {
+async function postLootDrop(context: BotContext, channel: GuildChannel) {
     if (!channel.isTextBased()) {
         return;
     }
@@ -191,6 +191,10 @@ async function postLootDrop(channel: GuildChannel) {
                 : [],
             components: [],
         });
+
+        if (template.specialAction) {
+            await template.specialAction(context, interaction, claimedLoot);
+        }
     });
 
     await once(collector, "end");

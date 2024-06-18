@@ -1,4 +1,7 @@
-import type { Message, User } from "discord.js";
+import type { ButtonInteraction, Message, User } from "discord.js";
+
+import type { BotContext } from "../context.js";
+import type { Loot } from "./db/model.js";
 
 import db from "./db/db.js";
 
@@ -7,6 +10,11 @@ export interface LootTemplate {
     displayName: string;
     titleText: string;
     description: string;
+    specialAction?: (
+        context: BotContext,
+        interaction: ButtonInteraction,
+        claimedLoot: Loot,
+    ) => Promise<void>;
     asset: string | null;
 }
 
