@@ -57,7 +57,7 @@ export async function disconnectFromDb() {
 
 async function runMigrationsIfNeeded(db: Kysely<Database>) {
     const migrationFolder = fileURLToPath(
-        new URL("./migrations", import.meta.url).toString(),
+        new URL("../migrations", import.meta.url).toString(),
     );
 
     const migrator = new Migrator({
