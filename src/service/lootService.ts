@@ -45,7 +45,7 @@ const lootTemplates: loot.LootTemplate[] = [
         displayName: "Sehr teurer Kühlschrank",
         titleText: "Ein sehr teurer Kühlschrank",
         description:
-            "Dafür haben wir keine Kosten und Mühen geschaut und extra einen Kredit aufgenommen!",
+            "Dafür haben wir keine Kosten und Mühen gescheut und extra einen Kredit aufgenommen.",
         asset: "assets/loot/03-kuehlschrank.jpg",
     },
     {
