@@ -37,7 +37,7 @@ async function createEhreTable(
             {
                 color: 0x1ea188,
                 author: {
-                    name: context.client.user?.username,
+                    name: context.client.user.username,
                 },
                 fields: [
                     userInGroups.best
