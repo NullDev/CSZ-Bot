@@ -39,12 +39,7 @@ const getCommandMessageChunksMatchingLimit = (
 /**
  * Enlists all user-commands with descriptions
  */
-export const run: CommandFunction = async (
-    _client,
-    message,
-    _args,
-    context,
-) => {
+export const run: CommandFunction = async (message, _args, context) => {
     const commandObj: Record<string, string> = {};
     const commandDir = context.commandDir;
 

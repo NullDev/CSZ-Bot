@@ -3,7 +3,7 @@ import type { CommandFunction } from "../../types.js";
 /**
  * Lists all server roles
  */
-export const run: CommandFunction = async (_client, message, _args) => {
+export const run: CommandFunction = async (message, _args) => {
     const roleNames = message.guild.roles.cache
         .filter(element => String(element.name).toLowerCase() !== "@everyone")
         .map(element => element.name);

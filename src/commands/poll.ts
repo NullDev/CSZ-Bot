@@ -140,7 +140,7 @@ const argsConfig = {
 /**
  * Creates a new poll (multiple answers) or straw poll (single selection)
  */
-export const run: CommandFunction = async (_client, message, args, context) => {
+export const run: CommandFunction = async (message, args, context) => {
     const { values: options, positionals } = parseArgs({ ...argsConfig, args });
 
     if (positionals.length === 0) {

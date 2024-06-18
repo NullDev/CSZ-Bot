@@ -1,4 +1,4 @@
-import type { Client, User } from "discord.js";
+import type { User } from "discord.js";
 
 import type { ProcessableMessage } from "../handler/cmdHandler.js";
 import type { CommandResult, MessageCommand } from "./command.js";
@@ -142,10 +142,7 @@ export class BoobCommand implements MessageCommand {
     ];
     description = "Zeigt dir die deine Boobs mit Größe an";
 
-    async handleMessage(
-        message: ProcessableMessage,
-        _client: Client,
-    ): Promise<CommandResult> {
+    async handleMessage(message: ProcessableMessage): Promise<CommandResult> {
         const { author } = message;
         const mention = message.mentions.users.first();
         const userToMeasure = mention !== undefined ? mention : author;

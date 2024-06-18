@@ -1,5 +1,5 @@
 // @ts-ignore
-import type { Client, User } from "discord.js";
+import type { User } from "discord.js";
 
 import * as penis from "../storage/penis.js";
 import type { CommandResult, MessageCommand } from "./command.js";
@@ -100,7 +100,6 @@ export class PenisCommand implements MessageCommand {
      */
     async handleMessage(
         message: ProcessableMessage,
-        _client: Client,
         context: BotContext,
     ): Promise<CommandResult> {
         const { author } = message;

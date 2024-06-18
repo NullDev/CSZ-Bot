@@ -1,6 +1,6 @@
 import { readFile } from "node:fs/promises";
 
-import { type Message, type Client, cleanContent } from "discord.js";
+import { type Message, cleanContent } from "discord.js";
 import { createCanvas, loadImage, GlobalFonts } from "@napi-rs/canvas";
 
 import type { SpecialCommand } from "../command.js";
@@ -26,7 +26,7 @@ export class WhereCommand implements SpecialCommand {
         );
     }
 
-    async handleSpecialMessage(message: Message, _client: Client<boolean>) {
+    async handleSpecialMessage(message: Message) {
         const subject = cleanContent(
             message.content.trim().toUpperCase(),
             message.channel,

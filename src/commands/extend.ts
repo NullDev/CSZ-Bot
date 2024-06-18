@@ -10,7 +10,7 @@ const isPollField = (field: APIEmbedField): boolean =>
 /**
  * Extends an existing poll or strawpoll
  */
-export const run: CommandFunction = async (client, message, args, context) => {
+export const run: CommandFunction = async (message, args, context) => {
     if (!message.reference)
         return "Bruder schon mal was von der Replyfunktion gehört?";
     if (
@@ -40,7 +40,7 @@ export const run: CommandFunction = async (client, message, args, context) => {
         return "Bruder irgendwas stimmt nicht mit deinem Reply ¯\\_(ツ)_/¯";
     }
 
-    const botUser = client.user;
+    const botUser = context.client.user;
     if (!botUser) return "Bruder der Bot existiert nicht? LOLWUT";
     const replyEmbed = replyMessage.embeds[0];
 

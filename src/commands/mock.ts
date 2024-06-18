@@ -72,7 +72,6 @@ export class MockCommand implements MessageCommand, ApplicationCommand {
 
     async handleMessage(
         message: ProcessableMessage,
-        _client: Client<boolean>,
         context: BotContext,
     ): Promise<void> {
         const author = message.guild.members.resolve(message.author);

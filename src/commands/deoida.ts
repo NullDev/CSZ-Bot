@@ -131,7 +131,6 @@ export class DeOidaCommand implements MessageCommand {
 
     async handleMessage(
         message: ProcessableMessage,
-        _client: Client<boolean>,
         context: BotContext,
     ): Promise<void> {
         const messageToTranslate = message.reference?.messageId

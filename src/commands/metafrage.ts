@@ -17,7 +17,7 @@ const argsConfig = {
 /**
  * Sends instructions on how to ask better questions
  */
-export const run: CommandFunction = async (_client, message, args) => {
+export const run: CommandFunction = async (message, args) => {
     const { values: options } = parseArgs({ ...argsConfig, args });
 
     if (args.length === 0 || (args.length === 1 && options.english)) {

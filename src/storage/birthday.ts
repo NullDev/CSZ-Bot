@@ -1,7 +1,7 @@
 import type { Snowflake } from "discord.js";
 
-import type { Birthday } from "./model.js";
-import db from "./db.js";
+import type { Birthday, OneBasedMonth } from "./db/model.js";
+import db from "./db/db.js";
 
 export function getBirthday(
     userId: Snowflake,
@@ -56,7 +56,6 @@ function convertMonth(monthId: number): OneBasedMonth {
     return (monthId + 1) as OneBasedMonth;
 }
 
-export type OneBasedMonth = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
 export function isOneBasedMonth(v: unknown): v is OneBasedMonth {
     return typeof v === "number" && Number.isInteger(v) && v >= 1 && v <= 12;
 }

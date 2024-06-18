@@ -1,7 +1,7 @@
 import type { Message, PartialMessage, Snowflake, User } from "discord.js";
 
-import type { WoisAction } from "./model.js";
-import db from "./db.js";
+import type { WoisAction } from "./db/model.js";
+import db from "./db/db.js";
 
 export async function insertWoisAction(
     message: Message,

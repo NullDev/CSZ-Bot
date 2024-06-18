@@ -2,9 +2,9 @@ import moment from "moment";
 import type { Snowflake, User } from "discord.js";
 
 import type { Radius } from "../commands/penis.js";
-import type { Penis } from "./model.js";
+import type { Penis } from "./db/model.js";
 
-import db from "./db.js";
+import db from "./db/db.js";
 import log from "@log";
 
 export function insertMeasurement(

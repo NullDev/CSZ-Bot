@@ -102,7 +102,6 @@ export class NeverCommand implements ApplicationCommand, MessageCommand {
 
     async handleMessage(
         message: ProcessableMessage,
-        _client: Client<boolean>,
         context: BotContext,
     ): Promise<void> {
         const { channel } = message;

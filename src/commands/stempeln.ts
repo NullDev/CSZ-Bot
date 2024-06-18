@@ -36,7 +36,6 @@ export class StempelCommand implements ApplicationCommand {
 
     async handleInteraction(
         command: CommandInteraction,
-        _client: Client<boolean>,
     ): Promise<CommandResult> {
         if (!(command instanceof ChatInputCommandInteraction)) {
             // TODO: handle this on a type level

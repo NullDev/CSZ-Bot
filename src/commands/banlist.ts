@@ -9,7 +9,7 @@ import { SlashCommandBuilder } from "discord.js";
 import type { ApplicationCommand } from "./command.js";
 import type { BotContext } from "../context.js";
 import * as banService from "../storage/ban.js";
-import type { Ban } from "../storage/model.js";
+import type { Ban } from "../storage/db/model.js";
 import log from "@log";
 
 export class BanListCommand implements ApplicationCommand {
@@ -21,7 +21,6 @@ export class BanListCommand implements ApplicationCommand {
 
     async handleInteraction(
         command: CommandInteraction<CacheType>,
-        _client: Client<boolean>,
         context: BotContext,
     ): Promise<void> {
         const bans = await banService.findAll();

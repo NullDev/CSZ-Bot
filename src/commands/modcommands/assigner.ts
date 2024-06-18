@@ -4,7 +4,7 @@ import log from "@log";
 /**
  * Creates an assigner message
  */
-export const run: CommandFunction = async (_client, message, args) => {
+export const run: CommandFunction = async (message, args) => {
     if (!args.length) return "Keine Rollen angegeben.";
     if (!message.guild) return "Keine Guild-Message, lel"; // TODO: Remove as soon as we have ProcessableMessage as base
 

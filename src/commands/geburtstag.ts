@@ -35,7 +35,6 @@ export class GeburtstagCommand implements ApplicationCommand {
 
     async handleInteraction(
         command: CommandInteraction<CacheType>,
-        _client: Client<boolean>,
     ): Promise<void> {
         if (!command.isChatInputCommand()) {
             // TODO: Solve this on a type level

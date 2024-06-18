@@ -1,4 +1,4 @@
-import type { Snowflake, Client } from "discord.js";
+import type { Snowflake } from "discord.js";
 
 import type { BotContext } from "./context.js";
 import type { ProcessableMessage } from "./handler/cmdHandler.js";
@@ -10,7 +10,6 @@ import type { ProcessableMessage } from "./handler/cmdHandler.js";
 export type CommandResult = string | void;
 
 export type CommandFunction = (
-    client: Client,
     message: ProcessableMessage,
     args: Array<string>,
     context: BotContext,

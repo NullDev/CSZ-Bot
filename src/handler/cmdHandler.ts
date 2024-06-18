@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import * as path from "node:path";
 
-import type { Client, Guild, GuildMember, Message } from "discord.js";
+import type { Guild, GuildMember, Message } from "discord.js";
 
 import type { CommandFunction, CommandResult } from "../types.js";
 import type { BotContext } from "../context.js";
@@ -30,7 +30,6 @@ export function isProcessableMessage(
  */
 export default async function (
     message: ProcessableMessage,
-    client: Client<true>,
     isModCommand: boolean,
     context: BotContext,
 ): Promise<CommandResult> {
@@ -38,7 +37,7 @@ export default async function (
 
     if (
         context.roleGuard.hasBotDenyRole(message.member) &&
-        !isMessageInBotSpam(message)
+        !isMessageInBotSpam(context, message)
     ) {
         await message.member.send(
             "Du hast dich scheinbar beschissen verhalten und darfst daher keine Befehle in diesem Channel ausführen!",
@@ -137,7 +136,7 @@ export default async function (
     );
 
     try {
-        const response = await usedCommand.run(client, message, args, context);
+        const response = await usedCommand.run(message, args, context);
 
         // Non-Exception Error returned by the command (e.g.: Missing Argument)
         return response;

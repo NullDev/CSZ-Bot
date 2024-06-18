@@ -33,7 +33,6 @@ export class AutoEhreCommand implements SpecialCommand {
 
     async handleSpecialMessage(
         message: ProcessableMessage,
-        _client: Client<boolean>,
     ): Promise<CommandResult> {
         const repliedToMessage = await message.fetchReference();
         if (repliedToMessage.author.id === message.author.id) {

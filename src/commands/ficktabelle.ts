@@ -28,10 +28,7 @@ export class FicktabelleCommand implements MessageCommand {
     name = "ficktabelle";
     description = "Sendet die Ficktabelle.";
 
-    async handleMessage(
-        message: ProcessableMessage,
-        _client: Client<boolean>,
-    ): Promise<void> {
+    async handleMessage(message: ProcessableMessage): Promise<void> {
         await message.channel.send({
             embeds: [
                 {
