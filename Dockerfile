@@ -1,18 +1,16 @@
-FROM oven/bun:latest as runtime-dependencies
+FROM oven/bun:alpine as runtime-dependencies
     WORKDIR /app
     RUN --mount=type=bind,source=package.json,target=package.json \
         --mount=type=bind,source=bun.lockb,target=bun.lockb \
         --mount=type=cache,target=/root/.bun/install/cache \
         NODE_ENV=production bun install
 
-FROM oven/bun:latest
+FROM oven/bun:alpine
     WORKDIR /app
-    RUN apt-get update -yqqq \
-        && apt-get install -yqqq \
-            fonts-noto-color-emoji \
-            fontconfig \
-            fonts-liberation \
-        && apt-get clean -yqqq \
+    RUN apk add --no-cache \
+        font-noto-emoji \
+        fontconfig \
+        font-liberation \
         && fc-cache -f -v
 
     ENV NODE_ENV=production
