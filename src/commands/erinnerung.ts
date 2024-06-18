@@ -15,7 +15,7 @@ import type { ProcessableMessage } from "../handler/cmdHandler.js";
 import type { BotContext } from "../context.js";
 import log from "@log";
 import * as reminderService from "../storage/reminders.js";
-import type { Reminder } from "../storage/model.js";
+import type { Reminder } from "../storage/db/model.js";
 
 import { ensureChatInputCommand } from "../utils/interactionUtils.js";
 

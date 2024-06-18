@@ -6,8 +6,7 @@ import type {
     Selectable,
 } from "kysely";
 
-import type { OneBasedMonth } from "./birthday.js";
-import type { Radius } from "../commands/penis.js";
+import type { Radius } from "../../commands/penis.js";
 
 export interface Database {
     birthdays: BirthdayTable;
@@ -27,6 +26,8 @@ export interface Database {
     bans: BanTable;
     reminders: ReminderTable;
 }
+
+export type OneBasedMonth = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
 
 export interface AuditedTable {
     createdAt: GeneratedAlways<string>;
