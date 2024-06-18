@@ -69,6 +69,9 @@ const lootTemplates: loot.LootTemplate[] = [
         description: "Benutze ihn weise!",
         asset: "assets/loot/06-krankschreibung.jpg",
     },
+    // Ideas:
+    // Trichter, Pfeffi, Private Krankenversicherung, Ayran, eine Heiligsprechung von Jesus höchstpersönlich, eine Grafikkarte aus der Zukunft, Vogerlsalat
+    // Special Loots mit besonderer Aktion? Ban für 2 Minuten? Timeout? Erleuchtung? Einen Würfelwurf? Sonderrolle, die man nur mit Geschenk gewinnen kann und jedes Mal weitergereicht wird?
 ];
 
 export async function runDropAttempt(context: BotContext) {
