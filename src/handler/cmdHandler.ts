@@ -38,7 +38,7 @@ export default async function (
 
     if (
         context.roleGuard.hasBotDenyRole(message.member) &&
-        !isMessageInBotSpam(message)
+        !isMessageInBotSpam(context, message)
     ) {
         await message.member.send(
             "Du hast dich scheinbar beschissen verhalten und darfst daher keine Befehle in diesem Channel ausführen!",
