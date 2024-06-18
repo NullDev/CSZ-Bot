@@ -21,15 +21,53 @@ const lootTimeoutMs = 60 * 1000;
 const lootTemplates: loot.LootTemplate[] = [
     {
         id: 0,
-        displayName: "✨Nichts✨",
+        displayName: "Nichts",
+        titleText: "✨Nichts✨",
         description: "¯\\_(ツ)_/¯",
         asset: null,
     },
     {
         id: 1,
         displayName: "Niedliche Kadse",
+        titleText: "Eine niedliche Kadse",
         description: "Awww",
-        asset: "assets/loot/1-kadse.jpg",
+        asset: "assets/loot/01-kadse.jpg",
+    },
+    {
+        id: 2,
+        displayName: "Messerblock",
+        titleText: "Einen Messerblock",
+        description: "🔪",
+        asset: "assets/loot/02-messerblock.jpg",
+    },
+    {
+        id: 3,
+        displayName: "Sehr teurer Kühlschrank",
+        titleText: "Ein sehr teurer Kühlschrank",
+        description:
+            "Dafür haben wir keine Kosten und Mühen geschaut und extra einen Kredit aufgenommen!",
+        asset: "assets/loot/03-kuehlschrank.jpg",
+    },
+    {
+        id: 4,
+        displayName: "Döner",
+        titleText: "Einen Döner",
+        description: "Bewahre ihn gut als Geldanalge auf!",
+        asset: "assets/loot/04-doener.jpg",
+    },
+    {
+        id: 5,
+        displayName: "Kinn",
+        titleText: "Ein Kinn",
+        description: "Pass gut drauf auf, sonst flieht es!",
+        asset: "assets/loot/05-kinn.jpg",
+    },
+    {
+        id: 6,
+        displayName: "Arbeitsunfähigkeitsbescheinigung",
+        titleText: "Einen gelben Urlaubsschein",
+        description: "Benutze ihn weise!",
+        asset: "assets/loot/06-krankschreibung.jpg",
     },
 ];
 
@@ -81,14 +119,14 @@ async function postLootDrop(channel: GuildChannel) {
                 title: "Geschenk",
                 description: `Ein Geschenk ist aufgetaucht! Öffne es schnell, in ${timeoutSeconds} Sekunden ist es weg!`,
                 image: {
-                    url: "attachment://unopened.gif",
+                    url: "attachment://00-unopened.gif",
                 },
             },
         ],
         files: [
             {
-                name: "unopened.gif",
-                attachment: await fs.readFile("assets/loot/unopened.gif"),
+                name: "00-unopened.gif",
+                attachment: await fs.readFile("assets/loot/00-unopened.gif"),
             },
         ],
         components: [
@@ -128,7 +166,7 @@ async function postLootDrop(channel: GuildChannel) {
         await message.edit({
             embeds: [
                 {
-                    title: `Das Geschenk enthielt: ${template.displayName}`,
+                    title: `Das Geschenk enthielt: ${template.titleText}`,
                     description: template.description,
                     image: attachment
                         ? {

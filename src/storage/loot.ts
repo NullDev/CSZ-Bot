@@ -5,6 +5,7 @@ import db from "./db/db.js";
 export interface LootTemplate {
     id: number;
     displayName: string;
+    titleText: string;
     description: string;
     asset: string | null;
 }
