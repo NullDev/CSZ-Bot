@@ -5,10 +5,12 @@ import {
     ActionRowBuilder,
     ButtonBuilder,
     ButtonStyle,
+    ChannelType,
     ComponentType,
     type GuildChannel,
 } from "discord.js";
 
+import type { BotContext } from "../context.js";
 import { randomEntry } from "../utils/arrayUtils.js";
 import * as loot from "../storage/loot.js";
 
@@ -31,7 +33,36 @@ const lootTemplates: loot.LootTemplate[] = [
     },
 ];
 
-export async function postLootDrop(channel: GuildChannel) {
+export async function runDropAttempt(context: BotContext) {
+    const lootConfig = context.commandConfig.loot;
+    const dice = Math.random();
+    if (dice > lootConfig.dropChance) {
+        return;
+    }
+
+    const fallbackChannel = context.textChannels.hauptchat;
+    const targetChannelId = lootConfig.targetChannels
+        ? randomEntry(lootConfig.targetChannels)
+        : null;
+
+    const targetChannel = targetChannelId
+        ? (await context.client.channels.fetch(targetChannelId)) ??
+          fallbackChannel
+        : fallbackChannel;
+
+    if (targetChannel.type !== ChannelType.GuildText) {
+        log.error(
+            `Loot target channel ${targetChannelId} is not a guild+text channel, aborting drop`,
+        );
+        return;
+    }
+    log.info(
+        `Dice was ${dice}, which is lower than configured ${lootConfig.dropChance}. Dropping loot to ${targetChannel.name}!`,
+    );
+    await postLootDrop(targetChannel);
+}
+
+async function postLootDrop(channel: GuildChannel) {
     if (!channel.isTextBased()) {
         return;
     }

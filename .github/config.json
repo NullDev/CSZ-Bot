@@ -27,6 +27,11 @@
         "ehre": {
             "emoji_names": ["ähre", "aehre", "pr0aehre"]
         },
+        "loot": {
+            "enabled": true,
+            "schedule_cron": "*/15 * * * *",
+            "drop_chance": 0.05
+        },
         "faulenzerping_allowed_role_ids": [],
         "faulenzerping_max_pings": 10,
         "faulenzerping_min_required_reactions": 5,

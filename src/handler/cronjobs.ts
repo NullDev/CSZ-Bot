@@ -12,6 +12,7 @@ import { rotate } from "../helper/bannerCarusel.js";
 import { clearWoisLogTask } from "./voiceStateUpdateHandler.js";
 import { leetTask } from "./purge.js";
 import { processBans } from "../service/banService.js";
+import { runDropAttempt } from "../service/lootService.js";
 
 import * as poll from "../commands/poll.js";
 import * as ehre from "../storage/ehre.js";
@@ -37,6 +38,11 @@ export const scheduleCronjobs = async (context: BotContext) => {
     schedule("0 0 1 */2 *", () => rotate(context));
     schedule("37 13 * * *", () => leetTask(context));
     schedule("5 * * * *", () => clearWoisLogTask(context));
+
+    const loot = context.commandConfig.loot;
+    if (loot.enabled) {
+        schedule(loot.scheduleCron, () => runDropAttempt(context));
+    }
 
     schedule("2022-04-01T00:00:00", () => startAprilFools(context));
     schedule("2022-04-02T00:00:00", () => endAprilFools(context));

@@ -30,6 +30,11 @@
         "delete_thread_messages_in_channels": [],
         "ehre": {
             "emoji_names": ["ähre", "aehre", "pr0aehre"]
+        },
+        "loot": {
+            "enabled": true,
+            "schedule_cron": "*/15 * * * *",
+            "drop_chance": 0.05
         }
     },
     "saufen_files": [],

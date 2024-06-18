@@ -116,6 +116,13 @@ export interface Config {
         ehre: {
             emoji_names: Array<string>;
         };
+
+        loot: {
+            enabled: boolean;
+            schedule_cron: string;
+            drop_chance: number;
+            target_channel_ids?: Array<Snowflake> | undefined;
+        };
     };
     ids: Record<ConfigIdKey, Snowflake>;
 }

@@ -46,6 +46,12 @@ export interface BotContext {
             emojiNames: Set<string>;
         };
         quote: QuoteConfig;
+        loot: {
+            enabled: boolean;
+            scheduleCron: string;
+            dropChance: number;
+            targetChannels?: Snowflake[];
+        };
     };
 
     roles: Record<RemoveSuffix<ConfigRoleId, "_role_id">, Role>;
@@ -244,6 +250,14 @@ export async function createBotContext(
                 defaultTargetChannelId:
                     config.bot_settings.quotes.default_target_channel_id,
                 emojiName: config.bot_settings.quotes.emoji_name,
+            },
+            loot: {
+                enabled: config.bot_settings.loot?.enabled ?? false,
+                scheduleCron:
+                    config.bot_settings.loot?.schedule_cron ?? "*/15 * * * *",
+                dropChance: config.bot_settings.loot?.drop_chance ?? 0.05,
+                targetChannels:
+                    config.bot_settings.loot?.target_channel_ids ?? undefined,
             },
         },
         roles: {
