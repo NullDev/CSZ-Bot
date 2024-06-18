@@ -38,7 +38,6 @@ export class UnbanCommand implements ApplicationCommand, MessageCommand {
 
     async handleInteraction(
         command: CommandInteraction,
-        _client: Client<boolean>,
         context: BotContext,
     ): Promise<CommandResult> {
         if (!(command instanceof ChatInputCommandInteraction)) {
@@ -73,7 +72,6 @@ export class UnbanCommand implements ApplicationCommand, MessageCommand {
     }
     async handleMessage(
         message: Message,
-        _client: Client<boolean>,
         context: BotContext,
     ): Promise<CommandResult> {
         const user = message.mentions.users.first();

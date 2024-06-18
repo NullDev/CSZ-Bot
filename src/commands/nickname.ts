@@ -118,7 +118,6 @@ export class Nickname implements ApplicationCommand {
 
     async handleInteraction(
         command: CommandInteraction,
-        _client: Client,
         context: BotContext,
     ): Promise<CommandResult> {
         const cmd = ensureChatInputCommand(command);
@@ -305,7 +304,6 @@ export class NicknameButtonHandler implements UserInteraction {
 
     async handleInteraction(
         interaction: MessageComponentInteraction,
-        _client: Client,
         context: BotContext,
     ): Promise<void> {
         const suggestion = ongoingSuggestions[interaction.message.id];

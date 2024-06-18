@@ -100,7 +100,6 @@ export class ErinnerungCommand implements MessageCommand, ApplicationCommand {
 
     async handleMessage(
         message: ProcessableMessage,
-        _client: Client<boolean>,
         context: BotContext,
     ): Promise<void> {
         // TODO: Create utility function that removes the command prefix for easier parsing

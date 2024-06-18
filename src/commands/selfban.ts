@@ -3,7 +3,7 @@ import { time, TimestampStyles } from "discord.js";
 import type { CommandFunction } from "../types.js";
 import * as banService from "../service/banService.js";
 
-export const run: CommandFunction = async (client, message, args, context) => {
+export const run: CommandFunction = async (message, args, context) => {
     let input = args?.[0]?.trim() ?? "8";
     const tilt = input === "tilt";
 

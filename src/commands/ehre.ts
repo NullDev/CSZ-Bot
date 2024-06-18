@@ -206,7 +206,6 @@ export class EhreCommand implements ApplicationCommand {
 
     async handleInteraction(
         command: CommandInteraction,
-        _client: Client<boolean>,
         context: BotContext,
     ): Promise<CommandResult> {
         if (!command.isChatInputCommand()) {

@@ -51,11 +51,7 @@ export class OidaCommand implements ApplicationCommand {
         return value.replaceAll(/\s+/g, " ").trim();
     }
 
-    async handleInteraction(
-        command: CommandInteraction,
-        _client: Client,
-        context: BotContext,
-    ) {
+    async handleInteraction(command: CommandInteraction, context: BotContext) {
         const cmd = ensureChatInputCommand(command);
 
         const addedBy = await context.guild.members.fetch(command.user);

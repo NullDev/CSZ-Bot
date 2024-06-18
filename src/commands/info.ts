@@ -17,6 +17,7 @@ import type {
 import type { GitHubContributor } from "../types.js";
 import type { ProcessableMessage } from "../handler/cmdHandler.js";
 import { assertNever } from "../utils/typeUtils.js";
+import type { BotContext } from "src/context.js";
 
 const fetchContributions = async (): Promise<Array<GitHubContributor>> => {
     return fetch("https://api.github.com/repos/NullDev/CSZ-Bot/contributors", {
@@ -163,11 +164,11 @@ export class InfoCommand implements ApplicationCommand, MessageCommand {
      */
     async handleInteraction(
         command: CommandInteraction,
-        client: Client,
+        context: BotContext,
     ): Promise<CommandResult> {
         const embed = await buildEmbed(
             command.guild,
-            client.user?.avatarURL() ?? undefined,
+            context.client.user.avatarURL() ?? undefined,
         );
         await command.reply({
             embeds: [embed],
@@ -197,11 +198,11 @@ export class InfoCommand implements ApplicationCommand, MessageCommand {
      */
     async handleMessage(
         message: ProcessableMessage,
-        client: Client,
+        context: BotContext,
     ): Promise<CommandResult> {
         const embed = await buildEmbed(
             message.guild,
-            client.user?.avatarURL() ?? undefined,
+            context.client.user.avatarURL() ?? undefined,
         );
 
         const reply = message.reply({

@@ -25,7 +25,7 @@ import { getConfig } from "./utils/configHandler.js";
  * Object that's passed to every executed command to make it easier to access common channels without repeatedly retrieving stuff via IDs.
  */
 export interface BotContext {
-    /** Initialized client, which guarantees the `user` being set. */
+    /** Initialized client, which guarantees the `user` (the user of the bot) being set. */
     client: Client<true>;
     /** Avoid using the raw config. If the value must be ensured before (for example, the existence of a channel), consider adding it to the context. */
     rawConfig: Config;

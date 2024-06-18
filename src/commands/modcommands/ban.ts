@@ -6,7 +6,6 @@ import {
     SlashCommandStringOption,
     SlashCommandUserOption,
 } from "discord.js";
-import type { Client } from "discord.js";
 
 import type {
     ApplicationCommand,
@@ -55,7 +54,6 @@ export class BanCommand implements ApplicationCommand, MessageCommand {
 
     async handleInteraction(
         command: CommandInteraction,
-        client: Client<boolean>,
         context: BotContext,
     ): Promise<void> {
         if (!command.isChatInputCommand()) {
@@ -108,7 +106,6 @@ export class BanCommand implements ApplicationCommand, MessageCommand {
 
     async handleMessage(
         message: ProcessableMessage,
-        _client: Client<boolean>,
         context: BotContext,
     ): Promise<CommandResult> {
         const user = message.mentions.users.first();

@@ -163,7 +163,6 @@ export class SplidGroupCommand implements ApplicationCommand {
 
     async handleInteraction(
         interaction: CommandInteraction,
-        _client: Client,
         context: BotContext,
     ) {
         const command = ensureChatInputCommand(interaction);

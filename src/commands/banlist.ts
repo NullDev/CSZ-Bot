@@ -21,7 +21,6 @@ export class BanListCommand implements ApplicationCommand {
 
     async handleInteraction(
         command: CommandInteraction<CacheType>,
-        _client: Client<boolean>,
         context: BotContext,
     ): Promise<void> {
         const bans = await banService.findAll();

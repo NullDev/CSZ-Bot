@@ -7,12 +7,7 @@ import { replacePrefixPlaceholders } from "../hilfe.js";
 /**
  * Enlists all mod-commands with descriptions
  */
-export const run: CommandFunction = async (
-    _client,
-    message,
-    _args,
-    context,
-) => {
+export const run: CommandFunction = async (message, _args, context) => {
     const commandObj: Record<string, string> = {};
     const commandDir = context.modCommandDir;
 

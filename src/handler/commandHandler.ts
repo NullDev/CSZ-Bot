@@ -209,7 +209,6 @@ export const registerAllApplicationCommandsAsGuildCommands = async (
  */
 const commandInteractionHandler = async (
     command: CommandInteraction,
-    client: Client,
     context: BotContext,
 ): Promise<void> => {
     const matchingCommand = applicationCommands.find(
@@ -223,7 +222,7 @@ const commandInteractionHandler = async (
     }
 
     log.debug(`Found a matching command ${matchingCommand.name}`);
-    await matchingCommand.handleInteraction(command, client, context);
+    await matchingCommand.handleInteraction(command, context);
 };
 
 const autocompleteInteractionHandler = async (
@@ -254,13 +253,12 @@ const autocompleteInteractionHandler = async (
 
 /**
  * Handles command interactions.
- * @param command the recieved command interaction
+ * @param command the received command interaction
  * @param client client
  * @returns the handled command or an error if no matching command was found.
  */
 const messageComponentInteractionHandler = async (
     command: MessageComponentInteraction,
-    client: Client,
     context: BotContext,
 ): Promise<unknown> => {
     const matchingInteraction = interactions.find(cmd =>
@@ -274,7 +272,7 @@ const messageComponentInteractionHandler = async (
     }
 
     log.debug(`Found a matching interaction ${matchingInteraction.name}`);
-    return matchingInteraction.handleInteraction(command, client, context);
+    return matchingInteraction.handleInteraction(command, context);
 };
 
 const hasPermissions = (
@@ -299,7 +297,6 @@ const hasPermissions = (
  * handles message commands
  * @param commandString the sliced command (e.g. "info")
  * @param message the message which invoked the command
- * @param client client
  * @returns handled message command or nothing if no matching command
  * was found or an error if the command would be a mod command but the
  * invoking user is not a mod
@@ -307,7 +304,6 @@ const hasPermissions = (
 const commandMessageHandler = async (
     commandString: string,
     message: ProcessableMessage,
-    client: Client,
     context: BotContext,
 ): Promise<unknown> => {
     const matchingCommand = messageCommands.find(
@@ -333,7 +329,7 @@ const commandMessageHandler = async (
     const invoker = message.member;
 
     if (hasPermissions(invoker, matchingCommand.requiredPermissions ?? [])) {
-        return matchingCommand.handleMessage(message, client, context);
+        return matchingCommand.handleMessage(message, context);
     }
 
     return Promise.all([
@@ -367,7 +363,6 @@ const isCooledDown = (command: SpecialCommand) => {
 
 const specialCommandHandler = (
     message: ProcessableMessage,
-    client: Client,
     context: BotContext,
 ): Promise<unknown> => {
     const commandCandidates = specialCommands.filter(p =>
@@ -382,18 +377,17 @@ const specialCommandHandler = (
                     `User "${message.author.tag}" (${message.author}) performed special command: ${c.name}`,
                 );
                 lastSpecialCommands[c.name] = Date.now();
-                return c.handleSpecialMessage(message, client, context);
+                return c.handleSpecialMessage(message, context);
             }),
     );
 };
 
 export const handleInteractionEvent = async (
     interaction: Interaction,
-    client: Client,
     context: BotContext,
 ): Promise<void> => {
     if (interaction.isCommand()) {
-        return commandInteractionHandler(interaction, client, context);
+        return commandInteractionHandler(interaction, context);
     }
 
     if (interaction.isAutocomplete()) {
@@ -403,7 +397,6 @@ export const handleInteractionEvent = async (
     if (interaction.isMessageComponent()) {
         await messageComponentInteractionHandler(
             interaction as MessageComponentInteraction,
-            client,
             context,
         );
         return;
@@ -414,7 +407,6 @@ export const handleInteractionEvent = async (
 
 export const messageCommandHandler = async (
     message: Message,
-    client: Client,
     context: BotContext,
 ): Promise<void> => {
     // Bots shall not be able to perform commands. High Security
@@ -436,10 +428,10 @@ export const messageCommandHandler = async (
     ) {
         const cmdString = message.content.split(/\s+/)[0].slice(1);
         if (cmdString) {
-            await commandMessageHandler(cmdString, message, client, context);
+            await commandMessageHandler(cmdString, message, context);
             return;
         }
     }
 
-    await specialCommandHandler(message, client, context);
+    await specialCommandHandler(message, context);
 };
