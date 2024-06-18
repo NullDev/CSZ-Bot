@@ -28,7 +28,7 @@ const lootTemplates: loot.LootTemplate[] = [
     {
         id: 1,
         displayName: "Niedliche Kadse",
-        description: "Awwww",
+        description: "Awww",
         asset: null, // "assets/loot/"
     },
 ];
@@ -37,8 +37,6 @@ async function postLootDrop(channel: GuildChannel) {
     if (!channel.isTextBased()) {
         return;
     }
-
-    const template = randomEntry(lootTemplates);
 
     const validUntil = new Date(Date.now() + lootTimeoutMs);
 
@@ -69,6 +67,7 @@ async function postLootDrop(channel: GuildChannel) {
         ],
     });
 
+    const template = randomEntry(lootTemplates);
     await loot.createLoot(template, validUntil, message);
 
     const collector = message.createMessageComponentCollector({
@@ -102,9 +101,11 @@ async function postLootDrop(channel: GuildChannel) {
                 {
                     title: `Das Geschenk enthielt: ${template.displayName}`,
                     description: template.description,
-                    image: {
-                        url: "opened.gif",
-                    },
+                    image: attachment
+                        ? {
+                              url: "opened.gif",
+                          }
+                        : undefined,
                     footer: {
                         text: `🎉 ${interaction.user.tag} hat das Geschenk geöffnet`,
                     },
