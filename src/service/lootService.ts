@@ -186,6 +186,10 @@ async function postLootDrop(context: BotContext, channel: GuildChannel) {
 
         collector.stop();
 
+        log.info(
+            `User ${interaction.user.username} claimed loot ${claimedLoot.id}`,
+        );
+
         const attachment = template.asset
             ? await fs.readFile(template.asset)
             : null;
@@ -232,6 +236,8 @@ async function postLootDrop(context: BotContext, channel: GuildChannel) {
     if (!l?.winnerId) {
         return;
     }
+
+    log.info(`Loot ${l.id} was not claimed, cleaning up`);
 
     const original = message.embeds[0];
     await message.edit({
