@@ -81,9 +81,21 @@ const lootTemplates: loot.LootTemplate[] = [
             await rollService.rollInChannel(interaction.user, channel, 1, 6);
         },
     },
-    // Ideas:
-    // Trichter, Pfeffi, Private Krankenversicherung, Ayran, eine Heiligsprechung von Jesus höchstpersönlich, eine Grafikkarte aus der Zukunft, Vogerlsalat
-    // Special Loots mit besonderer Aktion? Ban für 2 Minuten? Timeout? Erleuchtung? Sonderrolle, die man nur mit Geschenk gewinnen kann und jedes Mal weitergereicht wird?
+    /*
+        Ideas:
+        - Trichter,
+        - Pfeffi
+        - Private Krankenversicherung
+        - Ayran
+        - eine Heiligsprechung von Jesus höchstpersönlich
+        - eine Grafikkarte aus der Zukunft
+        - Vogerlsalat
+        Special Loots mit besonderer Aktion?
+        - Ban für 2 Minuten?
+        - Timeout?
+        - Erleuchtung?
+        - Sonderrolle, die man nur mit Geschenk gewinnen kann und jedes Mal weitergereicht wird Wächter des Pfeffis?)?
+    */
 ];
 
 export async function runDropAttempt(context: BotContext) {
