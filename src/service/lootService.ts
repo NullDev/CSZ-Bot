@@ -91,6 +91,8 @@ async function postLootDrop(channel: GuildChannel) {
             return;
         }
 
+        collector.stop();
+
         const attachment = template.asset
             ? await fs.readFile(template.asset)
             : null;
