@@ -1,15 +1,6 @@
-import { type APIEmbed, cleanContent } from "discord.js";
-
 import type { CommandFunction } from "../types.js";
-
-/**
- * Creates a pseudo randomly generated number
- * @param {number} min
- * @param {number} max
- * @returns {number} A pseudo randomly generated number
- */
-const pseudoRng = (min: number, max: number): number =>
-    Math.floor(Math.random() * max + min);
+import * as rollService from "../service/rollService.js";
+import { ChannelType } from "discord.js";
 
 /**
  * Return an error string if an error exists.
@@ -44,44 +35,12 @@ const checkParams = (amount: number, sides: number): string | undefined => {
     return undefined;
 };
 
-/**
- * Creates the dice throws based on a simple rng
- *
- * @param diceAmount
- * @param diceSides
- *
- * @returns diceResult of the thrown dice
- */
-const diceResult = (diceAmount: number, diceSides: number): number[] => {
-    const res = [];
-    for (let i = 0; i < diceAmount; ++i) {
-        res.push(pseudoRng(1, diceSides));
-    }
-
-    return res;
-};
-
-/**
- * Creates the final description of the embed
- *
- * @param {Array} rolls
- *
- * @returns {string} the constructed result
- */
-const constructResultStr = (rolls: readonly number[]): string => {
-    let res = "";
-
-    for (let i = 0; i < rolls.length; ++i) {
-        res += `Würfel #${i + 1}: ${rolls[i]}\n`;
-    }
-
-    return res.trim();
-};
-
-/**
- * Creates a dice throw (sequqnce)
- */
 export const run: CommandFunction = async (message, args) => {
+    const channel = message.channel;
+    if (channel.type !== ChannelType.GuildText) {
+        return;
+    }
+
     let parsed = args[0]?.toLowerCase();
 
     // god i hate myself
@@ -98,22 +57,7 @@ export const run: CommandFunction = async (message, args) => {
         return error;
     }
 
-    const maxHexCol = 16777214;
-
-    const embed: APIEmbed = {
-        title: cleanContent(`${parsed}:`, message.channel),
-        timestamp: new Date().toISOString(),
-        author: {
-            name: `Würfel Resultat für ${message.author.username}`,
-            icon_url: message.author.displayAvatarURL(),
-        },
-        color: pseudoRng(0, maxHexCol),
-        description: constructResultStr(diceResult(amount, sides)),
-    };
-
-    await message.channel.send({
-        embeds: [embed],
-    });
+    await rollService.rollInChannel(message.author, channel, amount, sides);
     await message.delete();
 };
 
