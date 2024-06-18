@@ -52,7 +52,7 @@ const lootTemplates: loot.LootTemplate[] = [
         id: 4,
         displayName: "Döner",
         titleText: "Einen Döner",
-        description: "Bewahre ihn gut als Geldanalge auf!",
+        description: "Bewahre ihn gut als Geldanlage auf!",
         asset: "assets/loot/04-doener.jpg",
     },
     {
