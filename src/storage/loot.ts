@@ -13,6 +13,7 @@ import db from "./db/db.js";
 
 export interface LootTemplate {
     id: number;
+    weight: number;
     displayName: string;
     titleText: string;
     description: string;

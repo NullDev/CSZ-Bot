@@ -12,7 +12,7 @@ import {
 } from "discord.js";
 
 import type { BotContext } from "../context.js";
-import { randomEntry } from "../utils/arrayUtils.js";
+import { randomEntry, randomEntryWeighted } from "../utils/arrayUtils.js";
 import * as loot from "../storage/loot.js";
 
 import log from "@log";
@@ -22,6 +22,7 @@ const lootTimeoutMs = 60 * 1000;
 const lootTemplates: loot.LootTemplate[] = [
     {
         id: 0,
+        weight: 20,
         displayName: "Nichts",
         titleText: "✨Nichts✨",
         description: "¯\\_(ツ)_/¯",
@@ -29,6 +30,7 @@ const lootTemplates: loot.LootTemplate[] = [
     },
     {
         id: 1,
+        weight: 4,
         displayName: "Niedliche Kadse",
         titleText: "Eine niedliche Kadse",
         description: "Awww",
@@ -36,6 +38,7 @@ const lootTemplates: loot.LootTemplate[] = [
     },
     {
         id: 2,
+        weight: 1,
         displayName: "Messerblock",
         titleText: "Einen Messerblock",
         description: "🔪",
@@ -43,6 +46,7 @@ const lootTemplates: loot.LootTemplate[] = [
     },
     {
         id: 3,
+        weight: 1,
         displayName: "Sehr teurer Kühlschrank",
         titleText: "Ein sehr teurer Kühlschrank",
         description:
@@ -51,6 +55,7 @@ const lootTemplates: loot.LootTemplate[] = [
     },
     {
         id: 4,
+        weight: 5,
         displayName: "Döner",
         titleText: "Einen Döner",
         description: "Bewahre ihn gut als Geldanlage auf!",
@@ -58,6 +63,7 @@ const lootTemplates: loot.LootTemplate[] = [
     },
     {
         id: 5,
+        weight: 0.5,
         displayName: "Kinn",
         titleText: "Ein Kinn",
         description: "Pass gut drauf auf, sonst flieht es!",
@@ -65,6 +71,7 @@ const lootTemplates: loot.LootTemplate[] = [
     },
     {
         id: 6,
+        weight: 0.5,
         displayName: "Arbeitsunfähigkeitsbescheinigung",
         titleText: "Einen gelben Urlaubsschein",
         description: "Benutze ihn weise!",
@@ -72,6 +79,7 @@ const lootTemplates: loot.LootTemplate[] = [
     },
     {
         id: 7,
+        weight: 5,
         displayName: "Würfelwurf",
         titleText: "Einen Wurf mit einem Würfel",
         description: "🎲",
@@ -96,7 +104,7 @@ const lootTemplates: loot.LootTemplate[] = [
         - Erleuchtung?
         - Sonderrolle, die man nur mit Geschenk gewinnen kann und jedes Mal weitergereicht wird Wächter des Pfeffis?)?
     */
-];
+] as const;
 
 export async function runDropAttempt(context: BotContext) {
     const lootConfig = context.commandConfig.loot;
@@ -164,7 +172,7 @@ async function postLootDrop(context: BotContext, channel: GuildChannel) {
         ],
     });
 
-    const template = randomEntry(lootTemplates);
+    const template = randomEntryWeighted(lootTemplates);
     await loot.createLoot(template, validUntil, message);
 
     const collector = message.createMessageComponentCollector({
