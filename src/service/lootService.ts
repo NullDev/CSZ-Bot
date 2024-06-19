@@ -1,5 +1,6 @@
 import { once } from "node:events";
 import * as fs from "node:fs/promises";
+import { setTimeout } from "node:timers/promises";
 
 import {
     ActionRowBuilder,
@@ -87,6 +88,18 @@ const lootTemplates: loot.LootTemplate[] = [
         specialAction: async (_content, interaction, channel, _loot) => {
             const rollService = await import("./rollService.js");
             await rollService.rollInChannel(interaction.user, channel, 1, 6);
+        },
+    },
+    {
+        id: 8,
+        weight: 2,
+        displayName: "Geschenk",
+        titleText: "Ein weiteres Geschenk",
+        description: ":O",
+        asset: null,
+        specialAction: async (context, interaction, channel, _loot) => {
+            await setTimeout(3000);
+            await postLootDrop(context, channel);
         },
     },
     /*
