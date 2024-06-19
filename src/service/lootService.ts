@@ -101,6 +101,10 @@ const lootTemplates: loot.LootTemplate[] = [
 export async function runDropAttempt(context: BotContext) {
     const lootConfig = context.commandConfig.loot;
     const dice = Math.random();
+
+    log.info(
+        `Rolled dice: ${dice}, against drop chance ${lootConfig.dropChance}`,
+    );
     if (dice > lootConfig.dropChance) {
         return;
     }
