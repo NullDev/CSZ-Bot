@@ -112,12 +112,11 @@ export async function runDropAttempt(context: BotContext) {
     const fallbackChannel = context.textChannels.hauptchat;
     const targetChannelId = lootConfig.targetChannels
         ? randomEntry(lootConfig.targetChannels)
-        : null;
+        : fallbackChannel.id;
 
-    const targetChannel = targetChannelId
-        ? (await context.client.channels.fetch(targetChannelId)) ??
-          fallbackChannel
-        : fallbackChannel;
+    const targetChannel =
+        (await context.client.channels.fetch(targetChannelId)) ??
+        fallbackChannel;
 
     if (targetChannel.type !== ChannelType.GuildText) {
         log.error(
