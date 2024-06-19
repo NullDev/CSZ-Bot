@@ -19,20 +19,22 @@ export type WeightedElement = {
 
 export function randomEntryWeighted<T extends WeightedElement>(
     array: readonly Readonly<T>[],
-): T {
-    const prefixSum = new Array(array.length);
-    let cumulativeSum = 0;
-    for (let i = 0; i < array.length; ++i) {
-        cumulativeSum += array[i].weight;
-        prefixSum[i] = cumulativeSum;
+): Readonly<T> {
+    if (array.length === 0) {
+        throw new Error("Cannot select random entry from empty array");
     }
 
-    const offset = Math.random() * cumulativeSum;
+    const prefixSum = [0];
+    for (let i = 1; i < array.length; ++i) {
+        prefixSum[i] = array[i].weight + prefixSum[i - 1];
+    }
 
-    for (const element of array) {
-        if (element.weight > offset) {
-            return element;
+    const offset = Math.random() * prefixSum[prefixSum.length - 1];
+
+    for (let i = 0; i < array.length; ++i) {
+        if (prefixSum[i] > offset) {
+            return array[i];
         }
     }
-    throw new Error("This should never happen (if you see this, good luck)");
+    return array[array.length - 1];
 }
