@@ -17,6 +17,7 @@ export interface LootTemplate {
     displayName: string;
     titleText: string;
     description: string;
+    emote?: string;
     specialAction?: (
         context: BotContext,
         interaction: ButtonInteraction,

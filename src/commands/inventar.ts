@@ -24,13 +24,19 @@ export class InventarCommand implements MessageCommand {
             return;
         }
 
-        const contentStrings = contents.map(c => `- ${c.displayName}`);
+        const contentsString = contents
+            .map(item => {
+                const emote = lootService.getEmote(item);
+                const e = emote ? `${emote} ` : "";
+                return `- ${e}${item.displayName}`;
+            })
+            .join("\n");
 
         await message.reply({
             embeds: [
                 {
                     title: `Inventar von ${message.member.displayName}`,
-                    description: contentStrings.join("\n"),
+                    description: contentsString,
                     footer: {
                         text: `Es befinden sich insgesamt ${contents.length} Gegenstände im Inventar`,
                     },

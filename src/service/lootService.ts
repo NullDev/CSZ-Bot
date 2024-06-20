@@ -14,6 +14,7 @@ import {
 } from "discord.js";
 
 import type { BotContext } from "../context.js";
+import type { Loot } from "../storage/db/model.js";
 import { randomEntry, randomEntryWeighted } from "../utils/arrayUtils.js";
 import * as loot from "../storage/loot.js";
 
@@ -45,6 +46,7 @@ const lootTemplates: loot.LootTemplate[] = [
         displayName: "Messerblock",
         titleText: "Einen Messerblock",
         description: "🔪",
+        emote: "🔪",
         asset: "assets/loot/02-messerblock.jpg",
     },
     {
@@ -62,6 +64,7 @@ const lootTemplates: loot.LootTemplate[] = [
         displayName: "Döner",
         titleText: "Einen Döner",
         description: "Bewahre ihn gut als Geldanlage auf!",
+        emote: "🥙",
         asset: "assets/loot/04-doener.jpg",
     },
     {
@@ -78,6 +81,7 @@ const lootTemplates: loot.LootTemplate[] = [
         displayName: "Arbeitsunfähigkeitsbescheinigung",
         titleText: "Einen gelben Urlaubsschein",
         description: "Benutze ihn weise!",
+        emote: "🩺",
         asset: "assets/loot/06-krankschreibung.jpg",
     },
     {
@@ -86,6 +90,7 @@ const lootTemplates: loot.LootTemplate[] = [
         displayName: "Würfelwurf",
         titleText: "Einen Wurf mit einem Würfel",
         description: "🎲",
+        emote: "🎲",
         asset: "assets/loot/07-wuerfelwurf.jpg",
         specialAction: async (_content, interaction, channel, _loot) => {
             const rollService = await import("./rollService.js");
@@ -98,6 +103,7 @@ const lootTemplates: loot.LootTemplate[] = [
         displayName: "Geschenk",
         titleText: "Ein weiteres Geschenk",
         description: ":O",
+        emote: "🎁",
         asset: null,
         specialAction: async (context, interaction, channel, _loot) => {
             await setTimeout(3000);
@@ -284,4 +290,8 @@ async function postLootDrop(context: BotContext, channel: GuildChannel) {
 export async function getInventoryContents(user: User) {
     const contents = await loot.findOfUser(user);
     return contents.filter(e => !excludedLootIds.includes(e.lootKindId));
+}
+
+export function getEmote(item: Loot) {
+    return lootTemplates.find(t => t.id === item.lootKindId)?.emote;
 }
