@@ -223,7 +223,7 @@ async function postLootDrop(context: BotContext, channel: GuildChannel) {
         collector.stop();
     });
 
-    await once(collector, "end");
+    await once(collector as unknown as EventTarget, "end");
 
     const claimedLoot = await loot.findOfMessage(message);
     if (!claimedLoot) {

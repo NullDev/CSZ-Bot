@@ -182,7 +182,7 @@ export class Vote2Command implements ApplicationCommand {
             });
         });
 
-        await once(collector, "end");
+        await once(collector as unknown as EventTarget, "end");
 
         const yesVotes = [...votes.values()].filter(v => v).length;
         const noVotes = votes.size - yesVotes;
