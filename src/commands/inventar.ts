@@ -29,7 +29,7 @@ export class InventarCommand implements MessageCommand {
         await message.reply({
             embeds: [
                 {
-                    title: `Inventar von ${message.member}`,
+                    title: `Inventar von ${message.member.displayName}`,
                     description: contentStrings.join("\n"),
                     footer: {
                         text: `Es befinden sich insgesamt ${contents.length} Gegenstände im Inventar`,
