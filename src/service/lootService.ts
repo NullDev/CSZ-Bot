@@ -246,6 +246,7 @@ async function postLootDrop(context: BotContext, channel: GuildChannel) {
                     },
                 },
             ],
+            files: [],
             components: [],
         });
         return;
