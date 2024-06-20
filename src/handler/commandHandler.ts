@@ -76,7 +76,8 @@ import type { ApplicationCommandCreationResponse } from "../types.js";
 import { AoCCommand } from "../commands/aoc.js";
 import { BanListCommand } from "../commands/banlist.js";
 import { Vote2Command } from "../commands/vote2.js";
-import { InstagramLink } from "src/commands/special/instagram.js";
+import { InstagramLink } from "../commands/special/instagram.js";
+import { InventarCommand } from "../commands/inventar.js";
 
 export const commands: readonly Command[] = [
     new InfoCommand(),
@@ -124,6 +125,7 @@ export const commands: readonly Command[] = [
     new AoCCommand(),
     new BanListCommand(),
     new Vote2Command(),
+    new InventarCommand(),
 ];
 export const interactions: readonly UserInteraction[] = [
     new NicknameButtonHandler(),

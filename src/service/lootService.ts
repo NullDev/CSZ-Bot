@@ -10,6 +10,7 @@ import {
     ComponentType,
     type TextChannel,
     type GuildChannel,
+    type User,
 } from "discord.js";
 
 import type { BotContext } from "../context.js";
@@ -20,9 +21,10 @@ import log from "@log";
 
 const lootTimeoutMs = 60 * 1000;
 
+const nothingId = 0;
 const lootTemplates: loot.LootTemplate[] = [
     {
-        id: 0,
+        id: nothingId,
         weight: 20,
         displayName: "Nichts",
         titleText: "✨Nichts✨",
@@ -277,4 +279,9 @@ async function postLootDrop(context: BotContext, channel: GuildChannel) {
         ],
         components: [],
     });
+}
+
+export async function getInventoryContents(user: User) {
+    const contents = await loot.findOfUser(user);
+    return contents.filter(e => e.id !== nothingId);
 }
