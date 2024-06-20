@@ -106,8 +106,9 @@ const lootTemplates: loot.LootTemplate[] = [
         emote: "🎁",
         asset: null,
         specialAction: async (context, interaction, channel, _loot) => {
-            await setTimeout(3000);
-            await postLootDrop(context, channel);
+            // not awaiting this because we need the handler of the collector to finish first
+            // Otherwise, we'll land in a weird state
+            setTimeout(3000).then(() => postLootDrop(context, channel));
         },
     },
     /*
