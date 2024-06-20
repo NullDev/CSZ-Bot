@@ -21,10 +21,10 @@ import log from "@log";
 
 const lootTimeoutMs = 60 * 1000;
 
-const nothingId = 0;
+const excludedLootIds = [0, 8];
 const lootTemplates: loot.LootTemplate[] = [
     {
-        id: nothingId,
+        id: 0,
         weight: 20,
         displayName: "Nichts",
         titleText: "✨Nichts✨",
@@ -283,5 +283,5 @@ async function postLootDrop(context: BotContext, channel: GuildChannel) {
 
 export async function getInventoryContents(user: User) {
     const contents = await loot.findOfUser(user);
-    return contents.filter(e => e.id !== nothingId);
+    return contents.filter(e => !excludedLootIds.includes(e.lootKindId));
 }
