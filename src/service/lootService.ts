@@ -11,6 +11,7 @@ import {
     type TextChannel,
     type GuildChannel,
     type User,
+    Interaction,
 } from "discord.js";
 
 import type { BotContext } from "../context.js";
@@ -92,9 +93,9 @@ const lootTemplates: loot.LootTemplate[] = [
         description: "🎲",
         emote: "🎲",
         asset: "assets/loot/07-wuerfelwurf.jpg",
-        specialAction: async (_content, interaction, channel, _loot) => {
+        specialAction: async (_content, winner, channel, _loot) => {
             const rollService = await import("./rollService.js");
-            await rollService.rollInChannel(interaction.user, channel, 1, 6);
+            await rollService.rollInChannel(winner.user, channel, 1, 6);
         },
     },
     {
@@ -105,10 +106,9 @@ const lootTemplates: loot.LootTemplate[] = [
         description: ":O",
         emote: "🎁",
         asset: null,
-        specialAction: async (context, interaction, channel, _loot) => {
-            // not awaiting this because we need the handler of the collector to finish first
-            // Otherwise, we'll land in a weird state
-            setTimeout(3000).then(() => postLootDrop(context, channel));
+        specialAction: async (context, _winner, channel, _loot) => {
+            await setTimeout(3000);
+            await postLootDrop(context, channel);
         },
     },
     /*
@@ -206,86 +206,93 @@ async function postLootDrop(context: BotContext, channel: GuildChannel) {
         if (interaction.customId !== "take-loot") {
             return;
         }
+        await interaction.deferUpdate();
 
         const claimedLoot = await loot.assignUserToLootDrop(
             interaction.user,
             message,
             new Date(),
         );
-
         if (!claimedLoot) {
             return;
         }
 
-        collector.stop();
-
         log.info(
-            `User ${interaction.user.username} claimed loot ${claimedLoot.id}`,
+            `User ${interaction.user.username} claimed loot ${claimedLoot.id} (template: ${template.id})`,
         );
-
-        const attachment = template.asset
-            ? await fs.readFile(template.asset)
-            : null;
-
-        await message.edit({
-            embeds: [
-                {
-                    title: `Das Geschenk enthielt: ${template.titleText}`,
-                    description: template.description,
-                    image: attachment
-                        ? {
-                              url: "attachment://opened.gif",
-                          }
-                        : undefined,
-                    footer: {
-                        text: `🎉 ${interaction.user.tag} hat das Geschenk geöffnet`,
-                    },
-                },
-            ],
-            files: attachment
-                ? [
-                      {
-                          name: "opened.gif",
-                          attachment,
-                      },
-                  ]
-                : [],
-            components: [],
-        });
-
-        if (template.specialAction) {
-            await template.specialAction(
-                context,
-                interaction,
-                channel as TextChannel,
-                claimedLoot,
-            );
-        }
+        collector.stop();
     });
 
     await once(collector, "end");
 
-    const l = await loot.findOfMessage(message);
-    if (!l?.winnerId) {
+    const claimedLoot = await loot.findOfMessage(message);
+    if (!claimedLoot) {
+        log.error(`Loot message ${message.id} was not found in database`);
         return;
     }
 
-    log.info(`Loot ${l.id} was not claimed, cleaning up`);
+    if (!claimedLoot.winnerId) {
+        log.info(`Loot ${claimedLoot.id} was not claimed, cleaning up`);
 
-    const original = message.embeds[0];
+        const original = message.embeds[0];
+        await message.edit({
+            embeds: [
+                {
+                    ...original,
+                    description:
+                        "Keiner war schnell genug, um es sich zu schnappen :(",
+                    footer: {
+                        text: "❌ Niemand war schnell genug",
+                    },
+                },
+            ],
+            components: [],
+        });
+        return;
+    }
+
+    const winner = await context.guild.members.fetch(claimedLoot.winnerId);
+
+    const attachment = template.asset
+        ? await fs.readFile(template.asset)
+        : null;
+
     await message.edit({
         embeds: [
             {
-                ...original,
-                description:
-                    "Keiner war schnell genug, um es sich zu schnappen :(",
+                title: `Das Geschenk enthielt: ${template.titleText}`,
+                description: template.description,
+                image: attachment
+                    ? {
+                          url: "attachment://opened.gif",
+                      }
+                    : undefined,
                 footer: {
-                    text: "❌ Niemand war schnell genug",
+                    text: `🎉 ${winner.displayName} hat das Geschenk geöffnet`,
                 },
             },
         ],
+        files: attachment
+            ? [
+                  {
+                      name: "opened.gif",
+                      attachment,
+                  },
+              ]
+            : [],
         components: [],
     });
+
+    if (template.specialAction) {
+        await template
+            .specialAction(context, winner, channel as TextChannel, claimedLoot)
+            .catch(err => {
+                log.error(
+                    `Error while executing special action for loot ${claimedLoot.id} (template: ${template.id})`,
+                    err,
+                );
+            });
+    }
 }
 
 export async function getInventoryContents(user: User) {

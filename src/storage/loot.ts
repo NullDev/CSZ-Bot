@@ -1,6 +1,6 @@
 import type {
-    ButtonInteraction,
     GuildChannel,
+    GuildMember,
     Message,
     TextChannel,
     User,
@@ -20,7 +20,7 @@ export interface LootTemplate {
     emote?: string;
     specialAction?: (
         context: BotContext,
-        interaction: ButtonInteraction,
+        winner: GuildMember,
         sourceChannel: TextChannel & GuildChannel,
         claimedLoot: Loot,
     ) => Promise<void>;
@@ -80,6 +80,7 @@ export async function assignUserToLootDrop(
         })
         .where("messageId", "=", message.id)
         .where("validUntil", ">", now.toISOString())
+        .where("winnerId", "=", null)
         .returningAll()
-        .executeTakeFirstOrThrow();
+        .executeTakeFirst();
 }
