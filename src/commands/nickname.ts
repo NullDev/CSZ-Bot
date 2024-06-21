@@ -119,17 +119,15 @@ export class Nickname implements ApplicationCommand {
             return;
         }
 
-        try {
-            const option = cmd.options.getSubcommand();
-            const commandUser = guild.members.cache.find(
-                m => m.id === cmd.user.id,
-            );
-            // We know that the user option is in every subcmd.
-            const user = cmd.options.getUser("user", true);
-            const isTrusted =
-                commandUser && context.roleGuard.isTrusted(commandUser);
-            const isSameUser = user.id === commandUser?.user.id;
+        const option = cmd.options.getSubcommand();
+        const commandUser = guild.members.cache.find(m => m.id === cmd.user.id);
+        // We know that the user option is in every subcmd.
+        const user = cmd.options.getUser("user", true);
+        const isTrusted =
+            commandUser && context.roleGuard.isTrusted(commandUser);
+        const isSameUser = user.id === commandUser?.user.id;
 
+        try {
             switch (option) {
                 case "deleteall": {
                     if (!isTrusted && !isSameUser) {
