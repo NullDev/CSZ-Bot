@@ -198,6 +198,9 @@ async function postLootDrop(context: BotContext, channel: GuildChannel) {
         return;
     }
 
+    const hamster =
+        context.guild.emojis.cache.find(e => e.name === "sad_hamster") ?? ":(";
+
     const validUntil = new Date(Date.now() + lootTimeoutMs);
 
     const takeLootButton = new ButtonBuilder()
@@ -247,8 +250,7 @@ async function postLootDrop(context: BotContext, channel: GuildChannel) {
             embeds: [
                 {
                     ...original,
-                    description:
-                        "Keiner war schnell genug, um es sich zu schnappen :(",
+                    description: `Oki aber nächstes mal bitti aufmachi, sonst muss ichs wieder mitnehmi ${hamster}`,
                     footer: {
                         text: "❌ Niemand war schnell genug",
                     },
@@ -268,9 +270,6 @@ async function postLootDrop(context: BotContext, channel: GuildChannel) {
         new Date(),
     );
     if (!claimedLoot) {
-        const hamster =
-            context.guild.emojis.cache.find(e => e.name === "sad_hamster") ??
-            ":(";
         await reply.edit({
             content: `Upsi, da ist was schief gelaufi oder jemand anderes war schnelli ${hamster}`,
         });
