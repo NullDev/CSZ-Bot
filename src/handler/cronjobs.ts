@@ -8,7 +8,7 @@ import { endAprilFools, startAprilFools } from "./aprilFoolsHandler.js";
 import { woisVoteScheduler } from "../commands/woisvote.js";
 import { publishAocLeaderBoard } from "../commands/aoc.js";
 import { rotate } from "../helper/bannerCarusel.js";
-import { leetTask } from "./purge.js";
+import { leetTask } from "../service/purgeService.js";
 import { processBans } from "../service/banService.js";
 import { runDropAttempt } from "../service/lootService.js";
 import { clearWoisLogTask } from "../service/voiceStateService.js";

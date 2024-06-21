@@ -2,7 +2,7 @@ import type { BotContext } from "../context.js";
 
 import log from "@log";
 
-export const leetTask = async (context: BotContext) => {
+export async function leetTask(context: BotContext) {
     const { hauptchat } = context.textChannels;
     const csz = context.guild;
 
@@ -67,4 +67,4 @@ export const leetTask = async (context: BotContext) => {
     );
 
     log.info(`Auto-kick: ${membersToKick.size} members kicked.`);
-};
+}
