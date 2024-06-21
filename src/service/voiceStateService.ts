@@ -8,9 +8,11 @@ export interface VoiceUpdateEvent {
     createdAt: Date;
 }
 
-export const woisData = {
-    latestEvents: [] as VoiceUpdateEvent[],
-};
+let latestEvents: VoiceUpdateEvent[] = [];
+export function getLatestEvents(): VoiceUpdateEvent[] {
+    // getter needed for better ESM compat
+    return latestEvents;
+}
 
 export async function checkVoiceUpdate(
     oldState: VoiceState,
@@ -26,7 +28,7 @@ export async function checkVoiceUpdate(
     // User joined Channel
     if (oldState.channel === null && newState.channel !== null) {
         if (newState.channelId === mainVoiceId) {
-            woisData.latestEvents.push({
+            latestEvents.push({
                 oldState,
                 newState,
                 createdAt: new Date(),
@@ -38,7 +40,7 @@ export async function checkVoiceUpdate(
     if (oldState.channel !== null && newState.channel === null) {
         if (newState.channelId === mainVoiceId) {
             // Add to latest events
-            woisData.latestEvents.push({
+            latestEvents.push({
                 oldState,
                 newState,
                 createdAt: new Date(),
@@ -47,8 +49,8 @@ export async function checkVoiceUpdate(
     }
 }
 
-export const clearWoisLogTask = (_context: BotContext) => {
-    woisData.latestEvents = woisData.latestEvents.filter(
+export function clearWoisLogTask() {
+    latestEvents = latestEvents.filter(
         event => event.createdAt.getTime() > Date.now() - 2 * 60 * 1000,
     );
-};
+}

@@ -15,7 +15,7 @@ import * as fadingMessageHandler from "./handler/fadingMessageHandler.js";
 import * as kysely from "./storage/db/db.js";
 
 import reactionHandler from "./handler/reactionHandler.js";
-import { checkVoiceUpdate } from "./handler/voiceStateUpdateHandler.js";
+import * as voiceStateService from "./service/voiceStateService.js";
 
 import {
     handleInteractionEvent,
@@ -283,7 +283,7 @@ client.on("messageReactionRemove", async (event, user) => {
 });
 
 client.on("voiceStateUpdate", (old, next) =>
-    checkVoiceUpdate(old, next, botContext),
+    voiceStateService.checkVoiceUpdate(old, next, botContext),
 );
 
 function login() {

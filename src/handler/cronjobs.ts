@@ -9,10 +9,10 @@ import { endAprilFools, startAprilFools } from "./aprilFoolsHandler.js";
 import { woisVoteScheduler } from "../commands/woisvote.js";
 import { publishAocLeaderBoard } from "../commands/aoc.js";
 import { rotate } from "../helper/bannerCarusel.js";
-import { clearWoisLogTask } from "./voiceStateUpdateHandler.js";
 import { leetTask } from "./purge.js";
 import { processBans } from "../service/banService.js";
 import { runDropAttempt } from "../service/lootService.js";
+import { clearWoisLogTask } from "../service/voiceStateService.js";
 
 import * as poll from "../commands/poll.js";
 import * as ehre from "../storage/ehre.js";
@@ -37,7 +37,7 @@ export const scheduleCronjobs = async (context: BotContext) => {
     schedule("1 0 * * *", () => ehre.resetVotes());
     schedule("0 0 1 */2 *", () => rotate(context));
     schedule("37 13 * * *", () => leetTask(context));
-    schedule("5 * * * *", () => clearWoisLogTask(context));
+    schedule("5 * * * *", () => clearWoisLogTask());
 
     const loot = context.commandConfig.loot;
     if (loot.enabled) {
