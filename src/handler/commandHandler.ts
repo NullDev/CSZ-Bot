@@ -126,6 +126,7 @@ export const commands: readonly Command[] = [
     new Vote2Command(),
     new InventarCommand(),
 ];
+
 export const interactions: readonly UserInteraction[] = [
     new NicknameButtonHandler(),
 ];

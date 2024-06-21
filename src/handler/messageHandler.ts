@@ -23,10 +23,14 @@ export default async function (message: Message, context: BotContext) {
         .replace(context.prefix.modCommand, "")
         .replace(/\s/g, "");
     // Maybe we can move some of these checks to `isProcessableMessage`, but we need to figure out how to represent this in a type
-    if (message.author.bot || nonBiased === "") return;
+    if (message.author.bot || nonBiased === "") {
+        return;
+    }
 
     // Ensures that every command always gets a message that fits certain criteria (for example, being a message originating from a server, not a DM)
-    if (!isProcessableMessage(message)) return;
+    if (!isProcessableMessage(message)) {
+        return;
+    }
 
     const isNormalCommand = message.content.startsWith(context.prefix.command);
     const isModCommand = message.content.startsWith(context.prefix.modCommand);
