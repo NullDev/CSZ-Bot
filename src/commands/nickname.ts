@@ -113,10 +113,15 @@ export class Nickname implements ApplicationCommand {
 
     async handleInteraction(command: CommandInteraction, context: BotContext) {
         const cmd = ensureChatInputCommand(command);
+        const guild = cmd.guild;
+        if (guild === null) {
+            await cmd.reply("Hurensohn. Der Command ist nix für dich.");
+            return;
+        }
 
         try {
             const option = cmd.options.getSubcommand();
-            const commandUser = cmd.guild?.members.cache.find(
+            const commandUser = guild.members.cache.find(
                 m => m.id === cmd.user.id,
             );
             // We know that the user option is in every subcmd.
@@ -125,97 +130,111 @@ export class Nickname implements ApplicationCommand {
                 commandUser && context.roleGuard.isTrusted(commandUser);
             const isSameUser = user.id === commandUser?.user.id;
 
-            if (option === "deleteall") {
-                // Yes, we could use a switch-statement here. No, that wouldn't make the code more readable as we're than
-                // struggling with the nickname parameter which is mandatory only in "add" and "delete" commands.
-                // Yes, we could rearrange the code parts into separate functions. Feel free to do so.
-                // Yes, "else" is uneccessary as we're returning in every block. However, I find the semantics more clear.
-                if (!isTrusted && !isSameUser) {
-                    await cmd.reply("Hurensohn. Der Command ist nix für dich.");
-                    return;
-                }
-                const member = cmd.guild?.members.cache.get(user.id);
-                if (!member) {
-                    await cmd.reply(
-                        "Hurensohn. Der Brudi ist nicht auf dem Server.",
-                    );
-                    return;
-                }
-                await nickName.deleteAllNickNames(user);
-                await this.updateNickName(member, null);
-                await cmd.reply("Ok Brudi. Hab alles gelöscht");
-                return;
-            }
+            switch (option) {
+                case "deleteall": {
+                    if (!isTrusted && !isSameUser) {
+                        await cmd.reply(
+                            "Hurensohn. Der Command ist nix für dich.",
+                        );
+                        return;
+                    }
 
-            if (option === "list") {
-                const nicknames = await nickName.getNicknames(user.id);
-                if (nicknames.length === 0) {
-                    await cmd.reply("Ne Brudi für den hab ich keine Nicknames");
-                    return;
-                }
-                await cmd.reply(
-                    `Hab für den Brudi folgende Nicknames (${
-                        nicknames.length
-                    }):\n${nicknames.map(n => n.nickName).join(", ")}`,
-                );
-                return;
-            }
+                    const member = guild.members.cache.get(user.id);
+                    if (!member) {
+                        await cmd.reply(
+                            "Hurensohn. Der Brudi ist nicht auf dem Server.",
+                        );
+                        return;
+                    }
 
-            if (option === "add") {
-                if (!isTrusted) {
-                    await cmd.reply("Hurensohn. Der Command ist nix für dich.");
-                    return;
-                }
-                const nickname = cmd.options.getString("nickname", true);
-                if (await nickName.nickNameExist(user.id, nickname)) {
-                    await cmd.reply(
-                        `Würdest du Hurensohn aufpassen, wüsstest du, dass für ${user} '${nickname}' bereits existiert.`,
-                    );
-                    return;
-                }
-                return Nickname.#createNickNameVote(
-                    command,
-                    user,
-                    nickname,
-                    isTrusted,
-                );
-            }
-
-            if (option === "delete") {
-                if (!isTrusted && !isSameUser) {
-                    await cmd.reply("Hurensohn. Der Command ist nix für dich.");
-                    return;
-                }
-
-                // We don't violate the DRY principle, since we're referring to another subcommand object as in the "add" subcmd.
-                // Code is equal but knowledge differs.
-                const nickname = cmd.options.getString("nickname", true);
-                await nickName.deleteNickName(user, nickname);
-                const member = cmd.guild?.members.cache.get(user.id);
-                if (!member) {
-                    await cmd.reply(
-                        "Hurensohn. Der Brudi ist nicht auf dem Server.",
-                    );
-                    return;
-                }
-
-                if (member.nickname === nickname) {
+                    await nickName.deleteAllNickNames(user);
                     await this.updateNickName(member, null);
+
+                    await cmd.reply("Ok Brudi. Hab alles gelöscht");
+                    return;
                 }
 
-                await cmd.reply(
-                    `Ok Brudi. Hab für ${user} ${nickname} gelöscht`,
-                );
-                return;
-            }
+                case "list": {
+                    await this.#listNicknames(cmd, user);
+                    return;
+                }
 
-            await cmd.reply("Das hätte nie passieren dürfen");
-            return;
+                case "add": {
+                    if (!isTrusted) {
+                        await cmd.reply(
+                            "Hurensohn. Der Command ist nix für dich.",
+                        );
+                        return;
+                    }
+
+                    const nickname = cmd.options.getString("nickname", true);
+                    if (await nickName.nickNameExist(user.id, nickname)) {
+                        await cmd.reply(
+                            `Würdest du Hurensohn aufpassen, wüsstest du, dass für ${user} '${nickname}' bereits existiert.`,
+                        );
+                        return;
+                    }
+
+                    return Nickname.#createNickNameVote(
+                        command,
+                        user,
+                        nickname,
+                        isTrusted,
+                    );
+                }
+
+                case "delete": {
+                    if (!isTrusted && !isSameUser) {
+                        await cmd.reply(
+                            "Hurensohn. Der Command ist nix für dich.",
+                        );
+                        return;
+                    }
+
+                    // We don't violate the DRY principle, since we're referring to another subcommand object as in the "add" subcmd.
+                    // Code is equal but knowledge differs.
+                    const nickname = cmd.options.getString("nickname", true);
+                    await nickName.deleteNickName(user, nickname);
+
+                    const member = guild.members.cache.get(user.id);
+                    if (!member) {
+                        await cmd.reply(
+                            "Hurensohn. Der Brudi ist nicht auf dem Server.",
+                        );
+                        return;
+                    }
+
+                    if (member.nickname === nickname) {
+                        await this.updateNickName(member, null);
+                    }
+
+                    await cmd.reply(
+                        `Ok Brudi. Hab für ${user} ${nickname} gelöscht`,
+                    );
+                    return;
+                }
+                default: {
+                    await cmd.reply("Das hätte nie passieren dürfen");
+                }
+            }
         } catch (e) {
             log.error(e);
             await cmd.reply("Das hätte nie passieren dürfen");
+        }
+    }
+
+    async #listNicknames(interaction: CommandInteraction, user: User) {
+        const nicknames = await nickName.getNicknames(user.id);
+        if (nicknames.length === 0) {
+            await interaction.reply("Ne Brudi für den hab ich keine Nicknames");
             return;
         }
+
+        const nickList = nicknames.map(n => n.nickName).join(", ");
+        await interaction.reply(
+            `Hab für den Brudi folgende Nicknames (${nicknames.length}):\n${nickList}`,
+        );
+        return;
     }
 
     async autocomplete(interaction: AutocompleteInteraction) {
