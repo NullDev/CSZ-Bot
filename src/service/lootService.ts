@@ -201,10 +201,7 @@ async function postLootDrop(context: BotContext, channel: GuildChannel) {
 
     try {
         interaction = await message.awaitMessageComponent({
-            filter: i => {
-                i.deferUpdate();
-                return i.customId === "take-loot";
-            },
+            filter: i => i.customId === "take-loot",
             componentType: ComponentType.Button,
             time: lootTimeoutMs,
         });
