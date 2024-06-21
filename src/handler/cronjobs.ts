@@ -1,7 +1,6 @@
 import cron, { type CronOptions } from "croner";
 
 import type { BotContext } from "../context.js";
-import { checkBirthdays } from "./bdayHandler.js";
 import { rerollNicknames } from "./nicknameHandler.js";
 import { connectAndPlaySaufen } from "./voiceHandler.js";
 import { reminderHandler } from "../commands/erinnerung.js";
@@ -13,6 +12,7 @@ import { leetTask } from "./purge.js";
 import { processBans } from "../service/banService.js";
 import { runDropAttempt } from "../service/lootService.js";
 import { clearWoisLogTask } from "../service/voiceStateService.js";
+import { checkBirthdays } from "../service/birthdayService.js";
 
 import * as poll from "../commands/poll.js";
 import * as ehre from "../storage/ehre.js";

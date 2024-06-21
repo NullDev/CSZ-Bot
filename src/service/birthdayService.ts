@@ -6,10 +6,10 @@ import * as birthday from "../storage/birthday.js";
 import type { BotContext } from "../context.js";
 
 /**
- * Iterates over the list of bdays and assigns a role to people having their cake day.
+ * Iterates over the list of birthdays and assigns a role to people having their cake day.
  */
 export async function checkBirthdays(context: BotContext) {
-    log.debug("Entered `BdayHandler#checkBirthdays`");
+    log.debug("Entered `birthdayService.checkBirthdays`");
 
     const birthdayRole = context.roles.bday;
     // const todaysBirthdays = await Birthday.getTodaysBirthdays();
