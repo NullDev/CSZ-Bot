@@ -38,3 +38,13 @@ export function randomEntryWeighted<T extends WeightedElement>(
     }
     return array[array.length - 1];
 }
+
+export function shuffleArray<T>(
+    array: readonly T[],
+    biasFn: (item: T) => number,
+): T[] {
+    return array
+        .map((value, _idx) => ({ value, bias: biasFn(value) }))
+        .sort((a, b) => a.bias - b.bias)
+        .map(({ value }) => value);
+}
