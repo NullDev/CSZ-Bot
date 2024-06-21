@@ -121,16 +121,16 @@ export class Nickname implements ApplicationCommand {
             );
             // We know that the user option is in every subcmd.
             const user = cmd.options.getUser("user", true);
-            const trusted =
+            const isTrusted =
                 commandUser && context.roleGuard.isTrusted(commandUser);
-            const sameuser = user.id === commandUser?.user.id;
+            const isSameUser = user.id === commandUser?.user.id;
 
             if (option === "deleteall") {
                 // Yes, we could use a switch-statement here. No, that wouldn't make the code more readable as we're than
                 // struggling with the nickname parameter which is mandatory only in "add" and "delete" commands.
                 // Yes, we could rearrange the code parts into separate functions. Feel free to do so.
                 // Yes, "else" is uneccessary as we're returning in every block. However, I find the semantics more clear.
-                if (!trusted && !sameuser) {
+                if (!isTrusted && !isSameUser) {
                     await cmd.reply("Hurensohn. Der Command ist nix für dich.");
                     return;
                 }
@@ -162,7 +162,7 @@ export class Nickname implements ApplicationCommand {
             }
 
             if (option === "add") {
-                if (!trusted) {
+                if (!isTrusted) {
                     await cmd.reply("Hurensohn. Der Command ist nix für dich.");
                     return;
                 }
@@ -177,13 +177,12 @@ export class Nickname implements ApplicationCommand {
                     command,
                     user,
                     nickname,
-                    trusted,
+                    isTrusted,
                 );
-                //    await this.addNickname(command, user);
             }
 
             if (option === "delete") {
-                if (!trusted && !sameuser) {
+                if (!isTrusted && !isSameUser) {
                     await cmd.reply("Hurensohn. Der Command ist nix für dich.");
                     return;
                 }
