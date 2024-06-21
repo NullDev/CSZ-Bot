@@ -62,7 +62,7 @@ const drawStempelkarteBackside = async (
     const avatarUnavailable = await fs.readFile("assets/no-avatar.png");
     const avatarUnavailableImage = await loadImage(avatarUnavailable);
 
-    const background = await fs.readFile("assets/stempelkarte-back.png");
+    const background = await fs.readFile("assets/stempelkarte/back.png");
     const backgroundImage = await loadImage(background);
 
     const canvas = createCanvas(backgroundImage.width, backgroundImage.height);
@@ -174,7 +174,7 @@ export class StempelkarteCommand implements ApplicationCommand {
         ) as PromiseFulfilledResult<Buffer>[];
 
         const files = results.map((result, index) => ({
-            name: `stempelkarte-${ofMember.nickname}-${index}.png`,
+            name: `stempelkarte/${ofMember.nickname}-${index}.png`,
             attachment: result.value,
         }));
 
