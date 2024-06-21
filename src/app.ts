@@ -165,14 +165,12 @@ client.once("ready", async initializedClient => {
  * for the "old commands". This way we can easily migrate commands to slash commands
  * and still have the option to use the textual commands. Win-Win :cooldoge:
  */
-client.on(
-    "messageCreate",
-    async message => await messageCommandHandler(message, botContext),
+client.on("messageCreate", message =>
+    messageCommandHandler(message, botContext),
 );
 
-client.on(
-    "interactionCreate",
-    async interaction => await handleInteractionEvent(interaction, botContext),
+client.on("interactionCreate", interaction =>
+    handleInteractionEvent(interaction, botContext),
 );
 
 client.on("guildCreate", guild =>
@@ -212,19 +210,12 @@ client.on("guildMemberAdd", async member => {
     });
 });
 
-client.on(
-    "guildMemberRemove",
-    async member => await guildRageQuit.incrementRageQuit(member.guild, member),
+client.on("guildMemberRemove", member =>
+    guildRageQuit.incrementRageQuit(member.guild, member),
 );
 
-client.on(
-    "messageCreate",
-    async message => await messageHandler(message, botContext),
-);
-client.on(
-    "messageCreate",
-    async message => await deleteThreadMessagesHandler(message, botContext),
-);
+client.on("messageCreate", m => messageHandler(m, botContext));
+client.on("messageCreate", m => deleteThreadMessagesHandler(m, botContext));
 
 client.on("messageDelete", async message => {
     try {
@@ -253,9 +244,7 @@ client.on("debug", d => {
     }
     log.debug(d, "Discord Client Debug");
 });
-client.on("rateLimit", data =>
-    log.error(data, "Discord client rate limit reached"),
-);
+client.on("rateLimit", d => log.error(d, "Discord client rate limit reached"));
 client.on("invalidated", () => log.debug("Client invalidated"));
 
 client.on("messageReactionAdd", async (event, user) => {
@@ -293,10 +282,8 @@ client.on("messageReactionRemove", async (event, user) => {
     }
 });
 
-client.on(
-    "voiceStateUpdate",
-    async (oldState, newState) =>
-        await checkVoiceUpdate(oldState, newState, botContext),
+client.on("voiceStateUpdate", (old, next) =>
+    checkVoiceUpdate(old, next, botContext),
 );
 
 function login() {

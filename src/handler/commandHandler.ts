@@ -2,7 +2,6 @@ import {
     type APIApplicationCommand,
     ApplicationCommandPermissionType,
     type AutocompleteInteraction,
-    type Client,
     type CommandInteraction,
     type Interaction,
     type Message,
@@ -13,7 +12,6 @@ import {
     Routes,
 } from "discord.js";
 import type { GuildMember } from "discord.js";
-import * as banService from "../service/banService.js";
 
 /**
  * Completely new bullish command handler it unifies slash commands and
@@ -30,6 +28,7 @@ import {
     type UserInteraction,
 } from "../commands/command.js";
 import type { BotContext } from "../context.js";
+import * as banService from "../service/banService.js";
 import type { ApplicationCommandCreationResponse } from "../types.js";
 import log from "@log";
 import { InfoCommand } from "../commands/info.js";

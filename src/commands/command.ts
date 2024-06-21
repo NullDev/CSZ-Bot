@@ -9,11 +9,7 @@ import type { AutocompleteInteraction, CommandInteraction } from "discord.js";
 import type { ProcessableMessage } from "../handler/cmdHandler.js";
 import type { BotContext } from "../context.js";
 
-// A command can be an application command (slash command) or a message command or both
 export type Command = ApplicationCommand | MessageCommand | SpecialCommand;
-export type ApplicationCommand = CommandBase & AppCommand;
-export type MessageCommand = CommandBase & MsgCommand;
-export type SpecialCommand = CommandBase & SpcalCommand;
 
 export interface CommandBase {
     readonly modCommand?: boolean;
@@ -33,8 +29,8 @@ export interface UserInteraction {
 }
 
 // For ApplicationCommands we require a SlashCommandBuilder object to create the command and a handler method
-interface AppCommand {
-    applicationCommand: Pick<
+export interface ApplicationCommand extends CommandBase {
+    readonly applicationCommand: Pick<
         SlashCommandBuilder | ContextMenuCommandBuilder,
         "toJSON"
     >;
@@ -49,7 +45,7 @@ interface AppCommand {
 }
 
 // For a MessageCommand we require an additional modCommand property and a handler method
-interface MsgCommand {
+export interface MessageCommand extends CommandBase {
     handleMessage(
         message: ProcessableMessage,
         context: BotContext,
@@ -57,9 +53,9 @@ interface MsgCommand {
 }
 
 // For SpecialCommands we require a pattern and a randomness (<= 1)
-interface SpcalCommand {
-    randomness: number;
-    cooldownTime?: number;
+export interface SpecialCommand extends CommandBase {
+    readonly randomness: number;
+    readonly cooldownTime?: number;
     handleSpecialMessage(
         message: ProcessableMessage,
         context: BotContext,

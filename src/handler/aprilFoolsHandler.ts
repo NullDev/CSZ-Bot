@@ -38,14 +38,14 @@ const createShuffledNicknames = async (
         tmpNicknameStore[id] = member.displayName;
     }
 
-    const averageCockSize: Record<Snowflake, number> =
-        await penis.getAveragePenisSizes();
-    const averageBoobSize: Record<Snowflake, number> =
-        await boob.getAverageBoobSizes();
-    const biasFnId = (id: Snowflake): number =>
+    const averageCockSize = await penis.getAveragePenisSizes();
+    const averageBoobSize = await boob.getAverageBoobSizes();
+
+    const biasFnId = (id: Snowflake) =>
         Math.random() * (averageCockSize[id] ?? 0.01) +
         (averageBoobSize[id] ?? 0.01);
-    const biasFnMember = (member: GuildMember): number => biasFnId(member.id);
+
+    const biasFnMember = (member: GuildMember) => biasFnId(member.id);
     const shuffledIds = shuffleArray(Array.from(members.keys()), biasFnId);
     const shuffledNames = shuffleArray(
         Array.from(members.values()),
@@ -85,7 +85,7 @@ const logRenameResult = (result: PromiseSettledResult<GuildMember>[]) => {
     ) as PromiseRejectedResult[];
 
     log.info(
-        `${fulfilled.length} users where renamed. ${rejected.length} renamings failed`,
+        `${fulfilled.length} users where renamed. ${rejected.length} rename ops failed`,
     );
     for (const rejection of rejected) {
         log.error(`Rename failed because of: ${rejection.reason}`);
