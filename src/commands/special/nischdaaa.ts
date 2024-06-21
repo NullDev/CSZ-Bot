@@ -1,7 +1,5 @@
-import type { Client } from "discord.js";
-
 import type { ProcessableMessage } from "../../handler/cmdHandler.js";
-import type { SpecialCommand, CommandResult } from "../command.js";
+import type { SpecialCommand } from "../command.js";
 
 export class NischdaaaCommand implements SpecialCommand {
     name = "Nischdaaa";
@@ -15,9 +13,7 @@ export class NischdaaaCommand implements SpecialCommand {
         );
     }
 
-    async handleSpecialMessage(
-        message: ProcessableMessage,
-    ): Promise<CommandResult> {
+    async handleSpecialMessage(message: ProcessableMessage): Promise<void> {
         await message.reply({
             content: "Nischdaaaa",
         });

@@ -1,6 +1,6 @@
 import type { Message } from "discord.js";
 
-import type { SpecialCommand, CommandResult } from "../command.js";
+import type { SpecialCommand } from "../command.js";
 import * as instagram from "../../utils/instagram.js";
 
 const instagramOptions = {
@@ -34,7 +34,7 @@ export class InstagramLink implements SpecialCommand {
         return pattern.test(message.content);
     }
 
-    async handleSpecialMessage(message: Message): Promise<CommandResult> {
+    async handleSpecialMessage(message: Message): Promise<void> {
         await message.channel.sendTyping();
 
         const postUri = message.content.replace("http://", "https://");

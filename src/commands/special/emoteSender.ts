@@ -1,7 +1,7 @@
-import type { Message, Client } from "discord.js";
+import type { Message } from "discord.js";
 
 import type { BotContext } from "../../context.js";
-import type { SpecialCommand, CommandResult } from "../command.js";
+import type { SpecialCommand } from "../command.js";
 import log from "@log";
 
 export class EmoteSenderCommand implements SpecialCommand {
@@ -32,7 +32,7 @@ export class EmoteSenderCommand implements SpecialCommand {
     async handleSpecialMessage(
         message: Message,
         context: BotContext,
-    ): Promise<CommandResult> {
+    ): Promise<void> {
         const trimmedContent = this.#trimMessage(message);
         const pickedEmotes: string[] | undefined = this.emotes[trimmedContent];
         if (pickedEmotes === undefined) {

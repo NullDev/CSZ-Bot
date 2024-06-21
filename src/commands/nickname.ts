@@ -11,15 +11,10 @@ import {
     SlashCommandUserOption,
     ComponentType,
     type AutocompleteInteraction,
-    type Client,
 } from "discord.js";
 
 import type { BotContext } from "../context.js";
-import type {
-    ApplicationCommand,
-    CommandResult,
-    UserInteraction,
-} from "./command.js";
+import type { ApplicationCommand, UserInteraction } from "./command.js";
 import log from "@log";
 import { ensureChatInputCommand } from "../utils/interactionUtils.js";
 import * as nickName from "../storage/nickName.js";
@@ -119,7 +114,7 @@ export class Nickname implements ApplicationCommand {
     async handleInteraction(
         command: CommandInteraction,
         context: BotContext,
-    ): Promise<CommandResult> {
+    ): Promise<void> {
         const cmd = ensureChatInputCommand(command);
 
         try {

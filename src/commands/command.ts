@@ -32,10 +32,6 @@ export interface UserInteraction {
     ): Promise<void>;
 }
 
-// For the sake of simplicity, at the moment every command returns void
-// biome-ignore lint/suspicious/noConfusingVoidType: It's ok here, since this is the return type of a promise.
-export type CommandResult = void;
-
 // For ApplicationCommands we require a SlashCommandBuilder object to create the command and a handler method
 interface AppCommand {
     applicationCommand: Pick<
@@ -45,7 +41,7 @@ interface AppCommand {
     handleInteraction(
         command: CommandInteraction,
         context: BotContext,
-    ): Promise<CommandResult>;
+    ): Promise<void>;
     autocomplete?(
         interaction: AutocompleteInteraction,
         context: BotContext,
@@ -57,7 +53,7 @@ interface MsgCommand {
     handleMessage(
         message: ProcessableMessage,
         context: BotContext,
-    ): Promise<CommandResult>;
+    ): Promise<void>;
 }
 
 // For SpecialCommands we require a pattern and a randomness (<= 1)
@@ -67,7 +63,7 @@ interface SpcalCommand {
     handleSpecialMessage(
         message: ProcessableMessage,
         context: BotContext,
-    ): Promise<CommandResult>;
+    ): Promise<void>;
     matches(message: ProcessableMessage, context: BotContext): boolean;
 }
 

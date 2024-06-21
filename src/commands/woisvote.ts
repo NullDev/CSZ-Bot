@@ -14,12 +14,12 @@ import {
     TimestampStyles,
 } from "discord.js";
 
-import type { ApplicationCommand, CommandResult } from "./command.js";
+import type { ApplicationCommand } from "./command.js";
 import * as woisAction from "../storage/woisAction.js";
 import type { ReactionHandler } from "../types.js";
 import type { BotContext } from "../context.js";
-import log from "@log";
 import { chunkArray } from "../utils/arrayUtils.js";
+import log from "@log";
 
 const defaultWoisTime = "20:00";
 // Constant can be used to check whether a message is a woisvote without querying the database
@@ -83,7 +83,7 @@ export class WoisCommand implements ApplicationCommand {
     async handleInteraction(
         command: CommandInteraction,
         context: BotContext,
-    ): Promise<CommandResult> {
+    ): Promise<void> {
         if (!command.isChatInputCommand()) {
             // TODO: Solve this on a type level
             return;

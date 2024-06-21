@@ -5,17 +5,11 @@ import {
 } from "discord.js";
 import type {
     Message,
-    Client,
     CommandInteraction,
     PermissionsString,
-    Interaction,
 } from "discord.js";
 
-import type {
-    ApplicationCommand,
-    CommandResult,
-    MessageCommand,
-} from "../command.js";
+import type { ApplicationCommand, MessageCommand } from "../command.js";
 import type { BotContext } from "../../context.js";
 
 import * as banService from "../../service/banService.js";
@@ -39,7 +33,7 @@ export class UnbanCommand implements ApplicationCommand, MessageCommand {
     async handleInteraction(
         command: CommandInteraction,
         context: BotContext,
-    ): Promise<CommandResult> {
+    ): Promise<void> {
         if (!(command instanceof ChatInputCommandInteraction)) {
             // TODO: handle this on a type level
             return;
@@ -70,10 +64,7 @@ export class UnbanCommand implements ApplicationCommand, MessageCommand {
             content: "Yo bruder, hab ihn entbannt",
         });
     }
-    async handleMessage(
-        message: Message,
-        context: BotContext,
-    ): Promise<CommandResult> {
+    async handleMessage(message: Message, context: BotContext): Promise<void> {
         const user = message.mentions.users.first();
 
         if (!user) {

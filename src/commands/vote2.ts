@@ -16,10 +16,7 @@ import {
     time,
 } from "discord.js";
 
-import type { ApplicationCommand, CommandResult } from "./command.js";
-import type { BotContext } from "../context.js";
-
-import log from "@log";
+import type { ApplicationCommand } from "./command.js";
 
 export class Vote2Command implements ApplicationCommand {
     modCommand = false;
@@ -86,9 +83,7 @@ export class Vote2Command implements ApplicationCommand {
                 ),
         );
 
-    async handleInteraction(
-        command: CommandInteraction,
-    ): Promise<CommandResult> {
+    async handleInteraction(command: CommandInteraction): Promise<void> {
         if (!command.isChatInputCommand()) {
             return;
         }

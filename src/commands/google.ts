@@ -1,5 +1,4 @@
 import {
-    type Client,
     type CommandInteraction,
     type GuildMember,
     SlashCommandBuilder,
@@ -7,7 +6,7 @@ import {
     SlashCommandUserOption,
 } from "discord.js";
 
-import type { ApplicationCommand, CommandResult } from "./command.js";
+import type { ApplicationCommand } from "./command.js";
 import { randomEntry } from "src/utils/arrayUtils.js";
 
 const replies = [
@@ -49,9 +48,7 @@ export class GoogleCommand implements ApplicationCommand {
                 .setDescription("Der User, der nichtmal googln kann"),
         );
 
-    async handleInteraction(
-        command: CommandInteraction,
-    ): Promise<CommandResult> {
+    async handleInteraction(command: CommandInteraction): Promise<void> {
         if (!command.isChatInputCommand()) {
             // TODO: Solve this on a type level
             return;

@@ -1,5 +1,4 @@
 import {
-    type Client,
     type CommandInteraction,
     type Guild,
     type TextBasedChannel,

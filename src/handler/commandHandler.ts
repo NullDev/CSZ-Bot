@@ -29,8 +29,10 @@ import {
     type SpecialCommand,
     type UserInteraction,
 } from "../commands/command.js";
-import { InfoCommand } from "../commands/info.js";
+import type { BotContext } from "../context.js";
+import type { ApplicationCommandCreationResponse } from "../types.js";
 import log from "@log";
+import { InfoCommand } from "../commands/info.js";
 import { TriggerReactOnKeyword } from "../commands/special/keywordReact.js";
 import { WhereCommand } from "../commands/special/where.js";
 import { DadJokeCommand } from "../commands/special/dadJoke.js";
@@ -70,9 +72,7 @@ import { OidaCommand } from "../commands/oida.js";
 import { DeOidaCommand } from "../commands/deoida.js";
 import { EhreCommand } from "../commands/ehre.js";
 import { isMessageInBotSpam } from "../utils/channelUtils.js";
-import type { BotContext } from "../context.js";
 import { WoisCommand } from "../commands/woisvote.js";
-import type { ApplicationCommandCreationResponse } from "../types.js";
 import { AoCCommand } from "../commands/aoc.js";
 import { BanListCommand } from "../commands/banlist.js";
 import { Vote2Command } from "../commands/vote2.js";

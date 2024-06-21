@@ -1,5 +1,5 @@
 import type { ProcessableMessage } from "../../handler/cmdHandler.js";
-import type { SpecialCommand, CommandResult } from "../command.js";
+import type { SpecialCommand } from "../command.js";
 
 // this is the former nixos.ts
 
@@ -18,9 +18,7 @@ export class TriggerReactOnKeyword implements SpecialCommand {
         return message.content.toLowerCase().includes(this.keyword);
     }
 
-    async handleSpecialMessage(
-        message: ProcessableMessage,
-    ): Promise<CommandResult> {
+    async handleSpecialMessage(message: ProcessableMessage): Promise<void> {
         if (this.#isEmoji(this.emoteName)) {
             await message.react(this.emoteName);
             return;

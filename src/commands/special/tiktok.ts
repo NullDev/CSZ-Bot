@@ -1,5 +1,5 @@
 import type { Message } from "discord.js";
-import type { SpecialCommand, CommandResult } from "../command.js";
+import type { SpecialCommand } from "../command.js";
 
 const proxitokInstance = "https://proxitok.pussthecat.org";
 // const downloadUrlRegex = /href=["'](\/download[^"']*)["']/;
@@ -16,7 +16,7 @@ export class TikTokLink implements SpecialCommand {
         return pattern.test(message.content);
     }
 
-    async handleSpecialMessage(message: Message): Promise<CommandResult> {
+    async handleSpecialMessage(message: Message): Promise<void> {
         await message.channel.sendTyping();
         const tikTokUrl = message.content;
         const searchUrl = `${proxitokInstance}/redirect/search?term=${tikTokUrl}&type=url`;

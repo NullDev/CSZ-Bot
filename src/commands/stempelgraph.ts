@@ -1,6 +1,5 @@
 import graphviz from "graphviz-wasm";
 import {
-    type Client,
     type CommandInteraction,
     type Guild,
     type GuildMember,
@@ -10,7 +9,7 @@ import {
 } from "discord.js";
 import { Resvg } from "@resvg/resvg-js";
 
-import type { ApplicationCommand, CommandResult } from "./command.js";
+import type { ApplicationCommand } from "./command.js";
 import type { BotContext } from "../context.js";
 import * as stempel from "../storage/stempel.js";
 import log from "@log";
@@ -220,7 +219,7 @@ export class StempelgraphCommand implements ApplicationCommand {
     async handleInteraction(
         command: CommandInteraction,
         context: BotContext,
-    ): Promise<CommandResult> {
+    ): Promise<void> {
         if (!command.isChatInputCommand()) {
             // TODO: Solve this on a type level
             return;

@@ -1,7 +1,7 @@
 import { cleanContent } from "discord.js";
 
 import type { ProcessableMessage } from "../../handler/cmdHandler.js";
-import type { SpecialCommand, CommandResult } from "../command.js";
+import type { SpecialCommand } from "../command.js";
 import type { BotContext } from "src/context.js";
 import { substringAfter } from "../../utils/stringUtils.js";
 import { randomEntry } from "../../utils/arrayUtils.js";
@@ -69,7 +69,7 @@ export class DadJokeCommand implements SpecialCommand {
     async handleSpecialMessage(
         message: ProcessableMessage,
         context: BotContext,
-    ): Promise<CommandResult> {
+    ): Promise<void> {
         const msg = message.content.toLowerCase();
         const phrase = Object.keys(this.matchPhrases).find(p =>
             msg.startsWith(p),

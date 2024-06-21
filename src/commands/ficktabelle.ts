@@ -1,5 +1,3 @@
-import type { Client } from "discord.js";
-
 import type { MessageCommand } from "./command.js";
 import type { ProcessableMessage } from "../handler/cmdHandler.js";
 import { randomEntry } from "../utils/arrayUtils.js";
@@ -29,14 +27,13 @@ export class FicktabelleCommand implements MessageCommand {
     description = "Sendet die Ficktabelle.";
 
     async handleMessage(message: ProcessableMessage): Promise<void> {
+        const title = randomEntry(titles);
         await message.channel.send({
             embeds: [
                 {
                     image: { url: FICKTABELLE_URL },
                     author: {
-                        name: `${message.author.username} ${randomEntry(
-                            titles,
-                        )}`,
+                        name: `${message.author.username} ${title}`,
                         icon_url: message.author.displayAvatarURL(),
                     },
                     footer: {

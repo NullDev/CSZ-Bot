@@ -1,6 +1,5 @@
 import * as crypto from "node:crypto";
 import {
-    type Client,
     type GuildMember,
     type CommandInteraction,
     type CacheType,
@@ -10,11 +9,7 @@ import {
     EmbedBuilder,
 } from "discord.js";
 
-import type {
-    ApplicationCommand,
-    CommandResult,
-    MessageCommand,
-} from "./command.js";
+import type { ApplicationCommand, MessageCommand } from "./command.js";
 import type { ProcessableMessage } from "../handler/cmdHandler.js";
 import { substringAfter } from "../utils/stringUtils.js";
 
@@ -125,7 +120,7 @@ export class SdmCommand implements MessageCommand, ApplicationCommand {
                 ),
         );
 
-    async handleMessage(message: ProcessableMessage): Promise<CommandResult> {
+    async handleMessage(message: ProcessableMessage): Promise<void> {
         const replyRef = message.reference?.messageId;
         const isReply = replyRef !== undefined;
         const args = substringAfter(message.cleanContent, this.name)
@@ -176,7 +171,7 @@ export class SdmCommand implements MessageCommand, ApplicationCommand {
 
     async handleInteraction(
         command: CommandInteraction<CacheType>,
-    ): Promise<CommandResult> {
+    ): Promise<void> {
         if (!command.isChatInputCommand()) {
             // TODO: Solve this on a type level
             return;

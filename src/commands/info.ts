@@ -1,5 +1,4 @@
 import {
-    type Client,
     type CommandInteraction,
     type Guild,
     GuildPremiumTier,
@@ -9,11 +8,7 @@ import {
     ComponentType,
 } from "discord.js";
 
-import type {
-    ApplicationCommand,
-    CommandResult,
-    MessageCommand,
-} from "./command.js";
+import type { ApplicationCommand, MessageCommand } from "./command.js";
 import type { GitHubContributor } from "../types.js";
 import type { ProcessableMessage } from "../handler/cmdHandler.js";
 import { assertNever } from "../utils/typeUtils.js";
@@ -165,7 +160,7 @@ export class InfoCommand implements ApplicationCommand, MessageCommand {
     async handleInteraction(
         command: CommandInteraction,
         context: BotContext,
-    ): Promise<CommandResult> {
+    ): Promise<void> {
         const embed = await buildEmbed(
             command.guild,
             context.client.user.avatarURL() ?? undefined,
@@ -199,7 +194,7 @@ export class InfoCommand implements ApplicationCommand, MessageCommand {
     async handleMessage(
         message: ProcessableMessage,
         context: BotContext,
-    ): Promise<CommandResult> {
+    ): Promise<void> {
         const embed = await buildEmbed(
             message.guild,
             context.client.user.avatarURL() ?? undefined,

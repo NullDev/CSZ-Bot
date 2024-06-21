@@ -7,11 +7,7 @@ import {
     SlashCommandUserOption,
 } from "discord.js";
 
-import type {
-    ApplicationCommand,
-    CommandResult,
-    MessageCommand,
-} from "../command.js";
+import type { ApplicationCommand, MessageCommand } from "../command.js";
 import type { ProcessableMessage } from "../../handler/cmdHandler.js";
 import type { BotContext } from "../../context.js";
 
@@ -107,7 +103,7 @@ export class BanCommand implements ApplicationCommand, MessageCommand {
     async handleMessage(
         message: ProcessableMessage,
         context: BotContext,
-    ): Promise<CommandResult> {
+    ): Promise<void> {
         const user = message.mentions.users.first();
         const invokingUser = message.author;
 

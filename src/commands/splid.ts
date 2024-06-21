@@ -9,7 +9,6 @@ import {
     SlashCommandSubcommandBuilder,
     SlashCommandUserOption,
     userMention,
-    type Client,
 } from "discord.js";
 
 // @ts-ignore Types are somehow broken :shrug:

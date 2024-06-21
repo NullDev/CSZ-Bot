@@ -1,6 +1,5 @@
 import {
     type CacheType,
-    type Client,
     type CommandInteraction,
     SlashCommandBuilder,
     SlashCommandStringOption,

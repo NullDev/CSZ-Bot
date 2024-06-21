@@ -73,18 +73,10 @@ export default async function (
         return;
     }
 
-    const response = await cmdHandler(message, isModCommand, context);
+    await cmdHandler(message, isModCommand, context);
 
     // Get all inline replies to the message and delete them. Ignore errors, since cached is used and previously deleted messages are contained as well
     for (const msg of getInlineReplies(message, context.client.user).values()) {
         await msg.delete();
     }
-
-    if (!response) {
-        return;
-    }
-
-    await message.reply({
-        content: response,
-    });
 }

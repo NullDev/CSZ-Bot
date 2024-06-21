@@ -1,6 +1,6 @@
-import type { Message, Client } from "discord.js";
+import type { Message } from "discord.js";
 
-import type { SpecialCommand, CommandResult } from "../command.js";
+import type { SpecialCommand } from "../command.js";
 
 export class WatCommand implements SpecialCommand {
     name = "wat";
@@ -12,7 +12,7 @@ export class WatCommand implements SpecialCommand {
         return message.content.toLowerCase() === "wat";
     }
 
-    async handleSpecialMessage(message: Message): Promise<CommandResult> {
+    async handleSpecialMessage(message: Message): Promise<void> {
         const watEmote = message.guild?.emojis.cache.find(
             e => e.name === "wat",
         );

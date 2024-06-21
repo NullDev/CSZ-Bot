@@ -3,7 +3,7 @@ import * as path from "node:path";
 
 import type { Guild, GuildMember, Message } from "discord.js";
 
-import type { CommandFunction, CommandResult } from "../types.js";
+import type { CommandFunction } from "../types.js";
 import type { BotContext } from "../context.js";
 import log from "@log";
 import * as banService from "../service/banService.js";
@@ -24,16 +24,15 @@ export function isProcessableMessage(
     return !!message.member && !!message.guild && message.inGuild();
 }
 
-/**
- * Passes commands to the correct executor
- *
- */
+/** Passes commands to the correct executor */
 export default async function (
     message: ProcessableMessage,
     isModCommand: boolean,
     context: BotContext,
-): Promise<CommandResult> {
-    if (message.author.bot) return;
+): Promise<void> {
+    if (message.author.bot) {
+        return;
+    }
 
     if (
         context.roleGuard.hasBotDenyRole(message.member) &&
@@ -52,7 +51,9 @@ export default async function (
     const args = message.content.slice(cmdPrefix.length).trim().split(/\s+/g);
     const rawCommandName = args.shift();
 
-    if (!rawCommandName) return;
+    if (!rawCommandName) {
+        return;
+    }
 
     const command = rawCommandName.toLowerCase();
 
@@ -99,7 +100,9 @@ export default async function (
      * try to invoke the run method, which is ofc not present - or at least it should
      * not be present. Therefore we need to check for the method.
      */
-    if (!usedCommand.run) return;
+    if (!usedCommand.run) {
+        return;
+    }
 
     if (
         isModCommand &&
@@ -114,7 +117,10 @@ export default async function (
                 r => r.id === context.roles.banned.id,
             )
         ) {
-            return "Da haste aber Schwein gehabt";
+            await message.reply({
+                content: "Da haste aber Schwein gehabt",
+            });
+            return;
         }
 
         await banService.banUser(
@@ -126,23 +132,34 @@ export default async function (
             0.08,
         );
 
-        return `Tut mir leid, ${message.author}. Du hast nicht genügend Rechte um dieses Command zu verwenden, dafür gibt's erstmal mit dem Willkürhammer einen auf den Deckel.`;
+        await message.reply({
+            content: `Tut mir leid, ${message.author}. Du hast nicht genügend Rechte um dieses Command zu verwenden, dafür gibt's erstmal mit dem Willkürhammer einen auf den Deckel.`,
+        });
+        return;
     }
 
-    log.info(
-        `User "${message.author.tag}" (${message.author}) performed ${
-            isModCommand ? "mod-" : ""
-        }command: ${cmdPrefix}${command}`,
-    );
+    if (isModCommand) {
+        log.info(
+            `User "${message.author.tag}" (${message.author}) performed mod-command: ${cmdPrefix}${command}`,
+        );
+    } else {
+        log.info(
+            `User "${message.author.tag}" (${message.author}) performed command: ${cmdPrefix}${command}`,
+        );
+    }
 
     try {
         const response = await usedCommand.run(message, args, context);
-
-        // Non-Exception Error returned by the command (e.g.: Missing Argument)
-        return response;
+        if (response) {
+            await message.reply({
+                content: response,
+            });
+        }
+        return;
     } catch (err) {
-        // Exception returned by the command handler
         log.error(err, "Error");
-        return "Sorry, irgendwas ist schief gegangen! =(";
+        await message.reply({
+            content: "Sorry, irgendwas ist schief gegangen! =(",
+        });
     }
 }

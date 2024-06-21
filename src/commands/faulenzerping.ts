@@ -2,7 +2,6 @@ import {
     ActionRowBuilder,
     ApplicationCommandType,
     type CacheType,
-    type Client,
     type CommandInteraction,
     ComponentType,
     ContextMenuCommandBuilder,

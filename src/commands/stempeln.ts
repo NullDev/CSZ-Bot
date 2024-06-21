@@ -1,12 +1,11 @@
 import {
     type CommandInteraction,
-    type Client,
     SlashCommandBuilder,
     SlashCommandUserOption,
     ChatInputCommandInteraction,
 } from "discord.js";
 
-import type { ApplicationCommand, CommandResult } from "./command.js";
+import type { ApplicationCommand } from "./command.js";
 import * as stempel from "../storage/stempel.js";
 import { randomEntry } from "../utils/arrayUtils.js";
 
@@ -34,9 +33,7 @@ export class StempelCommand implements ApplicationCommand {
                 .setDescription("Derjeniche, der dich invited hat"),
         );
 
-    async handleInteraction(
-        command: CommandInteraction,
-    ): Promise<CommandResult> {
+    async handleInteraction(command: CommandInteraction): Promise<void> {
         if (!(command instanceof ChatInputCommandInteraction)) {
             // TODO: handle this on a type level
             return;

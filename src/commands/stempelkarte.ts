@@ -2,7 +2,6 @@ import * as fs from "node:fs/promises";
 import { createCanvas, loadImage } from "@napi-rs/canvas";
 import {
     type ImageSize,
-    type Client,
     type CommandInteraction,
     type GuildMember,
     type Snowflake,
@@ -13,7 +12,7 @@ import {
 
 import * as stempel from "../storage/stempel.js";
 import log from "@log";
-import type { ApplicationCommand, CommandResult } from "./command.js";
+import type { ApplicationCommand } from "./command.js";
 import { chunkArray } from "../utils/arrayUtils.js";
 
 const stempelLocations = [
@@ -125,9 +124,7 @@ export class StempelkarteCommand implements ApplicationCommand {
                 ),
         );
 
-    async handleInteraction(
-        command: CommandInteraction,
-    ): Promise<CommandResult> {
+    async handleInteraction(command: CommandInteraction): Promise<void> {
         if (!(command instanceof ChatInputCommandInteraction)) {
             // TODO: handle this on a type level
             return;

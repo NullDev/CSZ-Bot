@@ -1,7 +1,6 @@
 import {
     type CacheType,
     type CommandInteraction,
-    type Client,
     type Message,
     EmbedBuilder,
     type GuildMember,

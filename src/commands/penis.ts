@@ -1,12 +1,12 @@
 // @ts-ignore
 import type { User } from "discord.js";
 
+import type { BotContext } from "../context.js";
 import * as penis from "../storage/penis.js";
-import type { CommandResult, MessageCommand } from "./command.js";
-import log from "@log";
+import type { MessageCommand } from "./command.js";
 import type { ProcessableMessage } from "../handler/cmdHandler.js";
 import { formatTime } from "../utils/dateUtils.js";
-import type { BotContext } from "../context.js";
+import log from "@log";
 
 export type Radius = 1 | 2 | 3;
 
@@ -101,7 +101,7 @@ export class PenisCommand implements MessageCommand {
     async handleMessage(
         message: ProcessableMessage,
         context: BotContext,
-    ): Promise<CommandResult> {
+    ): Promise<void> {
         const { author } = message;
         const mention = message.mentions.users.first();
         const userToMeasure = mention !== undefined ? mention : author;

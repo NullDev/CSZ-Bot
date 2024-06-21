@@ -4,7 +4,6 @@ import * as fs from "node:fs/promises";
 import {
     type CommandInteraction,
     type CacheType,
-    type Client,
     type PermissionsString,
     SlashCommandBuilder,
     SlashCommandStringOption,

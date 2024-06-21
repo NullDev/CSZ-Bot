@@ -1,5 +1,4 @@
 import {
-    type Client,
     type CommandInteraction,
     type InteractionReplyOptions,
     type MessagePayload,
@@ -11,10 +10,10 @@ import {
     type User,
 } from "discord.js";
 
-import type { ApplicationCommand, CommandResult } from "./command.js";
+import type { ApplicationCommand } from "./command.js";
 import type { BotContext } from "../context.js";
-import * as ehre from "../storage/ehre.js";
 import type { EhrePoints } from "../storage/db/model.js";
+import * as ehre from "../storage/ehre.js";
 import db from "@db";
 
 const ehreFormatter = new Intl.NumberFormat("de-DE", {
@@ -207,7 +206,7 @@ export class EhreCommand implements ApplicationCommand {
     async handleInteraction(
         command: CommandInteraction,
         context: BotContext,
-    ): Promise<CommandResult> {
+    ): Promise<void> {
         if (!command.isChatInputCommand()) {
             // TODO: Solve this on a type level
             return;

@@ -3,7 +3,7 @@ import * as fs from "node:fs/promises";
 import { createCanvas, loadImage } from "@napi-rs/canvas";
 import type { GuildMember } from "discord.js";
 
-import type { CommandResult, MessageCommand } from "./command.js";
+import type { MessageCommand } from "./command.js";
 import type { ProcessableMessage } from "../handler/cmdHandler.js";
 import log from "@log";
 
@@ -31,7 +31,7 @@ Usage: $COMMAND_PREFIX$bonk
        $COMMAND_PREFIX$bonk @nullping
        Oder auf eine Nachricht mit $COMMAND_PREFIX$bonk antworten.`;
 
-    async handleMessage(message: ProcessableMessage): Promise<CommandResult> {
+    async handleMessage(message: ProcessableMessage): Promise<void> {
         const messageRef = message.reference?.messageId;
         const messagePing = message.mentions?.users.first();
         let toBeBonked = await message.guild.members.fetch(message.author);

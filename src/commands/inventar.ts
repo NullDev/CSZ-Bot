@@ -1,11 +1,12 @@
-import type { BotContext } from "../context.js";
-import type { ApplicationCommand } from "./command.js";
-import * as lootService from "../service/lootService.js";
 import {
     type CommandInteraction,
     SlashCommandBuilder,
     SlashCommandUserOption,
 } from "discord.js";
+
+import type { BotContext } from "../context.js";
+import type { ApplicationCommand } from "./command.js";
+import * as lootService from "../service/lootService.js";
 import { ensureChatInputCommand } from "src/utils/interactionUtils.js";
 
 export class InventarCommand implements ApplicationCommand {

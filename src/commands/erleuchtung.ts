@@ -3,7 +3,6 @@
 // ================================ //
 
 import {
-    type Client,
     EmbedBuilder,
     type GuildMember,
     SlashCommandBuilder,
