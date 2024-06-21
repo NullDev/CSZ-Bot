@@ -11,7 +11,7 @@ import {
     type TextChannel,
     type GuildChannel,
     type User,
-    Interaction,
+    type Interaction,
 } from "discord.js";
 
 import type { BotContext } from "../context.js";
@@ -195,45 +195,23 @@ async function postLootDrop(context: BotContext, channel: GuildChannel) {
     });
 
     const template = randomEntryWeighted(lootTemplates);
-    await loot.createLoot(template, validUntil, message);
+    const l = await loot.createLoot(template, validUntil, message);
 
-    const collector = message.createMessageComponentCollector({
-        componentType: ComponentType.Button,
-        time: lootTimeoutMs,
-    });
+    let interaction: Interaction | undefined = undefined;
 
-    collector.on("collect", async interaction => {
-        if (interaction.customId !== "take-loot") {
-            return;
-        }
-        await interaction.deferUpdate();
-
-        const claimedLoot = await loot.assignUserToLootDrop(
-            interaction.user,
-            message,
-            new Date(),
-        );
-        if (!claimedLoot) {
-            return;
-        }
-
+    try {
+        interaction = await message.awaitMessageComponent({
+            filter: i => {
+                i.deferUpdate();
+                return i.customId === "take-loot";
+            },
+            componentType: ComponentType.Button,
+            time: lootTimeoutMs,
+        });
+    } catch (err) {
         log.info(
-            `User ${interaction.user.username} claimed loot ${claimedLoot.id} (template: ${template.id})`,
+            `Loot drop ${message.id} timed out; loot ${l.id} was not claimed, cleaning up`,
         );
-        collector.stop();
-    });
-
-    await once(collector as unknown as EventTarget, "end");
-
-    const claimedLoot = await loot.findOfMessage(message);
-    if (!claimedLoot) {
-        log.error(`Loot message ${message.id} was not found in database`);
-        return;
-    }
-
-    if (!claimedLoot.winnerId) {
-        log.info(`Loot ${claimedLoot.id} was not claimed, cleaning up`);
-
         const original = message.embeds[0];
         await message.edit({
             embeds: [
@@ -251,6 +229,28 @@ async function postLootDrop(context: BotContext, channel: GuildChannel) {
         });
         return;
     }
+
+    const reply = await interaction.reply({
+        content: "Du hast das Geschenk geöffnet, schauen wir mal nach!",
+        ephemeral: true,
+    });
+
+    const claimedLoot = await loot.assignUserToLootDrop(
+        interaction.user,
+        l.id,
+        new Date(),
+    );
+    if (!claimedLoot) {
+        await reply.edit({
+            content:
+                "Upsi, da ist was schief gelaufi oder jemand anderes war schnelli :sad_hamster:",
+        });
+        return;
+    }
+
+    log.info(
+        `User ${interaction.user.username} claimed loot ${claimedLoot.id} (template: ${template.id})`,
+    );
 
     const winner = await context.guild.members.fetch(claimedLoot.winnerId);
 

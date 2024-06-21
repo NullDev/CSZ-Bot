@@ -66,21 +66,23 @@ export async function findOfMessage(message: Message<true>, ctx = db()) {
         .executeTakeFirst();
 }
 
+export type ClaimedLoot = Loot & { winnerId: User["id"]; claimedAt: string };
+
 export async function assignUserToLootDrop(
     user: User,
-    message: Message,
+    lootId: Loot["id"],
     now: Date,
     ctx = db(),
-) {
-    return await ctx
+): Promise<ClaimedLoot | undefined> {
+    return (await ctx
         .updateTable("loot")
         .set({
             winnerId: user.id,
             claimedAt: now.toISOString(),
         })
-        .where("messageId", "=", message.id)
+        .where("id", "=", lootId)
         .where("validUntil", ">", now.toISOString())
         .where("winnerId", "=", null)
         .returningAll()
-        .executeTakeFirst();
+        .executeTakeFirst()) as ClaimedLoot | undefined;
 }
