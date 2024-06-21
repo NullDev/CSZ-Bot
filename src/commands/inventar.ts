@@ -42,20 +42,19 @@ export class InventarCommand implements ApplicationCommand {
 
         const groupedByLoot = Object.groupBy(contents, item => item.lootKindId);
 
-        const contentsString = Object.entries(groupedByLoot)
+        const items = Object.entries(groupedByLoot)
             .map(([_, items]) => items)
-            .filter(items => !!items && items.length > 0)
-            .map(items => {
-                // biome-ignore lint/style/noNonNullAssertion: see filter above
-                const firstItem = items![0];
-                const emote = lootService.getEmote(firstItem);
-                const e = emote ? `${emote} ` : "";
+            .filter(i => !!i && i.length > 0)
+            // biome-ignore lint/style/noNonNullAssertion: see filter above
+            .map(i => [i![0]!, i!.length] as const);
 
-                // biome-ignore lint/style/noNonNullAssertion: see filter above
-                return items!.length === 1
-                    ? `- ${e}${firstItem.displayName}`
-                    : // biome-ignore lint/style/noNonNullAssertion: <explanation>
-                      `- ${items!.length}x ${e}${firstItem.displayName}`;
+        const contentsString = items
+            .map(([item, count]) => {
+                const emote = lootService.getEmote(item);
+                const e = emote ? `${emote} ` : "";
+                return count === 1
+                    ? `- ${e}${item.displayName}`
+                    : `- ${count}x ${e}${item.displayName}`;
             })
             .join("\n");
 
