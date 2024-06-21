@@ -23,7 +23,7 @@ import log from "@log";
 
 const lootTimeoutMs = 60 * 1000;
 
-const excludedLootIds = [0, 8];
+const excludedLootIds = [0, 7, 8];
 const lootTemplates: loot.LootTemplate[] = [
     {
         id: 0,
@@ -111,14 +111,47 @@ const lootTemplates: loot.LootTemplate[] = [
             await postLootDrop(context, channel);
         },
     },
+    {
+        id: 9,
+        weight: 1,
+        displayName: "Ayran",
+        titleText: "Einen Ayran",
+        description: "Der gute von Müller",
+        emote: "🥛",
+        asset: "assets/loot/09-ayran.jpg",
+    },
+    {
+        id: 10,
+        weight: 1,
+        displayName: "Private Krankenversicherung",
+        titleText: "Eine private Krankenversicherung",
+        description: "Fehlt dir nur noch das Geld zum Vorstrecken",
+        emote: "💉",
+        asset: "assets/loot/10-pkv.jpg",
+    },
+    {
+        id: 11,
+        weight: 1,
+        displayName: "Trichter",
+        titleText: "Einen Trichter",
+        description: "Für die ganz großen Schlücke",
+        emote: "🕳️",
+        asset: "assets/loot/11-trichter.jpg",
+    },
+    {
+        id: 12,
+        weight: 1,
+        displayName: "Grafikkarte aus der Zukunft",
+        titleText: "Eine Grafikkarte aus der Zukunft",
+        description: "Leider ohne Treiber, die gibt es erst in 3 Monaten",
+        emote: "🖥️",
+        asset: "assets/loot/12-grafikkarte.png",
+    },
+
     /*
         Ideas:
-        - Trichter,
         - Pfeffi
-        - Private Krankenversicherung
-        - Ayran
         - eine Heiligsprechung von Jesus höchstpersönlich
-        - eine Grafikkarte aus der Zukunft
         - Vogerlsalat
         Special Loots mit besonderer Aktion?
         - Ban für 2 Minuten?
