@@ -65,10 +65,7 @@ export function findAllGroups(guild: Guild, ctx = db()): Promise<SplidGroup[]> {
         .execute();
 }
 
-export async function deleteByInviteCode(
-    groupCode: string,
-    ctx = db(),
-): Promise<void> {
+export async function deleteByInviteCode(groupCode: string, ctx = db()) {
     await ctx
         .deleteFrom("splidGroups")
         .where("groupCode", "=", groupCode)

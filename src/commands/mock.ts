@@ -52,9 +52,7 @@ export class MockCommand implements MessageCommand, ApplicationCommand {
                 .setRequired(true),
         );
 
-    async handleInteraction(
-        command: CommandInteraction<CacheType>,
-    ): Promise<void> {
+    async handleInteraction(command: CommandInteraction<CacheType>) {
         const cmd = ensureChatInputCommand(command);
 
         const author = cmd.guild?.members.resolve(cmd.user);
@@ -69,10 +67,7 @@ export class MockCommand implements MessageCommand, ApplicationCommand {
         });
     }
 
-    async handleMessage(
-        message: ProcessableMessage,
-        context: BotContext,
-    ): Promise<void> {
+    async handleMessage(message: ProcessableMessage, context: BotContext) {
         const author = message.guild.members.resolve(message.author);
         const { channel } = message;
 

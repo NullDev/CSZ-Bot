@@ -19,7 +19,7 @@ export default {
         invoker: User,
         context: BotContext,
         reactionWasRemoved: boolean,
-    ): Promise<void> {
+    ) {
         const channel = reactionEvent.message.channel;
         if (!channel.isTextBased()) {
             throw new Error("Channel is not text based");

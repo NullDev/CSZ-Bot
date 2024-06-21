@@ -17,10 +17,7 @@ const getInlineReplies = (
     );
 };
 
-export default async function (
-    message: Message,
-    context: BotContext,
-): Promise<void> {
+export default async function (message: Message, context: BotContext) {
     const nonBiased = message.content
         .replace(context.prefix.command, "")
         .replace(context.prefix.modCommand, "")

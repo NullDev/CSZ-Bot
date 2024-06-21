@@ -44,9 +44,7 @@ export class ClapCommand implements MessageCommand, ApplicationCommand {
                 .setRequired(true),
         );
 
-    async handleInteraction(
-        command: CommandInteraction<CacheType>,
-    ): Promise<void> {
+    async handleInteraction(command: CommandInteraction<CacheType>) {
         if (!command.isChatInputCommand()) {
             // TODO: Solve this on a type level
             return;
@@ -64,10 +62,7 @@ export class ClapCommand implements MessageCommand, ApplicationCommand {
         });
     }
 
-    async handleMessage(
-        message: ProcessableMessage,
-        context: BotContext,
-    ): Promise<void> {
+    async handleMessage(message: ProcessableMessage, context: BotContext) {
         const author = message.guild.members.resolve(message.author);
         const { channel } = message;
 

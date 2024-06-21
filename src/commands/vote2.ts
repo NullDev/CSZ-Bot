@@ -83,7 +83,7 @@ export class Vote2Command implements ApplicationCommand {
                 ),
         );
 
-    async handleInteraction(command: CommandInteraction): Promise<void> {
+    async handleInteraction(command: CommandInteraction) {
         if (!command.isChatInputCommand()) {
             return;
         }

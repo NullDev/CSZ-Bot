@@ -157,10 +157,7 @@ export class InfoCommand implements ApplicationCommand, MessageCommand {
      * @param client client
      * @returns info reply
      */
-    async handleInteraction(
-        command: CommandInteraction,
-        context: BotContext,
-    ): Promise<void> {
+    async handleInteraction(command: CommandInteraction, context: BotContext) {
         const embed = await buildEmbed(
             command.guild,
             context.client.user.avatarURL() ?? undefined,
@@ -191,10 +188,7 @@ export class InfoCommand implements ApplicationCommand, MessageCommand {
      * @param client client
      * @returns reply and reaction
      */
-    async handleMessage(
-        message: ProcessableMessage,
-        context: BotContext,
-    ): Promise<void> {
+    async handleMessage(message: ProcessableMessage, context: BotContext) {
         const embed = await buildEmbed(
             message.guild,
             context.client.user.avatarURL() ?? undefined,

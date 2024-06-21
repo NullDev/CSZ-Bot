@@ -27,7 +27,7 @@ export class InventarCommand implements ApplicationCommand {
     async handleInteraction(
         interaction: CommandInteraction,
         _context: BotContext,
-    ): Promise<void> {
+    ) {
         const cmd = ensureChatInputCommand(interaction);
 
         const user = cmd.options.getUser("user") ?? cmd.user;

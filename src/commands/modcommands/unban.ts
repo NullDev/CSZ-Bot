@@ -30,10 +30,7 @@ export class UnbanCommand implements ApplicationCommand, MessageCommand {
                 .setDescription("Der, der gebannt werden soll"),
         );
 
-    async handleInteraction(
-        command: CommandInteraction,
-        context: BotContext,
-    ): Promise<void> {
+    async handleInteraction(command: CommandInteraction, context: BotContext) {
         if (!(command instanceof ChatInputCommandInteraction)) {
             // TODO: handle this on a type level
             return;
@@ -64,7 +61,7 @@ export class UnbanCommand implements ApplicationCommand, MessageCommand {
             content: "Yo bruder, hab ihn entbannt",
         });
     }
-    async handleMessage(message: Message, context: BotContext): Promise<void> {
+    async handleMessage(message: Message, context: BotContext) {
         const user = message.mentions.users.first();
 
         if (!user) {

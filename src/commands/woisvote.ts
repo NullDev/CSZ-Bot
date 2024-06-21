@@ -80,10 +80,7 @@ export class WoisCommand implements ApplicationCommand {
                 ),
         );
 
-    async handleInteraction(
-        command: CommandInteraction,
-        context: BotContext,
-    ): Promise<void> {
+    async handleInteraction(command: CommandInteraction, context: BotContext) {
         if (!command.isChatInputCommand()) {
             // TODO: Solve this on a type level
             return;
@@ -165,7 +162,7 @@ export const woisVoteReactionHandler: ReactionHandler = {
         invoker: User,
         context: BotContext,
         reactionWasRemoved: boolean,
-    ): Promise<void> {
+    ) {
         const { message } = reactionEvent;
 
         const voteYes = reactionEvent.emoji.name === "👍";

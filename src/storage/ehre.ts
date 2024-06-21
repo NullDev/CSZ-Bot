@@ -92,6 +92,6 @@ export async function getUserInGroups(ctx = db()): Promise<EhreGroups> {
     };
 }
 
-export async function removeEhrePoints(user: User, ctx = db()): Promise<void> {
+export async function removeEhrePoints(user: User, ctx = db()) {
     await ctx.deleteFrom("ehrePoints").where("userId", "=", user.id).execute();
 }

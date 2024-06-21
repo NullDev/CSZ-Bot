@@ -69,7 +69,7 @@ export class DadJokeCommand implements SpecialCommand {
     async handleSpecialMessage(
         message: ProcessableMessage,
         context: BotContext,
-    ): Promise<void> {
+    ) {
         const msg = message.content.toLowerCase();
         const phrase = Object.keys(this.matchPhrases).find(p =>
             msg.startsWith(p),

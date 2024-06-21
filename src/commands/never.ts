@@ -74,9 +74,7 @@ export class NeverCommand implements ApplicationCommand, MessageCommand {
                 .setRequired(false),
         );
 
-    async handleInteraction(
-        command: CommandInteraction<CacheType>,
-    ): Promise<void> {
+    async handleInteraction(command: CommandInteraction<CacheType>) {
         if (!command.isChatInputCommand()) {
             // TODO: Solve this on a type level
             return;
@@ -99,10 +97,7 @@ export class NeverCommand implements ApplicationCommand, MessageCommand {
         await Promise.all([sentMessage.react("🍻"), sentMessage.react("🚱")]);
     }
 
-    async handleMessage(
-        message: ProcessableMessage,
-        context: BotContext,
-    ): Promise<void> {
+    async handleMessage(message: ProcessableMessage, context: BotContext) {
         const { channel } = message;
         const author = message.guild?.members.resolve(message.author);
         const customInput = message.content.slice(

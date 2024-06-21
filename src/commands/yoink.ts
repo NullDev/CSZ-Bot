@@ -37,7 +37,7 @@ export class YoinkCommand implements MessageCommand, ApplicationCommand {
     async handleInteraction(
         command: CommandInteraction<"cached">,
         context: BotContext,
-    ): Promise<void> {
+    ) {
         const cmd = ensureChatInputCommand(command);
 
         const author = command.guild?.members.cache.get(cmd.member.user.id);
@@ -62,10 +62,7 @@ export class YoinkCommand implements MessageCommand, ApplicationCommand {
         return;
     }
 
-    async handleMessage(
-        message: ProcessableMessage,
-        context: BotContext,
-    ): Promise<void> {
+    async handleMessage(message: ProcessableMessage, context: BotContext) {
         // parse options
         const guildMember = message.guild.members.cache.get(
             message.member.user.id,

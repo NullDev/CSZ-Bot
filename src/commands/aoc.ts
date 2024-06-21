@@ -195,9 +195,7 @@ export class AoCCommand implements ApplicationCommand {
                 .setRequired(false),
         );
 
-    async handleInteraction(
-        command: CommandInteraction<CacheType>,
-    ): Promise<void> {
+    async handleInteraction(command: CommandInteraction<CacheType>) {
         if (!command.isChatInputCommand()) {
             // TODO: Solve this on a type level
             return;

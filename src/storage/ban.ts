@@ -10,7 +10,7 @@ export async function persistOrUpdate(
     isSelfBan: boolean,
     reason: string | null = null,
     ctx = db(),
-): Promise<void> {
+) {
     log.debug(
         `Saving Ban for user ${user} until ${until} (is self ban: ${isSelfBan}, reason: ${reason})`,
     );
@@ -45,7 +45,7 @@ export function findExisting(
         .executeTakeFirst();
 }
 
-export async function remove(userId: Snowflake, ctx = db()): Promise<void> {
+export async function remove(userId: Snowflake, ctx = db()) {
     await ctx.deleteFrom("bans").where("userId", "=", userId).execute();
 }
 

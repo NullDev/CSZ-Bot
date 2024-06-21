@@ -1,6 +1,6 @@
 import { sql, type Kysely } from "kysely";
 
-export async function up(db: Kysely<any>): Promise<void> {
+export async function up(db: Kysely<any>) {
     //#region ehreVotes
     await db.schema.alterTable("ehreVotes").renameTo("old_ehreVotes").execute();
     await db.schema
@@ -161,6 +161,6 @@ function createUpdatedAtTrigger(db: Kysely<any>, tableName: string) {
         .execute(db);
 }
 
-export async function down(_db: Kysely<any>): Promise<void> {
+export async function down(_db: Kysely<any>) {
     throw new Error("Not supported lol");
 }

@@ -48,7 +48,7 @@ export class GoogleCommand implements ApplicationCommand {
                 .setDescription("Der User, der nichtmal googln kann"),
         );
 
-    async handleInteraction(command: CommandInteraction): Promise<void> {
+    async handleInteraction(command: CommandInteraction) {
         if (!command.isChatInputCommand()) {
             // TODO: Solve this on a type level
             return;

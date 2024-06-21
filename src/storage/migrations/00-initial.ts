@@ -1,6 +1,6 @@
 import { sql, type Kysely } from "kysely";
 
-export async function up(db: Kysely<any>): Promise<void> {
+export async function up(db: Kysely<any>) {
     // Initial schema that originated from sequelize
     // obtained from production database using ".schema" command
     // Just copied the raw SQL instead of using kysely's syntax.
@@ -216,6 +216,6 @@ export async function up(db: Kysely<any>): Promise<void> {
     );
 }
 
-export async function down(_db: Kysely<any>): Promise<void> {
+export async function down(_db: Kysely<any>) {
     throw new Error("Not supported lol");
 }

@@ -57,11 +57,7 @@ export async function allUsersAndNames(
     );
 }
 
-export async function deleteNickName(
-    user: User,
-    nickName: string,
-    ctx = db(),
-): Promise<void> {
+export async function deleteNickName(user: User, nickName: string, ctx = db()) {
     await ctx
         .deleteFrom("nickNames")
         .where("userId", "=", user.id)
@@ -69,10 +65,7 @@ export async function deleteNickName(
         .execute();
 }
 
-export async function deleteAllNickNames(
-    user: User,
-    ctx = db(),
-): Promise<void> {
+export async function deleteAllNickNames(user: User, ctx = db()) {
     await ctx.deleteFrom("nickNames").where("userId", "=", user.id).execute();
 }
 

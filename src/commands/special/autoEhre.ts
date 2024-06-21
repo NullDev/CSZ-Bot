@@ -29,7 +29,7 @@ export class AutoEhreCommand implements SpecialCommand {
         return false;
     }
 
-    async handleSpecialMessage(message: ProcessableMessage): Promise<void> {
+    async handleSpecialMessage(message: ProcessableMessage) {
         const repliedToMessage = await message.fetchReference();
         if (repliedToMessage.author.id === message.author.id) {
             // Silently discard if the user replies with "ehre" to his own message

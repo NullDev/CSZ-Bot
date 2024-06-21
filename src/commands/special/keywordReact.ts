@@ -18,7 +18,7 @@ export class TriggerReactOnKeyword implements SpecialCommand {
         return message.content.toLowerCase().includes(this.keyword);
     }
 
-    async handleSpecialMessage(message: ProcessableMessage): Promise<void> {
+    async handleSpecialMessage(message: ProcessableMessage) {
         if (this.#isEmoji(this.emoteName)) {
             await message.react(this.emoteName);
             return;

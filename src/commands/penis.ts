@@ -98,10 +98,7 @@ export class PenisCommand implements MessageCommand {
     /**
      * Replies to the message with a random penis length
      */
-    async handleMessage(
-        message: ProcessableMessage,
-        context: BotContext,
-    ): Promise<void> {
+    async handleMessage(message: ProcessableMessage, context: BotContext) {
         const { author } = message;
         const mention = message.mentions.users.first();
         const userToMeasure = mention !== undefined ? mention : author;

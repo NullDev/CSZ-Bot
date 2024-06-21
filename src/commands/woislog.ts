@@ -11,7 +11,7 @@ export class WoisLog implements ApplicationCommand {
         .setName(this.name)
         .setDescription(this.description);
 
-    async handleInteraction(command: CommandInteraction): Promise<void> {
+    async handleInteraction(command: CommandInteraction) {
         const latestEvents = woisData.latestEvents.filter(event => {
             return event.createdAt.getTime() > Date.now() - 2 * 60 * 1000;
         });

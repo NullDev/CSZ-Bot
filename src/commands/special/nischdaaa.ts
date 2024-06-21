@@ -13,7 +13,7 @@ export class NischdaaaCommand implements SpecialCommand {
         );
     }
 
-    async handleSpecialMessage(message: ProcessableMessage): Promise<void> {
+    async handleSpecialMessage(message: ProcessableMessage) {
         await message.reply({
             content: "Nischdaaaa",
         });

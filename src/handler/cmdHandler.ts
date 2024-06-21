@@ -29,7 +29,7 @@ export default async function (
     message: ProcessableMessage,
     isModCommand: boolean,
     context: BotContext,
-): Promise<void> {
+) {
     if (message.author.bot) {
         return;
     }

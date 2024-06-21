@@ -47,7 +47,7 @@ export class ErleuchtungCommand implements MessageCommand, ApplicationCommand {
         .setName(this.name)
         .setDescription(this.description);
 
-    async handleMessage(message: ProcessableMessage): Promise<void> {
+    async handleMessage(message: ProcessableMessage) {
         const author = message.guild.members.resolve(message.author);
         if (!author) {
             throw new Error("Couldn't resolve guild member");
@@ -59,9 +59,7 @@ export class ErleuchtungCommand implements MessageCommand, ApplicationCommand {
         });
     }
 
-    async handleInteraction(
-        command: CommandInteraction<CacheType>,
-    ): Promise<void> {
+    async handleInteraction(command: CommandInteraction<CacheType>) {
         if (!command.channel) {
             throw new Error("Command was invoked without a channel in context");
         }

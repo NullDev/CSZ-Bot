@@ -31,7 +31,7 @@ Usage: $COMMAND_PREFIX$bonk
        $COMMAND_PREFIX$bonk @nullping
        Oder auf eine Nachricht mit $COMMAND_PREFIX$bonk antworten.`;
 
-    async handleMessage(message: ProcessableMessage): Promise<void> {
+    async handleMessage(message: ProcessableMessage) {
         const messageRef = message.reference?.messageId;
         const messagePing = message.mentions?.users.first();
         let toBeBonked = await message.guild.members.fetch(message.author);

@@ -21,7 +21,7 @@ export async function incrementRageQuit(
     guild: Guild,
     member: GuildMember | PartialGuildMember,
     ctx = db(),
-): Promise<void> {
+) {
     await ctx
         .insertInto("guildRageQuits")
         .values({

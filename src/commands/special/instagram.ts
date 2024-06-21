@@ -34,7 +34,7 @@ export class InstagramLink implements SpecialCommand {
         return pattern.test(message.content);
     }
 
-    async handleSpecialMessage(message: Message): Promise<void> {
+    async handleSpecialMessage(message: Message) {
         await message.channel.sendTyping();
 
         const postUri = message.content.replace("http://", "https://");

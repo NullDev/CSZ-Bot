@@ -191,7 +191,7 @@ export default {
         invoker: User,
         context: BotContext,
         reactionWasRemoved: boolean,
-    ): Promise<void> {
+    ) {
         if (reactionWasRemoved) {
             // We don't support removing quotes, but the API of the reaction handlers will also call this on reaction removal
             return;

@@ -5,10 +5,7 @@ import type { Reminder } from "./db/model.js";
 import db from "@db";
 import log from "@log";
 
-export async function removeReminder(
-    reminderId: Reminder["id"],
-    ctx = db(),
-): Promise<void> {
+export async function removeReminder(reminderId: Reminder["id"], ctx = db()) {
     await ctx.deleteFrom("reminders").where("id", "=", reminderId).execute();
 }
 
@@ -30,7 +27,7 @@ export async function insertMessageReminder(
     guildId: Snowflake,
     remindAt: Date,
     ctx = db(),
-): Promise<void> {
+) {
     log.debug(
         `Saving Reminder measurement for user ${user.id} on message ${messageId} for ${remindAt}`,
     );
@@ -55,7 +52,7 @@ export async function insertStaticReminder(
     remindAt: Date,
     reminderNote: string | null = null,
     ctx = db(),
-): Promise<void> {
+) {
     log.debug(
         `Saving Reminder Measurement for user ${user.id} for ${remindAt}`,
     );

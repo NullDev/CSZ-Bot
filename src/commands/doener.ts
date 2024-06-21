@@ -18,10 +18,7 @@ export class DoenerCommand implements MessageCommand {
     Rechnet Euro in Döner um. Alternative Währungen können mit angegeben werden.
     `.trim();
 
-    async handleMessage(
-        message: ProcessableMessage,
-        _context: BotContext,
-    ): Promise<void> {
+    async handleMessage(message: ProcessableMessage, _context: BotContext) {
         const targetMessage = message.reference?.messageId
             ? await message.channel.messages.fetch(message.reference.messageId)
             : message;

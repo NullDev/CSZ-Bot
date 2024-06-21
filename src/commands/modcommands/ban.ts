@@ -48,10 +48,7 @@ export class BanCommand implements ApplicationCommand, MessageCommand {
                 .setDescription("Wie lange in Minuten"),
         );
 
-    async handleInteraction(
-        command: CommandInteraction,
-        context: BotContext,
-    ): Promise<void> {
+    async handleInteraction(command: CommandInteraction, context: BotContext) {
         if (!command.isChatInputCommand()) {
             // TODO: Solve this on a type level
             return;
@@ -100,10 +97,7 @@ export class BanCommand implements ApplicationCommand, MessageCommand {
         return;
     }
 
-    async handleMessage(
-        message: ProcessableMessage,
-        context: BotContext,
-    ): Promise<void> {
+    async handleMessage(message: ProcessableMessage, context: BotContext) {
         const user = message.mentions.users.first();
         const invokingUser = message.author;
 

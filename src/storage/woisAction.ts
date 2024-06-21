@@ -98,7 +98,7 @@ async function setInterestedUsers(
     actionId: WoisAction["id"],
     interestedUsers: WoisAction["interestedUsers"],
     ctx = db(),
-): Promise<void> {
+) {
     await ctx
         .updateTable("woisActions")
         .set({
@@ -108,9 +108,6 @@ async function setInterestedUsers(
         .execute();
 }
 
-export async function destroy(
-    actionId: WoisAction["id"],
-    ctx = db(),
-): Promise<void> {
+export async function destroy(actionId: WoisAction["id"], ctx = db()) {
     await ctx.deleteFrom("woisActions").where("id", "=", actionId).execute();
 }

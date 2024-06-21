@@ -120,7 +120,7 @@ export class SdmCommand implements MessageCommand, ApplicationCommand {
                 ),
         );
 
-    async handleMessage(message: ProcessableMessage): Promise<void> {
+    async handleMessage(message: ProcessableMessage) {
         const replyRef = message.reference?.messageId;
         const isReply = replyRef !== undefined;
         const args = substringAfter(message.cleanContent, this.name)
@@ -169,9 +169,7 @@ export class SdmCommand implements MessageCommand, ApplicationCommand {
         return;
     }
 
-    async handleInteraction(
-        command: CommandInteraction<CacheType>,
-    ): Promise<void> {
+    async handleInteraction(command: CommandInteraction<CacheType>) {
         if (!command.isChatInputCommand()) {
             // TODO: Solve this on a type level
             return;

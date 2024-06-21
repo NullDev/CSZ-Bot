@@ -8,7 +8,7 @@ import type { BotContext } from "../context.js";
 /**
  * Iterates over the list of bdays and assigns a role to people having their cake day.
  */
-export async function checkBirthdays(context: BotContext): Promise<void> {
+export async function checkBirthdays(context: BotContext) {
     log.debug("Entered `BdayHandler#checkBirthdays`");
 
     const birthdayRole = context.roles.bday;
@@ -60,7 +60,7 @@ async function sendBirthdayMessage(
     context: BotContext,
     users: GuildMember[],
     birthdayRole: Role,
-): Promise<void> {
+) {
     const plural = users.length > 1;
     await context.textChannels.hauptchat.send(
         `Heute kann es regnen,

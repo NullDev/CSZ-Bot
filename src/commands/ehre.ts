@@ -109,7 +109,7 @@ export const ehreReactionHandler = {
         invoker: User,
         context: BotContext,
         reactionWasRemoved: boolean,
-    ): Promise<void> {
+    ) {
         if (reactionWasRemoved) {
             // Ehres can't be removed, they stay.
             return;
@@ -203,10 +203,7 @@ export class EhreCommand implements ApplicationCommand {
         return `${thankingUser} hat ${ehrenbruder} geährt`;
     }
 
-    async handleInteraction(
-        command: CommandInteraction,
-        context: BotContext,
-    ): Promise<void> {
+    async handleInteraction(command: CommandInteraction, context: BotContext) {
         if (!command.isChatInputCommand()) {
             // TODO: Solve this on a type level
             return;

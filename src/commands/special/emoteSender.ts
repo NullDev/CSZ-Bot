@@ -29,10 +29,7 @@ export class EmoteSenderCommand implements SpecialCommand {
         );
     }
 
-    async handleSpecialMessage(
-        message: Message,
-        context: BotContext,
-    ): Promise<void> {
+    async handleSpecialMessage(message: Message, context: BotContext) {
         const trimmedContent = this.#trimMessage(message);
         const pickedEmotes: string[] | undefined = this.emotes[trimmedContent];
         if (pickedEmotes === undefined) {

@@ -142,7 +142,7 @@ export class BoobCommand implements MessageCommand {
     ];
     description = "Zeigt dir die deine Boobs mit Größe an";
 
-    async handleMessage(message: ProcessableMessage): Promise<void> {
+    async handleMessage(message: ProcessableMessage) {
         const { author } = message;
         const mention = message.mentions.users.first();
         const userToMeasure = mention !== undefined ? mention : author;

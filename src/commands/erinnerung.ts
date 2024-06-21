@@ -55,9 +55,7 @@ export class ErinnerungCommand implements MessageCommand, ApplicationCommand {
                 .setRequired(false),
         );
 
-    async handleInteraction(
-        command: CommandInteraction<CacheType>,
-    ): Promise<void> {
+    async handleInteraction(command: CommandInteraction<CacheType>) {
         const cmd = ensureChatInputCommand(command);
         const time = cmd.options.getString("time", true);
         const note = cmd.options.getString("note");
@@ -97,10 +95,7 @@ export class ErinnerungCommand implements MessageCommand, ApplicationCommand {
         }
     }
 
-    async handleMessage(
-        message: ProcessableMessage,
-        context: BotContext,
-    ): Promise<void> {
+    async handleMessage(message: ProcessableMessage, context: BotContext) {
         // TODO: Create utility function that removes the command prefix for easier parsing
         const param = message.content.split(
             `${context.prefix.command}${this.name} `,
