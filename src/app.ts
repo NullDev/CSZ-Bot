@@ -140,7 +140,6 @@ login().then(
 client.once("ready", async initializedClient => {
     try {
         botContext = await createBotContext(initializedClient);
-        console.assert(!!botContext, "Bot context should be available"); // TODO: Remove once botContext is used
 
         await scheduleCronjobs(botContext);
 
@@ -252,7 +251,7 @@ client.on("debug", d => {
     if (d.includes("Heartbeat")) {
         return;
     }
-    log.debug(d, "Discord Client Debug d");
+    log.debug(d, "Discord Client Debug");
 });
 client.on("rateLimit", data =>
     log.error(data, "Discord client rate limit reached"),
