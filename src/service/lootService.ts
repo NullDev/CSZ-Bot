@@ -227,10 +227,7 @@ async function postLootDrop(context: BotContext, channel: GuildChannel) {
         return;
     }
 
-    const reply = await interaction.reply({
-        content: "Du hast das Geschenk geöffnet, schauen wir mal nach!",
-        ephemeral: true,
-    });
+    const reply = await interaction.deferReply({ ephemeral: true });
 
     const claimedLoot = await loot.assignUserToLootDrop(
         interaction.user,
