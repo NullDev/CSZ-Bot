@@ -81,8 +81,8 @@ export async function assignUserToLootDrop(
             claimedAt: now.toISOString(),
         })
         .where("id", "=", lootId)
-        .where("validUntil", ">", now.toISOString())
-        .where("winnerId", "=", null)
+        .where("validUntil", ">=", now.toISOString())
+        .where("winnerId", "is", null)
         .returningAll()
         .executeTakeFirst()) as ClaimedLoot | undefined;
 }
