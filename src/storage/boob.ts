@@ -5,7 +5,7 @@ import type { Snowflake, User } from "discord.js";
 import type { Boob } from "./db/model.js";
 
 import { getStartAndEndDay } from "../utils/dateUtils.js";
-import db from "./db/db.js";
+import db from "@db";
 import log from "@log";
 
 export function insertMeasurement(

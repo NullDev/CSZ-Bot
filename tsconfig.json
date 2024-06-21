@@ -20,7 +20,8 @@
         "baseUrl": "./",
         "paths": {
             // "@/*": ["./src/*"],
-            "@log": ["./src/utils/logger.ts"]
+            "@log": ["./src/utils/logger.ts"],
+            "@db": ["./src/storage/db/db.ts"]
         }
     },
     "include": ["src"]

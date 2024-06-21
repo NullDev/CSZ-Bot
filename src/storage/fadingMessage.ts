@@ -1,6 +1,6 @@
 import type { ProcessableMessage } from "../handler/cmdHandler.js";
 import type { FadingMessage } from "./db/model.js";
-import db from "./db/db.js";
+import db from "@db";
 
 export function startFadingMessage(
     message: ProcessableMessage,

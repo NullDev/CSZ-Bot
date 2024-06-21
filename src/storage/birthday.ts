@@ -1,7 +1,7 @@
 import type { Snowflake } from "discord.js";
 
 import type { Birthday, OneBasedMonth } from "./db/model.js";
-import db from "./db/db.js";
+import db from "@db";
 
 export function getBirthday(
     userId: Snowflake,

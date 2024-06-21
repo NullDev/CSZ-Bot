@@ -1,7 +1,7 @@
 import type { Message, Snowflake } from "discord.js";
 
 import type { AdditionalMessageData, DataUsage } from "./db/model.js";
-import db from "./db/db.js";
+import db from "@db";
 
 export async function getForMessage(
     message: Message,

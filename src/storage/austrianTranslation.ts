@@ -1,7 +1,7 @@
 import type { GuildMember } from "discord.js";
 
 import type { AustrianTranslation } from "./db/model.js";
-import db from "./db/db.js";
+import db from "@db";
 import log from "@log";
 
 export function persistOrUpdate(

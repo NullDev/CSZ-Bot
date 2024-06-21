@@ -9,7 +9,7 @@ import type {
 import type { BotContext } from "../context.js";
 import type { Loot } from "./db/model.js";
 
-import db from "./db/db.js";
+import db from "@db";
 
 export interface LootTemplate {
     id: number;

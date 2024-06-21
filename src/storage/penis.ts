@@ -5,7 +5,7 @@ import type { Radius } from "../commands/penis.js";
 import type { Penis } from "./db/model.js";
 
 import { getStartAndEndDay } from "../utils/dateUtils.js";
-import db from "./db/db.js";
+import db from "@db";
 import log from "@log";
 
 export function insertMeasurement(

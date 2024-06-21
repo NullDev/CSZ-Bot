@@ -1,8 +1,8 @@
 import type { Guild, User } from "discord.js";
 
 import type { SplidGroup } from "./db/model.js";
-import db from "./db/db.js";
 
+import db from "@db";
 import log from "@log";
 
 export function createSplidGroup(

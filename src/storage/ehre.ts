@@ -1,9 +1,9 @@
+import { sql } from "kysely";
 import type { Snowflake, User } from "discord.js";
 
 import type { EhrePoints } from "./db/model.js";
-import db from "./db/db.js";
+import db from "@db";
 import log from "@log";
-import { sql } from "kysely";
 
 export async function hasVoted(
     userId: Snowflake,
