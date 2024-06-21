@@ -11,7 +11,7 @@ import "./polyfills.js";
 
 import messageHandler from "./handler/messageHandler.js";
 import messageDeleteHandler from "./handler/messageDeleteHandler.js";
-import * as fadingMessageHandler from "./handler/fadingMessageHandler.js";
+import * as fadingMessageHandler from "./service/fadingMessageService.js";
 import * as kysely from "./storage/db/db.js";
 
 import reactionHandler from "./handler/reactionHandler.js";
@@ -145,10 +145,6 @@ client.once("ready", async initializedClient => {
 
         // When the application is ready, slash commands should be registered
         await registerAllApplicationCommandsAsGuildCommands(botContext);
-
-        // Not awaiting this promise because it's basically an infinite loop (that can be cancelled)
-        // Possible TODO: Refactor this to a cron job
-        void fadingMessageHandler.startLoop(client);
 
         log.info("Bot successfully started");
         if (args.values["dry-run"]) {

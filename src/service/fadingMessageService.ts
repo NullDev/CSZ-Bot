@@ -1,13 +1,10 @@
-import { setInterval } from "node:timers/promises";
-
-import type { Client, TextChannel } from "discord.js";
+import type { TextChannel } from "discord.js";
+import type { BotContext } from "../context.js";
 
 import log from "@log";
 import * as fadingMessage from "../storage/fadingMessage.js";
 
-let isLooping = false;
-
-const fadingMessageDeleteLoop = async (client: Client) => {
+export async function handleFadingMessages(context: BotContext) {
     const now = new Date();
     const fadingMessages = await fadingMessage.findPendingForDeletion(now);
     const toRemove = [];
@@ -16,10 +13,14 @@ const fadingMessageDeleteLoop = async (client: Client) => {
         toRemove.push(fadingMessage.id);
 
         try {
-            const guild = await client.guilds.fetch(fadingMessage.guildId);
+            const guild = await context.client.guilds.fetch(
+                fadingMessage.guildId,
+            );
+
             const channel = guild.channels.cache.get(
                 fadingMessage.channelId,
             ) as TextChannel;
+
             const message = await channel.messages.fetch(
                 fadingMessage.messageId,
             );
@@ -34,17 +35,4 @@ const fadingMessageDeleteLoop = async (client: Client) => {
         }
     }
     await fadingMessage.destroyMultiple(toRemove);
-};
-
-const loopWrapper = async (client: Client) => {
-    isLooping = true;
-    await fadingMessageDeleteLoop(client);
-    isLooping = false;
-};
-
-export const startLoop = async (client: Client) => {
-    for await (const _ of setInterval(1000)) {
-        if (!isLooping) break;
-        await loopWrapper(client);
-    }
-};
+}

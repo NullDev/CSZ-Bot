@@ -13,6 +13,7 @@ import { processBans } from "../service/banService.js";
 import { runDropAttempt } from "../service/lootService.js";
 import { clearWoisLogTask } from "../service/voiceStateService.js";
 import { checkBirthdays } from "../service/birthdayService.js";
+import { handleFadingMessages } from "../service/fadingMessageService.js";
 
 import * as poll from "../commands/poll.js";
 import * as ehre from "../storage/ehre.js";
@@ -25,7 +26,7 @@ const schedule = (pattern: string, callback: Parameters<typeof cron>[1]) => {
     cron(pattern, options, callback);
 };
 
-export const scheduleCronjobs = async (context: BotContext) => {
+export async function scheduleCronjobs(context: BotContext) {
     schedule("1 0 * * *", () => checkBirthdays(context));
     schedule("0 20 1-25 12 *", () => publishAocLeaderBoard(context));
     schedule("0 0 * * 0", () => rerollNicknames(context));
@@ -38,6 +39,7 @@ export const scheduleCronjobs = async (context: BotContext) => {
     schedule("0 0 1 */2 *", () => rotate(context));
     schedule("37 13 * * *", () => leetTask(context));
     schedule("5 * * * *", () => clearWoisLogTask());
+    schedule("* * * * * *", () => handleFadingMessages(context));
 
     const loot = context.commandConfig.loot;
     if (loot.enabled) {
@@ -49,4 +51,4 @@ export const scheduleCronjobs = async (context: BotContext) => {
 
     await poll.importPolls();
     schedule("* * * * *", () => poll.processPolls(context));
-};
+}
