@@ -238,7 +238,9 @@ async function postLootDrop(context: BotContext, channel: GuildChannel) {
         new Date(),
     );
     if (!claimedLoot) {
-        const hamster = context.client.emojis.resolve("sad_hamster") ?? ":(";
+        const hamster =
+            context.guild.emojis.cache.find(e => e.name === "sad_hamster") ??
+            ":(";
         await reply.edit({
             content: `Upsi, da ist was schief gelaufi oder jemand anderes war schnelli ${hamster}`,
         });
