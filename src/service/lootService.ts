@@ -1,4 +1,3 @@
-import { once } from "node:events";
 import * as fs from "node:fs/promises";
 import { setTimeout } from "node:timers/promises";
 
@@ -23,7 +22,7 @@ import log from "@log";
 
 const lootTimeoutMs = 60 * 1000;
 
-const excludedLootIds = [0, 7, 8];
+const excludedLootIds = [0, 7, 8, 13];
 const lootTemplates: loot.LootTemplate[] = [
     {
         id: 0,
@@ -148,6 +147,15 @@ const lootTemplates: loot.LootTemplate[] = [
         description: "Leider ohne Treiber, die gibt es erst in 3 Monaten",
         emote: "🖥️",
         asset: "assets/loot/12-grafikkarte.png",
+    },
+    {
+        id: 13,
+        weight: 1,
+        displayName: "Feuchter Händedruck",
+        titleText: "Einen feuchten Händedruck",
+        description: "Glückwunsch!",
+        emote: "🤝",
+        asset: "assets/loot/13-haendedruck.jpg",
     },
 
     /*
