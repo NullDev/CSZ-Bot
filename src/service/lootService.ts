@@ -39,6 +39,7 @@ const lootTemplates: loot.LootTemplate[] = [
         displayName: "Niedliche Kadse",
         titleText: "Eine niedliche Kadse",
         description: "Awww",
+        emote: "🐱",
         asset: "assets/loot/01-kadse.jpg",
     },
     {
@@ -57,6 +58,7 @@ const lootTemplates: loot.LootTemplate[] = [
         titleText: "Ein sehr teurer Kühlschrank",
         description:
             "Dafür haben wir keine Kosten und Mühen gescheut und extra einen Kredit aufgenommen.",
+        emote: "🧊",
         asset: "assets/loot/03-kuehlschrank.jpg",
     },
     {
@@ -157,7 +159,7 @@ const lootTemplates: loot.LootTemplate[] = [
         - Ban für 2 Minuten?
         - Timeout?
         - Erleuchtung?
-        - Sonderrolle, die man nur mit Geschenk gewinnen kann und jedes Mal weitergereicht wird Wächter des Pfeffis?)?
+        - Sonderrolle, die man nur mit Geschenk gewinnen kann und jedes Mal weitergereicht wird (Wächter des Pfeffis?)?
     */
 ] as const;
 
