@@ -22,7 +22,7 @@ import log from "@log";
 
 const lootTimeoutMs = 60 * 1000;
 
-const excludedLootIds = [0, 7, 8, 13];
+const excludedLootIds = [0, 7, 8, 13, 14];
 const lootTemplates: loot.LootTemplate[] = [
     {
         id: 0,
@@ -157,17 +157,32 @@ const lootTemplates: loot.LootTemplate[] = [
         emote: "🤝",
         asset: "assets/loot/13-haendedruck.jpg",
     },
+    {
+        id: 14,
+        weight: 1,
+        displayName: "Erleuchtung",
+        titleText: "Eine Erleuchtung",
+        description: "💡",
+        emote: "💡",
+        asset: null,
+        specialAction: async (_context, winner, _channel, _loot) => {
+            const erleuchtungService = await import("./erleuchtungService.js");
+            await setTimeout(3000);
+            await erleuchtungService.getInspirationsEmbed(winner);
+        },
+    },
 
     /*
         Ideas:
-        - Pfeffi
-        - eine Heiligsprechung von Jesus höchstpersönlich
-        - Vogerlsalat
+            - Pfeffi
+            - eine Heiligsprechung von Jesus höchstpersönlich
+            - Vogerlsalat
+
         Special Loots mit besonderer Aktion?
-        - Ban für 2 Minuten?
-        - Timeout?
-        - Erleuchtung?
-        - Sonderrolle, die man nur mit Geschenk gewinnen kann und jedes Mal weitergereicht wird (Wächter des Pfeffis?)?
+            - Ban für 2 Minuten?
+            - Timeout?
+            - Erleuchtung?
+            - Sonderrolle, die man nur mit Geschenk gewinnen kann und jedes Mal weitergereicht wird (Wächter des Pfeffis?)?
     */
 ] as const;
 

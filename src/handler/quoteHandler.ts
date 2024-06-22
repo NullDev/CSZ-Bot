@@ -58,6 +58,7 @@ const getMessageQuoter = async (
             "A message has been quoted but the reaction could not be found",
         );
     }
+
     const fetchedUsersOfReaction = await messageReaction.users.fetch();
     return fetchedUsersOfReaction
         .map(user => guild.members.resolve(user.id))
@@ -218,12 +219,14 @@ export default {
         const referencedMessage = messageReferenceId
             ? await sourceChannel.messages.fetch(messageReferenceId)
             : undefined;
+
         const quotedUser = quotedMessage.member;
         const referencedUser = referencedMessage?.member;
         const quotingMembers = await getMessageQuoter(
             quoteConfig,
             quotedMessage,
         );
+
         const quotingMembersAllowed = quotingMembers.filter(
             context.roleGuard.isNerd,
         );
