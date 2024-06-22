@@ -194,7 +194,6 @@ const lootTemplates: loot.LootTemplate[] = [
 
     Special Loots mit besonderer Aktion?
         - Timeout?
-        - Erleuchtung?
         - Sonderrolle, die man nur mit Geschenk gewinnen kann und jedes Mal weitergereicht wird (Wächter des Pfeffis?)?
 */
 
