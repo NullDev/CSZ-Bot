@@ -181,7 +181,14 @@ const lootTemplates: loot.LootTemplate[] = [
         asset: "assets/loot/15-ban.jpg",
         specialAction: async (_context, winner, _channel, _loot) => {
             const banService = await import("./banService.js");
-            await banService.banUser(_context, winner, _context.client.user, "Willkürban aus der Lotterie", false, 0.08);
+            await banService.banUser(
+                _context,
+                winner,
+                _context.client.user,
+                "Willkürban aus der Lotterie",
+                false,
+                0.08,
+            );
         },
     },
     {
@@ -191,7 +198,7 @@ const lootTemplates: loot.LootTemplate[] = [
         titleText: "Ein warmes Oettinger",
         description: "Ja dann Prost ne!",
         emote: "🍺",
-        asset: "assets/loot/16-oettinger.jpg"
+        asset: "assets/loot/16-oettinger.jpg",
     },
 ] as const;
 
