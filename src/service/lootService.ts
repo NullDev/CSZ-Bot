@@ -171,6 +171,19 @@ const lootTemplates: loot.LootTemplate[] = [
             await erleuchtungService.getInspirationsEmbed(winner);
         },
     },
+    {
+        id: 15,
+        weight: 1,
+        displayName: "Willkürban",
+        titleText: "Einen Ban aus reiner Willkür",
+        description: "Tschüsseldorf!",
+        emote: "🔨",
+        asset: "assets/loot/15-ban.jpg",
+        specialAction: async (_context, winner, _channel, _loot) => {
+            const banService = await import("./banService.js");
+            await banService.banUser(_context, winner, _context.client.user, "Willkürban aus der Lotterie", false, 0.08);
+        },
+    },
 ] as const;
 
 /*
@@ -180,7 +193,6 @@ const lootTemplates: loot.LootTemplate[] = [
         - Vogerlsalat
 
     Special Loots mit besonderer Aktion?
-        - Ban für 2 Minuten?
         - Timeout?
         - Erleuchtung?
         - Sonderrolle, die man nur mit Geschenk gewinnen kann und jedes Mal weitergereicht wird (Wächter des Pfeffis?)?
