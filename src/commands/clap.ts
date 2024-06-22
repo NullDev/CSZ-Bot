@@ -12,15 +12,9 @@ import type { BotContext } from "../context.js";
 import type { ProcessableMessage } from "../handler/cmdHandler.js";
 import type { ApplicationCommand, MessageCommand } from "./command.js";
 
-/**
- * Clappifies text
- */
 const clapify = (str: string): string =>
     `${str.split(/\s+/).join(" :clap: ")} :clap:`;
 
-/**
- * build clapped embed
- */
 const buildClap = (author: GuildMember, toClap: string) => {
     return new EmbedBuilder()
         .setDescription(`${clapify(toClap)}`)

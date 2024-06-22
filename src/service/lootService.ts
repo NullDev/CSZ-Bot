@@ -171,20 +171,20 @@ const lootTemplates: loot.LootTemplate[] = [
             await erleuchtungService.getInspirationsEmbed(winner);
         },
     },
-
-    /*
-        Ideas:
-            - Pfeffi
-            - eine Heiligsprechung von Jesus höchstpersönlich
-            - Vogerlsalat
-
-        Special Loots mit besonderer Aktion?
-            - Ban für 2 Minuten?
-            - Timeout?
-            - Erleuchtung?
-            - Sonderrolle, die man nur mit Geschenk gewinnen kann und jedes Mal weitergereicht wird (Wächter des Pfeffis?)?
-    */
 ] as const;
+
+/*
+    Ideas:
+        - Pfeffi
+        - eine Heiligsprechung von Jesus höchstpersönlich
+        - Vogerlsalat
+
+    Special Loots mit besonderer Aktion?
+        - Ban für 2 Minuten?
+        - Timeout?
+        - Erleuchtung?
+        - Sonderrolle, die man nur mit Geschenk gewinnen kann und jedes Mal weitergereicht wird (Wächter des Pfeffis?)?
+*/
 
 export async function runDropAttempt(context: BotContext) {
     const lootConfig = context.commandConfig.loot;
