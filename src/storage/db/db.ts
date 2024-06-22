@@ -31,6 +31,9 @@ export async function connectToDb(databasePath: string) {
                     log.error(info, "Error running query");
                     break;
                 case "query":
+                    if (info.sql.includes("fadingMessages")) {
+                        return;
+                    }
                     log.debug(info, "DB Query");
                     break;
                 default:
