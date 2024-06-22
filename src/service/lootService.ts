@@ -184,6 +184,15 @@ const lootTemplates: loot.LootTemplate[] = [
             await banService.banUser(_context, winner, _context.client.user, "Willkürban aus der Lotterie", false, 0.08);
         },
     },
+    {
+        id: 16,
+        weight: 1,
+        displayName: "Oettinger",
+        titleText: "Ein warmes Oettinger",
+        description: "Ja dann Prost ne!",
+        emote: "🍺",
+        asset: "assets/loot/16-oettinger.jpg"
+    },
 ] as const;
 
 /*
