@@ -1,7 +1,7 @@
 import cron, { type CronOptions } from "croner";
 
 import type { BotContext } from "../context.js";
-import { rerollNicknames } from "./nicknameHandler.js";
+import { rerollNicknames } from "../service/nickNameRollService.js";
 import { connectAndPlaySaufen } from "./voiceHandler.js";
 import { reminderHandler } from "../commands/erinnerung.js";
 import { endAprilFools, startAprilFools } from "./aprilFoolsHandler.js";
