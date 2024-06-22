@@ -119,13 +119,17 @@ export class Nickname implements ApplicationCommand {
             return;
         }
 
+        const member = guild.members.cache.get(cmd.user.id);
+        if (!member) {
+            await cmd.reply("Hurensohn. Der Command ist nix für dich.");
+            return;
+        }
+
         const option = cmd.options.getSubcommand();
-        const commandUser = guild.members.cache.find(m => m.id === cmd.user.id);
-        // We know that the user option is in every subcmd.
+
         const user = cmd.options.getUser("user", true);
-        const isTrusted =
-            commandUser && context.roleGuard.isTrusted(commandUser);
-        const isSameUser = user.id === commandUser?.user.id;
+        const isTrusted = context.roleGuard.isTrusted(member);
+        const isSameUser = user.id === member.user.id;
 
         try {
             switch (option) {
@@ -137,7 +141,6 @@ export class Nickname implements ApplicationCommand {
                         return;
                     }
 
-                    const member = guild.members.cache.get(user.id);
                     if (!member) {
                         await cmd.reply(
                             "Hurensohn. Der Brudi ist nicht auf dem Server.",
@@ -307,7 +310,7 @@ export class Nickname implements ApplicationCommand {
 
 export class NicknameButtonHandler implements UserInteraction {
     readonly ids = ["nicknameVoteYes", "nicknameVoteNo"];
-    readonly name = "NicknameButtonhandler";
+    readonly name = "NicknameButtonHandler";
     readonly threshold = 7;
 
     async handleInteraction(
@@ -324,10 +327,12 @@ export class NicknameButtonHandler implements UserInteraction {
             });
             return;
         }
+
         const userVoteMap = getUserVoteMap(interaction.message.id);
         const member = interaction.guild?.members.cache.get(
             interaction.user.id,
         );
+
         if (member === undefined) {
             await interaction.update({
                 content: "Ich find dich nicht auf dem Server. Du Huso",
@@ -336,16 +341,16 @@ export class NicknameButtonHandler implements UserInteraction {
             return;
         }
 
-        const isTrusted = context.roleGuard.isTrusted(member);
+        const trusted = context.roleGuard.isTrusted(member);
         if (interaction.customId === "nicknameVoteYes") {
             userVoteMap[interaction.user.id] = {
                 vote: "YES",
-                trusted: isTrusted,
+                trusted,
             };
         } else if (interaction.customId === "nicknameVoteNo") {
             userVoteMap[interaction.user.id] = {
                 vote: "NO",
-                trusted: isTrusted,
+                trusted,
             };
         }
 
@@ -358,6 +363,7 @@ export class NicknameButtonHandler implements UserInteraction {
             });
             return;
         }
+
         if (this.#hasEnoughVotes(votes, "YES")) {
             try {
                 await nickName.insertNickname(
@@ -377,6 +383,7 @@ export class NicknameButtonHandler implements UserInteraction {
             });
             return;
         }
+
         await interaction.reply({
             content: "Hast abgestimmt",
             ephemeral: true,

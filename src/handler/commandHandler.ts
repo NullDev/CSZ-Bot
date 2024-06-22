@@ -131,12 +131,9 @@ export const interactions: readonly UserInteraction[] = [
     new NicknameButtonHandler(),
 ];
 
-export const applicationCommands =
-    commands.filter<ApplicationCommand>(isApplicationCommand);
-export const messageCommands =
-    commands.filter<MessageCommand>(isMessageCommand);
-export const specialCommands =
-    commands.filter<SpecialCommand>(isSpecialCommand);
+export const applicationCommands = commands.filter(isApplicationCommand);
+export const messageCommands = commands.filter(isMessageCommand);
+export const specialCommands = commands.filter(isSpecialCommand);
 
 const lastSpecialCommands: Record<string, number> = specialCommands.reduce(
     // biome-ignore lint/performance/noAccumulatingSpread: Whatever this does, someone wrote pretty cool code
