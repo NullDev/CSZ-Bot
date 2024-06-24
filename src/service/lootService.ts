@@ -12,6 +12,7 @@ import {
     type User,
     type Interaction,
 } from "discord.js";
+import { Temporal } from "@js-temporal/polyfill";
 
 import type { BotContext } from "../context.js";
 import type { Loot } from "../storage/db/model.js";
@@ -239,6 +240,28 @@ export async function runDropAttempt(context: BotContext) {
         );
         return;
     }
+
+    const lm = targetChannel.lastMessage?.createdTimestamp;
+    if (lm === undefined) {
+        log.info(
+            `Would have dropped loot to ${targetChannel.name}, but it does not have any messages yet`,
+        );
+        return;
+    }
+
+    const now = Temporal.Now.instant();
+    const lastMessage = Temporal.Instant.fromEpochMilliseconds(lm);
+    const passedTime = now.since(lastMessage);
+
+    if (
+        passedTime.subtract(lootConfig.maxTimePassedSinceLastMessage).sign > 0
+    ) {
+        log.info(
+            `Would have dropped loot to ${targetChannel.name}, but it was too soon since the last message (${lootConfig.maxTimePassedSinceLastMessage})`,
+        );
+        return;
+    }
+
     log.info(
         `Dice was ${dice}, which is lower than configured ${lootConfig.dropChance}. Dropping loot to ${targetChannel.name}!`,
     );

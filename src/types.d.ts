@@ -122,6 +122,8 @@ export interface Config {
             schedule_cron: string;
             drop_chance: number;
             target_channel_ids?: Array<Snowflake> | undefined;
+            /** ISO8601 duration */
+            max_time_passed_since_last_message: string;
         };
     };
     ids: Record<ConfigIdKey, Snowflake>;

@@ -11,6 +11,7 @@ import type {
     APIInteractionGuildMember,
 } from "discord.js";
 import { ChannelType } from "discord.js";
+import { Temporal } from "@js-temporal/polyfill";
 
 import type {
     Config,
@@ -50,7 +51,8 @@ export interface BotContext {
             enabled: boolean;
             scheduleCron: string;
             dropChance: number;
-            targetChannels?: Snowflake[];
+            targetChannels?: readonly Snowflake[];
+            maxTimePassedSinceLastMessage: Temporal.Duration;
         };
     };
 
@@ -258,6 +260,10 @@ export async function createBotContext(
                 dropChance: config.bot_settings.loot?.drop_chance ?? 0.05,
                 targetChannels:
                     config.bot_settings.loot?.target_channel_ids ?? undefined,
+                maxTimePassedSinceLastMessage: Temporal.Duration.from(
+                    config.bot_settings.loot
+                        ?.max_time_passed_since_last_message ?? "PT30M",
+                ),
             },
         },
         roles: {
