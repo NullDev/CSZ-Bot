@@ -179,12 +179,12 @@ const lootTemplates: loot.LootTemplate[] = [
         description: "Tschüsseldorf!",
         emote: "🔨",
         asset: "assets/loot/15-ban.jpg",
-        specialAction: async (_context, winner, _channel, _loot) => {
+        specialAction: async (context, winner, _channel, _loot) => {
             const banService = await import("./banService.js");
             await banService.banUser(
-                _context,
+                context,
                 winner,
-                _context.client.user,
+                context.client.user,
                 "Willkürban aus der Lotterie",
                 false,
                 0.08,
@@ -327,6 +327,8 @@ async function postLootDrop(context: BotContext, channel: GuildChannel) {
         });
         return;
     }
+
+    await reply.delete();
 
     log.info(
         `User ${interaction.user.username} claimed loot ${claimedLoot.id} (template: ${template.id})`,
