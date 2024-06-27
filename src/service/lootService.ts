@@ -208,6 +208,7 @@ const lootTemplates: loot.LootTemplate[] = [
         - Pfeffi
         - eine Heiligsprechung von Jesus höchstpersönlich
         - Vogerlsalat
+        - Wertlose GME-Aktie
 
     Special Loots mit besonderer Aktion?
         - Timeout?
