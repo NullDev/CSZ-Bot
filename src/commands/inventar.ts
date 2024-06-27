@@ -49,13 +49,13 @@ export class InventarCommand implements ApplicationCommand {
             // biome-ignore lint/style/noNonNullAssertion: see filter above
             .map(i => [i![0]!, i!.length] as const);
 
-        const contentsString = items
+        const description = items
             .map(([item, count]) => {
                 const emote = lootService.getEmote(item);
                 const e = emote ? `${emote} ` : "";
                 return count === 1
-                    ? `- ${e}${item.displayName}`
-                    : `- ${count}x ${e}${item.displayName}`;
+                    ? `${e}${item.displayName}`
+                    : `${count}x ${e}${item.displayName}`;
             })
             .join("\n");
 
@@ -63,7 +63,7 @@ export class InventarCommand implements ApplicationCommand {
             embeds: [
                 {
                     title: `Inventar von ${user.displayName}`,
-                    description: contentsString,
+                    description,
                     footer: {
                         text: `Es befinden sich insgesamt ${contents.length} Gegenstände im Inventar`,
                     },
