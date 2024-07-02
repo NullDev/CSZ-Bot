@@ -29,7 +29,7 @@
     "@js-temporal/polyfill": "^0.4.4",
     "@napi-rs/canvas": "^0.1.53",
     "@resvg/resvg-js": "^2.6.2",
-    "@sentry/bun": "^8.11.0",
+    "@sentry/bun": "^8.13.0",
     "chrono-node": "^2.7.6",
     "croner": "^8.0.2",
     "discord.js": "^14.15.3",
@@ -44,16 +44,16 @@
     "urlpattern-polyfill": "^10.0.0"
   },
   "devDependencies": {
-    "@biomejs/biome": "^1.8.2",
+    "@biomejs/biome": "^1.8.3",
     "@ffprobe-installer/ffprobe": "^2.1.2",
-    "@types/bun": "^1.1.5",
+    "@types/bun": "^1.1.6",
     "@types/jsdom": "^21.1.7",
     "@types/minimist": "^1.2.5",
     "@types/node-cron": "^3.0.11",
     "@types/sqlite3": "^3.1.11",
     "lefthook": "^1.6.18",
     "pino-pretty": "^11.2.1",
-    "typescript": "^5.5.2"
+    "typescript": "^5.5.3"
   },
   "engines": {
     "bun": ">=1.1.0"
