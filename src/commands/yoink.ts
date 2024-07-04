@@ -84,13 +84,13 @@ export class YoinkCommand implements MessageCommand, ApplicationCommand {
         }
 
         const args = message.content.split(" ");
-        if (args.length > 1) {
-            const emoji = parseEmoji(args[1]);
+        if (args.length >= 1) {
+            const emoji = parseEmoji(args[0]);
             if (emoji) {
                 const res = await this.createEmote(
                     emoji,
                     message.channel,
-                    args.length >= 2 ? args[1] : null,
+                    args.length > 1 ? args[1] : null,
                     message.guild,
                 );
                 await message.channel.send(res);
