@@ -86,8 +86,10 @@ export class YoinkCommand implements MessageCommand, ApplicationCommand {
         }
 
         const args = message.content.split(" ");
-        if (args.length >= 1) {
-            const emoji = parseEmoji(args[0]);
+        // args is [".yoink", ":xddd:", "name"]
+        // (name is optional)
+        if (args.length > 1) {
+            const emoji = parseEmoji(args[1]);
             if (!emoji) {
                 await message.channel.send(
                     "Konnte emote nicht parsen, du Mongo",
@@ -95,10 +97,11 @@ export class YoinkCommand implements MessageCommand, ApplicationCommand {
                 return;
             }
 
+            const name = args.length > 2 ? args[2] : null;
             const res = await this.createEmote(
                 emoji,
                 message.channel,
-                args.length > 1 ? args[1] : null,
+                name,
                 message.guild,
             );
             await message.channel.send(res);
