@@ -5,6 +5,7 @@ import {
     parseEmoji,
     SlashCommandBuilder,
     SlashCommandStringOption,
+    type PartialEmoji,
 } from "discord.js";
 
 import type { ApplicationCommand, MessageCommand } from "./command.js";
@@ -49,11 +50,17 @@ export class YoinkCommand implements MessageCommand, ApplicationCommand {
             await command.reply("Bist nicht cool genug");
             return;
         }
-        const emote = cmd.options.getString("emote", true);
+        const emoteCandidate = cmd.options.getString("emote", true);
         const name = cmd.options.getString("name", false);
         const channel = cmd.channel;
         if (!channel) {
             await command.reply("Channel nicht gefunden");
+            return;
+        }
+
+        const emote = parseEmoji(emoteCandidate);
+        if (!emote) {
+            await command.reply("Konnte emote nicht parsen, du Mongo");
             return;
         }
 
@@ -77,37 +84,71 @@ export class YoinkCommand implements MessageCommand, ApplicationCommand {
         }
 
         const args = message.content.split(" ");
-        if (args.length >= 1) {
-            await this.createEmote(
-                args[1],
-                message.channel,
-                args.length >= 2 ? args[1] : null,
-                message.guild,
-            );
-            await message.delete();
-        } else {
-            await message.channel.send(
-                "Argumente musst du schon angeben, du Mongo",
-            );
+        if (args.length > 1) {
+            const emoji = parseEmoji(args[1]);
+            if (emoji) {
+                const res = await this.createEmote(
+                    emoji,
+                    message.channel,
+                    args.length >= 2 ? args[1] : null,
+                    message.guild,
+                );
+                await message.channel.send(res);
+                await message.delete();
+                return;
+            }
+
+            await message.channel.send("Konnte emote nicht parsen, du Mongo");
             return;
         }
+
+        const repliedMessageId = message.reference?.messageId;
+        if (repliedMessageId) {
+            const repliedMessage =
+                await message.channel.messages.fetch(repliedMessageId);
+            if (repliedMessage) {
+                const emoteCandidate = repliedMessage.content.trim();
+
+                const emoji = parseEmoji(emoteCandidate);
+                if (emoji) {
+                    const res = await this.createEmote(
+                        emoji,
+                        message.channel,
+                        args.length >= 1 ? args[0] : null,
+                        message.guild,
+                    );
+                    await message.channel.send(res);
+                    await message.delete();
+                    return;
+                }
+                await message.channel.send(
+                    "Konnte deinen lellek-emote nicht parsen",
+                );
+                return;
+            }
+        }
+
+        await message.channel.send(
+            "Argumente musst du schon angeben, du Mongo",
+        );
+        return;
     }
 
     async createEmote(
-        emoji: string,
+        emoji: PartialEmoji,
         _channel: TextBasedChannel,
         name: string | null,
         guild: Guild,
     ): Promise<string> {
-        const parsedEmoji = parseEmoji(emoji);
-        if (!parsedEmoji) {
-            return "Du Lellek, ich kann dein Emote nicht parsen";
+        const effectiveName = name ?? emoji.name;
+        if (!effectiveName) {
+            return "Da war k1s ordentlicher Name verfügbar :(";
         }
 
-        const extension = parsedEmoji.animated ? ".gif" : ".png";
+        const extension = emoji.animated ? ".gif" : ".png";
         const guildEmoji = await guild?.emojis.create({
-            attachment: `https://cdn.discordapp.com/emojis/${parsedEmoji.id}${extension}`,
-            name: name ?? parsedEmoji.name,
+            attachment: `https://cdn.discordapp.com/emojis/${emoji.id}${extension}`,
+            name: effectiveName,
         });
 
         return `Hab \<:${guildEmoji.name}:${guildEmoji.id}\> als \`${guildEmoji.name}\` hinzugefügt`;
