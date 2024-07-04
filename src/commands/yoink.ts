@@ -8,6 +8,8 @@ import {
     type PartialEmoji,
 } from "discord.js";
 
+import log from "@log";
+
 import type { ApplicationCommand, MessageCommand } from "./command.js";
 import type { ProcessableMessage } from "../handler/cmdHandler.js";
 import type { BotContext } from "../context.js";
@@ -151,12 +153,16 @@ export class YoinkCommand implements MessageCommand, ApplicationCommand {
         }
 
         const extension = emoji.animated ? ".gif" : ".png";
-        const guildEmoji = await guild?.emojis.create({
-            attachment: `https://cdn.discordapp.com/emojis/${emoji.id}${extension}`,
-            name: effectiveName,
-        });
-
-        return `Hab \<:${guildEmoji.name}:${guildEmoji.id}\> als \`${guildEmoji.name}\` hinzugefügt`;
+        try {
+            const guildEmoji = await guild.emojis.create({
+                attachment: `https://cdn.discordapp.com/emojis/${emoji.id}${extension}`,
+                name: effectiveName,
+            });
+            return `Hab \<:${guildEmoji.name}:${guildEmoji.id}\> als \`${guildEmoji.name}\` hinzugefügt`;
+        } catch (err) {
+            log.error(err, "Could not add emote");
+            return "Konnte Emote nicht hinzufügen. Vielleicht hat der Server keine Slots mehr frei. Oder Discord wollte einfach nicht. Oder du bist doof.";
+        }
     }
 }
 
