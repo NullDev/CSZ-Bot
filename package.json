@@ -29,7 +29,7 @@
     "@js-temporal/polyfill": "^0.4.4",
     "@napi-rs/canvas": "^0.1.53",
     "@resvg/resvg-js": "^2.6.2",
-    "@sentry/bun": "^8.13.0",
+    "@sentry/bun": "^8.14.0",
     "chrono-node": "^2.7.6",
     "croner": "^8.0.2",
     "discord.js": "^14.15.3",
