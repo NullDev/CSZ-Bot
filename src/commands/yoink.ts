@@ -86,52 +86,57 @@ export class YoinkCommand implements MessageCommand, ApplicationCommand {
         const args = message.content.split(" ");
         if (args.length >= 1) {
             const emoji = parseEmoji(args[0]);
-            if (emoji) {
-                const res = await this.createEmote(
-                    emoji,
-                    message.channel,
-                    args.length > 1 ? args[1] : null,
-                    message.guild,
+            if (!emoji) {
+                await message.channel.send(
+                    "Konnte emote nicht parsen, du Mongo",
                 );
-                await message.channel.send(res);
-                await message.delete();
                 return;
             }
 
-            await message.channel.send("Konnte emote nicht parsen, du Mongo");
+            const res = await this.createEmote(
+                emoji,
+                message.channel,
+                args.length > 1 ? args[1] : null,
+                message.guild,
+            );
+            await message.channel.send(res);
+            await message.delete();
             return;
         }
 
         const repliedMessageId = message.reference?.messageId;
-        if (repliedMessageId) {
-            const repliedMessage =
-                await message.channel.messages.fetch(repliedMessageId);
-            if (repliedMessage) {
-                const emoteCandidate = repliedMessage.content.trim();
-
-                const emoji = parseEmoji(emoteCandidate);
-                if (emoji) {
-                    const res = await this.createEmote(
-                        emoji,
-                        message.channel,
-                        args.length >= 1 ? args[0] : null,
-                        message.guild,
-                    );
-                    await message.channel.send(res);
-                    await message.delete();
-                    return;
-                }
-                await message.channel.send(
-                    "Konnte deinen lellek-emote nicht parsen",
-                );
-                return;
-            }
+        if (!repliedMessageId) {
+            await message.channel.send(
+                "Da war nichts, was ich verarbeiten kann",
+            );
+            return;
         }
 
-        await message.channel.send(
-            "Argumente musst du schon angeben, du Mongo",
+        const repliedMessage =
+            await message.channel.messages.fetch(repliedMessageId);
+        if (!repliedMessage) {
+            await message.channel.send("Konnte Nachricht nicht laden");
+            return;
+        }
+
+        const emoteCandidate = repliedMessage.content.trim();
+
+        const emoji = parseEmoji(emoteCandidate);
+        if (!emoji) {
+            await message.channel.send(
+                "Konnte deinen lellek-emote nicht parsen",
+            );
+            return;
+        }
+
+        const res = await this.createEmote(
+            emoji,
+            message.channel,
+            args.length >= 1 ? args[0] : null,
+            message.guild,
         );
-        return;
+        await message.channel.send(res);
+        await message.delete();
     }
 
     async createEmote(
