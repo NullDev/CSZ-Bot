@@ -36,44 +36,6 @@ import log from "@log";
 
 import InfoCommand from "../commands/info.js";
 import TriggerReactOnKeyword from "../commands/special/keywordReact.js";
-import WhereCommand from "../commands/special/where.js";
-import DadJokeCommand from "../commands/special/dadJoke.js";
-import WatCommand from "../commands/special/wat.js";
-import TikTokLink from "../commands/special/tiktok.js";
-import StempelCommand from "../commands/stempeln.js";
-import StempelgraphCommand from "../commands/stempelgraph.js";
-import StempelkarteCommand from "../commands/stempelkarte.js";
-import BanCommand from "../commands/modcommands/ban.js";
-import UnbanCommand from "../commands/modcommands/unban.js";
-import PenisCommand from "../commands/penis.js";
-import BonkCommand from "../commands/bonk.js";
-import DoenerCommand from "../commands/doener.js";
-import GoogleCommand from "../commands/google.js";
-import NischdaaaCommand from "../commands/special/nischdaaa.js";
-import AutoEhreCommand from "../commands/special/autoEhre.js";
-import SplidGroupCommand from "../commands/splid.js";
-import WoisLog from "../commands/woislog.js";
-import FicktabelleCommand from "../commands/ficktabelle.js";
-import InviteCommand from "../commands/invite.js";
-import ErleuchtungCommand from "../commands/erleuchtung.js";
-import FaulenzerPingCommand from "../commands/faulenzerping.js";
-import GeringverdienerCommand from "../commands/geringverdiener.js";
-import ClapCommand from "../commands/clap.js";
-import NeverCommand from "../commands/never.js";
-import GeburtstagCommand from "../commands/geburtstag.js";
-import Saufen from "../commands/saufen.js";
-import ErinnerungCommand from "../commands/erinnerung.js";
-import YoinkCommand from "../commands/yoink.js";
-import EmoteSenderCommand from "../commands/special/emoteSender.js";
-import OidaCommand from "../commands/oida.js";
-import DeOidaCommand from "../commands/deoida.js";
-import EhreCommand from "../commands/ehre.js";
-import WoisCommand from "../commands/woisvote.js";
-import AoCCommand from "../commands/aoc.js";
-import BanListCommand from "../commands/banlist.js";
-import Vote2Command from "../commands/vote2.js";
-import InstagramLink from "../commands/special/instagram.js";
-import InventarCommand from "../commands/inventar.js";
 
 import { Nickname, NicknameButtonHandler } from "../commands/nickname.js";
 
@@ -85,45 +47,7 @@ const staticCommands: readonly Command[] = [
     new TriggerReactOnKeyword("nix", "nixos"),
     new TriggerReactOnKeyword("zig", "zig", 0.05),
     new TriggerReactOnKeyword("backend", "🍞", 1),
-    new WhereCommand(),
-    new DadJokeCommand(),
-    new WatCommand(),
-    new TikTokLink(),
-    new StempelCommand(),
-    new StempelgraphCommand(),
-    new StempelkarteCommand(),
-    new BanCommand(),
-    new UnbanCommand(),
-    new PenisCommand(),
-    new BonkCommand(),
-    new DoenerCommand(),
-    new GoogleCommand(),
     new Nickname(),
-    new SplidGroupCommand(),
-    new WoisLog(),
-    new NischdaaaCommand(),
-    new AutoEhreCommand(),
-    new WoisCommand(),
-    new FicktabelleCommand(),
-    new InviteCommand(),
-    new ErleuchtungCommand(),
-    new FaulenzerPingCommand(),
-    new GeringverdienerCommand(),
-    new ClapCommand(),
-    new NeverCommand(),
-    new GeburtstagCommand(),
-    new Saufen(),
-    new ErinnerungCommand(),
-    new YoinkCommand(),
-    new EmoteSenderCommand(),
-    new InstagramLink(),
-    new OidaCommand(),
-    new DeOidaCommand(),
-    new EhreCommand(),
-    new AoCCommand(),
-    new BanListCommand(),
-    new Vote2Command(),
-    new InventarCommand(),
 ];
 const allCommands: Command[] = [];
 

@@ -13,6 +13,7 @@ export type Command = ApplicationCommand | MessageCommand | SpecialCommand;
 
 export interface CommandBase {
     readonly modCommand?: boolean;
+    // readonly disabled?: boolean;
     readonly name: string;
     readonly aliases?: string[];
     readonly description: string;
