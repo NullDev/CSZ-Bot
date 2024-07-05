@@ -17,7 +17,11 @@ export const run: CommandFunction = async (message, args) => {
         if (!count) {
             continue;
         }
-        authors.push(`- ${count} Nachrichten von ${author}`);
+        const charCount =
+            Math.sumPrecise(messages.map(msg => msg.content.length)) | 0;
+        authors.push(
+            `- ${count} Nachrichten (${charCount} Zeichen) von ${author}`,
+        );
     }
 
     message.channel.send(
