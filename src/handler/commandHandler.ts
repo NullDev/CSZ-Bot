@@ -79,6 +79,8 @@ export const loadCommands = async (context: BotContext): Promise<void> => {
         const moduleUrl = new URL("file://");
         moduleUrl.pathname = path.join(context.commandDir, file);
 
+        log.debug(`Tryling to load ${moduleUrl}`);
+
         const module = await import(moduleUrl.toString());
         if (!module.default) {
             continue;
