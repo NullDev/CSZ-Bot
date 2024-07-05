@@ -98,7 +98,6 @@ const staticCommands: readonly Command[] = [
     new BanCommand(),
     new UnbanCommand(),
     new PenisCommand(),
-    new BoobCommand(),
     new BonkCommand(),
     new DoenerCommand(),
     new GoogleCommand(),
@@ -107,12 +106,10 @@ const staticCommands: readonly Command[] = [
     new WoisLog(),
     new NischdaaaCommand(),
     new AutoEhreCommand(),
-    new SdmCommand(),
     new WoisCommand(),
     new FicktabelleCommand(),
     new InviteCommand(),
     new ErleuchtungCommand(),
-    new MockCommand(),
     new FaulenzerPingCommand(),
     new GeringverdienerCommand(),
     new ClapCommand(),
@@ -183,7 +180,7 @@ export const loadCommands = async (context: BotContext): Promise<void> => {
         loadedCommandNames.add(instance.name);
         dynamicCommands.push(instance);
     }
-    log.info(dynamicCommands, `Loaded ${dynamicCommands.length} commands`);
+    log.info(dynamicCommands, `Loaded ${dynamicCommands.length} dynamic commands`);
 };
 
 const createPermissionSet = (
