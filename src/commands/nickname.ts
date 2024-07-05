@@ -45,7 +45,7 @@ const getUserVoteMap = (messageId: string): Record<string, UserVote> => {
     return idVoteMap[messageId];
 };
 
-export class Nickname implements ApplicationCommand {
+export default class NicknameCommand implements ApplicationCommand {
     modCommand = false;
     name = "nickname";
     description = "Setzt Nicknames für einen User";
@@ -176,7 +176,7 @@ export class Nickname implements ApplicationCommand {
                         return;
                     }
 
-                    return Nickname.#createNickNameVote(
+                    return NicknameCommand.#createNickNameVote(
                         command,
                         user,
                         nickname,

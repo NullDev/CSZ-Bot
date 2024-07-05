@@ -37,7 +37,7 @@ import log from "@log";
 import InfoCommand from "../commands/info.js";
 import TriggerReactOnKeyword from "../commands/special/keywordReact.js";
 
-import { Nickname, NicknameButtonHandler } from "../commands/nickname.js";
+import { NicknameButtonHandler } from "../commands/nickname.js";
 import SplidCommand from "../commands/splid.js";
 
 import { isProcessableMessage, type ProcessableMessage } from "./cmdHandler.js";
@@ -48,7 +48,6 @@ const staticCommands: readonly Command[] = [
     new TriggerReactOnKeyword("nix", "nixos"),
     new TriggerReactOnKeyword("zig", "zig", 0.05),
     new TriggerReactOnKeyword("backend", "🍞", 1),
-    new Nickname(),
     new SplidCommand(),
 ];
 const allCommands: Command[] = [];
