@@ -156,8 +156,15 @@ export const loadCommands = async (context: BotContext): Promise<void> => {
         }
         const moduleUrl = new URL("file://");
         moduleUrl.pathname = path.join(context.commandDir, file);
+
         const loadedCommand = await import(moduleUrl.toString());
-        commands.push([file, loadedCommand.default, loadedCommand]);
+
+        log.info(
+            [file, loadedCommand.default, loadedCommand],
+            `Loaded "${moduleUrl}"`,
+        );
+
+        commands.push(loadedCommand);
     }
     log.info(commands, `Loaded ${commands.length} commands`);
 };
