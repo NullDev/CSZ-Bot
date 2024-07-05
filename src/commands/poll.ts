@@ -314,9 +314,7 @@ export const processPolls = async (context: BotContext) => {
 
     for (const element of pollsToFinish) {
         const delayedPoll = element;
-        const message = await /** @type {import("discord.js").TextChannel} */ (
-            channel
-        ).messages.fetch(delayedPoll.pollId);
+        const message = await channel.messages.fetch(delayedPoll.pollId);
 
         const users: Record<Snowflake, User> = {};
         await Promise.all(
