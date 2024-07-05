@@ -18,6 +18,7 @@ import * as voiceStateService from "./service/voiceStateService.js";
 
 import {
     handleInteractionEvent,
+    loadCommands,
     messageCommandHandler,
     registerAllApplicationCommandsAsGuildCommands,
 } from "./handler/commandHandler.js";
