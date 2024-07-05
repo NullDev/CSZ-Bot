@@ -1,4 +1,6 @@
 import * as fs from "node:fs/promises";
+import * as path from "node:path";
+
 import {
     type APIApplicationCommand,
     ApplicationCommandPermissionType,
@@ -144,6 +146,20 @@ const lastSpecialCommands: Record<string, number> = getSpecialCommands().reduce(
     {},
 );
 
+export const loadCommands = async (context: BotContext): Promise<void> => {
+    const commandFiles = await fs.readdir(context.commandDir);
+
+    const commands = [];
+    for (const file of commandFiles) {
+        if (!file.endsWith(".ts")) {
+            continue;
+        }
+        const command = await import(path.join(context.commandDir, file));
+        commands.push([file, command.default]);
+    }
+    log.info(commands, `Loaded ${commands.length} commands`);
+};
+
 const createPermissionSet = (
     permissions: readonly PermissionsString[],
 ): bigint => {
@@ -163,6 +179,7 @@ export const registerAllApplicationCommandsAsGuildCommands = async (
     const token = context.rawConfig.auth.bot_token;
 
     const rest = new REST({ version: "10" }).setToken(token);
+
     const buildGuildCommand = (
         cmd: ApplicationCommand,
     ): APIApplicationCommand => {

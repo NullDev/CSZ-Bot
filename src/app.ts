@@ -140,6 +140,8 @@ client.once("ready", async initializedClient => {
     try {
         botContext = await createBotContext(initializedClient);
 
+        await loadCommands(botContext);
+
         await scheduleCronjobs(botContext);
 
         // When the application is ready, slash commands should be registered
