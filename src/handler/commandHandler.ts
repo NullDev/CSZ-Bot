@@ -46,19 +46,16 @@ import StempelkarteCommand from "../commands/stempelkarte.js";
 import BanCommand from "../commands/modcommands/ban.js";
 import UnbanCommand from "../commands/modcommands/unban.js";
 import PenisCommand from "../commands/penis.js";
-import BoobCommand from "../commands/boobs.js";
 import BonkCommand from "../commands/bonk.js";
 import DoenerCommand from "../commands/doener.js";
 import GoogleCommand from "../commands/google.js";
 import NischdaaaCommand from "../commands/special/nischdaaa.js";
 import AutoEhreCommand from "../commands/special/autoEhre.js";
-import SdmCommand from "../commands/sdm.js";
 import SplidGroupCommand from "../commands/splid.js";
 import WoisLog from "../commands/woislog.js";
 import FicktabelleCommand from "../commands/ficktabelle.js";
 import InviteCommand from "../commands/invite.js";
 import ErleuchtungCommand from "../commands/erleuchtung.js";
-import MockCommand from "../commands/mock.js";
 import FaulenzerPingCommand from "../commands/faulenzerping.js";
 import GeringverdienerCommand from "../commands/geringverdiener.js";
 import ClapCommand from "../commands/clap.js";
@@ -128,15 +125,15 @@ const staticCommands: readonly Command[] = [
     new Vote2Command(),
     new InventarCommand(),
 ];
+const allCommands: Command[] = [];
 
 export const interactions: readonly UserInteraction[] = [
     new NicknameButtonHandler(),
 ];
 
-const getApplicationCommands = () =>
-    staticCommands.filter(isApplicationCommand);
-export const getMessageCommands = () => staticCommands.filter(isMessageCommand);
-const getSpecialCommands = () => staticCommands.filter(isSpecialCommand);
+const getApplicationCommands = () => allCommands.filter(isApplicationCommand);
+export const getMessageCommands = () => allCommands.filter(isMessageCommand);
+const getSpecialCommands = () => allCommands.filter(isSpecialCommand);
 
 const lastSpecialCommands: Record<string, number> = getSpecialCommands().reduce(
     // biome-ignore lint/performance/noAccumulatingSpread: Whatever this does, someone wrote pretty cool code
@@ -180,7 +177,14 @@ export const loadCommands = async (context: BotContext): Promise<void> => {
         loadedCommandNames.add(instance.name);
         dynamicCommands.push(instance);
     }
-    log.info(dynamicCommands, `Loaded ${dynamicCommands.length} dynamic commands`);
+    log.info(`Had ${staticCommands.length} static commands`);
+    log.info(
+        dynamicCommands,
+        `Loaded ${dynamicCommands.length} dynamic commands`,
+    );
+
+    allCommands.push(...staticCommands);
+    allCommands.push(...dynamicCommands);
 };
 
 const createPermissionSet = (
