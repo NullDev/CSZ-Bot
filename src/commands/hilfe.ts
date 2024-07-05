@@ -45,7 +45,7 @@ export const run: CommandFunction = async (message, _args, context) => {
 
     const files = await fs.readdir(commandDir);
     for (const file of files) {
-        if (!file.endsWith(".js")) {
+        if (!file.endsWith(".ts")) {
             continue; // Skip source maps etc
         }
 
@@ -63,7 +63,7 @@ export const run: CommandFunction = async (message, _args, context) => {
             if (module.description) {
                 const commandStr =
                     context.prefix.command +
-                    file.toLowerCase().replace(/\.js/gi, "");
+                    file.toLowerCase().replace(/\.ts/gi, "");
                 commandObj[commandStr] = replacePrefixPlaceholders(
                     module.description,
                     context,

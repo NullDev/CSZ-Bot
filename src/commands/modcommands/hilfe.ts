@@ -13,8 +13,8 @@ export const run: CommandFunction = async (message, _args, context) => {
 
     const files = await fs.readdir(commandDir);
     for (const file of files) {
-        if (!file.endsWith(".js")) {
-            continue; // Skip source maps etc
+        if (!file.endsWith(".ts")) {
+            continue;
         }
 
         const cmdPath = path.resolve(commandDir, file);
@@ -25,7 +25,7 @@ export const run: CommandFunction = async (message, _args, context) => {
             // Prefix + Command name
             const commandStr =
                 context.prefix.modCommand +
-                file.toLowerCase().replace(/\.js/gi, "");
+                file.toLowerCase().replace(/\.ts/gi, "");
 
             // commandStr is the key and the description of the command is the value
             const modulePath = path.join(commandDir, file);
