@@ -166,6 +166,9 @@ export const loadCommands = async (context: BotContext): Promise<void> => {
                 loadedCommand.default,
                 loadedCommand,
                 loadedCommand.toString(),
+                loadedCommand.default
+                    ? new loadedCommand.default()
+                    : "<nopers>",
             ],
             `Loaded "${moduleUrl}"`,
         );
