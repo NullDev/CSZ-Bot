@@ -2,7 +2,7 @@ import type { CommandFunction } from "../types.js";
 
 export const run: CommandFunction = async (message, args) => {
     const messages = await message.channel.messages.fetch({
-        limit: 200,
+        limit: 100, // 100 is max number
         before: message.id,
     });
 
