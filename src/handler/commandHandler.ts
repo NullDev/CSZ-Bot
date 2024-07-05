@@ -23,7 +23,6 @@ import {
     isApplicationCommand,
     isMessageCommand,
     isSpecialCommand,
-    type MessageCommand,
     type SpecialCommand,
     type UserInteraction,
 } from "../commands/command.js";
