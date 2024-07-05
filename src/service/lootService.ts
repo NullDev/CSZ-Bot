@@ -166,10 +166,14 @@ const lootTemplates: loot.LootTemplate[] = [
         description: "💡",
         emote: "💡",
         asset: null,
-        specialAction: async (_context, winner, _channel, _loot) => {
+        specialAction: async (_context, winner, channel, _loot) => {
             const erleuchtungService = await import("./erleuchtungService.js");
             await setTimeout(3000);
-            await erleuchtungService.getInspirationsEmbed(winner);
+
+            const embed = await erleuchtungService.getInspirationsEmbed(winner);
+            await channel.send({
+                embeds: [embed],
+            });
         },
     },
     {
