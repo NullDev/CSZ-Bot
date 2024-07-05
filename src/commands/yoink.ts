@@ -18,7 +18,9 @@ import { ensureChatInputCommand } from "../utils/interactionUtils.js";
 /**
  * Sends instructions on how to ask better questions
  */
-export class YoinkCommand implements MessageCommand, ApplicationCommand {
+export default class YoinkCommand
+    implements MessageCommand, ApplicationCommand
+{
     readonly description = "Klaut emotes";
     readonly name = "yoink";
     applicationCommand = new SlashCommandBuilder()

@@ -3,7 +3,7 @@ import type { MessageCommand } from "./command.js";
 
 export const description = "";
 
-export class InviteCommand implements MessageCommand {
+export default class InviteCommand implements MessageCommand {
     name = "invite";
     description = "Sendet einen Invite-Link für den Server";
 

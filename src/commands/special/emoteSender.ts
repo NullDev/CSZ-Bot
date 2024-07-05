@@ -4,7 +4,7 @@ import type { BotContext } from "../../context.js";
 import type { SpecialCommand } from "../command.js";
 import log from "@log";
 
-export class EmoteSenderCommand implements SpecialCommand {
+export default class EmoteSenderCommand implements SpecialCommand {
     name = "EmoteSender";
     description = "Schreibt witizige Emotes wenn jemand was witziges schreibt";
     randomness = 1;

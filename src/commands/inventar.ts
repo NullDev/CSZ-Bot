@@ -9,7 +9,7 @@ import type { ApplicationCommand } from "./command.js";
 import * as lootService from "../service/lootService.js";
 import { ensureChatInputCommand } from "src/utils/interactionUtils.js";
 
-export class InventarCommand implements ApplicationCommand {
+export default class InventarCommand implements ApplicationCommand {
     modCommand = false;
     name = "inventar";
     description = "Das Inventar mit deinen gesammelten Geschenken.";

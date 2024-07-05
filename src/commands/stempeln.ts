@@ -18,7 +18,7 @@ const replies = [
     "Rosen sind rot, Veilchen sind blau, {0} und {1} sind verliebt, das weiß ich genau",
 ];
 
-export class StempelCommand implements ApplicationCommand {
+export default class StempelCommand implements ApplicationCommand {
     modCommand = false;
     name = "stempeln";
     description = "Gib deinem Inviter ein Stempel, zeig deinen Respekt";

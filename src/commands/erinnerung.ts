@@ -36,7 +36,9 @@ const validateDate = (date: Date): true | string => {
     return true;
 };
 
-export class ErinnerungCommand implements MessageCommand, ApplicationCommand {
+export default class ErinnerungCommand
+    implements MessageCommand, ApplicationCommand
+{
     name = "erinnerung";
     description = "Setzt eine Erinnerung für dich";
     applicationCommand = new SlashCommandBuilder()

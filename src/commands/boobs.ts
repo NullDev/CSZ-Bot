@@ -120,7 +120,7 @@ const isNewBiggestBoobs = async (size: number): Promise<boolean> => {
     return oldLongest < size;
 };
 
-export class BoobCommand implements MessageCommand {
+export default class BoobCommand implements MessageCommand {
     name = "boob";
     aliases = [
         "booba",

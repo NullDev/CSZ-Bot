@@ -18,7 +18,7 @@ import { assertNever } from "../utils/typeUtils.js";
 
 type SubCommand = "los" | "add" | "list" | "select";
 
-export class Saufen implements ApplicationCommand {
+export default class Saufen implements ApplicationCommand {
     name = "saufen";
     description = "Macht Stimmung in Wois";
     requiredPermissions: readonly PermissionsString[] = [

@@ -14,7 +14,7 @@ interface PhraseConfig {
 
 type Slot = "WHOIS" | "BOTNAME";
 
-export class DadJokeCommand implements SpecialCommand {
+export default class DadJokeCommand implements SpecialCommand {
     cooldownTime: number | undefined;
     name = "Dad Joke";
     description = "Macht bei der passenden Gelegenheit einen Dad Joke";

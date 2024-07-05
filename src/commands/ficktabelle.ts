@@ -22,7 +22,7 @@ const warnings = [
     "Tu nichts, was Assi Toni nicht auch tun würde",
 ];
 
-export class FicktabelleCommand implements MessageCommand {
+export default class FicktabelleCommand implements MessageCommand {
     name = "ficktabelle";
     description = "Sendet die Ficktabelle.";
 

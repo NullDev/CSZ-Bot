@@ -11,7 +11,6 @@ import "./polyfills.js";
 
 import messageHandler from "./handler/messageHandler.js";
 import messageDeleteHandler from "./handler/messageDeleteHandler.js";
-import * as fadingMessageHandler from "./service/fadingMessageService.js";
 import * as kysely from "./storage/db/db.js";
 
 import reactionHandler from "./handler/reactionHandler.js";

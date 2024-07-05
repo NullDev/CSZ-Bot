@@ -11,7 +11,7 @@ import * as banService from "../storage/ban.js";
 import type { Ban } from "../storage/db/model.js";
 import log from "@log";
 
-export class BanListCommand implements ApplicationCommand {
+export default class BanListCommand implements ApplicationCommand {
     name = "banlist";
     description = "Zeigt aktuell gebannte Lelleks an";
     applicationCommand = new SlashCommandBuilder()

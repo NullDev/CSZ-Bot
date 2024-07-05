@@ -58,7 +58,7 @@ const buildGeringverdiener = (
         });
 };
 
-export class GeringverdienerCommand
+export default class GeringverdienerCommand
     implements MessageCommand, ApplicationCommand
 {
     name = "geringverdiener";

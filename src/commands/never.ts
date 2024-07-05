@@ -61,7 +61,9 @@ function buildEmbed(prompt: NeverPrompt, author: GuildMember) {
         });
 }
 
-export class NeverCommand implements ApplicationCommand, MessageCommand {
+export default class NeverCommand
+    implements ApplicationCommand, MessageCommand
+{
     name = "never";
     description = 'Stellt eine "ich hab noch nie" Frage';
     applicationCommand = new SlashCommandBuilder()

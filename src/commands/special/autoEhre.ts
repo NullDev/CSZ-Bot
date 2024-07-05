@@ -1,8 +1,8 @@
 import type { ProcessableMessage } from "../../handler/cmdHandler.js";
 import type { SpecialCommand } from "../command.js";
-import { EhreCommand } from "../ehre.js";
+import EhreCommand from "../ehre.js";
 
-export class AutoEhreCommand implements SpecialCommand {
+export default class AutoEhreCommand implements SpecialCommand {
     name = "AutoEhre";
     description = "Ährt automatisch";
 

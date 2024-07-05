@@ -161,7 +161,7 @@ export const ehreReactionHandler = {
     },
 };
 
-export class EhreCommand implements ApplicationCommand {
+export default class EhreCommand implements ApplicationCommand {
     modCommand = false;
     name = "ehre";
     description = "Fügt Ehre hinzu & Zeigt die Tabelle an";

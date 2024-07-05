@@ -6,7 +6,9 @@ import type { ProcessableMessage } from "../handler/cmdHandler.js";
 
 import * as erleuchtungService from "../service/erleuchtungService.js";
 
-export class ErleuchtungCommand implements MessageCommand, ApplicationCommand {
+export default class ErleuchtungCommand
+    implements MessageCommand, ApplicationCommand
+{
     name = "erleuchtung";
     description = "Gönnt dir eine zufällige Erleuchtung.";
     applicationCommand = new SlashCommandBuilder()

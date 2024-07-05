@@ -23,7 +23,7 @@ const createBonkMeme = async (author: GuildMember): Promise<Buffer> => {
     return await canvas.encode("png");
 };
 
-export class BonkCommand implements MessageCommand {
+export default class BonkCommand implements MessageCommand {
     name = "bonk";
     aliases = ["bong"];
     description = `Bonkt einen Nutzer und ersetzt den rechten gelben Hund mit dem Avatar des Nutzers.

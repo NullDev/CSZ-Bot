@@ -5,7 +5,7 @@ const proxitokInstance = "https://proxitok.pussthecat.org";
 // const downloadUrlRegex = /href=["'](\/download[^"']*)["']/;
 const downloadUrlRegex = /source src=["'](\/stream[^"']*)["']/;
 
-export class TikTokLink implements SpecialCommand {
+export default class TikTokLink implements SpecialCommand {
     name = "Tiktok";
     description = "Embedded TikTok Links";
     randomness = 1;

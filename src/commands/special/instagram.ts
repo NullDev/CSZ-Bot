@@ -13,7 +13,7 @@ const instagramOptions = {
     },
 } as const;
 
-export class InstagramLink implements SpecialCommand {
+export default class InstagramLink implements SpecialCommand {
     name = "Instagram";
     description = "Embedded Instagram Links";
     randomness = 1;

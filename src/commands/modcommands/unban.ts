@@ -14,7 +14,9 @@ import type { BotContext } from "../../context.js";
 
 import * as banService from "../../service/banService.js";
 
-export class UnbanCommand implements ApplicationCommand, MessageCommand {
+export default class UnbanCommand
+    implements ApplicationCommand, MessageCommand
+{
     name = "unban";
     description = "Joa, unbannt halt einen ne?";
     requiredPermissions: readonly PermissionsString[] = ["BanMembers"];

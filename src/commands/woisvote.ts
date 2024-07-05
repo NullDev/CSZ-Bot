@@ -50,7 +50,7 @@ const pingWoisgang = async (message: Message, role: Role): Promise<void> => {
     await message.reply({
         content: `${role} DA PASSIERT WAS!`,
         allowedMentions: {
-            // Not working for obious reasons.
+            // Not working for obvious reasons.
             // Okay, not obvious. I don't have any clue why...
             // roles: [ config.ids.woisgang_role_id ]
             parse: ["roles"],
@@ -58,7 +58,7 @@ const pingWoisgang = async (message: Message, role: Role): Promise<void> => {
     });
 };
 
-export class WoisCommand implements ApplicationCommand {
+export default class WoisCommand implements ApplicationCommand {
     name = "woisvote";
     description = "Erstellt einen Vote für Wois";
 

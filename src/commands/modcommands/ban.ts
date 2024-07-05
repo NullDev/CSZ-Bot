@@ -14,7 +14,7 @@ import type { BotContext } from "../../context.js";
 import * as banService from "../../service/banService.js";
 import { formatDuration } from "../../utils/dateUtils.js";
 
-export class BanCommand implements ApplicationCommand, MessageCommand {
+export default class BanCommand implements ApplicationCommand, MessageCommand {
     name = "ban";
     description = "Joa, bannt halt einen ne?";
     requiredPermissions: readonly PermissionsString[] = ["BanMembers"];

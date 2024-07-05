@@ -59,7 +59,7 @@ const createSecureDecisionMessage = (
     };
 };
 
-export class SdmCommand implements MessageCommand, ApplicationCommand {
+export default class SdmCommand implements MessageCommand, ApplicationCommand {
     name = "sdm";
     description =
         "Macht eine Secure Decision mithilfe eines komplexen, hochoptimierten, Blockchain-Algorithmus.";

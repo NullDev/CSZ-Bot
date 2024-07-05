@@ -9,7 +9,7 @@ import type { ApplicationCommand } from "./command.js";
 import type { BotContext } from "../context.js";
 import { ensureChatInputCommand } from "../utils/interactionUtils.js";
 
-export class OidaCommand implements ApplicationCommand {
+export default class OidaCommand implements ApplicationCommand {
     modCommand = false;
     name = "oida";
     description = "Fügt a Übersetzung 🇦🇹 -> 🇩🇪 hinzu";

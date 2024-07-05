@@ -1,7 +1,7 @@
 import type { ProcessableMessage } from "../../handler/cmdHandler.js";
 import type { SpecialCommand } from "../command.js";
 
-export class NischdaaaCommand implements SpecialCommand {
+export default class NischdaaaCommand implements SpecialCommand {
     name = "Nischdaaa";
     description = "Crackes Erinnerung ";
     randomness = 0.005;

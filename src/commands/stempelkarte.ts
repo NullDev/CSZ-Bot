@@ -107,7 +107,7 @@ const drawStempelkarteBackside = async (
     return await canvas.encode("png");
 };
 
-export class StempelkarteCommand implements ApplicationCommand {
+export default class StempelkarteCommand implements ApplicationCommand {
     modCommand = false;
     name = "stempelkarte";
     description = "Zeigt eine die Stempelkarte eines Users an.";

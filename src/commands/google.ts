@@ -26,7 +26,7 @@ const buildEmbed = (member: GuildMember, reply: string) => {
     };
 };
 
-export class GoogleCommand implements ApplicationCommand {
+export default class GoogleCommand implements ApplicationCommand {
     modCommand = false;
     name = "google";
     description =

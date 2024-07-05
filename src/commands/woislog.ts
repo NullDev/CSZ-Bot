@@ -3,7 +3,7 @@ import { type CommandInteraction, SlashCommandBuilder } from "discord.js";
 import type { ApplicationCommand } from "./command.js";
 import * as voiceStateService from "../service/voiceStateService.js";
 
-export class WoisLog implements ApplicationCommand {
+export default class WoisLog implements ApplicationCommand {
     name = "woislog";
     description = "Zeigt die letzen Aktivitäten im Woischat an";
 

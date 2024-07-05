@@ -29,7 +29,7 @@ const createNumberFormatter = (currency: string) =>
         currency,
     });
 
-export class SplidGroupCommand implements ApplicationCommand {
+export default class SplidGroupCommand implements ApplicationCommand {
     modCommand = false;
     name = "splid";
     description = "Managed ein bisschen Splid";

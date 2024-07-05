@@ -16,7 +16,7 @@ import type { BotContext } from "../context.js";
 import type { ApplicationCommand } from "./command.js";
 import { chunkArray } from "../utils/arrayUtils.js";
 
-export class FaulenzerPingCommand implements ApplicationCommand {
+export default class FaulenzerPingCommand implements ApplicationCommand {
     name = "Faulenzerping"; // Must be upper case, because this name will be matched against the application command name
     description =
         "Pingt alle Leute, die noch nicht auf die ausgewählte Nachricht reagiert haben, aber in der angegebenen Gruppe sind.";

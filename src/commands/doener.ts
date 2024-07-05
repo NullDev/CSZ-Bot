@@ -11,7 +11,7 @@ const prices = {
     meal: 40,
 };
 
-export class DoenerCommand implements MessageCommand {
+export default class DoenerCommand implements MessageCommand {
     name = "doener";
     aliases = ["döner"];
     description = `

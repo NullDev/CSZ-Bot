@@ -39,7 +39,7 @@ const buildMock = (author: GuildMember, toMock: string) => {
         });
 };
 
-export class MockCommand implements MessageCommand, ApplicationCommand {
+export default class MockCommand implements MessageCommand, ApplicationCommand {
     name = "mock";
     description = "Mockt einen Text.";
     applicationCommand = new SlashCommandBuilder()

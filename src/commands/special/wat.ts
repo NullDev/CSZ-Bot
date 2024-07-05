@@ -2,7 +2,7 @@ import type { Message } from "discord.js";
 
 import type { SpecialCommand } from "../command.js";
 
-export class WatCommand implements SpecialCommand {
+export default class WatCommand implements SpecialCommand {
     name = "wat";
     description = "Reagiert mit wat emote sobald jemand wat schreibt";
     randomness = 0.3;

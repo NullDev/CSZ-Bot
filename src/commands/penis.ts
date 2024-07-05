@@ -44,7 +44,7 @@ const isNewLongestDick = async (size: number): Promise<boolean> => {
 /**
  * Penis command. Displays the users penis length
  */
-export class PenisCommand implements MessageCommand {
+export default class PenisCommand implements MessageCommand {
     name = "penis";
     aliases = [
         "glied",

@@ -3,7 +3,7 @@ import type { SpecialCommand } from "../command.js";
 
 // this is the former nixos.ts
 
-export class TriggerReactOnKeyword implements SpecialCommand {
+export default class TriggerReactOnKeyword implements SpecialCommand {
     name = "ReactTrigger";
     description = "Trigger a Bot reaction on keyword";
     cooldownTime = 300000;

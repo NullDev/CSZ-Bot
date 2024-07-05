@@ -12,7 +12,7 @@ if (process.env.NODE_ENV === "production") {
     GlobalFonts.register(await readFile("assets/impact.ttf"), "Impact");
 }
 
-export class WhereCommand implements SpecialCommand {
+export default class WhereCommand implements SpecialCommand {
     name = "Where";
     description = "Macht ein Ape-Meme";
     randomness = 0.001;

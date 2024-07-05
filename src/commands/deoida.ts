@@ -120,7 +120,7 @@ async function deOida(value: string): Promise<string> {
     return translatedLines.join("\n");
 }
 
-export class DeOidaCommand implements MessageCommand {
+export default class DeOidaCommand implements MessageCommand {
     name = "deoida";
     description = `
     Wendet super komplexes De-Oidaring an.

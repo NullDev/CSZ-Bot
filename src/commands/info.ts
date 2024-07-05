@@ -139,7 +139,7 @@ const buildEmbed = async (
  *
  * This command is both - a slash command (application command) and a message command
  */
-export class InfoCommand implements ApplicationCommand, MessageCommand {
+export default class InfoCommand implements ApplicationCommand, MessageCommand {
     modCommand = false;
     name = "info";
     description = "Listet Informationen über diesen Bot in einem Embed auf";

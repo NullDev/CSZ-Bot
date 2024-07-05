@@ -8,7 +8,7 @@ import type { ApplicationCommand } from "./command.js";
 import log from "@log";
 import * as birthday from "../storage/birthday.js";
 
-export class GeburtstagCommand implements ApplicationCommand {
+export default class GeburtstagCommand implements ApplicationCommand {
     name = "geburtstag";
     description =
         "Trag deinen Geburtstag ein, damit du an deinem Geburtstag die entsprechende Rolle bekommst!";

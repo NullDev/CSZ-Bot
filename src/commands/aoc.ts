@@ -168,7 +168,7 @@ export async function publishAocLeaderBoard(context: BotContext) {
     return channel.send({ embeds: [embed] });
 }
 
-export class AoCCommand implements ApplicationCommand {
+export default class AoCCommand implements ApplicationCommand {
     name = "aoc";
     description = "Zeigt das Advent of Code Leaderboard an";
     applicationCommand = new SlashCommandBuilder()

@@ -25,7 +25,7 @@ const buildClap = (author: GuildMember, toClap: string) => {
         });
 };
 
-export class ClapCommand implements MessageCommand, ApplicationCommand {
+export default class ClapCommand implements MessageCommand, ApplicationCommand {
     name = "clap";
     description = clapify("Clapped deinen Text");
     applicationCommand = new SlashCommandBuilder()

@@ -18,7 +18,7 @@ import {
 
 import type { ApplicationCommand } from "./command.js";
 
-export class Vote2Command implements ApplicationCommand {
+export default class Vote2Command implements ApplicationCommand {
     modCommand = false;
     name = "vote2";
     description = "Erstellt eine Umfrage (ja/nein).";
