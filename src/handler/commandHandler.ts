@@ -104,10 +104,9 @@ export const loadCommands = async (context: BotContext): Promise<void> => {
         loadedCommandNames.add(instance.name);
         dynamicCommands.push(instance);
     }
-    log.info(`Had ${staticCommands.length} static commands`);
+
     log.info(
-        dynamicCommands,
-        `Loaded ${dynamicCommands.length} dynamic commands`,
+        `Loaded ${dynamicCommands.length} dynamic and ${staticCommands.length} static commands.`,
     );
 
     allCommands.push(...staticCommands);
