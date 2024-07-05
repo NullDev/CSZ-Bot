@@ -1,3 +1,4 @@
+import * as fs from "node:fs/promises";
 import {
     type APIApplicationCommand,
     ApplicationCommandPermissionType,
@@ -133,11 +134,11 @@ export const interactions: readonly UserInteraction[] = [
     new NicknameButtonHandler(),
 ];
 
-export const applicationCommands = commands.filter(isApplicationCommand);
-export const messageCommands = commands.filter(isMessageCommand);
-export const specialCommands = commands.filter(isSpecialCommand);
+const getApplicationCommands = () => commands.filter(isApplicationCommand);
+export const getMessageCommands = () => commands.filter(isMessageCommand);
+const getSpecialCommands = () => commands.filter(isSpecialCommand);
 
-const lastSpecialCommands: Record<string, number> = specialCommands.reduce(
+const lastSpecialCommands: Record<string, number> = getSpecialCommands().reduce(
     // biome-ignore lint/performance/noAccumulatingSpread: Whatever this does, someone wrote pretty cool code
     (acc, cmd) => ({ ...acc, [cmd.name]: 0 }),
     {},
@@ -186,7 +187,7 @@ export const registerAllApplicationCommandsAsGuildCommands = async (
         return commandCreationData;
     };
 
-    const commandsToRegister = applicationCommands.map(buildGuildCommand);
+    const commandsToRegister = getApplicationCommands().map(buildGuildCommand);
 
     try {
         const url = Routes.applicationGuildCommands(clientId, context.guild.id);
@@ -212,7 +213,7 @@ const commandInteractionHandler = async (
     command: CommandInteraction,
     context: BotContext,
 ): Promise<void> => {
-    const matchingCommand = applicationCommands.find(
+    const matchingCommand = getApplicationCommands().find(
         cmd => cmd.name === command.commandName,
     );
 
@@ -230,7 +231,7 @@ const autocompleteInteractionHandler = async (
     interaction: AutocompleteInteraction,
     context: BotContext,
 ) => {
-    const matchingCommand = applicationCommands.find(
+    const matchingCommand = getApplicationCommands().find(
         cmd => cmd.name === interaction.commandName,
     );
 
@@ -307,7 +308,7 @@ const commandMessageHandler = async (
     message: ProcessableMessage,
     context: BotContext,
 ): Promise<unknown> => {
-    const matchingCommand = messageCommands.find(
+    const matchingCommand = getMessageCommands().find(
         cmd =>
             cmd.name.toLowerCase() === commandString.toLowerCase() ||
             cmd.aliases?.includes(commandString.toLowerCase()),
@@ -366,7 +367,7 @@ const specialCommandHandler = (
     message: ProcessableMessage,
     context: BotContext,
 ): Promise<unknown> => {
-    const commandCandidates = specialCommands.filter(p =>
+    const commandCandidates = getSpecialCommands().filter(p =>
         p.matches(message, context),
     );
     return Promise.all(

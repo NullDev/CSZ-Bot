@@ -3,7 +3,7 @@ import * as path from "node:path";
 
 import type { CommandFunction } from "../types.js";
 import type { BotContext } from "../context.js";
-import { messageCommands } from "../handler/commandHandler.js";
+import { getMessageCommands } from "../handler/commandHandler.js";
 
 /**
  * Retrieves commands in chunks that doesn't affect message limit
@@ -73,7 +73,7 @@ export const run: CommandFunction = async (message, _args, context) => {
     }
 
     // New Class-based commands
-    const userCommands = messageCommands.filter(cmd => !cmd.modCommand);
+    const userCommands = getMessageCommands().filter(cmd => !cmd.modCommand);
     for (const cmd of userCommands) {
         const commandStr = context.prefix.command + cmd.name;
         commandObj[commandStr] = replacePrefixPlaceholders(
