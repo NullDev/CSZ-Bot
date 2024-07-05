@@ -13,14 +13,15 @@ export const run: CommandFunction = async (message, args) => {
 
     const authors = [];
     for (const [author, messages] of Object.entries(grouped)) {
-        const count = messages?.length;
-        if (!count) {
+        if (!messages) {
             continue;
         }
-        const charCount =
-            Math.sumPrecise(messages.map(msg => msg.content.length)) | 0;
+
+        const charCount = Math.sumPrecise(
+            messages.map(msg => msg.content.length),
+        );
         authors.push(
-            `- ${count} Nachrichten (${charCount} Zeichen) von ${author}`,
+            `- ${messages.length} Nachrichten (${charCount | 0} Zeichen) von ${author}`,
         );
     }
 
