@@ -83,7 +83,7 @@ import { Nickname, NicknameButtonHandler } from "../commands/nickname.js";
 import { isProcessableMessage, type ProcessableMessage } from "./cmdHandler.js";
 import { isMessageInBotSpam } from "../utils/channelUtils.js";
 
-export const commands: readonly Command[] = [
+const staticCommands: readonly Command[] = [
     new InfoCommand(),
     new TriggerReactOnKeyword("nix", "nixos"),
     new TriggerReactOnKeyword("zig", "zig", 0.05),
@@ -136,9 +136,10 @@ export const interactions: readonly UserInteraction[] = [
     new NicknameButtonHandler(),
 ];
 
-const getApplicationCommands = () => commands.filter(isApplicationCommand);
-export const getMessageCommands = () => commands.filter(isMessageCommand);
-const getSpecialCommands = () => commands.filter(isSpecialCommand);
+const getApplicationCommands = () =>
+    staticCommands.filter(isApplicationCommand);
+export const getMessageCommands = () => staticCommands.filter(isMessageCommand);
+const getSpecialCommands = () => staticCommands.filter(isSpecialCommand);
 
 const lastSpecialCommands: Record<string, number> = getSpecialCommands().reduce(
     // biome-ignore lint/performance/noAccumulatingSpread: Whatever this does, someone wrote pretty cool code
@@ -149,7 +150,9 @@ const lastSpecialCommands: Record<string, number> = getSpecialCommands().reduce(
 export const loadCommands = async (context: BotContext): Promise<void> => {
     const commandFiles = await fs.readdir(context.commandDir);
 
-    const commands = [];
+    const loadedCommandNames = new Set(staticCommands.map(c => c.name));
+
+    const dynamicCommands = [];
     for (const file of commandFiles) {
         if (!file.endsWith(".ts")) {
             continue;
@@ -158,24 +161,29 @@ export const loadCommands = async (context: BotContext): Promise<void> => {
         const moduleUrl = new URL("file://");
         moduleUrl.pathname = path.join(context.commandDir, file);
 
-        const loadedCommand = await import(moduleUrl.toString());
+        const module = await import(moduleUrl.toString());
+        if (!module.default) {
+            continue;
+        }
 
-        log.info(
-            [
-                file,
-                loadedCommand.default,
-                loadedCommand,
-                loadedCommand.toString(),
-                loadedCommand.default
-                    ? new loadedCommand.default()
-                    : "<nopers>",
-            ],
-            `Loaded "${moduleUrl}"`,
-        );
+        const instance = new module.default();
+        if (!instance.name) {
+            log.warn(instance, `Command ${file} has no name, skipping`);
+            continue;
+        }
 
-        commands.push(loadedCommand);
+        if (loadedCommandNames.has(instance.name)) {
+            log.debug(
+                instance,
+                `Command ${instance.name} is already loaded, skipping`,
+            );
+            continue;
+        }
+
+        loadedCommandNames.add(instance.name);
+        dynamicCommands.push(instance);
     }
-    log.info(commands, `Loaded ${commands.length} commands`);
+    log.info(dynamicCommands, `Loaded ${dynamicCommands.length} commands`);
 };
 
 const createPermissionSet = (
