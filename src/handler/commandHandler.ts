@@ -319,6 +319,12 @@ const isCooledDown = (command: SpecialCommand) => {
     const now = Date.now();
     const diff = now - lastSpecialCommands[command.name];
     const coolDownTime = command.cooldownTime ?? 120000;
+
+    log.info(
+        { timings: lastSpecialCommands },
+        `Checking cooldown for ${command.name}: ${diff}ms, cooldown: ${coolDownTime}ms`,
+    );
+
     if (diff >= coolDownTime) {
         return true;
     }
@@ -338,7 +344,7 @@ const specialCommandHandler = async (
     const commandCandidates = commands.filter(p => p.matches(message, context));
 
     for (const command of commandCandidates) {
-        log.debug(`Command ${command.name} matches message`);
+        log.debug(command, `Command ${command.name} matches message`);
         if (Math.random() > command.randomness || !isCooledDown(command)) {
             continue;
         }
