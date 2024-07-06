@@ -296,21 +296,17 @@ const commandMessageHandler = async (
 
 const isCooledDown = (command: SpecialCommand) => {
     const now = Date.now();
-    const diff = now - lastSpecialCommands[command.name];
+    const lastExecution = lastSpecialCommands[command.name] ?? -1;
+    const tineSinceLastExecution = now - lastExecution;
     const coolDownTime = command.cooldownTime ?? 120000;
 
-    log.info(
-        { timings: lastSpecialCommands },
-        `Checking cooldown for ${command.name}: ${diff}ms, cooldown: ${coolDownTime}ms`,
-    );
-
-    if (diff >= coolDownTime) {
+    if (tineSinceLastExecution >= coolDownTime) {
         return true;
     }
 
     // Otherwise a random function should evaluate the cooldown. The longer the last command was, the higher the chance
     // diff is < fixedCoolDown
-    return Math.random() < diff / coolDownTime;
+    return Math.random() < tineSinceLastExecution / coolDownTime;
 };
 
 const specialCommandHandler = async (
