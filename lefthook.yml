@@ -2,7 +2,6 @@
 pre-push:
   commands:
     lint:
-      tags: frontend lint
       run: bun run lint
 
 pre-commit:
