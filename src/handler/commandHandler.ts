@@ -94,10 +94,7 @@ export const loadCommands = async (context: BotContext): Promise<void> => {
         }
 
         if (loadedCommandNames.has(instance.name)) {
-            log.debug(
-                instance,
-                `Command ${instance.name} is already loaded, skipping`,
-            );
+            log.debug(`Command "${instance.name}" is already loaded, skipping`);
             continue;
         }
 
