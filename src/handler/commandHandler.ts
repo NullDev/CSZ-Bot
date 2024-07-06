@@ -1,6 +1,3 @@
-import * as fs from "node:fs/promises";
-import * as path from "node:path";
-
 import {
     type APIApplicationCommand,
     ApplicationCommandPermissionType,
@@ -34,6 +31,8 @@ import * as banService from "../service/banService.js";
 import type { ApplicationCommandCreationResponse } from "../types.js";
 import log from "@log";
 
+import * as commandService from "../service/commandService.js";
+
 import TriggerReactOnKeyword from "../commands/special/keywordReact.js";
 
 import { NicknameButtonHandler } from "../commands/nickname.js";
@@ -65,32 +64,12 @@ const lastSpecialCommands: Record<string, number> = getSpecialCommands().reduce(
 );
 
 export const loadCommands = async (context: BotContext): Promise<void> => {
-    const commandFiles = await fs.readdir(context.commandDir);
-
+    const availableCommands =
+        await commandService.readAvailableCommands(context);
     const loadedCommandNames = new Set(staticCommands.map(c => c.name));
 
     const dynamicCommands = [];
-    for (const file of commandFiles) {
-        if (!file.endsWith(".ts")) {
-            continue;
-        }
-
-        const moduleUrl = new URL("file://");
-        moduleUrl.pathname = path.join(context.commandDir, file);
-
-        log.debug(`Tryling to load ${moduleUrl}`);
-
-        const module = await import(moduleUrl.toString());
-        if (!module.default) {
-            continue;
-        }
-
-        const instance = new module.default();
-        if (!instance.name) {
-            log.warn(instance, `Command ${file} has no name, skipping`);
-            continue;
-        }
-
+    for (const instance of availableCommands) {
         if (loadedCommandNames.has(instance.name)) {
             log.debug(`Command "${instance.name}" is already loaded, skipping`);
             continue;
