@@ -1,7 +1,7 @@
 import type { Message } from "discord.js";
 
-import type { SpecialCommand } from "../command.js";
-import * as instagram from "../../utils/instagram.js";
+import type { SpecialCommand } from "./command.js";
+import * as instagram from "../utils/instagram.js";
 
 const instagramOptions = {
     uriPattern:
