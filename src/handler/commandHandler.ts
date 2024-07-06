@@ -320,35 +320,38 @@ const commandMessageHandler = async (
 const isCooledDown = (command: SpecialCommand) => {
     const now = Date.now();
     const diff = now - lastSpecialCommands[command.name];
-    const cooldownTime = command.cooldownTime ?? 120000;
-    // After 2 minutes command is cooled down
-    if (diff >= cooldownTime) {
+    const coolDownTime = command.cooldownTime ?? 120000;
+    if (diff >= coolDownTime) {
         return true;
     }
+
     // Otherwise a random function should evaluate the cooldown. The longer the last command was, the higher the chance
-    // diff is < fixedCooldown
-    return Math.random() < diff / cooldownTime;
+    // diff is < fixedCoolDown
+    return Math.random() < diff / coolDownTime;
 };
 
-const specialCommandHandler = (
+const specialCommandHandler = async (
     message: ProcessableMessage,
     context: BotContext,
-): Promise<unknown> => {
-    const commandCandidates = getSpecialCommands().filter(p =>
-        p.matches(message, context),
-    );
-    return Promise.all(
-        commandCandidates
-            .filter(c => Math.random() <= c.randomness)
-            .filter(c => isCooledDown(c))
-            .map(c => {
-                log.info(
-                    `User "${message.author.tag}" (${message.author}) performed special command: ${c.name}`,
-                );
-                lastSpecialCommands[c.name] = Date.now();
-                return c.handleSpecialMessage(message, context);
-            }),
-    );
+) => {
+    const commands = getSpecialCommands();
+    log.debug(commands, `Checking ${commands.length} special commands`);
+
+    const commandCandidates = commands.filter(p => p.matches(message, context));
+
+    for (const command of commandCandidates) {
+        log.debug(`Command ${command.name} matches message`);
+        if (Math.random() > command.randomness || !isCooledDown(command)) {
+            continue;
+        }
+
+        log.info(
+            `User "${message.author.tag}" (${message.author}) performed special command: ${command.name}`,
+        );
+
+        lastSpecialCommands[command.name] = Date.now();
+        await command.handleSpecialMessage(message, context);
+    }
 };
 
 export const handleInteractionEvent = async (
