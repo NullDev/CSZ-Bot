@@ -34,7 +34,6 @@ import * as banService from "../service/banService.js";
 import type { ApplicationCommandCreationResponse } from "../types.js";
 import log from "@log";
 
-import InfoCommand from "../commands/info.js";
 import TriggerReactOnKeyword from "../commands/special/keywordReact.js";
 
 import { NicknameButtonHandler } from "../commands/nickname.js";
@@ -44,7 +43,6 @@ import { isProcessableMessage, type ProcessableMessage } from "./cmdHandler.js";
 import { isMessageInBotSpam } from "../utils/channelUtils.js";
 
 const staticCommands: readonly Command[] = [
-    new InfoCommand(),
     new TriggerReactOnKeyword("nix", "nixos"),
     new TriggerReactOnKeyword("zig", "zig", 0.05),
     new TriggerReactOnKeyword("backend", "🍞", 1),
