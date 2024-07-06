@@ -1,4 +1,4 @@
-import { rapidApiInstagramApiKey } from "./configHandler.js";
+import { rapidApiInstagramApiKey } from "../utils/configHandler.js";
 
 // Uses some random API:
 // https://rapidapi.com/ugoBoy/api/social-media-video-downloader

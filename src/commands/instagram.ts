@@ -1,7 +1,7 @@
 import type { Message } from "discord.js";
 
 import type { SpecialCommand } from "./command.js";
-import * as instagram from "../utils/instagram.js";
+import * as instagramService from "../service/instagramService.js";
 
 const instagramOptions = {
     uriPattern:
@@ -20,7 +20,7 @@ export default class InstagramLink implements SpecialCommand {
     cooldownTime = 0;
 
     matches(message: Message<boolean>): boolean {
-        if (!instagram.isAvailable()) {
+        if (!instagramService.isAvailable()) {
             return false;
         }
 
@@ -39,7 +39,7 @@ export default class InstagramLink implements SpecialCommand {
 
         const postUri = message.content.replace("http://", "https://");
 
-        const result = await instagram.downloadInstagramContent(postUri);
+        const result = await instagramService.downloadInstagramContent(postUri);
         if (!result.success) {
             const failureReaction = message.guild?.emojis.cache.find(
                 e => e.name === "sadge",
