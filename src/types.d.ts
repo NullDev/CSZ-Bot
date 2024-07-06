@@ -15,6 +15,11 @@ export type CommandFunction = (
     context: BotContext,
 ) => Promise<CommandResult>;
 
+export type LegacyCommand = {
+    run: CommandFunction;
+    description: string;
+};
+
 export interface ReactionHandler {
     displayName: string;
     execute(

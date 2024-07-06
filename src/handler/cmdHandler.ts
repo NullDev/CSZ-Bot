@@ -3,7 +3,7 @@ import * as path from "node:path";
 
 import type { Guild, GuildMember, Message } from "discord.js";
 
-import type { CommandFunction } from "../types.js";
+import type { LegacyCommand } from "../types.js";
 import type { BotContext } from "../context.js";
 import log from "@log";
 import * as banService from "../service/banService.js";
@@ -88,10 +88,9 @@ export default async function (
     const commandModuleUrl = new URL("file://");
     commandModuleUrl.pathname = commandPath;
 
-    const usedCommand = (await import(commandModuleUrl.toString())) as {
-        run: CommandFunction;
-        description: string;
-    };
+    const usedCommand = (await import(
+        commandModuleUrl.toString()
+    )) as LegacyCommand;
 
     console.assert(!!usedCommand, "usedCommand must be non-falsy");
 
