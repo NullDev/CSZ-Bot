@@ -7,7 +7,7 @@ import { reminderHandler } from "../commands/erinnerung.js";
 import { endAprilFools, startAprilFools } from "../service/aprilFoolsService.js";
 import { woisVoteScheduler } from "../commands/woisvote.js";
 import { publishAocLeaderBoard } from "../commands/aoc.js";
-import { rotate } from "../helper/bannerCarusel.js";
+import { rotate } from "../service/bannerService.js";
 import { leetTask } from "../service/purgeService.js";
 import { processBans } from "../service/banService.js";
 import { runDropAttempt } from "../service/lootService.js";

@@ -1,27 +1,21 @@
 import * as path from "node:path";
-import { readdir } from "node:fs/promises";
+import * as fs from "node:fs/promises";
 
-import { randomEntry } from "../utils/arrayUtils.js";
 import type { BotContext } from "../context.js";
+import { randomEntry } from "../utils/arrayUtils.js";
 import log from "@log";
-
-const pickRandomBanner = (bannersDir: string, files: string[]): string => {
-    const newBanner = randomEntry(files);
-    return path.resolve(bannersDir, newBanner);
-};
 
 export const rotate = async (context: BotContext) => {
     log.debug("Rotating banners");
 
-    const currentHash = context.guild.banner;
-    const files = await readdir(context.bannersDir);
-
+    const files = await fs.readdir(context.bannersDir);
     if (files.length === 0) {
         return;
     }
 
     const file = pickRandomBanner(context.bannersDir, files);
 
+    const currentHash = context.guild.banner;
     await context.guild.setBanner(file);
     const newHash = context.guild.banner;
 
@@ -35,4 +29,9 @@ export const rotate = async (context: BotContext) => {
         );
         await context.guild.setBanner(secondTry);
     }
+};
+
+const pickRandomBanner = (bannersDir: string, files: string[]): string => {
+    const newBanner = randomEntry(files);
+    return path.resolve(bannersDir, newBanner);
 };
