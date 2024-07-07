@@ -7,8 +7,9 @@ import * as fadingMessage from "../storage/fadingMessage.js";
 
 import log from "@log";
 import * as poll from "../commands/poll.js";
+import { EMOJI } from "../service/pollService.js";
 
-const pollEmojis = poll.EMOJI;
+const pollEmojis = EMOJI;
 const voteEmojis = ["👍", "👎"];
 const pollVoteEmojis = pollEmojis.concat(voteEmojis);
 

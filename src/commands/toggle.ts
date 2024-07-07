@@ -4,6 +4,7 @@ import type { MessageCommand } from "./command.js";
 import type { BotContext } from "../context.js";
 import type { ProcessableMessage } from "../service/commandService.js";
 
+import { LETTERS } from "../service/pollService.js";
 import * as poll from "./poll.js";
 
 export default class ToggleCommand implements MessageCommand {
@@ -56,7 +57,7 @@ export default class ToggleCommand implements MessageCommand {
 }
 
 const isPollField = (field: APIEmbedField): boolean =>
-    !field.inline && poll.LETTERS.some(l => field.name.startsWith(l));
+    !field.inline && LETTERS.some(l => field.name.startsWith(l));
 
 const togglePoll = async (message: Message) => {
     const pollEmbed = message.embeds[0];

@@ -5,11 +5,12 @@ import type { BotContext } from "../context.js";
 import type { ProcessableMessage } from "../service/commandService.js";
 
 import { parseLegacyMessageParts } from "../service/commandService.js";
+import { LETTERS, EMOJI } from "../service/pollService.js";
 import * as poll from "./poll.js";
 import log from "@log";
 
 const isPollField = (field: APIEmbedField): boolean =>
-    !field.inline && poll.LETTERS.some(l => field.name.startsWith(l));
+    !field.inline && LETTERS.some(l => field.name.startsWith(l));
 
 export default class ExtendCommand implements MessageCommand {
     modCommand = false;
@@ -125,7 +126,7 @@ export default class ExtendCommand implements MessageCommand {
         for (const i in additionalPollOptions) {
             // Disabling rule because the order is important
 
-            await msg.react(poll.EMOJI[oldPollOptionFields.length + Number(i)]);
+            await msg.react(EMOJI[oldPollOptionFields.length + Number(i)]);
         }
         await message.delete();
     }
