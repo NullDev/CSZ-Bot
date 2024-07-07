@@ -35,8 +35,10 @@ export async function readAvailableLegacyCommands(
 
     const res = [];
     for await (const module of modules) {
+        const fileName = path.basename(module.__filename);
         log.debug(
             {
+                fileName,
                 run: module.run,
                 description: module.description,
             },
@@ -51,7 +53,6 @@ export async function readAvailableLegacyCommands(
             continue;
         }
 
-        const fileName = path.basename(module.__filename);
         res.push({
             name: removeExtension(fileName, commandExtensions),
             definition: module,
