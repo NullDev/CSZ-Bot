@@ -52,7 +52,7 @@ const allCommands: Command[] = [];
 export const interactions: readonly UserInteraction[] = [new NicknameButtonHandler()];
 
 const getApplicationCommands = () => allCommands.filter(isApplicationCommand);
-export const getMessageCommands = () => allCommands.filter(isMessageCommand);
+const getMessageCommands = () => allCommands.filter(isMessageCommand);
 const getSpecialCommands = () => allCommands.filter(isSpecialCommand);
 
 const lastSpecialCommands: Record<string, number> = getSpecialCommands().reduce(
