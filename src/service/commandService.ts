@@ -35,26 +35,15 @@ export async function readAvailableLegacyCommands(
 
     const res = [];
     for await (const { filePath, module } of modules) {
-        const fileName = path.basename(filePath);
-        log.debug(
-            {
-                fileName,
-                run: module.run?.toString(),
-                t: typeof module.run,
-                d: typeof module.description,
-                description: module.description,
-            },
-            "Module Candidate",
-        );
-
         if (
-            !module.description ||
-            module.description !== "string" ||
-            typeof module.run !== "function"
+            typeof module.description !== "string" ||
+            typeof module.run !== "function" ||
+            !module.description
         ) {
             continue;
         }
 
+        const fileName = path.basename(filePath);
         res.push({
             name: removeExtension(fileName, commandExtensions),
             definition: module,
