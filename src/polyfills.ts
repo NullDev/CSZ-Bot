@@ -5,6 +5,20 @@ declare global {
     interface Math {
         sumPrecise: (values: number[]) => number;
     }
+
+    /*
+    // TODO: https://github.com/tc39/proposal-iterator-helpers/
+    interface Iterator<T, TReturn = any, TNext = undefined> {
+        map<U>(mapperFn: (value: T) => U): Iterator<T, TReturn, TNext>;
+        filter<S extends T>(filtererFn: (value: T) => value is S): Iterator<S, TReturn, TNext>;
+        take(limit: number): Iterator<T, TReturn, TNext>;
+        drop(limit: number): Iterator<T, TReturn, TNext>;
+        // flatMap
+        // reduce
+        toArray(): T[];
+        forEach(fn: (value: T) => unknown): void;
+    }
+    */
 }
 
 if (typeof Math.sumPrecise !== "function") {
@@ -16,5 +30,3 @@ if (typeof Math.sumPrecise !== "function") {
 if (!globalThis.URLPattern) {
     await import("urlpattern-polyfill");
 }
-
-// TODO: https://github.com/tc39/proposal-iterator-helpers/
