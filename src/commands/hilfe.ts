@@ -4,6 +4,7 @@ import * as path from "node:path";
 import type { CommandFunction } from "../types.js";
 import type { BotContext } from "../context.js";
 import { getMessageCommands } from "../handler/commandHandler.js";
+import * as commandService from "../service/commandService.js";
 
 /**
  * Retrieves commands in chunks that doesn't affect message limit
@@ -40,44 +41,31 @@ const getCommandMessageChunksMatchingLimit = (
  * Enlists all user-commands with descriptions
  */
 export const run: CommandFunction = async (message, _args, context) => {
+    const prefix = context.prefix.command;
+
     const commandObj: Record<string, string> = {};
-    const commandDir = context.commandDir;
+    const legacyCommands = await commandService.readAvailableLegacyCommands(
+        context,
+        "pleb",
+    );
 
-    const files = await fs.readdir(commandDir);
-    for (const file of files) {
-        if (!file.endsWith(".ts")) {
-            continue; // Skip source maps etc
-        }
-
-        const cmdPath = path.resolve(commandDir, file);
-
-        const stats = await fs.stat(cmdPath);
-
-        if (!stats.isDirectory()) {
-            // commandStr is the key and the description of the command is the value
-            const modulePath = path.join(commandDir, file);
-
-            const module = await import(modulePath);
-
-            // Old file-based commands
-            if (module.description) {
-                const commandStr =
-                    context.prefix.command +
-                    file.toLowerCase().replace(/\.ts/gi, "");
-                commandObj[commandStr] = replacePrefixPlaceholders(
-                    module.description,
-                    context,
-                );
-            }
-        }
+    for (const command of legacyCommands) {
+        const commandStr = prefix + command.name;
+        commandObj[commandStr] = replacePrefixPlaceholders(
+            command.definition.description,
+            context,
+        );
     }
 
-    // New Class-based commands
-    const userCommands = getMessageCommands().filter(cmd => !cmd.modCommand);
-    for (const cmd of userCommands) {
-        const commandStr = context.prefix.command + cmd.name;
+    const newCommands = await commandService.readAvailableCommands(context);
+    for (const command of newCommands) {
+        if (command.modCommand) {
+            continue;
+        }
+
+        const commandStr = prefix + command.name;
         commandObj[commandStr] = replacePrefixPlaceholders(
-            cmd.description,
+            command.description,
             context,
         );
     }

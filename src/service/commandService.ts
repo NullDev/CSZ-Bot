@@ -27,7 +27,7 @@ export async function readAvailableCommands(
 export async function readAvailableLegacyCommands(
     context: BotContext,
     type: "mod" | "pleb",
-): Promise<LegacyCommand[]> {
+): Promise<{ name: string; definition: LegacyCommand }[]> {
     const dir = type === "mod" ? context.modCommandDir : context.commandDir;
     const modules = loadRawCommandModules(context, dir);
 
@@ -40,7 +40,19 @@ export async function readAvailableLegacyCommands(
         ) {
             continue;
         }
-        res.push(module);
+
+        let fileName = path.basename(module.__filename);
+        for (const extension of commandExtensions) {
+            if (fileName.endsWith(extension)) {
+                fileName = fileName.slice(0, -extension.length);
+                break;
+            }
+        }
+
+        res.push({
+            name: fileName,
+            definition: module,
+        });
     }
     return res;
 }
