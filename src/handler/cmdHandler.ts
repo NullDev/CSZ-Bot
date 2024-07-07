@@ -1,13 +1,11 @@
-import fs from "node:fs/promises";
-import * as path from "node:path";
-
 import type { Guild, GuildMember, Message } from "discord.js";
 
-import type { LegacyCommand } from "../types.js";
+import type { CommandResult } from "../types.js";
 import type { BotContext } from "../context.js";
 import log from "@log";
 import * as banService from "../service/banService.js";
 import { isMessageInBotSpam } from "../utils/channelUtils.js";
+import * as commandService from "../service/commandService.js";
 
 /**
  * A message that the bot can pass to command handlers.
@@ -27,7 +25,6 @@ export function isProcessableMessage(
 /** Passes commands to the correct executor */
 export default async function (
     message: ProcessableMessage,
-    isModCommand: boolean,
     context: BotContext,
 ) {
     if (message.author.bot) {
@@ -44,6 +41,8 @@ export default async function (
         return;
     }
 
+    const isModCommand = message.content.startsWith(context.prefix.modCommand);
+
     const cmdPrefix = isModCommand
         ? context.prefix.modCommand
         : context.prefix.command;
@@ -55,60 +54,32 @@ export default async function (
         return;
     }
 
-    const command = rawCommandName.toLowerCase();
+    const invokedCommand = await commandService.loadLegacyCommandByName(
+        context,
+        rawCommandName,
+        isModCommand ? "mod" : "pleb",
+    );
 
-    const commandArr = [];
-    const commandDir = isModCommand
-        ? context.modCommandDir
-        : context.commandDir;
-
-    const files = await fs.readdir(commandDir);
-    for (const file of files) {
-        const cmdPath = path.resolve(commandDir, file);
-
-        const stats = await fs.stat(cmdPath);
-        if (!stats.isDirectory()) {
-            commandArr.push(file.toLowerCase());
-        }
-    }
-
-    const commandFile = commandArr.find(cmd => {
-        const normalized = command.toLowerCase();
-        return cmd === `${normalized}.js` || cmd === `${normalized}.ts`;
-    });
-
-    if (commandFile === undefined) {
+    if (!invokedCommand) {
+        log.warn(`Command "${rawCommandName}" nod found`);
         return;
     }
 
-    const commandPath = path.join(commandDir, commandFile);
-
-    // We need a file:// URL because in windows, paths begin with a drive letter,
-    // which is interpreted as the protocol.
-    const commandModuleUrl = new URL("file://");
-    commandModuleUrl.pathname = commandPath;
-
-    const usedCommand = (await import(
-        commandModuleUrl.toString()
-    )) as LegacyCommand;
-
-    console.assert(!!usedCommand, "usedCommand must be non-falsy");
-
-    /**
-     * Since the "new commands" will also be loaded the command handler would
-     * try to invoke the run method, which is ofc not present - or at least it should
-     * not be present. Therefore we need to check for the method.
-     */
-    if (!usedCommand.run) {
-        return;
-    }
+    const { name, definition } = invokedCommand;
+    console.assert(!!name, "name must be non-falsy");
+    console.assert(!!definition, "definition must be non-falsy");
+    console.assert(!!definition.run, "definition.run must be non-falsy");
+    console.assert(
+        !!definition.description,
+        "definition.description must be non-falsy",
+    );
 
     if (
         isModCommand &&
         !message.member.roles.cache.some(r => context.moderatorRoles.has(r.id))
     ) {
         log.warn(
-            `User "${message.author.tag}" (${message.author}) tried mod command "${cmdPrefix}${command}" and was denied`,
+            `User "${message.author.tag}" (${message.author}) tried mod command "${cmdPrefix}${name}" and was denied`,
         );
 
         if (
@@ -139,26 +110,28 @@ export default async function (
 
     if (isModCommand) {
         log.info(
-            `User "${message.author.tag}" (${message.author}) performed mod-command: ${cmdPrefix}${command}`,
+            `User "${message.author.tag}" (${message.author}) performed mod-command: ${cmdPrefix}${name}`,
         );
     } else {
         log.info(
-            `User "${message.author.tag}" (${message.author}) performed command: ${cmdPrefix}${command}`,
+            `User "${message.author.tag}" (${message.author}) performed command: ${cmdPrefix}${name}`,
         );
     }
 
+    let response: CommandResult | undefined = undefined;
     try {
-        const response = await usedCommand.run(message, args, context);
-        if (response) {
-            await message.reply({
-                content: response,
-            });
-        }
-        return;
+        response = await definition.run(message, args, context);
     } catch (err) {
         log.error(err, "Error");
         await message.reply({
             content: "Sorry, irgendwas ist schief gegangen! =(",
+        });
+        return;
+    }
+
+    if (response) {
+        await message.reply({
+            content: response,
         });
     }
 }

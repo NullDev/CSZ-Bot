@@ -24,10 +24,12 @@ export async function readAvailableCommands(
     return res;
 }
 
+export type LegacyCommandInfo = { name: string; definition: LegacyCommand };
+
 export async function readAvailableLegacyCommands(
     context: BotContext,
     type: "mod" | "pleb",
-): Promise<{ name: string; definition: LegacyCommand }[]> {
+): Promise<LegacyCommandInfo[]> {
     const dir = type === "mod" ? context.modCommandDir : context.commandDir;
     const modules = loadRawCommandModules(context, dir);
 
@@ -71,4 +73,14 @@ async function* loadRawCommandModules(context: BotContext, commandDir: string) {
 
         yield await import(moduleUrl.toString());
     }
+}
+
+export async function loadLegacyCommandByName(
+    context: BotContext,
+    name: string,
+    type: "mod" | "pleb",
+): Promise<LegacyCommandInfo | undefined> {
+    const command = name.toLowerCase();
+    const allLegacyCommands = await readAvailableLegacyCommands(context, type);
+    return allLegacyCommands.find(cmd => cmd.name.toLowerCase() === command);
 }

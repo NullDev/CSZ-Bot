@@ -32,9 +32,9 @@ export default async function (message: Message, context: BotContext) {
         return;
     }
 
-    const isNormalCommand = message.content.startsWith(context.prefix.command);
-    const isModCommand = message.content.startsWith(context.prefix.modCommand);
-    const isCommand = isNormalCommand || isModCommand;
+    const isCommand =
+        message.content.startsWith(context.prefix.command) ||
+        message.content.startsWith(context.prefix.modCommand);
 
     if (
         context.client.user &&
@@ -74,7 +74,7 @@ export default async function (message: Message, context: BotContext) {
         return;
     }
 
-    await cmdHandler(message, isModCommand, context);
+    await cmdHandler(message, context);
 
     // Get all inline replies to the message and delete them. Ignore errors, since cached is used and previously deleted messages are contained as well
     for (const msg of getInlineReplies(message, context.client.user).values()) {
