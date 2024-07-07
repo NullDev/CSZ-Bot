@@ -1,22 +1,61 @@
-import type { CommandFunction } from "../types.js";
-import * as rollService from "../service/rollService.js";
 import { ChannelType } from "discord.js";
 
-/**
- * Return an error string if an error exists.
- *
- * @param amount
- * @param sides
- *
- * @returns the error string
- */
-const checkParams = (amount: number, sides: number): string | undefined => {
-    if (!Number.isSafeInteger(amount) || !Number.isSafeInteger(sides)) {
-        return "Bruder nimm ma bitte nur natürliche Zahlen (>0).";
-    }
+import type { MessageCommand } from "./command.js";
+import type { BotContext } from "../context.js";
 
-    if (amount <= 0 || sides <= 0 || Number.isNaN(amount) || Number.isNaN(sides)) {
-        return "Du brauchst schon ein valides Argument...";
+import { parseLegacyMessageParts, type ProcessableMessage } from "../service/commandService.js";
+import { defer } from "../utils/interactionUtils.js";
+import * as rollService from "../service/rollService.js";
+
+export default class RollCommand implements MessageCommand {
+    modCommand = false;
+    name = "roll";
+    description = `
+Wirft x beliebig viele Würfel mit y vielen Seiten.
+Usage: $COMMAND_PREFIX$roll xdy
+Mit x als die Anzahl der Würfel (<11) und y als die Menge der Seiten der Würfel (<=100)
+`.trim();
+
+    async handleMessage(message: ProcessableMessage, context: BotContext): Promise<void> {
+        const { args } = parseLegacyMessageParts(context, message);
+
+        await using _ = defer(() => message.delete());
+
+        const channel = message.channel;
+        if (channel.type !== ChannelType.GuildText) {
+            return;
+        }
+
+        let parsed = args[0]?.toLowerCase();
+
+        // god i hate myself
+        // there must be a better way of handling this
+        if (!parsed) {
+            parsed = "0d0";
+        }
+
+        const [amountStr, sidesStr] = parsed.split("d");
+        const [amount, sides] = [Number(amountStr), Number(sidesStr)];
+
+        const error = checkParams(amount, sides);
+        if (error) {
+            await message.channel.send(error);
+            return;
+        }
+
+        await rollService.rollInChannel(message.author, channel, amount, sides);
+        await message.delete();
+    }
+}
+
+function checkParams(amount: number, sides: number) {
+    if (
+        !Number.isSafeInteger(amount) ||
+        !Number.isSafeInteger(sides) ||
+        amount <= 0 ||
+        sides <= 0
+    ) {
+        return "Bruder nimm ma bitte nur natürliche Zahlen (>0).";
     }
 
     if (amount > 10) {
@@ -28,36 +67,4 @@ const checkParams = (amount: number, sides: number): string | undefined => {
     }
 
     return undefined;
-};
-
-export const run: CommandFunction = async (message, args) => {
-    const channel = message.channel;
-    if (channel.type !== ChannelType.GuildText) {
-        return;
-    }
-
-    let parsed = args[0]?.toLowerCase();
-
-    // god i hate myself
-    // there must be a better way of handling this
-    if (!parsed) {
-        parsed = "0d0";
-    }
-
-    const [amountStr, sidesStr] = parsed.split("d");
-    const [amount, sides] = [Number(amountStr), Number(sidesStr)];
-
-    const error = checkParams(amount, sides);
-    if (error) {
-        return error;
-    }
-
-    await rollService.rollInChannel(message.author, channel, amount, sides);
-    await message.delete();
-};
-
-export const description = `
-Wirft x beliebig viele Würfel mit y vielen Seiten.
-Usage: $COMMAND_PREFIX$roll xdy
-Mit x als die Anzahl der Würfel (<11) und y als die Menge der Seiten der Würfel (<=100)
-`.trim();
+}
