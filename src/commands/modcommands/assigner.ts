@@ -1,18 +1,20 @@
 import type { CommandFunction } from "../../types.js";
 import log from "@log";
 
-/**
- * Creates an assigner message
- */
 export const run: CommandFunction = async (message, args) => {
-    if (!args.length) return "Keine Rollen angegeben.";
-    if (!message.guild) return "Keine Guild-Message, lel"; // TODO: Remove as soon as we have ProcessableMessage as base
+    if (!args.length) {
+        await message.channel.send("Keine Rollen angegeben.");
+        return;
+    }
 
     const roleNames = message.guild.roles.cache
         .filter(element => String(element.name).toLowerCase() !== "@everyone")
         .map(element => element.name);
 
-    if (!args.some(e => roleNames.includes(e))) return "Keine dieser Rollen existiert!";
+    if (!args.some(e => roleNames.includes(e))) {
+        await message.channel.send("Keine dieser Rollen existiert!");
+        return;
+    }
 
     await message.delete().catch(log.error);
 
