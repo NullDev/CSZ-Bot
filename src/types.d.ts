@@ -126,6 +126,10 @@ export interface Config {
             /** ISO8601 duration */
             max_time_passed_since_last_message: string;
         };
+
+        instagram: {
+            rapid_api_instagram_api_key?: string;
+        };
     };
     ids: Record<ConfigIdKey, Snowflake>;
 }

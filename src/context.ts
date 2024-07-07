@@ -49,6 +49,9 @@ export interface BotContext {
             targetChannels?: readonly Snowflake[];
             maxTimePassedSinceLastMessage: Temporal.Duration;
         };
+        instagram: {
+            rapidApiInstagramApiKey?: string;
+        };
     };
 
     roles: Record<RemoveSuffix<ConfigRoleId, "_role_id">, Role>;
@@ -167,45 +170,48 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
         throw new Error(`Cannot find configured guild "${config.ids.guild_id}"`);
     }
 
+    const bs = config.bot_settings;
+
     return {
         client,
         rawConfig: config,
         guild,
         prefix: {
-            command: config.bot_settings.prefix.command_prefix,
-            modCommand: config.bot_settings.prefix.mod_prefix,
+            command: bs.prefix.command_prefix,
+            modCommand: bs.prefix.mod_prefix,
         },
         commandConfig: {
             faulenzerPing: {
-                allowedRoleIds: new Set(config.bot_settings.faulenzerping_allowed_role_ids),
-                maxNumberOfPings: Number(
-                    config.bot_settings.faulenzerping_max_number_of_pings ?? "15",
-                ),
-                minRequiredReactions: Number(
-                    config.bot_settings.faulenzerping_min_required_reactions ?? "5",
-                ),
+                allowedRoleIds: new Set(bs.faulenzerping_allowed_role_ids),
+                maxNumberOfPings: Number(bs.faulenzerping_max_number_of_pings ?? "15"),
+                minRequiredReactions: Number(bs.faulenzerping_min_required_reactions ?? "5"),
             },
             ehre: {
-                emojiNames: new Set(config.bot_settings.ehre?.emoji_names ?? ["aehre"]),
+                emojiNames: new Set(bs.ehre?.emoji_names ?? ["aehre"]),
             },
             quote: {
-                allowedGroupIds: new Set(config.bot_settings.quotes.allowed_group_ids),
-                anonymousCategoryIds: new Set(config.bot_settings.quotes.anonymous_category_ids),
-                anonymousChannelIds: new Set(config.bot_settings.quotes.anonymous_channel_ids),
-                blacklistedChannelIds: new Set(config.bot_settings.quotes.blacklisted_channel_ids),
-                quoteVoteThreshold: config.bot_settings.quotes.quote_threshold ?? 2,
-                targetChannelOverrides: config.bot_settings.quotes.target_channel_overrides,
-                defaultTargetChannelId: config.bot_settings.quotes.default_target_channel_id,
-                emojiName: config.bot_settings.quotes.emoji_name,
+                allowedGroupIds: new Set(bs.quotes.allowed_group_ids),
+                anonymousCategoryIds: new Set(bs.quotes.anonymous_category_ids),
+                anonymousChannelIds: new Set(bs.quotes.anonymous_channel_ids),
+                blacklistedChannelIds: new Set(bs.quotes.blacklisted_channel_ids),
+                quoteVoteThreshold: bs.quotes.quote_threshold ?? 2,
+                targetChannelOverrides: bs.quotes.target_channel_overrides,
+                defaultTargetChannelId: bs.quotes.default_target_channel_id,
+                emojiName: bs.quotes.emoji_name,
             },
             loot: {
-                enabled: config.bot_settings.loot?.enabled ?? false,
-                scheduleCron: config.bot_settings.loot?.schedule_cron ?? "*/15 * * * *",
-                dropChance: config.bot_settings.loot?.drop_chance ?? 0.05,
-                targetChannels: config.bot_settings.loot?.target_channel_ids ?? undefined,
+                enabled: bs.loot?.enabled ?? false,
+                scheduleCron: bs.loot?.schedule_cron ?? "*/15 * * * *",
+                dropChance: bs.loot?.drop_chance ?? 0.05,
+                targetChannels: bs.loot?.target_channel_ids ?? undefined,
                 maxTimePassedSinceLastMessage: Temporal.Duration.from(
-                    config.bot_settings.loot?.max_time_passed_since_last_message ?? "PT30M",
+                    bs.loot?.max_time_passed_since_last_message ?? "PT30M",
                 ),
+            },
+            instagram: {
+                rapidApiInstagramApiKey: bs.instagram.rapid_api_instagram_api_key
+                    ? bs.instagram.rapid_api_instagram_api_key.trim()
+                    : undefined,
             },
         },
         roles: {

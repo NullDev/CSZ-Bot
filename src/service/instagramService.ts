@@ -1,8 +1,8 @@
-import { rapidApiInstagramApiKey } from "../utils/configHandler.js";
-
 // Uses some random API:
 // https://rapidapi.com/ugoBoy/api/social-media-video-downloader
 // We're using the free tier, which has 150 videos per month
+
+import type { BotContext } from "src/context.js";
 
 interface ApiResponse {
     success: boolean;
@@ -32,11 +32,15 @@ export interface ErrorInstagramResponse {
     raw?: unknown;
 }
 
-export function isAvailable(): boolean {
-    return !!rapidApiInstagramApiKey;
+export function isAvailable(context: BotContext): boolean {
+    return !!context.commandConfig.instagram.rapidApiInstagramApiKey;
 }
 
-export async function downloadInstagramContent(link: string): Promise<InstagramResponse> {
+export async function downloadInstagramContent(
+    context: BotContext,
+    link: string,
+): Promise<InstagramResponse> {
+    const { rapidApiInstagramApiKey } = context.commandConfig.instagram;
     if (!rapidApiInstagramApiKey) {
         return {
             success: false,

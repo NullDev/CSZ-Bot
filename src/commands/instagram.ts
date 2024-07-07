@@ -1,6 +1,7 @@
 import type { Message } from "discord.js";
 
 import type { SpecialCommand } from "./command.js";
+import type { BotContext } from "../context.js";
 import * as instagramService from "../service/instagramService.js";
 
 const instagramOptions = {
@@ -18,8 +19,8 @@ export default class InstagramLink implements SpecialCommand {
     randomness = 1;
     cooldownTime = 0;
 
-    matches(message: Message<boolean>): boolean {
-        if (!instagramService.isAvailable()) {
+    matches(message: Message<boolean>, context: BotContext): boolean {
+        if (!instagramService.isAvailable(context)) {
             return false;
         }
 
@@ -33,12 +34,12 @@ export default class InstagramLink implements SpecialCommand {
         return pattern.test(message.content);
     }
 
-    async handleSpecialMessage(message: Message) {
+    async handleSpecialMessage(message: Message, context: BotContext) {
         await message.channel.sendTyping();
 
         const postUri = message.content.replace("http://", "https://");
 
-        const result = await instagramService.downloadInstagramContent(postUri);
+        const result = await instagramService.downloadInstagramContent(context, postUri);
         if (!result.success) {
             const failureReaction = message.guild?.emojis.cache.find(e => e.name === "sadge");
             if (failureReaction) {
