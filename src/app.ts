@@ -1,5 +1,4 @@
-import * as Discord from "discord.js";
-import { GatewayIntentBits, Partials, type Client } from "discord.js";
+import { GatewayIntentBits, Partials, Client } from "discord.js";
 import * as sentry from "@sentry/node";
 
 import type { ReactionHandler } from "./types.js";
@@ -67,7 +66,7 @@ if (!config.auth.bot_token) {
 
 await kysely.connectToDb(databasePath);
 
-const client = new Discord.Client({
+const client = new Client({
     partials: [Partials.Message, Partials.Reaction, Partials.User],
     allowedMentions: {
         parse: ["users"],
