@@ -274,13 +274,14 @@ export default class NicknameCommand implements ApplicationCommand {
             },
         };
 
-        let finishedEarly = false;
+        let voteResult: undefined | boolean = undefined;
 
         collector.on("collect", async interaction => {
             if (!interaction.member) {
-                await interaction.update({
+                await interaction.reply({
                     content: "Ich find dich nicht auf dem Server. Du Huso",
                     components: [],
+                    ephemeral: true,
                 });
                 return;
             }
@@ -298,43 +299,45 @@ export default class NicknameCommand implements ApplicationCommand {
             const allVotes = Object.values(votes);
 
             if (hasEnoughVotes(allVotes, "NO", 7)) {
-                finishedEarly = true;
-                await using _ = defer(() => collector.stop());
-
-                await interaction.update({
-                    content: `Der Vorschlag: \`${nickname}\` für ${user} war echt nicht so geil`,
-                    components: [],
-                });
+                voteResult = false;
+                collector.stop();
                 return;
             }
 
             if (hasEnoughVotes(allVotes, "YES", 7)) {
-                finishedEarly = true;
-                await using _ = defer(() => collector.stop());
-
-                try {
-                    await nickName.insertNickname(user.id, nickname);
-                } catch (error) {
-                    await interaction.update(
-                        `Würdet ihr Hurensöhne aufpassen, wüsstest ihr, dass für ${user} \`${nickname}\` bereits existiert.`,
-                    );
-                    return;
-                }
-
-                await interaction.update({
-                    content: `Für ${user} ist jetzt \`${nickname}\` in der Rotation`,
-                    components: [],
-                });
+                voteResult = true;
+                collector.stop();
             }
         });
 
         collector.once("end", async () => {
-            if (finishedEarly) {
+            if (voteResult === undefined) {
+                await command.editReply({
+                    content: "Abstimmung beendet, war wohl nich so dolle",
+                    components: [],
+                });
+                return;
+            }
+
+            if (!voteResult) {
+                await command.editReply({
+                    content: `Der Vorschlag \`${nickname}\` für ${user} war echt nicht so geil`,
+                    components: [],
+                });
+                return;
+            }
+
+            try {
+                await nickName.insertNickname(user.id, nickname);
+            } catch (error) {
+                await command.editReply(
+                    `Würdet ihr Hurensöhne aufpassen, wüsstest ihr, dass für ${user} \`${nickname}\` bereits existiert.`,
+                );
                 return;
             }
 
             await command.editReply({
-                content: "Abstimmung beendet, war wohl nich so dolle",
+                content: `Für ${user} ist jetzt \`${nickname}\` in der Rotation`,
                 components: [],
             });
         });
