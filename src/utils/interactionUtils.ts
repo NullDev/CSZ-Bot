@@ -1,8 +1,4 @@
-import type {
-    CacheType,
-    ChatInputCommandInteraction,
-    CommandInteraction,
-} from "discord.js";
+import type { CacheType, ChatInputCommandInteraction, CommandInteraction } from "discord.js";
 
 export function ensureChatInputCommand<Cached extends CacheType = CacheType>(
     interaction: CommandInteraction<Cached>,

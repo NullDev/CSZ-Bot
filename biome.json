@@ -6,7 +6,8 @@
     "formatter": {
         "enabled": true,
         "indentWidth": 4,
-        "indentStyle": "space"
+        "indentStyle": "space",
+        "lineWidth": 100
     },
     "vcs": {
         "enabled": true,

@@ -72,9 +72,7 @@ const drawStempelkarteBackside = async (
         url ? loadImage(url) : Promise.reject(new Error("url is falsy")),
     );
 
-    const avatarResults = await Promise.allSettled(
-        avatarSourcesWithPlaceholders,
-    );
+    const avatarResults = await Promise.allSettled(avatarSourcesWithPlaceholders);
 
     ctx.drawImage(backgroundImage, 0, 0);
 
@@ -87,11 +85,7 @@ const drawStempelkarteBackside = async (
                 : avatarUnavailableImage;
 
         const centerPoint = stempelLocations[i];
-        ctx.drawImage(
-            avatar,
-            centerPoint.x - avatar.width / 2,
-            centerPoint.y - avatar.height / 2,
-        );
+        ctx.drawImage(avatar, centerPoint.x - avatar.width / 2, centerPoint.y - avatar.height / 2);
     }
 
     const subjectAvatar = subjectAvatarUrl
@@ -119,9 +113,7 @@ export default class StempelkarteCommand implements ApplicationCommand {
             new SlashCommandUserOption()
                 .setRequired(false)
                 .setName("user")
-                .setDescription(
-                    "Derjeniche, von dem du die Stempelkarte sehen möchtest",
-                ),
+                .setDescription("Derjeniche, von dem du die Stempelkarte sehen möchtest"),
         );
 
     async handleInteraction(command: CommandInteraction) {
@@ -132,9 +124,7 @@ export default class StempelkarteCommand implements ApplicationCommand {
 
         const userOption = command.options.getUser("user") ?? command.user;
 
-        const ofMember = command.guild?.members.cache.find(
-            m => m.id === userOption.id,
-        );
+        const ofMember = command.guild?.members.cache.find(m => m.id === userOption.id);
         if (!ofMember) {
             return;
         }
@@ -146,8 +136,7 @@ export default class StempelkarteCommand implements ApplicationCommand {
 
         if (allInvitees.length === 0) {
             await command.reply({
-                content:
-                    "Wie wäre es wenn du überhaupt mal Leute einlädst du Schmarotzer",
+                content: "Wie wäre es wenn du überhaupt mal Leute einlädst du Schmarotzer",
             });
             return;
         }
@@ -164,9 +153,7 @@ export default class StempelkarteCommand implements ApplicationCommand {
                 .map(getUserById)
                 .map(member => getAvatarUrlForMember(member));
 
-            stempelkarten.push(
-                drawStempelkarteBackside(subjectAvatarUrl, avatarUrls),
-            );
+            stempelkarten.push(drawStempelkarteBackside(subjectAvatarUrl, avatarUrls));
         }
 
         const results = (await Promise.allSettled(stempelkarten)).filter(

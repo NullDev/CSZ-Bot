@@ -14,25 +14,13 @@ export async function up(db: Kysely<any>) {
         .addColumn("channelId", "text", c => c.notNull())
         .addColumn("messageId", "text", c => c.notNull())
         .addColumn("usedImage", "text")
-        .addColumn("createdAt", "timestamp", c =>
-            c.notNull().defaultTo(sql`current_timestamp`),
-        )
-        .addColumn("updatedAt", "timestamp", c =>
-            c.notNull().defaultTo(sql`current_timestamp`),
-        )
+        .addColumn("createdAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
+        .addColumn("updatedAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
         .execute();
 
-    await db.schema
-        .createIndex("loot_messageId")
-        .on("loot")
-        .column("messageId")
-        .execute();
+    await db.schema.createIndex("loot_messageId").on("loot").column("messageId").execute();
 
-    await db.schema
-        .createIndex("loot_winnerId")
-        .on("loot")
-        .column("winnerId")
-        .execute();
+    await db.schema.createIndex("loot_winnerId").on("loot").column("winnerId").execute();
 
     await createUpdatedAtTrigger(db, "loot");
 }

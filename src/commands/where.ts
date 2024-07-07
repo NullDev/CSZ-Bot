@@ -21,16 +21,11 @@ export default class WhereCommand implements SpecialCommand {
     matches(message: Message<boolean>): boolean {
         const msg = message.content.toLowerCase();
 
-        return (
-            msg.startsWith("wo ") && countWords(substringAfter(msg, "wo ")) <= 3
-        );
+        return msg.startsWith("wo ") && countWords(substringAfter(msg, "wo ")) <= 3;
     }
 
     async handleSpecialMessage(message: Message) {
-        const subject = cleanContent(
-            message.content.trim().toUpperCase(),
-            message.channel,
-        );
+        const subject = cleanContent(message.content.trim().toUpperCase(), message.channel);
 
         const whereMemeBuffer = await WhereCommand.createWhereMeme(subject);
 

@@ -45,8 +45,7 @@ export default {
                 const role = guild.roles.cache.find(
                     r =>
                         // biome-ignore lint/suspicious/noMisleadingCharacterClass: somebody wrote this and it seems right
-                        r.name.replace(/[\u200B-\u200D\uFEFF]/g, "") ===
-                        message.content,
+                        r.name.replace(/[\u200B-\u200D\uFEFF]/g, "") === message.content,
                 );
 
                 if (role === undefined) {
@@ -58,8 +57,7 @@ export default {
                 } else {
                     // Users with role deny ID shall not assign themselves roles. Don't care about removing them.
                     if (context.roleGuard.hasRoleDenyRole(member)) {
-                        const reaction =
-                            await message.reactions.cache.get("✅");
+                        const reaction = await message.reactions.cache.get("✅");
                         if (reaction === undefined) return;
 
                         await reaction.users.remove(member.id);
@@ -99,9 +97,7 @@ export default {
                 embedAuthor.name.indexOf("Umfrage") >= 0 &&
                 voteEmojis.includes(reactionName);
 
-            const delayedPoll = poll.delayedPolls.find(
-                x => x.pollId === message.id,
-            );
+            const delayedPoll = poll.delayedPolls.find(x => x.pollId === message.id);
             const isDelayedPoll = delayedPoll !== undefined;
 
             if (isStrawpoll) {
@@ -126,23 +122,16 @@ export default {
                     );
                 });
 
-                await Promise.all(
-                    reactions.map(r => r.users.remove(member.id)),
-                );
+                await Promise.all(reactions.map(r => r.users.remove(member.id)));
             } else if (isUmfrage) {
                 if (isDelayedPoll) {
                     const delayedPollReactions =
                         delayedPoll.reactions[voteEmojis.indexOf(reactionName)];
-                    const hasVoted = delayedPollReactions.some(
-                        x => x === member.id,
-                    );
+                    const hasVoted = delayedPollReactions.some(x => x === member.id);
                     if (!hasVoted) {
                         delayedPollReactions.push(member.id);
                     } else {
-                        delayedPollReactions.splice(
-                            delayedPollReactions.indexOf(member.id),
-                            1,
-                        );
+                        delayedPollReactions.splice(delayedPollReactions.indexOf(member.id), 1);
                     }
 
                     const msg = await message.channel.send(
@@ -150,10 +139,7 @@ export default {
                             ? "🗑 Deine Reaktion wurde gelöscht."
                             : "💾 Deine Reaktion wurde gespeichert.",
                     );
-                    await fadingMessage.startFadingMessage(
-                        msg as ProcessableMessage,
-                        2500,
-                    );
+                    await fadingMessage.startFadingMessage(msg as ProcessableMessage, 2500);
                 }
             }
 
@@ -162,14 +148,10 @@ export default {
                 const allUserReactions = message.reactions.cache.filter(r => {
                     const emojiName = r.emoji.name;
                     return (
-                        emojiName &&
-                        r.users.cache.has(member.id) &&
-                        pollEmojis.includes(emojiName)
+                        emojiName && r.users.cache.has(member.id) && pollEmojis.includes(emojiName)
                     );
                 });
-                await Promise.all(
-                    allUserReactions.map(r => r.users.remove(member.id)),
-                );
+                await Promise.all(allUserReactions.map(r => r.users.remove(member.id)));
 
                 await additionalMessageData.upsertForMessage(
                     message,

@@ -24,9 +24,7 @@ export default class TriggerReactOnKeyword implements SpecialCommand {
             return;
         }
 
-        const emote = message.guild.emojis.cache.find(
-            e => e.name === this.emoteName,
-        );
+        const emote = message.guild.emojis.cache.find(e => e.name === this.emoteName);
         if (emote) {
             await message.react(emote);
             return;

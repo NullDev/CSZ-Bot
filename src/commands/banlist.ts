@@ -1,9 +1,4 @@
-import {
-    type CacheType,
-    type CommandInteraction,
-    TimestampStyles,
-    time,
-} from "discord.js";
+import { type CacheType, type CommandInteraction, TimestampStyles, time } from "discord.js";
 import { SlashCommandBuilder } from "discord.js";
 import type { ApplicationCommand } from "./command.js";
 import type { BotContext } from "../context.js";
@@ -18,10 +13,7 @@ export default class BanListCommand implements ApplicationCommand {
         .setName(this.name)
         .setDescription(this.description);
 
-    async handleInteraction(
-        command: CommandInteraction<CacheType>,
-        context: BotContext,
-    ) {
+    async handleInteraction(command: CommandInteraction<CacheType>, context: BotContext) {
         const bans = await banService.findAll();
 
         if (bans.length === 0) {
@@ -57,8 +49,7 @@ export default class BanListCommand implements ApplicationCommand {
                 ? "auf weiteres"
                 : time(new Date(ban.bannedUntil), TimestampStyles.RelativeTime)
         }`;
-        const reasonString =
-            ban.reason === null ? "" : `(Grund: ${ban.reason})`;
+        const reasonString = ban.reason === null ? "" : `(Grund: ${ban.reason})`;
         return `${user}: ${untilString} ${reasonString}`;
     }
 }

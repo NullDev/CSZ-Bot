@@ -36,9 +36,7 @@ const validateDate = (date: Date): true | string => {
     return true;
 };
 
-export default class ErinnerungCommand
-    implements MessageCommand, ApplicationCommand
-{
+export default class ErinnerungCommand implements MessageCommand, ApplicationCommand {
     name = "erinnerung";
     description = "Setzt eine Erinnerung für dich";
     applicationCommand = new SlashCommandBuilder()
@@ -62,9 +60,7 @@ export default class ErinnerungCommand
         const time = cmd.options.getString("time", true);
         const note = cmd.options.getString("note");
         if (cmd.guildId === null) {
-            await cmd.reply(
-                "Brudi ich muss schon wissen wo ich dich erinnern soll",
-            );
+            await cmd.reply("Brudi ich muss schon wissen wo ich dich erinnern soll");
             return;
         }
 
@@ -91,21 +87,15 @@ export default class ErinnerungCommand
             );
         } catch (err) {
             log.error(err, `Couldn't parse date from message ${time} due to`);
-            await cmd.reply(
-                "Brudi was ist das denn für ne Datumsangabe? Gib was ordentliches an",
-            );
+            await cmd.reply("Brudi was ist das denn für ne Datumsangabe? Gib was ordentliches an");
         }
     }
 
     async handleMessage(message: ProcessableMessage, context: BotContext) {
         // TODO: Create utility function that removes the command prefix for easier parsing
-        const param = message.content.split(
-            `${context.prefix.command}${this.name} `,
-        )[1];
+        const param = message.content.split(`${context.prefix.command}${this.name} `)[1];
         if (!param) {
-            await message.reply(
-                "Brudi ich muss schon wissen wann ich dich erinnern soll",
-            );
+            await message.reply("Brudi ich muss schon wissen wann ich dich erinnern soll");
             return;
         }
 
@@ -138,10 +128,7 @@ export default class ErinnerungCommand
                 )} dran erinnern. Außer ich kack ab lol, dann mach ich das später (vielleicht)`,
             );
         } catch (err) {
-            log.error(
-                err,
-                `Couldn't parse date from message ${message.content} due to`,
-            );
+            log.error(err, `Couldn't parse date from message ${message.content} due to`);
             await message.reply(
                 "Brudi was ist das denn für ne Datumsangabe? Gib was ordentliches an",
             );
@@ -162,14 +149,11 @@ const sendReminder = async (reminder: Reminder, context: BotContext) => {
             throw new Error(`Channel ${reminder.channelId} couldn't be found`);
         }
         if (!channel.isTextBased()) {
-            throw new Error(
-                `Channel ${reminder.channelId} is not a text channel`,
-            );
+            throw new Error(`Channel ${reminder.channelId} is not a text channel`);
         }
         const textChannel = channel as TextBasedChannel;
         const user = await guild.members.fetch(reminder.userId);
-        const note =
-            reminder.reminderNote || "Lol du Vollidiot hast nichts angegeben";
+        const note = reminder.reminderNote || "Lol du Vollidiot hast nichts angegeben";
 
         if (!reminder.messageId) {
             await textChannel.send({

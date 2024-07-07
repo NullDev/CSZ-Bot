@@ -1,8 +1,4 @@
-import {
-    type CommandInteraction,
-    SlashCommandBuilder,
-    SlashCommandUserOption,
-} from "discord.js";
+import { type CommandInteraction, SlashCommandBuilder, SlashCommandUserOption } from "discord.js";
 
 import type { BotContext } from "../context.js";
 import type { ApplicationCommand } from "./command.js";
@@ -24,10 +20,7 @@ export default class InventarCommand implements ApplicationCommand {
                 .setDescription("Wem du tun willst"),
         );
 
-    async handleInteraction(
-        interaction: CommandInteraction,
-        _context: BotContext,
-    ) {
+    async handleInteraction(interaction: CommandInteraction, _context: BotContext) {
         const cmd = ensureChatInputCommand(interaction);
 
         const user = cmd.options.getUser("user") ?? cmd.user;

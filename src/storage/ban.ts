@@ -34,15 +34,8 @@ export async function persistOrUpdate(
         .execute();
 }
 
-export function findExisting(
-    user: User | GuildMember,
-    ctx = db(),
-): Promise<Ban | undefined> {
-    return ctx
-        .selectFrom("bans")
-        .where("userId", "=", user.id)
-        .selectAll()
-        .executeTakeFirst();
+export function findExisting(user: User | GuildMember, ctx = db()): Promise<Ban | undefined> {
+    return ctx.selectFrom("bans").where("userId", "=", user.id).selectAll().executeTakeFirst();
 }
 
 export async function remove(userId: Snowflake, ctx = db()) {

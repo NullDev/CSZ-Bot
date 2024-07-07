@@ -21,10 +21,7 @@ type SubCommand = "los" | "add" | "list" | "select";
 export default class Saufen implements ApplicationCommand {
     name = "saufen";
     description = "Macht Stimmung in Wois";
-    requiredPermissions: readonly PermissionsString[] = [
-        "BanMembers",
-        "ManageEvents",
-    ];
+    requiredPermissions: readonly PermissionsString[] = ["BanMembers", "ManageEvents"];
     applicationCommand = new SlashCommandBuilder()
         .setName(this.name)
         .setDescription(this.description)
@@ -58,16 +55,11 @@ export default class Saufen implements ApplicationCommand {
                     new SlashCommandStringOption()
                         .setRequired(true)
                         .setName("sound")
-                        .setDescription(
-                            "Link zum File (Bitte nur audio files bro)",
-                        ),
+                        .setDescription("Link zum File (Bitte nur audio files bro)"),
                 ),
         );
 
-    async handleInteraction(
-        command: CommandInteraction<CacheType>,
-        context: BotContext,
-    ) {
+    async handleInteraction(command: CommandInteraction<CacheType>, context: BotContext) {
         if (!command.isChatInputCommand()) {
             // TODO: Solve this on a type level
             return;
@@ -99,16 +91,11 @@ export default class Saufen implements ApplicationCommand {
             }
             case "select": {
                 const toPlay = command.options.getString("sound", true);
-                await Promise.all([
-                    connectAndPlaySaufen(context, toPlay),
-                    reply(),
-                ]);
+                await Promise.all([connectAndPlaySaufen(context, toPlay), reply()]);
                 return;
             }
             case "add": {
-                const soundUrl = new URL(
-                    command.options.getString("sound", true),
-                );
+                const soundUrl = new URL(command.options.getString("sound", true));
                 const targetPath = path.resolve(
                     context.soundsDir,
                     path.basename(soundUrl.pathname),
@@ -146,10 +133,7 @@ export default class Saufen implements ApplicationCommand {
             .map(f => f.name);
     }
 
-    async autocomplete(
-        interaction: AutocompleteInteraction,
-        context: BotContext,
-    ) {
+    async autocomplete(interaction: AutocompleteInteraction, context: BotContext) {
         const subCommand = interaction.options.getSubcommand(true);
         if (subCommand !== "select") {
             return;

@@ -58,16 +58,9 @@ export function findOneByDescriptionForGuild(
 }
 
 export function findAllGroups(guild: Guild, ctx = db()): Promise<SplidGroup[]> {
-    return ctx
-        .selectFrom("splidGroups")
-        .where("guildId", "=", guild.id)
-        .selectAll()
-        .execute();
+    return ctx.selectFrom("splidGroups").where("guildId", "=", guild.id).selectAll().execute();
 }
 
 export async function deleteByInviteCode(groupCode: string, ctx = db()) {
-    await ctx
-        .deleteFrom("splidGroups")
-        .where("groupCode", "=", groupCode)
-        .execute();
+    await ctx.deleteFrom("splidGroups").where("groupCode", "=", groupCode).execute();
 }

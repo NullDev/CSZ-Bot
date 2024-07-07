@@ -8,17 +8,11 @@ export const run: CommandFunction = async (message, _args, context) => {
     const prefix = context.prefix.command;
 
     const commandObj: Record<string, string> = {};
-    const legacyCommands = await commandService.readAvailableLegacyCommands(
-        context,
-        "pleb",
-    );
+    const legacyCommands = await commandService.readAvailableLegacyCommands(context, "pleb");
 
     for (const command of legacyCommands) {
         const commandStr = prefix + command.name;
-        commandObj[commandStr] = replacePrefixPlaceholders(
-            command.definition.description,
-            context,
-        );
+        commandObj[commandStr] = replacePrefixPlaceholders(command.definition.description, context);
     }
 
     const newCommands = await commandService.readAvailableCommands(context);
@@ -28,19 +22,14 @@ export const run: CommandFunction = async (message, _args, context) => {
         }
 
         const commandStr = prefix + command.name;
-        commandObj[commandStr] = replacePrefixPlaceholders(
-            command.description,
-            context,
-        );
+        commandObj[commandStr] = replacePrefixPlaceholders(command.description, context);
     }
 
     await message.author.send(
         `Hallo, ${message.author.username}!\n\nHier ist eine Liste mit Commands:`,
     );
 
-    const chunks = getCommandMessageChunksMatchingLimit(
-        Object.entries(commandObj),
-    );
+    const chunks = getCommandMessageChunksMatchingLimit(Object.entries(commandObj));
     await Promise.all(chunks.map(chunk => message.author.send(chunk)));
 
     await message.author.send(
@@ -50,21 +39,13 @@ export const run: CommandFunction = async (message, _args, context) => {
     await message.react("✉"); // Send this last, so we only display a confirmation when everything actually worked
 };
 
-const getCommandMessageChunksMatchingLimit = (
-    commands: Array<[string, string]>,
-): string[] => {
+const getCommandMessageChunksMatchingLimit = (commands: Array<[string, string]>): string[] => {
     const chunk: string[] = [];
     let index = 0;
 
-    const sortedCommands = commands.toSorted((a, b) =>
-        a[0].localeCompare(b[0]),
-    );
+    const sortedCommands = commands.toSorted((a, b) => a[0].localeCompare(b[0]));
     for (const value of sortedCommands) {
-        if (
-            chunk[index] &&
-            chunk[index].length + (value[0].length + value[1].length + 10) >
-                2000
-        ) {
+        if (chunk[index] && chunk[index].length + (value[0].length + value[1].length + 10) > 2000) {
             chunk[index] += "```";
             ++index;
         }
@@ -79,10 +60,7 @@ const getCommandMessageChunksMatchingLimit = (
     return chunk;
 };
 
-export function replacePrefixPlaceholders(
-    helpText: string,
-    context: BotContext,
-): string {
+export function replacePrefixPlaceholders(helpText: string, context: BotContext): string {
     return helpText
         .replaceAll("$MOD_COMMAND_PREFIX$", context.prefix.modCommand)
         .replaceAll("$COMMAND_PREFIX$", context.prefix.command);

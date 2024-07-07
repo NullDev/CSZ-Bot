@@ -3,15 +3,9 @@ import type { Message, Snowflake } from "discord.js";
 import type { AdditionalMessageData, DataUsage } from "./db/model.js";
 import db from "@db";
 
-export async function getForMessage(
-    message: Message,
-    usage: DataUsage,
-    ctx = db(),
-) {
+export async function getForMessage(message: Message, usage: DataUsage, ctx = db()) {
     if (!message.guild) {
-        throw new Error(
-            "Cannot associate data with message outside of a guild",
-        );
+        throw new Error("Cannot associate data with message outside of a guild");
     }
 
     return await ctx
@@ -29,9 +23,7 @@ export async function upsertForMessage(
     ctx = db(),
 ) {
     if (!message.guild) {
-        throw new Error(
-            "Cannot associate data with message outside of a guild",
-        );
+        throw new Error("Cannot associate data with message outside of a guild");
     }
 
     await ctx
@@ -51,11 +43,7 @@ export async function upsertForMessage(
         .execute();
 }
 
-export async function destroyForMessage(
-    message: Message,
-    usage: DataUsage,
-    ctx = db(),
-) {
+export async function destroyForMessage(message: Message, usage: DataUsage, ctx = db()) {
     await ctx
         .deleteFrom("additionalMessageData")
         .where("messageId", "=", message.id)
@@ -63,13 +51,6 @@ export async function destroyForMessage(
         .execute();
 }
 
-export function findAll(
-    usage: DataUsage,
-    ctx = db(),
-): Promise<AdditionalMessageData[]> {
-    return ctx
-        .selectFrom("additionalMessageData")
-        .where("usage", "=", usage)
-        .selectAll()
-        .execute();
+export function findAll(usage: DataUsage, ctx = db()): Promise<AdditionalMessageData[]> {
+    return ctx.selectFrom("additionalMessageData").where("usage", "=", usage).selectAll().execute();
 }

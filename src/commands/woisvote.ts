@@ -93,8 +93,7 @@ export default class WoisCommand implements ApplicationCommand {
         }
 
         const reason = command.options.getString("grund", true);
-        const time =
-            command.options.getString("zeitpunkt", false) ?? defaultWoisTime;
+        const time = command.options.getString("zeitpunkt", false) ?? defaultWoisTime;
 
         const plainTime = Temporal.PlainTime.from(time);
 
@@ -192,22 +191,12 @@ export const woisVoteReactionHandler: ReactionHandler = {
         }
 
         // If the woisvote has not been created by a woisgang user, but we have two votes on it. PING DEM WOISGANG!
-        if (
-            !action.isWoisgangAction &&
-            action.interestedUsers.length === 1 &&
-            interest
-        ) {
-            const alertingMessage = await message.channel.messages.fetch(
-                message.id,
-            );
+        if (!action.isWoisgangAction && action.interestedUsers.length === 1 && interest) {
+            const alertingMessage = await message.channel.messages.fetch(message.id);
             await pingWoisgang(alertingMessage, context.roles.woisgang);
         }
 
-        const success = await woisAction.registerInterest(
-            message,
-            invoker,
-            interest,
-        );
+        const success = await woisAction.registerInterest(message, invoker, interest);
 
         if (!success) {
             log.error(
@@ -235,9 +224,7 @@ export const woisVoteScheduler = async (context: BotContext): Promise<void> => {
     // We remove woisvote from the database immediately before anything goes wrong and we spam pings.
     await woisAction.destroy(pendingAction.id);
 
-    const interestedUsers = JSON.parse(
-        pendingAction.interestedUsers,
-    ) as Snowflake[];
+    const interestedUsers = JSON.parse(pendingAction.interestedUsers) as Snowflake[];
 
     if (interestedUsers.length === 0) {
         // No one wants wois

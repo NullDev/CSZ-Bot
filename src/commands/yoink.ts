@@ -18,9 +18,7 @@ import { ensureChatInputCommand } from "../utils/interactionUtils.js";
 /**
  * Sends instructions on how to ask better questions
  */
-export default class YoinkCommand
-    implements MessageCommand, ApplicationCommand
-{
+export default class YoinkCommand implements MessageCommand, ApplicationCommand {
     readonly description = "Klaut emotes";
     readonly name = "yoink";
     applicationCommand = new SlashCommandBuilder()
@@ -39,17 +37,13 @@ export default class YoinkCommand
                 .setRequired(false),
         );
 
-    async handleInteraction(
-        command: CommandInteraction<"cached">,
-        context: BotContext,
-    ) {
+    async handleInteraction(command: CommandInteraction<"cached">, context: BotContext) {
         const cmd = ensureChatInputCommand(command);
 
         const author = command.guild?.members.cache.get(cmd.member.user.id);
         if (
             !author ||
-            (!context.roleGuard.isEmotifizierer(author) &&
-                !context.roleGuard.isMod(author))
+            (!context.roleGuard.isEmotifizierer(author) && !context.roleGuard.isMod(author))
         ) {
             await command.reply("Bist nicht cool genug");
             return;
@@ -75,9 +69,7 @@ export default class YoinkCommand
 
     async handleMessage(message: ProcessableMessage, context: BotContext) {
         // parse options
-        const guildMember = message.guild.members.cache.get(
-            message.member.user.id,
-        );
+        const guildMember = message.guild.members.cache.get(message.member.user.id);
         if (
             !guildMember ||
             (!context.roleGuard.isEmotifizierer(guildMember) &&
@@ -93,19 +85,12 @@ export default class YoinkCommand
         if (args.length > 1) {
             const emoji = parseEmoji(args[1]);
             if (!emoji) {
-                await message.channel.send(
-                    "Konnte emote nicht parsen, du Mongo",
-                );
+                await message.channel.send("Konnte emote nicht parsen, du Mongo");
                 return;
             }
 
             const name = args.length > 2 ? args[2] : null;
-            const res = await this.createEmote(
-                emoji,
-                message.channel,
-                name,
-                message.guild,
-            );
+            const res = await this.createEmote(emoji, message.channel, name, message.guild);
             await message.channel.send(res);
             await message.delete();
             return;
@@ -113,14 +98,11 @@ export default class YoinkCommand
 
         const repliedMessageId = message.reference?.messageId;
         if (!repliedMessageId) {
-            await message.channel.send(
-                "Da war nichts, was ich verarbeiten kann",
-            );
+            await message.channel.send("Da war nichts, was ich verarbeiten kann");
             return;
         }
 
-        const repliedMessage =
-            await message.channel.messages.fetch(repliedMessageId);
+        const repliedMessage = await message.channel.messages.fetch(repliedMessageId);
         if (!repliedMessage) {
             await message.channel.send("Konnte Nachricht nicht laden");
             return;
@@ -130,9 +112,7 @@ export default class YoinkCommand
 
         const emoji = parseEmoji(emoteCandidate);
         if (!emoji) {
-            await message.channel.send(
-                "Konnte deinen lellek-emote nicht parsen",
-            );
+            await message.channel.send("Konnte deinen lellek-emote nicht parsen");
             return;
         }
 

@@ -43,9 +43,6 @@ export function removeOptionalSuffix<T extends string, TSuffix extends string>(
     suffix: TSuffix,
 ): RemoveOptionalSuffix<T, TSuffix> {
     return value.endsWith(suffix)
-        ? (value.slice(0, 0 - suffix.length) as RemoveOptionalSuffix<
-              T,
-              TSuffix
-          >)
+        ? (value.slice(0, 0 - suffix.length) as RemoveOptionalSuffix<T, TSuffix>)
         : (value as RemoveOptionalSuffix<T, TSuffix>);
 }

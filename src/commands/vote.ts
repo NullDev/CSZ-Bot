@@ -40,17 +40,12 @@ export const run: CommandFunction = async (message, args, context) => {
         },
     };
 
-    const channel = options.channel
-        ? context.textChannels.votes
-        : message.channel;
+    const channel = options.channel ? context.textChannels.votes : message.channel;
 
     const messageWithVoteContent = await channel.send({
         embeds: [embed],
     });
-    await Promise.all([
-        messageWithVoteContent.react("👍"),
-        messageWithVoteContent.react("👎"),
-    ]);
+    await Promise.all([messageWithVoteContent.react("👍"), messageWithVoteContent.react("👎")]);
     await message.delete();
 };
 

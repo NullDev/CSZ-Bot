@@ -37,10 +37,7 @@ export function getWoisActionInRange(
         .executeTakeFirst();
 }
 
-export function getPendingWoisAction(
-    before: Date,
-    ctx = db(),
-): Promise<WoisAction | undefined> {
+export function getPendingWoisAction(before: Date, ctx = db()): Promise<WoisAction | undefined> {
     return ctx
         .selectFrom("woisActions")
         .where("date", "<=", before.toISOString())
@@ -71,14 +68,10 @@ export async function registerInterest(
             return false;
         }
 
-        const interestedUsers = JSON.parse(
-            action.interestedUsers,
-        ) as Snowflake[];
+        const interestedUsers = JSON.parse(action.interestedUsers) as Snowflake[];
 
         if (!interested) {
-            const newList = interestedUsers.filter(
-                u => interestedUser.id !== u,
-            );
+            const newList = interestedUsers.filter(u => interestedUser.id !== u);
             await setInterestedUsers(action.id, JSON.stringify(newList), tx);
             return true;
         }

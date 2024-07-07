@@ -1,9 +1,4 @@
-import {
-    cleanContent,
-    type APIEmbed,
-    type TextChannel,
-    type User,
-} from "discord.js";
+import { cleanContent, type APIEmbed, type TextChannel, type User } from "discord.js";
 
 export async function rollInChannel(
     author: User,

@@ -1,10 +1,4 @@
-import type {
-    GuildChannel,
-    GuildMember,
-    Message,
-    TextChannel,
-    User,
-} from "discord.js";
+import type { GuildChannel, GuildMember, Message, TextChannel, User } from "discord.js";
 
 import type { BotContext } from "../context.js";
 import type { Loot } from "./db/model.js";
@@ -51,11 +45,7 @@ export async function createLoot(
 }
 
 export async function findOfUser(user: User, ctx = db()) {
-    return await ctx
-        .selectFrom("loot")
-        .where("winnerId", "=", user.id)
-        .selectAll()
-        .execute();
+    return await ctx.selectFrom("loot").where("winnerId", "=", user.id).selectAll().execute();
 }
 
 export async function findOfMessage(message: Message<true>, ctx = db()) {

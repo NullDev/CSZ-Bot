@@ -10,12 +10,8 @@ export async function up(db: Kysely<any>) {
         .addColumn("messageId", "text", c => c.notNull())
         .addColumn("usage", "integer", c => c.notNull())
         .addColumn("payload", "text", c => c.notNull())
-        .addColumn("createdAt", "timestamp", c =>
-            c.notNull().defaultTo(sql`current_timestamp`),
-        )
-        .addColumn("updatedAt", "timestamp", c =>
-            c.notNull().defaultTo(sql`current_timestamp`),
-        )
+        .addColumn("createdAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
+        .addColumn("updatedAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
         .execute();
 
     // Unused data migration (the table does not contain any meaningful data anyways)

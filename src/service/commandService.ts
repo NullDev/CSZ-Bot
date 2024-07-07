@@ -11,9 +11,7 @@ import log from "@log";
 
 const commandExtensions = [".ts", ".js"];
 
-export async function readAvailableCommands(
-    context: BotContext,
-): Promise<Command[]> {
+export async function readAvailableCommands(context: BotContext): Promise<Command[]> {
     const modules = loadRawCommandModules(context, context.commandDir);
 
     const res = [];
@@ -83,10 +81,7 @@ async function* loadRawCommandModules(context: BotContext, commandDir: string) {
     }
 }
 
-function removeExtension(
-    fileName: string,
-    extensions: readonly string[],
-): string {
+function removeExtension(fileName: string, extensions: readonly string[]): string {
     for (const extension of extensions) {
         if (fileName.endsWith(extension)) {
             return fileName.slice(0, -extension.length);
@@ -115,8 +110,6 @@ export type ProcessableMessage = Message<true> & {
     guild: Guild;
 };
 
-export function isProcessableMessage(
-    message: Message,
-): message is ProcessableMessage {
+export function isProcessableMessage(message: Message): message is ProcessableMessage {
     return !!message.member && !!message.guild && message.inGuild();
 }

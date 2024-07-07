@@ -15,12 +15,7 @@ const checkParams = (amount: number, sides: number): string | undefined => {
         return "Bruder nimm ma bitte nur natürliche Zahlen (>0).";
     }
 
-    if (
-        amount <= 0 ||
-        sides <= 0 ||
-        Number.isNaN(amount) ||
-        Number.isNaN(sides)
-    ) {
+    if (amount <= 0 || sides <= 0 || Number.isNaN(amount) || Number.isNaN(sides)) {
         return "Du brauchst schon ein valides Argument...";
     }
 

@@ -42,23 +42,17 @@ export default class StempelCommand implements ApplicationCommand {
         const invitator = command.guild?.members.cache.find(
             m => m.id === command.options.getUser("inviter", true).id,
         );
-        const invitedUser = command.guild?.members.cache.find(
-            m => m.id === command.user.id,
-        );
+        const invitedUser = command.guild?.members.cache.find(m => m.id === command.user.id);
         if (!invitator || !invitedUser) {
             await command.reply("Bruder gib doch bitte richtige User an");
             return;
         }
         if (invitator.user.bot) {
-            await command.reply(
-                "Alter als ob dich der Bot invited hat. Laber nich!",
-            );
+            await command.reply("Alter als ob dich der Bot invited hat. Laber nich!");
             return;
         }
         if (invitator.id === invitedUser.id) {
-            await command.reply(
-                "Bruder wie solltest du dich bitte selbst inviten können?",
-            );
+            await command.reply("Bruder wie solltest du dich bitte selbst inviten können?");
             return;
         }
 

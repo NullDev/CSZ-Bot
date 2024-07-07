@@ -116,10 +116,7 @@ export const ehreReactionHandler = {
         }
 
         const reactionName = reactionEvent.emoji.name;
-        if (
-            !reactionName ||
-            !context.commandConfig.ehre.emojiNames.has(reactionName)
-        ) {
+        if (!reactionName || !context.commandConfig.ehre.emojiNames.has(reactionName)) {
             return; // Not an Ehre reaction
         }
 
@@ -143,8 +140,7 @@ export const ehreReactionHandler = {
 
         const replyChannel = reactionEvent.message.channel;
         const replyChannelHasSlowMode =
-            replyChannel.isTextBased() &&
-            (replyChannel as TextChannel).rateLimitPerUser > 0;
+            replyChannel.isTextBased() && (replyChannel as TextChannel).rateLimitPerUser > 0;
         const replyChannelHasOverwrite =
             replyChannel.isTextBased() &&
             (replyChannel as TextChannel).permissionOverwrites.cache
@@ -155,9 +151,7 @@ export const ehreReactionHandler = {
             return;
         }
 
-        await reactionEvent.message.reply(
-            `${invoker} hat ${ehrenbruder} geährt`,
-        );
+        await reactionEvent.message.reply(`${invoker} hat ${ehrenbruder} geährt`);
     },
 };
 
@@ -181,15 +175,10 @@ export default class EhreCommand implements ApplicationCommand {
                 ),
         )
         .addSubcommand(
-            new SlashCommandSubcommandBuilder()
-                .setName("tabelle")
-                .setDescription("Alle Ehrenuser"),
+            new SlashCommandSubcommandBuilder().setName("tabelle").setDescription("Alle Ehrenuser"),
         );
 
-    static async addEhre(
-        thankingUser: User,
-        ehrenbruder: User,
-    ): Promise<string> {
+    static async addEhre(thankingUser: User, ehrenbruder: User): Promise<string> {
         if (thankingUser.id === ehrenbruder.id) {
             await ehre.removeEhrePoints(ehrenbruder);
             return "Willst dich selber ähren? Dreckiger Abschaum. Sowas verdient einfach keinen Respekt!";

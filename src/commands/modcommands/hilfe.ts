@@ -5,19 +5,13 @@ import * as commandService from "../../service/commandService.js";
 export const description = "Listet alle mod-commands auf";
 
 export const run: CommandFunction = async (message, _args, context) => {
-    const legacyCommands = await commandService.readAvailableLegacyCommands(
-        context,
-        "mod",
-    );
+    const legacyCommands = await commandService.readAvailableLegacyCommands(context, "mod");
 
     const prefix = context.prefix.modCommand;
     const commandObj: Record<string, string> = {};
     for (const command of legacyCommands) {
         const commandStr = prefix + command.name;
-        commandObj[commandStr] = replacePrefixPlaceholders(
-            command.definition.description,
-            context,
-        );
+        commandObj[commandStr] = replacePrefixPlaceholders(command.definition.description, context);
     }
 
     let commandText = "";

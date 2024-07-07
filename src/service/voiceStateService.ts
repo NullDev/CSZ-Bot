@@ -19,9 +19,7 @@ export async function checkVoiceUpdate(
     newState: VoiceState,
     context: BotContext,
 ) {
-    log.debug(
-        `Voice update detected: ${oldState.channelId} -> ${newState.channelId}`,
-    );
+    log.debug(`Voice update detected: ${oldState.channelId} -> ${newState.channelId}`);
 
     const mainVoiceId = context.voiceChannels.haupt_woischat.id;
 

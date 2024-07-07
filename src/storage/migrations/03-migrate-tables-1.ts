@@ -10,12 +10,8 @@ export async function up(db: Kysely<any>) {
         .addColumn("userId", "text", c => c.notNull().unique())
         .addColumn("month", "integer", c => c.notNull())
         .addColumn("day", "integer", c => c.notNull())
-        .addColumn("createdAt", "timestamp", c =>
-            c.notNull().defaultTo(sql`current_timestamp`),
-        )
-        .addColumn("updatedAt", "timestamp", c =>
-            c.notNull().defaultTo(sql`current_timestamp`),
-        )
+        .addColumn("createdAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
+        .addColumn("updatedAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
         .execute();
 
     await db
@@ -39,12 +35,8 @@ export async function up(db: Kysely<any>) {
         .addColumn("id", "integer", c => c.primaryKey().autoIncrement())
         .addColumn("inviterId", "text", c => c.notNull())
         .addColumn("invitedMemberId", "text", c => c.notNull().unique())
-        .addColumn("createdAt", "timestamp", c =>
-            c.notNull().defaultTo(sql`current_timestamp`),
-        )
-        .addColumn("updatedAt", "timestamp", c =>
-            c.notNull().defaultTo(sql`current_timestamp`),
-        )
+        .addColumn("createdAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
+        .addColumn("updatedAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
         .execute();
 
     await db
@@ -67,10 +59,7 @@ export async function up(db: Kysely<any>) {
     //#endregion
     //#region splidLinks
 
-    await db.schema
-        .alterTable("splidLinks")
-        .renameTo("old_splidLinks")
-        .execute();
+    await db.schema.alterTable("splidLinks").renameTo("old_splidLinks").execute();
     await db.schema
         .createTable("splidLinks")
         .addColumn("id", "integer", c => c.primaryKey().autoIncrement())
@@ -78,12 +67,8 @@ export async function up(db: Kysely<any>) {
         .addColumn("discordUserId", "text", c => c.notNull())
         .addColumn("externalSplidId", "text", c => c.notNull())
 
-        .addColumn("createdAt", "timestamp", c =>
-            c.notNull().defaultTo(sql`current_timestamp`),
-        )
-        .addColumn("updatedAt", "timestamp", c =>
-            c.notNull().defaultTo(sql`current_timestamp`),
-        )
+        .addColumn("createdAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
+        .addColumn("updatedAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
         .execute();
 
     await db.schema
@@ -101,23 +86,11 @@ export async function up(db: Kysely<any>) {
 
     await db
         .insertInto("splidLinks")
-        .columns([
-            "guildId",
-            "discordUserId",
-            "externalSplidId",
-            "createdAt",
-            "updatedAt",
-        ])
+        .columns(["guildId", "discordUserId", "externalSplidId", "createdAt", "updatedAt"])
         .expression(
             db
                 .selectFrom("old_splidLinks")
-                .select([
-                    "guildId",
-                    "discordUserId",
-                    "externalSplidId",
-                    "createdAt",
-                    "updatedAt",
-                ]),
+                .select(["guildId", "discordUserId", "externalSplidId", "createdAt", "updatedAt"]),
         )
         .execute();
 
@@ -126,10 +99,7 @@ export async function up(db: Kysely<any>) {
     //#endregion
     //#region splidGroups
 
-    await db.schema
-        .alterTable("splidGroups")
-        .renameTo("old_splidGroups")
-        .execute();
+    await db.schema.alterTable("splidGroups").renameTo("old_splidGroups").execute();
 
     await db.schema
         .createTable("splidGroups")
@@ -139,12 +109,8 @@ export async function up(db: Kysely<any>) {
         .addColumn("groupCode", "text", c => c.notNull())
         .addColumn("shortDescription", "text", c => c.notNull().unique())
         .addColumn("longDescription", "text", c => c.defaultTo(null))
-        .addColumn("createdAt", "timestamp", c =>
-            c.notNull().defaultTo(sql`current_timestamp`),
-        )
-        .addColumn("updatedAt", "timestamp", c =>
-            c.notNull().defaultTo(sql`current_timestamp`),
-        )
+        .addColumn("createdAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
+        .addColumn("updatedAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
         .execute();
 
     await db.schema
@@ -191,10 +157,7 @@ export async function up(db: Kysely<any>) {
     //#endregion
     //#region guildRageQuits
 
-    await db.schema
-        .alterTable("guildRageQuits")
-        .renameTo("old_guildRageQuits")
-        .execute();
+    await db.schema.alterTable("guildRageQuits").renameTo("old_guildRageQuits").execute();
 
     await db.schema
         .createTable("guildRageQuits")
@@ -202,12 +165,8 @@ export async function up(db: Kysely<any>) {
         .addColumn("guildId", "text", c => c.notNull())
         .addColumn("userId", "text", c => c.notNull())
         .addColumn("numRageQuits", "integer", c => c.notNull().defaultTo(1))
-        .addColumn("createdAt", "timestamp", c =>
-            c.notNull().defaultTo(sql`current_timestamp`),
-        )
-        .addColumn("updatedAt", "timestamp", c =>
-            c.notNull().defaultTo(sql`current_timestamp`),
-        )
+        .addColumn("createdAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
+        .addColumn("updatedAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
         .execute();
 
     await db.schema
@@ -219,23 +178,11 @@ export async function up(db: Kysely<any>) {
 
     await db
         .insertInto("guildRageQuits")
-        .columns([
-            "guildId",
-            "userId",
-            "numRageQuits",
-            "createdAt",
-            "updatedAt",
-        ])
+        .columns(["guildId", "userId", "numRageQuits", "createdAt", "updatedAt"])
         .expression(
             db
                 .selectFrom("old_guildRageQuits")
-                .select([
-                    "guildId",
-                    "userId",
-                    "numRageQuits",
-                    "createdAt",
-                    "updatedAt",
-                ]),
+                .select(["guildId", "userId", "numRageQuits", "createdAt", "updatedAt"]),
         )
         .execute();
 
@@ -252,31 +199,17 @@ export async function up(db: Kysely<any>) {
         .addColumn("userId", "text", c => c.notNull())
         .addColumn("size", "integer", c => c.notNull())
         .addColumn("diameter", "integer", c => c.notNull())
-        .addColumn("measuredAt", "timestamp", c =>
-            c.notNull().defaultTo(sql`current_timestamp`),
-        )
-        .addColumn("createdAt", "timestamp", c =>
-            c.notNull().defaultTo(sql`current_timestamp`),
-        )
-        .addColumn("updatedAt", "timestamp", c =>
-            c.notNull().defaultTo(sql`current_timestamp`),
-        )
+        .addColumn("measuredAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
+        .addColumn("createdAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
+        .addColumn("updatedAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
         .execute();
 
-    await db.schema
-        .createIndex("penis_measuredAt")
-        .on("penis")
-        .column("measuredAt desc")
-        .execute();
+    await db.schema.createIndex("penis_measuredAt").on("penis").column("measuredAt desc").execute();
 
     await db
         .insertInto("penis")
         .columns(["userId", "size", "diameter", "measuredAt"])
-        .expression(
-            db
-                .selectFrom("old_penis")
-                .select(["userId", "size", "diameter", "measuredAt"]),
-        )
+        .expression(db.selectFrom("old_penis").select(["userId", "size", "diameter", "measuredAt"]))
         .execute();
 
     await createUpdatedAtTrigger(db, "penis");
@@ -291,29 +224,17 @@ export async function up(db: Kysely<any>) {
         .addColumn("id", "integer", c => c.primaryKey().autoIncrement())
         .addColumn("userId", "text", c => c.notNull())
         .addColumn("size", "integer", c => c.notNull())
-        .addColumn("measuredAt", "timestamp", c =>
-            c.notNull().defaultTo(sql`current_timestamp`),
-        )
-        .addColumn("createdAt", "timestamp", c =>
-            c.notNull().defaultTo(sql`current_timestamp`),
-        )
-        .addColumn("updatedAt", "timestamp", c =>
-            c.notNull().defaultTo(sql`current_timestamp`),
-        )
+        .addColumn("measuredAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
+        .addColumn("createdAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
+        .addColumn("updatedAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
         .execute();
 
-    await db.schema
-        .createIndex("boobs_measuredAt")
-        .on("boobs")
-        .column("measuredAt desc")
-        .execute();
+    await db.schema.createIndex("boobs_measuredAt").on("boobs").column("measuredAt desc").execute();
 
     await db
         .insertInto("boobs")
         .columns(["userId", "size", "measuredAt"])
-        .expression(
-            db.selectFrom("old_boobs").select(["userId", "size", "measuredAt"]),
-        )
+        .expression(db.selectFrom("old_boobs").select(["userId", "size", "measuredAt"]))
         .execute();
 
     await createUpdatedAtTrigger(db, "boobs");
@@ -321,10 +242,7 @@ export async function up(db: Kysely<any>) {
     //#endregion
     //#region fadingMessages
 
-    await db.schema
-        .alterTable("fadingMessages")
-        .renameTo("old_fadingMessages")
-        .execute();
+    await db.schema.alterTable("fadingMessages").renameTo("old_fadingMessages").execute();
 
     await db.schema
         .createTable("fadingMessages")
@@ -334,12 +252,8 @@ export async function up(db: Kysely<any>) {
         .addColumn("messageId", "text", c => c.notNull())
         .addColumn("beginTime", "timestamp", c => c.notNull())
         .addColumn("endTime", "timestamp", c => c.notNull())
-        .addColumn("createdAt", "timestamp", c =>
-            c.notNull().defaultTo(sql`current_timestamp`),
-        )
-        .addColumn("updatedAt", "timestamp", c =>
-            c.notNull().defaultTo(sql`current_timestamp`),
-        )
+        .addColumn("createdAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
+        .addColumn("updatedAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
         .execute();
 
     await db.schema
@@ -354,13 +268,7 @@ export async function up(db: Kysely<any>) {
         .expression(
             db
                 .selectFrom("old_fadingMessages")
-                .select([
-                    "guildId",
-                    "channelId",
-                    "messageId",
-                    "beginTime",
-                    "endTime",
-                ]),
+                .select(["guildId", "channelId", "messageId", "beginTime", "endTime"]),
         )
         .execute();
 
@@ -369,10 +277,7 @@ export async function up(db: Kysely<any>) {
     //#endregion
     //#region woisActions
 
-    await db.schema
-        .alterTable("woisActions")
-        .renameTo("old_woisActions")
-        .execute();
+    await db.schema.alterTable("woisActions").renameTo("old_woisActions").execute();
 
     await db.schema
         .createTable("woisActions")
@@ -382,12 +287,8 @@ export async function up(db: Kysely<any>) {
         .addColumn("date", "timestamp", c => c.notNull())
         .addColumn("interestedUsers", "json", c => c.notNull().defaultTo("[]"))
         .addColumn("isWoisgangAction", "boolean", c => c.notNull())
-        .addColumn("createdAt", "timestamp", c =>
-            c.notNull().defaultTo(sql`current_timestamp`),
-        )
-        .addColumn("updatedAt", "timestamp", c =>
-            c.notNull().defaultTo(sql`current_timestamp`),
-        )
+        .addColumn("createdAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
+        .addColumn("updatedAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
         .execute();
 
     await db
@@ -430,41 +331,19 @@ export async function up(db: Kysely<any>) {
         .addColumn("reason", "text")
         .addColumn("bannedUntil", "timestamp")
         .addColumn("isSelfBan", "boolean", c => c.notNull())
-        .addColumn("createdAt", "timestamp", c =>
-            c.notNull().defaultTo(sql`current_timestamp`),
-        )
-        .addColumn("updatedAt", "timestamp", c =>
-            c.notNull().defaultTo(sql`current_timestamp`),
-        )
+        .addColumn("createdAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
+        .addColumn("updatedAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
         .execute();
 
-    await db.schema
-        .createIndex("bans_bannedUntil")
-        .on("bans")
-        .column("bannedUntil asc")
-        .execute();
+    await db.schema.createIndex("bans_bannedUntil").on("bans").column("bannedUntil asc").execute();
 
     await db
         .insertInto("bans")
-        .columns([
-            "userId",
-            "reason",
-            "bannedUntil",
-            "isSelfBan",
-            "createdAt",
-            "updatedAt",
-        ])
+        .columns(["userId", "reason", "bannedUntil", "isSelfBan", "createdAt", "updatedAt"])
         .expression(
             db
                 .selectFrom("old_bans")
-                .select([
-                    "userId",
-                    "reason",
-                    "bannedUntil",
-                    "isSelfBan",
-                    "createdAt",
-                    "updatedAt",
-                ]),
+                .select(["userId", "reason", "bannedUntil", "isSelfBan", "createdAt", "updatedAt"]),
         )
         .execute();
 
@@ -484,12 +363,8 @@ export async function up(db: Kysely<any>) {
         .addColumn("userId", "text", c => c.notNull())
         .addColumn("remindAt", "timestamp", c => c.notNull())
         .addColumn("reminderNote", "text")
-        .addColumn("createdAt", "timestamp", c =>
-            c.notNull().defaultTo(sql`current_timestamp`),
-        )
-        .addColumn("updatedAt", "timestamp", c =>
-            c.notNull().defaultTo(sql`current_timestamp`),
-        )
+        .addColumn("createdAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
+        .addColumn("updatedAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
         .execute();
 
     await db.schema

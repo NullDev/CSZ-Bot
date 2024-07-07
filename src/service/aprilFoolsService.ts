@@ -9,24 +9,15 @@ import log from "@log";
 // Store old usernames. Hope the bot doesn't crash lol
 const tmpNicknameStore: Record<Snowflake, string> = {};
 
-const renameMember = (
-    member: GuildMember,
-    name: string | null,
-): Promise<GuildMember> =>
+const renameMember = (member: GuildMember, name: string | null): Promise<GuildMember> =>
     member.setNickname(name, "April Fools").catch(err => {
-        throw new Error(
-            `Could not rename Member: ${member.id} to ${name} because of ${err}`,
-        );
+        throw new Error(`Could not rename Member: ${member.id} to ${name} because of ${err}`);
     });
 
-const resetAll = async (
-    context: BotContext,
-): Promise<PromiseSettledResult<GuildMember>[]> => {
+const resetAll = async (context: BotContext): Promise<PromiseSettledResult<GuildMember>[]> => {
     const allMembers = await context.guild.members.fetch();
     return Promise.allSettled(
-        allMembers.map(member =>
-            renameMember(member, tmpNicknameStore[member.id] ?? null),
-        ),
+        allMembers.map(member => renameMember(member, tmpNicknameStore[member.id] ?? null)),
     );
 };
 
@@ -42,15 +33,11 @@ const createShuffledNicknames = async (
     const averageBoobSize = await boob.getAverageBoobSizes();
 
     const biasFnId = (id: Snowflake) =>
-        Math.random() * (averageCockSize[id] ?? 0.01) +
-        (averageBoobSize[id] ?? 0.01);
+        Math.random() * (averageCockSize[id] ?? 0.01) + (averageBoobSize[id] ?? 0.01);
 
     const biasFnMember = (member: GuildMember) => biasFnId(member.id);
     const shuffledIds = shuffleArray(Array.from(members.keys()), biasFnId);
-    const shuffledNames = shuffleArray(
-        Array.from(members.values()),
-        biasFnMember,
-    );
+    const shuffledNames = shuffleArray(Array.from(members.values()), biasFnMember);
 
     if (shuffledIds.length !== shuffledNames.length) {
         throw new Error("Something went terribly wrong");
@@ -70,9 +57,7 @@ const shuffleAllNicknames = async (
     const shuffledNicknames = await createShuffledNicknames(allMembers);
 
     return Promise.allSettled(
-        allMembers.map(member =>
-            renameMember(member, shuffledNicknames[member.id]),
-        ),
+        allMembers.map(member => renameMember(member, shuffledNicknames[member.id])),
     );
 };
 
@@ -80,13 +65,9 @@ const logRenameResult = (result: PromiseSettledResult<GuildMember>[]) => {
     const fulfilled = result.filter(
         p => p.status === "fulfilled",
     ) as PromiseFulfilledResult<GuildMember>[];
-    const rejected = result.filter(
-        p => p.status === "rejected",
-    ) as PromiseRejectedResult[];
+    const rejected = result.filter(p => p.status === "rejected") as PromiseRejectedResult[];
 
-    log.info(
-        `${fulfilled.length} users where renamed. ${rejected.length} rename ops failed`,
-    );
+    log.info(`${fulfilled.length} users where renamed. ${rejected.length} rename ops failed`);
     for (const rejection of rejected) {
         log.error(`Rename failed because of: ${rejection.reason}`);
     }

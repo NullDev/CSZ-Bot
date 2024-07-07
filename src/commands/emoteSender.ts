@@ -24,18 +24,14 @@ export default class EmoteSenderCommand implements SpecialCommand {
 
     matches(message: Message<boolean>): boolean {
         const trimmedContent = this.#trimMessage(message);
-        return Object.keys(this.emotes).some(
-            emote => emote === trimmedContent.toLowerCase(),
-        );
+        return Object.keys(this.emotes).some(emote => emote === trimmedContent.toLowerCase());
     }
 
     async handleSpecialMessage(message: Message, context: BotContext) {
         const trimmedContent = this.#trimMessage(message);
         const pickedEmotes: string[] | undefined = this.emotes[trimmedContent];
         if (pickedEmotes === undefined) {
-            throw new Error(
-                `Could not find emote collection for content: '${trimmedContent}'`,
-            );
+            throw new Error(`Could not find emote collection for content: '${trimmedContent}'`);
         }
 
         const emotes = pickedEmotes.map(emote =>
@@ -44,16 +40,12 @@ export default class EmoteSenderCommand implements SpecialCommand {
 
         if (emotes.some(e => e === undefined)) {
             // Continue, it might not be crucial if only one emote is missing
-            log.warn(
-                `Some emotes for content '${trimmedContent}' could not be resolved`,
-            );
+            log.warn(`Some emotes for content '${trimmedContent}' could not be resolved`);
         }
         const emoteText = emotes.filter(emote => emote !== undefined).join("");
         if (emoteText.length === 0) {
             // But if all are missing that doesn't make any sense
-            throw new Error(
-                `No emotes could be resolved for content '${trimmedContent}'`,
-            );
+            throw new Error(`No emotes could be resolved for content '${trimmedContent}'`);
         }
 
         await message.channel.send(emoteText);

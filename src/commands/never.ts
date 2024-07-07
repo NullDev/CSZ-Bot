@@ -45,10 +45,7 @@ async function getPrompt(userPrompt: Prompt | null): Promise<NeverPrompt> {
 }
 
 function buildEmbed(prompt: NeverPrompt, author: GuildMember) {
-    const emoji =
-        prompt.level !== undefined
-            ? QUESTION_LEVEL_EMOJI_MAP[prompt.level]
-            : "👀";
+    const emoji = prompt.level !== undefined ? QUESTION_LEVEL_EMOJI_MAP[prompt.level] : "👀";
     return new EmbedBuilder()
         .setTitle(prompt.prompt)
         .setColor(0x2ecc71)
@@ -61,9 +58,7 @@ function buildEmbed(prompt: NeverPrompt, author: GuildMember) {
         });
 }
 
-export default class NeverCommand
-    implements ApplicationCommand, MessageCommand
-{
+export default class NeverCommand implements ApplicationCommand, MessageCommand {
     name = "never";
     description = 'Stellt eine "ich hab noch nie" Frage';
     applicationCommand = new SlashCommandBuilder()
@@ -102,9 +97,7 @@ export default class NeverCommand
     async handleMessage(message: ProcessableMessage, context: BotContext) {
         const { channel } = message;
         const author = message.guild?.members.resolve(message.author);
-        const customInput = message.content.slice(
-            `${context.prefix.command}mock `.length,
-        );
+        const customInput = message.content.slice(`${context.prefix.command}mock `.length);
 
         if (!author) {
             throw new Error("Couldn't resolve guild member");

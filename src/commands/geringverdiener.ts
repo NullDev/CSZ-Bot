@@ -21,20 +21,14 @@ import type { ProcessableMessage } from "../service/commandService.js";
  *
  * Limitation: this does only work for emojis from this server.
  */
-const geringverdiener = (
-    emojiManager: GuildEmojiManager,
-    str: string,
-): string =>
-    str.replace(
-        /:([\w~]+):(?!\d+>)/gi,
-        (_match, emojiName, _offset, wholeString) => {
-            const emote = emojiManager.cache.find(e => e.name === emojiName);
-            if (emote) {
-                return `${emote}`;
-            }
-            return wholeString;
-        },
-    );
+const geringverdiener = (emojiManager: GuildEmojiManager, str: string): string =>
+    str.replace(/:([\w~]+):(?!\d+>)/gi, (_match, emojiName, _offset, wholeString) => {
+        const emote = emojiManager.cache.find(e => e.name === emojiName);
+        if (emote) {
+            return `${emote}`;
+        }
+        return wholeString;
+    });
 
 /**
  * build geringverdienered embed
@@ -58,9 +52,7 @@ const buildGeringverdiener = (
         });
 };
 
-export default class GeringverdienerCommand
-    implements MessageCommand, ApplicationCommand
-{
+export default class GeringverdienerCommand implements MessageCommand, ApplicationCommand {
     name = "geringverdiener";
     description =
         "Erlaubt das nutzen von animierten Emojis dieses Servers für Geringverdiener ohne Discord Nitro.";
@@ -90,11 +82,7 @@ export default class GeringverdienerCommand
             throw new Error("Couldn't resolve guild member");
         }
 
-        const geringverdieneredEmbed = buildGeringverdiener(
-            command.guild.emojis,
-            author,
-            text,
-        );
+        const geringverdieneredEmbed = buildGeringverdiener(command.guild.emojis, author, text);
         await command.reply({
             embeds: [geringverdieneredEmbed],
         });
@@ -106,9 +94,7 @@ export default class GeringverdienerCommand
 
         const refId = message.reference?.messageId;
         const isReply = refId !== undefined;
-        let content = message.content.slice(
-            `${context.prefix.command}${this.name} `.length,
-        );
+        let content = message.content.slice(`${context.prefix.command}${this.name} `.length);
         const hasContent = !!content && content.trim().length > 0;
 
         if (!author) {
@@ -116,9 +102,7 @@ export default class GeringverdienerCommand
         }
 
         if (!isReply && !hasContent) {
-            await message.channel.send(
-                "Brudi da ist nix, was ich geringverdieneren kann",
-            );
+            await message.channel.send("Brudi da ist nix, was ich geringverdieneren kann");
             return;
         }
 

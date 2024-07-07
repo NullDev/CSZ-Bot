@@ -6,9 +6,7 @@ import type { ProcessableMessage } from "../service/commandService.js";
 
 import * as erleuchtungService from "../service/erleuchtungService.js";
 
-export default class ErleuchtungCommand
-    implements MessageCommand, ApplicationCommand
-{
+export default class ErleuchtungCommand implements MessageCommand, ApplicationCommand {
     name = "erleuchtung";
     description = "Gönnt dir eine zufällige Erleuchtung.";
     applicationCommand = new SlashCommandBuilder()
@@ -28,11 +26,7 @@ export default class ErleuchtungCommand
     }
 
     async handleInteraction(command: CommandInteraction<CacheType>) {
-        if (
-            !command.channel ||
-            !command.channel.isTextBased() ||
-            !command.guild
-        ) {
+        if (!command.channel || !command.channel.isTextBased() || !command.guild) {
             throw new Error("Command was invoked without a channel in context");
         }
 

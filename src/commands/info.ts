@@ -21,12 +21,9 @@ const fetchContributions = async (): Promise<Array<GitHubContributor>> => {
 };
 
 const fetchLanguages = async (): Promise<Array<string>> => {
-    const res = await fetch(
-        "https://api.github.com/repos/NullDev/CSZ-Bot/languages",
-        {
-            headers: { Accept: "application/vnd.github.v3+json" },
-        },
-    );
+    const res = await fetch("https://api.github.com/repos/NullDev/CSZ-Bot/languages", {
+        headers: { Accept: "application/vnd.github.v3+json" },
+    });
     return Object.keys((await res.json()) as object);
 };
 
@@ -89,10 +86,7 @@ const getServerInfo = (guild: Guild): string => {
     );
 };
 
-const buildEmbed = async (
-    guild: Guild | null,
-    avatarUrl?: string,
-): Promise<APIEmbed> => {
+const buildEmbed = async (guild: Guild | null, avatarUrl?: string): Promise<APIEmbed> => {
     const now = new Date();
     const embed = {
         color: 0x1ea188,
@@ -158,10 +152,7 @@ export default class InfoCommand implements ApplicationCommand, MessageCommand {
      * @returns info reply
      */
     async handleInteraction(command: CommandInteraction, context: BotContext) {
-        const embed = await buildEmbed(
-            command.guild,
-            context.client.user.avatarURL() ?? undefined,
-        );
+        const embed = await buildEmbed(command.guild, context.client.user.avatarURL() ?? undefined);
         await command.reply({
             embeds: [embed],
             ephemeral: true,
@@ -189,10 +180,7 @@ export default class InfoCommand implements ApplicationCommand, MessageCommand {
      * @returns reply and reaction
      */
     async handleMessage(message: ProcessableMessage, context: BotContext) {
-        const embed = await buildEmbed(
-            message.guild,
-            context.client.user.avatarURL() ?? undefined,
-        );
+        const embed = await buildEmbed(message.guild, context.client.user.avatarURL() ?? undefined);
 
         const reply = message.reply({
             embeds: [embed],

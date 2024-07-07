@@ -14,9 +14,7 @@ export function insertMeasurement(
     measuredAt: Date = new Date(),
     ctx = db(),
 ): Promise<Boob> {
-    log.debug(
-        `Saving Boob Measurement for user ${user.id} with size ${size} from ${measuredAt}`,
-    );
+    log.debug(`Saving Boob Measurement for user ${user.id} with size ${size} from ${measuredAt}`);
     return ctx
         .insertInto("boobs")
         .values({
@@ -27,10 +25,7 @@ export function insertMeasurement(
         .executeTakeFirstOrThrow();
 }
 
-export function fetchRecentMeasurement(
-    user: User,
-    ctx = db(),
-): Promise<Boob | undefined> {
+export function fetchRecentMeasurement(user: User, ctx = db()): Promise<Boob | undefined> {
     const now = Temporal.Now.instant();
     const { startOfToday, startOfTomorrow } = getStartAndEndDay(now);
 
@@ -43,9 +38,7 @@ export function fetchRecentMeasurement(
         .executeTakeFirst();
 }
 
-export async function longestRecentMeasurement(
-    ctx = db(),
-): Promise<number | undefined> {
+export async function longestRecentMeasurement(ctx = db()): Promise<number | undefined> {
     const now = Temporal.Now.instant();
     const { startOfToday, startOfTomorrow } = getStartAndEndDay(now);
     const res = await ctx

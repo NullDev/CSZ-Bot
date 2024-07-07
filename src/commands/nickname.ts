@@ -135,16 +135,12 @@ export default class NicknameCommand implements ApplicationCommand {
             switch (option) {
                 case "deleteall": {
                     if (!isTrusted && !isSameUser) {
-                        await cmd.reply(
-                            "Hurensohn. Der Command ist nix für dich.",
-                        );
+                        await cmd.reply("Hurensohn. Der Command ist nix für dich.");
                         return;
                     }
 
                     if (!member) {
-                        await cmd.reply(
-                            "Hurensohn. Der Brudi ist nicht auf dem Server.",
-                        );
+                        await cmd.reply("Hurensohn. Der Brudi ist nicht auf dem Server.");
                         return;
                     }
 
@@ -162,9 +158,7 @@ export default class NicknameCommand implements ApplicationCommand {
 
                 case "add": {
                     if (!isTrusted) {
-                        await cmd.reply(
-                            "Hurensohn. Der Command ist nix für dich.",
-                        );
+                        await cmd.reply("Hurensohn. Der Command ist nix für dich.");
                         return;
                     }
 
@@ -176,19 +170,12 @@ export default class NicknameCommand implements ApplicationCommand {
                         return;
                     }
 
-                    return NicknameCommand.#createNickNameVote(
-                        command,
-                        user,
-                        nickname,
-                        isTrusted,
-                    );
+                    return NicknameCommand.#createNickNameVote(command, user, nickname, isTrusted);
                 }
 
                 case "delete": {
                     if (!isTrusted && !isSameUser) {
-                        await cmd.reply(
-                            "Hurensohn. Der Command ist nix für dich.",
-                        );
+                        await cmd.reply("Hurensohn. Der Command ist nix für dich.");
                         return;
                     }
 
@@ -199,9 +186,7 @@ export default class NicknameCommand implements ApplicationCommand {
 
                     const member = guild.members.cache.get(user.id);
                     if (!member) {
-                        await cmd.reply(
-                            "Hurensohn. Der Brudi ist nicht auf dem Server.",
-                        );
+                        await cmd.reply("Hurensohn. Der Brudi ist nicht auf dem Server.");
                         return;
                     }
 
@@ -209,9 +194,7 @@ export default class NicknameCommand implements ApplicationCommand {
                         await this.updateNickName(member, null);
                     }
 
-                    await cmd.reply(
-                        `Ok Brudi. Hab für ${user} ${nickname} gelöscht`,
-                    );
+                    await cmd.reply(`Ok Brudi. Hab für ${user} ${nickname} gelöscht`);
                     return;
                 }
                 default: {
@@ -313,10 +296,7 @@ export class NicknameButtonHandler implements UserInteraction {
     readonly name = "NicknameButtonHandler";
     readonly threshold = 7;
 
-    async handleInteraction(
-        interaction: MessageComponentInteraction,
-        context: BotContext,
-    ) {
+    async handleInteraction(interaction: MessageComponentInteraction, context: BotContext) {
         const suggestion = ongoingSuggestions[interaction.message.id];
 
         if (suggestion === undefined) {
@@ -329,9 +309,7 @@ export class NicknameButtonHandler implements UserInteraction {
         }
 
         const userVoteMap = getUserVoteMap(interaction.message.id);
-        const member = interaction.guild?.members.cache.get(
-            interaction.user.id,
-        );
+        const member = interaction.guild?.members.cache.get(interaction.user.id);
 
         if (member === undefined) {
             await interaction.update({
@@ -366,10 +344,7 @@ export class NicknameButtonHandler implements UserInteraction {
 
         if (this.#hasEnoughVotes(votes, "YES")) {
             try {
-                await nickName.insertNickname(
-                    suggestion.nickNameUserId,
-                    suggestion.nickName,
-                );
+                await nickName.insertNickname(suggestion.nickNameUserId, suggestion.nickName);
             } catch (error) {
                 await interaction.update(
                     `Würdet ihr Hurensöhne aufpassen, wüsstest ihr, dass für <@${suggestion.nickNameUserId}> \`${suggestion.nickName}\` bereits existiert.`,
@@ -391,9 +366,7 @@ export class NicknameButtonHandler implements UserInteraction {
     }
 
     #hasEnoughVotes(votes: UserVote[], voteType: Vote) {
-        const mappedVotes = votes
-            .filter(vote => vote.vote === voteType)
-            .map(getWeightOfUserVote);
+        const mappedVotes = votes.filter(vote => vote.vote === voteType).map(getWeightOfUserVote);
         return Math.sumPrecise(mappedVotes) >= this.threshold;
     }
 }

@@ -31,8 +31,7 @@ export default class FaulenzerPingCommand implements ApplicationCommand {
 
         if (!command.member || !context.roleGuard.isTrusted(command.member)) {
             await command.reply({
-                content:
-                    "Du bist nicht berechtigt, diesen Command zu benutzen.",
+                content: "Du bist nicht berechtigt, diesen Command zu benutzen.",
                 ephemeral: true,
             });
             return;
@@ -75,9 +74,7 @@ export default class FaulenzerPingCommand implements ApplicationCommand {
 
         const { allowedRoleIds, maxNumberOfPings, minRequiredReactions } =
             context.commandConfig.faulenzerPing;
-        const roleIds = [...confirmation.roles.keys()].filter(roleId =>
-            allowedRoleIds.has(roleId),
-        );
+        const roleIds = [...confirmation.roles.keys()].filter(roleId => allowedRoleIds.has(roleId));
         if (roleIds.length === 0) {
             await response.edit({
                 content: "Du hast keine erlaubten Rollen angegeben.",
@@ -104,9 +101,7 @@ export default class FaulenzerPingCommand implements ApplicationCommand {
             }
         }
 
-        const usersNotToNotify = await this.getUsersThatReactedToMessage(
-            command.targetMessage,
-        );
+        const usersNotToNotify = await this.getUsersThatReactedToMessage(command.targetMessage);
         if (usersNotToNotify.size < minRequiredReactions) {
             await response.edit({
                 content: `Es gibt nur ${usersNotToNotify.size} Reaktionen, das ist zu wenig.`,
@@ -156,9 +151,7 @@ export default class FaulenzerPingCommand implements ApplicationCommand {
     ) {
         const userChunks = chunkArray(usersToNotify, 10);
         for (const users of userChunks) {
-            const usersToNotifyMentions = users
-                .map(userId => `<@${userId}>`)
-                .join(" ");
+            const usersToNotifyMentions = users.map(userId => `<@${userId}>`).join(" ");
 
             await originalMessage.reply({
                 content: `${message} ${usersToNotifyMentions}`,

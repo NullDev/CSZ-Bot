@@ -28,9 +28,7 @@ export default class Vote2Command implements ApplicationCommand {
         .setDescription(this.description)
         .addStringOption(
             new SlashCommandStringOption()
-                .setDescription(
-                    "Die Frage oder worüber abgestimmt werden soll.",
-                )
+                .setDescription("Die Frage oder worüber abgestimmt werden soll.")
                 .setRequired(true)
                 .setName("question")
                 .setNameLocalizations({
@@ -126,12 +124,7 @@ export default class Vote2Command implements ApplicationCommand {
 
         const response = await command.reply({
             embeds: [embed],
-            components: [
-                new ActionRowBuilder<ButtonBuilder>().addComponents(
-                    yesButton,
-                    noButton,
-                ),
-            ],
+            components: [new ActionRowBuilder<ButtonBuilder>().addComponents(yesButton, noButton)],
         });
 
         const votes = new Map<Snowflake, boolean>();

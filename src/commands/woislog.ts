@@ -15,9 +15,7 @@ export default class WoisLog implements ApplicationCommand {
         const events = voiceStateService.getLatestEvents();
 
         const maxAge = Date.now() - 2 * 60 * 1000;
-        const latestEvents = events.filter(
-            event => event.createdAt.getTime() > maxAge,
-        );
+        const latestEvents = events.filter(event => event.createdAt.getTime() > maxAge);
 
         if (latestEvents.length === 0) {
             await command.reply({

@@ -24,15 +24,12 @@ import log from "@log";
 
 const player = createAudioPlayer();
 
-async function connectToHauptwois(
-    woisChannel: VoiceChannel,
-): Promise<VoiceConnection> {
+async function connectToHauptwois(woisChannel: VoiceChannel): Promise<VoiceConnection> {
     try {
         const connection = joinVoiceChannel({
             channelId: woisChannel.id,
             guildId: woisChannel.guild.id,
-            adapterCreator: woisChannel.guild
-                .voiceAdapterCreator as DiscordGatewayAdapterCreator,
+            adapterCreator: woisChannel.guild.voiceAdapterCreator as DiscordGatewayAdapterCreator,
         });
 
         await entersState(connection, VoiceConnectionStatus.Ready, 30_000);
@@ -43,10 +40,7 @@ async function connectToHauptwois(
     }
 }
 
-async function playSaufen(
-    file: string,
-    duration: number,
-): Promise<AudioPlayer> {
+async function playSaufen(file: string, duration: number): Promise<AudioPlayer> {
     const resource = createAudioResource(file, {
         inputType: StreamType.Arbitrary,
     });
@@ -55,10 +49,7 @@ async function playSaufen(
     return entersState(player, AudioPlayerStatus.Playing, duration);
 }
 
-export async function connectAndPlaySaufen(
-    context: BotContext,
-    filename?: string,
-) {
+export async function connectAndPlaySaufen(context: BotContext, filename?: string) {
     log.debug("Entered `connectAndPlaySaufen`");
 
     const wois = context.voiceChannels.haupt_woischat;

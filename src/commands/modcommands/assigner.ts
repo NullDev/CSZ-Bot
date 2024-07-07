@@ -12,8 +12,7 @@ export const run: CommandFunction = async (message, args) => {
         .filter(element => String(element.name).toLowerCase() !== "@everyone")
         .map(element => element.name);
 
-    if (!args.some(e => roleNames.includes(e)))
-        return "Keine dieser Rollen existiert!";
+    if (!args.some(e => roleNames.includes(e))) return "Keine dieser Rollen existiert!";
 
     await message.delete().catch(log.error);
 

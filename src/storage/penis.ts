@@ -27,10 +27,7 @@ export function insertMeasurement(
         .executeTakeFirstOrThrow();
 }
 
-export function fetchRecentMeasurement(
-    user: User,
-    ctx = db(),
-): Promise<Penis | undefined> {
+export function fetchRecentMeasurement(user: User, ctx = db()): Promise<Penis | undefined> {
     const now = Temporal.Now.instant();
     const { startOfToday, startOfTomorrow } = getStartAndEndDay(now);
 
@@ -43,9 +40,7 @@ export function fetchRecentMeasurement(
         .executeTakeFirst();
 }
 
-export async function longestRecentMeasurement(
-    ctx = db(),
-): Promise<number | undefined> {
+export async function longestRecentMeasurement(ctx = db()): Promise<number | undefined> {
     const now = Temporal.Now.instant();
     const { startOfToday, startOfTomorrow } = getStartAndEndDay(now);
 
@@ -58,9 +53,7 @@ export async function longestRecentMeasurement(
     return res?.maxSize ?? undefined;
 }
 
-export async function getAveragePenisSizes(
-    ctx = db(),
-): Promise<Record<Snowflake, number>> {
+export async function getAveragePenisSizes(ctx = db()): Promise<Record<Snowflake, number>> {
     const result = await ctx
         .selectFrom("penis")
         .select(({ eb }) => eb.fn.avg<number>("size").as("avgSize"))

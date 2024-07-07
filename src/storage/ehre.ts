@@ -5,10 +5,7 @@ import type { EhrePoints } from "./db/model.js";
 import db from "@db";
 import log from "@log";
 
-export async function hasVoted(
-    userId: Snowflake,
-    ctx = db(),
-): Promise<boolean> {
+export async function hasVoted(userId: Snowflake, ctx = db()): Promise<boolean> {
     const { votes } = await ctx
         .selectFrom("ehreVotes")
         .where("userId", "=", userId)
@@ -44,15 +41,8 @@ export async function addPoints(userId: Snowflake, points: number, ctx = db()) {
         .executeTakeFirstOrThrow();
 }
 
-export function findPoints(
-    userId: Snowflake,
-    ctx = db(),
-): Promise<EhrePoints | undefined> {
-    return ctx
-        .selectFrom("ehrePoints")
-        .where("userId", "=", userId)
-        .selectAll()
-        .executeTakeFirst();
+export function findPoints(userId: Snowflake, ctx = db()): Promise<EhrePoints | undefined> {
+    return ctx.selectFrom("ehrePoints").where("userId", "=", userId).selectAll().executeTakeFirst();
 }
 
 export async function runDeflation(ctx = db()) {

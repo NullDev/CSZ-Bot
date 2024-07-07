@@ -147,12 +147,9 @@ export default class BoobCommand implements MessageCommand {
         const mention = message.mentions.users.first();
         const userToMeasure = mention !== undefined ? mention : author;
 
-        log.debug(
-            `${author.id} wants to measure boob of user ${userToMeasure.id}`,
-        );
+        log.debug(`${author.id} wants to measure boob of user ${userToMeasure.id}`);
 
-        const recentMeasurement =
-            await boob.fetchRecentMeasurement(userToMeasure);
+        const recentMeasurement = await boob.fetchRecentMeasurement(userToMeasure);
 
         if (recentMeasurement === undefined) {
             log.debug(
@@ -162,9 +159,7 @@ export default class BoobCommand implements MessageCommand {
             const size = Math.floor(Math.random() * Object.keys(boobas).length);
 
             if (await isNewBiggestBoobs(size)) {
-                log.debug(
-                    `${userToMeasure} has the new biggest boobs with size ${size}`,
-                );
+                log.debug(`${userToMeasure} has the new biggest boobs with size ${size}`);
             }
 
             await Promise.all([

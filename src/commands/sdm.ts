@@ -18,9 +18,7 @@ const createSecureDecisionMessage = (
     author: GuildMember,
     options: string[] = [],
 ) => {
-    const formattedQuestion = question.endsWith("?")
-        ? question
-        : `${question}?`;
+    const formattedQuestion = question.endsWith("?") ? question : `${question}?`;
 
     const embed = new EmbedBuilder()
         .setTitle(formattedQuestion)
@@ -135,9 +133,7 @@ export default class SdmCommand implements MessageCommand, ApplicationCommand {
 
         let question = args.join(" ").replace(/\s\s+/g, " ");
         if (isReply && !args.length) {
-            question = (
-                await message.channel.messages.fetch(replyRef)
-            ).content.trim();
+            question = (await message.channel.messages.fetch(replyRef)).content.trim();
         }
 
         const options = question
@@ -151,11 +147,7 @@ export default class SdmCommand implements MessageCommand, ApplicationCommand {
                 type: "disjunction",
             });
             question = listFormatter.format(options);
-            const msg = createSecureDecisionMessage(
-                question,
-                message.member,
-                options,
-            );
+            const msg = createSecureDecisionMessage(question, message.member, options);
             await message.reply(msg);
             // Don't delete as it would trigger the messageDeleteHandler
             // await message.delete();
@@ -192,9 +184,7 @@ export default class SdmCommand implements MessageCommand, ApplicationCommand {
             const o4 = command.options.getString("o4", false);
             const o5 = command.options.getString("o5", false);
 
-            const options = [o1, o2, o3, o4, o5].filter(
-                o => o !== null,
-            ) as string[];
+            const options = [o1, o2, o3, o4, o5].filter(o => o !== null) as string[];
 
             const msg = createSecureDecisionMessage(question, member, options);
             await command.reply(msg);

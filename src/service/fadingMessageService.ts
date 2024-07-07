@@ -14,17 +14,11 @@ export async function handleFadingMessages(context: BotContext) {
         toRemove.push(fadingMessage.id);
 
         try {
-            const guild = await context.client.guilds.fetch(
-                fadingMessage.guildId,
-            );
+            const guild = await context.client.guilds.fetch(fadingMessage.guildId);
 
-            const channel = guild.channels.cache.get(
-                fadingMessage.channelId,
-            ) as TextChannel;
+            const channel = guild.channels.cache.get(fadingMessage.channelId) as TextChannel;
 
-            const message = await channel.messages.fetch(
-                fadingMessage.messageId,
-            );
+            const message = await channel.messages.fetch(fadingMessage.messageId);
 
             await message.delete();
         } catch (error: unknown) {

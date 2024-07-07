@@ -73,9 +73,7 @@ export default class MockCommand implements MessageCommand, ApplicationCommand {
 
         const messageReference = message.reference?.messageId;
         const isReply = messageReference !== undefined;
-        let content = message.content.slice(
-            `${context.prefix.command}${this.name} `.length,
-        );
+        let content = message.content.slice(`${context.prefix.command}${this.name} `.length);
         const hasContent = !!content && content.trim().length > 0;
 
         if (!author) {
@@ -89,8 +87,7 @@ export default class MockCommand implements MessageCommand, ApplicationCommand {
 
         let replyMessage: Message<boolean> | null = null;
         if (isReply) {
-            replyMessage =
-                await message.channel.messages.fetch(messageReference);
+            replyMessage = await message.channel.messages.fetch(messageReference);
             if (!hasContent) {
                 content = replyMessage.content;
             }

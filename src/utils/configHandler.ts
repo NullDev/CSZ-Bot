@@ -33,11 +33,9 @@ export const getConfig = () => {
     }
 };
 
-export const databasePath =
-    process.env.DATABASE_PATH ?? path.resolve("storage.db");
+export const databasePath = process.env.DATABASE_PATH ?? path.resolve("storage.db");
 
-export const rapidApiInstagramApiKey =
-    process.env.RAPID_API_INSTAGRAM_API_KEY || undefined; // TODO: Move to context
+export const rapidApiInstagramApiKey = process.env.RAPID_API_INSTAGRAM_API_KEY || undefined; // TODO: Move to context
 
 export const args = parseArgs({
     options: {

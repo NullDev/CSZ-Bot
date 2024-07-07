@@ -4,8 +4,7 @@ import type { SpecialCommand } from "./command.js";
 import * as instagramService from "../service/instagramService.js";
 
 const instagramOptions = {
-    uriPattern:
-        /(?<uri>https?:\/\/(www\.)?instagram\.com\/(?:reel|tv|p)\/.*)\/.*/i,
+    uriPattern: /(?<uri>https?:\/\/(www\.)?instagram\.com\/(?:reel|tv|p)\/.*)\/.*/i,
     headers: {
         "User-Agent":
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.5005.124 Safari/537.36 Edg/102.0.1245.44",
@@ -41,9 +40,7 @@ export default class InstagramLink implements SpecialCommand {
 
         const result = await instagramService.downloadInstagramContent(postUri);
         if (!result.success) {
-            const failureReaction = message.guild?.emojis.cache.find(
-                e => e.name === "sadge",
-            );
+            const failureReaction = message.guild?.emojis.cache.find(e => e.name === "sadge");
             if (failureReaction) {
                 await message.react(failureReaction);
             }

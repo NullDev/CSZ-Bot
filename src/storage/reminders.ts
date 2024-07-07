@@ -9,10 +9,7 @@ export async function removeReminder(reminderId: Reminder["id"], ctx = db()) {
     await ctx.deleteFrom("reminders").where("id", "=", reminderId).execute();
 }
 
-export function getCurrentReminders(
-    now = new Date(),
-    ctx = db(),
-): Promise<Reminder[]> {
+export function getCurrentReminders(now = new Date(), ctx = db()): Promise<Reminder[]> {
     return ctx
         .selectFrom("reminders")
         .where("remindAt", "<=", now.toISOString())
@@ -53,9 +50,7 @@ export async function insertStaticReminder(
     reminderNote: string | null = null,
     ctx = db(),
 ) {
-    log.debug(
-        `Saving Reminder Measurement for user ${user.id} for ${remindAt}`,
-    );
+    log.debug(`Saving Reminder Measurement for user ${user.id} for ${remindAt}`);
 
     await ctx
         .insertInto("reminders")

@@ -4,10 +4,7 @@ import type { BotContext } from "../context.js";
 import { rerollNicknames } from "../service/nickNameRollService.js";
 import { connectAndPlaySaufen } from "./voiceHandler.js";
 import { reminderHandler } from "../commands/erinnerung.js";
-import {
-    endAprilFools,
-    startAprilFools,
-} from "../service/aprilFoolsService.js";
+import { endAprilFools, startAprilFools } from "../service/aprilFoolsService.js";
 import { woisVoteScheduler } from "../commands/woisvote.js";
 import { publishAocLeaderBoard } from "../commands/aoc.js";
 import { rotate } from "../helper/bannerCarusel.js";

@@ -23,44 +23,26 @@ export interface CommandBase {
 export interface UserInteraction {
     readonly ids: string[];
     readonly name: string;
-    handleInteraction(
-        command: MessageComponentInteraction,
-        context: BotContext,
-    ): Promise<void>;
+    handleInteraction(command: MessageComponentInteraction, context: BotContext): Promise<void>;
 }
 
 // For ApplicationCommands we require a SlashCommandBuilder object to create the command and a handler method
 export interface ApplicationCommand extends CommandBase {
-    readonly applicationCommand: Pick<
-        SlashCommandBuilder | ContextMenuCommandBuilder,
-        "toJSON"
-    >;
-    handleInteraction(
-        command: CommandInteraction,
-        context: BotContext,
-    ): Promise<void>;
-    autocomplete?(
-        interaction: AutocompleteInteraction,
-        context: BotContext,
-    ): Promise<void>;
+    readonly applicationCommand: Pick<SlashCommandBuilder | ContextMenuCommandBuilder, "toJSON">;
+    handleInteraction(command: CommandInteraction, context: BotContext): Promise<void>;
+    autocomplete?(interaction: AutocompleteInteraction, context: BotContext): Promise<void>;
 }
 
 // For a MessageCommand we require an additional modCommand property and a handler method
 export interface MessageCommand extends CommandBase {
-    handleMessage(
-        message: ProcessableMessage,
-        context: BotContext,
-    ): Promise<void>;
+    handleMessage(message: ProcessableMessage, context: BotContext): Promise<void>;
 }
 
 // For SpecialCommands we require a pattern and a randomness (<= 1)
 export interface SpecialCommand extends CommandBase {
     readonly randomness: number;
     readonly cooldownTime?: number;
-    handleSpecialMessage(
-        message: ProcessableMessage,
-        context: BotContext,
-    ): Promise<void>;
+    handleSpecialMessage(message: ProcessableMessage, context: BotContext): Promise<void>;
     matches(message: ProcessableMessage, context: BotContext): boolean;
 }
 

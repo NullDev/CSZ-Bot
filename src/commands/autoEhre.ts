@@ -37,10 +37,7 @@ export default class AutoEhreCommand implements SpecialCommand {
             return;
         }
 
-        const reply = await EhreCommand.addEhre(
-            message.author,
-            repliedToMessage.author,
-        );
+        const reply = await EhreCommand.addEhre(message.author, repliedToMessage.author);
         await message.reply(reply);
     }
 }

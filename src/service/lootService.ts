@@ -223,9 +223,7 @@ export async function runDropAttempt(context: BotContext) {
     const lootConfig = context.commandConfig.loot;
     const dice = Math.random();
 
-    log.info(
-        `Rolled dice: ${dice}, against drop chance ${lootConfig.dropChance}`,
-    );
+    log.info(`Rolled dice: ${dice}, against drop chance ${lootConfig.dropChance}`);
     if (dice > lootConfig.dropChance) {
         return;
     }
@@ -235,9 +233,7 @@ export async function runDropAttempt(context: BotContext) {
         ? randomEntry(lootConfig.targetChannels)
         : fallbackChannel.id;
 
-    const targetChannel =
-        (await context.client.channels.fetch(targetChannelId)) ??
-        fallbackChannel;
+    const targetChannel = (await context.client.channels.fetch(targetChannelId)) ?? fallbackChannel;
 
     if (targetChannel.type !== ChannelType.GuildText) {
         log.error(
@@ -258,9 +254,7 @@ export async function runDropAttempt(context: BotContext) {
     const lastMessage = Temporal.Instant.fromEpochMilliseconds(lm);
     const passedTime = now.since(lastMessage);
 
-    if (
-        passedTime.subtract(lootConfig.maxTimePassedSinceLastMessage).sign > 0
-    ) {
+    if (passedTime.subtract(lootConfig.maxTimePassedSinceLastMessage).sign > 0) {
         log.info(
             `Would have dropped loot to ${targetChannel.name}, but it was too soon since the last message (${lootConfig.maxTimePassedSinceLastMessage})`,
         );
@@ -278,8 +272,7 @@ async function postLootDrop(context: BotContext, channel: GuildChannel) {
         return;
     }
 
-    const hamster =
-        context.guild.emojis.cache.find(e => e.name === "sad_hamster") ?? ":(";
+    const hamster = context.guild.emojis.cache.find(e => e.name === "sad_hamster") ?? ":(";
 
     const validUntil = new Date(Date.now() + lootTimeoutMs);
 
@@ -305,9 +298,7 @@ async function postLootDrop(context: BotContext, channel: GuildChannel) {
                 attachment: await fs.readFile("assets/loot/00-unopened.gif"),
             },
         ],
-        components: [
-            new ActionRowBuilder<ButtonBuilder>().addComponents(takeLootButton),
-        ],
+        components: [new ActionRowBuilder<ButtonBuilder>().addComponents(takeLootButton)],
     });
 
     const template = randomEntryWeighted(lootTemplates);
@@ -322,9 +313,7 @@ async function postLootDrop(context: BotContext, channel: GuildChannel) {
             time: lootTimeoutMs,
         });
     } catch (err) {
-        log.info(
-            `Loot drop ${message.id} timed out; loot ${l.id} was not claimed, cleaning up`,
-        );
+        log.info(`Loot drop ${message.id} timed out; loot ${l.id} was not claimed, cleaning up`);
         const original = message.embeds[0];
         await message.edit({
             embeds: [
@@ -344,11 +333,7 @@ async function postLootDrop(context: BotContext, channel: GuildChannel) {
 
     const reply = await interaction.deferReply({ ephemeral: true });
 
-    const claimedLoot = await loot.assignUserToLootDrop(
-        interaction.user,
-        l.id,
-        new Date(),
-    );
+    const claimedLoot = await loot.assignUserToLootDrop(interaction.user, l.id, new Date());
     if (!claimedLoot) {
         await reply.edit({
             content: `Upsi, da ist was schief gelaufi oder jemand anderes war schnelli ${hamster}`,
@@ -364,9 +349,7 @@ async function postLootDrop(context: BotContext, channel: GuildChannel) {
 
     const winner = await context.guild.members.fetch(claimedLoot.winnerId);
 
-    const attachment = template.asset
-        ? await fs.readFile(template.asset)
-        : null;
+    const attachment = template.asset ? await fs.readFile(template.asset) : null;
 
     await message.edit({
         embeds: [

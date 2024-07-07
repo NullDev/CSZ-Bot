@@ -10,9 +10,7 @@ export async function insertNickname(
     nickName: string,
     ctx = db(),
 ): Promise<NickName> {
-    log.debug(
-        `Inserting Nickname for user "${userId}" Nickname: "${nickName}"`,
-    );
+    log.debug(`Inserting Nickname for user "${userId}" Nickname: "${nickName}"`);
 
     if (await nickNameExist(userId, nickName, ctx)) {
         throw new Error("Nickname already exists");
@@ -28,11 +26,7 @@ export async function insertNickname(
         .executeTakeFirstOrThrow();
 }
 
-export async function nickNameExist(
-    userId: Snowflake,
-    nickName: string,
-    ctx = db(),
-) {
+export async function nickNameExist(userId: Snowflake, nickName: string, ctx = db()) {
     const { nicks } = await ctx
         .selectFrom("nickNames")
         .where("userId", "=", userId)
@@ -42,9 +36,7 @@ export async function nickNameExist(
     return nicks > 0;
 }
 
-export async function allUsersAndNames(
-    ctx = db(),
-): Promise<Record<Snowflake, string[]>> {
+export async function allUsersAndNames(ctx = db()): Promise<Record<Snowflake, string[]>> {
     const allNicks = await ctx.selectFrom("nickNames").selectAll().execute();
     return allNicks.reduce(
         (acc, cur) => ({
@@ -69,13 +61,6 @@ export async function deleteAllNickNames(user: User, ctx = db()) {
     await ctx.deleteFrom("nickNames").where("userId", "=", user.id).execute();
 }
 
-export function getNicknames(
-    userId: Snowflake,
-    ctx = db(),
-): Promise<NickName[]> {
-    return ctx
-        .selectFrom("nickNames")
-        .where("userId", "=", userId)
-        .selectAll()
-        .execute();
+export function getNicknames(userId: Snowflake, ctx = db()): Promise<NickName[]> {
+    return ctx.selectFrom("nickNames").where("userId", "=", userId).selectAll().execute();
 }

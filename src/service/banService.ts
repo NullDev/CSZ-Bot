@@ -55,10 +55,7 @@ export async function banUser(
 
     // No Shadow ban :(
     const botUser = context.client.user;
-    if (
-        member.id === "371724846205239326" ||
-        (botUser && member.id === botUser.id)
-    ) {
+    if (member.id === "371724846205239326" || (botUser && member.id === botUser.id)) {
         return "Fick dich bitte.";
     }
 
@@ -91,10 +88,7 @@ export async function banUser(
         const unbannedAtMessage =
             unbanAt === null
                 ? "Du wirst manuell durch einen Moderader entbannt"
-                : `Du wirst entbannt ${time(
-                      unbanAt,
-                      TimestampStyles.RelativeTime,
-                  )}`;
+                : `Du wirst entbannt ${time(unbanAt, TimestampStyles.RelativeTime)}`;
 
         await member.send(`Du hast dich selber von der Coding Shitpost Zentrale gebannt!
 ${unbannedAtMessage}
@@ -109,9 +103,7 @@ Haddi & xD™
             },
         });
     } else {
-        const reasonStr = reason
-            ? `Banngrund: ${reason}`
-            : "Es wurde kein Banngrund angegeben.";
+        const reasonStr = reason ? `Banngrund: ${reason}` : "Es wurde kein Banngrund angegeben.";
 
         await member.send(`Du wurdest von der Coding Shitpost Zentrale gebannt!
 ${reasonStr}
@@ -145,25 +137,16 @@ export async function unBanUser(
 
 // #region Banned User Role Assignment
 
-async function assignBannedRoles(
-    context: BotContext,
-    user: GuildMember,
-): Promise<boolean> {
-    const defaultRole = user.guild.roles.cache.find(
-        role => role.id === context.roles.default.id,
-    );
-    const bannedRole = user.guild.roles.cache.find(
-        role => role.id === context.roles.banned.id,
-    );
+async function assignBannedRoles(context: BotContext, user: GuildMember): Promise<boolean> {
+    const defaultRole = user.guild.roles.cache.find(role => role.id === context.roles.default.id);
+    const bannedRole = user.guild.roles.cache.find(role => role.id === context.roles.banned.id);
 
     if (!defaultRole || !bannedRole) {
         return false;
     }
 
     const currentRoles = [...user.roles.cache.map(r => r.id)];
-    let newRoles = [...currentRoles, bannedRole.id].filter(
-        r => r !== context.roles.default.id,
-    );
+    let newRoles = [...currentRoles, bannedRole.id].filter(r => r !== context.roles.default.id);
 
     if (user.roles.cache.find(r => r.id === context.roles.gruendervaeter.id)) {
         newRoles = newRoles.filter(r => r !== context.roles.gruendervaeter.id);
@@ -178,35 +161,20 @@ async function assignBannedRoles(
     await user.edit({ roles: newRoles });
     return true;
 }
-async function restoreRoles(
-    context: BotContext,
-    user: GuildMember,
-): Promise<boolean> {
+async function restoreRoles(context: BotContext, user: GuildMember): Promise<boolean> {
     log.debug(`Restoring roles from user ${user.id}`);
-    const defaultRole = user.guild.roles.cache.find(
-        role => role.id === context.roles.default.id,
-    );
-    const bannedRole = user.guild.roles.cache.find(
-        role => role.id === context.roles.banned.id,
-    );
+    const defaultRole = user.guild.roles.cache.find(role => role.id === context.roles.default.id);
+    const bannedRole = user.guild.roles.cache.find(role => role.id === context.roles.banned.id);
 
     if (!defaultRole || !bannedRole) {
         return false;
     }
 
     const currentRoles = [...user.roles.cache.map(r => r.id)];
-    let newRoles = [...currentRoles, defaultRole.id].filter(
-        r => r !== context.roles.banned.id,
-    );
+    let newRoles = [...currentRoles, defaultRole.id].filter(r => r !== context.roles.banned.id);
 
-    if (
-        user.roles.cache.find(
-            r => r.id === context.roles.gruendervaeter_banned.id,
-        )
-    ) {
-        newRoles = newRoles.filter(
-            r => r !== context.roles.gruendervaeter_banned.id,
-        );
+    if (user.roles.cache.find(r => r.id === context.roles.gruendervaeter_banned.id)) {
+        newRoles = newRoles.filter(r => r !== context.roles.gruendervaeter_banned.id);
         newRoles.push(context.roles.gruendervaeter.id);
     }
 

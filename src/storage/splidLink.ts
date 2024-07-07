@@ -34,11 +34,7 @@ export function remove(guild: Guild, user: User, ctx = db()) {
         .execute();
 }
 
-export async function matchUsers(
-    guild: Guild,
-    splidIds: Set<string>,
-    ctx = db(),
-) {
+export async function matchUsers(guild: Guild, splidIds: Set<string>, ctx = db()) {
     const availableLinks = await ctx
         .selectFrom("splidLinks")
         .where("guildId", "=", guild.id)

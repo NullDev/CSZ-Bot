@@ -1,8 +1,4 @@
-import {
-    type CommandInteraction,
-    SlashCommandBuilder,
-    SlashCommandStringOption,
-} from "discord.js";
+import { type CommandInteraction, SlashCommandBuilder, SlashCommandStringOption } from "discord.js";
 
 import * as austrianTranslation from "../storage/austrianTranslation.js";
 import type { ApplicationCommand } from "./command.js";
@@ -23,9 +19,7 @@ export default class OidaCommand implements ApplicationCommand {
                 .setName("austrian")
                 .setDescriptionLocalization("en-US", "ösisch")
                 .setDescriptionLocalization("de", "ösisch")
-                .setDescription(
-                    "🇦🇹 Österreichische Bezeichnung. Darf Leerzeichen enthalten.",
-                ),
+                .setDescription("🇦🇹 Österreichische Bezeichnung. Darf Leerzeichen enthalten."),
         )
         .addStringOption(
             new SlashCommandStringOption()
@@ -33,9 +27,7 @@ export default class OidaCommand implements ApplicationCommand {
                 .setName("german")
                 .setDescriptionLocalization("en-US", "piefkisch")
                 .setDescriptionLocalization("de", "piefkisch")
-                .setDescription(
-                    "🇩🇪 Deutsche Bezeichnung. Darf Leerzeichen enthalten.",
-                ),
+                .setDescription("🇩🇪 Deutsche Bezeichnung. Darf Leerzeichen enthalten."),
         )
         .addStringOption(
             new SlashCommandStringOption()

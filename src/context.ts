@@ -13,12 +13,7 @@ import type {
 import { ChannelType } from "discord.js";
 import { Temporal } from "@js-temporal/polyfill";
 
-import type {
-    Config,
-    ConfigTextChannelId,
-    ConfigVoiceChannelId,
-    ConfigRoleId,
-} from "./types.js";
+import type { Config, ConfigTextChannelId, ConfigVoiceChannelId, ConfigRoleId } from "./types.js";
 import type { RemoveOptionalSuffix, RemoveSuffix } from "./utils/typeUtils.js";
 import { getConfig } from "./utils/configHandler.js";
 
@@ -64,17 +59,11 @@ export interface BotContext {
     // and we're not able to rename these entries.
     // We remove all instances of "_id" suffixes and - if present - the "_channel" suffix.
     textChannels: Record<
-        RemoveOptionalSuffix<
-            RemoveSuffix<ConfigTextChannelId, "_id">,
-            "_channel"
-        >,
+        RemoveOptionalSuffix<RemoveSuffix<ConfigTextChannelId, "_id">, "_channel">,
         TextChannel
     >;
     voiceChannels: Record<
-        RemoveOptionalSuffix<
-            RemoveSuffix<ConfigVoiceChannelId, "_id">,
-            "_channel"
-        >,
+        RemoveOptionalSuffix<RemoveSuffix<ConfigVoiceChannelId, "_id">, "_channel">,
         VoiceChannel
     >;
 
@@ -91,24 +80,12 @@ export interface BotContext {
         isMod: (member: GuildMember) => boolean;
         isNerd: (member: GuildMember | APIInteractionGuildMember) => boolean;
         isTrusted: (member: GuildMember | APIInteractionGuildMember) => boolean;
-        isGruendervater: (
-            member: GuildMember | APIInteractionGuildMember,
-        ) => boolean;
-        isWoisGang: (
-            member: GuildMember | APIInteractionGuildMember,
-        ) => boolean;
-        isEmotifizierer: (
-            member: GuildMember | APIInteractionGuildMember,
-        ) => boolean;
-        hasBotDenyRole: (
-            member: GuildMember | APIInteractionGuildMember,
-        ) => boolean;
-        hasRoleDenyRole: (
-            member: GuildMember | APIInteractionGuildMember,
-        ) => boolean;
-        isRejoiner: (
-            member: GuildMember | APIInteractionGuildMember,
-        ) => boolean;
+        isGruendervater: (member: GuildMember | APIInteractionGuildMember) => boolean;
+        isWoisGang: (member: GuildMember | APIInteractionGuildMember) => boolean;
+        isEmotifizierer: (member: GuildMember | APIInteractionGuildMember) => boolean;
+        hasBotDenyRole: (member: GuildMember | APIInteractionGuildMember) => boolean;
+        hasRoleDenyRole: (member: GuildMember | APIInteractionGuildMember) => boolean;
+        isRejoiner: (member: GuildMember | APIInteractionGuildMember) => boolean;
     };
 }
 
@@ -123,28 +100,19 @@ export interface QuoteConfig {
     emojiName: string;
 }
 
-function ensureRole<T extends ConfigRoleId>(
-    config: Config,
-    guild: Guild,
-    roleIdName: T,
-): Role {
+function ensureRole<T extends ConfigRoleId>(config: Config, guild: Guild, roleIdName: T): Role {
     const roleId = config.ids[roleIdName];
     const role = guild.roles.cache.get(roleId);
 
     if (!role)
-        throw new Error(
-            `Role "${roleIdName}" not found by id: "${roleId}" in guild "${guild.id}"`,
-        );
+        throw new Error(`Role "${roleIdName}" not found by id: "${roleId}" in guild "${guild.id}"`);
 
     return role;
 }
 
 function ensureRoleByDisplayName(guild: Guild, displayName: string): Role {
     const role = guild.roles.cache.find(role => role.name === displayName);
-    if (!role)
-        throw new Error(
-            `Role "${displayName}" not found in guild "${guild.id}"`,
-        );
+    if (!role) throw new Error(`Role "${displayName}" not found in guild "${guild.id}"`);
     return role;
 }
 
@@ -164,9 +132,7 @@ function ensureTextChannel<T extends ConfigTextChannelId>(
             `Could not find main channel with id "${channelId}" on guild "${guild.id}"`,
         );
     if (channel.type !== ChannelType.GuildText)
-        throw new Error(
-            `Main channel is not a text channel. "${channel.id}" is "${channel.type}"`,
-        );
+        throw new Error(`Main channel is not a text channel. "${channel.id}" is "${channel.type}"`);
 
     return channel;
 }
@@ -193,16 +159,12 @@ function ensureVoiceChannel<T extends ConfigVoiceChannelId>(
 
 // #endregion
 
-export async function createBotContext(
-    client: Client<true>,
-): Promise<BotContext> {
+export async function createBotContext(client: Client<true>): Promise<BotContext> {
     const config = getConfig();
 
     const guild = client.guilds.cache.get(config.ids.guild_id);
     if (!guild) {
-        throw new Error(
-            `Cannot find configured guild "${config.ids.guild_id}"`,
-        );
+        throw new Error(`Cannot find configured guild "${config.ids.guild_id}"`);
     }
 
     return {
@@ -215,54 +177,34 @@ export async function createBotContext(
         },
         commandConfig: {
             faulenzerPing: {
-                allowedRoleIds: new Set(
-                    config.bot_settings.faulenzerping_allowed_role_ids,
-                ),
+                allowedRoleIds: new Set(config.bot_settings.faulenzerping_allowed_role_ids),
                 maxNumberOfPings: Number(
-                    config.bot_settings.faulenzerping_max_number_of_pings ??
-                        "15",
+                    config.bot_settings.faulenzerping_max_number_of_pings ?? "15",
                 ),
                 minRequiredReactions: Number(
-                    config.bot_settings.faulenzerping_min_required_reactions ??
-                        "5",
+                    config.bot_settings.faulenzerping_min_required_reactions ?? "5",
                 ),
             },
             ehre: {
-                emojiNames: new Set(
-                    config.bot_settings.ehre?.emoji_names ?? ["aehre"],
-                ),
+                emojiNames: new Set(config.bot_settings.ehre?.emoji_names ?? ["aehre"]),
             },
             quote: {
-                allowedGroupIds: new Set(
-                    config.bot_settings.quotes.allowed_group_ids,
-                ),
-                anonymousCategoryIds: new Set(
-                    config.bot_settings.quotes.anonymous_category_ids,
-                ),
-                anonymousChannelIds: new Set(
-                    config.bot_settings.quotes.anonymous_channel_ids,
-                ),
-                blacklistedChannelIds: new Set(
-                    config.bot_settings.quotes.blacklisted_channel_ids,
-                ),
-                quoteVoteThreshold:
-                    config.bot_settings.quotes.quote_threshold ?? 2,
-                targetChannelOverrides:
-                    config.bot_settings.quotes.target_channel_overrides,
-                defaultTargetChannelId:
-                    config.bot_settings.quotes.default_target_channel_id,
+                allowedGroupIds: new Set(config.bot_settings.quotes.allowed_group_ids),
+                anonymousCategoryIds: new Set(config.bot_settings.quotes.anonymous_category_ids),
+                anonymousChannelIds: new Set(config.bot_settings.quotes.anonymous_channel_ids),
+                blacklistedChannelIds: new Set(config.bot_settings.quotes.blacklisted_channel_ids),
+                quoteVoteThreshold: config.bot_settings.quotes.quote_threshold ?? 2,
+                targetChannelOverrides: config.bot_settings.quotes.target_channel_overrides,
+                defaultTargetChannelId: config.bot_settings.quotes.default_target_channel_id,
                 emojiName: config.bot_settings.quotes.emoji_name,
             },
             loot: {
                 enabled: config.bot_settings.loot?.enabled ?? false,
-                scheduleCron:
-                    config.bot_settings.loot?.schedule_cron ?? "*/15 * * * *",
+                scheduleCron: config.bot_settings.loot?.schedule_cron ?? "*/15 * * * *",
                 dropChance: config.bot_settings.loot?.drop_chance ?? 0.05,
-                targetChannels:
-                    config.bot_settings.loot?.target_channel_ids ?? undefined,
+                targetChannels: config.bot_settings.loot?.target_channel_ids ?? undefined,
                 maxTimePassedSinceLastMessage: Temporal.Duration.from(
-                    config.bot_settings.loot
-                        ?.max_time_passed_since_last_message ?? "PT30M",
+                    config.bot_settings.loot?.max_time_passed_since_last_message ?? "PT30M",
                 ),
             },
         },
@@ -272,11 +214,7 @@ export async function createBotContext(
             bday: ensureRole(config, guild, "bday_role_id"),
             bot_deny: ensureRole(config, guild, "bot_deny_role_id"),
             default: ensureRole(config, guild, "default_role_id"),
-            gruendervaeter_banned: ensureRole(
-                config,
-                guild,
-                "gruendervaeter_banned_role_id",
-            ),
+            gruendervaeter_banned: ensureRole(config, guild, "gruendervaeter_banned_role_id"),
             gruendervaeter: ensureRole(config, guild, "gruendervaeter_role_id"),
             role_deny: ensureRole(config, guild, "role_deny_role_id"),
             shame: ensureRole(config, guild, "shame_role_id"),
@@ -298,11 +236,7 @@ export async function createBotContext(
             bot_spam: ensureTextChannel(config, guild, "bot_spam_channel_id"),
         },
         voiceChannels: {
-            haupt_woischat: ensureVoiceChannel(
-                config,
-                guild,
-                "haupt_woischat_id",
-            ),
+            haupt_woischat: ensureVoiceChannel(config, guild, "haupt_woischat_id"),
         },
         deleteThreadMessagesInChannels: new Set(
             config.bot_settings.delete_thread_messages_in_channels,
@@ -315,8 +249,7 @@ export async function createBotContext(
         modCommandDir: path.resolve("src/commands/modcommands"),
 
         roleGuard: {
-            isMod: member =>
-                hasAnyRoleByName(member, config.bot_settings.moderator_roles),
+            isMod: member => hasAnyRoleByName(member, config.bot_settings.moderator_roles),
             isNerd: member => hasRoleById(member, config.ids.default_role_id),
             isTrusted: member =>
                 hasRoleById(member, config.ids.trusted_role_id) ||
@@ -324,14 +257,10 @@ export async function createBotContext(
             isGruendervater: member =>
                 hasRoleById(member, config.ids.gruendervaeter_role_id) ||
                 hasRoleById(member, config.ids.gruendervaeter_banned_role_id),
-            isWoisGang: member =>
-                hasRoleById(member, config.ids.woisgang_role_id),
-            isEmotifizierer: member =>
-                hasRoleById(member, config.ids.emotifizierer_role_id),
-            hasBotDenyRole: member =>
-                hasRoleById(member, config.ids.bot_deny_role_id),
-            hasRoleDenyRole: member =>
-                hasRoleById(member, config.ids.role_deny_role_id),
+            isWoisGang: member => hasRoleById(member, config.ids.woisgang_role_id),
+            isEmotifizierer: member => hasRoleById(member, config.ids.emotifizierer_role_id),
+            hasBotDenyRole: member => hasRoleById(member, config.ids.bot_deny_role_id),
+            hasRoleDenyRole: member => hasRoleById(member, config.ids.role_deny_role_id),
             isRejoiner: member => hasRoleById(member, config.ids.shame_role_id),
         },
     };
@@ -344,10 +273,7 @@ export async function createBotContext(
         return roleNames.some(role => hasRoleByName(member, role));
     }
 
-    function hasRoleById(
-        member: GuildMember | APIInteractionGuildMember,
-        id: Snowflake,
-    ): boolean {
+    function hasRoleById(member: GuildMember | APIInteractionGuildMember, id: Snowflake): boolean {
         return Array.isArray(member.roles)
             ? member.roles.includes(id)
             : member.roles.cache.some(role => role.id === id);

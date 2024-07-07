@@ -1,8 +1,4 @@
-import {
-    type CommandInteraction,
-    type CacheType,
-    SlashCommandBuilder,
-} from "discord.js";
+import { type CommandInteraction, type CacheType, SlashCommandBuilder } from "discord.js";
 
 import type { ApplicationCommand } from "./command.js";
 import log from "@log";
@@ -53,9 +49,7 @@ export default class GeburtstagCommand implements ApplicationCommand {
 
         try {
             await birthday.insertBirthday(command.user.id, day, month);
-            await command.reply(
-                "Danke mein G, ich hab dein Geburtstag eingetragen!",
-            );
+            await command.reply("Danke mein G, ich hab dein Geburtstag eingetragen!");
         } catch (err) {
             log.error(err, "Geburtstag ist schief gelaufen");
             await command.reply(

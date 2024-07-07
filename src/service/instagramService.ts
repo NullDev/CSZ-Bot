@@ -19,9 +19,7 @@ interface ApiResponse {
     r_id: string;
 }
 
-export type InstagramResponse =
-    | SuccessInstagramResponse
-    | ErrorInstagramResponse;
+export type InstagramResponse = SuccessInstagramResponse | ErrorInstagramResponse;
 
 export interface SuccessInstagramResponse {
     success: true;
@@ -38,9 +36,7 @@ export function isAvailable(): boolean {
     return !!rapidApiInstagramApiKey;
 }
 
-export async function downloadInstagramContent(
-    link: string,
-): Promise<InstagramResponse> {
+export async function downloadInstagramContent(link: string): Promise<InstagramResponse> {
     if (!rapidApiInstagramApiKey) {
         return {
             success: false,
@@ -48,9 +44,7 @@ export async function downloadInstagramContent(
         };
     }
 
-    const url = new URL(
-        "https://social-media-video-downloader.p.rapidapi.com/smvd/get/all",
-    );
+    const url = new URL("https://social-media-video-downloader.p.rapidapi.com/smvd/get/all");
     url.searchParams.set("url", link);
 
     try {
@@ -58,8 +52,7 @@ export async function downloadInstagramContent(
             method: "GET",
             headers: {
                 "X-RapidAPI-Key": rapidApiInstagramApiKey,
-                "X-RapidAPI-Host":
-                    "social-media-video-downloader.p.rapidapi.com",
+                "X-RapidAPI-Host": "social-media-video-downloader.p.rapidapi.com",
             },
         });
         const result = (await response.json()) as ApiResponse;

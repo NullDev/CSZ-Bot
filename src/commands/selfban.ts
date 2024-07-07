@@ -57,9 +57,7 @@ export const run: CommandFunction = async (message, args, context) => {
     const targetTime = new Date(Date.now() + durationInMinutes * 60 * 1000);
 
     if (tilt) {
-        const alarmEmote = message.guild?.emojis.cache.find(
-            e => e.name === "alarm",
-        );
+        const alarmEmote = message.guild?.emojis.cache.find(e => e.name === "alarm");
 
         await message.channel.send(
             `${alarmEmote} User ${invokingUser} ist getilted und gönnt sich eine kurze Auszeit bis ${time(

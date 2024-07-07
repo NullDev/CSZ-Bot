@@ -17,27 +17,15 @@ export async function checkBirthdays(context: BotContext) {
 
     const todaysBirthdaysAsMembers = todaysBirthdays
         .map(b => context.guild.members.cache.get(b.userId))
-        .filter(
-            b =>
-                b !== undefined &&
-                b.roles.cache.get(birthdayRole.id) === undefined,
-        );
+        .filter(b => b !== undefined && b.roles.cache.get(birthdayRole.id) === undefined);
 
     const memberWithRoleThatDontHaveBirthday = context.guild.members.cache
         .filter(m => m.roles.cache.get(birthdayRole.id) !== undefined)
         .filter(m => !todaysBirthdays.some(b => b.userId === m.id));
 
     if (todaysBirthdaysAsMembers.length > 0) {
-        await Promise.all(
-            todaysBirthdaysAsMembers.map(member =>
-                member?.roles?.add(birthdayRole),
-            ),
-        );
-        await sendBirthdayMessage(
-            context,
-            todaysBirthdaysAsMembers as GuildMember[],
-            birthdayRole,
-        );
+        await Promise.all(todaysBirthdaysAsMembers.map(member => member?.roles?.add(birthdayRole)));
+        await sendBirthdayMessage(context, todaysBirthdaysAsMembers as GuildMember[], birthdayRole);
     }
 
     for (const member of memberWithRoleThatDontHaveBirthday.values()) {
@@ -48,19 +36,12 @@ export async function checkBirthdays(context: BotContext) {
         try {
             await member.roles.remove(birthdayRole);
         } catch (e) {
-            log.error(
-                e,
-                `Could not remove role "${birthdayRole}" from "${member}"`,
-            );
+            log.error(e, `Could not remove role "${birthdayRole}" from "${member}"`);
         }
     }
 }
 
-async function sendBirthdayMessage(
-    context: BotContext,
-    users: GuildMember[],
-    birthdayRole: Role,
-) {
+async function sendBirthdayMessage(context: BotContext, users: GuildMember[], birthdayRole: Role) {
     const plural = users.length > 1;
     await context.textChannels.hauptchat.send(
         `Heute kann es regnen,
@@ -72,9 +53,7 @@ async function sendBirthdayMessage(
             alle deine Freunde
             freuen sich mit ${plural ? "euch" : "dir"}
 
-            Wie schön dass ${plural ? "ihr" : "du"} geboren ${
-                plural ? "seid" : "bist"
-            },
+            Wie schön dass ${plural ? "ihr" : "du"} geboren ${plural ? "seid" : "bist"},
             wir hätten ${plural ? "euch" : "dich"} sonst sehr vermisst.
             wie schön dass wir beisammen sind,
             wir gratulieren ${plural ? "euch" : "dir"}, ${birthdayRole}

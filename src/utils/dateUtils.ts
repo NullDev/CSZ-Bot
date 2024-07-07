@@ -24,15 +24,7 @@ export function formatDateTime(dateTime: Date) {
  *  Values taken from:
  * https://tc39.es/proposal-unified-intl-numberformat/section6/locales-currencies-tz_proposed_out.html#sec-issanctionedsimpleunitidentifier
  */
-type Unit =
-    | "year"
-    | "month"
-    | "week"
-    | "day"
-    | "hour"
-    | "minute"
-    | "second"
-    | "millisecond";
+type Unit = "year" | "month" | "week" | "day" | "hour" | "minute" | "second" | "millisecond";
 
 const durationFormatters = {
     year: {
@@ -104,10 +96,7 @@ export function formatDuration(seconds: number) {
     return durationFormatters.second.formatter.format(seconds);
 }
 
-export function getStartAndEndDay(
-    instant: Temporal.Instant,
-    timeZone = "Europe/Berlin",
-) {
+export function getStartAndEndDay(instant: Temporal.Instant, timeZone = "Europe/Berlin") {
     const today = Temporal.PlainDate.from(instant.toZonedDateTimeISO(timeZone));
     const tomorrow = today.add({ days: 1 });
 

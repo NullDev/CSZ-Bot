@@ -38,10 +38,7 @@ import TriggerReactOnKeyword from "../commands/special/keywordReact.js";
 import { NicknameButtonHandler } from "../commands/nickname.js";
 import SplidCommand from "../commands/splid.js";
 
-import {
-    isProcessableMessage,
-    type ProcessableMessage,
-} from "../service/commandService.js";
+import { isProcessableMessage, type ProcessableMessage } from "../service/commandService.js";
 import { isMessageInBotSpam } from "../utils/channelUtils.js";
 
 const staticCommands: readonly Command[] = [
@@ -52,9 +49,7 @@ const staticCommands: readonly Command[] = [
 ];
 const allCommands: Command[] = [];
 
-export const interactions: readonly UserInteraction[] = [
-    new NicknameButtonHandler(),
-];
+export const interactions: readonly UserInteraction[] = [new NicknameButtonHandler()];
 
 const getApplicationCommands = () => allCommands.filter(isApplicationCommand);
 export const getMessageCommands = () => allCommands.filter(isMessageCommand);
@@ -67,8 +62,7 @@ const lastSpecialCommands: Record<string, number> = getSpecialCommands().reduce(
 );
 
 export const loadCommands = async (context: BotContext): Promise<void> => {
-    const availableCommands =
-        await commandService.readAvailableCommands(context);
+    const availableCommands = await commandService.readAvailableCommands(context);
     const loadedCommandNames = new Set(staticCommands.map(c => c.name));
 
     const dynamicCommands = [];
@@ -90,9 +84,7 @@ export const loadCommands = async (context: BotContext): Promise<void> => {
     allCommands.push(...dynamicCommands);
 };
 
-const createPermissionSet = (
-    permissions: readonly PermissionsString[],
-): bigint => {
+const createPermissionSet = (permissions: readonly PermissionsString[]): bigint => {
     const flags = new PermissionsBitField();
     flags.add(...permissions);
     return flags.bitfield;
@@ -110,9 +102,7 @@ export const registerAllApplicationCommandsAsGuildCommands = async (
 
     const rest = new REST({ version: "10" }).setToken(token);
 
-    const buildGuildCommand = (
-        cmd: ApplicationCommand,
-    ): APIApplicationCommand => {
+    const buildGuildCommand = (cmd: ApplicationCommand): APIApplicationCommand => {
         const defaultMemberPermissions = createPermissionSet(
             cmd.requiredPermissions ?? ["SendMessages"],
         );
@@ -143,10 +133,7 @@ export const registerAllApplicationCommandsAsGuildCommands = async (
         })) as ApplicationCommandCreationResponse[];
         log.info(`Registered ${response.length} guild commands`);
     } catch (err) {
-        log.error(
-            err,
-            `Could not register application commands for guild ${context.guild.id}`,
-        );
+        log.error(err, `Could not register application commands for guild ${context.guild.id}`);
     }
 };
 
@@ -160,9 +147,7 @@ const commandInteractionHandler = async (
     command: CommandInteraction,
     context: BotContext,
 ): Promise<void> => {
-    const matchingCommand = getApplicationCommands().find(
-        cmd => cmd.name === command.commandName,
-    );
+    const matchingCommand = getApplicationCommands().find(cmd => cmd.name === command.commandName);
 
     if (!matchingCommand) {
         throw new Error(
@@ -194,9 +179,7 @@ const autocompleteInteractionHandler = async (
         );
     }
 
-    log.debug(
-        `Found a matching autocomplete handler for command ${matchingCommand.name}`,
-    );
+    log.debug(`Found a matching autocomplete handler for command ${matchingCommand.name}`);
     await matchingCommand.autocomplete(interaction, context);
 };
 
@@ -229,9 +212,7 @@ const hasPermissions = (
     permissions: ReadonlyArray<PermissionsString>,
 ): boolean => {
     log.debug(
-        `Checking member ${
-            member.id
-        } permissions on permissionSet: ${JSON.stringify(permissions)}`,
+        `Checking member ${member.id} permissions on permissionSet: ${JSON.stringify(permissions)}`,
     );
 
     // No permissions, no problem
@@ -261,10 +242,7 @@ const commandMessageHandler = async (
             cmd.aliases?.includes(commandString.toLowerCase()),
     );
 
-    if (
-        context.roleGuard.hasBotDenyRole(message.member) &&
-        !isMessageInBotSpam(context, message)
-    ) {
+    if (context.roleGuard.hasBotDenyRole(message.member) && !isMessageInBotSpam(context, message)) {
         await message.member.send(
             "Du hast dich scheinbar beschissen verhalten und darfst daher keine Befehle in diesem Channel ausführen!",
         );
@@ -283,14 +261,7 @@ const commandMessageHandler = async (
 
     return Promise.all([
         // Ban the member that has not the required permissions
-        banService.banUser(
-            context,
-            invoker,
-            context.client.user,
-            "Lol",
-            false,
-            0.08,
-        ),
+        banService.banUser(context, invoker, context.client.user, "Lol", false, 0.08),
         message.reply({
             content: `Tut mir leid, ${message.author}. Du hast nicht genügend Rechte um dieses Command zu verwenden, dafür gibt's erstmal mit dem Willkürhammer einen auf den Deckel.`,
         }),
@@ -312,10 +283,7 @@ const isCooledDown = (command: SpecialCommand) => {
     return Math.random() < tineSinceLastExecution / coolDownTime;
 };
 
-const specialCommandHandler = async (
-    message: ProcessableMessage,
-    context: BotContext,
-) => {
+const specialCommandHandler = async (message: ProcessableMessage, context: BotContext) => {
     const commands = getSpecialCommands();
     const commandCandidates = commands.filter(p => p.matches(message, context));
     for (const command of commandCandidates) {
@@ -372,10 +340,7 @@ export const messageCommandHandler = async (
     // TODO: The Prefix is now completely irrelevant, since the commands itself define their permission.
     const plebPrefix = context.prefix.command;
     const modPrefix = context.prefix.modCommand;
-    if (
-        message.content.startsWith(plebPrefix) ||
-        message.content.startsWith(modPrefix)
-    ) {
+    if (message.content.startsWith(plebPrefix) || message.content.startsWith(modPrefix)) {
         const cmdString = message.content.split(/\s+/)[0].slice(1);
         if (cmdString) {
             await commandMessageHandler(cmdString, message, context);

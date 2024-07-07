@@ -46,19 +46,12 @@ type LeaderBoard = {
     members: Record<number, AoCMember>;
 };
 
-const aocConfig = JSON.parse(
-    await fs.readFile(aocConfigPath, "utf8"),
-) as AoCConfig;
+const aocConfig = JSON.parse(await fs.readFile(aocConfigPath, "utf8")) as AoCConfig;
 const medals = ["🥇", "🥈", "🥉", "🪙", "🏵️", "🌹"];
 
-const getLanguage = (
-    member: AoCMember,
-    userMap: Record<string, UserMapEntry>,
-): string => {
+const getLanguage = (member: AoCMember, userMap: Record<string, UserMapEntry>): string => {
     const language = userMap[member.id]?.language ?? "n/a";
-    log.debug(
-        `[AoC] Resolved language ${language} for member with id ${member.id}`,
-    );
+    log.debug(`[AoC] Resolved language ${language} for member with id ${member.id}`);
     return language;
 };
 
@@ -68,9 +61,7 @@ const getNameString = (
     includeLanguage: boolean,
 ): string => {
     const convertedName =
-        userMap[member.id]?.displayName ??
-        member.name ??
-        `(anonymous user #${member.id})`;
+        userMap[member.id]?.displayName ?? member.name ?? `(anonymous user #${member.id})`;
     if (includeLanguage) {
         const language = getLanguage(member, userMap);
         log.debug(
@@ -78,9 +69,7 @@ const getNameString = (
         );
         return `${convertedName} [${language}]`;
     }
-    log.debug(
-        `[AoC] Resolved ${convertedName} for member with id ${member.id}`,
-    );
+    log.debug(`[AoC] Resolved ${convertedName} for member with id ${member.id}`);
     return convertedName;
 };
 
@@ -95,10 +84,7 @@ const createEmbedFromLeaderBoard = (
     members.sort((a, b) => b[order] - a[order]);
     const top: discord.EmbedField[] = members.slice(0, 6).map((m, i) => ({
         name: `${medals[i]} ${i + 1}. ${getNameString(m, userMap, false)}`,
-        value: `⭐ ${m.stars}\n🏆 ${m.local_score}\n🌐 ${getLanguage(
-            m,
-            userMap,
-        )}`,
+        value: `⭐ ${m.stars}\n🏆 ${m.local_score}\n🌐 ${getLanguage(m, userMap)}`,
         inline: true,
     }));
 
@@ -120,11 +106,7 @@ const createEmbedFromLeaderBoard = (
         inline: false,
     };
 
-    log.info(
-        `[AoC] Created Fields for the bottom ${
-            members.length - top.length
-        } Members`,
-    );
+    log.info(`[AoC] Created Fields for the bottom ${members.length - top.length} Members`);
 
     return {
         title: "AoC Leaderboard",
@@ -150,9 +132,7 @@ const getLeaderBoard = async (): Promise<LeaderBoard> => {
 export async function publishAocLeaderBoard(context: BotContext) {
     log.debug("Entered `AoCHandler#publishLeaderBoard`");
 
-    const targetChannel = context.guild.channels.cache.get(
-        aocConfig.targetChannelId,
-    );
+    const targetChannel = context.guild.channels.cache.get(aocConfig.targetChannelId);
     if (!targetChannel) {
         log.error(`Target channel ${aocConfig.targetChannelId} not found`);
         return;
@@ -160,11 +140,7 @@ export async function publishAocLeaderBoard(context: BotContext) {
 
     const channel = targetChannel as discord.ThreadChannel;
     const leaderBoard = await getLeaderBoard();
-    const embed = createEmbedFromLeaderBoard(
-        aocConfig.userMap,
-        leaderBoard,
-        "local_score",
-    );
+    const embed = createEmbedFromLeaderBoard(aocConfig.userMap, leaderBoard, "local_score");
     return channel.send({ embeds: [embed] });
 }
 
@@ -210,24 +186,15 @@ export default class AoCCommand implements ApplicationCommand {
             return;
         }
 
-        const order =
-            command.options.getString("order", false) ?? "local_score";
+        const order = command.options.getString("order", false) ?? "local_score";
 
-        if (
-            order !== "stars" &&
-            order !== "local_score" &&
-            order !== "global_score"
-        ) {
+        if (order !== "stars" && order !== "local_score" && order !== "global_score") {
             // Shouldn't happen unless we change the command
             throw new Error(`Invalid order ${order}`);
         }
 
         const leaderBoard = await getLeaderBoard();
-        const embed = createEmbedFromLeaderBoard(
-            aocConfig.userMap,
-            leaderBoard,
-            order,
-        );
+        const embed = createEmbedFromLeaderBoard(aocConfig.userMap, leaderBoard, order);
         await command.reply({ embeds: [embed] });
     }
 }

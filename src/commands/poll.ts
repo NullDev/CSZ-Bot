@@ -67,9 +67,7 @@ export const FIELD_NAME_LIMIT = 256;
 export const FIELD_VALUE_LIMIT = 1024;
 export const POLL_OPTION_SEPARATOR = " - ";
 export const POLL_OPTION_MAX_LENGTH =
-    2 * FIELD_VALUE_LIMIT -
-    Math.max(...LETTERS.map(s => s.length)) -
-    POLL_OPTION_SEPARATOR.length;
+    2 * FIELD_VALUE_LIMIT - Math.max(...LETTERS.map(s => s.length)) - POLL_OPTION_SEPARATOR.length;
 export const OPTION_LIMIT = LETTERS.length;
 
 interface DelayedPoll {
@@ -82,11 +80,7 @@ interface DelayedPoll {
 
 export const delayedPolls: DelayedPoll[] = [];
 
-export const createOptionField = (
-    option: string,
-    index: number,
-    author?: User,
-): APIEmbedField => {
+export const createOptionField = (option: string, index: number, author?: User): APIEmbedField => {
     let newOption = option;
     if (author) {
         const authorNote = ` (von ${author.username})`;
@@ -101,8 +95,7 @@ export const createOptionField = (
 
     const optionDiscriminator = `${LETTERS[index]}${POLL_OPTION_SEPARATOR}`;
     const splitIndex = FIELD_NAME_LIMIT - optionDiscriminator.length;
-    const firstTextBlock =
-        optionDiscriminator + newOption.substring(0, splitIndex);
+    const firstTextBlock = optionDiscriminator + newOption.substring(0, splitIndex);
     const secondTextBlock = newOption.substring(splitIndex) || " ";
 
     return { name: firstTextBlock, value: secondTextBlock, inline: false };
@@ -154,8 +147,7 @@ export const run: CommandFunction = async (message, args, context) => {
         .filter(e => e.replace(/\s/g, "") !== "");
 
     const question = pollArray[0];
-    if (question.length > TEXT_LIMIT)
-        return "Bruder die Frage ist ja länger als mein Schwanz :c";
+    if (question.length > TEXT_LIMIT) return "Bruder die Frage ist ja länger als mein Schwanz :c";
 
     const pollOptions = pollArray.slice(1);
     let pollOptionsTextLength = 0;
@@ -188,9 +180,7 @@ export const run: CommandFunction = async (message, args, context) => {
         fields,
         timestamp: new Date().toISOString(),
         author: {
-            name: `${options.straw ? "Strawpoll" : "Umfrage"} von ${
-                message.author.username
-            }`,
+            name: `${options.straw ? "Strawpoll" : "Umfrage"} von ${message.author.username}`,
             icon_url: message.author.displayAvatarURL(),
         },
     };
@@ -232,10 +222,7 @@ export const run: CommandFunction = async (message, args, context) => {
 
         embedFields.push({
             name: "⏳ Verzögert",
-            value: `Abstimmungsende: ${time(
-                finishTime,
-                TimestampStyles.RelativeTime,
-            )}`,
+            value: `Abstimmungsende: ${time(finishTime, TimestampStyles.RelativeTime)}`,
             inline: true,
         });
         embed.color = 0xa10083;
@@ -306,9 +293,7 @@ export const importPolls = async () => {
 
 export const processPolls = async (context: BotContext) => {
     const currentDate = new Date();
-    const pollsToFinish = delayedPolls.filter(
-        delayedPoll => currentDate >= delayedPoll.finishesAt,
-    );
+    const pollsToFinish = delayedPolls.filter(delayedPoll => currentDate >= delayedPoll.finishesAt);
 
     const channel: TextChannel = context.textChannels.votes;
 
@@ -328,20 +313,17 @@ export const processPolls = async (context: BotContext) => {
                         ) !== uidi,
                 )
                 .map(async uidToResolve => {
-                    users[uidToResolve] =
-                        await context.client.users.fetch(uidToResolve);
+                    users[uidToResolve] = await context.client.users.fetch(uidToResolve);
                 }),
         );
 
-        const fields: APIEmbedField[] = delayedPoll.reactions.map(
-            (value, i) => {
-                return {
-                    name: `${LETTERS[i]} ${delayedPoll.reactionMap[i]} (${value.length})`,
-                    value: value.map(uid => users[uid]).join("\n") || "-",
-                    inline: false,
-                };
-            },
-        );
+        const fields: APIEmbedField[] = delayedPoll.reactions.map((value, i) => {
+            return {
+                name: `${LETTERS[i]} ${delayedPoll.reactionMap[i]} (${value.length})`,
+                value: value.map(uid => users[uid]).join("\n") || "-",
+                inline: false,
+            };
+        });
 
         const embed = message.embeds[0];
         if (embed === undefined) {
@@ -379,9 +361,7 @@ export const processPolls = async (context: BotContext) => {
         await channel.send({
             embeds: [toSend],
         });
-        await Promise.all(
-            message.reactions.cache.map(reaction => reaction.remove()),
-        );
+        await Promise.all(message.reactions.cache.map(reaction => reaction.remove()));
         await message.react("✅");
         delayedPolls.splice(delayedPolls.indexOf(delayedPoll), 1);
 

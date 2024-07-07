@@ -70,11 +70,7 @@ export type ConfigVoiceChannelId = "haupt_woischat_id";
 
 export type ConfigGuildId = "guild_id";
 
-export type ConfigId =
-    | ConfigRoleId
-    | ConfigTextChannelId
-    | ConfigGuildId
-    | ConfigVoiceChannelId;
+export type ConfigId = ConfigRoleId | ConfigTextChannelId | ConfigGuildId | ConfigVoiceChannelId;
 
 export interface Config {
     auth: {
@@ -134,13 +130,7 @@ export interface Config {
     ids: Record<ConfigIdKey, Snowflake>;
 }
 
-export type JsonValue =
-    | JsonObject
-    | JsonValue[]
-    | boolean
-    | number
-    | string
-    | null;
+export type JsonValue = JsonObject | JsonValue[] | boolean | number | string | null;
 
 export type JsonObject = Record<string, JsonValue>;
 

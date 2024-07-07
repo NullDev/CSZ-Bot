@@ -101,9 +101,7 @@ async function drawStempelgraph(
         log.debug(`${stempel.inviter} --> ${stempel.invitee}`);
     }
     for (const info of userInfo) {
-        log.debug(
-            `${info[0].id} : ${info[1].name} / ${info[1].member} / ${info[1].roles}`,
-        );
+        log.debug(`${info[0].id} : ${info[1].name} / ${info[1].member} / ${info[1].roles}`);
     }
     const inviterNodes = stempels
         .map(s => userInfo.get(s.inviter))
@@ -117,9 +115,7 @@ async function drawStempelgraph(
         .map(getMemberNode)
         .join(";");
 
-    const connections = stempels
-        .map(s => `"${s.inviter.id}" -> "${s.invitee.id}"`)
-        .join(";");
+    const connections = stempels.map(s => `"${s.inviter.id}" -> "${s.invitee.id}"`).join(";");
 
     const dotSrc = `digraph {
 	layout = ${engine};
@@ -232,9 +228,7 @@ export default class StempelgraphCommand implements ApplicationCommand {
         log.debug(`Found ${stempels.length} Stempels`);
 
         const allUserIds = new Set<string>(
-            stempels
-                .map(s => s.inviterId)
-                .concat(stempels.map(s => s.invitedMemberId)),
+            stempels.map(s => s.inviterId).concat(stempels.map(s => s.invitedMemberId)),
         );
         log.debug(`All in all we have ${allUserIds.size} unique Stempler`);
 
@@ -247,8 +241,7 @@ export default class StempelgraphCommand implements ApplicationCommand {
                 invitee: memberInfoMap.get(s.invitedMemberId),
             }))
             .filter(
-                (s): s is StempelConnection =>
-                    s.invitee !== undefined && s.inviter !== undefined,
+                (s): s is StempelConnection => s.invitee !== undefined && s.inviter !== undefined,
             );
 
         const graphUserInfo = new Map<GuildMember, UserInfo>();
@@ -260,15 +253,10 @@ export default class StempelgraphCommand implements ApplicationCommand {
             });
         }
 
-        const engine = (command.options.getString("engine") ??
-            "dot") as LayoutEngine;
+        const engine = (command.options.getString("engine") ?? "dot") as LayoutEngine;
 
         try {
-            const stempelGraph = await drawStempelgraph(
-                namedStempels,
-                engine,
-                graphUserInfo,
-            );
+            const stempelGraph = await drawStempelgraph(namedStempels, engine, graphUserInfo);
 
             await command.reply({
                 files: [

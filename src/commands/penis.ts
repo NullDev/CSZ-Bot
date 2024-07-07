@@ -103,17 +103,12 @@ export default class PenisCommand implements MessageCommand {
         const mention = message.mentions.users.first();
         const userToMeasure = mention !== undefined ? mention : author;
 
-        log.debug(
-            `${author.id} wants to measure penis of user ${userToMeasure.id}`,
-        );
+        log.debug(`${author.id} wants to measure penis of user ${userToMeasure.id}`);
 
-        const recentMeasurement =
-            await penis.fetchRecentMeasurement(userToMeasure);
+        const recentMeasurement = await penis.fetchRecentMeasurement(userToMeasure);
 
         if (recentMeasurement === undefined) {
-            log.debug(
-                `No recent measuring of ${userToMeasure.id} found. Creating Measurement`,
-            );
+            log.debug(`No recent measuring of ${userToMeasure.id} found. Creating Measurement`);
 
             const size =
                 userToMeasure.id === context.client.user.id
@@ -125,9 +120,7 @@ export default class PenisCommand implements MessageCommand {
                     : ((Math.floor(Math.random() * RADIUS_MAX) + 1) as Radius);
 
             if (await isNewLongestDick(size)) {
-                log.debug(
-                    `${userToMeasure} has the new longest dick with size ${size}`,
-                );
+                log.debug(`${userToMeasure} has the new longest dick with size ${size}`);
             }
 
             await Promise.all([

@@ -7,10 +7,7 @@ export default class NischdaaaCommand implements SpecialCommand {
     randomness = 0.005;
 
     matches(message: ProcessableMessage): boolean {
-        return (
-            message.content.endsWith("?") &&
-            message.content.split(" ").length > 3
-        );
+        return message.content.endsWith("?") && message.content.split(" ").length > 3;
     }
 
     async handleSpecialMessage(message: ProcessableMessage) {

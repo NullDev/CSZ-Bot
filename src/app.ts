@@ -163,29 +163,18 @@ client.once("ready", async initializedClient => {
  * for the "old commands". This way we can easily migrate commands to slash commands
  * and still have the option to use the textual commands. Win-Win :cooldoge:
  */
-client.on("messageCreate", message =>
-    messageCommandHandler(message, botContext),
-);
+client.on("messageCreate", message => messageCommandHandler(message, botContext));
 
-client.on("interactionCreate", interaction =>
-    handleInteractionEvent(interaction, botContext),
-);
+client.on("interactionCreate", interaction => handleInteractionEvent(interaction, botContext));
 
 client.on("guildCreate", guild =>
-    log.info(
-        `New guild joined: ${guild.name} (id: ${guild.id}) with ${guild.memberCount} members`,
-    ),
+    log.info(`New guild joined: ${guild.name} (id: ${guild.id}) with ${guild.memberCount} members`),
 );
 
-client.on("guildDelete", guild =>
-    log.info(`Deleted from guild: ${guild.name} (id: ${guild.id}).`),
-);
+client.on("guildDelete", guild => log.info(`Deleted from guild: ${guild.name} (id: ${guild.id}).`));
 
 client.on("guildMemberAdd", async member => {
-    const numRageQuits = await guildRageQuit.getNumRageQuits(
-        member.guild,
-        member,
-    );
+    const numRageQuits = await guildRageQuit.getNumRageQuits(member.guild, member);
 
     if (numRageQuits === 0) {
         return;
@@ -208,9 +197,7 @@ client.on("guildMemberAdd", async member => {
     });
 });
 
-client.on("guildMemberRemove", member =>
-    guildRageQuit.incrementRageQuit(member.guild, member),
-);
+client.on("guildMemberRemove", member => guildRageQuit.incrementRageQuit(member.guild, member));
 
 client.on("messageCreate", m => messageHandler(m, botContext));
 client.on("messageCreate", m => deleteThreadMessagesHandler(m, botContext));
@@ -246,27 +233,18 @@ client.on("rateLimit", d => log.error(d, "Discord client rate limit reached"));
 client.on("invalidated", () => log.debug("Client invalidated"));
 
 client.on("messageReactionAdd", async (event, user) => {
-    const [entireEvent, entireUser] = await Promise.all([
-        event.fetch(),
-        user.fetch(),
-    ]);
+    const [entireEvent, entireUser] = await Promise.all([event.fetch(), user.fetch()]);
 
     for (const handler of reactionHandlers) {
         try {
             await handler.execute(entireEvent, entireUser, botContext, false);
         } catch (err) {
-            log.error(
-                err,
-                `Handler "${handler.displayName}" failed during "messageReactionAdd".`,
-            );
+            log.error(err, `Handler "${handler.displayName}" failed during "messageReactionAdd".`);
         }
     }
 });
 client.on("messageReactionRemove", async (event, user) => {
-    const [entireEvent, entireUser] = await Promise.all([
-        event.fetch(),
-        user.fetch(),
-    ]);
+    const [entireEvent, entireUser] = await Promise.all([event.fetch(), user.fetch()]);
 
     for (const handler of reactionHandlers) {
         try {

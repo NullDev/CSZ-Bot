@@ -27,27 +27,18 @@ export default class DadJokeCommand implements SpecialCommand {
     };
 
     answers: Record<Lang, string[]> = {
-        german: [
-            "Und ich bin der Uwe, ich bin auch dabei",
-            "Hallo #WHOIS#, ich bin #BOTNAME#",
-        ],
+        german: ["Und ich bin der Uwe, ich bin auch dabei", "Hallo #WHOIS#, ich bin #BOTNAME#"],
         austrian: ["Und i bin da #BOTNAME# oida", "Oida #WHOIS#, was geht?"],
     };
 
-    #getRandomAnswer(
-        config: PhraseConfig,
-        slotConfig: Record<Slot, string>,
-    ): string {
+    #getRandomAnswer(config: PhraseConfig, slotConfig: Record<Slot, string>): string {
         const langArr = this.answers[config.lang];
         let randomMessage = randomEntry(langArr);
 
         if (randomMessage.includes("#")) {
             for (const slot of Object.keys(slotConfig)) {
                 if (randomMessage.includes(`#${slot}#`)) {
-                    randomMessage = randomMessage.replaceAll(
-                        `#${slot}#`,
-                        slotConfig[slot as Slot],
-                    );
+                    randomMessage = randomMessage.replaceAll(`#${slot}#`, slotConfig[slot as Slot]);
                 }
             }
         }
@@ -60,43 +51,29 @@ export default class DadJokeCommand implements SpecialCommand {
 
         // Note the whitespaces
         return Object.keys(this.matchPhrases).some(
-            phrase =>
-                msg.startsWith(`${phrase} `) &&
-                substringAfter(msg, `${phrase} `).length > 3,
+            phrase => msg.startsWith(`${phrase} `) && substringAfter(msg, `${phrase} `).length > 3,
         );
     }
 
-    async handleSpecialMessage(
-        message: ProcessableMessage,
-        context: BotContext,
-    ) {
+    async handleSpecialMessage(message: ProcessableMessage, context: BotContext) {
         const msg = message.content.toLowerCase();
-        const phrase = Object.keys(this.matchPhrases).find(p =>
-            msg.startsWith(p),
-        );
+        const phrase = Object.keys(this.matchPhrases).find(p => msg.startsWith(p));
         if (!phrase) return;
         const attributes = this.matchPhrases[phrase];
         const idx = msg.lastIndexOf(phrase);
 
         if (idx < message.content.length - 1) {
             // Get index of the first terminator character after trigger
-            const indexOfTerminator = message.content.search(
-                /(?:(?![,])[\p{P}\p{S}\p{C}])/gu,
-            );
+            const indexOfTerminator = message.content.search(/(?:(?![,])[\p{P}\p{S}\p{C}])/gu);
             // Extract the dad joke subject
             const trimmedWords = message.content
                 .substring(
                     idx + phrase.length + 1,
-                    indexOfTerminator !== -1
-                        ? indexOfTerminator
-                        : message.content.length,
+                    indexOfTerminator !== -1 ? indexOfTerminator : message.content.length,
                 )
                 .split(/\s+/)
                 .map(w => w.trim());
-            const whoIs = cleanContent(
-                trimmedWords.join(" "),
-                message.channel,
-            ).trim();
+            const whoIs = cleanContent(trimmedWords.join(" "), message.channel).trim();
             const slots: Record<Slot, string> = {
                 WHOIS: whoIs,
                 BOTNAME: context.client.user.username ?? "Bot",

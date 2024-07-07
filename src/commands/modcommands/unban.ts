@@ -3,20 +3,14 @@ import {
     SlashCommandUserOption,
     ChatInputCommandInteraction,
 } from "discord.js";
-import type {
-    Message,
-    CommandInteraction,
-    PermissionsString,
-} from "discord.js";
+import type { Message, CommandInteraction, PermissionsString } from "discord.js";
 
 import type { ApplicationCommand, MessageCommand } from "../command.js";
 import type { BotContext } from "../../context.js";
 
 import * as banService from "../../service/banService.js";
 
-export default class UnbanCommand
-    implements ApplicationCommand, MessageCommand
-{
+export default class UnbanCommand implements ApplicationCommand, MessageCommand {
     name = "unban";
     description = "Joa, unbannt halt einen ne?";
     requiredPermissions: readonly PermissionsString[] = ["BanMembers"];

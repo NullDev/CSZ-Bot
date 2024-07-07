@@ -1,10 +1,5 @@
 import type { Snowflake } from "discord.js";
-import type {
-    ColumnType,
-    Generated,
-    GeneratedAlways,
-    Selectable,
-} from "kysely";
+import type { ColumnType, Generated, GeneratedAlways, Selectable } from "kysely";
 
 import type { Radius } from "../../commands/penis.js";
 

@@ -29,8 +29,7 @@ const buildEmbed = (member: GuildMember, reply: string) => {
 export default class GoogleCommand implements ApplicationCommand {
     modCommand = false;
     name = "google";
-    description =
-        "Falls jemand zu blöd zum googlen ist und du es ihm unter die Nase reiben willst";
+    description = "Falls jemand zu blöd zum googlen ist und du es ihm unter die Nase reiben willst";
 
     applicationCommand = new SlashCommandBuilder()
         .setName(this.name)
@@ -54,9 +53,7 @@ export default class GoogleCommand implements ApplicationCommand {
             return;
         }
 
-        const user = command.guild?.members.cache.find(
-            m => m.id === command.user.id,
-        );
+        const user = command.guild?.members.cache.find(m => m.id === command.user.id);
         if (!user) {
             throw new Error("Couldn't resolve guild member");
         }
@@ -66,18 +63,12 @@ export default class GoogleCommand implements ApplicationCommand {
             ) ?? null;
         const swd = command.options.getString("searchword", true);
 
-        const link = `[${swd}](https://www.google.com/search?q=${swd.replaceAll(
-            " ",
-            "+",
-        )})`;
+        const link = `[${swd}](https://www.google.com/search?q=${swd.replaceAll(" ", "+")})`;
 
         const randomReply = randomEntry(replies);
         let reply = randomReply.replace("{0}", link);
         if (dau) {
-            reply = reply.replace(
-                "{1}",
-                `${dau?.nickname ?? dau?.displayName}`,
-            );
+            reply = reply.replace("{1}", `${dau?.nickname ?? dau?.displayName}`);
         }
 
         const embed = buildEmbed(user, reply);

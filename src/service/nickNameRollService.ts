@@ -14,11 +14,7 @@ export async function rerollNicknames(context: BotContext) {
     await Promise.all(updateTasks);
 }
 
-async function updateNickname(
-    context: BotContext,
-    userId: string,
-    storedNicknames: string[],
-) {
+async function updateNickname(context: BotContext, userId: string, storedNicknames: string[]) {
     try {
         const member = context.guild.members.cache.find(m => m.id === userId);
         if (!member) return;

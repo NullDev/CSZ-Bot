@@ -22,10 +22,7 @@ export function startFadingMessage(
         .executeTakeFirstOrThrow();
 }
 
-export function findPendingForDeletion(
-    now: Date,
-    ctx = db(),
-): Promise<FadingMessage[]> {
+export function findPendingForDeletion(now: Date, ctx = db()): Promise<FadingMessage[]> {
     return ctx
         .selectFrom("fadingMessages")
         .where("endTime", "<=", now.toISOString())

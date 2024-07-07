@@ -1,20 +1,12 @@
 import type { ClientUser, Message } from "discord.js";
 
 import type { BotContext } from "../context.js";
-import {
-    isProcessableMessage,
-    type ProcessableMessage,
-} from "../service/commandService.js";
+import { isProcessableMessage, type ProcessableMessage } from "../service/commandService.js";
 import legacyCommandHandler from "./legacyCommandHandler.js";
 
-const getInlineReplies = (
-    messageRef: ProcessableMessage,
-    clientUser: ClientUser,
-) => {
+const getInlineReplies = (messageRef: ProcessableMessage, clientUser: ClientUser) => {
     return messageRef.channel.messages.cache.filter(
-        m =>
-            m.author.id === clientUser.id &&
-            m.reference?.messageId === messageRef.id,
+        m => m.author.id === clientUser.id && m.reference?.messageId === messageRef.id,
     );
 };
 
@@ -38,11 +30,7 @@ export default async function (message: Message, context: BotContext) {
         message.content.startsWith(context.prefix.command) ||
         message.content.startsWith(context.prefix.modCommand);
 
-    if (
-        context.client.user &&
-        message.mentions.has(context.client.user.id) &&
-        !isCommand
-    ) {
+    if (context.client.user && message.mentions.has(context.client.user.id) && !isCommand) {
         // Trusted users should be familiar with the bot, they should know how to use it
         // Maybe, we don't want to flame them, since that can make the chat pretty noisy
 
@@ -50,9 +38,7 @@ export default async function (message: Message, context: BotContext) {
             context.rawConfig.bot_settings.flame_trusted_user_on_bot_ping ||
             !context.roleGuard.isTrusted(message.member);
 
-        const shouldHonorUser = message.member.roles.cache.has(
-            context.roles.winner.id,
-        );
+        const shouldHonorUser = message.member.roles.cache.has(context.roles.winner.id);
 
         const reply = shouldFlameUser
             ? "Was pingst du mich du Hurensohn :angry:"

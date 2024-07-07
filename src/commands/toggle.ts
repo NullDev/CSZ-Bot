@@ -72,9 +72,7 @@ export const run: CommandFunction = async (message, args, context) => {
     const pollAuthor = pollEmbed.author;
     if (!pollAuthor) return "Irgendwie ist der Poll kaputt";
 
-    const isPoll =
-        pollAuthor.name.startsWith("Umfrage") ||
-        pollAuthor.name.startsWith("Strawpoll");
+    const isPoll = pollAuthor.name.startsWith("Umfrage") || pollAuthor.name.startsWith("Strawpoll");
 
     const isSdm = pollAuthor.name.startsWith("Secure Decision");
 

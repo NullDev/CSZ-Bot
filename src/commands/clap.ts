@@ -12,8 +12,7 @@ import type { BotContext } from "../context.js";
 import type { ProcessableMessage } from "../service/commandService.js";
 import type { ApplicationCommand, MessageCommand } from "./command.js";
 
-const clapify = (str: string): string =>
-    `${str.split(/\s+/).join(" :clap: ")} :clap:`;
+const clapify = (str: string): string => `${str.split(/\s+/).join(" :clap: ")} :clap:`;
 
 const buildClap = (author: GuildMember, toClap: string) => {
     return new EmbedBuilder()
@@ -62,9 +61,7 @@ export default class ClapCommand implements MessageCommand, ApplicationCommand {
 
         const replyRef = message.reference?.messageId;
         const isReply = replyRef !== undefined;
-        let content = message.content.slice(
-            `${context.prefix.command}${this.name} `.length,
-        );
+        let content = message.content.slice(`${context.prefix.command}${this.name} `.length);
         const hasContent = !!content && content.trim().length > 0;
 
         if (!author) {
