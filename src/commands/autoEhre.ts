@@ -1,6 +1,6 @@
-import type { ProcessableMessage } from "../../service/commandService.js";
-import type { SpecialCommand } from "../command.js";
-import EhreCommand from "../ehre.js";
+import type { ProcessableMessage } from "../service/commandService.js";
+import type { SpecialCommand } from "./command.js";
+import EhreCommand from "./ehre.js";
 
 export default class AutoEhreCommand implements SpecialCommand {
     name = "AutoEhre";
