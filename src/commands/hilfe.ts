@@ -1,46 +1,9 @@
-import * as fs from "node:fs/promises";
-import * as path from "node:path";
-
 import type { CommandFunction } from "../types.js";
 import type { BotContext } from "../context.js";
-import { getMessageCommands } from "../handler/commandHandler.js";
 import * as commandService from "../service/commandService.js";
 
-/**
- * Retrieves commands in chunks that doesn't affect message limit
- */
-const getCommandMessageChunksMatchingLimit = (
-    commands: Array<[string, string]>,
-): string[] => {
-    const chunk: string[] = [];
-    let index = 0;
+export const description = "Listet alle commands auf";
 
-    const sortedCommands = commands.toSorted((a, b) =>
-        a[0].localeCompare(b[0]),
-    );
-    for (const value of sortedCommands) {
-        if (
-            chunk[index] &&
-            chunk[index].length + (value[0].length + value[1].length + 10) >
-                2000
-        ) {
-            chunk[index] += "```";
-            ++index;
-        }
-        if (!chunk[index]) {
-            chunk[index] = "```css\n";
-        }
-        chunk[index] += `${value[0]}: ${value[1]}\n\n`;
-    }
-
-    chunk[index] += "```";
-
-    return chunk;
-};
-
-/**
- * Enlists all user-commands with descriptions
- */
 export const run: CommandFunction = async (message, _args, context) => {
     const prefix = context.prefix.command;
 
@@ -84,6 +47,35 @@ export const run: CommandFunction = async (message, _args, context) => {
     await message.react("✉"); // Send this last, so we only display a confirmation when everything actually worked
 };
 
+const getCommandMessageChunksMatchingLimit = (
+    commands: Array<[string, string]>,
+): string[] => {
+    const chunk: string[] = [];
+    let index = 0;
+
+    const sortedCommands = commands.toSorted((a, b) =>
+        a[0].localeCompare(b[0]),
+    );
+    for (const value of sortedCommands) {
+        if (
+            chunk[index] &&
+            chunk[index].length + (value[0].length + value[1].length + 10) >
+                2000
+        ) {
+            chunk[index] += "```";
+            ++index;
+        }
+        if (!chunk[index]) {
+            chunk[index] = "```css\n";
+        }
+        chunk[index] += `${value[0]}: ${value[1]}\n\n`;
+    }
+
+    chunk[index] += "```";
+
+    return chunk;
+};
+
 export function replacePrefixPlaceholders(
     helpText: string,
     context: BotContext,
@@ -92,5 +84,3 @@ export function replacePrefixPlaceholders(
         .replaceAll("$MOD_COMMAND_PREFIX$", context.prefix.modCommand)
         .replaceAll("$COMMAND_PREFIX$", context.prefix.command);
 }
-
-export const description = "Listet alle commands auf";
