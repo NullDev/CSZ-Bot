@@ -47,7 +47,7 @@ const staticCommands: readonly Command[] = [
 const allCommands: Command[] = [];
 
 const getApplicationCommands = () => allCommands.filter(isApplicationCommand);
-export const getMessageCommands = () => allCommands.filter(isMessageCommand);
+const getMessageCommands = () => allCommands.filter(isMessageCommand);
 const getSpecialCommands = () => allCommands.filter(isSpecialCommand);
 
 const lastSpecialCommands: Record<string, number> = getSpecialCommands().reduce(
@@ -207,10 +207,9 @@ const commandMessageHandler = async (
     message: ProcessableMessage,
     context: BotContext,
 ): Promise<unknown> => {
+    const lowerCommand = commandString.toLowerCase();
     const matchingCommand = getMessageCommands().find(
-        cmd =>
-            cmd.name.toLowerCase() === commandString.toLowerCase() ||
-            cmd.aliases?.includes(commandString.toLowerCase()),
+        cmd => cmd.name.toLowerCase() === lowerCommand || cmd.aliases?.includes(lowerCommand),
     );
 
     if (context.roleGuard.hasBotDenyRole(message.member) && !isMessageInBotSpam(context, message)) {
