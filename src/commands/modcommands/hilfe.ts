@@ -11,16 +11,17 @@ export default class ModHilfeCommand implements MessageCommand {
     description = "Listet alle mod-commands auf";
 
     async handleMessage(message: ProcessableMessage, context: BotContext): Promise<void> {
-        const legacyCommands = await commandService.readAvailableLegacyCommands(context, "mod");
+        const prefix = context.prefix.command;
 
-        const prefix = context.prefix.modCommand;
         const commandObj: Record<string, string> = {};
-        for (const command of legacyCommands) {
+        const newCommands = await commandService.readAvailableCommands(context);
+        for (const command of newCommands) {
+            if (!command.modCommand) {
+                continue;
+            }
+
             const commandStr = prefix + command.name;
-            commandObj[commandStr] = replacePrefixPlaceholders(
-                command.definition.description,
-                context,
-            );
+            commandObj[commandStr] = replacePrefixPlaceholders(command.description, context);
         }
 
         let commandText = "";
@@ -33,7 +34,7 @@ export default class ModHilfeCommand implements MessageCommand {
 
         // Add :envelope: reaction to authors message
         await message.author.send(
-            `Hallo, ${message.author}!\n\nHier ist eine Liste mit commands:\n\n\`\`\`CSS\n${commandText}\`\`\``,
+            `Hallo, ${message.author}!\n\nHier ist eine Liste mit mod-commands:\n\n\`\`\`CSS\n${commandText}\`\`\``,
         );
         await message.react("✉"); // Send this last, so we only display a confirmation when everything actually worked
     }
