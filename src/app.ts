@@ -199,15 +199,6 @@ client.on("messageDelete", async message => {
     );
 });
 
-client.on(
-    "messageUpdate",
-    async (_, newMessage) =>
-        await messageCommandHandler(
-            newMessage.partial ? await newMessage.fetch() : newMessage,
-            botContext,
-        ),
-);
-
 client.on("error", e => log.error(e, "Discord Client Error"));
 client.on("warn", w => log.warn(w, "Discord Client Warning"));
 client.on("debug", d => {

@@ -286,21 +286,10 @@ const specialCommandHandler = async (message: ProcessableMessage, context: BotCo
     const commands = getSpecialCommands();
     const commandCandidates = commands.filter(p => p.matches(message, context));
 
-    const executedCommands = new Set<string>();
     for (const command of commandCandidates) {
         if (Math.random() > command.randomness || !isCooledDown(command)) {
             continue;
         }
-
-        if (executedCommands.has(command.name)) {
-            log.warn(
-                { commandCandidates },
-                `Command ${command.name} was already executed, skipping`,
-            );
-            continue;
-        }
-        executedCommands.add(command.name);
-
         log.info(
             `User "${message.author.tag}" (${message.author}) performed special command: ${command.name}`,
         );
