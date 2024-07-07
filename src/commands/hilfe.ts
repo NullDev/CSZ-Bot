@@ -35,7 +35,7 @@ export const run: CommandFunction = async (message, _args, context) => {
     }
 
     await message.author.send(
-        `Hallo, ${message.author.username}!\n\nHier ist eine Liste mit Commands:\n\nBei Fragen kannst du dich über den Kanal #czs-Bot (<#902960751222853702>) an uns wenden!`,
+        `Hallo, ${message.author.username}!\n\nHier ist eine Liste mit Commands:`,
     );
 
     const chunks = getCommandMessageChunksMatchingLimit(
@@ -43,7 +43,10 @@ export const run: CommandFunction = async (message, _args, context) => {
     );
     await Promise.all(chunks.map(chunk => message.author.send(chunk)));
 
-    // Add :envelope: reaction to authors message
+    await message.author.send(
+        "Bei Fragen kannst du dich über den Kanal #czs-Bot (<#902960751222853702>) an uns wenden!",
+    );
+
     await message.react("✉"); // Send this last, so we only display a confirmation when everything actually worked
 };
 
