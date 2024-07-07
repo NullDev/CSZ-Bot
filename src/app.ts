@@ -8,7 +8,6 @@ import log from "@log";
 
 import "./polyfills.js";
 
-import messageHandler from "./handler/messageHandler.js";
 import messageDeleteHandler from "./handler/messageDeleteHandler.js";
 import * as kysely from "./storage/db/db.js";
 
@@ -153,13 +152,6 @@ client.once("ready", async initializedClient => {
     }
 });
 
-/**
- * This is an additional Message handler, that we use as a replacement
- * for the "old commands". This way we can easily migrate commands to slash commands
- * and still have the option to use the textual commands. Win-Win :cooldoge:
- */
-client.on("messageCreate", message => messageCommandHandler(message, botContext));
-
 client.on("interactionCreate", interaction => handleInteractionEvent(interaction, botContext));
 
 client.on("guildCreate", guild =>
@@ -194,7 +186,7 @@ client.on("guildMemberAdd", async member => {
 
 client.on("guildMemberRemove", member => guildRageQuit.incrementRageQuit(member.guild, member));
 
-client.on("messageCreate", m => messageHandler(m, botContext));
+client.on("messageCreate", message => messageCommandHandler(message, botContext));
 client.on("messageCreate", m => deleteThreadMessagesHandler(m, botContext));
 
 client.on("messageDelete", async message => {
@@ -210,7 +202,7 @@ client.on("messageDelete", async message => {
 client.on(
     "messageUpdate",
     async (_, newMessage) =>
-        await messageHandler(
+        await messageCommandHandler(
             newMessage.partial ? await newMessage.fetch() : newMessage,
             botContext,
         ),
