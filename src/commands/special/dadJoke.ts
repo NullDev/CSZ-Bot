@@ -1,6 +1,6 @@
 import { cleanContent } from "discord.js";
 
-import type { ProcessableMessage } from "../../handler/cmdHandler.js";
+import type { ProcessableMessage } from "../../handler/legacyCommandHandler.js";
 import type { SpecialCommand } from "../command.js";
 import type { BotContext } from "src/context.js";
 import { substringAfter } from "../../utils/stringUtils.js";

@@ -8,7 +8,7 @@ import {
 } from "discord.js";
 
 import type { ApplicationCommand, MessageCommand } from "../command.js";
-import type { ProcessableMessage } from "../../handler/cmdHandler.js";
+import type { ProcessableMessage } from "../../handler/legacyCommandHandler.js";
 import type { BotContext } from "../../context.js";
 
 import * as banService from "../../service/banService.js";

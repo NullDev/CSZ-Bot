@@ -1,4 +1,4 @@
-import type { ProcessableMessage } from "../handler/cmdHandler.js";
+import type { ProcessableMessage } from "../handler/legacyCommandHandler.js";
 import type { FadingMessage } from "./db/model.js";
 import db from "@db";
 

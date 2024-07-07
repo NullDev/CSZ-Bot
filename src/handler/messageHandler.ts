@@ -3,7 +3,7 @@ import type { ClientUser, Message } from "discord.js";
 import cmdHandler, {
     isProcessableMessage,
     type ProcessableMessage,
-} from "./cmdHandler.js";
+} from "./legacyCommandHandler.js";
 import type { BotContext } from "../context.js";
 
 const getInlineReplies = (

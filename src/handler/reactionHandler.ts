@@ -1,6 +1,6 @@
 import type { MessageReaction, User } from "discord.js";
 
-import type { ProcessableMessage } from "./cmdHandler.js";
+import type { ProcessableMessage } from "./legacyCommandHandler.js";
 import type { BotContext } from "../context.js";
 import * as additionalMessageData from "../storage/additionalMessageData.js";
 import * as fadingMessage from "../storage/fadingMessage.js";

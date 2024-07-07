@@ -10,7 +10,7 @@ import {
 
 import type { ApplicationCommand, MessageCommand } from "./command.js";
 import type { GitHubContributor } from "../types.js";
-import type { ProcessableMessage } from "../handler/cmdHandler.js";
+import type { ProcessableMessage } from "../handler/legacyCommandHandler.js";
 import { assertNever } from "../utils/typeUtils.js";
 import type { BotContext } from "src/context.js";
 

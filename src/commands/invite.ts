@@ -1,4 +1,4 @@
-import type { ProcessableMessage } from "../handler/cmdHandler.js";
+import type { ProcessableMessage } from "../handler/legacyCommandHandler.js";
 import type { MessageCommand } from "./command.js";
 
 export const description = "";

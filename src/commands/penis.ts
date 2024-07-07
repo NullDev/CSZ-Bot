@@ -4,7 +4,7 @@ import type { User } from "discord.js";
 import type { BotContext } from "../context.js";
 import * as penis from "../storage/penis.js";
 import type { MessageCommand } from "./command.js";
-import type { ProcessableMessage } from "../handler/cmdHandler.js";
+import type { ProcessableMessage } from "../handler/legacyCommandHandler.js";
 import { formatTime } from "../utils/dateUtils.js";
 import log from "@log";
 

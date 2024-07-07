@@ -1,4 +1,4 @@
-import type { ProcessableMessage } from "../../handler/cmdHandler.js";
+import type { ProcessableMessage } from "../../handler/legacyCommandHandler.js";
 import type { SpecialCommand } from "../command.js";
 import EhreCommand from "../ehre.js";
 
