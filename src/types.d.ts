@@ -3,18 +3,6 @@ import type { Snowflake } from "discord.js";
 import type { BotContext } from "./context.js";
 import type { ProcessableMessage } from "./service/commandService.js";
 
-export type CommandFunction = (
-    message: ProcessableMessage,
-    args: Array<string>,
-    context: BotContext,
-    // biome-ignore lint/suspicious/noConfusingVoidType: void is ok lel
-) => Promise<string | void>;
-
-export type LegacyCommand = {
-    run: CommandFunction;
-    description: string;
-};
-
 export interface ReactionHandler {
     displayName: string;
     execute(

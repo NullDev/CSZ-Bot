@@ -14,16 +14,6 @@ export default class HilfeCommand implements MessageCommand {
         const prefix = context.prefix.command;
 
         const commandObj: Record<string, string> = {};
-        const legacyCommands = await commandService.readAvailableLegacyCommands(context, "pleb");
-
-        for (const command of legacyCommands) {
-            const commandStr = prefix + command.name;
-            commandObj[commandStr] = replacePrefixPlaceholders(
-                command.definition.description,
-                context,
-            );
-        }
-
         const newCommands = await commandService.readAvailableCommands(context);
         for (const command of newCommands) {
             if (command.modCommand) {
