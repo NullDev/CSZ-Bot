@@ -69,9 +69,17 @@ async function* loadRawCommandModules(context: BotContext, commandDir: string) {
 
         const moduleUrl = new URL("file://");
         moduleUrl.pathname = path.join(context.commandDir, file);
-        log.debug(`Trying to load ${moduleUrl}`);
 
-        yield await import(moduleUrl.toString());
+        // biome-ignore lint/suspicious/noExplicitAny: we need this to handle legacy and new commands
+        let module: any;
+        try {
+            module = await import(moduleUrl.toString());
+        } catch (err) {
+            log.error(err, `Could not load module "${moduleUrl}"`);
+            continue;
+        }
+
+        yield module;
     }
 }
 
