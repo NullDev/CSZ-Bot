@@ -45,7 +45,7 @@ export default class MetafrageCommand implements MessageCommand {
 
     async handleMessage(message: ProcessableMessage, context: BotContext): Promise<void> {
         const { args } = parseLegacyMessageParts(context, message);
-        const { values: options } = parseArgs({ ...argsConfig, args });
+        const options = parseArgs({ ...argsConfig, args }).values;
 
         await using _ = defer(() => message.delete());
 
