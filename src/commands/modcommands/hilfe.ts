@@ -1,42 +1,23 @@
-import { promises as fs } from "node:fs";
-import * as path from "node:path";
-
 import type { CommandFunction } from "../../types.js";
 import { replacePrefixPlaceholders } from "../hilfe.js";
+import * as commandService from "../../service/commandService.js";
 
-/**
- * Enlists all mod-commands with descriptions
- */
+export const description = "Listet alle mod-commands auf";
+
 export const run: CommandFunction = async (message, _args, context) => {
+    const legacyCommands = await commandService.readAvailableLegacyCommands(
+        context,
+        "mod",
+    );
+
+    const prefix = context.prefix.modCommand;
     const commandObj: Record<string, string> = {};
-    const commandDir = context.modCommandDir;
-
-    const files = await fs.readdir(commandDir);
-    for (const file of files) {
-        if (!file.endsWith(".ts")) {
-            continue;
-        }
-
-        const cmdPath = path.resolve(commandDir, file);
-
-        const stats = await fs.stat(cmdPath);
-
-        if (!stats.isDirectory()) {
-            // Prefix + Command name
-            const commandStr =
-                context.prefix.modCommand +
-                file.toLowerCase().replace(/\.ts/gi, "");
-
-            // commandStr is the key and the description of the command is the value
-            const modulePath = path.join(commandDir, file);
-
-            const module = await import(modulePath);
-
-            commandObj[commandStr] = replacePrefixPlaceholders(
-                module.description,
-                context,
-            );
-        }
+    for (const command of legacyCommands) {
+        const commandStr = prefix + command.name;
+        commandObj[commandStr] = replacePrefixPlaceholders(
+            command.definition.description,
+            context,
+        );
     }
 
     let commandText = "";
@@ -53,5 +34,3 @@ export const run: CommandFunction = async (message, _args, context) => {
     );
     await message.react("✉"); // Send this last, so we only display a confirmation when everything actually worked
 };
-
-export const description = "Listet alle mod commands auf";
