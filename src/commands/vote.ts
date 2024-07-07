@@ -22,7 +22,7 @@ const argsConfig = {
 
 export default class VoteCommand implements MessageCommand {
     modCommand = false;
-    name = "min";
+    name = "vote";
     description = `Erstellt eine Umfrage (ja/nein).
 Usage: $COMMAND_PREFIX$vote [Optionen?] [Hier die Frage]
 Optionen:
