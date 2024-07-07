@@ -11,10 +11,12 @@ import {
     type User,
 } from "discord.js";
 
+import type { BotContext } from "../context.js";
+import type { MessageCommand } from "./command.js";
+import { parseLegacyMessageParts, type ProcessableMessage } from "../service/commandService.js";
+
 import log from "@log";
 import * as additionalMessageData from "../storage/additionalMessageData.js";
-import type { BotContext } from "../context.js";
-import type { CommandFunction } from "../types.js";
 
 export const LETTERS = [
     ":regional_indicator_a:",
@@ -130,152 +132,174 @@ const argsConfig = {
     allowPositionals: true,
 } satisfies ParseArgsConfig;
 
-/**
- * Creates a new poll (multiple answers) or straw poll (single selection)
- */
-export const run: CommandFunction = async (message, args, context) => {
-    const { values: options, positionals } = parseArgs({ ...argsConfig, args });
+export default class PollCommand implements MessageCommand {
+    modCommand = false;
+    name = "poll";
+    description = `Erstellt eine Umfrage mit mehreren Antwortmöglichkeiten (standardmäßig mit Mehrfachauswahl) (maximal ${OPTION_LIMIT}).
+Usage: $COMMAND_PREFIX$poll [Optionen?] [Hier die Frage] ; [Antwort 1] ; [Antwort 2] ; [...]
+Optionen:
+\t-c, --channel
+\t\t\tSendet die Umfrage in den Umfragenchannel, um den Slowmode zu umgehen
+\t-e, --extendable
+\t\t\tErlaubt die Erweiterung der Antwortmöglichkeiten durch jeden User mit .extend als Reply
+\t-s, --straw
+\t\t\tStatt mehrerer Antworten kann nur eine Antwort gewählt werden
+\t-d <T>, --delayed <T>
+\t\t\tErgebnisse der Umfrage wird erst nach <T> Minuten angezeigt. (Noch) inkompatibel mit -e`;
 
-    if (positionals.length === 0) {
-        return "Bruder da ist keine Umfrage :c";
+    async handleMessage(message: ProcessableMessage, context: BotContext): Promise<void> {
+        const { args } = parseLegacyMessageParts(context, message);
+        const response = await this.legacyHandler(message, context, args);
+        if (response) {
+            await message.channel.send(response);
+        }
     }
 
-    const pollArray = positionals
-        .join(" ")
-        .split(";")
-        .map(e => e.trim())
-        .filter(e => e.replace(/\s/g, "") !== "");
+    async legacyHandler(message: ProcessableMessage, context: BotContext, args: string[]) {
+        const { values: options, positionals } = parseArgs({ ...argsConfig, args });
 
-    const question = pollArray[0];
-    if (question.length > TEXT_LIMIT) return "Bruder die Frage ist ja länger als mein Schwanz :c";
-
-    const pollOptions = pollArray.slice(1);
-    let pollOptionsTextLength = 0;
-
-    const isExtendable = options.extendable;
-    for (const pollOption of pollOptions) {
-        pollOptionsTextLength += pollOption.length;
-    }
-
-    if (!pollOptions.length) {
-        return "Bruder da sind keine Antwortmöglichkeiten :c";
-    }
-
-    if (pollOptions.length < 2 && !isExtendable) {
-        return "Bruder du musst schon mehr als eine Antwortmöglichkeit geben 🙄";
-    }
-
-    if (pollOptions.length > OPTION_LIMIT) {
-        return `Bitte gib nicht mehr als ${OPTION_LIMIT} Antwortmöglichkeiten an!`;
-    }
-
-    if (pollOptions.some(value => value.length > POLL_OPTION_MAX_LENGTH)) {
-        return `Bruder mindestens eine Antwortmöglichkeit ist länger als ${POLL_OPTION_MAX_LENGTH} Zeichen!`;
-    }
-
-    const fields = pollOptions.map((o, i) => createOptionField(o, i));
-
-    const embed: APIEmbed = {
-        description: `**${cleanContent(question, message.channel)}**`,
-        fields,
-        timestamp: new Date().toISOString(),
-        author: {
-            name: `${options.straw ? "Strawpoll" : "Umfrage"} von ${message.author.username}`,
-            icon_url: message.author.displayAvatarURL(),
-        },
-    };
-    const embedFields = embed.fields;
-    if (embedFields === undefined) {
-        return "Irgendwie fehlen die Felder in dem Embed. Das sollte nicht passieren.";
-    }
-
-    const extendable =
-        options.extendable &&
-        pollOptions.length < OPTION_LIMIT &&
-        pollOptionsTextLength < TEXT_LIMIT;
-
-    if (extendable) {
-        if (options.delayed) {
-            return "Bruder du kannst -e nicht mit -d kombinieren. 🙄";
+        if (positionals.length === 0) {
+            return "Bruder da ist keine Umfrage :c";
         }
 
-        embedFields.push({
-            name: "✏️ Erweiterbar",
-            value: "Erweiterbar mit .extend als Reply",
-            inline: true,
-        });
-        embed.color = 0x2ecc71;
-    }
-    let finishTime = undefined;
+        const pollArray = positionals
+            .join(" ")
+            .split(";")
+            .map(e => e.trim())
+            .filter(e => e.replace(/\s/g, "") !== "");
 
-    if (options.delayed) {
-        const delayTime = Number(options.delayed);
-        finishTime = new Date(Date.now() + delayTime * 60 * 1000);
+        const question = pollArray[0];
+        if (question.length > TEXT_LIMIT)
+            return "Bruder die Frage ist ja länger als mein Schwanz :c";
 
-        if (Number.isNaN(delayTime) || delayTime <= 0) {
-            return "Bruder keine ungültigen Zeiten angeben 🙄";
+        const pollOptions = pollArray.slice(1);
+        let pollOptionsTextLength = 0;
+
+        const isExtendable = options.extendable;
+        for (const pollOption of pollOptions) {
+            pollOptionsTextLength += pollOption.length;
         }
 
-        if (delayTime > 60 * 1000 * 24 * 7) {
-            return "Bruder du kannst maximal 7 Tage auf ein Ergebnis warten 🙄";
+        if (!pollOptions.length) {
+            return "Bruder da sind keine Antwortmöglichkeiten :c";
         }
 
-        embedFields.push({
-            name: "⏳ Verzögert",
-            value: `Abstimmungsende: ${time(finishTime, TimestampStyles.RelativeTime)}`,
-            inline: true,
-        });
-        embed.color = 0xa10083;
-    }
+        if (pollOptions.length < 2 && !isExtendable) {
+            return "Bruder du musst schon mehr als eine Antwortmöglichkeit geben 🙄";
+        }
 
-    embedFields.push({
-        name: "📝 Antwortmöglichkeit",
-        value: options.straw ? "Einzelauswahl" : "Mehrfachauswahl",
-        inline: true,
-    });
+        if (pollOptions.length > OPTION_LIMIT) {
+            return `Bitte gib nicht mehr als ${OPTION_LIMIT} Antwortmöglichkeiten an!`;
+        }
 
-    const voteChannel = context.textChannels.votes;
-    const channel = options.channel ? voteChannel : message.channel;
-    if (options.delayed && channel !== voteChannel) {
-        return "Du kannst keine verzögerte Abstimmung außerhalb des Umfragenchannels machen!";
-    }
+        if (pollOptions.some(value => value.length > POLL_OPTION_MAX_LENGTH)) {
+            return `Bruder mindestens eine Antwortmöglichkeit ist länger als ${POLL_OPTION_MAX_LENGTH} Zeichen!`;
+        }
 
-    if (!channel.isTextBased()) {
-        return "Der Zielchannel ist irgenwie kein Text-Channel?";
-    }
+        const fields = pollOptions.map((o, i) => createOptionField(o, i));
 
-    const pollMessage = await channel.send({
-        embeds: [embed],
-    });
-
-    await message.delete();
-    await Promise.all(pollOptions.map((_e, i) => pollMessage.react(EMOJI[i])));
-
-    if (finishTime) {
-        const reactionMap: string[] = [];
-        const reactions: string[][] = [];
-
-        pollOptions.forEach((option, index) => {
-            reactionMap[index] = option;
-            reactions[index] = [];
-        });
-
-        const delayedPollData = {
-            pollId: pollMessage.id,
-            createdAt: new Date(),
-            finishesAt: finishTime,
-            reactions,
-            reactionMap,
+        const embed: APIEmbed = {
+            description: `**${cleanContent(question, message.channel)}**`,
+            fields,
+            timestamp: new Date().toISOString(),
+            author: {
+                name: `${options.straw ? "Strawpoll" : "Umfrage"} von ${message.author.username}`,
+                icon_url: message.author.displayAvatarURL(),
+            },
         };
+        const embedFields = embed.fields;
+        if (embedFields === undefined) {
+            return "Irgendwie fehlen die Felder in dem Embed. Das sollte nicht passieren.";
+        }
 
-        await additionalMessageData.upsertForMessage(
-            pollMessage,
-            "DELAYED_POLL",
-            JSON.stringify(delayedPollData),
-        );
-        delayedPolls.push(delayedPollData);
+        const extendable =
+            options.extendable &&
+            pollOptions.length < OPTION_LIMIT &&
+            pollOptionsTextLength < TEXT_LIMIT;
+
+        if (extendable) {
+            if (options.delayed) {
+                return "Bruder du kannst -e nicht mit -d kombinieren. 🙄";
+            }
+
+            embedFields.push({
+                name: "✏️ Erweiterbar",
+                value: "Erweiterbar mit .extend als Reply",
+                inline: true,
+            });
+            embed.color = 0x2ecc71;
+        }
+        let finishTime = undefined;
+
+        if (options.delayed) {
+            const delayTime = Number(options.delayed);
+            finishTime = new Date(Date.now() + delayTime * 60 * 1000);
+
+            if (Number.isNaN(delayTime) || delayTime <= 0) {
+                return "Bruder keine ungültigen Zeiten angeben 🙄";
+            }
+
+            if (delayTime > 60 * 1000 * 24 * 7) {
+                return "Bruder du kannst maximal 7 Tage auf ein Ergebnis warten 🙄";
+            }
+
+            embedFields.push({
+                name: "⏳ Verzögert",
+                value: `Abstimmungsende: ${time(finishTime, TimestampStyles.RelativeTime)}`,
+                inline: true,
+            });
+            embed.color = 0xa10083;
+        }
+
+        embedFields.push({
+            name: "📝 Antwortmöglichkeit",
+            value: options.straw ? "Einzelauswahl" : "Mehrfachauswahl",
+            inline: true,
+        });
+
+        const voteChannel = context.textChannels.votes;
+        const channel = options.channel ? voteChannel : message.channel;
+        if (options.delayed && channel !== voteChannel) {
+            return "Du kannst keine verzögerte Abstimmung außerhalb des Umfragenchannels machen!";
+        }
+
+        if (!channel.isTextBased()) {
+            return "Der Zielchannel ist irgenwie kein Text-Channel?";
+        }
+
+        const pollMessage = await channel.send({
+            embeds: [embed],
+        });
+
+        await message.delete();
+        await Promise.all(pollOptions.map((_e, i) => pollMessage.react(EMOJI[i])));
+
+        if (finishTime) {
+            const reactionMap: string[] = [];
+            const reactions: string[][] = [];
+
+            pollOptions.forEach((option, index) => {
+                reactionMap[index] = option;
+                reactions[index] = [];
+            });
+
+            const delayedPollData = {
+                pollId: pollMessage.id,
+                createdAt: new Date(),
+                finishesAt: finishTime,
+                reactions,
+                reactionMap,
+            };
+
+            await additionalMessageData.upsertForMessage(
+                pollMessage,
+                "DELAYED_POLL",
+                JSON.stringify(delayedPollData),
+            );
+            delayedPolls.push(delayedPollData);
+        }
     }
-};
+}
 
 export const importPolls = async () => {
     const additionalDatas = await additionalMessageData.findAll("DELAYED_POLL");
@@ -368,15 +392,3 @@ export const processPolls = async (context: BotContext) => {
         await additionalMessageData.destroyForMessage(message, "DELAYED_POLL");
     }
 };
-
-export const description = `Erstellt eine Umfrage mit mehreren Antwortmöglichkeiten (standardmäßig mit Mehrfachauswahl) (maximal ${OPTION_LIMIT}).
-Usage: $COMMAND_PREFIX$poll [Optionen?] [Hier die Frage] ; [Antwort 1] ; [Antwort 2] ; [...]
-Optionen:
-\t-c, --channel
-\t\t\tSendet die Umfrage in den Umfragenchannel, um den Slowmode zu umgehen
-\t-e, --extendable
-\t\t\tErlaubt die Erweiterung der Antwortmöglichkeiten durch jeden User mit .extend als Reply
-\t-s, --straw
-\t\t\tStatt mehrerer Antworten kann nur eine Antwort gewählt werden
-\t-d <T>, --delayed <T>
-\t\t\tErgebnisse der Umfrage wird erst nach <T> Minuten angezeigt. (Noch) inkompatibel mit -e`;
