@@ -121,7 +121,11 @@ export interface MessageParts {
     args: string[];
 }
 
-export function parseMessageParts(context: BotContext, message: ProcessableMessage): MessageParts {
+/** Argument "parser" for legacy commands. Use `parseArgs` from `node:util` or create an application command instead. */
+export function parseLegacyMessageParts(
+    context: BotContext,
+    message: ProcessableMessage,
+): MessageParts {
     const isModCommand = message.content.startsWith(context.prefix.modCommand);
     const prefix = isModCommand ? context.prefix.modCommand : context.prefix.command;
 

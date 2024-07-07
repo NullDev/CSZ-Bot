@@ -2,7 +2,7 @@ import type { MessageCommand } from "./command.js";
 import type { BotContext } from "../context.js";
 import type { ProcessableMessage } from "../service/commandService.js";
 
-import { parseMessageParts } from "../service/commandService.js";
+import { parseLegacyMessageParts } from "../service/commandService.js";
 
 export default class MinCommand implements MessageCommand {
     modCommand = false;
@@ -11,7 +11,7 @@ export default class MinCommand implements MessageCommand {
         "Gibt dir die Moralisch vertretbare Altersgrenze für den Geschlechtsakt basierend auf deinem Alter zurück. \nUsage: $COMMAND_PREFIX$min [dein Alter]";
 
     async handleMessage(message: ProcessableMessage, context: BotContext): Promise<void> {
-        const { args } = parseMessageParts(context, message);
+        const { args } = parseLegacyMessageParts(context, message);
 
         if (args.length === 0) {
             message.channel.send("Wie wärs wenn du auch ein Alter angibst?");

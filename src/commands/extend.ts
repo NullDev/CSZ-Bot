@@ -4,7 +4,7 @@ import type { MessageCommand } from "./command.js";
 import type { BotContext } from "../context.js";
 import type { ProcessableMessage } from "../service/commandService.js";
 
-import { parseMessageParts } from "../service/commandService.js";
+import { parseLegacyMessageParts } from "../service/commandService.js";
 import * as poll from "./poll.js";
 import log from "@log";
 
@@ -17,7 +17,7 @@ export default class ExtendCommand implements MessageCommand {
     description = `Nutzbar als Reply auf eine mit --extendable erstellte Umfrage, um eine/mehrere Antwortmöglichkeit/en hinzuzufügen. Die Anzahl der bestehenden und neuen Antwortmöglichkeiten darf ${poll.OPTION_LIMIT} nicht übersteigen.\nUsage: $COMMAND_PREFIX$extend [Antwort 1] ; [...]`;
 
     async handleMessage(message: ProcessableMessage, context: BotContext): Promise<void> {
-        const { args } = parseMessageParts(context, message);
+        const { args } = parseLegacyMessageParts(context, message);
         await this.legacyHandler(message, context, args);
     }
 

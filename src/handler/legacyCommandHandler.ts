@@ -17,7 +17,10 @@ export default async function (message: commandService.ProcessableMessage, conte
         return;
     }
 
-    const { type, prefix, commandName, args } = commandService.parseMessageParts(context, message);
+    const { type, prefix, commandName, args } = commandService.parseLegacyMessageParts(
+        context,
+        message,
+    );
     if (!commandName) {
         return;
     }
