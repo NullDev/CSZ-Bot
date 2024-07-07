@@ -38,7 +38,10 @@ import TriggerReactOnKeyword from "../commands/special/keywordReact.js";
 import { NicknameButtonHandler } from "../commands/nickname.js";
 import SplidCommand from "../commands/splid.js";
 
-import { isProcessableMessage, type ProcessableMessage } from "./legacyCommandHandler.js";
+import {
+    isProcessableMessage,
+    type ProcessableMessage,
+} from "../service/commandService.js";
 import { isMessageInBotSpam } from "../utils/channelUtils.js";
 
 const staticCommands: readonly Command[] = [

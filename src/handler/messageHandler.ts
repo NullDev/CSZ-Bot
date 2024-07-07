@@ -1,10 +1,11 @@
 import type { ClientUser, Message } from "discord.js";
 
-import cmdHandler, {
+import type { BotContext } from "../context.js";
+import {
     isProcessableMessage,
     type ProcessableMessage,
-} from "./legacyCommandHandler.js";
-import type { BotContext } from "../context.js";
+} from "../service/commandService.js";
+import legacyCommandHandler from "./legacyCommandHandler.js";
 
 const getInlineReplies = (
     messageRef: ProcessableMessage,
@@ -75,7 +76,7 @@ export default async function (message: Message, context: BotContext) {
         return;
     }
 
-    await cmdHandler(message, context);
+    await legacyCommandHandler(message, context);
 
     // Get all inline replies to the message and delete them. Ignore errors, since cached is used and previously deleted messages are contained as well
     for (const msg of getInlineReplies(message, context.client.user).values()) {

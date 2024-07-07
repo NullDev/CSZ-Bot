@@ -1,6 +1,8 @@
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
 
+import type { Guild, GuildMember, Message } from "discord.js";
+
 import type { BotContext } from "../context.js";
 import type { Command } from "../commands/command.js";
 import type { LegacyCommand } from "../types.js";
@@ -102,4 +104,19 @@ export async function loadLegacyCommandByName(
     const allLegacyCommands = await readAvailableLegacyCommands(context, type);
     log.info(allLegacyCommands, "Legacy commands");
     return allLegacyCommands.find(cmd => cmd.name.toLowerCase() === command);
+}
+
+/**
+ * A message that the bot can pass to command handlers.
+ * For example, it ensures that there is a member (and it's not a DM)
+ */
+export type ProcessableMessage = Message<true> & {
+    member: GuildMember;
+    guild: Guild;
+};
+
+export function isProcessableMessage(
+    message: Message,
+): message is ProcessableMessage {
+    return !!message.member && !!message.guild && message.inGuild();
 }

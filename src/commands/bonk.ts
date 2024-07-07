@@ -4,7 +4,7 @@ import { createCanvas, loadImage } from "@napi-rs/canvas";
 import type { GuildMember } from "discord.js";
 
 import type { MessageCommand } from "./command.js";
-import type { ProcessableMessage } from "../handler/legacyCommandHandler.js";
+import type { ProcessableMessage } from "../service/commandService.js";
 import log from "@log";
 
 const createBonkMeme = async (author: GuildMember): Promise<Buffer> => {

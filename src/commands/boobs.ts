@@ -1,6 +1,6 @@
 import type { User } from "discord.js";
 
-import type { ProcessableMessage } from "../handler/legacyCommandHandler.js";
+import type { ProcessableMessage } from "../service/commandService.js";
 import type { MessageCommand } from "./command.js";
 import * as boob from "../storage/boob.js";
 import log from "@log";

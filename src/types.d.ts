@@ -1,7 +1,7 @@
 import type { Snowflake } from "discord.js";
 
 import type { BotContext } from "./context.js";
-import type { ProcessableMessage } from "./handler/legacyCommandHandler.js";
+import type { ProcessableMessage } from "./service/commandService.js";
 
 /**
  * A string denotes the response to the message (for example a business error).

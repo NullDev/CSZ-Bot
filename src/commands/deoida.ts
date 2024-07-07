@@ -1,5 +1,5 @@
 import type { BotContext } from "../context.js";
-import type { ProcessableMessage } from "../handler/legacyCommandHandler.js";
+import type { ProcessableMessage } from "../service/commandService.js";
 import type { MessageCommand } from "./command.js";
 import * as austrianTranslation from "../storage/austrianTranslation.js";
 

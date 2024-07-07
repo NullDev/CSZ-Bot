@@ -9,7 +9,7 @@ import {
 } from "discord.js";
 
 import type { ApplicationCommand, MessageCommand } from "./command.js";
-import type { ProcessableMessage } from "../handler/legacyCommandHandler.js";
+import type { ProcessableMessage } from "../service/commandService.js";
 import type { BotContext } from "../context.js";
 
 type Prompt = string;

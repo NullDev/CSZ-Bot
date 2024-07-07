@@ -10,7 +10,7 @@ import {
 
 import type { BotContext } from "../context.js";
 import type { ApplicationCommand, MessageCommand } from "./command.js";
-import type { ProcessableMessage } from "../handler/legacyCommandHandler.js";
+import type { ProcessableMessage } from "../service/commandService.js";
 import { ensureChatInputCommand } from "../utils/interactionUtils.js";
 
 /**

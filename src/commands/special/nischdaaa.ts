@@ -1,4 +1,4 @@
-import type { ProcessableMessage } from "../../handler/legacyCommandHandler.js";
+import type { ProcessableMessage } from "../../service/commandService.js";
 import type { SpecialCommand } from "../command.js";
 
 export default class NischdaaaCommand implements SpecialCommand {

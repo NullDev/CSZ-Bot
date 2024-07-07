@@ -7,24 +7,9 @@ import * as banService from "../service/banService.js";
 import { isMessageInBotSpam } from "../utils/channelUtils.js";
 import * as commandService from "../service/commandService.js";
 
-/**
- * A message that the bot can pass to command handlers.
- * For example, it ensures that there is a member (and it's not a DM)
- */
-export type ProcessableMessage = Message<true> & {
-    member: GuildMember;
-    guild: Guild;
-};
-
-export function isProcessableMessage(
-    message: Message,
-): message is ProcessableMessage {
-    return !!message.member && !!message.guild && message.inGuild();
-}
-
 /** Passes commands to the correct executor */
 export default async function (
-    message: ProcessableMessage,
+    message: commandService.ProcessableMessage,
     context: BotContext,
 ) {
     if (message.author.bot) {

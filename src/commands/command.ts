@@ -6,7 +6,7 @@ import type {
 } from "discord.js";
 import type { AutocompleteInteraction, CommandInteraction } from "discord.js";
 
-import type { ProcessableMessage } from "../handler/legacyCommandHandler.js";
+import type { ProcessableMessage } from "../service/commandService.js";
 import type { BotContext } from "../context.js";
 
 export type Command = ApplicationCommand | MessageCommand | SpecialCommand;
