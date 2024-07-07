@@ -15,8 +15,9 @@ const getCommandMessageChunksMatchingLimit = (
     const chunk: string[] = [];
     let index = 0;
 
-    // TODO: Use toSorted once Node.js's types have it
-    const sortedCommands = commands.sort((a, b) => a[0].localeCompare(b[0]));
+    const sortedCommands = commands.toSorted((a, b) =>
+        a[0].localeCompare(b[0]),
+    );
     for (const value of sortedCommands) {
         if (
             chunk[index] &&
