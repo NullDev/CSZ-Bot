@@ -1,26 +1,34 @@
-import type { CommandFunction } from "../types.js";
+import type { MessageCommand } from "./command.js";
+import type { BotContext } from "../context.js";
+import type { ProcessableMessage } from "../service/commandService.js";
 
-export const run: CommandFunction = async (message, args) => {
-    const messages = await message.channel.messages.fetch({
-        limit: 100, // 100 is max number
-        before: message.id,
-    });
+export default class ZusammenfassungCommand implements MessageCommand {
+    modCommand = false;
+    name = "zusammenfassung";
+    description = "Macht eine Zusammenfassung der Nachrichten und so";
 
-    const grouped = Object.groupBy(messages.values(), msg => msg.author.displayName);
+    async handleMessage(message: ProcessableMessage, _context: BotContext): Promise<void> {
+        const messages = await message.channel.messages.fetch({
+            limit: 100, // 100 is max number
+            before: message.id,
+        });
 
-    const authors = [];
-    for (const [author, messages] of Object.entries(grouped)) {
-        if (!messages) {
-            continue;
+        const grouped = Object.groupBy(messages.values(), msg => msg.author.displayName);
+
+        const authors = [];
+        for (const [author, messages] of Object.entries(grouped)) {
+            if (!messages) {
+                continue;
+            }
+
+            const charCount = Math.sumPrecise(messages.map(msg => msg.content.length));
+            authors.push(
+                `- ${messages.length} Nachrichten (${charCount | 0} Zeichen) von ${author}`,
+            );
         }
 
-        const charCount = Math.sumPrecise(messages.map(msg => msg.content.length));
-        authors.push(`- ${messages.length} Nachrichten (${charCount | 0} Zeichen) von ${author}`);
+        message.channel.send(
+            `Habe ${messages.size} Nachrichten abrufen können:\n${authors.join("\n")}`,
+        );
     }
-
-    message.channel.send(
-        `Habe ${messages.size} Nachrichten abrufen können:\n${authors.join("\n")}`,
-    );
-};
-
-export const description = "Macht eine Zusammenfassung der Nachrichten und so";
+}
