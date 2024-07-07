@@ -20,6 +20,23 @@ const argsConfig = {
     },
 } satisfies ParseArgsConfig;
 
+const insults = {
+    de: [
+        "du Sohn einer ranzigen Hafendirne!",
+        "möge dich der Blitz beim scheißen treffen!",
+        "du verdammter Troglodyt!",
+        "sonst muss ich heute Nacht noch deine Mama besuchen!",
+        "dir bau ich gleich ein drittes Fickloch!",
+        "dein Stammbaum ist ein Tetradekagon!",
+    ],
+    en: [
+        "you fucking imbecile!",
+        "retard!",
+        "you troglodyte!",
+        "even my brother is more capable and he's a retard!",
+    ],
+};
+
 export default class MetafrageCommand implements MessageCommand {
     modCommand = false;
     name = "metafrage";
@@ -39,32 +56,17 @@ export default class MetafrageCommand implements MessageCommand {
             return;
         }
 
-        // insult collections, feel free to expand
-        const germanInsults: string[] = [
-            "du Sohn einer ranzigen Hafendirne!",
-            "möge dich der Blitz beim scheißen treffen!",
-            "du verdammter Troglodyt!",
-            "sonst muss ich heute Nacht noch deine Mama besuchen!",
-            "dir bau ich gleich ein drittes Fickloch!",
-            "dein Stammbaum ist ein Tetradekagon!",
-        ];
-        const englishInsults: string[] = [
-            "you fucking imbecile!",
-            "retard!",
-            "you troglodyte!",
-            "even my brother is more capable and he's a retard!",
-        ];
-
         if (options.english) {
-            const insult = randomEntry(englishInsults);
+            const insult = randomEntry(insults.en);
             await message.channel.send(
                 `Stop asking meta questions, ${insult}\nIt's a waste of time and stops us from ~~insulting each other~~ working on real problems.\nHere's a few hints on how to do it better: <https://metaquestion.net>`,
             );
-        } else {
-            const insult = randomEntry(germanInsults);
-            await message.channel.send(
-                `Hör auf, Metafragen zu stellen, ${insult}\nDas ist reine Zeitverschwendung und hindert uns nur daran, ~~uns zu beleidigen~~ an echten Problemen zu arbeiten.\nFür Tipps zum besser machen: <http://metafrage.de>`,
-            );
+            return;
         }
+
+        const insult = randomEntry(insults.de);
+        await message.channel.send(
+            `Hör auf, Metafragen zu stellen, ${insult}\nDas ist reine Zeitverschwendung und hindert uns nur daran, ~~uns zu beleidigen~~ an echten Problemen zu arbeiten.\nFür Tipps zum besser machen: <http://metafrage.de>`,
+        );
     }
 }
