@@ -44,7 +44,6 @@ Mit x als die Anzahl der Würfel (<11) und y als die Menge der Seiten der Würfe
         }
 
         await rollService.rollInChannel(message.author, channel, amount, sides);
-        await message.delete();
     }
 }
 
