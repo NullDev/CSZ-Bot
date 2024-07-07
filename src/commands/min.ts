@@ -5,7 +5,6 @@ import type { ProcessableMessage } from "../service/commandService.js";
 import { parseLegacyMessageParts } from "../service/commandService.js";
 
 export default class MinCommand implements MessageCommand {
-    modCommand = false;
     name = "min";
     description =
         "Gibt dir die Moralisch vertretbare Altersgrenze für den Geschlechtsakt basierend auf deinem Alter zurück. \nUsage: $COMMAND_PREFIX$min [dein Alter]";

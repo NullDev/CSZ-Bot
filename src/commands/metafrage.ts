@@ -38,7 +38,6 @@ const insults = {
 };
 
 export default class MetafrageCommand implements MessageCommand {
-    modCommand = false;
     name = "metafrage";
     description =
         "Weist freundlich darauf hin, keine Metafragen zu stellen. -e für englischsprachige Hurensöhne.";

@@ -8,7 +8,6 @@ import * as banService from "../service/banService.js";
 import { parseLegacyMessageParts } from "../service/commandService.js";
 
 export default class MinCommand implements MessageCommand {
-    modCommand = false;
     name = "selfban";
     description =
         "Bannt den ausführenden User indem er ihn von allen Channels ausschließt.\nBenutzung: $COMMAND_PREFIX$selfban [Dauer in Stunden = 8; tilt; 0 = manuelle Entbannung durch Moderader nötig]";

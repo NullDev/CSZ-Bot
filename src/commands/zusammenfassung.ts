@@ -3,7 +3,6 @@ import type { BotContext } from "../context.js";
 import type { ProcessableMessage } from "../service/commandService.js";
 
 export default class ZusammenfassungCommand implements MessageCommand {
-    modCommand = false;
     name = "zusammenfassung";
     description = "Macht eine Zusammenfassung der Nachrichten und so";
 

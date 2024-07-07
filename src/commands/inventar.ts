@@ -6,7 +6,6 @@ import * as lootService from "../service/lootService.js";
 import { ensureChatInputCommand } from "../utils/interactionUtils.js";
 
 export default class InventarCommand implements ApplicationCommand {
-    modCommand = false;
     name = "inventar";
     description = "Das Inventar mit deinen gesammelten Geschenken.";
 

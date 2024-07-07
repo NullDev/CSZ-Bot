@@ -88,7 +88,6 @@ const argsConfig = {
 } satisfies ParseArgsConfig;
 
 export default class PollCommand implements MessageCommand {
-    modCommand = false;
     name = "poll";
     description = `Erstellt eine Umfrage mit mehreren Antwortmöglichkeiten (standardmäßig mit Mehrfachauswahl) (maximal ${OPTION_LIMIT}).
 Usage: $COMMAND_PREFIX$poll [Optionen?] [Hier die Frage] ; [Antwort 1] ; [Antwort 2] ; [...]

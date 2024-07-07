@@ -3,7 +3,6 @@ import type { MessageCommand } from "./command.js";
 import * as commandService from "../service/commandService.js";
 
 export default class HilfeCommand implements MessageCommand {
-    modCommand = false;
     name = "hilfe";
     description = "Listet alle commands auf";
 

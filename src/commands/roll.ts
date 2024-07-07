@@ -8,7 +8,6 @@ import { defer } from "../utils/interactionUtils.js";
 import * as rollService from "../service/rollService.js";
 
 export default class RollCommand implements MessageCommand {
-    modCommand = false;
     name = "roll";
     description = `
 Wirft x beliebig viele Würfel mit y vielen Seiten.

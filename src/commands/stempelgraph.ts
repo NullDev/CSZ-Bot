@@ -192,7 +192,6 @@ function getRoles(context: BotContext, member: GuildMember): RoleInGraph[] {
 }
 
 export default class StempelgraphCommand implements ApplicationCommand {
-    modCommand = false;
     name = "stempelgraph";
     description = "Zeigt einen Sozialgraphen der Stempel. 1984 ist real!";
 

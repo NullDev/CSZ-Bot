@@ -8,7 +8,6 @@ import { LETTERS } from "../service/pollService.js";
 import * as poll from "./poll.js";
 
 export default class ToggleCommand implements MessageCommand {
-    modCommand = false;
     name = "toggle";
     description =
         "Nutzbar als Reply auf eine Umfrage, um Sie erweiterbar zu machen. Nur für Admins nutzbar.";

@@ -6,7 +6,6 @@ import type { BotContext } from "../context.js";
 import { ensureChatInputCommand } from "../utils/interactionUtils.js";
 
 export default class OidaCommand implements ApplicationCommand {
-    modCommand = false;
     name = "oida";
     description = "Fügt a Übersetzung 🇦🇹 -> 🇩🇪 hinzu";
 
