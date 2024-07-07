@@ -350,7 +350,7 @@ export const messageCommandHandler = async (
 
                 // Not using message.reply because the original message might be deleted by the command handler
                 await message.channel.send(
-                    `${message.author} wollte gerade dieses Command ausführen:\n\`${cmdString}\`\nDabei ist irgendwas explodiert. Irgendjemand sollte das fixen.`,
+                    `${message.author} wollte gerade dieses Command ausführen:\n\`${message.content}\`\nDabei ist irgendwas explodiert. Irgendjemand sollte das fixen.`,
                 );
             }
             return;
