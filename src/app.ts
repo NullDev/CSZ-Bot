@@ -29,7 +29,7 @@ import { woisVoteReactionHandler } from "./commands/woisvote.js";
 import deleteThreadMessagesHandler from "./handler/deleteThreadMessagesHandler.js";
 import * as terminal from "./terminal.js";
 import * as guildRageQuit from "./storage/guildRageQuit.js";
-import { scheduleCronjobs } from "./handler/cronjobs.js";
+import * as cronService from "./service/cronService.js";
 import { args } from "./utils/configHandler.js";
 
 {
@@ -143,7 +143,7 @@ client.once("ready", async initializedClient => {
 
         await loadCommands(botContext);
 
-        await scheduleCronjobs(botContext);
+        await cronService.schedule(botContext);
 
         // When the application is ready, slash commands should be registered
         await registerAllApplicationCommandsAsGuildCommands(botContext);
