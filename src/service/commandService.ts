@@ -53,7 +53,7 @@ export async function readAvailableLegacyCommands(
 }
 
 async function* loadRawCommandModules(context: BotContext, commandDir: string) {
-    const commandFiles = await fs.readdir(commandDir);
+    const commandFiles = await fs.readdir(commandDir, { recursive: true });
 
     for (const file of commandFiles) {
         if (!commandExtensions.some(extension => file.endsWith(extension))) {
