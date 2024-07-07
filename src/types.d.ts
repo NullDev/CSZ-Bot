@@ -3,17 +3,12 @@ import type { Snowflake } from "discord.js";
 import type { BotContext } from "./context.js";
 import type { ProcessableMessage } from "./service/commandService.js";
 
-/**
- * A string denotes the response to the message (for example a business error).
- */
-// biome-ignore lint/suspicious/noConfusingVoidType: It's ok here, since this is the return type of a promise.
-export type CommandResult = string | void;
-
 export type CommandFunction = (
     message: ProcessableMessage,
     args: Array<string>,
     context: BotContext,
-) => Promise<CommandResult>;
+    // biome-ignore lint/suspicious/noConfusingVoidType: void is ok lel
+) => Promise<string | void>;
 
 export type LegacyCommand = {
     run: CommandFunction;
@@ -30,7 +25,6 @@ export interface ReactionHandler {
     ): Promise<void>;
 }
 
-export type Mutable<T> = { -readonly [P in keyof T]: T[P] };
 type RequiredNotNull<T> = {
     [P in keyof T]: NonNullable<T[P]>;
 };
@@ -133,10 +127,6 @@ export interface Config {
     };
     ids: Record<ConfigIdKey, Snowflake>;
 }
-
-export type JsonValue = JsonObject | JsonValue[] | boolean | number | string | null;
-
-export type JsonObject = Record<string, JsonValue>;
 
 export type ApplicationCommandCreationResponse = {
     id: Snowflake;

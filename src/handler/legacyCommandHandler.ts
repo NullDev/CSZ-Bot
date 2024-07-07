@@ -1,11 +1,8 @@
-import type { Guild, GuildMember, Message } from "discord.js";
-
-import type { CommandResult } from "../types.js";
 import type { BotContext } from "../context.js";
-import log from "@log";
 import * as banService from "../service/banService.js";
-import { isMessageInBotSpam } from "../utils/channelUtils.js";
 import * as commandService from "../service/commandService.js";
+import { isMessageInBotSpam } from "../utils/channelUtils.js";
+import log from "@log";
 
 /** Passes commands to the correct executor */
 export default async function (message: commandService.ProcessableMessage, context: BotContext) {
@@ -78,7 +75,7 @@ export default async function (message: commandService.ProcessableMessage, conte
         );
     }
 
-    let response: CommandResult | undefined = undefined;
+    let response = undefined;
     try {
         response = await definition.run(message, args, context);
     } catch (err) {

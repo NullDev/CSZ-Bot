@@ -3,6 +3,7 @@ import {
     ApplicationCommandPermissionType,
     type AutocompleteInteraction,
     type CommandInteraction,
+    type GuildMember,
     type Interaction,
     type Message,
     type MessageComponentInteraction,
@@ -11,7 +12,6 @@ import {
     REST,
     Routes,
 } from "discord.js";
-import type { GuildMember } from "discord.js";
 
 /**
  * Completely new bullish command handler it unifies slash commands and
