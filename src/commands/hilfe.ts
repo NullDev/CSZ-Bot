@@ -1,43 +1,53 @@
-import type { CommandFunction } from "../types.js";
 import type { BotContext } from "../context.js";
+import type { MessageCommand } from "./command.js";
 import * as commandService from "../service/commandService.js";
 
-export const description = "Listet alle commands auf";
+export default class HilfeCommand implements MessageCommand {
+    modCommand = false;
+    name = "hilfe";
+    description = "Listet alle commands auf";
 
-export const run: CommandFunction = async (message, _args, context) => {
-    const prefix = context.prefix.command;
+    async handleMessage(
+        message: commandService.ProcessableMessage,
+        context: BotContext,
+    ): Promise<void> {
+        const prefix = context.prefix.command;
 
-    const commandObj: Record<string, string> = {};
-    const legacyCommands = await commandService.readAvailableLegacyCommands(context, "pleb");
+        const commandObj: Record<string, string> = {};
+        const legacyCommands = await commandService.readAvailableLegacyCommands(context, "pleb");
 
-    for (const command of legacyCommands) {
-        const commandStr = prefix + command.name;
-        commandObj[commandStr] = replacePrefixPlaceholders(command.definition.description, context);
-    }
-
-    const newCommands = await commandService.readAvailableCommands(context);
-    for (const command of newCommands) {
-        if (command.modCommand) {
-            continue;
+        for (const command of legacyCommands) {
+            const commandStr = prefix + command.name;
+            commandObj[commandStr] = replacePrefixPlaceholders(
+                command.definition.description,
+                context,
+            );
         }
 
-        const commandStr = prefix + command.name;
-        commandObj[commandStr] = replacePrefixPlaceholders(command.description, context);
+        const newCommands = await commandService.readAvailableCommands(context);
+        for (const command of newCommands) {
+            if (command.modCommand) {
+                continue;
+            }
+
+            const commandStr = prefix + command.name;
+            commandObj[commandStr] = replacePrefixPlaceholders(command.description, context);
+        }
+
+        await message.author.send(
+            `Hallo, ${message.author.username}!\n\nHier ist eine Liste mit Commands:`,
+        );
+
+        const chunks = getCommandMessageChunksMatchingLimit(Object.entries(commandObj));
+        await Promise.all(chunks.map(chunk => message.author.send(chunk)));
+
+        await message.author.send(
+            "Bei Fragen kannst du dich über den Kanal #czs-Bot (<#902960751222853702>) an uns wenden!",
+        );
+
+        await message.react("✉"); // Send this last, so we only display a confirmation when everything actually worked
     }
-
-    await message.author.send(
-        `Hallo, ${message.author.username}!\n\nHier ist eine Liste mit Commands:`,
-    );
-
-    const chunks = getCommandMessageChunksMatchingLimit(Object.entries(commandObj));
-    await Promise.all(chunks.map(chunk => message.author.send(chunk)));
-
-    await message.author.send(
-        "Bei Fragen kannst du dich über den Kanal #czs-Bot (<#902960751222853702>) an uns wenden!",
-    );
-
-    await message.react("✉"); // Send this last, so we only display a confirmation when everything actually worked
-};
+}
 
 const getCommandMessageChunksMatchingLimit = (commands: Array<[string, string]>): string[] => {
     const chunk: string[] = [];
