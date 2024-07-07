@@ -90,5 +90,6 @@ export async function loadLegacyCommandByName(
 ): Promise<LegacyCommandInfo | undefined> {
     const command = name.toLowerCase();
     const allLegacyCommands = await readAvailableLegacyCommands(context, type);
+    log.info(allLegacyCommands, "Legacy commands");
     return allLegacyCommands.find(cmd => cmd.name.toLowerCase() === command);
 }
