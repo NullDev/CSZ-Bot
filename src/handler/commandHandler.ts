@@ -343,7 +343,16 @@ export const messageCommandHandler = async (
     if (message.content.startsWith(plebPrefix) || message.content.startsWith(modPrefix)) {
         const cmdString = message.content.split(/\s+/)[0].slice(1);
         if (cmdString) {
-            await commandMessageHandler(cmdString, message, context);
+            try {
+                await commandMessageHandler(cmdString, message, context);
+            } catch (err) {
+                log.error(err, "Error while handling message command");
+
+                // Not using message.reply because the original message might be deleted by the command handler
+                await message.channel.send(
+                    `${message.author} wollte gerade dieses Command ausführen:\n\`${cmdString}\`\nDabei ist irgendwas explodiert. Irgendjemand sollte das fixen.`,
+                );
+            }
             return;
         }
     }
