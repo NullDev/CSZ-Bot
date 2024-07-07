@@ -4,7 +4,7 @@
         "tsconfig.json": "tsconfig.*.json",
         "package.json": "package-lock.json, .npmrc, yarn.lock, .yarnrc, .nvmrc, bun.lockb",
         "flake.nix": "flake.lock",
-        "*.ts": "$(capture).test.ts"
+        "*.ts": "$(capture).test.ts,$(capture).d.ts"
     },
     "files.eol": "\n",
     "cSpell.language": "de,en",

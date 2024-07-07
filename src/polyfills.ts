@@ -16,3 +16,5 @@ if (typeof Math.sumPrecise !== "function") {
 if (!globalThis.URLPattern) {
     await import("urlpattern-polyfill");
 }
+
+// TODO: https://github.com/tc39/proposal-iterator-helpers/
