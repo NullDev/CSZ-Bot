@@ -39,7 +39,9 @@ export async function readAvailableLegacyCommands(
         log.debug(
             {
                 fileName,
-                run: module.run,
+                run: module.run?.toString(),
+                t: typeof module.run,
+                d: typeof module.description,
                 description: module.description,
             },
             "Module Candidate",

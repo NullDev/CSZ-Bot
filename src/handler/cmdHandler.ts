@@ -61,7 +61,7 @@ export default async function (
     );
 
     if (!invokedCommand) {
-        log.warn(`Command "${rawCommandName}" nod found`);
+        log.warn(`Command "${rawCommandName}" not found`);
         return;
     }
 
