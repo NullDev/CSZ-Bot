@@ -15,7 +15,7 @@ export async function readAvailableCommands(
     const modules = loadRawCommandModules(context, context.commandDir);
 
     const res = [];
-    for await (const module of modules) {
+    for await (const { module } of modules) {
         if (!module.default) {
             continue;
         }
@@ -34,8 +34,8 @@ export async function readAvailableLegacyCommands(
     const modules = loadRawCommandModules(context, dir);
 
     const res = [];
-    for await (const module of modules) {
-        const fileName = path.basename(module.__filename);
+    for await (const { filePath, module } of modules) {
+        const fileName = path.basename(filePath);
         log.debug(
             {
                 fileName,
@@ -69,8 +69,10 @@ async function* loadRawCommandModules(context: BotContext, commandDir: string) {
             continue;
         }
 
+        const filePath = path.join(context.commandDir, file);
+
         const moduleUrl = new URL("file://");
-        moduleUrl.pathname = path.join(context.commandDir, file);
+        moduleUrl.pathname = filePath;
 
         // biome-ignore lint/suspicious/noExplicitAny: we need this to handle legacy and new commands
         let module: any;
@@ -81,7 +83,10 @@ async function* loadRawCommandModules(context: BotContext, commandDir: string) {
             continue;
         }
 
-        yield module;
+        yield {
+            filePath,
+            module,
+        };
     }
 }
 

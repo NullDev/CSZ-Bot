@@ -22,6 +22,7 @@ export default async function (message: Message, context: BotContext) {
         .replace(context.prefix.command, "")
         .replace(context.prefix.modCommand, "")
         .replace(/\s/g, "");
+
     // Maybe we can move some of these checks to `isProcessableMessage`, but we need to figure out how to represent this in a type
     if (message.author.bot || nonBiased === "") {
         return;
