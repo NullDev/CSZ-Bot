@@ -56,6 +56,9 @@ export default class MetafrageCommand implements MessageCommand {
             return;
         }
 
+        throw new Error("Lol test");
+
+        // biome-ignore lint/correctness/noUnreachable: <explanation>
         if (options.english) {
             const insult = randomEntry(insults.en);
             await message.channel.send(
