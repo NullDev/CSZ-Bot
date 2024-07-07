@@ -28,7 +28,7 @@ export type LegacyCommandInfo = { name: string; definition: LegacyCommand };
 
 export async function readAvailableLegacyCommands(
     context: BotContext,
-    type: "mod" | "pleb",
+    type: CommandType,
 ): Promise<LegacyCommandInfo[]> {
     const dir = type === "mod" ? context.modCommandDir : context.commandDir;
     const modules = loadRawCommandModules(context, dir);
@@ -93,7 +93,7 @@ function removeExtension(fileName: string, extensions: readonly string[]): strin
 export async function loadLegacyCommandByName(
     context: BotContext,
     name: string,
-    type: "mod" | "pleb",
+    type: CommandType,
 ): Promise<LegacyCommandInfo | undefined> {
     const command = name.toLowerCase();
     const allLegacyCommands = await readAvailableLegacyCommands(context, type);
@@ -114,8 +114,10 @@ export function isProcessableMessage(message: Message): message is ProcessableMe
     return !!message.member && !!message.guild && message.inGuild();
 }
 
+export type CommandType = "mod" | "pleb";
+
 export interface MessageParts {
-    type: "mod" | "pleb";
+    type: CommandType;
     prefix: string;
     commandName: string;
     args: string[];
