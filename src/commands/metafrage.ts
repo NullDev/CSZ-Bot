@@ -5,6 +5,7 @@ import type { BotContext } from "../context.js";
 import type { ProcessableMessage } from "../service/commandService.js";
 
 import { parseLegacyMessageParts } from "../service/commandService.js";
+import { defer } from "../utils/interactionUtils.js";
 
 import { randomEntry } from "src/utils/arrayUtils.js";
 
@@ -28,6 +29,8 @@ export default class MetafrageCommand implements MessageCommand {
     async handleMessage(message: ProcessableMessage, context: BotContext): Promise<void> {
         const { args } = parseLegacyMessageParts(context, message);
         const { values: options } = parseArgs({ ...argsConfig, args });
+
+        await using _ = defer(() => message.delete());
 
         if (args.length === 0 || (args.length === 1 && options.english)) {
             // insult collections, feel free to expand
@@ -62,6 +65,5 @@ export default class MetafrageCommand implements MessageCommand {
                 "Bruder, es gibt genau eine Option und die heißt -e! Versuch gar nicht erst, mich zu verarschen!",
             );
         }
-        await message.delete();
     }
 }
