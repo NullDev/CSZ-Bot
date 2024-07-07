@@ -4,7 +4,7 @@ import * as sentry from "@sentry/node";
 
 import type { ReactionHandler } from "./types.js";
 
-import * as conf from "./utils/configHandler.js";
+import { readConfig, databasePath, args } from "./utils/configHandler.js";
 import log from "@log";
 
 import "./polyfills.js";
@@ -30,7 +30,6 @@ import deleteThreadMessagesHandler from "./handler/deleteThreadMessagesHandler.j
 import * as terminal from "./terminal.js";
 import * as guildRageQuit from "./storage/guildRageQuit.js";
 import * as cronService from "./service/cronService.js";
-import { args } from "./utils/configHandler.js";
 
 {
     const prodMode =
@@ -51,7 +50,7 @@ import { args } from "./utils/configHandler.js";
 let botContext: BotContext;
 
 log.info("Bot starting up...");
-const config = await conf.readConfig();
+const config = await readConfig();
 
 if (config.sentry?.dsn) {
     sentry.init({
@@ -66,7 +65,7 @@ if (!config.auth.bot_token) {
     process.exit(1);
 }
 
-await kysely.connectToDb(conf.databasePath);
+await kysely.connectToDb(databasePath);
 
 const client = new Discord.Client({
     partials: [Partials.Message, Partials.Reaction, Partials.User],
@@ -102,15 +101,15 @@ const reactionHandlers: ReactionHandler[] = [
     woisVoteReactionHandler,
 ];
 
-process.on("unhandledRejection", (err: unknown, promise) => {
-    log.error(err, `Unhandled rejection (promise: ${promise})`);
-});
-process.on("uncaughtException", (err, origin) => {
-    log.error(err, `Uncaught exception (origin: ${origin})`);
-});
+process.on("unhandledRejection", (err: unknown, promise) =>
+    log.error(err, `Unhandled rejection (promise: ${promise})`),
+);
+process.on("uncaughtException", (err, origin) =>
+    log.error(err, `Uncaught exception (origin: ${origin})`),
+);
 
 process.once("SIGTERM", signal => {
-    log.fatal(`Received Sigterm: ${signal}`);
+    log.fatal(`Received SIGTERM: ${signal}`);
     process.exit(1);
 });
 process.once("exit", code => {
@@ -153,7 +152,7 @@ client.once("ready", async initializedClient => {
             process.exit(0);
         }
     } catch (err) {
-        log.error(err, "Error in Ready handler");
+        log.error(err, "Error in `ready` handler");
         process.exit(1);
     }
 });
@@ -203,13 +202,13 @@ client.on("messageCreate", m => messageHandler(m, botContext));
 client.on("messageCreate", m => deleteThreadMessagesHandler(m, botContext));
 
 client.on("messageDelete", async message => {
-    try {
-        if (message.inGuild()) {
-            await messageDeleteHandler(message, botContext);
-        }
-    } catch (err) {
-        log.error(err, `[messageDelete] Error for ${message.id}`);
+    if (!message.inGuild()) {
+        return;
     }
+
+    await messageDeleteHandler(message, botContext).catch(err =>
+        log.error(err, `[messageDelete] Error for ${message.id}`),
+    );
 });
 
 client.on(
@@ -236,25 +235,28 @@ client.on("messageReactionAdd", async (event, user) => {
     const [entireEvent, entireUser] = await Promise.all([event.fetch(), user.fetch()]);
 
     for (const handler of reactionHandlers) {
-        try {
-            await handler.execute(entireEvent, entireUser, botContext, false);
-        } catch (err) {
-            log.error(err, `Handler "${handler.displayName}" failed during "messageReactionAdd".`);
-        }
+        await handler
+            .execute(entireEvent, entireUser, botContext, false)
+            .catch(err =>
+                log.error(
+                    err,
+                    `Handler "${handler.displayName}" failed during "messageReactionAdd".`,
+                ),
+            );
     }
 });
 client.on("messageReactionRemove", async (event, user) => {
     const [entireEvent, entireUser] = await Promise.all([event.fetch(), user.fetch()]);
 
     for (const handler of reactionHandlers) {
-        try {
-            await handler.execute(entireEvent, entireUser, botContext, true);
-        } catch (err) {
-            log.error(
-                err,
-                `Handler "${handler.displayName}" failed during "messageReactionRemove".`,
+        await handler
+            .execute(entireEvent, entireUser, botContext, true)
+            .catch(err =>
+                log.error(
+                    err,
+                    `Handler "${handler.displayName}" failed during "messageReactionRemove".`,
+                ),
             );
-        }
     }
 });
 
