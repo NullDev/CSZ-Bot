@@ -18,7 +18,10 @@ export default class ExtendCommand implements MessageCommand {
 
     async handleMessage(message: ProcessableMessage, context: BotContext): Promise<void> {
         const { args } = parseLegacyMessageParts(context, message);
-        await this.legacyHandler(message, context, args);
+        const response = await this.legacyHandler(message, context, args);
+        if (response) {
+            await message.channel.send(response);
+        }
     }
 
     async legacyHandler(message: ProcessableMessage, context: BotContext, args: string[]) {
