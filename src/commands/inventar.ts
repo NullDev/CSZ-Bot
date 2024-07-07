@@ -3,7 +3,7 @@ import { type CommandInteraction, SlashCommandBuilder, SlashCommandUserOption } 
 import type { BotContext } from "../context.js";
 import type { ApplicationCommand } from "./command.js";
 import * as lootService from "../service/lootService.js";
-import { ensureChatInputCommand } from "src/utils/interactionUtils.js";
+import { ensureChatInputCommand } from "../utils/interactionUtils.js";
 
 export default class InventarCommand implements ApplicationCommand {
     modCommand = false;

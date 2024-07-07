@@ -11,8 +11,8 @@ import {
 import type { ApplicationCommand, MessageCommand } from "./command.js";
 import type { GitHubContributor } from "../types.js";
 import type { ProcessableMessage } from "../service/commandService.js";
+import type { BotContext } from "../context.js";
 import { assertNever } from "../utils/typeUtils.js";
-import type { BotContext } from "src/context.js";
 
 const fetchContributions = async (): Promise<Array<GitHubContributor>> => {
     return fetch("https://api.github.com/repos/NullDev/CSZ-Bot/contributors", {

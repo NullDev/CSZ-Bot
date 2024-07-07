@@ -2,7 +2,7 @@
 // https://rapidapi.com/ugoBoy/api/social-media-video-downloader
 // We're using the free tier, which has 150 videos per month
 
-import type { BotContext } from "src/context.js";
+import type { BotContext } from "../context.js";
 
 interface ApiResponse {
     success: boolean;
