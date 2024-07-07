@@ -35,6 +35,14 @@ export async function readAvailableLegacyCommands(
 
     const res = [];
     for await (const module of modules) {
+        log.debug(
+            {
+                run: module.run,
+                description: module.description,
+            },
+            "Module Candidate",
+        );
+
         if (
             !module.description ||
             module.description !== "string" ||
@@ -43,16 +51,9 @@ export async function readAvailableLegacyCommands(
             continue;
         }
 
-        let fileName = path.basename(module.__filename);
-        for (const extension of commandExtensions) {
-            if (fileName.endsWith(extension)) {
-                fileName = fileName.slice(0, -extension.length);
-                break;
-            }
-        }
-
+        const fileName = path.basename(module.__filename);
         res.push({
-            name: fileName,
+            name: removeExtension(fileName, commandExtensions),
             definition: module,
         });
     }
@@ -81,6 +82,18 @@ async function* loadRawCommandModules(context: BotContext, commandDir: string) {
 
         yield module;
     }
+}
+
+function removeExtension(
+    fileName: string,
+    extensions: readonly string[],
+): string {
+    for (const extension of extensions) {
+        if (fileName.endsWith(extension)) {
+            return fileName.slice(0, -extension.length);
+        }
+    }
+    return fileName;
 }
 
 export async function loadLegacyCommandByName(
