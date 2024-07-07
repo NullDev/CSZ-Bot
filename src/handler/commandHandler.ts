@@ -317,12 +317,8 @@ const specialCommandHandler = async (
     context: BotContext,
 ) => {
     const commands = getSpecialCommands();
-    log.debug(commands, `Checking ${commands.length} special commands`);
-
     const commandCandidates = commands.filter(p => p.matches(message, context));
-
     for (const command of commandCandidates) {
-        log.debug(command, `Command ${command.name} matches message`);
         if (Math.random() > command.randomness || !isCooledDown(command)) {
             continue;
         }
