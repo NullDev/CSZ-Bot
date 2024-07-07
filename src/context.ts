@@ -15,7 +15,7 @@ import { Temporal } from "@js-temporal/polyfill";
 
 import type { Config, ConfigTextChannelId, ConfigVoiceChannelId, ConfigRoleId } from "./types.js";
 import type { RemoveOptionalSuffix, RemoveSuffix } from "./utils/typeUtils.js";
-import { getConfig } from "./utils/configHandler.js";
+import { readConfig } from "./utils/configHandler.js";
 
 /**
  * Object that's passed to every executed command to make it easier to access common channels without repeatedly retrieving stuff via IDs.
@@ -163,7 +163,7 @@ function ensureVoiceChannel<T extends ConfigVoiceChannelId>(
 // #endregion
 
 export async function createBotContext(client: Client<true>): Promise<BotContext> {
-    const config = getConfig();
+    const config = await readConfig();
 
     const guild = client.guilds.cache.get(config.ids.guild_id);
     if (!guild) {

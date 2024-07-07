@@ -51,7 +51,7 @@ import { args } from "./utils/configHandler.js";
 let botContext: BotContext;
 
 log.info("Bot starting up...");
-const config = conf.getConfig();
+const config = await conf.readConfig();
 
 if (config.sentry?.dsn) {
     sentry.init({

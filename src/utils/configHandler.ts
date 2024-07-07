@@ -1,14 +1,14 @@
-import * as fs from "node:fs";
+import * as fs from "node:fs/promises";
 import * as path from "node:path";
 import { parseArgs } from "node:util";
 
-import log from "@log";
 import type { Config } from "../types.js";
+import log from "@log";
 
 const configPath = path.resolve("config.json");
 
-export const getConfig = () => {
-    if (!fs.existsSync(configPath)) {
+export const readConfig = async () => {
+    if (!(await fs.exists(configPath))) {
         log.error(
             "Config does not exist. Copy the config template and configure it according to the README:",
         );
@@ -19,7 +19,7 @@ export const getConfig = () => {
 
     let jsonString: string;
     try {
-        jsonString = fs.readFileSync(configPath, "utf8");
+        jsonString = await fs.readFile(configPath, "utf8");
     } catch (e) {
         log.error(e, "Cannot read config file");
         process.exit(1);
