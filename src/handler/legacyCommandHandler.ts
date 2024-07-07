@@ -17,25 +17,15 @@ export default async function (message: commandService.ProcessableMessage, conte
         return;
     }
 
-    const isModCommand = message.content.startsWith(context.prefix.modCommand);
-
-    const cmdPrefix = isModCommand ? context.prefix.modCommand : context.prefix.command;
-
-    const args = message.content.slice(cmdPrefix.length).trim().split(/\s+/g);
-    const rawCommandName = args.shift();
-
-    if (!rawCommandName) {
+    const { type, prefix, commandName, args } = commandService.parseMessageParts(context, message);
+    if (!commandName) {
         return;
     }
 
-    const invokedCommand = await commandService.loadLegacyCommandByName(
-        context,
-        rawCommandName,
-        isModCommand ? "mod" : "pleb",
-    );
+    const invokedCommand = await commandService.loadLegacyCommandByName(context, commandName, type);
 
     if (!invokedCommand) {
-        log.warn(`Command "${rawCommandName}" not found`);
+        log.warn(`Command "${commandName}" not found`);
         return;
     }
 
@@ -45,9 +35,9 @@ export default async function (message: commandService.ProcessableMessage, conte
     console.assert(!!definition.run, "definition.run must be non-falsy");
     console.assert(!!definition.description, "definition.description must be non-falsy");
 
-    if (isModCommand && !message.member.roles.cache.some(r => context.moderatorRoles.has(r.id))) {
+    if (type === "mod" && !message.member.roles.cache.some(r => context.moderatorRoles.has(r.id))) {
         log.warn(
-            `User "${message.author.tag}" (${message.author}) tried mod command "${cmdPrefix}${name}" and was denied`,
+            `User "${message.author.tag}" (${message.author}) tried mod command "${prefix}${name}" and was denied`,
         );
 
         if (message.member.roles.cache.some(r => r.id === context.roles.banned.id)) {
@@ -65,13 +55,13 @@ export default async function (message: commandService.ProcessableMessage, conte
         return;
     }
 
-    if (isModCommand) {
+    if (type === "mod") {
         log.info(
-            `User "${message.author.tag}" (${message.author}) performed mod-command: ${cmdPrefix}${name}`,
+            `User "${message.author.tag}" (${message.author}) performed mod-command: ${prefix}${name}`,
         );
     } else {
         log.info(
-            `User "${message.author.tag}" (${message.author}) performed command: ${cmdPrefix}${name}`,
+            `User "${message.author.tag}" (${message.author}) performed command: ${prefix}${name}`,
         );
     }
 

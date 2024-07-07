@@ -113,3 +113,24 @@ export type ProcessableMessage = Message<true> & {
 export function isProcessableMessage(message: Message): message is ProcessableMessage {
     return !!message.member && !!message.guild && message.inGuild();
 }
+
+export interface MessageParts {
+    type: "mod" | "pleb";
+    prefix: string;
+    commandName: string;
+    args: string[];
+}
+
+export function parseMessageParts(context: BotContext, message: ProcessableMessage): MessageParts {
+    const isModCommand = message.content.startsWith(context.prefix.modCommand);
+    const prefix = isModCommand ? context.prefix.modCommand : context.prefix.command;
+
+    const args = message.content.slice(prefix.length).trim().split(/\s+/g);
+    const commandName = args.shift();
+    return {
+        type: isModCommand ? "mod" : "pleb",
+        prefix,
+        commandName: commandName ?? "",
+        args,
+    };
+}
