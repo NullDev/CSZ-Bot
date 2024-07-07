@@ -46,8 +46,6 @@ import * as cronService from "./service/cronService.js";
     console.log();
 }
 
-let botContext: BotContext;
-
 log.info("Bot starting up...");
 const config = await readConfig();
 
@@ -100,9 +98,7 @@ const reactionHandlers: ReactionHandler[] = [
     woisVoteReactionHandler,
 ];
 
-process.on("unhandledRejection", (err: unknown, promise) =>
-    log.error(err, `Unhandled rejection (promise: ${promise})`),
-);
+process.on("unhandledRejection", err => log.error(err, "Unhandled rejection"));
 process.on("uncaughtException", (err, origin) =>
     log.error(err, `Uncaught exception (origin: ${origin})`),
 );
@@ -135,6 +131,7 @@ login().then(
     },
 );
 
+let botContext: BotContext;
 client.once("ready", async initializedClient => {
     try {
         botContext = await createBotContext(initializedClient);
