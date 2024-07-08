@@ -13,7 +13,6 @@ export type Command = ApplicationCommand | MessageCommand | SpecialCommand;
 
 export interface CommandBase {
     readonly modCommand?: boolean;
-    // readonly disabled?: boolean;
     readonly name: string;
     readonly aliases?: string[];
     readonly description: string;
@@ -42,18 +41,7 @@ export interface MessageCommand extends CommandBase {
 export interface SpecialCommand extends CommandBase {
     readonly randomness: number;
     readonly cooldownTime?: number;
-    handleSpecialMessage(message: ProcessableMessage, context: BotContext): Promise<void>;
     matches(message: ProcessableMessage, context: BotContext): boolean;
-}
 
-export function isApplicationCommand(cmd: Command): cmd is ApplicationCommand {
-    return "handleInteraction" in cmd;
-}
-
-export function isMessageCommand(cmd: Command): cmd is MessageCommand {
-    return "handleMessage" in cmd;
-}
-
-export function isSpecialCommand(cmd: Command): cmd is SpecialCommand {
-    return "handleSpecialMessage" in cmd;
+    handleSpecialMessage(message: ProcessableMessage, context: BotContext): Promise<void>;
 }

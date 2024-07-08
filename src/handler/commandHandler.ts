@@ -17,14 +17,11 @@ import {
  * Completely new bullish command handler it unifies slash commands and
  * message commands and relies on the "new commands"
  */
-import {
-    type ApplicationCommand,
-    type Command,
-    isApplicationCommand,
-    isMessageCommand,
-    isSpecialCommand,
-    type SpecialCommand,
-    type UserInteraction,
+import type {
+    ApplicationCommand,
+    Command,
+    SpecialCommand,
+    UserInteraction,
 } from "../commands/command.js";
 import type { BotContext } from "../context.js";
 import * as banService from "../service/banService.js";
@@ -51,9 +48,9 @@ const allCommands: Command[] = [];
 
 export const interactions: readonly UserInteraction[] = [new NicknameButtonHandler()];
 
-const getApplicationCommands = () => allCommands.filter(isApplicationCommand);
-const getMessageCommands = () => allCommands.filter(isMessageCommand);
-const getSpecialCommands = () => allCommands.filter(isSpecialCommand);
+const getApplicationCommands = () => allCommands.filter(c => "handleInteraction" in c);
+const getMessageCommands = () => allCommands.filter(c => "handleMessage" in c);
+const getSpecialCommands = () => allCommands.filter(c => "handleSpecialMessage" in c);
 
 const lastSpecialCommands: Record<string, number> = getSpecialCommands().reduce(
     // biome-ignore lint/performance/noAccumulatingSpread: Whatever this does, someone wrote pretty cool code
