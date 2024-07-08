@@ -35,13 +35,25 @@ export interface ApplicationCommand extends CommandBase {
 // For a MessageCommand we require an additional modCommand property and a handler method
 export interface MessageCommand extends CommandBase {
     handleMessage(message: ProcessableMessage, context: BotContext): Promise<void>;
+    handleEditedMessage?(
+        oldMessage: ProcessableMessage,
+        newMessage: ProcessableMessage,
+        context: BotContext,
+    ): Promise<void>;
 }
 
 // For SpecialCommands we require a pattern and a randomness (<= 1)
 export interface SpecialCommand extends CommandBase {
     readonly randomness: number;
     readonly cooldownTime?: number;
+
     matches(message: ProcessableMessage, context: BotContext): boolean;
 
     handleSpecialMessage(message: ProcessableMessage, context: BotContext): Promise<void>;
+
+    handleEditedSpecialMessage?(
+        oldMessage: ProcessableMessage,
+        newMessage: ProcessableMessage,
+        context: BotContext,
+    ): Promise<void>;
 }
