@@ -3,7 +3,7 @@ import * as sentry from "@sentry/node";
 
 import type { ReactionHandler } from "./types.js";
 
-import { readConfig, databasePath, args } from "./utils/configHandler.js";
+import { readConfig, databasePath, args } from "./service/configService.js";
 import log from "@log";
 
 import "./polyfills.js";

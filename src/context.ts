@@ -15,7 +15,7 @@ import { Temporal } from "@js-temporal/polyfill";
 
 import type { Config, ConfigTextChannelId, ConfigVoiceChannelId, ConfigRoleId } from "./types.js";
 import type { RemoveOptionalSuffix, RemoveSuffix } from "./utils/typeUtils.js";
-import { readConfig } from "./utils/configHandler.js";
+import { readConfig } from "./service/configService.js";
 
 /**
  * Object that's passed to every executed command to make it easier to access common channels without repeatedly retrieving stuff via IDs.
