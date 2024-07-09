@@ -61,7 +61,7 @@ export default class InventarCommand implements ApplicationCommand {
                     footer: {
                         text:
                             cuties > 0
-                                ? `Es befinden sich insgesamt ${cuties} süße ${contents.length === cuties ? "keine normalen" : `${contents.length - cuties} normale`} Gegenstände im Inventar`
+                                ? `Es befinden sich insgesamt ${cuties} süße und ${contents.length === cuties ? "keine normalen" : `${contents.length - cuties} normale`} Gegenstände im Inventar`
                                 : `Es befinden sich insgesamt ${contents.length} Gegenstände im Inventar`,
                     },
                 },
