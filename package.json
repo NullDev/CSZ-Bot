@@ -31,7 +31,7 @@
     "@resvg/resvg-js": "^2.6.2",
     "@sentry/bun": "^8.15.0",
     "chrono-node": "^2.7.6",
-    "croner": "^8.0.2",
+    "croner": "^8.1.0",
     "discord.js": "^14.15.3",
     "get-audio-duration": "^4.0.1",
     "graphviz-wasm": "^3.0.2",
@@ -51,7 +51,7 @@
     "@types/minimist": "^1.2.5",
     "@types/node-cron": "^3.0.11",
     "@types/sqlite3": "^3.1.11",
-    "lefthook": "^1.6.18",
+    "lefthook": "^1.7.1",
     "pino-pretty": "^11.2.1",
     "typescript": "^5.5.3"
   },
