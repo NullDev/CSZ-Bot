@@ -77,6 +77,7 @@ const lootTemplates: loot.LootTemplate[] = [
         displayName: "Kinn",
         titleText: "Ein Kinn",
         description: "Pass gut drauf auf, sonst flieht es!",
+        emote: "👶",
         asset: "assets/loot/05-kinn.jpg",
     },
     {
