@@ -33,7 +33,7 @@ export default class InventarCommand implements ApplicationCommand {
             return;
         }
 
-        const groupedByLoot = Object.groupBy(contents, item => item.lootKindId);
+        const groupedByLoot = Object.groupBy(contents, item => item.displayName);
 
         const items = Object.entries(groupedByLoot)
             .map(([_, items]) => items)

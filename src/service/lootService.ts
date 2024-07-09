@@ -24,6 +24,7 @@ import log from "@log";
 const lootTimeoutMs = 60 * 1000;
 
 const excludedLootIds = [0, 7, 8, 13, 14];
+const kebabId = 4;
 const lootTemplates: loot.LootTemplate[] = [
     {
         id: 0,
@@ -62,7 +63,7 @@ const lootTemplates: loot.LootTemplate[] = [
         asset: "assets/loot/03-kuehlschrank.jpg",
     },
     {
-        id: 4,
+        id: kebabId,
         weight: 5,
         displayName: "Döner",
         titleText: "Einen Döner",
@@ -391,7 +392,30 @@ async function postLootDrop(context: BotContext, channel: GuildChannel) {
 
 export async function getInventoryContents(user: User) {
     const contents = await loot.findOfUser(user);
-    return contents.filter(e => !excludedLootIds.includes(e.lootKindId));
+    const displayableLoot = contents.filter(e => !excludedLootIds.includes(e.lootKindId));
+
+    const now = Date.now();
+    const maxKebabAge = 1000 * 60 * 60 * 24 * 3;
+
+    const res: typeof displayableLoot = [];
+    for (const loot of displayableLoot) {
+        if (!loot.claimedAt) {
+            continue;
+        }
+
+        const itemAge = now - new Date(loot.claimedAt).getTime();
+
+        if (loot.lootKindId === kebabId && itemAge > maxKebabAge) {
+            res.push({
+                ...loot,
+                displayName: "Verschimmelter Döner",
+            });
+            continue;
+        }
+
+        res.push(loot);
+    }
+    return res;
 }
 
 export function getEmote(item: Loot) {
