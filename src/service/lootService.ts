@@ -25,7 +25,7 @@ const lootTimeoutMs = 60 * 1000;
 
 const excludedLootIds = [0, 7, 8, 13, 14];
 
-enum LootTypeId {
+export enum LootTypeId {
     NICHTS = 0,
     KADSE = 1,
     MESSERBLOCK = 2,

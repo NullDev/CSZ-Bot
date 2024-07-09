@@ -51,13 +51,18 @@ export default class InventarCommand implements ApplicationCommand {
             })
             .join("\n");
 
+        const cuties = contents.filter(i => i.lootKindId === lootService.LootTypeId.KADSE).length;
+
         await interaction.reply({
             embeds: [
                 {
                     title: `Inventar von ${user.displayName}`,
                     description,
                     footer: {
-                        text: `Es befinden sich insgesamt ${contents.length} Gegenstände im Inventar`,
+                        text:
+                            cuties > 0
+                                ? `Es befinden sich insgesamt ${cuties} süße ${contents.length === cuties ? "keine normalen" : `${contents.length - cuties} normale`} Gegenstände im Inventar`
+                                : `Es befinden sich insgesamt ${contents.length} Gegenstände im Inventar`,
                     },
                 },
             ],
