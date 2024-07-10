@@ -43,6 +43,7 @@ export enum LootTypeId {
     ERLEUCHTUNG = 14,
     BAN = 15,
     OETTINGER = 16,
+    ACHIEVEMENT = 17,
 }
 const lootTemplates: loot.LootTemplate[] = [
     {
@@ -225,6 +226,15 @@ const lootTemplates: loot.LootTemplate[] = [
         description: "Ja dann Prost ne!",
         emote: "🍺",
         asset: "assets/loot/16-oettinger.jpg",
+    },
+    {
+        id: LootTypeId.ACHIEVEMENT,
+        weight: 1,
+        displayName: "Achievement",
+        titleText: "Ein Achievement",
+        description: "Das erreichen echt nicht viele",
+        emote: "🏆",
+        asset: "assets/loot/17-achievement.png",
     },
 ] as const;
 
