@@ -110,7 +110,14 @@ Optionen:
     }
 
     async legacyHandler(message: ProcessableMessage, context: BotContext, args: string[]) {
-        const { values: options, positionals } = parseArgs({ ...argsConfig, args });
+        let params: ReturnType<typeof parseArgs>;
+        try {
+            params = parseArgs({ ...argsConfig, args });
+        } catch {
+            await message.channel.send("Yo da stimmte was mit den parametern nicht");
+            return;
+        }
+        const { values: options, positionals } = params;
 
         if (positionals.length === 0) {
             return "Bruder da ist keine Umfrage :c";
