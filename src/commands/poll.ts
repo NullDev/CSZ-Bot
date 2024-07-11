@@ -14,6 +14,7 @@ import {
 import type { BotContext } from "../context.js";
 import type { MessageCommand } from "./command.js";
 import { parseLegacyMessageParts, type ProcessableMessage } from "../service/commandService.js";
+import * as timeUtils from "../utils/time.js";
 
 import log from "@log";
 import * as additionalMessageData from "../storage/additionalMessageData.js";
@@ -200,7 +201,7 @@ Optionen:
                 return "Bruder keine ungültigen Zeiten angeben 🙄";
             }
 
-            if (delayTime > 60 * 1000 * 24 * 7) {
+            if (delayTime > timeUtils.days(7)) {
                 return "Bruder du kannst maximal 7 Tage auf ein Ergebnis warten 🙄";
             }
 

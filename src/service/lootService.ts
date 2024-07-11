@@ -18,6 +18,7 @@ import type { BotContext } from "../context.js";
 import type { Loot } from "../storage/db/model.js";
 import { randomEntry, randomEntryWeighted } from "../utils/arrayUtils.js";
 import * as loot from "../storage/loot.js";
+import * as time from "../utils/time.js";
 
 import log from "@log";
 
@@ -425,7 +426,7 @@ export async function getInventoryContents(user: User) {
     const displayableLoot = contents.filter(e => !excludedLootIds.includes(e.lootKindId));
 
     const now = Date.now();
-    const maxKebabAge = 1000 * 60 * 60 * 24 * 3;
+    const maxKebabAge = time.days(3);
 
     const res: typeof displayableLoot = [];
     for (const loot of displayableLoot) {

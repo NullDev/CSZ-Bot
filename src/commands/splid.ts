@@ -21,6 +21,7 @@ import { ensureChatInputCommand } from "../utils/interactionUtils.js";
 import logger from "@log";
 import * as splidLink from "../storage/splidLink.js";
 import * as splidGroup from "../storage/splidGroup.js";
+import * as time from "../utils/time.js";
 
 const createNumberFormatter = (currency: string) =>
     new Intl.NumberFormat("de-DE", {
@@ -544,7 +545,7 @@ type CacheEntry = {
     data: ReturnType<typeof fetchExternalMemberDataLive>;
 };
 const memberCache = new Map<string, CacheEntry>();
-const memberCacheRetentionMs = 1000 * 60;
+const memberCacheRetentionMs = time.minutes(1);
 
 type SplidMember = {
     name: string;

@@ -15,6 +15,7 @@ import {
 import type { BotContext } from "../context.js";
 import type { ApplicationCommand } from "./command.js";
 import { chunkArray } from "../utils/arrayUtils.js";
+import * as time from "../utils/time.js";
 
 export default class FaulenzerPingCommand implements ApplicationCommand {
     name = "Faulenzerping"; // Must be upper case, because this name will be matched against the application command name
@@ -54,7 +55,7 @@ export default class FaulenzerPingCommand implements ApplicationCommand {
             confirmation = await response.awaitMessageComponent({
                 filter: i => i.user.id === command.user.id,
                 componentType: ComponentType.RoleSelect,
-                time: 1000 * 60,
+                time: time.minutes(1),
             });
         } catch (e) {
             await response.edit({
