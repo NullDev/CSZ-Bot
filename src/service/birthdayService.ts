@@ -4,6 +4,7 @@ import log from "@log";
 import * as birthday from "../storage/birthday.js";
 
 import type { BotContext } from "../context.js";
+import { format } from "src/utils/stringUtils.js";
 
 /**
  * Iterates over the list of birthdays and assigns a role to people having their cake day.
@@ -42,22 +43,45 @@ export async function checkBirthdays(context: BotContext) {
 }
 
 async function sendBirthdayMessage(context: BotContext, users: GuildMember[], birthdayRole: Role) {
-    const plural = users.length > 1;
+    const userString = users.map(u => u.toString()).join(", ");
+    const message = /* mf2 */ `
+.match {$count :number}
+1 {{
+Heute kann es regnen,
+stürmen oder schneien,
+denn du strahlst ja selber
+wie der Sonnenschein.
+Heut' ist dein Geburtstag,
+darum feiern wir,
+alle deine Freunde
+freuen sich mit dir
+
+Wie schön dass du geboren bist,
+wir hätten dich sonst sehr vermisst.
+wie schön dass wir beisammen sind,
+wir gratulieren dir, ${birthdayRole}
+
+${userString}
+}}
+* {{
+Heute kann es regnen,
+stürmen oder schneien,
+denn ihr strahlt ja selber
+wie der Sonnenschein.
+Heut' ist euer Geburtstag,
+darum feiern wir,
+alle deine Freunde
+freuen sich mit euch
+
+Wie schön dass ihr geboren seid,
+wir hätten euch sonst sehr vermisst.
+wie schön dass wir beisammen sind,
+wir gratulieren euch, ${birthdayRole}
+
+${userString}
+}}
+`.trim();
     await context.textChannels.hauptchat.send(
-        `Heute kann es regnen,
-            stürmen oder schneien,
-            denn ${plural ? "ihr" : "du"} ${plural ? "strahlt" : "strahlst"} ja selber
-            wie der Sonnenschein.
-            Heut ist ${plural ? "euer" : "dein"} Geburtstag,
-            darum feiern wir,
-            alle deine Freunde
-            freuen sich mit ${plural ? "euch" : "dir"}
-
-            Wie schön dass ${plural ? "ihr" : "du"} geboren ${plural ? "seid" : "bist"},
-            wir hätten ${plural ? "euch" : "dich"} sonst sehr vermisst.
-            wie schön dass wir beisammen sind,
-            wir gratulieren ${plural ? "euch" : "dir"}, ${birthdayRole}
-
-            ${users.map(u => u).join()}`.replaceAll(/\n\s+/g, "\n"),
+        format(message, { count: users.length }).replaceAll(/\n\s+/g, "\n"),
     );
 }
