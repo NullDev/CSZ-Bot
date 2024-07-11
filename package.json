@@ -38,7 +38,7 @@
     "jsdom": "^24.1.0",
     "kysely": "^0.27.4",
     "kysely-bun-sqlite": "^0.3.2",
-    "libsodium-wrappers": "^0.7.13",
+    "libsodium-wrappers": "^0.7.14",
     "pino": "^9.2.0",
     "splid-js": "^1.1.1",
     "urlpattern-polyfill": "^10.0.0"
@@ -51,7 +51,7 @@
     "@types/minimist": "^1.2.5",
     "@types/node-cron": "^3.0.11",
     "@types/sqlite3": "^3.1.11",
-    "lefthook": "^1.7.1",
+    "lefthook": "^1.7.2",
     "pino-pretty": "^11.2.1",
     "typescript": "^5.5.3"
   },
