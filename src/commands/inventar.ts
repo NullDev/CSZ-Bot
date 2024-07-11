@@ -4,7 +4,7 @@ import type { BotContext } from "../context.js";
 import type { ApplicationCommand } from "./command.js";
 import * as lootService from "../service/lootService.js";
 import { ensureChatInputCommand } from "../utils/interactionUtils.js";
-import { format } from "src/utils/stringUtils.js";
+import { format } from "../utils/stringUtils.js";
 
 export default class InventarCommand implements ApplicationCommand {
     name = "inventar";
