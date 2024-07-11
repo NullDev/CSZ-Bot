@@ -55,14 +55,16 @@ export default class InventarCommand implements ApplicationCommand {
         const cuties = contents.filter(i => i.lootKindId === lootService.LootTypeId.KADSE).length;
 
         const message = /* mf2 */ `
-            .match {$cuties :number} {$count :number}
-            0 1 {{Es befindet sich insgesamt 1 Gegenstand im Inventar}}
-            0 * {{Es befinden sich insgesamt {$count} Gegenstände im Inventar}}
-            1 0 {{Es befinden sich insgesamt 1 süßer und keine normalen Gegenstände im Inventar}}
-            1 few {{Es befinden sich insgesamt 1 süßer und ein paar Gegenstände im Inventar}}
-            1 * {{Es befinden sich insgesamt 1 süßer und {$count} normale Gegenstände im Inventar}}
-            * * {{Es befinden sich insgesamt {$cuties} süße und {$count} normale Gegenstände im Inventar}}
-            `;
+.match {$cuties :number} {$count :number}
+0 0 {{Es befindet sich einfach überhaupt nichts in diesem Inventar}}
+0 1 {{Es befindet sich 1 Gegenstand im Inventar}}
+0 * {{Es befinden sich {$count} Gegenstände im Inventar}}
+1 0 {{Es befinden sich insgesamt 1 süßer und keine normalen Gegenstände im Inventar}}
+1 1 {{Es befinden sich insgesamt 1 süßer und 1 normaler Gegenstand im Inventar}}
+1 few {{Es befinden sich insgesamt 1 süßer und ein paar Gegenstände im Inventar}}
+1 * {{Es befinden sich insgesamt 1 süßer und {$count} normale Gegenstände im Inventar}}
+* * {{Es befinden sich insgesamt {$cuties} süße und {$count} normale Gegenstände im Inventar}}
+`.trim();
 
         await interaction.reply({
             embeds: [
