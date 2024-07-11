@@ -3,7 +3,6 @@ import {
     type GuildMember,
     type User,
     type CacheType,
-    type MessageComponentInteraction,
     ButtonStyle,
     SlashCommandBuilder,
     SlashCommandStringOption,
@@ -11,13 +10,15 @@ import {
     SlashCommandUserOption,
     ComponentType,
     type AutocompleteInteraction,
+    type Snowflake,
 } from "discord.js";
 
 import type { BotContext } from "../context.js";
-import type { ApplicationCommand, UserInteraction } from "./command.js";
+import type { ApplicationCommand } from "./command.js";
 import log from "@log";
 import { ensureChatInputCommand } from "../utils/interactionUtils.js";
 import * as nickName from "../storage/nickName.js";
+import * as time from "../utils/time.js";
 
 type Vote = "YES" | "NO";
 
@@ -25,25 +26,6 @@ interface UserVote {
     readonly vote: Vote;
     readonly trusted: boolean;
 }
-
-function getWeightOfUserVote(vote: UserVote): number {
-    return vote.trusted ? 2 : 1;
-}
-
-interface Suggestion {
-    readonly nickNameUserId: string;
-    readonly nickName: string;
-}
-
-const ongoingSuggestions: Record<string, Suggestion> = {};
-const idVoteMap: Record<string, Record<string, UserVote>> = {};
-
-const getUserVoteMap = (messageId: string): Record<string, UserVote> => {
-    if (idVoteMap[messageId] === undefined) {
-        idVoteMap[messageId] = {};
-    }
-    return idVoteMap[messageId];
-};
 
 export default class NicknameCommand implements ApplicationCommand {
     name = "nickname";
@@ -169,7 +151,13 @@ export default class NicknameCommand implements ApplicationCommand {
                         return;
                     }
 
-                    return NicknameCommand.#createNickNameVote(command, user, nickname, isTrusted);
+                    return NicknameCommand.#createNickNameVote(
+                        command,
+                        user,
+                        nickname,
+                        isTrusted,
+                        context,
+                    );
                 }
 
                 case "delete": {
@@ -249,8 +237,9 @@ export default class NicknameCommand implements ApplicationCommand {
         user: User,
         nickname: string,
         trusted: boolean,
+        context: BotContext,
     ) {
-        await command.reply({
+        const reply = await command.reply({
             content: `Eh Brudis, soll ich für ${user} ${nickname} hinzufügen?`,
             components: [
                 {
@@ -258,13 +247,13 @@ export default class NicknameCommand implements ApplicationCommand {
                     components: [
                         {
                             type: ComponentType.Button,
-                            customId: "nicknameVoteYes",
+                            customId: "nickname-vote-yes",
                             label: "Guter",
                             style: ButtonStyle.Success,
                         },
                         {
                             type: ComponentType.Button,
-                            customId: "nicknameVoteNo",
+                            customId: "nickname-vote-no",
                             label: "Lass ma",
                             style: ButtonStyle.Danger,
                         },
@@ -273,16 +262,85 @@ export default class NicknameCommand implements ApplicationCommand {
             ],
         });
 
-        const message = await command.fetchReply();
-        ongoingSuggestions[message.id] = {
-            nickNameUserId: user.id,
-            nickName: nickname,
+        const collector = reply.createMessageComponentCollector({
+            componentType: ComponentType.Button,
+            time: time.minutes(5),
+        });
+
+        const votes: Record<Snowflake, UserVote> = {
+            [command.user.id]: {
+                vote: "YES",
+                trusted,
+            },
         };
 
-        getUserVoteMap(message.id)[user.id] = {
-            vote: "YES",
-            trusted,
-        };
+        let voteResult: undefined | boolean = undefined;
+
+        collector.on("collect", async interaction => {
+            if (!interaction.member) {
+                await interaction.reply({
+                    content: "Ich find dich nicht auf dem Server. Du Huso",
+                    components: [],
+                    ephemeral: true,
+                });
+                return;
+            }
+
+            votes[interaction.user.id] = {
+                vote: interaction.customId === "nickname-vote-yes" ? "YES" : "NO",
+                trusted: context.roleGuard.isTrusted(interaction.member),
+            };
+
+            await interaction.reply({
+                content: "Hast abgestimmt",
+                ephemeral: true,
+            });
+
+            const allVotes = Object.values(votes);
+
+            if (hasEnoughVotes(allVotes, "NO", 7)) {
+                voteResult = false;
+                collector.stop();
+                return;
+            }
+
+            if (hasEnoughVotes(allVotes, "YES", 7)) {
+                voteResult = true;
+                collector.stop();
+            }
+        });
+
+        collector.once("end", async () => {
+            if (voteResult === undefined) {
+                await command.editReply({
+                    content: "Abstimmung beendet, war wohl nich so dolle",
+                    components: [],
+                });
+                return;
+            }
+
+            if (!voteResult) {
+                await command.editReply({
+                    content: `Der Vorschlag \`${nickname}\` für ${user} war echt nicht so geil`,
+                    components: [],
+                });
+                return;
+            }
+
+            try {
+                await nickName.insertNickname(user.id, nickname);
+            } catch (error) {
+                await command.editReply(
+                    `Würdet ihr Hurensöhne aufpassen, wüsstest ihr, dass für ${user} \`${nickname}\` bereits existiert.`,
+                );
+                return;
+            }
+
+            await command.editReply({
+                content: `Für ${user} ist jetzt \`${nickname}\` in der Rotation`,
+                components: [],
+            });
+        });
     }
 
     async updateNickName(user: GuildMember, nickname: string | null) {
@@ -290,82 +348,11 @@ export default class NicknameCommand implements ApplicationCommand {
     }
 }
 
-export class NicknameButtonHandler implements UserInteraction {
-    readonly ids = ["nicknameVoteYes", "nicknameVoteNo"];
-    readonly name = "NicknameButtonHandler";
-    readonly threshold = 7;
+function hasEnoughVotes(votes: UserVote[], voteType: Vote, threshold: number) {
+    const mappedVotes = votes.filter(vote => vote.vote === voteType).map(getWeightOfUserVote);
+    return Math.sumPrecise(mappedVotes) >= threshold;
+}
 
-    async handleInteraction(interaction: MessageComponentInteraction, context: BotContext) {
-        const suggestion = ongoingSuggestions[interaction.message.id];
-
-        if (suggestion === undefined) {
-            await interaction.update({
-                content:
-                    "Ich find den Namensvorschlag nicht. Irgend ein Huso muss wohl den Bot neugestartet haben. Macht am besten ne Neue auf",
-                components: [],
-            });
-            return;
-        }
-
-        const userVoteMap = getUserVoteMap(interaction.message.id);
-        const member = interaction.guild?.members.cache.get(interaction.user.id);
-
-        if (member === undefined) {
-            await interaction.update({
-                content: "Ich find dich nicht auf dem Server. Du Huso",
-                components: [],
-            });
-            return;
-        }
-
-        const trusted = context.roleGuard.isTrusted(member);
-        if (interaction.customId === "nicknameVoteYes") {
-            userVoteMap[interaction.user.id] = {
-                vote: "YES",
-                trusted,
-            };
-        } else if (interaction.customId === "nicknameVoteNo") {
-            userVoteMap[interaction.user.id] = {
-                vote: "NO",
-                trusted,
-            };
-        }
-
-        // evaluate the user votes
-        const votes: UserVote[] = Object.values(userVoteMap);
-        if (this.#hasEnoughVotes(votes, "NO")) {
-            await interaction.update({
-                content: `Der Vorschlag: \`${suggestion.nickName}\` für <@${suggestion.nickNameUserId}> war echt nicht so geil`,
-                components: [],
-            });
-            return;
-        }
-
-        if (this.#hasEnoughVotes(votes, "YES")) {
-            try {
-                await nickName.insertNickname(suggestion.nickNameUserId, suggestion.nickName);
-            } catch (error) {
-                await interaction.update(
-                    `Würdet ihr Hurensöhne aufpassen, wüsstest ihr, dass für <@${suggestion.nickNameUserId}> \`${suggestion.nickName}\` bereits existiert.`,
-                );
-                return;
-            }
-
-            await interaction.update({
-                content: `Für <@${suggestion.nickNameUserId}> ist jetzt \`${suggestion.nickName}\` in der Rotation`,
-                components: [],
-            });
-            return;
-        }
-
-        await interaction.reply({
-            content: "Hast abgestimmt",
-            ephemeral: true,
-        });
-    }
-
-    #hasEnoughVotes(votes: UserVote[], voteType: Vote) {
-        const mappedVotes = votes.filter(vote => vote.vote === voteType).map(getWeightOfUserVote);
-        return Math.sumPrecise(mappedVotes) >= this.threshold;
-    }
+function getWeightOfUserVote(vote: UserVote): number {
+    return vote.trusted ? 2 : 1;
 }

@@ -6,7 +6,6 @@ import {
     type GuildMember,
     type Interaction,
     type Message,
-    type MessageComponentInteraction,
     PermissionsBitField,
     type PermissionsString,
     REST,
@@ -32,7 +31,6 @@ import * as commandService from "../service/commandService.js";
 
 import TriggerReactOnKeyword from "../commands/special/keywordReact.js";
 
-import { NicknameButtonHandler } from "../commands/nickname.js";
 import SplidCommand from "../commands/splid.js";
 
 import { isProcessableMessage, type ProcessableMessage } from "../service/commandService.js";
@@ -45,8 +43,6 @@ const staticCommands: readonly Command[] = [
     new SplidCommand(),
 ];
 const allCommands: Command[] = [];
-
-export const interactions: readonly UserInteraction[] = [new NicknameButtonHandler()];
 
 const getApplicationCommands = () => allCommands.filter(c => "handleInteraction" in c);
 const getMessageCommands = () => allCommands.filter(c => "handleMessage" in c);
@@ -180,30 +176,6 @@ const autocompleteInteractionHandler = async (
     await matchingCommand.autocomplete(interaction, context);
 };
 
-/**
- * Handles command interactions.
- * @param command the received command interaction
- * @param client client
- * @returns the handled command or an error if no matching command was found.
- */
-const messageComponentInteractionHandler = async (
-    command: MessageComponentInteraction,
-    context: BotContext,
-): Promise<unknown> => {
-    const matchingInteraction = interactions.find(cmd =>
-        cmd.ids.find(id => id === command.customId),
-    );
-
-    if (!matchingInteraction) {
-        // No exception because there might be message components which are handled by different methods
-        // For example, using a createMessageComponentCollector
-        return;
-    }
-
-    log.debug(`Found a matching interaction ${matchingInteraction.name}`);
-    return matchingInteraction.handleInteraction(command, context);
-};
-
 const hasPermissions = (
     member: GuildMember,
     permissions: ReadonlyArray<PermissionsString>,
@@ -306,14 +278,6 @@ export const handleInteractionEvent = async (
 
     if (interaction.isAutocomplete()) {
         return autocompleteInteractionHandler(interaction, context);
-    }
-
-    if (interaction.isMessageComponent()) {
-        await messageComponentInteractionHandler(
-            interaction as MessageComponentInteraction,
-            context,
-        );
-        return;
     }
 
     throw new Error("Not supported");
