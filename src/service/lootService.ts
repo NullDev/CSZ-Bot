@@ -24,9 +24,30 @@ import log from "@log";
 const lootTimeoutMs = 60 * 1000;
 
 const excludedLootIds = [0, 7, 8, 13, 14];
+
+export enum LootTypeId {
+    NICHTS = 0,
+    KADSE = 1,
+    MESSERBLOCK = 2,
+    KUEHLSCHRANK = 3,
+    DOENER = 4,
+    KINN = 5,
+    KRANKSCHREIBUNG = 6,
+    WUERFELWURF = 7,
+    GESCHENK = 8,
+    AYRAN = 9,
+    PKV = 10,
+    TRICHTER = 11,
+    GRAFIKKARTE = 12,
+    HAENDEDRUCK = 13,
+    ERLEUCHTUNG = 14,
+    BAN = 15,
+    OETTINGER = 16,
+    ACHIEVEMENT = 17,
+}
 const lootTemplates: loot.LootTemplate[] = [
     {
-        id: 0,
+        id: LootTypeId.NICHTS,
         weight: 20,
         displayName: "Nichts",
         titleText: "✨Nichts✨",
@@ -34,7 +55,7 @@ const lootTemplates: loot.LootTemplate[] = [
         asset: null,
     },
     {
-        id: 1,
+        id: LootTypeId.KADSE,
         weight: 4,
         displayName: "Niedliche Kadse",
         titleText: "Eine niedliche Kadse",
@@ -43,7 +64,7 @@ const lootTemplates: loot.LootTemplate[] = [
         asset: "assets/loot/01-kadse.jpg",
     },
     {
-        id: 2,
+        id: LootTypeId.MESSERBLOCK,
         weight: 1,
         displayName: "Messerblock",
         titleText: "Einen Messerblock",
@@ -52,7 +73,7 @@ const lootTemplates: loot.LootTemplate[] = [
         asset: "assets/loot/02-messerblock.jpg",
     },
     {
-        id: 3,
+        id: LootTypeId.KUEHLSCHRANK,
         weight: 1,
         displayName: "Sehr teurer Kühlschrank",
         titleText: "Ein sehr teurer Kühlschrank",
@@ -62,7 +83,7 @@ const lootTemplates: loot.LootTemplate[] = [
         asset: "assets/loot/03-kuehlschrank.jpg",
     },
     {
-        id: 4,
+        id: LootTypeId.DOENER,
         weight: 5,
         displayName: "Döner",
         titleText: "Einen Döner",
@@ -71,15 +92,16 @@ const lootTemplates: loot.LootTemplate[] = [
         asset: "assets/loot/04-doener.jpg",
     },
     {
-        id: 5,
+        id: LootTypeId.KINN,
         weight: 0.5,
         displayName: "Kinn",
         titleText: "Ein Kinn",
         description: "Pass gut drauf auf, sonst flieht es!",
+        emote: "👶",
         asset: "assets/loot/05-kinn.jpg",
     },
     {
-        id: 6,
+        id: LootTypeId.KRANKSCHREIBUNG,
         weight: 0.5,
         displayName: "Arbeitsunfähigkeitsbescheinigung",
         titleText: "Einen gelben Urlaubsschein",
@@ -88,7 +110,7 @@ const lootTemplates: loot.LootTemplate[] = [
         asset: "assets/loot/06-krankschreibung.jpg",
     },
     {
-        id: 7,
+        id: LootTypeId.WUERFELWURF,
         weight: 5,
         displayName: "Würfelwurf",
         titleText: "Einen Wurf mit einem Würfel",
@@ -101,7 +123,7 @@ const lootTemplates: loot.LootTemplate[] = [
         },
     },
     {
-        id: 8,
+        id: LootTypeId.GESCHENK,
         weight: 2,
         displayName: "Geschenk",
         titleText: "Ein weiteres Geschenk",
@@ -114,7 +136,7 @@ const lootTemplates: loot.LootTemplate[] = [
         },
     },
     {
-        id: 9,
+        id: LootTypeId.AYRAN,
         weight: 1,
         displayName: "Ayran",
         titleText: "Einen Ayran",
@@ -123,7 +145,7 @@ const lootTemplates: loot.LootTemplate[] = [
         asset: "assets/loot/09-ayran.jpg",
     },
     {
-        id: 10,
+        id: LootTypeId.PKV,
         weight: 1,
         displayName: "Private Krankenversicherung",
         titleText: "Eine private Krankenversicherung",
@@ -132,7 +154,7 @@ const lootTemplates: loot.LootTemplate[] = [
         asset: "assets/loot/10-pkv.jpg",
     },
     {
-        id: 11,
+        id: LootTypeId.TRICHTER,
         weight: 1,
         displayName: "Trichter",
         titleText: "Einen Trichter",
@@ -141,7 +163,7 @@ const lootTemplates: loot.LootTemplate[] = [
         asset: "assets/loot/11-trichter.jpg",
     },
     {
-        id: 12,
+        id: LootTypeId.GRAFIKKARTE,
         weight: 1,
         displayName: "Grafikkarte aus der Zukunft",
         titleText: "Eine Grafikkarte aus der Zukunft",
@@ -150,7 +172,7 @@ const lootTemplates: loot.LootTemplate[] = [
         asset: "assets/loot/12-grafikkarte.png",
     },
     {
-        id: 13,
+        id: LootTypeId.HAENDEDRUCK,
         weight: 1,
         displayName: "Feuchter Händedruck",
         titleText: "Einen feuchten Händedruck",
@@ -159,7 +181,7 @@ const lootTemplates: loot.LootTemplate[] = [
         asset: "assets/loot/13-haendedruck.jpg",
     },
     {
-        id: 14,
+        id: LootTypeId.ERLEUCHTUNG,
         weight: 1,
         displayName: "Erleuchtung",
         titleText: "Eine Erleuchtung",
@@ -177,7 +199,7 @@ const lootTemplates: loot.LootTemplate[] = [
         },
     },
     {
-        id: 15,
+        id: LootTypeId.BAN,
         weight: 1,
         displayName: "Willkürban",
         titleText: "Einen Ban aus reiner Willkür",
@@ -197,13 +219,22 @@ const lootTemplates: loot.LootTemplate[] = [
         },
     },
     {
-        id: 16,
+        id: LootTypeId.OETTINGER,
         weight: 1,
         displayName: "Oettinger",
         titleText: "Ein warmes Oettinger",
         description: "Ja dann Prost ne!",
         emote: "🍺",
         asset: "assets/loot/16-oettinger.jpg",
+    },
+    {
+        id: LootTypeId.ACHIEVEMENT,
+        weight: 1,
+        displayName: "Achievement",
+        titleText: "Ein Achievement",
+        description: "Das erreichen echt nicht viele",
+        emote: "🏆",
+        asset: "assets/loot/17-achievement.png",
     },
 ] as const;
 
@@ -391,7 +422,30 @@ async function postLootDrop(context: BotContext, channel: GuildChannel) {
 
 export async function getInventoryContents(user: User) {
     const contents = await loot.findOfUser(user);
-    return contents.filter(e => !excludedLootIds.includes(e.lootKindId));
+    const displayableLoot = contents.filter(e => !excludedLootIds.includes(e.lootKindId));
+
+    const now = Date.now();
+    const maxKebabAge = 1000 * 60 * 60 * 24 * 3;
+
+    const res: typeof displayableLoot = [];
+    for (const loot of displayableLoot) {
+        if (!loot.claimedAt) {
+            continue;
+        }
+
+        const itemAge = now - new Date(loot.claimedAt).getTime();
+
+        if (loot.lootKindId === LootTypeId.DOENER && itemAge > maxKebabAge) {
+            res.push({
+                ...loot,
+                displayName: "Verschimmelter Döner",
+            });
+            continue;
+        }
+
+        res.push(loot);
+    }
+    return res;
 }
 
 export function getEmote(item: Loot) {

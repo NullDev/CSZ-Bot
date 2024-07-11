@@ -134,7 +134,6 @@ const buildEmbed = async (guild: Guild | null, avatarUrl?: string): Promise<APIE
  * This command is both - a slash command (application command) and a message command
  */
 export default class InfoCommand implements ApplicationCommand, MessageCommand {
-    modCommand = false;
     name = "info";
     description = "Listet Informationen über diesen Bot in einem Embed auf";
 

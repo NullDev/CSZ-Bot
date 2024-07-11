@@ -38,16 +38,23 @@ const insults = {
 };
 
 export default class MetafrageCommand implements MessageCommand {
-    modCommand = false;
     name = "metafrage";
     description =
         "Weist freundlich darauf hin, keine Metafragen zu stellen. -e für englischsprachige Hurensöhne.";
 
     async handleMessage(message: ProcessableMessage, context: BotContext): Promise<void> {
-        const { args } = parseLegacyMessageParts(context, message);
-        const options = parseArgs({ ...argsConfig, args }).values;
-
         await using _ = defer(() => message.delete());
+
+        const { args } = parseLegacyMessageParts(context, message);
+
+        let params: ReturnType<typeof parseArgs>;
+        try {
+            params = parseArgs({ ...argsConfig, args });
+        } catch {
+            await message.channel.send("Yo da stimmte was mit den parametern nicht");
+            return;
+        }
+        const options = params.values;
 
         if (args.length !== 0 && (args.length !== 1 || !options.english)) {
             await message.channel.send(

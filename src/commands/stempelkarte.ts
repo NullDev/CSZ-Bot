@@ -102,7 +102,6 @@ const drawStempelkarteBackside = async (
 };
 
 export default class StempelkarteCommand implements ApplicationCommand {
-    modCommand = false;
     name = "stempelkarte";
     description = "Zeigt eine die Stempelkarte eines Users an.";
 

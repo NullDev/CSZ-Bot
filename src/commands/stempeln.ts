@@ -19,7 +19,6 @@ const replies = [
 ];
 
 export default class StempelCommand implements ApplicationCommand {
-    modCommand = false;
     name = "stempeln";
     description = "Gib deinem Inviter ein Stempel, zeig deinen Respekt";
 

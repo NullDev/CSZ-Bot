@@ -13,7 +13,6 @@ const isPollField = (field: APIEmbedField): boolean =>
     !field.inline && LETTERS.some(l => field.name.startsWith(l));
 
 export default class ExtendCommand implements MessageCommand {
-    modCommand = false;
     name = "extend";
     description = `Nutzbar als Reply auf eine mit --extendable erstellte Umfrage, um eine/mehrere Antwortmöglichkeit/en hinzuzufügen. Die Anzahl der bestehenden und neuen Antwortmöglichkeiten darf ${poll.OPTION_LIMIT} nicht übersteigen.\nUsage: $COMMAND_PREFIX$extend [Antwort 1] ; [...]`;
 

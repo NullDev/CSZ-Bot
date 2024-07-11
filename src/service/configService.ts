@@ -7,7 +7,7 @@ import log from "@log";
 
 const configPath = path.resolve("config.json");
 
-export const readConfig = async () => {
+export async function readConfig() {
     if (!(await fs.exists(configPath))) {
         log.error(
             "Config does not exist. Copy the config template and configure it according to the README:",
@@ -31,7 +31,7 @@ export const readConfig = async () => {
         log.error(e, "Config is not valid JSON. Stopping...");
         return process.exit(1);
     }
-};
+}
 
 export const databasePath = process.env.DATABASE_PATH ?? path.resolve("storage.db");
 

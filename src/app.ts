@@ -3,7 +3,7 @@ import * as sentry from "@sentry/node";
 
 import type { ReactionHandler } from "./types.js";
 
-import { readConfig, databasePath, args } from "./utils/configHandler.js";
+import { readConfig, databasePath, args } from "./service/configService.js";
 import log from "@log";
 
 import "./polyfills.js";
@@ -198,15 +198,6 @@ client.on("messageDelete", async message => {
         log.error(err, `[messageDelete] Error for ${message.id}`),
     );
 });
-
-client.on(
-    "messageUpdate",
-    async (_, newMessage) =>
-        await messageCommandHandler(
-            newMessage.partial ? await newMessage.fetch() : newMessage,
-            botContext,
-        ),
-);
 
 client.on("error", e => log.error(e, "Discord Client Error"));
 client.on("warn", w => log.warn(w, "Discord Client Warning"));

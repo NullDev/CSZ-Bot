@@ -16,13 +16,11 @@ import {
  * Completely new bullish command handler it unifies slash commands and
  * message commands and relies on the "new commands"
  */
-import {
-    type ApplicationCommand,
-    type Command,
-    isApplicationCommand,
-    isMessageCommand,
-    isSpecialCommand,
-    type SpecialCommand,
+import type {
+    ApplicationCommand,
+    Command,
+    SpecialCommand,
+    UserInteraction,
 } from "../commands/command.js";
 import type { BotContext } from "../context.js";
 import * as banService from "../service/banService.js";
@@ -46,9 +44,9 @@ const staticCommands: readonly Command[] = [
 ];
 const allCommands: Command[] = [];
 
-const getApplicationCommands = () => allCommands.filter(isApplicationCommand);
-const getMessageCommands = () => allCommands.filter(isMessageCommand);
-const getSpecialCommands = () => allCommands.filter(isSpecialCommand);
+const getApplicationCommands = () => allCommands.filter(c => "handleInteraction" in c);
+const getMessageCommands = () => allCommands.filter(c => "handleMessage" in c);
+const getSpecialCommands = () => allCommands.filter(c => "handleSpecialMessage" in c);
 
 const lastSpecialCommands: Record<string, number> = getSpecialCommands().reduce(
     // biome-ignore lint/performance/noAccumulatingSpread: Whatever this does, someone wrote pretty cool code
@@ -256,11 +254,11 @@ const isCooledDown = (command: SpecialCommand) => {
 const specialCommandHandler = async (message: ProcessableMessage, context: BotContext) => {
     const commands = getSpecialCommands();
     const commandCandidates = commands.filter(p => p.matches(message, context));
+
     for (const command of commandCandidates) {
         if (Math.random() > command.randomness || !isCooledDown(command)) {
             continue;
         }
-
         log.info(
             `User "${message.author.tag}" (${message.author}) performed special command: ${command.name}`,
         );

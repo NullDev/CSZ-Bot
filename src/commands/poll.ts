@@ -88,7 +88,6 @@ const argsConfig = {
 } satisfies ParseArgsConfig;
 
 export default class PollCommand implements MessageCommand {
-    modCommand = false;
     name = "poll";
     description = `Erstellt eine Umfrage mit mehreren Antwortmöglichkeiten (standardmäßig mit Mehrfachauswahl) (maximal ${OPTION_LIMIT}).
 Usage: $COMMAND_PREFIX$poll [Optionen?] [Hier die Frage] ; [Antwort 1] ; [Antwort 2] ; [...]
@@ -111,7 +110,14 @@ Optionen:
     }
 
     async legacyHandler(message: ProcessableMessage, context: BotContext, args: string[]) {
-        const { values: options, positionals } = parseArgs({ ...argsConfig, args });
+        let params: ReturnType<typeof parseArgs>;
+        try {
+            params = parseArgs({ ...argsConfig, args });
+        } catch {
+            await message.channel.send("Yo da stimmte was mit den parametern nicht");
+            return;
+        }
+        const { values: options, positionals } = params;
 
         if (positionals.length === 0) {
             return "Bruder da ist keine Umfrage :c";

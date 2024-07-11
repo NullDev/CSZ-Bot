@@ -21,7 +21,6 @@ const argsConfig = {
 } satisfies ParseArgsConfig;
 
 export default class VoteCommand implements MessageCommand {
-    modCommand = false;
     name = "vote";
     description = `Erstellt eine Umfrage (ja/nein).
 Usage: $COMMAND_PREFIX$vote [Optionen?] [Hier die Frage]
@@ -31,7 +30,15 @@ Optionen:
 
     async handleMessage(message: ProcessableMessage, context: BotContext): Promise<void> {
         const { args } = parseLegacyMessageParts(context, message);
-        const { values: options, positionals } = parseArgs({ ...argsConfig, args });
+
+        let params: ReturnType<typeof parseArgs>;
+        try {
+            params = parseArgs({ ...argsConfig, args });
+        } catch {
+            await message.channel.send("Yo da stimmte was mit den parametern nicht");
+            return;
+        }
+        const { values: options, positionals } = params;
 
         if (positionals.length === 0) {
             await message.channel.send("Bruder da ist keine Frage :c");

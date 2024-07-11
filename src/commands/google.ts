@@ -27,7 +27,6 @@ const buildEmbed = (member: GuildMember, reply: string) => {
 };
 
 export default class GoogleCommand implements ApplicationCommand {
-    modCommand = false;
     name = "google";
     description = "Falls jemand zu blöd zum googlen ist und du es ihm unter die Nase reiben willst";
 
