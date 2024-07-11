@@ -16,15 +16,10 @@ import {
  * Completely new bullish command handler it unifies slash commands and
  * message commands and relies on the "new commands"
  */
-import type {
-    ApplicationCommand,
-    Command,
-    SpecialCommand,
-    UserInteraction,
-} from "../commands/command.js";
+import type { ApplicationCommand, Command, SpecialCommand } from "../commands/command.js";
 import type { BotContext } from "../context.js";
-import * as banService from "../service/banService.js";
 import type { ApplicationCommandCreationResponse } from "../types.js";
+import * as banService from "../service/banService.js";
 import log from "@log";
 
 import * as commandService from "../service/commandService.js";

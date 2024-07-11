@@ -1,10 +1,10 @@
 import type {
+    AutocompleteInteraction,
+    CommandInteraction,
     ContextMenuCommandBuilder,
-    MessageComponentInteraction,
     PermissionsString,
     SlashCommandBuilder,
 } from "discord.js";
-import type { AutocompleteInteraction, CommandInteraction } from "discord.js";
 
 import type { ProcessableMessage } from "../service/commandService.js";
 import type { BotContext } from "../context.js";
@@ -19,20 +19,14 @@ export interface CommandBase {
     readonly requiredPermissions?: readonly PermissionsString[];
 }
 
-export interface UserInteraction {
-    readonly ids: string[];
-    readonly name: string;
-    handleInteraction(command: MessageComponentInteraction, context: BotContext): Promise<void>;
-}
-
-// For ApplicationCommands we require a SlashCommandBuilder object to create the command and a handler method
+/** aka "Slash Commands" */
 export interface ApplicationCommand extends CommandBase {
     readonly applicationCommand: Pick<SlashCommandBuilder | ContextMenuCommandBuilder, "toJSON">;
     handleInteraction(command: CommandInteraction, context: BotContext): Promise<void>;
     autocomplete?(interaction: AutocompleteInteraction, context: BotContext): Promise<void>;
 }
 
-// For a MessageCommand we require an additional modCommand property and a handler method
+/** Traditional command invoked via text message (for example, `.hilfe`) */
 export interface MessageCommand extends CommandBase {
     handleMessage(message: ProcessableMessage, context: BotContext): Promise<void>;
 }

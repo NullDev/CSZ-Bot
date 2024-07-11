@@ -57,16 +57,16 @@ export default class ClapCommand implements MessageCommand, ApplicationCommand {
 
     async handleMessage(message: ProcessableMessage, context: BotContext) {
         const author = message.guild.members.resolve(message.author);
+        if (!author) {
+            throw new Error("Couldn't resolve guild member");
+        }
+
         const { channel } = message;
 
         const replyRef = message.reference?.messageId;
         const isReply = replyRef !== undefined;
         let content = message.content.slice(`${context.prefix.command}${this.name} `.length);
         const hasContent = !!content && content.trim().length > 0;
-
-        if (!author) {
-            throw new Error("Couldn't resolve guild member");
-        }
 
         if (!isReply && !hasContent) {
             await message.channel.send(clapify("Wo ist deine Nachricht?"));
