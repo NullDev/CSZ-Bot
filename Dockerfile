@@ -1,4 +1,4 @@
-FROM oven/bun:alpine as runtime-dependencies
+FROM oven/bun:alpine AS runtime-dependencies
     WORKDIR /app
     RUN --mount=type=bind,source=package.json,target=package.json \
         --mount=type=bind,source=bun.lockb,target=bun.lockb \
@@ -14,8 +14,7 @@ FROM oven/bun:alpine
         && fc-cache -f -v
 
     ENV NODE_ENV=production
-
-    ENV TZ 'Europe/Berlin'
+    ENV TZ=Europe/Berlin
 
     COPY --from=runtime-dependencies /app/node_modules /app/node_modules
     COPY ./ /app/
