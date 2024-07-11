@@ -1,3 +1,5 @@
+import { MessageFormat } from "messageformat";
+
 /**
  * Count words in string
  * @param str string
@@ -15,4 +17,12 @@ export function countWords(str: string): number {
  */
 export function substringAfter(str: string, s: string): string {
     return str.substring(str.indexOf(s) + s.length);
+}
+
+const formatCache: Record<string, MessageFormat> = {};
+
+export function format(mf2Source: string, params: Record<string, unknown>): string {
+    // biome-ignore lint/suspicious/noAssignInExpressions: dem performance
+    const mf = (formatCache[mf2Source] ??= new MessageFormat(mf2Source, "de"));
+    return mf.format(params);
 }

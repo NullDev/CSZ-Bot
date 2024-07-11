@@ -4,6 +4,7 @@ import type { BotContext } from "../context.js";
 import type { ApplicationCommand } from "./command.js";
 import * as lootService from "../service/lootService.js";
 import { ensureChatInputCommand } from "../utils/interactionUtils.js";
+import { format } from "src/utils/stringUtils.js";
 
 export default class InventarCommand implements ApplicationCommand {
     name = "inventar";
@@ -53,16 +54,23 @@ export default class InventarCommand implements ApplicationCommand {
 
         const cuties = contents.filter(i => i.lootKindId === lootService.LootTypeId.KADSE).length;
 
+        const message = /* mf2 */ `
+            .match {$cuties :number} {$count :number}
+            0 1 {{Es befindet sich insgesamt 1 Gegenstand im Inventar}}
+            0 * {{Es befinden sich insgesamt {$count} Gegenstände im Inventar}}
+            1 0 {{Es befinden sich insgesamt 1 süßer und keine normalen Gegenstände im Inventar}}
+            1 few {{Es befinden sich insgesamt 1 süßer und ein paar Gegenstände im Inventar}}
+            1 * {{Es befinden sich insgesamt 1 süßer und {$count} normale Gegenstände im Inventar}}
+            * * {{Es befinden sich insgesamt {$cuties} süße und {$count} normale Gegenstände im Inventar}}
+            `;
+
         await interaction.reply({
             embeds: [
                 {
                     title: `Inventar von ${user.displayName}`,
                     description,
                     footer: {
-                        text:
-                            cuties > 0
-                                ? `Es befinden sich insgesamt ${cuties} süße und ${contents.length === cuties ? "keine normalen" : `${contents.length - cuties} normale`} Gegenstände im Inventar`
-                                : `Es befinden sich insgesamt ${contents.length} Gegenstände im Inventar`,
+                        text: format(message, { cuties, count: contents.length - cuties }),
                     },
                 },
             ],

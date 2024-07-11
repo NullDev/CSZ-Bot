@@ -39,6 +39,7 @@
     "kysely": "^0.27.4",
     "kysely-bun-sqlite": "^0.3.2",
     "libsodium-wrappers": "^0.7.14",
+    "messageformat": "^4.0.0-7",
     "pino": "^9.2.0",
     "splid-js": "^1.1.1",
     "urlpattern-polyfill": "^10.0.0"
