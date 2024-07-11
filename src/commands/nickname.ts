@@ -16,8 +16,9 @@ import {
 import type { BotContext } from "../context.js";
 import type { ApplicationCommand } from "./command.js";
 import log from "@log";
-import { defer, ensureChatInputCommand } from "../utils/interactionUtils.js";
+import { ensureChatInputCommand } from "../utils/interactionUtils.js";
 import * as nickName from "../storage/nickName.js";
+import * as time from "../utils/time.js";
 
 type Vote = "YES" | "NO";
 
@@ -263,7 +264,7 @@ export default class NicknameCommand implements ApplicationCommand {
 
         const collector = reply.createMessageComponentCollector({
             componentType: ComponentType.Button,
-            time: 1000 * 60 * 5,
+            time: time.minutes(5),
         });
 
         const votes: Record<Snowflake, UserVote> = {
