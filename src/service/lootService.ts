@@ -247,7 +247,7 @@ const lootTemplates: loot.LootTemplate[] = [
         id: LootTypeId.GME_AKTIE,
         weight: 5,
         displayName: "GME-Aktie",
-        titleText: "Eine GME Aktie",
+        titleText: "Eine wertlose GME-Aktie",
         description: "Der squeeze kommt bald!",
         emote: "📉",
         asset: "assets/loot/18-gme.jpg",
