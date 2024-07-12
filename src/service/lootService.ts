@@ -276,7 +276,7 @@ const lootTemplates: loot.LootTemplate[] = [
         displayName: "Radioaktiver Müll",
         titleText: "Radioaktiver Müll",
         description:
-            "Sollte dir ja nichtsmehr anhaben, bist ja durch den Server schon genug verstrahlt!",
+            "Sollte dir ja nichts mehr anhaben, du bist ja durch den Server schon genug verstrahlt 🤷‍♂️",
         emote: "☢️",
         asset: "assets/loot/21-radioaktiver-muell.jpg",
     },
