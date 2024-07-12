@@ -249,7 +249,7 @@ const lootTemplates: loot.LootTemplate[] = [
         displayName: "GME-Aktie",
         titleText: "Eine GME Aktie",
         description: "Der squeeze kommt bald!",
-        emote: "📈",
+        emote: "📉",
         asset: "assets/loot/18-gme.jpg",
     },
     {
