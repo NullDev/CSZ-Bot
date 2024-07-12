@@ -20,7 +20,7 @@ export default class InventarCommand implements ApplicationCommand {
                 .setDescription("Wem du tun willst"),
         );
 
-    async handleInteraction(interaction: CommandInteraction, _context: BotContext) {
+    async handleInteraction(interaction: CommandInteraction, context: BotContext) {
         const cmd = ensureChatInputCommand(interaction);
 
         const user = cmd.options.getUser("user") ?? cmd.user;
@@ -44,7 +44,7 @@ export default class InventarCommand implements ApplicationCommand {
 
         const description = items
             .map(([item, count]) => {
-                const emote = lootService.getEmote(item);
+                const emote = lootService.getEmote(context.guild, item);
                 const e = emote ? `${emote} ` : "";
                 return count === 1
                     ? `${e}${item.displayName}`

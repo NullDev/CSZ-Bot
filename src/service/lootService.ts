@@ -11,6 +11,7 @@ import {
     type GuildChannel,
     type User,
     type Interaction,
+    type Guild,
 } from "discord.js";
 import { Temporal } from "@js-temporal/polyfill";
 
@@ -19,6 +20,7 @@ import type { Loot } from "../storage/db/model.js";
 import { randomEntry, randomEntryWeighted } from "../utils/arrayUtils.js";
 import * as loot from "../storage/loot.js";
 import * as time from "../utils/time.js";
+import * as emote from "./emoteService.js";
 
 import log from "@log";
 
@@ -160,7 +162,7 @@ const lootTemplates: loot.LootTemplate[] = [
         displayName: "Trichter",
         titleText: "Einen Trichter",
         description: "Für die ganz großen Schlücke",
-        emote: "🕳️",
+        emote: ":trichter:",
         asset: "assets/loot/11-trichter.jpg",
     },
     {
@@ -449,6 +451,7 @@ export async function getInventoryContents(user: User) {
     return res;
 }
 
-export function getEmote(item: Loot) {
-    return lootTemplates.find(t => t.id === item.lootKindId)?.emote;
+export function getEmote(guild: Guild, item: Loot) {
+    const e = lootTemplates.find(t => t.id === item.lootKindId)?.emote;
+    return emote.resolveEmote(guild, e);
 }
