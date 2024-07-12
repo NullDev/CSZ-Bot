@@ -63,7 +63,7 @@ const lootTemplates: loot.LootTemplate[] = [
         displayName: "Niedliche Kadse",
         titleText: "Eine niedliche Kadse",
         description: "Awww",
-        emote: "🐱",
+        emote: ":catsmile:",
         asset: "assets/loot/01-kadse.jpg",
     },
     {
