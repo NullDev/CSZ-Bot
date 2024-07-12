@@ -256,7 +256,7 @@ const lootTemplates: loot.LootTemplate[] = [
         id: LootTypeId.FERRIS,
         weight: 3,
         displayName: "Ferris",
-        titleText: "Ferris - Die Krabbe",
+        titleText: "Einen Ferris - Die Krabbe",
         description: "Damit kann man ja endlich den Bot in Rust neuschreiben",
         emote: "🦀",
         asset: "assets/loot/19-ferris.png",
