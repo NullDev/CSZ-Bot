@@ -47,6 +47,10 @@ export enum LootTypeId {
     BAN = 15,
     OETTINGER = 16,
     ACHIEVEMENT = 17,
+    GME_AKTIE = 18,
+    FERRIS = 19,
+    HOMEPOD = 20,
+    RADIOACTIVE_WASTE = 21,
 }
 const lootTemplates: loot.LootTemplate[] = [
     {
@@ -238,6 +242,43 @@ const lootTemplates: loot.LootTemplate[] = [
         description: "Das erreichen echt nicht viele",
         emote: "🏆",
         asset: "assets/loot/17-achievement.png",
+    },
+    {
+        id: LootTypeId.GME_AKTIE,
+        weight: 5,
+        displayName: "GME-Aktie",
+        titleText: "Eine wertlose GME-Aktie",
+        description: "Der squeeze kommt bald!",
+        emote: "📉",
+        asset: "assets/loot/18-gme.jpg",
+    },
+    {
+        id: LootTypeId.FERRIS,
+        weight: 3,
+        displayName: "Ferris",
+        titleText: "Einen Ferris - Die Krabbe",
+        description: "Damit kann man ja endlich den Bot in Rust neuschreiben",
+        emote: "🦀",
+        asset: "assets/loot/19-ferris.png",
+    },
+    {
+        id: LootTypeId.HOMEPOD,
+        weight: 5,
+        displayName: "Homepod",
+        titleText: "Ein Apple:registered: Homepod:copyright:",
+        description: "Damit dein 'Smart Home' nichtmehr ganz so smart ist",
+        emote: "🍎",
+        asset: "assets/loot/20-homepod.jpg",
+    },
+    {
+        id: LootTypeId.RADIOACTIVE_WASTE,
+        weight: 1,
+        displayName: "Radioaktiver Müll",
+        titleText: "Radioaktiver Müll",
+        description:
+            "Sollte dir ja nichts mehr anhaben, du bist ja durch den Server schon genug verstrahlt 🤷‍♂️",
+        emote: "☢️",
+        asset: "assets/loot/21-radioaktiver-muell.jpg",
     },
 ] as const;
 
