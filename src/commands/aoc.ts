@@ -96,11 +96,9 @@ const createEmbedFromLeaderBoard = (
             .slice(top.length)
             .map(
                 (m, i) =>
-                    `${top.length + i + 1}. ${getNameString(
-                        m,
-                        userMap,
-                        true,
-                    )} (Stars: ${m.stars} / Local Score: ${m.local_score})`,
+                    `${top.length + i + 1}. ${getNameString(m, userMap, true)} (Stars: ${
+                        m.stars
+                    } / Local Score: ${m.local_score})`,
             )
             .join("\n"),
         inline: false,

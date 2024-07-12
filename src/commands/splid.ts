@@ -676,9 +676,9 @@ function buildPaymentMatrix(members: readonly SplidMember[], entries: SplidEntry
                 }
 
                 logger.debug(
-                    `${primaryPayer.name} paid for ${member.name} ${
-                        amount * parts
-                    } ${entry.currencyCode}`,
+                    `${primaryPayer.name} paid for ${member.name} ${amount * parts} ${
+                        entry.currencyCode
+                    }`,
                 );
 
                 const balanceRow = paymentMatrix.get(primaryPayer.globalId);

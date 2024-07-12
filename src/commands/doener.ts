@@ -95,7 +95,9 @@ export default class DoenerCommand implements MessageCommand {
 
         const mealStr =
             Math.random() > 0.7
-                ? `Alternativ kannst du davon maximal ${(amount / prices.meal).toFixed(0)} mal essen gehen.`
+                ? `Alternativ kannst du davon maximal ${(amount / prices.meal).toFixed(
+                      0,
+                  )} mal essen gehen.`
                 : "";
 
         await targetMessage.reply({

@@ -119,9 +119,9 @@ export default class WoisCommand implements ApplicationCommand {
         if (existingWoisVote !== undefined) {
             const nextDate = Temporal.PlainDateTime.from(existingWoisVote.date);
             await command.reply(
-                `Es gibt bereits einen Woisvote für ${nextDate.toPlainTime().toString()} Uhr. Geh doch da hin: ${
-                    existingWoisVote.messageId
-                }`,
+                `Es gibt bereits einen Woisvote für ${nextDate
+                    .toPlainTime()
+                    .toString()} Uhr. Geh doch da hin: ${existingWoisVote.messageId}`,
             );
             return;
         }
