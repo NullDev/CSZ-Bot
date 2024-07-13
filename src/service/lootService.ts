@@ -246,7 +246,7 @@ const lootTemplates: loot.LootTemplate[] = [
     {
         id: LootTypeId.GME_AKTIE,
         weight: 5,
-        displayName: "GME-Aktie",
+        displayName: "Wertlose GME-Aktie",
         titleText: "Eine wertlose GME-Aktie",
         description: "Der squeeze kommt bald!",
         emote: "📉",
@@ -287,7 +287,6 @@ const lootTemplates: loot.LootTemplate[] = [
         - Pfeffi
         - eine Heiligsprechung von Jesus höchstpersönlich
         - Vogerlsalat
-        - Wertlose GME-Aktie
 
     Special Loots mit besonderer Aktion?
         - Timeout?
