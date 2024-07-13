@@ -70,7 +70,7 @@ export interface BotContext {
         VoiceChannel
     >;
 
-    deleteThreadMessagesInChannels: Set<Snowflake>;
+    deleteThreadMessagesInChannelIds: Set<Snowflake>;
 
     rootDir: string;
     srcDir: string;
@@ -216,6 +216,9 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
                     config.command.instagram.rapidApiInstagramApiKey?.trim() ?? undefined,
             },
         },
+
+        deleteThreadMessagesInChannelIds: new Set(config.deleteThreadMessagesInChannelIds),
+
         roles: {
             // TODO: Make this prettier (splitting up the IDs by type in the config would make this much easier)
             banned: ensureRole(config, guild, "banned_role_id"),
@@ -241,9 +244,6 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
         voiceChannels: {
             haupt_woischat: ensureVoiceChannel(config, guild, "haupt_woischat_id"),
         },
-        deleteThreadMessagesInChannels: new Set(
-            config.bot_settings.delete_thread_messages_in_channels,
-        ),
         rootDir: path.resolve(""),
         srcDir: path.resolve("src"),
         bannersDir: path.resolve("banners"),

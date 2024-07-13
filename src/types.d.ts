@@ -114,12 +114,11 @@ export interface Config {
         };
     };
 
+    deleteThreadMessagesInChannelIds: readonly Snowflake[];
+
     bot_settings: {
         flame_trusted_user_on_bot_ping?: boolean;
-
         ban_reason_channel_id: Snowflake;
-
-        delete_thread_messages_in_channels: Array<Snowflake>;
     };
     ids: Record<ConfigIdKey, Snowflake>;
 }

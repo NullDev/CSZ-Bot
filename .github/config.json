@@ -48,6 +48,7 @@
             "targetChannelOverrides": []
         }
     },
+    "deleteThreadMessagesInChannelIds": ["893179191556706384"],
     "bot_settings": {
         "moderator_roles": ["Moderader"],
         "ban_reason_channel_id": "893179190881452117",

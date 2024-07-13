@@ -5,7 +5,7 @@ export default async function (message: Message, context: BotContext) {
     if (message.type !== MessageType.ThreadCreated) {
         return;
     }
-    if (!context.deleteThreadMessagesInChannels.has(message.channelId)) {
+    if (!context.deleteThreadMessagesInChannelIds.has(message.channelId)) {
         return;
     }
     await message.delete();
