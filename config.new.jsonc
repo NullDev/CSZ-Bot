@@ -2,7 +2,7 @@
     // "$schema": "",
     "auth": {
         "clientId": "<CLIENT_ID>",
-        "botToken": "<BOT_TOKEN>"
+        "token": "<BOT_TOKEN>"
     },
     // https://discord.com/developers/docs/topics/gateway-events#activity-object-activity-types
     "activity": {

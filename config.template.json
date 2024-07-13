@@ -1,7 +1,7 @@
 {
     "auth": {
-        "bot_token": "",
-        "client_id": ""
+        "clientId": "",
+        "token": ""
     },
     "activity": {
         "type": 0,

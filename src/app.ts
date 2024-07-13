@@ -54,9 +54,9 @@ if (config.sentry?.dsn) {
     });
 }
 
-if (!config.auth.bot_token) {
+if (!config.auth.clientId || !config.auth.token) {
     log.error(
-        "No bot token found in config. Make sure to set `auth.bot_token` and `auth.client_id` in `config.json`",
+        "No bot token found in config. Make sure to set `auth.clientId` and `auth.token` in `config.json`",
     );
     process.exit(1);
 }
@@ -246,6 +246,6 @@ client.on("voiceStateUpdate", (old, next) =>
 function login() {
     return new Promise<Client<true>>(resolve => {
         client.once("ready", resolve);
-        client.login(config.auth.bot_token);
+        client.login(config.auth.token);
     });
 }

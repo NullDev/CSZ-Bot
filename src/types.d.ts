@@ -56,8 +56,8 @@ export type ConfigId = ConfigRoleId | ConfigTextChannelId | ConfigGuildId | Conf
 
 export interface Config {
     auth: {
-        bot_token: string;
-        client_id: string;
+        clientId: string;
+        token: string;
     };
 
     sentry?: {
