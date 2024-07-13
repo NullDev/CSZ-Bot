@@ -197,14 +197,14 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
                 emojiNames: new Set(config.command.ehre.emojiNames ?? ["aehre"]),
             },
             quote: {
-                allowedGroupIds: new Set(bs.quotes.allowed_group_ids),
-                anonymousCategoryIds: new Set(bs.quotes.anonymous_category_ids),
-                anonymousChannelIds: new Set(bs.quotes.anonymous_channel_ids),
-                blacklistedChannelIds: new Set(bs.quotes.blacklisted_channel_ids),
-                quoteVoteThreshold: bs.quotes.quote_threshold ?? 2,
-                defaultTargetChannelId: bs.quotes.default_target_channel_id,
-                targetChannelOverrides: bs.quotes.target_channel_overrides,
-                emojiName: bs.quotes.emoji_name,
+                allowedGroupIds: new Set(config.command.quotes.allowed_group_ids),
+                anonymousCategoryIds: new Set(config.command.quotes.anonymous_category_ids),
+                anonymousChannelIds: new Set(config.command.quotes.anonymous_channel_ids),
+                blacklistedChannelIds: new Set(config.command.quotes.blacklisted_channel_ids),
+                quoteVoteThreshold: config.command.quotes.quote_threshold ?? 2,
+                defaultTargetChannelId: config.command.quotes.default_target_channel_id,
+                targetChannelOverrides: config.command.quotes.target_channel_overrides,
+                emojiName: config.command.quotes.emoji_name,
             },
             loot: {
                 enabled: config.command.loot?.enabled ?? false,
@@ -275,7 +275,7 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
         return member.roles.cache.some(role => role.name === roleName);
     }
 
-    function hasAnyRoleByName(member: GuildMember, roleNames: string[]) {
+    function hasAnyRoleByName(member: GuildMember, roleNames: readonly string[]) {
         return roleNames.some(role => hasRoleByName(member, role));
     }
 

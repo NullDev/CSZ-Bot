@@ -34,11 +34,7 @@
             "enabled": true,
             "scheduleCron": "*/15 * * * *",
             "dropChance": 0.05
-        }
-    },
-    "bot_settings": {
-        "moderator_roles": ["Moderader"],
-        "ban_reason_channel_id": "893179190881452117",
+        },
         "quotes": {
             "emoji_name": "zitat",
             "emoji_id": "905042096724017212",
@@ -48,7 +44,11 @@
             "blacklisted_channel_ids": [],
             "default_target_channel_id": "893179191556706386",
             "target_channel_overrides": []
-        },
+        }
+    },
+    "bot_settings": {
+        "moderator_roles": ["Moderader"],
+        "ban_reason_channel_id": "893179190881452117",
         "delete_thread_messages_in_channels": ["893179191556706384"],
         "flame_trusted_user_on_bot_ping": false,
 

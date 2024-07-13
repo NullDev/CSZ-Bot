@@ -97,24 +97,24 @@ export interface Config {
             /** ISO8601 duration */
             max_time_passed_since_last_message: string;
         };
+        quotes: {
+            allowed_group_ids: readonly Snowflake[];
+            anonymous_channel_ids: readonly Snowflake[];
+            anonymous_category_ids: readonly Snowflake[];
+            quote_threshold: number;
+            blacklisted_channel_ids: readonly Snowflake[];
+            target_channel_overrides: Record<string, string>;
+            default_target_channel_id: Snowflake;
+            emoji_name: string;
+        };
     };
 
     bot_settings: {
         flame_trusted_user_on_bot_ping?: boolean;
 
         ban_reason_channel_id: Snowflake;
-        moderator_roles: Array<string>;
+        moderator_roles: readonly string[];
 
-        quotes: {
-            allowed_group_ids: Array<Snowflake>;
-            anonymous_channel_ids: Array<Snowflake>;
-            anonymous_category_ids: Array<Snowflake>;
-            quote_threshold: number;
-            blacklisted_channel_ids: Array<Snowflake>;
-            target_channel_overrides: Record<string, string>;
-            default_target_channel_id: Snowflake;
-            emoji_name: string;
-        };
 
         delete_thread_messages_in_channels: Array<Snowflake>;
 
