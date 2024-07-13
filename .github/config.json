@@ -3,8 +3,14 @@
         "bot_token": "<BOT_TOKEN>",
         "client_id": "<CLIENT_ID>"
     },
+    "activity": {
+        "type": 0,
+        "name": "Die Jungs von der CSZ sind mir heilig."
+    },
+    "sentry": {
+        "dsn": null
+    },
     "bot_settings": {
-        "status": "Hi!",
         "prefix": {
             "command_prefix": ".",
             "mod_prefix": "~"

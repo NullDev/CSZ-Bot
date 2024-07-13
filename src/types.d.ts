@@ -1,4 +1,4 @@
-import type { Snowflake } from "discord.js";
+import type { Snowflake, ActivityType } from "discord.js";
 
 import type { BotContext } from "./context.js";
 import type { ProcessableMessage } from "./service/commandService.js";
@@ -61,11 +61,17 @@ export interface Config {
     };
 
     sentry?: {
-        dsn?: string;
+        dsn?: string | null;
+    };
+
+    activity: {
+        type: ActivityType;
+        name: string;
+        state?: string;
+        url?: string;
     };
 
     bot_settings: {
-        status: string;
         prefix: {
             command_prefix: string;
             mod_prefix: string;
@@ -104,7 +110,7 @@ export interface Config {
             enabled: boolean;
             schedule_cron: string;
             drop_chance: number;
-            target_channel_ids?: Array<Snowflake> | undefined;
+            allowedChannelIds?: Array<Snowflake> | null;
             /** ISO8601 duration */
             max_time_passed_since_last_message: string;
         };

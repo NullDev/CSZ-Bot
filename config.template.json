@@ -3,14 +3,22 @@
         "bot_token": "",
         "client_id": ""
     },
+    "activity": {
+        "type": 0,
+        "name": "Hi!"
+    },
+    "sentry": {
+        "dsn": null
+    },
     "bot_settings": {
-        "status": "Hi!",
         "prefix": {
             "command_prefix": ".",
             "mod_prefix": "~"
         },
         "ban_reason_channel_id": "624931933758947343",
-        "moderator_roles": ["Moderator"],
+        "moderator_roles": [
+            "Moderator"
+        ],
         "woisping_limit": 7200,
         "woisping_threshold": 2,
         "faulenzerping_allowed_role_ids": [],
@@ -29,7 +37,11 @@
         },
         "delete_thread_messages_in_channels": [],
         "ehre": {
-            "emoji_names": ["ähre", "aehre", "pr0aehre"]
+            "emoji_names": [
+                "ähre",
+                "aehre",
+                "pr0aehre"
+            ]
         },
         "loot": {
             "enabled": true,
@@ -50,17 +62,14 @@
         "woisgang_role_id": "",
         "winner_role_id": "",
         "role_deny_role_id": "",
-
         "bot_deny_role_id": "",
         "bot_spam_channel_id": "",
-
         "gruendervaeter_role_id": "",
         "gruendervaeter_banned_role_id": "",
         "trusted_role_id": "",
         "trusted_banned_role_id": "",
         "shame_role_id": "",
         "emotifizierer_role_id": "",
-
         "banned_channel_id": "",
         "votes_channel_id": "",
         "bot_log_channel_id": "",

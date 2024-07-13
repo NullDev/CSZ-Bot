@@ -121,7 +121,7 @@ login().then(
         log.info(
             `Prefixes: "${config.bot_settings.prefix.command_prefix}" and "${config.bot_settings.prefix.mod_prefix}"`,
         );
-        client.user.setActivity(config.bot_settings.status);
+        client.user.setActivity(config.activity);
     },
     err => {
         log.error(err, "Token login was not successful");
