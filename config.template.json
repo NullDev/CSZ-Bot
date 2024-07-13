@@ -14,6 +14,13 @@
         "command": ".",
         "modCommand": "~"
     },
+    "command": {
+        "faulenzerPing": {
+            "allowedRoleIds": [],
+            "maxNumberOfPings": 10,
+            "minRequiredReactions": 5
+        }
+    },
     "bot_settings": {
         "ban_reason_channel_id": "624931933758947343",
         "moderator_roles": [
@@ -21,9 +28,6 @@
         ],
         "woisping_limit": 7200,
         "woisping_threshold": 2,
-        "faulenzerping_allowed_role_ids": [],
-        "faulenzerping_max_pings": 10,
-        "faulenzerping_min_required_reactions": 5,
         "flame_trusted_user_on_bot_ping": false,
         "quotes": {
             "emoji_name": "",

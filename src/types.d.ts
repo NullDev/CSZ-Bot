@@ -76,6 +76,14 @@ export interface Config {
         modCommand: string;
     };
 
+    command: {
+        faulenzerPing: {
+            allowedRoleIds: readonly Snowflake[];
+            maxNumberOfPings: number;
+            minRequiredReactions: number;
+        };
+    };
+
     bot_settings: {
         flame_trusted_user_on_bot_ping?: boolean;
 
@@ -84,10 +92,6 @@ export interface Config {
 
         woisping_limit: number;
         woisping_threshold: number;
-
-        faulenzerping_allowed_role_ids: Array<Snowflake>;
-        faulenzerping_max_number_of_pings: number;
-        faulenzerping_min_required_reactions: number;
 
         quotes: {
             allowed_group_ids: Array<Snowflake>;

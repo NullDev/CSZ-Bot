@@ -187,9 +187,11 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
         ]),
         commandConfig: {
             faulenzerPing: {
-                allowedRoleIds: new Set(bs.faulenzerping_allowed_role_ids),
-                maxNumberOfPings: Number(bs.faulenzerping_max_number_of_pings ?? "15"),
-                minRequiredReactions: Number(bs.faulenzerping_min_required_reactions ?? "5"),
+                allowedRoleIds: new Set(config.command.faulenzerPing.allowedRoleIds),
+                maxNumberOfPings: Number(config.command.faulenzerPing.maxNumberOfPings ?? "15"),
+                minRequiredReactions: Number(
+                    config.command.faulenzerPing.minRequiredReactions ?? "5",
+                ),
             },
             ehre: {
                 emojiNames: new Set(bs.ehre?.emoji_names ?? ["aehre"]),

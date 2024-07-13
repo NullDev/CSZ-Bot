@@ -3,16 +3,23 @@
         "clientId": "<CLIENT_ID>",
         "token": "<BOT_TOKEN>"
     },
+    "sentry": {
+        "dsn": null
+    },
     "activity": {
         "type": 0,
         "name": "Die Jungs von der CSZ sind mir heilig."
     },
-    "sentry": {
-        "dsn": null
-    },
     "prefix": {
         "command": ".",
         "modCommand": "~"
+    },
+    "command": {
+        "faulenzerPing": {
+            "allowedRoleIds": [],
+            "maxNumberOfPings": 10,
+            "minRequiredReactions": 5
+        }
     },
     "bot_settings": {
         "moderator_roles": ["Moderader"],
@@ -38,9 +45,6 @@
             "schedule_cron": "*/15 * * * *",
             "drop_chance": 0.05
         },
-        "faulenzerping_allowed_role_ids": [],
-        "faulenzerping_max_pings": 10,
-        "faulenzerping_min_required_reactions": 5,
         "flame_trusted_user_on_bot_ping": false,
         "instagram": {
             "rapid_api_instagram_api_key": ""
