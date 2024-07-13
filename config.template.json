@@ -14,6 +14,9 @@
         "command": ".",
         "modCommand": "~"
     },
+    "moderatorRoleIds": [
+        "<ROLE_ID>"
+    ],
     "command": {
         "faulenzerPing": {
             "allowedRoleIds": [],

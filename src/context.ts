@@ -55,7 +55,7 @@ export interface BotContext {
     };
 
     roles: Record<RemoveSuffix<ConfigRoleId, "_role_id">, Role>;
-    moderatorRoles: Set<Snowflake>;
+    moderatorRoles: readonly Role[];
 
     // This type is rather "complex"
     // That's due to the channel IDs in the config not being named consistent (sometimes ends with _channel_id, sometimes with _id only)
@@ -113,9 +113,11 @@ function ensureRole<T extends ConfigRoleId>(config: Config, guild: Guild, roleId
     return role;
 }
 
-function ensureRoleByDisplayName(guild: Guild, displayName: string): Role {
-    const role = guild.roles.cache.find(role => role.name === displayName);
-    if (!role) throw new Error(`Role "${displayName}" not found in guild "${guild.id}"`);
+function ensureRoleById(guild: Guild, id: Snowflake): Role {
+    const role = guild.roles.cache.get(id);
+    if (!role) {
+        throw new Error(`Role with ID "${id}" not found in guild "${guild.id}"`);
+    }
     return role;
 }
 
@@ -178,11 +180,7 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
             command: config.prefix.command,
             modCommand: config.prefix.modCommand,
         },
-        moderatorRoles: new Set([
-            ...config.bot_settings.moderator_roles.map(
-                name => ensureRoleByDisplayName(guild, name).id,
-            ),
-        ]),
+        moderatorRoles: config.moderatorRoleIds.map(id => ensureRoleById(guild, id)),
         commandConfig: {
             faulenzerPing: {
                 allowedRoleIds: new Set(config.command.faulenzerPing.allowedRoleIds),
@@ -254,7 +252,7 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
         modCommandDir: path.resolve("src/commands/modcommands"),
 
         roleGuard: {
-            isMod: member => hasAnyRoleByName(member, config.bot_settings.moderator_roles),
+            isMod: member => hasAnyRoleByName(member, config.moderatorRoleIds),
             isNerd: member => hasRoleById(member, config.ids.default_role_id),
             isTrusted: member =>
                 hasRoleById(member, config.ids.trusted_role_id) ||
@@ -271,12 +269,8 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
     };
 }
 
-function hasRoleByName(member: GuildMember, roleName: string): boolean {
-    return member.roles.cache.some(role => role.name === roleName);
-}
-
-function hasAnyRoleByName(member: GuildMember, roleNames: readonly string[]) {
-    return roleNames.some(role => hasRoleByName(member, role));
+function hasAnyRoleByName(member: GuildMember, roleIds: readonly Snowflake[]) {
+    return roleIds.some(role => hasRoleById(member, role));
 }
 
 function hasRoleById(member: GuildMember | APIInteractionGuildMember, id: Snowflake): boolean {

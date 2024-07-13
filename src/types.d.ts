@@ -76,6 +76,8 @@ export interface Config {
         modCommand: string;
     };
 
+    moderatorRoleIds: readonly Snowflake[];
+
     command: {
         faulenzerPing: {
             allowedRoleIds: readonly Snowflake[];
@@ -116,7 +118,6 @@ export interface Config {
         flame_trusted_user_on_bot_ping?: boolean;
 
         ban_reason_channel_id: Snowflake;
-        moderator_roles: readonly string[];
 
         delete_thread_messages_in_channels: Array<Snowflake>;
     };
