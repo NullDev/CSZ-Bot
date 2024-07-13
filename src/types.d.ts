@@ -89,6 +89,9 @@ export interface Config {
         ehre: {
             emojiNames: readonly string[];
         };
+        instagram: {
+            rapidApiInstagramApiKey?: string | null;
+        };
         loot: {
             enabled: boolean;
             scheduleCron: string;
@@ -116,10 +119,6 @@ export interface Config {
         moderator_roles: readonly string[];
 
         delete_thread_messages_in_channels: Array<Snowflake>;
-
-        instagram: {
-            rapidApiInstagramApiKey?: string;
-        };
     };
     ids: Record<ConfigIdKey, Snowflake>;
 }
