@@ -71,6 +71,7 @@ export interface BotContext {
     >;
 
     deleteThreadMessagesInChannelIds: Set<Snowflake>;
+    flameTrustedUserOnBotPing: boolean;
 
     rootDir: string;
     srcDir: string;
@@ -218,6 +219,7 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
         },
 
         deleteThreadMessagesInChannelIds: new Set(config.deleteThreadMessagesInChannelIds),
+        flameTrustedUserOnBotPing: config.flameTrustedUserOnBotPing,
 
         roles: {
             // TODO: Make this prettier (splitting up the IDs by type in the config would make this much easier)
