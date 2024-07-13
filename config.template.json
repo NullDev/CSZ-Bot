@@ -19,6 +19,10 @@
             "allowedRoleIds": [],
             "maxNumberOfPings": 10,
             "minRequiredReactions": 5
+        },
+        "woisPing": {
+            "limit": 7200,
+            "threshold": 2
         }
     },
     "bot_settings": {
@@ -26,8 +30,6 @@
         "moderator_roles": [
             "Moderator"
         ],
-        "woisping_limit": 7200,
-        "woisping_threshold": 2,
         "flame_trusted_user_on_bot_ping": false,
         "quotes": {
             "emoji_name": "",

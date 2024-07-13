@@ -29,6 +29,10 @@
             "maxNumberOfPings": null, // default: 15
             "minRequiredReactions": null, // default: 5
         },
+        "woisPing": {
+            "limit": 7200,
+            "threshold": 2
+        },
         "ehre": {
             "emojiNames": null, // default: ["aehre"]
         },
@@ -63,8 +67,6 @@
         },
         "instagram": {
             "rapidApiInstagramApiKey": null,
-        },
-        "woisping": {
         },
     },
 }

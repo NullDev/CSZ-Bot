@@ -82,6 +82,10 @@ export interface Config {
             maxNumberOfPings: number;
             minRequiredReactions: number;
         };
+        woisPing: {
+            limit: number;
+            threshold: number;
+        };
     };
 
     bot_settings: {
@@ -89,9 +93,6 @@ export interface Config {
 
         ban_reason_channel_id: Snowflake;
         moderator_roles: Array<string>;
-
-        woisping_limit: number;
-        woisping_threshold: number;
 
         quotes: {
             allowed_group_ids: Array<Snowflake>;

@@ -19,13 +19,15 @@
             "allowedRoleIds": [],
             "maxNumberOfPings": 10,
             "minRequiredReactions": 5
+        },
+        "woisPing": {
+            "limit": 7200,
+            "threshold": 2
         }
     },
     "bot_settings": {
         "moderator_roles": ["Moderader"],
         "ban_reason_channel_id": "893179190881452117",
-        "woisping_limit": 7200,
-        "woisping_threshold": 2,
         "quotes": {
             "emoji_name": "zitat",
             "emoji_id": "905042096724017212",
