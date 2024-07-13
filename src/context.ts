@@ -177,8 +177,8 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
         rawConfig: config,
         guild,
         prefix: {
-            command: bs.prefix.command_prefix,
-            modCommand: bs.prefix.mod_prefix,
+            command: config.prefix.command,
+            modCommand: config.prefix.modCommand,
         },
         moderatorRoles: new Set([
             ...config.bot_settings.moderator_roles.map(

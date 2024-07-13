@@ -10,11 +10,11 @@
     "sentry": {
         "dsn": null
     },
+    "prefix": {
+        "command": ".",
+        "modCommand": "~"
+    },
     "bot_settings": {
-        "prefix": {
-            "command_prefix": ".",
-            "mod_prefix": "~"
-        },
         "moderator_roles": ["Moderader"],
         "ban_reason_channel_id": "893179190881452117",
         "woisping_limit": 7200,

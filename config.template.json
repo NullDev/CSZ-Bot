@@ -3,18 +3,18 @@
         "clientId": "",
         "token": ""
     },
+    "sentry": {
+        "dsn": null
+    },
     "activity": {
         "type": 0,
         "name": "Hi!"
     },
-    "sentry": {
-        "dsn": null
+    "prefix": {
+        "command": ".",
+        "modCommand": "~"
     },
     "bot_settings": {
-        "prefix": {
-            "command_prefix": ".",
-            "mod_prefix": "~"
-        },
         "ban_reason_channel_id": "624931933758947343",
         "moderator_roles": [
             "Moderator"

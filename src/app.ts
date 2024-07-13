@@ -118,9 +118,7 @@ login().then(
         log.info(
             `Got ${client.users.cache.size} users, in ${client.channels.cache.size} channels of ${client.guilds.cache.size} guilds`,
         );
-        log.info(
-            `Prefixes: "${config.bot_settings.prefix.command_prefix}" and "${config.bot_settings.prefix.mod_prefix}"`,
-        );
+        log.info(`Prefixes: "${config.prefix.command}" and "${config.prefix.modCommand}"`);
         client.user.setActivity(config.activity);
     },
     err => {
