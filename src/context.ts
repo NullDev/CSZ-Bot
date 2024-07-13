@@ -46,7 +46,7 @@ export interface BotContext {
             enabled: boolean;
             scheduleCron: string;
             dropChance: number;
-            targetChannels?: readonly Snowflake[];
+            allowedChannelIds?: readonly Snowflake[];
             maxTimePassedSinceLastMessage: Temporal.Duration;
         };
         instagram: {
@@ -180,6 +180,11 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
             command: bs.prefix.command_prefix,
             modCommand: bs.prefix.mod_prefix,
         },
+        moderatorRoles: new Set([
+            ...config.bot_settings.moderator_roles.map(
+                name => ensureRoleByDisplayName(guild, name).id,
+            ),
+        ]),
         commandConfig: {
             faulenzerPing: {
                 allowedRoleIds: new Set(bs.faulenzerping_allowed_role_ids),
@@ -195,15 +200,15 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
                 anonymousChannelIds: new Set(bs.quotes.anonymous_channel_ids),
                 blacklistedChannelIds: new Set(bs.quotes.blacklisted_channel_ids),
                 quoteVoteThreshold: bs.quotes.quote_threshold ?? 2,
-                targetChannelOverrides: bs.quotes.target_channel_overrides,
                 defaultTargetChannelId: bs.quotes.default_target_channel_id,
+                targetChannelOverrides: bs.quotes.target_channel_overrides,
                 emojiName: bs.quotes.emoji_name,
             },
             loot: {
                 enabled: bs.loot?.enabled ?? false,
                 scheduleCron: bs.loot?.schedule_cron ?? "*/15 * * * *",
                 dropChance: bs.loot?.drop_chance ?? 0.05,
-                targetChannels: bs.loot?.target_channel_ids ?? undefined,
+                allowedChannelIds: bs.loot?.target_channel_ids ?? undefined,
                 maxTimePassedSinceLastMessage: Temporal.Duration.from(
                     bs.loot?.max_time_passed_since_last_message ?? "PT30M",
                 ),
@@ -229,11 +234,6 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
             woisgang: ensureRole(config, guild, "woisgang_role_id"),
             winner: ensureRole(config, guild, "winner_role_id"),
         },
-        moderatorRoles: new Set([
-            ...config.bot_settings.moderator_roles.map(
-                name => ensureRoleByDisplayName(guild, name).id,
-            ),
-        ]),
         textChannels: {
             banned: ensureTextChannel(config, guild, "banned_channel_id"),
             bot_log: ensureTextChannel(config, guild, "bot_log_channel_id"),
