@@ -216,9 +216,7 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
                 ),
             },
             instagram: {
-                rapidApiInstagramApiKey: bs.instagram.rapid_api_instagram_api_key
-                    ? bs.instagram.rapid_api_instagram_api_key.trim()
-                    : undefined,
+                rapidApiInstagramApiKey: bs.instagram.rapidApiInstagramApiKey?.trim() ?? undefined,
             },
         },
         roles: {

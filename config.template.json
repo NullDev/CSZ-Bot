@@ -26,6 +26,9 @@
         },
         "ehre": {
             "emojiNames": ["ähre", "aehre", "pr0aehre"]
+        },
+        "instagram": {
+            "rapidApiInstagramApiKey": ""
         }
     },
     "bot_settings": {
@@ -49,9 +52,6 @@
             "enabled": true,
             "schedule_cron": "*/15 * * * *",
             "drop_chance": 0.05
-        },
-        "instagram": {
-            "rapid_api_instagram_api_key": ""
         }
     },
     "saufen_files": [],

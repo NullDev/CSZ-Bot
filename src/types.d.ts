@@ -120,7 +120,7 @@ export interface Config {
         };
 
         instagram: {
-            rapid_api_instagram_api_key?: string;
+            rapidApiInstagramApiKey?: string;
         };
     };
     ids: Record<ConfigIdKey, Snowflake>;

@@ -26,6 +26,9 @@
         },
         "ehre": {
             "emojiNames": ["ähre", "aehre", "pr0aehre"]
+        },
+        "instagram": {
+            "rapidApiInstagramApiKey": ""
         }
     },
     "bot_settings": {
@@ -48,9 +51,7 @@
             "drop_chance": 0.05
         },
         "flame_trusted_user_on_bot_ping": false,
-        "instagram": {
-            "rapid_api_instagram_api_key": ""
-        }
+
     },
     "ids": {
         "guild_id": "893179190235508819",
