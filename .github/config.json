@@ -52,12 +52,16 @@
     "flameTrustedUserOnBotPing": false,
 
     "textChannel": {
-        "banReasonChannelId": "893179190881452117"
+        "banReasonChannelId": "893179190881452117",
+        "bannedChannelId": "893179193741942888",
+        "botLogChannelId": "893179191556706387",
+        "hauptchatChannelId": "893179191292477441",
+        "votesChannelId": "893179191556706384",
+        "botSpamChannelId": "893179191556706387"
     },
 
     "ids": {
         "guild_id": "893179190235508819",
-        "hauptchat_id": "893179191292477441",
         "default_role_id": "893179190709477407",
         "banned_role_id": "893179190709477409",
         "bday_role_id": "893179190709477416",
@@ -67,7 +71,6 @@
         "role_deny_role_id": "893179190684307514",
 
         "bot_deny_role_id": "1025870480374247485",
-        "bot_spam_channel_id": "893179191556706387",
 
         "haupt_woischat_id": "893179191825162372",
         "woischat_text_id": "893179191825162371",
@@ -77,9 +80,5 @@
         "trusted_role_id": "893179190571044915",
         "trusted_banned_role_id": "893179190571044914",
         "emotifizierer_role_id": "893179190709477410",
-
-        "banned_channel_id": "893179193741942888",
-        "votes_channel_id": "893179191556706384",
-        "bot_log_channel_id": "893179191556706387"
     }
 }

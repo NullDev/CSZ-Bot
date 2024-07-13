@@ -13,7 +13,7 @@ import type {
 import { ChannelType } from "discord.js";
 import { Temporal } from "@js-temporal/polyfill";
 
-import type { Config, ConfigTextChannelId, ConfigVoiceChannelId, ConfigRoleId } from "./types.js";
+import type { Config, ConfigVoiceChannelId, ConfigRoleId } from "./types.js";
 import type { RemoveOptionalSuffix, RemoveSuffix } from "./utils/typeUtils.js";
 import { readConfig } from "./service/configService.js";
 
@@ -61,10 +61,15 @@ export interface BotContext {
     // That's due to the channel IDs in the config not being named consistent (sometimes ends with _channel_id, sometimes with _id only)
     // and we're not able to rename these entries.
     // We remove all instances of "_id" suffixes and - if present - the "_channel" suffix.
-    textChannels: Record<
-        RemoveOptionalSuffix<RemoveSuffix<ConfigTextChannelId, "_id">, "_channel">,
-        TextChannel
-    >;
+    textChannels: {
+        banReason: TextChannel;
+        banned: TextChannel;
+        botLog: TextChannel;
+        hauptchat: TextChannel;
+        votes: TextChannel;
+        botSpam: TextChannel;
+    };
+
     voiceChannels: Record<
         RemoveOptionalSuffix<RemoveSuffix<ConfigVoiceChannelId, "_id">, "_channel">,
         VoiceChannel
@@ -123,15 +128,6 @@ function ensureRoleById(guild: Guild, id: Snowflake): Role {
 }
 
 // #region Ensure Channels
-
-function ensureConfigTextChannel<T extends ConfigTextChannelId>(
-    config: Config,
-    guild: Guild,
-    channelIdName: T,
-): TextChannel {
-    const channelId = config.ids[channelIdName];
-    return ensureTextChannel(guild, channelId);
-}
 
 function ensureTextChannel(guild: Guild, channelId: Snowflake): TextChannel {
     const channel = guild.channels.cache.get(channelId);
@@ -240,14 +236,15 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
             winner: ensureRole(config, guild, "winner_role_id"),
         },
         textChannels: {
-            banned: ensureTextChannel(config, guild, "banned_channel_id"),
-            bot_log: ensureTextChannel(config, guild, "bot_log_channel_id"),
-            hauptchat: ensureTextChannel(config, guild, "hauptchat_id"),
-            votes: ensureTextChannel(config, guild, "votes_channel_id"),
-            bot_spam: ensureTextChannel(config, guild, "bot_spam_channel_id"),
+            banReason: ensureTextChannel(guild, config.textChannel.banReasonChannelId),
+            banned: ensureTextChannel(guild, config.textChannel.bannedChannelId),
+            botLog: ensureTextChannel(guild, config.textChannel.botLogChannelId),
+            hauptchat: ensureTextChannel(guild, config.textChannel.hauptchatChannelId),
+            votes: ensureTextChannel(guild, config.textChannel.votesChannelId),
+            botSpam: ensureTextChannel(guild, config.textChannel.botSpamChannelId),
         },
         voiceChannels: {
-            haupt_woischat: ensureVoiceChannel(config, guild, "haupt_woischat_id"),
+            haupt_woischat: ensureConfigVoiceChannel(config, guild, "haupt_woischat_id"),
         },
         rootDir: path.resolve(""),
         srcDir: path.resolve("src"),

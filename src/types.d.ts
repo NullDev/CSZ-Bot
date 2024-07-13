@@ -41,13 +41,6 @@ export type ConfigRoleId =
     | "woisgang_role_id"
     | "winner_role_id";
 
-export type ConfigTextChannelId =
-    | "banned_channel_id"
-    | "bot_log_channel_id"
-    | "bot_spam_channel_id"
-    | "hauptchat_id"
-    | "votes_channel_id";
-
 export type ConfigVoiceChannelId = "haupt_woischat_id";
 
 export type ConfigGuildId = "guild_id";
@@ -119,6 +112,11 @@ export interface Config {
 
     textChannel: {
         banReasonChannelId: Snowflake;
+        bannedChannelId: Snowflake;
+        botLogChannelId: Snowflake;
+        hauptchatChannelId: Snowflake;
+        votesChannelId: Snowflake;
+        botSpamChannelId: Snowflake;
     };
 
     ids: Record<ConfigIdKey, Snowflake>;

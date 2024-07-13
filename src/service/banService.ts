@@ -96,7 +96,7 @@ Falls du doch vorzeitig entbannt werden möchtest, kannst du dich im ${nagChanne
 
 Haddi & xD™
 `);
-        await context.textChannels.bot_log.send({
+        await context.textChannels.botLog.send({
             content: `${member} hat sich selbst für ${humanReadableDuration} gebannt.\nGrund: ${reason}`,
             allowedMentions: {
                 users: [],
@@ -110,7 +110,7 @@ ${reasonStr}
 Falls du Fragen zu dem Bann hast, kannst du dich in ${nagChannel} ausheulen.
 Lg & xD™`);
 
-        await context.textChannels.bot_log.send({
+        await context.textChannels.botLog.send({
             content: `${member} wurde von ${banInvoker} für ${humanReadableDuration} gebannt.\nGrund: ${reason}`,
             allowedMentions: {
                 users: [],
