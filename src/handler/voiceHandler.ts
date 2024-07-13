@@ -52,7 +52,7 @@ async function playSaufen(file: string, duration: number): Promise<AudioPlayer> 
 export async function connectAndPlaySaufen(context: BotContext, filename?: string) {
     log.debug("Entered `connectAndPlaySaufen`");
 
-    const wois = context.voiceChannels.haupt_woischat;
+    const wois = context.voiceChannels.hauptWoischat;
     if (wois.members.size === 0) {
         return;
     }

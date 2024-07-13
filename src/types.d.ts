@@ -119,6 +119,10 @@ export interface Config {
         botSpamChannelId: Snowflake;
     };
 
+    voiceChannels: {
+        hauptWoischatChannelId: Snowflake;
+    };
+
     ids: Record<ConfigIdKey, Snowflake>;
 }
 

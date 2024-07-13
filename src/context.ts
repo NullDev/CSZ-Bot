@@ -70,10 +70,9 @@ export interface BotContext {
         botSpam: TextChannel;
     };
 
-    voiceChannels: Record<
-        RemoveOptionalSuffix<RemoveSuffix<ConfigVoiceChannelId, "_id">, "_channel">,
-        VoiceChannel
-    >;
+    voiceChannels: {
+        hauptWoischat: VoiceChannel;
+    };
 
     deleteThreadMessagesInChannelIds: Set<Snowflake>;
     flameTrustedUserOnBotPing: boolean;
@@ -244,7 +243,7 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
             botSpam: ensureTextChannel(guild, config.textChannel.botSpamChannelId),
         },
         voiceChannels: {
-            haupt_woischat: ensureConfigVoiceChannel(config, guild, "haupt_woischat_id"),
+            hauptWoischat: ensureVoiceChannel(guild, config.voiceChannels.hauptWoischatChannelId),
         },
         rootDir: path.resolve(""),
         srcDir: path.resolve("src"),

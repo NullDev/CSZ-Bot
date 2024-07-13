@@ -61,6 +61,10 @@
         "botSpamChannelId": ""
     },
 
+    "voiceChannels": {
+        "hauptWoischatChannelId": ""
+    },
+
     "ids": {
         "guild_id": "",
         "default_role_id": "",
@@ -76,7 +80,6 @@
         "trusted_banned_role_id": "",
         "shame_role_id": "",
         "emotifizierer_role_id": "",
-        "haupt_woischat_id": "",
         "woischat_text_id": ""
     }
 }

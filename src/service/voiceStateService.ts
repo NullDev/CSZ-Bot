@@ -21,7 +21,7 @@ export async function checkVoiceUpdate(
 ) {
     log.debug(`Voice update detected: ${oldState.channelId} -> ${newState.channelId}`);
 
-    const mainVoiceId = context.voiceChannels.haupt_woischat.id;
+    const mainVoiceId = context.voiceChannels.hauptWoischat.id;
 
     // User joined Channel
     if (oldState.channel === null && newState.channel !== null) {

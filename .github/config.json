@@ -60,6 +60,10 @@
         "botSpamChannelId": "893179191556706387"
     },
 
+    "voiceChannels": {
+        "hauptWoischatChannelId": "893179191825162372"
+    },
+
     "ids": {
         "guild_id": "893179190235508819",
         "default_role_id": "893179190709477407",
@@ -72,7 +76,6 @@
 
         "bot_deny_role_id": "1025870480374247485",
 
-        "haupt_woischat_id": "893179191825162372",
         "woischat_text_id": "893179191825162371",
 
         "gruendervaeter_role_id": "893179190709477411",
