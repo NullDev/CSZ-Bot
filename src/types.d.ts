@@ -98,14 +98,14 @@ export interface Config {
             max_time_passed_since_last_message: string;
         };
         quotes: {
-            allowed_group_ids: readonly Snowflake[];
-            anonymous_channel_ids: readonly Snowflake[];
-            anonymous_category_ids: readonly Snowflake[];
-            quote_threshold: number;
-            blacklisted_channel_ids: readonly Snowflake[];
-            target_channel_overrides: Record<string, string>;
-            default_target_channel_id: Snowflake;
-            emoji_name: string;
+            emojiName: string;
+            allowedGroupIds: readonly Snowflake[];
+            anonymousChannelIds: readonly Snowflake[];
+            anonymousCategoryIds: readonly Snowflake[];
+            voteThreshold: number;
+            blacklistedChannelIds: readonly Snowflake[];
+            targetChannelOverrides: Record<string, string>;
+            defaultTargetChannelId: Snowflake;
         };
     };
 
@@ -114,7 +114,6 @@ export interface Config {
 
         ban_reason_channel_id: Snowflake;
         moderator_roles: readonly string[];
-
 
         delete_thread_messages_in_channels: Array<Snowflake>;
 

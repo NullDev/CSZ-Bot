@@ -36,14 +36,13 @@
             "dropChance": 0.05
         },
         "quotes": {
-            "emoji_name": "zitat",
-            "emoji_id": "905042096724017212",
-            "allowed_group_ids": ["893179190709477407"],
-            "quote_threshold": 2,
-            "anonymous_channel_ids": [],
-            "blacklisted_channel_ids": [],
-            "default_target_channel_id": "893179191556706386",
-            "target_channel_overrides": []
+            "emojiName": "zitat",
+            "allowedGroupIds": ["893179190709477407"],
+            "voteThreshold": 2,
+            "anonymousChannelIds": [],
+            "blacklistedChannelIds": [],
+            "defaultTargetChannelId": "893179191556706386",
+            "targetChannelOverrides": []
         }
     },
     "bot_settings": {

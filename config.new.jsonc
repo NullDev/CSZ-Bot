@@ -37,9 +37,11 @@
             "emojiNames": null, // default: ["aehre"]
         },
         "quote": {
+            "emojiName": "quote",
             "allowedGroupIds": [
                 "<ROLE_ID>",
             ],
+            "voteThreshold": null, // default: 2
             "anonymousCategoryIds": [
                 "<CATEGORY_ID>",
             ],
@@ -49,12 +51,10 @@
             "blacklistedChannelIds": [
                 "<CHANNEL_ID>",
             ],
-            "quoteVoteThreshold": null, // default: 2
             "defaultTargetChannelId": "<CHANNEL_ID>",
             "targetChannelOverrides": {
                 "<ORIGINAL_CHANNEL_ID>": "<TARGET_CHANNEL_ID>",
             },
-            "emojiName": "quote",
         },
         "loot": {
             "enabled": true,

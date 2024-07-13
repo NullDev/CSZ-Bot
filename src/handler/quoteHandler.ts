@@ -70,7 +70,7 @@ const hasMessageEnoughQuotes = (
     messageQuoter: readonly GuildMember[],
 ): boolean => {
     const weightedVotes = messageQuoter.map(q => (context.roleGuard.isTrusted(q) ? 2 : 1));
-    return Math.sumPrecise(weightedVotes) >= context.commandConfig.quote.quoteVoteThreshold;
+    return Math.sumPrecise(weightedVotes) >= context.commandConfig.quote.voteThreshold;
 };
 
 const isQuoterQuotingHimself = (quoter: GuildMember, messageAuthor: GuildMember) =>

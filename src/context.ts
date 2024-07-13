@@ -97,7 +97,7 @@ export interface QuoteConfig {
     anonymousChannelIds: Set<Snowflake>;
     anonymousCategoryIds: Set<Snowflake>;
     blacklistedChannelIds: Set<Snowflake>;
-    quoteVoteThreshold: number;
+    voteThreshold: number;
     targetChannelOverrides: Record<Snowflake, Snowflake>;
     defaultTargetChannelId: Snowflake;
     emojiName: string;
@@ -197,14 +197,14 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
                 emojiNames: new Set(config.command.ehre.emojiNames ?? ["aehre"]),
             },
             quote: {
-                allowedGroupIds: new Set(config.command.quotes.allowed_group_ids),
-                anonymousCategoryIds: new Set(config.command.quotes.anonymous_category_ids),
-                anonymousChannelIds: new Set(config.command.quotes.anonymous_channel_ids),
-                blacklistedChannelIds: new Set(config.command.quotes.blacklisted_channel_ids),
-                quoteVoteThreshold: config.command.quotes.quote_threshold ?? 2,
-                defaultTargetChannelId: config.command.quotes.default_target_channel_id,
-                targetChannelOverrides: config.command.quotes.target_channel_overrides,
-                emojiName: config.command.quotes.emoji_name,
+                emojiName: config.command.quotes.emojiName,
+                allowedGroupIds: new Set(config.command.quotes.allowedGroupIds),
+                anonymousCategoryIds: new Set(config.command.quotes.anonymousCategoryIds),
+                anonymousChannelIds: new Set(config.command.quotes.anonymousChannelIds),
+                blacklistedChannelIds: new Set(config.command.quotes.blacklistedChannelIds),
+                voteThreshold: config.command.quotes.voteThreshold ?? 2,
+                defaultTargetChannelId: config.command.quotes.defaultTargetChannelId,
+                targetChannelOverrides: config.command.quotes.targetChannelOverrides,
             },
             loot: {
                 enabled: config.command.loot?.enabled ?? false,
