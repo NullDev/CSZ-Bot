@@ -124,33 +124,37 @@ function ensureRoleById(guild: Guild, id: Snowflake): Role {
 
 // #region Ensure Channels
 
-function ensureTextChannel<T extends ConfigTextChannelId>(
+function ensureConfigTextChannel<T extends ConfigTextChannelId>(
     config: Config,
     guild: Guild,
     channelIdName: T,
 ): TextChannel {
     const channelId = config.ids[channelIdName];
+    return ensureTextChannel(guild, channelId);
+}
 
+function ensureTextChannel(guild: Guild, channelId: Snowflake): TextChannel {
     const channel = guild.channels.cache.get(channelId);
-
     if (!channel)
         throw new Error(
             `Could not find main channel with id "${channelId}" on guild "${guild.id}"`,
         );
     if (channel.type !== ChannelType.GuildText)
         throw new Error(`Main channel is not a text channel. "${channel.id}" is "${channel.type}"`);
-
     return channel;
 }
-function ensureVoiceChannel<T extends ConfigVoiceChannelId>(
+
+function ensureConfigVoiceChannel<T extends ConfigVoiceChannelId>(
     config: Config,
     guild: Guild,
     channelIdName: T,
 ): VoiceChannel {
     const channelId = config.ids[channelIdName];
+    return ensureVoiceChannel(guild, channelId);
+}
 
+function ensureVoiceChannel(guild: Guild, channelId: Snowflake): VoiceChannel {
     const channel = guild.channels.cache.get(channelId);
-
     if (!channel)
         throw new Error(
             `Could not find main channel with id "${channelId}" on guild "${guild.id}"`,
@@ -159,7 +163,6 @@ function ensureVoiceChannel<T extends ConfigVoiceChannelId>(
         throw new Error(
             `Main channel is not a voice channel. "${channel.id}" is "${channel.type}"`,
         );
-
     return channel;
 }
 
