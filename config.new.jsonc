@@ -9,10 +9,10 @@
     },
     // https://discord.com/developers/docs/topics/gateway-events#activity-object-activity-types
     "activity": {
+        "type": 0,
         "name": "Die Jungs von der CSZ sind mir heilig",
         "state": null,
-        "url": null,
-        "type": "Playing"
+        "url": null
     },
     "prefix": {
         "command": ".",
