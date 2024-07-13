@@ -50,9 +50,11 @@
     },
     "deleteThreadMessagesInChannelIds": ["893179191556706384"],
     "flameTrustedUserOnBotPing": false,
-    "bot_settings": {
-        "ban_reason_channel_id": "893179190881452117"
+
+    "textChannel": {
+        "banReasonChannelId": "893179190881452117"
     },
+
     "ids": {
         "guild_id": "893179190235508819",
         "hauptchat_id": "893179191292477441",

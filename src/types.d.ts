@@ -117,9 +117,10 @@ export interface Config {
     deleteThreadMessagesInChannelIds: readonly Snowflake[];
     flameTrustedUserOnBotPing: boolean;
 
-    bot_settings: {
-        ban_reason_channel_id: Snowflake;
+    textChannel: {
+        banReasonChannelId: Snowflake;
     };
+
     ids: Record<ConfigIdKey, Snowflake>;
 }
 
