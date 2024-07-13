@@ -194,7 +194,7 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
                 ),
             },
             ehre: {
-                emojiNames: new Set(bs.ehre?.emoji_names ?? ["aehre"]),
+                emojiNames: new Set(config.command.ehre.emojiNames ?? ["aehre"]),
             },
             quote: {
                 allowedGroupIds: new Set(bs.quotes.allowed_group_ids),

@@ -86,6 +86,9 @@ export interface Config {
             limit: number;
             threshold: number;
         };
+        ehre: {
+            emojiNames: readonly string[];
+        };
     };
 
     bot_settings: {
@@ -106,10 +109,6 @@ export interface Config {
         };
 
         delete_thread_messages_in_channels: Array<Snowflake>;
-
-        ehre: {
-            emoji_names: Array<string>;
-        };
 
         loot: {
             enabled: boolean;

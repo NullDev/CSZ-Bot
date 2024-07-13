@@ -23,6 +23,9 @@
         "woisPing": {
             "limit": 7200,
             "threshold": 2
+        },
+        "ehre": {
+            "emojiNames": ["ähre", "aehre", "pr0aehre"]
         }
     },
     "bot_settings": {
@@ -39,9 +42,6 @@
             "target_channel_overrides": []
         },
         "delete_thread_messages_in_channels": ["893179191556706384"],
-        "ehre": {
-            "emoji_names": ["ähre", "aehre", "pr0aehre"]
-        },
         "loot": {
             "enabled": true,
             "schedule_cron": "*/15 * * * *",
