@@ -1,0 +1,70 @@
+{
+    // "$schema": "",
+    "auth": {
+        "clientId": "<CLIENT_ID>",
+        "botToken": "<BOT_TOKEN>"
+    },
+    // https://discord.com/developers/docs/topics/gateway-events#activity-object-activity-types
+    "activity": {
+        "name": "Die Jungs von der CSZ sind mir heilig",
+        "state": null,
+        "url": null,
+        "type": "Playing"
+    },
+    "prefix": {
+        "command": ".",
+        "modCommand": "~"
+    },
+    "moderatorRoleIds": [
+        "<ROLE_ID>"
+    ],
+    "command": {
+        "faulenzerPing": {
+            "allowedRoleIds": [
+                "<ROLE_ID>"
+            ],
+            "maxNumberOfPings": null, // default: 15
+            "minRequiredReactions": null, // default: 5
+        },
+        "ehre": {
+            "emojiNames": null, // default: ["aehre"]
+        },
+        "quote": {
+            "allowedGroupIds": [
+                "<ROLE_ID>",
+            ],
+            "anonymousCategoryIds": [
+                "<CATEGORY_ID>",
+            ],
+            "anonymousChannelIds": [
+                "<CHANNEL_ID>",
+            ],
+            "blacklistedChannelIds": [
+                "<CHANNEL_ID>",
+            ],
+            "quoteVoteThreshold": null, // default: 2
+            "defaultTargetChannelId": "<CHANNEL_ID>",
+            "targetChannelOverrides": {
+                "<ORIGINAL_CHANNEL_ID>": "<TARGET_CHANNEL_ID>",
+            },
+            "emojiName": "quote",
+        },
+        "loot": {
+            "enabled": true,
+            "scheduleCron": "*/25 * * * *",
+            "dropChance": 0.08,
+            "allowedChannelIds": [
+                "<CHANNEL_ID>",
+            ],
+            "maxTimePassedSinceLastMessage": "PT30M",
+        },
+        "instagram": {
+            "rapidApiInstagramApiKey": null,
+        },
+        "woisping": {
+        },
+    },
+    "sentry": {
+        "dsn": null,
+    },
+}
