@@ -170,8 +170,6 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
         throw new Error(`Cannot find configured guild "${config.ids.guild_id}"`);
     }
 
-    const bs = config.bot_settings;
-
     return {
         client,
         rawConfig: config,
@@ -271,18 +269,18 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
             isRejoiner: member => hasRoleById(member, config.ids.shame_role_id),
         },
     };
+}
 
-    function hasRoleByName(member: GuildMember, roleName: string): boolean {
-        return member.roles.cache.some(role => role.name === roleName);
-    }
+function hasRoleByName(member: GuildMember, roleName: string): boolean {
+    return member.roles.cache.some(role => role.name === roleName);
+}
 
-    function hasAnyRoleByName(member: GuildMember, roleNames: readonly string[]) {
-        return roleNames.some(role => hasRoleByName(member, role));
-    }
+function hasAnyRoleByName(member: GuildMember, roleNames: readonly string[]) {
+    return roleNames.some(role => hasRoleByName(member, role));
+}
 
-    function hasRoleById(member: GuildMember | APIInteractionGuildMember, id: Snowflake): boolean {
-        return Array.isArray(member.roles)
-            ? member.roles.includes(id)
-            : member.roles.cache.some(role => role.id === id);
-    }
+function hasRoleById(member: GuildMember | APIInteractionGuildMember, id: Snowflake): boolean {
+    return Array.isArray(member.roles)
+        ? member.roles.includes(id)
+        : member.roles.cache.some(role => role.id === id);
 }
