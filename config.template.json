@@ -54,7 +54,6 @@
         "flame_trusted_user_on_bot_ping": false,
         "delete_thread_messages_in_channels": []
     },
-    "saufen_files": [],
     "ids": {
         "guild_id": "",
         "hauptchat_id": "",
