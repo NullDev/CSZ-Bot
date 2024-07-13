@@ -252,7 +252,7 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
         modCommandDir: path.resolve("src/commands/modcommands"),
 
         roleGuard: {
-            isMod: member => hasAnyRoleByName(member, config.moderatorRoleIds),
+            isMod: member => hasAnyRoleById(member, config.moderatorRoleIds),
             isNerd: member => hasRoleById(member, config.ids.default_role_id),
             isTrusted: member =>
                 hasRoleById(member, config.ids.trusted_role_id) ||
@@ -269,7 +269,7 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
     };
 }
 
-function hasAnyRoleByName(member: GuildMember, roleIds: readonly Snowflake[]) {
+function hasAnyRoleById(member: GuildMember, roleIds: readonly Snowflake[]) {
     return roleIds.some(role => hasRoleById(member, role));
 }
 
