@@ -29,6 +29,11 @@
         },
         "instagram": {
             "rapidApiInstagramApiKey": ""
+        },
+        "loot": {
+            "enabled": true,
+            "schedule_cron": "*/15 * * * *",
+            "drop_chance": 0.05
         }
     },
     "bot_settings": {
@@ -47,12 +52,7 @@
             "target_channel_overrides": [],
             "default_target_channel_id": ""
         },
-        "delete_thread_messages_in_channels": [],
-        "loot": {
-            "enabled": true,
-            "schedule_cron": "*/15 * * * *",
-            "drop_chance": 0.05
-        }
+        "delete_thread_messages_in_channels": []
     },
     "saufen_files": [],
     "ids": {

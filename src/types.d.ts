@@ -89,6 +89,14 @@ export interface Config {
         ehre: {
             emojiNames: readonly string[];
         };
+        loot: {
+            enabled: boolean;
+            schedule_cron: string;
+            drop_chance: number;
+            allowedChannelIds?: Array<Snowflake> | null;
+            /** ISO8601 duration */
+            max_time_passed_since_last_message: string;
+        };
     };
 
     bot_settings: {
@@ -109,15 +117,6 @@ export interface Config {
         };
 
         delete_thread_messages_in_channels: Array<Snowflake>;
-
-        loot: {
-            enabled: boolean;
-            schedule_cron: string;
-            drop_chance: number;
-            allowedChannelIds?: Array<Snowflake> | null;
-            /** ISO8601 duration */
-            max_time_passed_since_last_message: string;
-        };
 
         instagram: {
             rapidApiInstagramApiKey?: string;

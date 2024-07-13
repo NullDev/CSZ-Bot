@@ -207,12 +207,12 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
                 emojiName: bs.quotes.emoji_name,
             },
             loot: {
-                enabled: bs.loot?.enabled ?? false,
-                scheduleCron: bs.loot?.schedule_cron ?? "*/15 * * * *",
-                dropChance: bs.loot?.drop_chance ?? 0.05,
-                allowedChannelIds: bs.loot?.allowedChannelIds ?? undefined,
+                enabled: config.command.loot?.enabled ?? false,
+                scheduleCron: config.command.loot?.schedule_cron ?? "*/15 * * * *",
+                dropChance: config.command.loot?.drop_chance ?? 0.05,
+                allowedChannelIds: config.command.loot?.allowedChannelIds ?? undefined,
                 maxTimePassedSinceLastMessage: Temporal.Duration.from(
-                    bs.loot?.max_time_passed_since_last_message ?? "PT30M",
+                    config.command.loot?.max_time_passed_since_last_message ?? "PT30M",
                 ),
             },
             instagram: {
