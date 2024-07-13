@@ -91,8 +91,8 @@ export interface Config {
         };
         loot: {
             enabled: boolean;
-            schedule_cron: string;
-            drop_chance: number;
+            scheduleCron: string;
+            dropChance: number;
             allowedChannelIds?: Array<Snowflake> | null;
             /** ISO8601 duration */
             max_time_passed_since_last_message: string;

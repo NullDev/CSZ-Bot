@@ -32,8 +32,8 @@
         },
         "loot": {
             "enabled": true,
-            "schedule_cron": "*/15 * * * *",
-            "drop_chance": 0.05
+            "scheduleCron": "*/15 * * * *",
+            "dropChance": 0.05
         }
     },
     "bot_settings": {
