@@ -69,4 +69,20 @@
             "rapidApiInstagramApiKey": null,
         },
     },
+
+    "deleteThreadMessagesInChannelIds": [],
+    "flameTrustedUserOnBotPing": false,
+
+    "textChannel": {
+        "banReasonChannelId": "<CHANNEL_ID>",
+        "bannedChannelId": "<CHANNEL_ID>",
+        "botLogChannelId": "<CHANNEL_ID>",
+        "hauptchatChannelId": "<CHANNEL_ID>",
+        "votesChannelId": "<CHANNEL_ID>",
+        "botSpamChannelId": "<CHANNEL_ID>",
+    },
+
+    "voiceChannels": {
+        "hauptWoischatChannelId": "<CHANNEL_ID>",
+    },
 }
