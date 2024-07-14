@@ -11,7 +11,7 @@ import {
 import type { ApplicationCommand, MessageCommand } from "./command.js";
 import type { ProcessableMessage } from "../service/commandService.js";
 import type { BotContext } from "../context.js";
-import { assertNever } from "../utils/typeUtils.js";
+import assertNever from "../utils/assertNever.js";
 
 interface GitHubContributor {
     login: string;

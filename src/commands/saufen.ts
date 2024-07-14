@@ -14,7 +14,7 @@ import {
 import type { ApplicationCommand } from "./command.js";
 import type { BotContext } from "../context.js";
 import { connectAndPlaySaufen } from "../handler/voiceHandler.js";
-import { assertNever } from "../utils/typeUtils.js";
+import assertNever from "../utils/assertNever.js";
 
 type SubCommand = "los" | "add" | "list" | "select";
 

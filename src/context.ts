@@ -14,7 +14,6 @@ import { ChannelType } from "discord.js";
 import { Temporal } from "@js-temporal/polyfill";
 
 import type { Config } from "./types.js";
-import type { RemoveSuffix } from "./utils/typeUtils.js";
 import { readConfig } from "./service/configService.js";
 
 /**
