@@ -85,7 +85,7 @@ const createPermissionSet = (permissions: readonly PermissionsString[]): bigint 
 export const registerAllApplicationCommandsAsGuildCommands = async (
     context: BotContext,
 ): Promise<void> => {
-    const { clientId, token } = context.rawConfig.auth;
+    const { clientId, token } = context.auth;
 
     const rest = new REST({ version: "10" }).setToken(token);
 

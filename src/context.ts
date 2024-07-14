@@ -13,7 +13,6 @@ import type {
 import { ChannelType } from "discord.js";
 import { Temporal } from "@js-temporal/polyfill";
 
-import type { Config } from "./types.js";
 import { readConfig } from "./service/configService.js";
 
 /**
@@ -22,9 +21,12 @@ import { readConfig } from "./service/configService.js";
 export interface BotContext {
     /** Initialized client, which guarantees the `user` (the user of the bot) being set. */
     client: Client<true>;
-    /** Avoid using the raw config. If the value must be ensured before (for example, the existence of a channel), consider adding it to the context. */
-    rawConfig: Config;
     guild: Guild;
+
+    auth: {
+        clientId: string;
+        token: string;
+    };
 
     prefix: {
         command: string;
@@ -175,7 +177,10 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
 
     return {
         client,
-        rawConfig: config,
+        auth: {
+            clientId: config.auth.clientId,
+            token: config.auth.token,
+        },
         guild,
         prefix: {
             command: config.prefix.command,
