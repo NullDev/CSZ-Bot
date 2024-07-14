@@ -55,27 +55,37 @@ export default class GibMirIdsCommand implements MessageCommand {
 
 interface SplitOptions {
     charLimitPerChunk?: number;
-    // chunkOpening?: string;
-    // chunkClosing?: string;
+    chunkOpening?: string;
+    chunkClosing?: string;
 }
 
 function splitInChunks(
     lines: readonly string[],
-    { charLimitPerChunk = 2000 }: SplitOptions,
+    { charLimitPerChunk = 2000, chunkOpening, chunkClosing }: SplitOptions,
 ): string[] {
     let charsInChunk = 0;
     let currentChunk: string[] = [];
     const chunks = [currentChunk];
 
+    const open = chunkOpening ?? "";
+    const close = chunkClosing ?? "";
+    // we need + 1 for line ending if there is an opening
+    const chunkOverhead =
+        (open.length ? open.length + 1 : 0) + (close.length ? close.length + 1 : 0);
+
     for (const line of lines) {
         const appendedChars = line.length + 1; // + 1 for line ending
-        if (charsInChunk + appendedChars > charLimitPerChunk) {
+        if (charsInChunk + appendedChars + chunkOverhead > charLimitPerChunk) {
+            if (close) {
+                currentChunk.push(close);
+            }
+
             charsInChunk = 0;
-            currentChunk = [];
+            currentChunk = open ? [open] : [];
             chunks.push(currentChunk);
         }
         currentChunk.push(line);
-        charsInChunk += appendedChars;
+        charsInChunk += appendedChars + chunkOverhead;
     }
 
     return chunks.map(chunk => chunk.join("\n"));
