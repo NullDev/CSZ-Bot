@@ -1,4 +1,5 @@
 {
+    // This file supports comments and trailing commas
     "auth": {
         "clientId": "<CLIENT_ID>",
         "token": "<BOT_TOKEN>"
@@ -7,16 +8,19 @@
         "dsn": null
     },
     "activity": {
+        // https://discord.com/developers/docs/topics/gateway-events#activity-object-activity-types
         "type": 0,
         "name": "Hi!"
     },
     "prefix": {
+        // You may want to choose a prefix that does not collide with others on the test server
         "command": "xd",
         "modCommand": "yd"
     },
     "moderatorRoleIds": [
         "893179190709477413"
     ],
+
     "command": {
         "faulenzerPing": {
             "allowedRoleIds": [],

@@ -9,6 +9,9 @@
     "files.eol": "\n",
     "cSpell.language": "de,en",
     "editor.formatOnSaveMode": "modificationsIfAvailable",
+    "files.associations": {
+        "config*.json": "jsonc"
+    },
     "[javascript]": {
         "editor.defaultFormatter": "biomejs.biome"
     },

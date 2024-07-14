@@ -2,6 +2,8 @@ import * as fs from "node:fs/promises";
 import * as path from "node:path";
 import { parseArgs } from "node:util";
 
+import * as JSONC from "@std/jsonc";
+
 import type { Snowflake, ActivityType } from "discord.js";
 
 import log from "@log";
@@ -27,7 +29,7 @@ export async function readConfig() {
     }
 
     try {
-        return JSON.parse(jsonString) as Config;
+        return JSONC.parse(jsonString) as unknown as Config;
     } catch (e) {
         log.error(e, "Config is not valid JSON. Stopping...");
         return process.exit(1);

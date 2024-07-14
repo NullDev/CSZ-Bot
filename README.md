@@ -62,6 +62,7 @@ bun i
 cp config.template.json config.json
 $EDITOR config.json
 ```
+Hinweis: Die Datei kann Kommentare und Trailing-Commas (JSONC). Wenn du nicht VSCode verwendest, musst du das ggf. noch einstellen.
 2. Das Template ist für die [Coding-Test-Zentrale](https://discord.gg/ekJA6GA3BJ) vorausgefüllt. Es fehlen noch:
     - Um einen Bot zum Testen anzulegen, einfach den Instruktionen im [Discord Developer Portal](https://discord.com/developers/applications) folgen.
         - Die Applikation muss als "Bot" gesetzt werden.
