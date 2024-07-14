@@ -14,6 +14,11 @@ export default class GibMirIdsCommand implements MessageCommand {
     description = "Listet IDs auf dem Server für einfachere Config";
 
     async handleMessage(message: ProcessableMessage, context: BotContext) {
+        if (!context.roleGuard.isTrusted(message.member)) {
+            await message.react("❌");
+            return;
+        }
+
         const lines = [`# Guild: \`${context.guild.id}\``, ""];
 
         const channels = [...context.guild.channels.cache.values()].sort(
