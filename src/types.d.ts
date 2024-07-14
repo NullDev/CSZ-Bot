@@ -102,11 +102,11 @@ export interface Config {
         hauptwoisTextChannelId: Snowflake;
     };
 
-    voiceChannels: {
+    voiceChannel: {
         hauptWoischatChannelId: Snowflake;
     };
 
-    roles: {
+    role: {
         bannedRoleId: Snowflake;
         birthdayRoleId: Snowflake;
         botDenyRoleId: Snowflake;

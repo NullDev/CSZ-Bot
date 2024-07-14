@@ -63,11 +63,11 @@
         "hauptwoisTextChannelId": "893179191825162371"
     },
 
-    "voiceChannels": {
+    "voiceChannel": {
         "hauptWoischatChannelId": "893179191825162372"
     },
 
-    "roles": {
+    "role": {
         "bannedRoleId": "893179190709477409",
         "birthdayRoleId": "893179190709477416",
         "botDenyRoleId": "1025870480374247485",

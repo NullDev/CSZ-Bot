@@ -63,11 +63,11 @@
         "botSpamChannelId": ""
     },
 
-    "voiceChannels": {
+    "voiceChannel": {
         "hauptWoischatChannelId": ""
     },
 
-    "roles": {
+    "role": {
         "bannedRoleId": "",
         "birthdayRoleId": "",
         "botDenyRoleId": "",
