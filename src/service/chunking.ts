@@ -30,12 +30,12 @@ export function splitInChunks(
                 currentChunk.push(close);
             }
 
-            charsInChunk = 0;
+            charsInChunk = chunkOverhead;
             currentChunk = open ? [open] : [];
             chunks.push(currentChunk);
         }
         currentChunk.push(line);
-        charsInChunk += appendedChars + chunkOverhead;
+        charsInChunk += appendedChars;
     }
 
     currentChunk.push(close);
