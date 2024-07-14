@@ -4,6 +4,7 @@ import {
     type APIEmbed,
     type APIEmbedField,
     cleanContent,
+    EmbedBuilder,
     type Snowflake,
     type TextChannel,
     time,
@@ -160,7 +161,12 @@ Optionen:
 
         const fields = pollOptions.map((o, i) => createOptionField(o, i));
 
-        const embed: APIEmbed = {
+        const extendable =
+            options.extendable &&
+            pollOptions.length < OPTION_LIMIT &&
+            pollOptionsTextLength < TEXT_LIMIT;
+
+        const embed = new EmbedBuilder({
             description: `**${cleanContent(question, message.channel)}**`,
             fields,
             timestamp: new Date().toISOString(),
@@ -168,28 +174,19 @@ Optionen:
                 name: `${options.straw ? "Strawpoll" : "Umfrage"} von ${message.author.username}`,
                 icon_url: message.author.displayAvatarURL(),
             },
-        };
-        const embedFields = embed.fields;
-        if (embedFields === undefined) {
-            return "Irgendwie fehlen die Felder in dem Embed. Das sollte nicht passieren.";
-        }
-
-        const extendable =
-            options.extendable &&
-            pollOptions.length < OPTION_LIMIT &&
-            pollOptionsTextLength < TEXT_LIMIT;
+        });
 
         if (extendable) {
             if (options.delayed) {
                 return "Bruder du kannst -e nicht mit -d kombinieren. 🙄";
             }
 
-            embedFields.push({
+            embed.addFields({
                 name: "✏️ Erweiterbar",
                 value: "Erweiterbar mit .extend als Reply",
                 inline: true,
             });
-            embed.color = 0x2ecc71;
+            embed.setColor(0x2ecc71);
         }
         let finishTime = undefined;
 
@@ -205,15 +202,15 @@ Optionen:
                 return "Bruder du kannst maximal 7 Tage auf ein Ergebnis warten 🙄";
             }
 
-            embedFields.push({
+            embed.addFields({
                 name: "⏳ Verzögert",
                 value: `Abstimmungsende: ${time(finishTime, TimestampStyles.RelativeTime)}`,
                 inline: true,
             });
-            embed.color = 0xa10083;
+            embed.setColor(0xa10083);
         }
 
-        embedFields.push({
+        embed.addFields({
             name: "📝 Antwortmöglichkeit",
             value: options.straw ? "Einzelauswahl" : "Mehrfachauswahl",
             inline: true,
