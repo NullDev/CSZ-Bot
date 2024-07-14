@@ -55,7 +55,7 @@ export enum LootTypeId {
 const lootTemplates: loot.LootTemplate[] = [
     {
         id: LootTypeId.NICHTS,
-        weight: 20,
+        weight: 25,
         displayName: "Nichts",
         titleText: "✨Nichts✨",
         description: "¯\\_(ツ)_/¯",
@@ -264,9 +264,9 @@ const lootTemplates: loot.LootTemplate[] = [
     {
         id: LootTypeId.HOMEPOD,
         weight: 5,
-        displayName: "Homepod",
-        titleText: "Ein Apple:registered: Homepod:copyright:",
-        description: "Damit dein 'Smart Home' nichtmehr ganz so smart ist",
+        displayName: "HomePod",
+        titleText: "Einen Apple:registered: HomePod:copyright:",
+        description: "Damit dein \"Smart Home\" nicht mehr ganz so smart ist",
         emote: "🍎",
         asset: "assets/loot/20-homepod.jpg",
     },
