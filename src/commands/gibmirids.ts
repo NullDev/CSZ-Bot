@@ -16,11 +16,14 @@ export default class GibMirIdsCommand implements MessageCommand {
     async handleMessage(message: ProcessableMessage, context: BotContext) {
         const lines = [`# Guild: \`${context.guild.id}\``, ""];
 
-        const channels = [...context.guild.channels.cache.values()];
+        const channels = [...context.guild.channels.cache.values()].sort(
+            (a, b) => Number(a.id) - Number(b.id),
+        );
+
         const channelsByType = Object.groupBy(channels, c => c.type);
         for (const [typeStr, channels] of Object.entries(channelsByType)) {
             const type = Number(typeStr);
-            if (type === ChannelType.GuildPublicThread) {
+            if (type === ChannelType.PublicThread || type === ChannelType.PrivateThread) {
                 continue;
             }
 
