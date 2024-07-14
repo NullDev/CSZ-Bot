@@ -18,8 +18,13 @@ export default class GibMirIdsCommand implements MessageCommand {
 
         const channels = [...context.guild.channels.cache.values()];
         const channelsByType = Object.groupBy(channels, c => c.type);
-        for (const [type, channels] of Object.entries(channelsByType)) {
-            lines.push(`## ${ChannelType[Number(type)]}`);
+        for (const [typeStr, channels] of Object.entries(channelsByType)) {
+            const type = Number(typeStr);
+            if (type === ChannelType.GuildPublicThread) {
+                continue;
+            }
+
+            lines.push(`## ${ChannelType[type]}`);
             lines.push(...channels.map(c => `- ${c.name}: \`${c.id}\``));
         }
 
