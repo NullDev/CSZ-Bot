@@ -1,3 +1,5 @@
+import { ChannelType } from "discord.js";
+
 import type { ProcessableMessage } from "../service/commandService.js";
 import type { MessageCommand } from "./command.js";
 import type { BotContext } from "../context.js";
@@ -8,7 +10,7 @@ import type { BotContext } from "../context.js";
  * This command is both - a slash command (application command) and a message command
  */
 export default class GibMirIdsCommand implements MessageCommand {
-    name = "gitmirids";
+    name = "gibmirids";
     description = "Listet IDs auf dem Server für einfachere Config";
 
     async handleMessage(message: ProcessableMessage, context: BotContext) {
@@ -17,16 +19,17 @@ export default class GibMirIdsCommand implements MessageCommand {
         const channels = [...context.guild.channels.cache.values()];
         const channelsByType = Object.groupBy(channels, c => c.type);
         for (const [type, channels] of Object.entries(channelsByType)) {
-            lines.push(`**${type}**`);
-            lines.push(...channels.map(c => `${c.name}: \`${c.id}\``));
+            lines.push(`**${ChannelType[Number(type)]}**`);
+            lines.push(...channels.map(c => `- ${c.name}: \`${c.id}\``));
         }
 
+        lines.push("");
         lines.push("");
 
         const roles = [...context.guild.roles.cache.values()].sort(
             (a, b) => b.position - a.position,
         );
-        lines.push(...roles.map(r => `${r.name}: \`${r.id}\``));
+        lines.push(...roles.map(r => `- ${r.name}: \`${r.id}\``));
 
         for (const chunk of splitInChunks(lines, 2000)) {
             await message.author.send(chunk.join("\n"));
