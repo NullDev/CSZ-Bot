@@ -1,7 +1,6 @@
 import { GatewayIntentBits, Partials, Client } from "discord.js";
 import * as sentry from "@sentry/node";
 
-
 import { readConfig, databasePath, args } from "./service/configService.js";
 import log from "@log";
 
