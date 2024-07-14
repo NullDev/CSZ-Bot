@@ -28,7 +28,10 @@ export default class GibMirIdsCommand implements MessageCommand {
         );
         lines.push(...roles.map(r => `${r.name}: \`${r.id}\``));
 
-        await message.author.send(splitInChunks(lines, 3000).join("\n"));
+        for (const chunk of splitInChunks(lines, 3000)) {
+            await message.author.send(chunk.join("\n"));
+        }
+
         await message.react("⚙️");
     }
 }
