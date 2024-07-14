@@ -176,6 +176,22 @@ Optionen:
             },
         });
 
+        let thumbnailFile = undefined;
+        if (extendable) {
+            if (options.straw) {
+                thumbnailFile = "extendable-straw.png";
+            } else {
+                thumbnailFile = "extendable-multi.png";
+            }
+        } else {
+            if (options.straw) {
+                thumbnailFile = "straw.png";
+            } else {
+                thumbnailFile = "multi.png";
+            }
+        }
+        embed.setThumbnail(`attachment://${thumbnailFile}`);
+
         if (extendable) {
             if (options.delayed) {
                 return "Bruder du kannst -e nicht mit -d kombinieren. 🙄";
@@ -228,6 +244,7 @@ Optionen:
 
         const pollMessage = await channel.send({
             embeds: [embed],
+            files: thumbnailFile ? [`./assets/poll/${thumbnailFile}`] : undefined,
         });
 
         await message.delete();
