@@ -45,18 +45,28 @@ export default class GibMirIdsCommand implements MessageCommand {
         );
         lines.push(...roles.map(r => `- ${r.name}: \`${r.id}\``));
 
-        for (const chunk of splitInChunks(lines, 2000)) {
-            await message.author.send(chunk.join("\n"));
+        for (const chunk of splitInChunks(lines, {})) {
+            await message.author.send(chunk);
         }
 
         await message.react("⚙️");
     }
 }
 
-function splitInChunks(lines: readonly string[], charLimitPerChunk: number): string[][] {
+interface SplitOptions {
+    charLimitPerChunk?: number;
+    // chunkOpening?: string;
+    // chunkClosing?: string;
+}
+
+function splitInChunks(
+    lines: readonly string[],
+    { charLimitPerChunk = 2000 }: SplitOptions,
+): string[] {
     let charsInChunk = 0;
     let currentChunk: string[] = [];
     const chunks = [currentChunk];
+
     for (const line of lines) {
         const appendedChars = line.length + 1; // + 1 for line ending
         if (charsInChunk + appendedChars > charLimitPerChunk) {
@@ -68,5 +78,5 @@ function splitInChunks(lines: readonly string[], charLimitPerChunk: number): str
         charsInChunk += appendedChars;
     }
 
-    return chunks;
+    return chunks.map(chunk => chunk.join("\n"));
 }
