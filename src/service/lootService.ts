@@ -266,7 +266,7 @@ const lootTemplates: loot.LootTemplate[] = [
         weight: 5,
         displayName: "HomePod",
         titleText: "Einen Apple:registered: HomePod:copyright:",
-        description: "Damit dein \"Smart Home\" nicht mehr ganz so smart ist",
+        description: 'Damit dein "Smart Home" nicht mehr ganz so smart ist',
         emote: "🍎",
         asset: "assets/loot/20-homepod.jpg",
     },
