@@ -7,15 +7,15 @@ export function splitInChunks(
     lines: readonly string[],
     { charLimitPerChunk = 2000, chunkOpeningLine, chunkClosingLine }: SplitOptions,
 ): string[] {
-    let charsInChunk = 0;
-    let currentChunk: string[] = [];
-    const chunks = [currentChunk];
-
     const open = chunkOpeningLine ?? "";
     const close = chunkClosingLine ?? "";
     // we need + 1 for line ending if there is an opening
     const chunkOverhead =
         (open.length ? open.length + 1 : 0) + (close.length ? close.length + 1 : 0);
+
+    let currentChunk = open ? [open] : [];
+    let charsInChunk = currentChunk.length;
+    const chunks = [currentChunk];
 
     for (const line of lines) {
         const appendedChars = line.length + 1; // + 1 for line ending
