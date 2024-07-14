@@ -8,10 +8,12 @@ import log from "@log";
 
 import "./polyfills.js";
 
-import messageDeleteHandler from "./handler/messageDeleteHandler.js";
 import * as kysely from "./storage/db/db.js";
 
-import reactionHandler from "./handler/reactionHandler.js";
+import messageDeleteHandler from "./handler/messageDeleteHandler.js";
+import defaultReactionHandler from "./handler/defaultReactionHandler.js";
+import quoteReactionHandler from "./handler/quoteHandler.js";
+import { woisVoteReactionHandler } from "./commands/woisvote.js";
 import * as voiceStateService from "./service/voiceStateService.js";
 
 import {
@@ -20,11 +22,9 @@ import {
     messageCommandHandler,
     registerAllApplicationCommandsAsGuildCommands,
 } from "./handler/commandHandler.js";
-import quoteReactionHandler from "./handler/quoteHandler.js";
+import deleteThreadMessagesHandler from "./handler/deleteThreadMessagesHandler.js";
 import { createBotContext, type BotContext } from "./context.js";
 import { ehreReactionHandler } from "./commands/ehre.js";
-import { woisVoteReactionHandler } from "./commands/woisvote.js";
-import deleteThreadMessagesHandler from "./handler/deleteThreadMessagesHandler.js";
 import * as terminal from "./utils/terminal.js";
 import * as guildRageQuit from "./storage/guildRageQuit.js";
 import * as cronService from "./service/cronService.js";
@@ -91,7 +91,7 @@ const client = new Client({
  * All of them will be executed in the given order, regardless of their result or if they throw an error.
  */
 const reactionHandlers: ReactionHandler[] = [
-    reactionHandler,
+    defaultReactionHandler,
     quoteReactionHandler,
     ehreReactionHandler,
     woisVoteReactionHandler,
