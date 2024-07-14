@@ -1,6 +1,7 @@
 import { ChannelType } from "discord.js";
 
 import type { ProcessableMessage } from "../service/commandService.js";
+import * as chunking from "../service/chunking.js";
 import type { MessageCommand } from "./command.js";
 import type { BotContext } from "../context.js";
 
@@ -16,6 +17,15 @@ export default class GibMirIdsCommand implements MessageCommand {
     async handleMessage(message: ProcessableMessage, context: BotContext) {
         if (!context.roleGuard.isTrusted(message.member)) {
             await message.react("❌");
+            return;
+        }
+
+        try {
+            await message.author.send(
+                `Hallo, ${message.author.username}!\n\nHier ist eine Liste an IDs:`,
+            );
+        } catch {
+            await message.reply("Ich kann dir keine Nachrichten schicken, wenn du sie blockierst.");
             return;
         }
 
@@ -45,48 +55,10 @@ export default class GibMirIdsCommand implements MessageCommand {
         );
         lines.push(...roles.map(r => `- ${r.name}: \`${r.id}\``));
 
-        for (const chunk of splitInChunks(lines, {})) {
+        for (const chunk of chunking.splitInChunks(lines, {})) {
             await message.author.send(chunk);
         }
 
         await message.react("⚙️");
     }
-}
-
-interface SplitOptions {
-    charLimitPerChunk?: number;
-    chunkOpening?: string;
-    chunkClosing?: string;
-}
-
-function splitInChunks(
-    lines: readonly string[],
-    { charLimitPerChunk = 2000, chunkOpening, chunkClosing }: SplitOptions,
-): string[] {
-    let charsInChunk = 0;
-    let currentChunk: string[] = [];
-    const chunks = [currentChunk];
-
-    const open = chunkOpening ?? "";
-    const close = chunkClosing ?? "";
-    // we need + 1 for line ending if there is an opening
-    const chunkOverhead =
-        (open.length ? open.length + 1 : 0) + (close.length ? close.length + 1 : 0);
-
-    for (const line of lines) {
-        const appendedChars = line.length + 1; // + 1 for line ending
-        if (charsInChunk + appendedChars + chunkOverhead > charLimitPerChunk) {
-            if (close) {
-                currentChunk.push(close);
-            }
-
-            charsInChunk = 0;
-            currentChunk = open ? [open] : [];
-            chunks.push(currentChunk);
-        }
-        currentChunk.push(line);
-        charsInChunk += appendedChars + chunkOverhead;
-    }
-
-    return chunks.map(chunk => chunk.join("\n"));
 }
