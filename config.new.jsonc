@@ -102,6 +102,6 @@
         "trustedBannedRoleId": "<ROLE_ID>",
         "woisgangRoleId": "<ROLE_ID>",
         "winnerRoleId": "<ROLE_ID>",
-        "emotifiziererRoleId": "<ROLE_ID>0"
-    },
+        "emotifiziererRoleId": "<ROLE_ID>",
+    }
 }
