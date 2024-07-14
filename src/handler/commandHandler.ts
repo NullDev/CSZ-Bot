@@ -31,6 +31,7 @@ import SplidCommand from "../commands/splid.js";
 import { isProcessableMessage, type ProcessableMessage } from "../service/commandService.js";
 import { isMessageInBotSpam } from "../utils/channelUtils.js";
 
+/**  Commands that need special init parameters and cannot be instantiated automatically */
 const staticCommands: readonly Command[] = [
     new TriggerReactOnKeyword("nix", "nixos"),
     new TriggerReactOnKeyword("zig", "zig", 0.05),
@@ -40,14 +41,11 @@ const staticCommands: readonly Command[] = [
 const allCommands: Command[] = [];
 
 const getApplicationCommands = () => allCommands.filter(c => "handleInteraction" in c);
+const getAutocompleteCommands = () => allCommands.filter(c => "autocomplete" in c);
 const getMessageCommands = () => allCommands.filter(c => "handleMessage" in c);
 const getSpecialCommands = () => allCommands.filter(c => "handleSpecialMessage" in c);
 
-const lastSpecialCommands: Record<string, number> = getSpecialCommands().reduce(
-    // biome-ignore lint/performance/noAccumulatingSpread: Whatever this does, someone wrote pretty cool code
-    (acc, cmd) => ({ ...acc, [cmd.name]: 0 }),
-    {},
-);
+const latestSpecialCommandInvocations: Record<string, number> = {};
 
 export const loadCommands = async (context: BotContext): Promise<void> => {
     const availableCommands = await commandService.readAvailableCommands(context);
@@ -72,12 +70,6 @@ export const loadCommands = async (context: BotContext): Promise<void> => {
     allCommands.push(...dynamicCommands);
 };
 
-const createPermissionSet = (permissions: readonly PermissionsString[]): bigint => {
-    const flags = new PermissionsBitField();
-    flags.add(...permissions);
-    return flags.bitfield;
-};
-
 /**
  * Registers all defined applicationCommands as guild commands
  * We're overwriting ALL, therefore no deletion is necessary
@@ -90,14 +82,14 @@ export const registerAllApplicationCommandsAsGuildCommands = async (
     const rest = new REST({ version: "10" }).setToken(token);
 
     const buildGuildCommand = (cmd: ApplicationCommand): APIApplicationCommand => {
-        const defaultMemberPermissions = createPermissionSet(
+        const defaultMemberPermissions = new PermissionsBitField(
             cmd.requiredPermissions ?? ["SendMessages"],
         );
 
         const commandCreationData: APIApplicationCommand = {
             ...cmd.applicationCommand.toJSON(),
             dm_permission: false,
-            default_member_permissions: defaultMemberPermissions.toString(),
+            default_member_permissions: defaultMemberPermissions.bitfield.toString(),
             // Somehow, this permission thing does not make any sense, that's why we assert to `any`
             permissions: [
                 {
@@ -150,19 +142,13 @@ const autocompleteInteractionHandler = async (
     interaction: AutocompleteInteraction,
     context: BotContext,
 ) => {
-    const matchingCommand = getApplicationCommands().find(
+    const matchingCommand = getAutocompleteCommands().find(
         cmd => cmd.name === interaction.commandName,
     );
 
     if (!matchingCommand) {
         throw new Error(
             `Application Command ${interaction.commandName} with ID ${interaction.id} invoked, but not available`,
-        );
-    }
-
-    if (!matchingCommand.autocomplete) {
-        throw new Error(
-            `Application Command ${interaction.commandName} with ID ${interaction.id} invoked, but no autocomplete function available`,
         );
     }
 
@@ -232,7 +218,7 @@ const commandMessageHandler = async (
 
 const isCooledDown = (command: SpecialCommand) => {
     const now = Date.now();
-    const lastExecution = lastSpecialCommands[command.name] ?? -1;
+    const lastExecution = latestSpecialCommandInvocations[command.name] ?? -1;
     const tineSinceLastExecution = now - lastExecution;
     const coolDownTime = command.cooldownTime ?? 120000;
 
@@ -246,8 +232,7 @@ const isCooledDown = (command: SpecialCommand) => {
 };
 
 const specialCommandHandler = async (message: ProcessableMessage, context: BotContext) => {
-    const commands = getSpecialCommands();
-    const commandCandidates = commands.filter(p => p.matches(message, context));
+    const commandCandidates = getSpecialCommands().filter(p => p.matches(message, context));
 
     for (const command of commandCandidates) {
         if (Math.random() > command.randomness || !isCooledDown(command)) {
@@ -257,7 +242,7 @@ const specialCommandHandler = async (message: ProcessableMessage, context: BotCo
             `User "${message.author.tag}" (${message.author}) performed special command: ${command.name}`,
         );
 
-        lastSpecialCommands[command.name] = Date.now();
+        latestSpecialCommandInvocations[command.name] = Date.now();
         await command.handleSpecialMessage(message, context);
     }
 };

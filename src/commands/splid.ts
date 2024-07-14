@@ -15,7 +15,7 @@ import {
 import { SplidClient } from "splid-js";
 
 import type { BotContext } from "../context.js";
-import type { ApplicationCommand } from "./command.js";
+import type { ApplicationCommand, AutocompleteCommand } from "./command.js";
 import type { SplidGroup } from "../storage/db/model.js";
 import { ensureChatInputCommand } from "../utils/interactionUtils.js";
 import logger from "@log";
@@ -30,7 +30,7 @@ const createNumberFormatter = (currency: string) =>
         currency,
     });
 
-export default class SplidGroupCommand implements ApplicationCommand {
+export default class SplidGroupCommand implements ApplicationCommand, AutocompleteCommand {
     name = "splid";
     description = "Managed ein bisschen Splid";
 

@@ -14,7 +14,7 @@ import {
 } from "discord.js";
 
 import type { BotContext } from "../context.js";
-import type { ApplicationCommand } from "./command.js";
+import type { ApplicationCommand, AutocompleteCommand } from "./command.js";
 import log from "@log";
 import { ensureChatInputCommand } from "../utils/interactionUtils.js";
 import * as nickName from "../storage/nickName.js";
@@ -27,7 +27,7 @@ interface UserVote {
     readonly trusted: boolean;
 }
 
-export default class NicknameCommand implements ApplicationCommand {
+export default class NicknameCommand implements ApplicationCommand, AutocompleteCommand {
     name = "nickname";
     description = "Setzt Nicknames für einen User";
 

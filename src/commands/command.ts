@@ -9,7 +9,7 @@ import type {
 import type { ProcessableMessage } from "../service/commandService.js";
 import type { BotContext } from "../context.js";
 
-export type Command = ApplicationCommand | MessageCommand | SpecialCommand;
+export type Command = ApplicationCommand | AutocompleteCommand | MessageCommand | SpecialCommand;
 
 export interface CommandBase {
     readonly modCommand?: boolean;
@@ -23,7 +23,10 @@ export interface CommandBase {
 export interface ApplicationCommand extends CommandBase {
     readonly applicationCommand: Pick<SlashCommandBuilder | ContextMenuCommandBuilder, "toJSON">;
     handleInteraction(command: CommandInteraction, context: BotContext): Promise<void>;
-    autocomplete?(interaction: AutocompleteInteraction, context: BotContext): Promise<void>;
+}
+
+export interface AutocompleteCommand extends ApplicationCommand {
+    autocomplete(interaction: AutocompleteInteraction, context: BotContext): Promise<void>;
 }
 
 /** Traditional command invoked via text message (for example, `.hilfe`) */
