@@ -10,6 +10,7 @@ import {
     type PermissionsString,
     REST,
     Routes,
+    Snowflake,
 } from "discord.js";
 
 /**
@@ -18,7 +19,6 @@ import {
  */
 import type { ApplicationCommand, Command, SpecialCommand } from "../commands/command.js";
 import type { BotContext } from "../context.js";
-import type { ApplicationCommandCreationResponse } from "../types.js";
 import * as banService from "../service/banService.js";
 import log from "@log";
 
@@ -109,7 +109,7 @@ export const registerAllApplicationCommandsAsGuildCommands = async (
         const url = Routes.applicationGuildCommands(clientId, context.guild.id);
         const response = (await rest.put(url, {
             body: commandsToRegister,
-        })) as ApplicationCommandCreationResponse[];
+        })) as unknown[];
         log.info(`Registered ${response.length} guild commands`);
     } catch (err) {
         log.error(err, `Could not register application commands for guild ${context.guild.id}`);

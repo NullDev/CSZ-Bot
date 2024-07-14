@@ -108,7 +108,3 @@ export interface Config {
         emotifiziererRoleId: Snowflake;
     };
 }
-
-export type ApplicationCommandCreationResponse = {
-    id: Snowflake;
-};
