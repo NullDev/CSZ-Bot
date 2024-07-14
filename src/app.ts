@@ -160,7 +160,6 @@ client.on("guildDelete", guild => log.info(`Deleted from guild: ${guild.name} (i
 
 client.on("guildMemberAdd", async member => {
     const numRageQuits = await guildRageQuit.getNumRageQuits(member.guild, member);
-
     if (numRageQuits === 0) {
         return;
     }
