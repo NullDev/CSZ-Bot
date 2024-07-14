@@ -25,7 +25,7 @@ import { createBotContext, type BotContext } from "./context.js";
 import { ehreReactionHandler } from "./commands/ehre.js";
 import { woisVoteReactionHandler } from "./commands/woisvote.js";
 import deleteThreadMessagesHandler from "./handler/deleteThreadMessagesHandler.js";
-import * as terminal from "./terminal.js";
+import * as terminal from "./utils/terminal.js";
 import * as guildRageQuit from "./storage/guildRageQuit.js";
 import * as cronService from "./service/cronService.js";
 
