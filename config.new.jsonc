@@ -85,11 +85,11 @@
         "hauptwoisTextChannelId": "<CHANNEL_ID>",
     },
 
-    "voiceChannels": {
+    "voiceChannel": {
         "hauptWoischatChannelId": "<CHANNEL_ID>",
     },
 
-    "roles": {
+    "role": {
         "bannedRoleId": "<ROLE_ID>",
         "birthdayRoleId": "<ROLE_ID>",
         "botDenyRoleId": "<ROLE_ID>",
