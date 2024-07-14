@@ -1,6 +1,7 @@
 import type { MessageCommand } from "../command.js";
 import type { BotContext } from "../../context.js";
 import type { ProcessableMessage } from "../../service/commandService.js";
+import * as chunking from "../../service/chunking.js";
 
 import { replacePrefixPlaceholders } from "../hilfe.js";
 import * as commandService from "../../service/commandService.js";
@@ -13,7 +14,7 @@ export default class ModHilfeCommand implements MessageCommand {
     async handleMessage(message: ProcessableMessage, context: BotContext): Promise<void> {
         const prefix = context.prefix.command;
 
-        const commandObj: Record<string, string> = {};
+        const lines = [];
         const newCommands = await commandService.readAvailableCommands(context);
         for (const command of newCommands) {
             if (!command.modCommand) {
@@ -21,21 +22,30 @@ export default class ModHilfeCommand implements MessageCommand {
             }
 
             const commandStr = prefix + command.name;
-            commandObj[commandStr] = replacePrefixPlaceholders(command.description, context);
+            lines.push(
+                `${commandStr}: ${replacePrefixPlaceholders(command.description, context)}\n`,
+            );
         }
 
-        let commandText = "";
-        for (const [commandName, description] of Object.entries(commandObj)) {
-            commandText += commandName;
-            commandText += ":\n";
-            commandText += replacePrefixPlaceholders(description, context);
-            commandText += "\n\n";
+        try {
+            await message.author.send(
+                `Hallo, ${message.author}!\n\nHier ist eine Liste mit mod-commands:`,
+            );
+        } catch {
+            await message.react("❌");
+            await message.reply("Ich kann dir keine Nachrichten schicken, wenn du sie blockierst.");
+            return;
         }
 
-        // Add :envelope: reaction to authors message
-        await message.author.send(
-            `Hallo, ${message.author}!\n\nHier ist eine Liste mit mod-commands:\n\n\`\`\`CSS\n${commandText}\`\`\``,
-        );
-        await message.react("✉"); // Send this last, so we only display a confirmation when everything actually worked
+        const chunks = chunking.splitInChunks(lines, {
+            charLimitPerChunk: 2000,
+            chunkOpeningLine: "```css",
+            chunkClosingLine: "```",
+        });
+
+        await Promise.all(chunks.map(chunk => message.author.send(chunk)));
+
+        // Send this last, so we only display a confirmation when everything actually worked
+        await message.react("✉");
     }
 }

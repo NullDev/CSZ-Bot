@@ -13,7 +13,7 @@ export default class HilfeCommand implements MessageCommand {
     ): Promise<void> {
         const prefix = context.prefix.command;
 
-        const commandObj: Record<string, string> = {};
+        const lines = [];
         const newCommands = await commandService.readAvailableCommands(context);
         for (const command of newCommands) {
             if (command.modCommand) {
@@ -21,7 +21,9 @@ export default class HilfeCommand implements MessageCommand {
             }
 
             const commandStr = prefix + command.name;
-            commandObj[commandStr] = replacePrefixPlaceholders(command.description, context);
+            lines.push(
+                `${commandStr}: ${replacePrefixPlaceholders(command.description, context)}\n`,
+            );
         }
 
         try {
@@ -33,10 +35,6 @@ export default class HilfeCommand implements MessageCommand {
             await message.reply("Ich kann dir keine Nachrichten schicken, wenn du sie blockierst.");
             return;
         }
-
-        const lines = Object.entries(commandObj).map(
-            ([command, description]) => `${command}: ${description}\n`,
-        );
 
         const chunks = chunking.splitInChunks(lines, {
             charLimitPerChunk: 2000,
