@@ -9,18 +9,25 @@ import {
 } from "discord.js";
 
 import type { ApplicationCommand, MessageCommand } from "./command.js";
-import type { GitHubContributor } from "../types.js";
 import type { ProcessableMessage } from "../service/commandService.js";
 import type { BotContext } from "../context.js";
 import { assertNever } from "../utils/typeUtils.js";
 
-const fetchContributions = async (): Promise<Array<GitHubContributor>> => {
+interface GitHubContributor {
+    login: string;
+    id: number;
+    html_url: string;
+    type: "User" | "Bot";
+    contributions: number;
+}
+
+const fetchContributions = async (): Promise<GitHubContributor[]> => {
     return fetch("https://api.github.com/repos/NullDev/CSZ-Bot/contributors", {
         headers: { Accept: "application/vnd.github.v3+json" },
-    }).then(res => res.json() as Promise<Array<GitHubContributor>>);
+    }).then(res => res.json() as Promise<GitHubContributor[]>);
 };
 
-const fetchLanguages = async (): Promise<Array<string>> => {
+const fetchLanguages = async (): Promise<string[]> => {
     const res = await fetch("https://api.github.com/repos/NullDev/CSZ-Bot/languages", {
         headers: { Accept: "application/vnd.github.v3+json" },
     });

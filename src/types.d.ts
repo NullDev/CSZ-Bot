@@ -19,14 +19,6 @@ type RequiredNotNull<T> = {
 
 export type Ensure<T, K extends keyof T> = T & RequiredNotNull<Pick<T, K>>;
 
-export interface GitHubContributor {
-    login: string;
-    id: number;
-    html_url: string;
-    type: "User" | "Bot";
-    contributions: number;
-}
-
 export interface Config {
     auth: {
         clientId: string;
