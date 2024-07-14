@@ -1,7 +1,6 @@
 import { GatewayIntentBits, Partials, Client } from "discord.js";
 import * as sentry from "@sentry/node";
 
-import type { ReactionHandler } from "./types.js";
 
 import { readConfig, databasePath, args } from "./service/configService.js";
 import log from "@log";
@@ -10,6 +9,7 @@ import "./polyfills.js";
 
 import * as kysely from "./storage/db/db.js";
 
+import type { ReactionHandler } from "./handler/ReactionHandler.js";
 import messageDeleteHandler from "./handler/messageDeleteHandler.js";
 import defaultReactionHandler from "./handler/defaultReactionHandler.js";
 import quoteReactionHandler from "./handler/quoteHandler.js";
