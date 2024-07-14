@@ -26,23 +26,3 @@ export function removeSuffix<T extends string, TSuffix extends string>(
     }
     return value.slice(0, 0 - suffix.length) as RemoveSuffix<T, TSuffix>;
 }
-
-/**
- * Removes the TSuffix from entries in the config on type-level if it is present
- *
- * RemoveOptionalSuffix<"lol_id", "_id"> will map to "lol"
- * RemoveOptionalSuffix<"lol_id", "test"> will map to "lol_id"
- */
-export type RemoveOptionalSuffix<
-    TString extends string,
-    TSuffix extends string,
-> = TString extends `${infer T}${TSuffix}` ? T : TString;
-
-export function removeOptionalSuffix<T extends string, TSuffix extends string>(
-    value: T,
-    suffix: TSuffix,
-): RemoveOptionalSuffix<T, TSuffix> {
-    return value.endsWith(suffix)
-        ? (value.slice(0, 0 - suffix.length) as RemoveOptionalSuffix<T, TSuffix>)
-        : (value as RemoveOptionalSuffix<T, TSuffix>);
-}

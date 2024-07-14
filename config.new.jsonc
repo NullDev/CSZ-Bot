@@ -73,6 +73,8 @@
     "deleteThreadMessagesInChannelIds": [],
     "flameTrustedUserOnBotPing": false,
 
+    "guildGuildId": "<GUILD_ID>",
+
     "textChannel": {
         "banReasonChannelId": "<CHANNEL_ID>",
         "bannedChannelId": "<CHANNEL_ID>",
@@ -80,9 +82,26 @@
         "hauptchatChannelId": "<CHANNEL_ID>",
         "votesChannelId": "<CHANNEL_ID>",
         "botSpamChannelId": "<CHANNEL_ID>",
+        "hauptwoisTextChannelId": "<CHANNEL_ID>",
     },
 
     "voiceChannels": {
         "hauptWoischatChannelId": "<CHANNEL_ID>",
+    },
+
+    "roles": {
+        "bannedRoleId": "<ROLE_ID>",
+        "birthdayRoleId": "<ROLE_ID>",
+        "botDenyRoleId": "<ROLE_ID>",
+        "defaultRoleId": "<ROLE_ID>",
+        "gruendervaeterRoleId": "<ROLE_ID>",
+        "gruendervaeterBannedRoleId": "<ROLE_ID>",
+        "roleDenyRoleId": "<ROLE_ID>",
+        "shameRoleId": "<ROLE_ID>",
+        "trustedRoleId": "<ROLE_ID>",
+        "trustedBannedRoleId": "<ROLE_ID>",
+        "woisgangRoleId": "<ROLE_ID>",
+        "winnerRoleId": "<ROLE_ID>",
+        "emotifiziererRoleId": "<ROLE_ID>0"
     },
 }

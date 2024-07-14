@@ -13,8 +13,8 @@ import type {
 import { ChannelType } from "discord.js";
 import { Temporal } from "@js-temporal/polyfill";
 
-import type { Config, ConfigVoiceChannelId, ConfigRoleId } from "./types.js";
-import type { RemoveOptionalSuffix, RemoveSuffix } from "./utils/typeUtils.js";
+import type { Config } from "./types.js";
+import type { RemoveSuffix } from "./utils/typeUtils.js";
 import { readConfig } from "./service/configService.js";
 
 /**
@@ -54,7 +54,22 @@ export interface BotContext {
         };
     };
 
-    roles: Record<RemoveSuffix<ConfigRoleId, "_role_id">, Role>;
+    roles: {
+        banned: Role;
+        birthday: Role;
+        botDeny: Role;
+        default: Role;
+        gruendervaeter: Role;
+        gruendervaeterBanned: Role;
+        roleDeny: Role;
+        shame: Role;
+        trusted: Role;
+        trustedBanned: Role;
+        woisgang: Role;
+        winner: Role;
+        emotifizierer: Role;
+    };
+
     moderatorRoles: readonly Role[];
 
     // This type is rather "complex"
@@ -68,6 +83,7 @@ export interface BotContext {
         hauptchat: TextChannel;
         votes: TextChannel;
         botSpam: TextChannel;
+        hauptwoisText: TextChannel;
     };
 
     voiceChannels: {
@@ -108,25 +124,15 @@ export interface QuoteConfig {
     emojiName: string;
 }
 
-function ensureRole<T extends ConfigRoleId>(config: Config, guild: Guild, roleIdName: T): Role {
-    const roleId = config.ids[roleIdName];
-    const role = guild.roles.cache.get(roleId);
+// #region Ensure Stuff
 
-    if (!role)
-        throw new Error(`Role "${roleIdName}" not found by id: "${roleId}" in guild "${guild.id}"`);
-
-    return role;
-}
-
-function ensureRoleById(guild: Guild, id: Snowflake): Role {
+function ensureRole(guild: Guild, id: Snowflake): Role {
     const role = guild.roles.cache.get(id);
     if (!role) {
         throw new Error(`Role with ID "${id}" not found in guild "${guild.id}"`);
     }
     return role;
 }
-
-// #region Ensure Channels
 
 function ensureTextChannel(guild: Guild, channelId: Snowflake): TextChannel {
     const channel = guild.channels.cache.get(channelId);
@@ -137,15 +143,6 @@ function ensureTextChannel(guild: Guild, channelId: Snowflake): TextChannel {
     if (channel.type !== ChannelType.GuildText)
         throw new Error(`Main channel is not a text channel. "${channel.id}" is "${channel.type}"`);
     return channel;
-}
-
-function ensureConfigVoiceChannel<T extends ConfigVoiceChannelId>(
-    config: Config,
-    guild: Guild,
-    channelIdName: T,
-): VoiceChannel {
-    const channelId = config.ids[channelIdName];
-    return ensureVoiceChannel(guild, channelId);
 }
 
 function ensureVoiceChannel(guild: Guild, channelId: Snowflake): VoiceChannel {
@@ -166,9 +163,9 @@ function ensureVoiceChannel(guild: Guild, channelId: Snowflake): VoiceChannel {
 export async function createBotContext(client: Client<true>): Promise<BotContext> {
     const config = await readConfig();
 
-    const guild = client.guilds.cache.get(config.ids.guild_id);
+    const guild = client.guilds.cache.get(config.guildGuildId);
     if (!guild) {
-        throw new Error(`Cannot find configured guild "${config.ids.guild_id}"`);
+        throw new Error(`Cannot find configured guild "${config.guildGuildId}"`);
     }
 
     return {
@@ -179,7 +176,7 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
             command: config.prefix.command,
             modCommand: config.prefix.modCommand,
         },
-        moderatorRoles: config.moderatorRoleIds.map(id => ensureRoleById(guild, id)),
+        moderatorRoles: config.moderatorRoleIds.map(id => ensureRole(guild, id)),
         commandConfig: {
             faulenzerPing: {
                 allowedRoleIds: new Set(config.command.faulenzerPing.allowedRoleIds),
@@ -221,19 +218,21 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
 
         roles: {
             // TODO: Make this prettier (splitting up the IDs by type in the config would make this much easier)
-            banned: ensureRole(config, guild, "banned_role_id"),
-            bday: ensureRole(config, guild, "bday_role_id"),
-            bot_deny: ensureRole(config, guild, "bot_deny_role_id"),
-            default: ensureRole(config, guild, "default_role_id"),
-            gruendervaeter_banned: ensureRole(config, guild, "gruendervaeter_banned_role_id"),
-            gruendervaeter: ensureRole(config, guild, "gruendervaeter_role_id"),
-            role_deny: ensureRole(config, guild, "role_deny_role_id"),
-            shame: ensureRole(config, guild, "shame_role_id"),
-            trusted_banned: ensureRole(config, guild, "trusted_banned_role_id"),
-            trusted: ensureRole(config, guild, "trusted_role_id"),
-            woisgang: ensureRole(config, guild, "woisgang_role_id"),
-            winner: ensureRole(config, guild, "winner_role_id"),
+            banned: ensureRole(guild, config.roles.bannedRoleId),
+            birthday: ensureRole(guild, config.roles.birthdayRoleId),
+            botDeny: ensureRole(guild, config.roles.botDenyRoleId),
+            default: ensureRole(guild, config.roles.defaultRoleId),
+            gruendervaeter: ensureRole(guild, config.roles.gruendervaeterRoleId),
+            gruendervaeterBanned: ensureRole(guild, config.roles.gruendervaeterBannedRoleId),
+            roleDeny: ensureRole(guild, config.roles.roleDenyRoleId),
+            shame: ensureRole(guild, config.roles.shameRoleId),
+            trusted: ensureRole(guild, config.roles.trustedRoleId),
+            trustedBanned: ensureRole(guild, config.roles.trustedBannedRoleId),
+            woisgang: ensureRole(guild, config.roles.woisgangRoleId),
+            winner: ensureRole(guild, config.roles.winnerRoleId),
+            emotifizierer: ensureRole(guild, config.roles.emotifiziererRoleId),
         },
+
         textChannels: {
             banReason: ensureTextChannel(guild, config.textChannel.banReasonChannelId),
             banned: ensureTextChannel(guild, config.textChannel.bannedChannelId),
@@ -241,10 +240,13 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
             hauptchat: ensureTextChannel(guild, config.textChannel.hauptchatChannelId),
             votes: ensureTextChannel(guild, config.textChannel.votesChannelId),
             botSpam: ensureTextChannel(guild, config.textChannel.botSpamChannelId),
+            hauptwoisText: ensureTextChannel(guild, config.textChannel.hauptwoisTextChannelId),
         },
+
         voiceChannels: {
             hauptWoischat: ensureVoiceChannel(guild, config.voiceChannels.hauptWoischatChannelId),
         },
+
         rootDir: path.resolve(""),
         srcDir: path.resolve("src"),
         bannersDir: path.resolve("banners"),
@@ -254,18 +256,18 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
 
         roleGuard: {
             isMod: member => hasAnyRoleById(member, config.moderatorRoleIds),
-            isNerd: member => hasRoleById(member, config.ids.default_role_id),
+            isNerd: member => hasRoleById(member, config.roles.defaultRoleId),
             isTrusted: member =>
-                hasRoleById(member, config.ids.trusted_role_id) ||
-                hasRoleById(member, config.ids.trusted_banned_role_id),
+                hasRoleById(member, config.roles.trustedRoleId) ||
+                hasRoleById(member, config.roles.trustedBannedRoleId),
             isGruendervater: member =>
-                hasRoleById(member, config.ids.gruendervaeter_role_id) ||
-                hasRoleById(member, config.ids.gruendervaeter_banned_role_id),
-            isWoisGang: member => hasRoleById(member, config.ids.woisgang_role_id),
-            isEmotifizierer: member => hasRoleById(member, config.ids.emotifizierer_role_id),
-            hasBotDenyRole: member => hasRoleById(member, config.ids.bot_deny_role_id),
-            hasRoleDenyRole: member => hasRoleById(member, config.ids.role_deny_role_id),
-            isRejoiner: member => hasRoleById(member, config.ids.shame_role_id),
+                hasRoleById(member, config.roles.gruendervaeterRoleId) ||
+                hasRoleById(member, config.roles.gruendervaeterBannedRoleId),
+            isWoisGang: member => hasRoleById(member, config.roles.woisgangRoleId),
+            isEmotifizierer: member => hasRoleById(member, config.roles.emotifiziererRoleId),
+            hasBotDenyRole: member => hasRoleById(member, config.roles.botDenyRoleId),
+            hasRoleDenyRole: member => hasRoleById(member, config.roles.roleDenyRoleId),
+            isRejoiner: member => hasRoleById(member, config.roles.shameRoleId),
         },
     };
 }

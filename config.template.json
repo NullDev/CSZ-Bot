@@ -52,8 +52,10 @@
     "deleteThreadMessagesInChannelIds": [],
     "flameTrustedUserOnBotPing": false,
 
+    "guildGuildId": "",
+
     "textChannel": {
-        "banReasonChannelId": "624931933758947343",
+        "banReasonChannelId": "",
         "bannedChannelId": "",
         "botLogChannelId": "",
         "hauptchatChannelId": "",
@@ -65,21 +67,19 @@
         "hauptWoischatChannelId": ""
     },
 
-    "ids": {
-        "guild_id": "",
-        "default_role_id": "",
-        "banned_role_id": "",
-        "bday_role_id": "",
-        "woisgang_role_id": "",
-        "winner_role_id": "",
-        "role_deny_role_id": "",
-        "bot_deny_role_id": "",
-        "gruendervaeter_role_id": "",
-        "gruendervaeter_banned_role_id": "",
-        "trusted_role_id": "",
-        "trusted_banned_role_id": "",
-        "shame_role_id": "",
-        "emotifizierer_role_id": "",
-        "woischat_text_id": ""
+    "roles": {
+        "bannedRoleId": "",
+        "birthdayRoleId": "",
+        "botDenyRoleId": "",
+        "defaultRoleId": "",
+        "gruendervaeterRoleId": "",
+        "gruendervaeterBannedRoleId": "",
+        "roleDenyRoleId": "",
+        "shameRoleId": "",
+        "trustedRoleId": "",
+        "trustedBannedRoleId": "",
+        "woisgangRoleId": "",
+        "winnerRoleId": "",
+        "emotifiziererRoleId": ""
     }
 }

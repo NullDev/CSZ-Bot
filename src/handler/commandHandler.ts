@@ -101,7 +101,7 @@ export const registerAllApplicationCommandsAsGuildCommands = async (
             // Somehow, this permission thing does not make any sense, that's why we assert to `any`
             permissions: [
                 {
-                    id: context.roles.bot_deny.id,
+                    id: context.roles.botDeny.id,
                     type: ApplicationCommandPermissionType.Role,
                     permission: false,
                 },

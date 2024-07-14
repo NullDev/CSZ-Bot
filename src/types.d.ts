@@ -27,26 +27,6 @@ export interface GitHubContributor {
     contributions: number;
 }
 
-export type ConfigRoleId =
-    | "banned_role_id"
-    | "bday_role_id"
-    | "bot_deny_role_id"
-    | "default_role_id"
-    | "gruendervaeter_banned_role_id"
-    | "gruendervaeter_role_id"
-    | "role_deny_role_id"
-    | "shame_role_id"
-    | "trusted_banned_role_id"
-    | "trusted_role_id"
-    | "woisgang_role_id"
-    | "winner_role_id";
-
-export type ConfigVoiceChannelId = "haupt_woischat_id";
-
-export type ConfigGuildId = "guild_id";
-
-export type ConfigId = ConfigRoleId | ConfigTextChannelId | ConfigGuildId | ConfigVoiceChannelId;
-
 export interface Config {
     auth: {
         clientId: string;
@@ -110,6 +90,8 @@ export interface Config {
     deleteThreadMessagesInChannelIds: readonly Snowflake[];
     flameTrustedUserOnBotPing: boolean;
 
+    guildGuildId: Snowflake;
+
     textChannel: {
         banReasonChannelId: Snowflake;
         bannedChannelId: Snowflake;
@@ -117,13 +99,28 @@ export interface Config {
         hauptchatChannelId: Snowflake;
         votesChannelId: Snowflake;
         botSpamChannelId: Snowflake;
+        hauptwoisTextChannelId: Snowflake;
     };
 
     voiceChannels: {
         hauptWoischatChannelId: Snowflake;
     };
 
-    ids: Record<ConfigIdKey, Snowflake>;
+    roles: {
+        bannedRoleId: Snowflake;
+        birthdayRoleId: Snowflake;
+        botDenyRoleId: Snowflake;
+        defaultRoleId: Snowflake;
+        gruendervaeterRoleId: Snowflake;
+        gruendervaeterBannedRoleId: Snowflake;
+        roleDenyRoleId: Snowflake;
+        shameRoleId: Snowflake;
+        trustedRoleId: Snowflake;
+        trustedBannedRoleId: Snowflake;
+        woisgangRoleId: Snowflake;
+        winnerRoleId: Snowflake;
+        emotifiziererRoleId: Snowflake;
+    };
 }
 
 export type ApplicationCommandCreationResponse = {

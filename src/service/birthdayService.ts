@@ -12,7 +12,7 @@ import { format } from "src/utils/stringUtils.js";
 export async function checkBirthdays(context: BotContext) {
     log.debug("Entered `birthdayService.checkBirthdays`");
 
-    const birthdayRole = context.roles.bday;
+    const birthdayRole = context.roles.birthday;
     // const todaysBirthdays = await Birthday.getTodaysBirthdays();
     const todaysBirthdays = await birthday.getTodaysBirthdays();
 
