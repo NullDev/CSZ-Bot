@@ -37,7 +37,6 @@ export default class HilfeCommand implements MessageCommand {
         }
 
         const chunks = chunking.splitInChunks(lines, {
-            charLimitPerChunk: 2000,
             chunkOpeningLine: "```css",
             chunkClosingLine: "```",
         });
