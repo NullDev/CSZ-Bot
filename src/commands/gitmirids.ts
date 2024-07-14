@@ -28,7 +28,25 @@ export default class GibMirIdsCommand implements MessageCommand {
         );
         lines.push(...roles.map(r => `${r.name}: \`${r.id}\``));
 
-        await message.author.send(lines.join("\n"));
+        await message.author.send(splitInChunks(lines, 3000).join("\n"));
         await message.react("⚙️");
     }
+}
+
+function splitInChunks(lines: readonly string[], charLimitPerChunk: number): string[][] {
+    let charsInChunk = 0;
+    let currentChunk: string[] = [];
+    const chunks = [currentChunk];
+    for (const line of lines) {
+        const appendedChars = line.length + 1; // + 1 for line ending
+        if (charsInChunk + appendedChars > charLimitPerChunk) {
+            charsInChunk = 0;
+            currentChunk = [];
+            chunks.push(currentChunk);
+        }
+        currentChunk.push(line);
+        charsInChunk += appendedChars;
+    }
+
+    return chunks;
 }
