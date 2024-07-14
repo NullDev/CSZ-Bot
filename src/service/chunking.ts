@@ -38,5 +38,7 @@ export function splitInChunks(
         charsInChunk += appendedChars + chunkOverhead;
     }
 
+    currentChunk.push(close);
+
     return chunks.map(chunk => chunk.join("\n"));
 }
