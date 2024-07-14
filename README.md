@@ -66,21 +66,9 @@ $EDITOR config.json
     - Um einen Bot zum Testen anzulegen, einfach den Instruktionen im [Discord Developer Portal](https://discord.com/developers/applications) folgen.
         - Die Applikation muss als "Bot" gesetzt werden.
         - Es müssen beide [Gateway Intents](https://discordjs.guide/popular-topics/intents.html#gateway-intents) eingeschalten werden.
-        - Den Bot Token (**nicht** die Application-ID oder den Public-Key) [in die Config](https://github.com/NullDev/CSZ-Bot/blob/master/config.template.json#L3) unter `bot_token` kopieren.
-        - Okay, die Application-ID muss doch mit [in die Config beim Feld `client_id`](https://github.com/NullDev/CSZ-Bot/blob/master/config.template.json#L4) rein.
+        - Ersetze `<CLIENT_ID>` durch die Application-ID
+        - Ersetze `<BOT_TOKEN>` durch das Bot-Token
     - Um IDs kopieren zu können, den "Developer Mode" in den Discord Einstellungen aktivieren. Mit Rechtsklick kann man dann die IDs kopieren.
-    - Es müssen folgende Rollen am Server angelegt werden:
-        - Moderator-Rolle - CSZ-Default: Moderader
-        - Default Rolle - CSZ-Default: Nerd
-        - Banned-Rolle - CSZ-Default: B&
-        - Geburtstags-Rolle - CSZ-Default: Geburtstagskind
-        - Gründerväter-Rolle - CSZ-Default: Gründerväter
-        - Trusted-Rolle - CSZ-Default: Trusted
-        - Rejoiner / Shame-Rolle - CSZ-Default: Rejoiner
-        - Gründerväter-Gebannt-Rolle - CSZ-Default: B&-Gründerväter
-        - Trusted-Gebannt-Rolle - CSZ-Default: B&-Trusted
-        - Woisgang-Rolle - CSZ-Default: woisgang
-        - ...und vielleicht noch ein paar Weitere, die du der Config entnehmen kannst.
 3. Das Script starten.
 
 Mit Hot-Reload:

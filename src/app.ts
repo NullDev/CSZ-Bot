@@ -50,7 +50,7 @@ const config = await readConfig();
 
 if (config.sentry?.dsn) {
     sentry.init({
-        dsn: config.sentry?.dsn,
+        dsn: config.sentry.dsn,
     });
 }
 

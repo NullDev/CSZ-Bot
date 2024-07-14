@@ -1,7 +1,7 @@
 {
     "auth": {
-        "clientId": "",
-        "token": ""
+        "clientId": "<CLIENT_ID>",
+        "token": "<BOT_TOKEN>"
     },
     "sentry": {
         "dsn": null
@@ -11,11 +11,11 @@
         "name": "Hi!"
     },
     "prefix": {
-        "command": ".",
-        "modCommand": "~"
+        "command": "xd",
+        "modCommand": "yd"
     },
     "moderatorRoleIds": [
-        "<ROLE_ID>"
+        "893179190709477413"
     ],
     "command": {
         "faulenzerPing": {
@@ -39,48 +39,49 @@
             "dropChance": 0.05
         },
         "quotes": {
-            "emojiName": "",
-            "allowedGroupIds": [],
+            "emojiName": "zitat",
+            "allowedGroupIds": ["893179190709477407"],
             "voteThreshold": 2,
             "anonymousChannelIds": [],
             "anonymousCategoryIds": [],
             "blacklistedChannelIds": [],
-            "defaultTargetChannelId": "",
+            "defaultTargetChannelId": "893179191556706386",
             "targetChannelOverrides": []
         }
     },
-    
-    "deleteThreadMessagesInChannelIds": [],
+
+    "deleteThreadMessagesInChannelIds": ["893179191556706384"],
     "flameTrustedUserOnBotPing": false,
 
-    "guildGuildId": "",
+    "guildGuildId": "893179190235508819",
 
     "textChannel": {
-        "banReasonChannelId": "",
-        "bannedChannelId": "",
-        "botLogChannelId": "",
-        "hauptchatChannelId": "",
-        "votesChannelId": "",
-        "botSpamChannelId": ""
+        "banReasonChannelId": "893179190881452117",
+        "bannedChannelId": "893179193741942888",
+        "botLogChannelId": "893179191556706387",
+        "hauptchatChannelId": "893179191292477441",
+        "votesChannelId": "893179191556706384",
+        "botSpamChannelId": "893179191556706387",
+        "hauptwoisTextChannelId": "893179191825162371"
     },
 
     "voiceChannel": {
-        "hauptWoischatChannelId": ""
+        "hauptWoischatChannelId": "893179191825162372"
     },
 
     "role": {
-        "bannedRoleId": "",
-        "birthdayRoleId": "",
-        "botDenyRoleId": "",
-        "defaultRoleId": "",
-        "gruendervaeterRoleId": "",
-        "gruendervaeterBannedRoleId": "",
-        "roleDenyRoleId": "",
-        "shameRoleId": "",
-        "trustedRoleId": "",
-        "trustedBannedRoleId": "",
-        "woisgangRoleId": "",
-        "winnerRoleId": "",
-        "emotifiziererRoleId": ""
+        "bannedRoleId": "893179190709477409",
+        "birthdayRoleId": "893179190709477416",
+        "botDenyRoleId": "1025870480374247485",
+        "defaultRoleId": "893179190709477407",
+        "gruendervaeterRoleId": "893179190709477411",
+        "gruendervaeterBannedRoleId": "893179190571044916",
+        "roleDenyRoleId": "893179190684307514",
+        "shameRoleId": "893179190235508822",
+        "trustedRoleId": "893179190571044915",
+        "trustedBannedRoleId": "893179190571044914",
+        "woisgangRoleId": "893179190235508825",
+        "winnerRoleId": "1045422896740311070",
+        "emotifiziererRoleId": "893179190709477410"
     }
 }

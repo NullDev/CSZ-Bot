@@ -43,6 +43,7 @@
             "allowedGroupIds": ["893179190709477407"],
             "voteThreshold": 2,
             "anonymousChannelIds": [],
+            "anonymousCategoryIds": [],
             "blacklistedChannelIds": [],
             "defaultTargetChannelId": "893179191556706386",
             "targetChannelOverrides": []
