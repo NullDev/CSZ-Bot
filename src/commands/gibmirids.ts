@@ -14,17 +14,18 @@ export default class GibMirIdsCommand implements MessageCommand {
     description = "Listet IDs auf dem Server für einfachere Config";
 
     async handleMessage(message: ProcessableMessage, context: BotContext) {
-        const lines = [`Guild: \`${context.guild.id}\``, ""];
+        const lines = [`# Guild: \`${context.guild.id}\``, ""];
 
         const channels = [...context.guild.channels.cache.values()];
         const channelsByType = Object.groupBy(channels, c => c.type);
         for (const [type, channels] of Object.entries(channelsByType)) {
-            lines.push(`**${ChannelType[Number(type)]}**`);
+            lines.push(`## ${ChannelType[Number(type)]}`);
             lines.push(...channels.map(c => `- ${c.name}: \`${c.id}\``));
         }
 
         lines.push("");
         lines.push("");
+        lines.push("## Rollen");
 
         const roles = [...context.guild.roles.cache.values()].sort(
             (a, b) => b.position - a.position,
