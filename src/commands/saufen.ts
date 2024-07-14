@@ -97,7 +97,7 @@ export default class Saufen implements ApplicationCommand {
             case "add": {
                 const soundUrl = new URL(command.options.getString("sound", true));
                 const targetPath = path.resolve(
-                    context.soundsDir,
+                    context.path.sounds,
                     path.basename(soundUrl.pathname),
                 );
 
@@ -118,7 +118,7 @@ export default class Saufen implements ApplicationCommand {
                 return;
             }
             case "list": {
-                const files = await this.#getSoundFiles(context.soundsDir);
+                const files = await this.#getSoundFiles(context.path.sounds);
                 await command.reply(files.map(f => `- ${f}`).join("\n"));
                 return;
             }
@@ -139,7 +139,7 @@ export default class Saufen implements ApplicationCommand {
             return;
         }
 
-        const files = await this.#getSoundFiles(context.soundsDir);
+        const files = await this.#getSoundFiles(context.path.sounds);
 
         const focusedValue = interaction.options.getFocused().toLowerCase();
         const completions = files

@@ -8,12 +8,12 @@ import log from "@log";
 export const rotate = async (context: BotContext) => {
     log.debug("Rotating banners");
 
-    const files = await fs.readdir(context.bannersDir);
+    const files = await fs.readdir(context.path.banners);
     if (files.length === 0) {
         return;
     }
 
-    const file = pickRandomBanner(context.bannersDir, files);
+    const file = pickRandomBanner(context.path.banners, files);
 
     const currentHash = context.guild.banner;
     await context.guild.setBanner(file);
@@ -24,7 +24,7 @@ export const rotate = async (context: BotContext) => {
     // a new one.
     if (newHash === currentHash && files.length > 1) {
         const secondTry = pickRandomBanner(
-            context.bannersDir,
+            context.path.banners,
             files.filter(f => f !== file),
         );
         await context.guild.setBanner(secondTry);

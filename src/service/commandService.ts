@@ -11,7 +11,7 @@ import log from "@log";
 const commandExtensions = [".ts", ".js"];
 
 export async function readAvailableCommands(context: BotContext): Promise<Command[]> {
-    const modules = loadRawCommandModules(context, context.commandDir);
+    const modules = loadRawCommandModules(context, context.path.commands);
 
     const res = [];
     for await (const { module } of modules) {
@@ -31,7 +31,7 @@ async function* loadRawCommandModules(context: BotContext, commandDir: string) {
             continue;
         }
 
-        const filePath = path.join(context.commandDir, file);
+        const filePath = path.join(context.path.commands, file);
 
         const moduleUrl = new URL("file://");
         moduleUrl.pathname = filePath;

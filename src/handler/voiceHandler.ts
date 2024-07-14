@@ -57,10 +57,10 @@ export async function connectAndPlaySaufen(context: BotContext, filename?: strin
         return;
     }
 
-    const files = await readdir(context.soundsDir);
+    const files = await readdir(context.path.sounds);
 
     const fileToPlay = filename ?? randomEntry(files);
-    const file = path.resolve(context.soundsDir, fileToPlay);
+    const file = path.resolve(context.path.sounds, fileToPlay);
     try {
         const duration = (await gad.getAudioDurationInSeconds(file)) * 1000;
         await playSaufen(file, duration);

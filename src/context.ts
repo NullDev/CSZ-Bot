@@ -93,12 +93,14 @@ export interface BotContext {
     deleteThreadMessagesInChannelIds: Set<Snowflake>;
     flameTrustedUserOnBotPing: boolean;
 
-    rootDir: string;
-    srcDir: string;
-    bannersDir: string;
-    soundsDir: string;
-    commandDir: string;
-    modCommandDir: string;
+    path: {
+        root: string;
+        src: string;
+        banners: string;
+        sounds: string;
+        commands: string;
+        modCommands: string;
+    };
 
     roleGuard: {
         isMod: (member: GuildMember) => boolean;
@@ -251,12 +253,14 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
             hauptWoischat: ensureVoiceChannel(guild, voiceChannel.hauptWoischatChannelId),
         },
 
-        rootDir: path.resolve(""),
-        srcDir: path.resolve("src"),
-        bannersDir: path.resolve("banners"),
-        soundsDir: path.resolve("sounds"),
-        commandDir: path.resolve("src/commands"),
-        modCommandDir: path.resolve("src/commands/modcommands"),
+        path: {
+            root: path.resolve(""),
+            src: path.resolve("src"),
+            banners: path.resolve("banners"),
+            sounds: path.resolve("sounds"),
+            commands: path.resolve("src/commands"),
+            modCommands: path.resolve("src/commands/modcommands"),
+        },
 
         roleGuard: {
             isMod: member => hasAnyRoleById(member, config.moderatorRoleIds),
