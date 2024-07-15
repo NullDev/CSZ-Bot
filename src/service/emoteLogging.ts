@@ -1,7 +1,4 @@
-import type {
-    MessageReaction,
-    User,
-} from "discord.js";
+import type { MessageReaction, User } from "discord.js";
 
 import type { BotContext } from "../context.js";
 import type { ProcessableMessage } from "./commandService.js";
@@ -16,7 +13,6 @@ const allowedUsers = [
     "601056589222379520", // hans
 ];
 
-
 export async function processReactionAdd(
     reactionEvent: MessageReaction,
     invoker: User,
@@ -26,8 +22,27 @@ export async function processReactionAdd(
         return;
     }
 
+    const emote = reactionEvent.emoji;
+    if (!emote.id || !emote.name) {
+        return;
+    }
 
     log.info({ emoji: reactionEvent.emoji }, "Reaction added");
+
+    const parsedEmote = {
+        id: emote.id,
+        name: emote.name,
+        animated: emote.animated ?? false,
+    };
+
+    await dbEmote.logMessageUse(
+        parsedEmote.id,
+        parsedEmote.name,
+        parsedEmote.animated,
+        emoteService.getEmoteUrl(parsedEmote),
+        reactionEvent.message as ProcessableMessage,
+        true,
+    );
 }
 
 export async function processReactionRemove(
@@ -39,10 +54,8 @@ export async function processReactionRemove(
         return;
     }
 
-
     log.info({ emoji: reactionEvent.emoji }, "Reaction removed");
 }
-
 
 export async function processMessage(message: ProcessableMessage, context: BotContext) {
     if (allowedUsers.includes(message.author.id)) {

@@ -7,7 +7,6 @@ import {
     type Snowflake,
 } from "discord.js";
 
-
 export function messageContainsEmote(message: Message): boolean {
     return extractEmotesFromMessage(message.content).length > 0;
 }
