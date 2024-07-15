@@ -18,7 +18,7 @@ export async function processReactionAdd(
     invoker: User,
     _context: BotContext,
 ) {
-    if (allowedUsers.includes(invoker.id)) {
+    if (!allowedUsers.includes(invoker.id)) {
         return;
     }
 
