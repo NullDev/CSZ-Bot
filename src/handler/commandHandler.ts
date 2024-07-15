@@ -292,7 +292,6 @@ export const messageCommandHandler = async (
                     `${message.author} wollte gerade dieses Command ausführen:\n\`${message.content}\`\nDabei ist irgendwas explodiert. Irgendjemand sollte das fixen.`,
                 );
             }
-            return;
         }
     }
 
