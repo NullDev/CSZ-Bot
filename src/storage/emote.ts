@@ -39,7 +39,6 @@ export async function logMessageUse(
                     data,
                     deletedAt: null,
                 })
-                .onConflict(oc => oc.doNothing())
                 .returningAll()
                 .executeTakeFirst();
         }
