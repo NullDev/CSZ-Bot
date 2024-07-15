@@ -5,21 +5,37 @@ import type { ProcessableMessage } from "./commandService.js";
 
 import log from "@log";
 
-export async function processReactionAdd(reactionEvent: MessageReaction, _invoker: User, _context: BotContext) {
+export async function processReactionAdd(
+    reactionEvent: MessageReaction,
+    _invoker: User,
+    _context: BotContext,
+) {
     log.info({ emoji: reactionEvent.emoji }, "Reaction added");
 }
 
-export async function processReactionRemove(reactionEvent: MessageReaction, _invoker: User, _context: BotContext) {
+export async function processReactionRemove(
+    reactionEvent: MessageReaction,
+    _invoker: User,
+    _context: BotContext,
+) {
     log.info({ emoji: reactionEvent.emoji }, "Reaction removed");
 }
 
 export function messageContainsEmote(message: ProcessableMessage): boolean {
-    // TODO: Check if message contains emotes
-    return !message.author.bot && message.author.id === "563456475650064415"; // holdser
+    if (message.author.bot) {
+        return false;
+    }
+    // holdser
+    if (message.author.id !== "563456475650064415") {
+        return false;
+    }
+    const emotes = extractEmotes(message.content);
+    return emotes.length > 0;
 }
 
 export async function processMessage(message: ProcessableMessage, _context: BotContext) {
-    log.info({ message: message.content }, "Processing message");
+    const emotes = extractEmotes(message.content);
+    log.info({ message: message.content, emotes }, "Processing message");
 }
 
 /**
@@ -39,4 +55,19 @@ export function resolveEmote(
         return guildEmote ?? emote;
     }
     return emote;
+}
+
+function extractEmotes(content: string) {
+    const pattern = /<.*?:(.+?):(\d+)>/gi;
+
+    const res = [];
+    let match: RegExpExecArray | null = null;
+    // biome-ignore lint/suspicious/noAssignInExpressions: :shruge:
+    while ((match = pattern.exec(content)) !== null) {
+        res.push({
+            name: match[1],
+            id: match[2],
+        });
+    }
+    return res;
 }
