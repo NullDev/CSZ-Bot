@@ -227,7 +227,7 @@ export interface EmoteTable extends AuditedTable {
     isAnimated: boolean | null;
     data: ArrayBuffer;
 
-    deletedAt: ColumnType<string | null, string | null, string | null>; // TODO: Date is not supported by the DB driver
+    deletedAt: ColumnType<string | null, null, string | null>; // TODO: Date is not supported by the DB driver
 }
 
 export type EmoteUse = Selectable<EmoteUseTable>;
@@ -242,5 +242,5 @@ export interface EmoteUseTable extends AuditedTable {
     usedByUserName: string;
     isReaction: boolean;
 
-    deletedAt: ColumnType<string | null, string | null, string | null>; // TODO: Date is not supported by the DB driver
+    deletedAt: ColumnType<string | null, null, string | null>; // TODO: Date is not supported by the DB driver
 }
