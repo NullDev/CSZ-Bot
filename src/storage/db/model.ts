@@ -225,7 +225,7 @@ export interface EmoteTable extends AuditedTable {
     name: string;
     isAnimated: boolean;
     url: string;
-    data: ArrayBuffer;
+    data: Uint8Array;
 
     deletedAt: ColumnType<string | null, null, string | null>; // TODO: Date is not supported by the DB driver
 }

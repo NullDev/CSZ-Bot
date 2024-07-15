@@ -36,7 +36,7 @@ export async function logMessageUse(
                     name: emoteName,
                     isAnimated,
                     url,
-                    data,
+                    data: new Uint8Array(data),
                     deletedAt: null,
                 })
                 .returningAll()
