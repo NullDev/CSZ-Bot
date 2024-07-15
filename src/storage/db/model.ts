@@ -21,6 +21,8 @@ export interface Database {
     bans: BanTable;
     reminders: ReminderTable;
     loot: LootTable;
+    emote: EmoteTable;
+    emoteUse: EmoteUseTable;
 }
 
 export type OneBasedMonth = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
@@ -213,4 +215,32 @@ export interface LootTable extends AuditedTable {
     channelId: Snowflake;
     messageId: Snowflake;
     usedImage: string | null;
+}
+
+export type Emote = Selectable<EmoteTable>;
+export interface EmoteTable extends AuditedTable {
+    id: GeneratedAlways<number>;
+
+    guildId: ColumnType<Snowflake, Snowflake, never>;
+    emoteId: ColumnType<Snowflake, Snowflake, never>;
+    name: string;
+    isAnimated: boolean | null;
+    data: ArrayBuffer;
+
+    deletedAt: ColumnType<string | null, string | null, string | null>; // TODO: Date is not supported by the DB driver
+}
+
+export type EmoteUse = Selectable<EmoteUseTable>;
+export interface EmoteUseTable extends AuditedTable {
+    id: GeneratedAlways<number>;
+
+    guildId: ColumnType<Snowflake, Snowflake, never>;
+    channelId: ColumnType<Snowflake, Snowflake, never>;
+    messageId: ColumnType<Snowflake, Snowflake, never>;
+    emoteId: ColumnType<number, number, never>;
+    usedByUserId: ColumnType<Snowflake, Snowflake, never>;
+    usedByUserName: string;
+    isReaction: boolean;
+
+    deletedAt: ColumnType<string | null, string | null, string | null>; // TODO: Date is not supported by the DB driver
 }
