@@ -1,21 +1,17 @@
-import { sql } from "kysely";
-import type { Emoji, GuildEmoji, Message } from "discord.js";
+import type { Message, Snowflake } from "discord.js";
+
+import type { Emote } from "./db/model.js";
 
 import db from "@db";
 import log from "@log";
 
-export async function logMessageUse(emote: Emoji, message: Message<true>, ctx = db()) {
-    const emoteId = emote.id;
-    if (!emoteId) {
-        return;
-    }
-
-    const emoteName = emote.name;
-    if (!emoteName) {
-        log.warn({ emote }, "Emote has no name");
-        return;
-    }
-
+export async function logMessageUse(
+    emoteId: Snowflake,
+    emoteName: string,
+    message: Message<true>,
+    isReaction: boolean,
+    ctx = db(),
+) {
     await ctx.transaction().execute(async ctx => {
         // splitting select and insert (instead of using upsert) to avoid having to download the emote data
         let existingEmote = await ctx
@@ -28,10 +24,8 @@ export async function logMessageUse(emote: Emoji, message: Message<true>, ctx = 
             existingEmote = await ctx
                 .insertInto("emote")
                 .values({
-                    guildId: message.guildId,
                     data: new ArrayBuffer(0), // TODO
                     emoteId,
-                    isAnimated: (emote as GuildEmoji).animated, // TODO
                     name: emoteName,
                     deletedAt: null,
                 })
@@ -48,13 +42,13 @@ export async function logMessageUse(emote: Emoji, message: Message<true>, ctx = 
             .insertInto("emoteUse")
             .values({
                 // not using emote.guild.id because the emote can originate from a different server
-                guildId: message.guildId,
+                messageGuildId: message.guildId,
                 channelId: message.channelId,
                 messageId: message.id,
                 emoteId: existingEmote.id,
                 usedByUserId: message.author.id,
                 usedByUserName: message.author.displayName,
-                isReaction: false,
+                isReaction,
             })
             .execute();
     });
