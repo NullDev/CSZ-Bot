@@ -1,6 +1,6 @@
 import type { ReactionHandler } from "./ReactionHandler.js";
 
-import * as emoji from "../service/emoteService.js";
+import * as emoteLogging from "../service/emoteLogging.js";
 
 export default {
     displayName: "Log Emotes Reaction Handler",
@@ -10,9 +10,9 @@ export default {
         }
 
         if (reactionWasRemoved) {
-            await emoji.processReactionRemove(reactionEvent, invoker, context);
+            await emoteLogging.processReactionRemove(reactionEvent, invoker, context);
         } else {
-            await emoji.processReactionAdd(reactionEvent, invoker, context);
+            await emoteLogging.processReactionAdd(reactionEvent, invoker, context);
         }
     },
 } satisfies ReactionHandler;

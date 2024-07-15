@@ -1,73 +1,15 @@
 import {
+    type Message,
     parseEmoji,
     type Guild,
     type GuildEmoji,
-    type MessageReaction,
     type PartialEmoji,
     type Snowflake,
-    type User,
 } from "discord.js";
 
-import type { BotContext } from "../context.js";
-import type { ProcessableMessage } from "./commandService.js";
 
-import * as dbEmote from "../storage/emote.js";
-
-import log from "@log";
-
-export async function processReactionAdd(
-    reactionEvent: MessageReaction,
-    _invoker: User,
-    _context: BotContext,
-) {
-    log.info({ emoji: reactionEvent.emoji }, "Reaction added");
-}
-
-export async function processReactionRemove(
-    reactionEvent: MessageReaction,
-    _invoker: User,
-    _context: BotContext,
-) {
-    log.info({ emoji: reactionEvent.emoji }, "Reaction removed");
-}
-
-export function messageContainsEmote(message: ProcessableMessage): boolean {
-    if (message.author.bot) {
-        return false;
-    }
-
-    const allowedUsers = [
-        "563456475650064415", // holdser
-        "601056589222379520", // hans
-    ];
-
-    if (allowedUsers.includes(message.author.id)) {
-        return false;
-    }
-    const emotes = extractEmotes(message.content);
-    return emotes.length > 0;
-}
-
-export async function processMessage(message: ProcessableMessage, context: BotContext) {
-    const emotes = extractEmotes(message.content);
-    for (const emote of emotes) {
-        const resolvedEmote = context.client.emojis.cache.get(emote.id);
-        if (!resolvedEmote) {
-            log.warn({ emote }, "Could not resolve emote");
-            continue;
-        }
-
-        log.info({ emote, resolvedEmote }, "Processing emote");
-
-        await dbEmote.logMessageUse(
-            emote.id,
-            emote.name,
-            emote.animated,
-            getEmoteUrl(emote),
-            message,
-            false,
-        );
-    }
+export function messageContainsEmote(message: Message): boolean {
+    return extractEmotesFromMessage(message.content).length > 0;
 }
 
 /**
@@ -91,7 +33,7 @@ export function resolveEmote(
 
 export type ParsedEmoji = PartialEmoji & { id: Snowflake };
 
-function extractEmotes(content: string): ParsedEmoji[] {
+export function extractEmotesFromMessage(content: string): ParsedEmoji[] {
     const pattern = /<.*?:(.+?):(\d+)>/gi;
     const res = [];
     for (const [match] of content.matchAll(pattern)) {

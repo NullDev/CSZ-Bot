@@ -1,7 +1,9 @@
 import type { ProcessableMessage } from "../service/commandService.js";
 import type { SpecialCommand } from "./command.js";
 import type { BotContext } from "../context.js";
-import * as emoji from "../service/emoteService.js";
+
+import * as emoteService from "../service/emoteService.js";
+import * as emoteLogging from "../service/emoteLogging.js";
 
 export default class EmoteLoggerCommand implements SpecialCommand {
     name = "EmoteLogger";
@@ -12,10 +14,10 @@ export default class EmoteLoggerCommand implements SpecialCommand {
     cooldownTime = 0;
 
     matches(message: ProcessableMessage): boolean {
-        return emoji.messageContainsEmote(message);
+        return !message.author.bot && emoteService.messageContainsEmote(message);
     }
 
     async handleSpecialMessage(message: ProcessableMessage, context: BotContext) {
-        await emoji.processMessage(message, context);
+        await emoteLogging.processMessage(message, context);
     }
 }
