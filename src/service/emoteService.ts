@@ -1,15 +1,15 @@
-import type { Guild, GuildEmoji, MessageReaction } from "discord.js";
+import type { Guild, GuildEmoji, MessageReaction, User } from "discord.js";
 
 import type { BotContext } from "../context.js";
 import type { ProcessableMessage } from "./commandService.js";
 
 import log from "@log";
 
-export async function processReactionAdd(reactionEvent: MessageReaction, _context: BotContext) {
+export async function processReactionAdd(reactionEvent: MessageReaction, _invoker: User, _context: BotContext) {
     log.info({ emoji: reactionEvent.emoji }, "Reaction added");
 }
 
-export async function processReactionRemove(reactionEvent: MessageReaction, _context: BotContext) {
+export async function processReactionRemove(reactionEvent: MessageReaction, _invoker: User, _context: BotContext) {
     log.info({ emoji: reactionEvent.emoji }, "Reaction removed");
 }
 
