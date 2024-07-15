@@ -1,19 +1,18 @@
 import { sql } from "kysely";
-import type { Emoji, GuildEmoji, Message, Snowflake, User } from "discord.js";
+import type { Emoji, GuildEmoji, Message } from "discord.js";
 
 import db from "@db";
 import log from "@log";
 
 export async function logMessageUse(emote: Emoji, message: Message<true>, ctx = db()) {
-    const emoteName = emote.name;
-    if (!emoteName) {
-        log.warn({ emote }, "Emote has no name");
+    const emoteId = emote.id;
+    if (!emoteId) {
         return;
     }
 
-    const emoteId = emote.id;
-    if (!emoteId) {
-        log.warn({ emote }, "Emote has no ID");
+    const emoteName = emote.name;
+    if (!emoteName) {
+        log.warn({ emote }, "Emote has no name");
         return;
     }
 
