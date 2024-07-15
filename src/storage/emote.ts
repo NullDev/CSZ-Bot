@@ -23,6 +23,12 @@ export async function logMessageUse(
             .executeTakeFirst();
 
         if (!existingEmote) {
+            const req = await fetch(url);
+            if (!req.ok) {
+                throw new Error(`Failed to fetch emote data: ${req.statusText}`);
+            }
+            const data = await req.arrayBuffer();
+
             existingEmote = await ctx
                 .insertInto("emote")
                 .values({
@@ -30,7 +36,7 @@ export async function logMessageUse(
                     name: emoteName,
                     isAnimated,
                     url,
-                    data: new ArrayBuffer(0), // TODO
+                    data,
                     deletedAt: null,
                 })
                 .onConflict(oc => oc.doNothing())
