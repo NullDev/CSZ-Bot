@@ -22,6 +22,11 @@ export async function processReactionAdd(
         return;
     }
 
+    const message = reactionEvent.message;
+    if (!message.inGuild()) {
+        return;
+    }
+
     const emote = reactionEvent.emoji;
     if (!emote.id || !emote.name) {
         return;
@@ -35,13 +40,13 @@ export async function processReactionAdd(
         animated: emote.animated ?? false,
     };
 
-    await dbEmote.logMessageUse(
+    await dbEmote.logReactionUse(
         parsedEmote.id,
         parsedEmote.name,
         parsedEmote.animated,
         emoteService.getEmoteUrl(parsedEmote),
-        reactionEvent.message as ProcessableMessage,
-        true,
+        message,
+        invoker,
     );
 }
 
@@ -78,7 +83,6 @@ export async function processMessage(message: ProcessableMessage, context: BotCo
             emote.animated,
             emoteService.getEmoteUrl(emote),
             message,
-            false,
         );
     }
 }
