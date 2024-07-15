@@ -50,7 +50,7 @@ export async function processReactionRemove(
     invoker: User,
     _context: BotContext,
 ) {
-    if (allowedUsers.includes(invoker.id)) {
+    if (!allowedUsers.includes(invoker.id)) {
         return;
     }
 
@@ -58,7 +58,7 @@ export async function processReactionRemove(
 }
 
 export async function processMessage(message: ProcessableMessage, context: BotContext) {
-    if (allowedUsers.includes(message.author.id)) {
+    if (!allowedUsers.includes(message.author.id)) {
         return;
     }
 
