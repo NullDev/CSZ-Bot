@@ -57,6 +57,10 @@
     "pino-pretty": "^11.2.1",
     "typescript": "^5.5.3"
   },
+  "trustedDependencies": [
+    "@biomejs/biome",
+    "lefthook"
+  ],
   "engines": {
     "bun": ">=1.1.0"
   }
