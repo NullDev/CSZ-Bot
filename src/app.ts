@@ -11,6 +11,7 @@ import * as kysely from "./storage/db/db.js";
 import type { ReactionHandler } from "./handler/ReactionHandler.js";
 import messageDeleteHandler from "./handler/messageDeleteHandler.js";
 import defaultReactionHandler from "./handler/defaultReactionHandler.js";
+import logEmotesReactionHandler from "./handler/logEmotesReactionHandler.js";
 import quoteReactionHandler from "./handler/quoteHandler.js";
 import { woisVoteReactionHandler } from "./commands/woisvote.js";
 import * as voiceStateService from "./service/voiceStateService.js";
@@ -91,6 +92,7 @@ const client = new Client({
  */
 const reactionHandlers: ReactionHandler[] = [
     defaultReactionHandler,
+    logEmotesReactionHandler,
     quoteReactionHandler,
     ehreReactionHandler,
     woisVoteReactionHandler,
