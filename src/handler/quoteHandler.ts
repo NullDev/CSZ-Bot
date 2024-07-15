@@ -12,6 +12,7 @@ import {
 } from "discord.js";
 
 import type { BotContext, QuoteConfig } from "../context.js";
+import type { ReactionHandler } from "./ReactionHandler.js";
 import log from "@log";
 
 const isChannelAnonymous = async (context: BotContext, channel: Channel) => {
@@ -297,4 +298,4 @@ export default {
             await quotedMessage.reply("Ihr quoted echt jeden Scheiß, oder?");
         }
     },
-};
+} satisfies ReactionHandler;

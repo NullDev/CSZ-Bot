@@ -4,6 +4,7 @@ import type { ProcessableMessage } from "../service/commandService.js";
 import type { BotContext } from "../context.js";
 import * as additionalMessageData from "../storage/additionalMessageData.js";
 import * as fadingMessage from "../storage/fadingMessage.js";
+import type { ReactionHandler } from "./ReactionHandler.js";
 
 import log from "@log";
 import * as poll from "../commands/poll.js";
@@ -162,4 +163,4 @@ export default {
             }
         }
     },
-};
+} satisfies ReactionHandler;
