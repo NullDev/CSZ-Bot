@@ -33,9 +33,13 @@ export function messageContainsEmote(message: ProcessableMessage): boolean {
     return emotes.length > 0;
 }
 
-export async function processMessage(message: ProcessableMessage, _context: BotContext) {
+export async function processMessage(message: ProcessableMessage, context: BotContext) {
     const emotes = extractEmotes(message.content);
-    log.info({ message: message.content, emotes }, "Processing message");
+    for (const emote of emotes) {
+        const resolvedEmote = context.client.emojis.cache.get(emote.id);
+        log.info({ emote, resolvedEmote }, "Processing emote");
+        // TODO: log use
+    }
 }
 
 /**
