@@ -59,3 +59,11 @@ export async function logMessageUse(emote: Emoji, message: Message<true>, ctx = 
             .execute();
     });
 }
+
+export async function markAsDeleted(emoteId: Emote["id"], ctx = db()): Promise<void> {
+    await ctx
+        .updateTable("emote")
+        .set("deletedAt", new Date().toISOString())
+        .where("id", "=", emoteId)
+        .execute();
+}
