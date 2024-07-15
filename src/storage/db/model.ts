@@ -223,6 +223,8 @@ export interface EmoteTable extends AuditedTable {
 
     emoteId: ColumnType<Snowflake, Snowflake, never>;
     name: string;
+    isAnimated: boolean;
+    url: string;
     data: ArrayBuffer;
 
     deletedAt: ColumnType<string | null, null, string | null>; // TODO: Date is not supported by the DB driver

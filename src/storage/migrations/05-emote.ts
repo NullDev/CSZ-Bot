@@ -6,6 +6,8 @@ export async function up(db: Kysely<any>) {
         .addColumn("id", "integer", c => c.primaryKey().autoIncrement())
         .addColumn("emoteId", "text", c => c.notNull())
         .addColumn("name", "text", c => c.notNull())
+        .addColumn("isAnimated", "boolean", c => c.notNull())
+        .addColumn("url", "text", c => c.notNull())
         .addColumn("data", "blob", c => c.notNull())
 
         .addColumn("createdAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))

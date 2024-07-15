@@ -14,6 +14,7 @@ import type { ApplicationCommand, MessageCommand } from "./command.js";
 import type { ProcessableMessage } from "../service/commandService.js";
 import type { BotContext } from "../context.js";
 import { ensureChatInputCommand } from "../utils/interactionUtils.js";
+import * as emoteService from "../service/emoteService.js";
 
 /**
  * Sends instructions on how to ask better questions
@@ -136,11 +137,13 @@ export default class YoinkCommand implements MessageCommand, ApplicationCommand 
         if (!effectiveName) {
             return "Da war k1s ordentlicher Name verfügbar :(";
         }
+        if (!emoji.id) {
+            return "Das ist kein Emote, du Mongo";
+        }
 
-        const extension = emoji.animated ? ".gif" : ".png";
         try {
             const guildEmoji = await guild.emojis.create({
-                attachment: `https://cdn.discordapp.com/emojis/${emoji.id}${extension}`,
+                attachment: emoteService.getEmoteUrl(emoji as emoteService.ParsedEmoji),
                 name: effectiveName,
             });
             return `Hab \<:${guildEmoji.name}:${guildEmoji.id}\> als \`${guildEmoji.name}\` hinzugefügt`;

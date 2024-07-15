@@ -1,7 +1,17 @@
-import type { Guild, GuildEmoji, MessageReaction, User } from "discord.js";
+import {
+    parseEmoji,
+    type Guild,
+    type GuildEmoji,
+    type MessageReaction,
+    type PartialEmoji,
+    type Snowflake,
+    type User,
+} from "discord.js";
 
 import type { BotContext } from "../context.js";
 import type { ProcessableMessage } from "./commandService.js";
+
+import * as dbEmote from "../storage/emote.js";
 
 import log from "@log";
 
@@ -37,8 +47,21 @@ export async function processMessage(message: ProcessableMessage, context: BotCo
     const emotes = extractEmotes(message.content);
     for (const emote of emotes) {
         const resolvedEmote = context.client.emojis.cache.get(emote.id);
+        if (!resolvedEmote) {
+            log.warn({ emote }, "Could not resolve emote");
+            continue;
+        }
+
         log.info({ emote, resolvedEmote }, "Processing emote");
-        // TODO: log use
+
+        await dbEmote.logMessageUse(
+            emote.id,
+            emote.name,
+            emote.animated,
+            getEmoteUrl(emote),
+            message,
+            false,
+        );
     }
 }
 
@@ -61,17 +84,22 @@ export function resolveEmote(
     return emote;
 }
 
-function extractEmotes(content: string) {
-    const pattern = /<.*?:(.+?):(\d+)>/gi;
+export type ParsedEmoji = PartialEmoji & { id: Snowflake };
 
+function extractEmotes(content: string): ParsedEmoji[] {
+    const pattern = /<.*?:(.+?):(\d+)>/gi;
     const res = [];
-    let match: RegExpExecArray | null = null;
-    // biome-ignore lint/suspicious/noAssignInExpressions: :shruge:
-    while ((match = pattern.exec(content)) !== null) {
-        res.push({
-            name: match[1],
-            id: match[2],
-        });
+    for (const [match] of content.matchAll(pattern)) {
+        const parsed = parseEmoji(match);
+        if (!parsed || !parsed.id) {
+            continue;
+        }
+        res.push(parsed as ParsedEmoji);
     }
     return res;
+}
+
+export function getEmoteUrl(emote: ParsedEmoji): string {
+    const extension = emote.animated ? ".gif" : ".png";
+    return `https://cdn.discordapp.com/emojis/${emote.id}${extension}`;
 }

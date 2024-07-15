@@ -8,6 +8,8 @@ import log from "@log";
 export async function logMessageUse(
     emoteId: Snowflake,
     emoteName: string,
+    isAnimated: boolean,
+    url: string,
     message: Message<true>,
     isReaction: boolean,
     ctx = db(),
@@ -24,9 +26,11 @@ export async function logMessageUse(
             existingEmote = await ctx
                 .insertInto("emote")
                 .values({
-                    data: new ArrayBuffer(0), // TODO
                     emoteId,
                     name: emoteName,
+                    isAnimated,
+                    url,
+                    data: new ArrayBuffer(0), // TODO
                     deletedAt: null,
                 })
                 .onConflict(oc => oc.doNothing())
