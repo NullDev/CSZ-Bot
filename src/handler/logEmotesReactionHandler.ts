@@ -5,6 +5,10 @@ import * as emoji from "../service/emoteService.js";
 export default {
     displayName: "Log Emotes Reaction Handler",
     async execute(reactionEvent, _invoker, context, reactionWasRemoved) {
-        await emoji.processReaction(reactionEvent, reactionWasRemoved, context);
+        if (reactionWasRemoved) {
+            await emoji.processReactionRemove(reactionEvent, context);
+        } else {
+            await emoji.processReactionAdd(reactionEvent, context);
+        }
     },
 } satisfies ReactionHandler;

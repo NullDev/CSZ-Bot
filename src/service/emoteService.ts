@@ -4,12 +4,12 @@ import type { BotContext } from "../context.js";
 
 import log from "@log";
 
-export async function processReaction(
-    reactionEvent: MessageReaction,
-    wasRemoved: boolean,
-    context: BotContext,
-) {
-    log.info({ wasRemoved, emoji: reactionEvent.emoji }, "Reaction event");
+export async function processReactionAdd(reactionEvent: MessageReaction, _context: BotContext) {
+    log.info({ emoji: reactionEvent.emoji }, "Reaction added");
+}
+
+export async function processReactionRemove(reactionEvent: MessageReaction, _context: BotContext) {
+    log.info({ emoji: reactionEvent.emoji }, "Reaction removed");
 }
 
 /**
