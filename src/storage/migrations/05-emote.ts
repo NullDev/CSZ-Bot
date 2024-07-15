@@ -46,7 +46,7 @@ export async function up(db: Kysely<any>) {
 function createUpdatedAtTrigger(db: Kysely<any>, tableName: string) {
     return sql
         .raw(`
-    create trigger if not exists ${tableName}_updatedAt
+    create trigger ${tableName}_updatedAt
     after update on ${tableName} for each row
     begin
         update ${tableName}
