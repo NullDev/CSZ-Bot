@@ -14,6 +14,9 @@ export async function up(db: Kysely<any>) {
         .addColumn("updatedAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
         .addColumn("deletedAt", "timestamp")
         .execute();
+
+    await db.schema.createIndex("emote_emoteId").on("emote").column("emoteId").unique().execute();
+
     await createUpdatedAtTrigger(db, "emote");
 
     await db.schema
@@ -31,6 +34,14 @@ export async function up(db: Kysely<any>) {
         .addColumn("updatedAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
         .addColumn("deletedAt", "timestamp")
         .execute();
+
+    await db.schema
+        .createIndex("emote_emoteId")
+        .on("emoteUse")
+        .columns(["messageId", "emoteId", "usedByUserId", "isReaction", "deletedAt"])
+        .unique()
+        .execute();
+
     await createUpdatedAtTrigger(db, "emoteUse");
 }
 
