@@ -35,8 +35,13 @@ export function messageContainsEmote(message: ProcessableMessage): boolean {
     if (message.author.bot) {
         return false;
     }
-    // holdser
-    if (message.author.id !== "563456475650064415") {
+
+    const allowedUsers = [
+        "563456475650064415", // holdser
+        "601056589222379520", // hans
+    ];
+
+    if (allowedUsers.includes(message.author.id)) {
         return false;
     }
     const emotes = extractEmotes(message.content);
