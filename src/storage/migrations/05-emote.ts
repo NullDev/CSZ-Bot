@@ -36,7 +36,7 @@ export async function up(db: Kysely<any>) {
         .execute();
 
     await db.schema
-        .createIndex("emote_emoteId")
+        .createIndex("emoteUse_messageId_emoteId_usedByUserId_isReaction_deletedAt")
         .on("emoteUse")
         .columns(["messageId", "emoteId", "usedByUserId", "isReaction", "deletedAt"])
         .unique()
