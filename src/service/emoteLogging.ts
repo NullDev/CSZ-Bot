@@ -86,3 +86,28 @@ export async function processMessage(message: ProcessableMessage, context: BotCo
         );
     }
 }
+
+export async function persistCurrentGuildEmotes(context: BotContext) {
+    for (const guild of context.client.guilds.cache.values()) {
+        for (const emote of guild.emojis.cache.values()) {
+            if (!emote.id || !emote.name) {
+                continue;
+            }
+
+            const parsed = {
+                id: emote.id,
+                name: emote.name,
+                animated: emote.animated ?? false,
+            };
+
+            log.info({ emote: parsed }, "Ensuring emote");
+
+            await dbEmote.ensureEmote(
+                parsed.id,
+                parsed.name,
+                parsed.animated,
+                emoteService.getEmoteUrl(parsed),
+            );
+        }
+    }
+}

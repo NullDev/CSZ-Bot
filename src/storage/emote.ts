@@ -1,7 +1,6 @@
-import type { Kysely } from "kysely";
 import type { Message, Snowflake, User } from "discord.js";
 
-import type { Database, Emote } from "./db/model.js";
+import type { Emote } from "./db/model.js";
 
 import db from "@db";
 
@@ -59,12 +58,12 @@ export async function logReactionUse(
     });
 }
 
-async function ensureEmote(
+export async function ensureEmote(
     emoteId: Snowflake,
     emoteName: string,
     isAnimated: boolean,
     url: string,
-    ctx: Kysely<Database>,
+    ctx = db(),
 ) {
     // splitting select and insert (instead of using upsert) to avoid having to download the emote data
 
