@@ -8,20 +8,11 @@ import * as emoteService from "./emoteService.js";
 
 import log from "@log";
 
-const allowedUsers = [
-    "563456475650064415", // holdser
-    "601056589222379520", // hans
-];
-
 export async function processReactionAdd(
     reactionEvent: MessageReaction,
     invoker: User,
     _context: BotContext,
 ) {
-    if (!allowedUsers.includes(invoker.id)) {
-        return;
-    }
-
     const message = reactionEvent.message;
     if (!message.inGuild()) {
         return;
@@ -55,18 +46,11 @@ export async function processReactionRemove(
     invoker: User,
     _context: BotContext,
 ) {
-    if (!allowedUsers.includes(invoker.id)) {
-        return;
-    }
-
+    // TODO: Implement
     log.info({ emoji: reactionEvent.emoji }, "Reaction removed");
 }
 
 export async function processMessage(message: ProcessableMessage, context: BotContext) {
-    if (!allowedUsers.includes(message.author.id)) {
-        return;
-    }
-
     const emotes = emoteService.extractEmotesFromMessage(message.content);
     for (const emote of emotes) {
         const resolvedEmote = context.client.emojis.cache.get(emote.id);
