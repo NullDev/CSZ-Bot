@@ -31,7 +31,11 @@ export async function connectToDb(databasePath: string) {
                     log.error(info, "Error running query");
                     break;
                 case "query":
-                    if (info.sql.includes("fadingMessages")) {
+                    if (
+                        info.sql.includes("fadingMessages") ||
+                        info.sql.includes("woisActions") ||
+                        info.sql.includes("reminders")
+                    ) {
                         return;
                     }
                     log.debug(info, "DB Query");
