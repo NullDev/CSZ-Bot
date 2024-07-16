@@ -13,7 +13,7 @@ export default class EmoteStatsCommand implements ApplicationCommand {
         .setDescription(this.description);
 
     async handleInteraction(command: CommandInteraction, context: BotContext): Promise<void> {
-        const stats = await emoteLogging.getUserStats(command.user);
+        const stats = await emoteLogging.getUserStats(command.user, 10);
         const totalEmotes = Math.sumPrecise(stats.map(s => s.count)) | 0;
         await command.reply({
             embeds: [

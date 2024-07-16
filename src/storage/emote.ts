@@ -107,7 +107,7 @@ export async function markAsDeleted(emoteId: Emote["id"], ctx = db()): Promise<v
         .execute();
 }
 
-export async function getUsage(user: User, ctx = db()) {
+export async function getUsage(user: User, limit: number, ctx = db()) {
     return await ctx
         .selectFrom("emoteUse")
         .innerJoin("emote", "emote.id", "emoteUse.emoteId")
@@ -120,5 +120,6 @@ export async function getUsage(user: User, ctx = db()) {
             sql<number>`COUNT(*)`.as("count"),
         ])
         .orderBy(sql<number>`COUNT(*)`, "desc")
+        .limit(limit)
         .execute();
 }

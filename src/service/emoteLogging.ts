@@ -96,6 +96,6 @@ export async function persistCurrentGuildEmotes(context: BotContext) {
     }
 }
 
-export async function getUserStats(user: User) {
-    return dbEmote.getUsage(user);
+export async function getUserStats(user: User, limit: number) {
+    return dbEmote.getUsage(user, limit | 0);
 }
