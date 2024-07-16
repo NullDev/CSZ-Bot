@@ -112,7 +112,7 @@ export async function getUsage(user: User, ctx = db()) {
         .selectFrom("emoteUse")
         .innerJoin("emote", "emote.id", "emoteUse.emoteId")
         .where("usedByUserId", "=", user.id)
-        .groupBy("emoteId")
+        .groupBy("emote.emoteId")
         .select([
             "emote.emoteId",
             "emote.name",
