@@ -1,3 +1,4 @@
+import { sql } from "kysely";
 import type { Message, Snowflake, User } from "discord.js";
 
 import type { Emote } from "./db/model.js";
@@ -103,5 +104,21 @@ export async function markAsDeleted(emoteId: Emote["id"], ctx = db()): Promise<v
         .updateTable("emote")
         .set("deletedAt", new Date().toISOString())
         .where("id", "=", emoteId)
+        .execute();
+}
+
+export async function getUsage(user: User, ctx = db()) {
+    return await ctx
+        .selectFrom("emoteUse")
+        .innerJoin("emote", "emote.id", "emoteUse.emoteId")
+        .where("usedByUserId", "=", user.id)
+        .groupBy("emoteId")
+        .select([
+            "emote.emoteId",
+            "emote.name",
+            "emote.isAnimated",
+            sql<number>`COUNT(*)`.as("count"),
+        ])
+        .orderBy(sql<number>`COUNT(*)`, "desc")
         .execute();
 }

@@ -95,3 +95,7 @@ export async function persistCurrentGuildEmotes(context: BotContext) {
         }
     }
 }
+
+export async function getUserStats(user: User) {
+    return dbEmote.getUsage(user);
+}
