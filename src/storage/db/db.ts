@@ -33,6 +33,7 @@ export async function connectToDb(databasePath: string) {
                 case "query":
                     if (
                         info.sql.startsWith('select * from "fadingMessages"') ||
+                        info.sql.startsWith('delete from "fadingMessages" where') ||
                         info.sql.startsWith('select * from "woisActions"') ||
                         info.sql.startsWith('select * from "reminders"') ||
                         info.sql.startsWith('select * from "bans"')
