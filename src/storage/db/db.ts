@@ -32,9 +32,10 @@ export async function connectToDb(databasePath: string) {
                     break;
                 case "query":
                     if (
-                        info.sql.includes("fadingMessages") ||
-                        info.sql.includes("woisActions") ||
-                        info.sql.includes("reminders")
+                        info.sql.startsWith('select * from "fadingMessages"') ||
+                        info.sql.startsWith('select * from "woisActions"') ||
+                        info.sql.startsWith('select * from "reminders"') ||
+                        info.sql.startsWith('select * from "bans"')
                     ) {
                         return;
                     }
