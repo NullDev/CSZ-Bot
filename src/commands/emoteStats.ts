@@ -32,7 +32,6 @@ export default class EmoteStatsCommand implements ApplicationCommand {
                     },
                 },
             ],
-            ephemeral: true,
         });
     }
 }
