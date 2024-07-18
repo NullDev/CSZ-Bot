@@ -120,7 +120,12 @@ export default class ExtendCommand implements MessageCommand {
 
         embed.fields = [...oldPollOptionFields, ...newFields, ...metaFields];
 
-        const msg = await replyMessage.edit({ embeds: [embed] });
+        const msg = await replyMessage.edit({
+            embeds: [embed],
+            // Re-Applying embed thumbnails from attachments will post a picture,
+            // therefore we keep attachments empty.
+            attachments: []
+        });
 
         for (const i in additionalPollOptions) {
             // Disabling rule because the order is important
