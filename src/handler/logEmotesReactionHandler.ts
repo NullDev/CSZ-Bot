@@ -5,6 +5,9 @@ import * as emoteLogging from "../service/emoteLogging.js";
 export default {
     displayName: "Log Emotes Reaction Handler",
     async execute(reactionEvent, invoker, context, reactionWasRemoved) {
+        // Deactivated due to privacy concerns
+        return;
+
         if (invoker.bot) {
             return;
         }
