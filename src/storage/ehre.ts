@@ -50,7 +50,7 @@ export async function runDeflation(ctx = db()) {
     await ctx
         .updateTable("ehrePoints")
         .set(eb => ({
-            points: eb("points", "*", 0.98),
+            points: eb("points", "*", 0.995),
         }))
         .execute();
 }
