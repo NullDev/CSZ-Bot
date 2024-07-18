@@ -51,8 +51,8 @@ export enum LootTypeId {
     FERRIS = 19,
     HOMEPOD = 20,
     RADIOACTIVE_WASTE = 21,
-    SAHNE =22,
-    AEHRE=23
+    SAHNE = 22,
+    AEHRE = 23,
 }
 const lootTemplates: loot.LootTemplate[] = [
     {
@@ -287,8 +287,7 @@ const lootTemplates: loot.LootTemplate[] = [
         weight: 1,
         displayName: "Sprühsahne",
         titleText: "Sprühsahne",
-        description:
-            "Fürs Frühstück oder so",
+        description: "Fürs Frühstück oder so",
         emote: ":sahne:",
         asset: "assets/loot/22-sahne.jpg",
     },
@@ -297,12 +296,13 @@ const lootTemplates: loot.LootTemplate[] = [
         weight: 1,
         displayName: "Ehre",
         titleText: "Ehre aus Mitleid",
-        description: "Irgendjemand muss ja den Server am laufen halten, kriegst dafür wertlose Internetpunkte",
+        description:
+            "Irgendjemand muss ja den Server am laufen halten, kriegst dafür wertlose Internetpunkte",
         emote: ":aehre:",
         asset: "assets/loot/23-ehre.jpg",
         specialAction: async (context, winner, _channel, _loot) => {
-            const ehre = await import("../storage/ehre.ts");
-            await ehre.addPoints(winner.id,1);
+            const ehre = await import("../storage/ehre.js");
+            await ehre.addPoints(winner.id, 1);
         },
     },
 ] as const;
