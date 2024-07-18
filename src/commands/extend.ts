@@ -124,7 +124,7 @@ export default class ExtendCommand implements MessageCommand {
             embeds: [embed],
             // Re-Applying embed thumbnails from attachments will post a picture,
             // therefore we keep attachments empty.
-            attachments: []
+            attachments: [],
         });
 
         for (const i in additionalPollOptions) {
