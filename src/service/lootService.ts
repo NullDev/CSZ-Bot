@@ -51,6 +51,8 @@ export enum LootTypeId {
     FERRIS = 19,
     HOMEPOD = 20,
     RADIOACTIVE_WASTE = 21,
+    SAHNE = 22,
+    AEHRE = 23,
 }
 const lootTemplates: loot.LootTemplate[] = [
     {
@@ -279,6 +281,29 @@ const lootTemplates: loot.LootTemplate[] = [
             "Sollte dir ja nichts mehr anhaben, du bist ja durch den Server schon genug verstrahlt 🤷‍♂️",
         emote: "☢️",
         asset: "assets/loot/21-radioaktiver-muell.jpg",
+    },
+    {
+        id: LootTypeId.SAHNE,
+        weight: 1,
+        displayName: "Sprühsahne",
+        titleText: "Sprühsahne",
+        description: "Fürs Frühstück oder so",
+        emote: ":sahne:",
+        asset: "assets/loot/22-sahne.jpg",
+    },
+    {
+        id: LootTypeId.AEHRE,
+        weight: 1,
+        displayName: "Ehre",
+        titleText: "Ehre aus Mitleid",
+        description:
+            "Irgendjemand muss ja den Server am laufen halten, kriegst dafür wertlose Internetpunkte",
+        emote: ":aehre:",
+        asset: "assets/loot/23-ehre.jpg",
+        specialAction: async (context, winner, _channel, _loot) => {
+            const ehre = await import("../storage/ehre.js");
+            await ehre.addPoints(winner.id, 1);
+        },
     },
 ] as const;
 
