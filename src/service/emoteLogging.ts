@@ -39,7 +39,8 @@ export async function processReactionAdd(reactionEvent: MessageReaction, _contex
 export async function processMessage(message: ProcessableMessage, context: BotContext) {
     const emotes = emoteService.extractEmotesFromMessage(message.content);
     for (const emote of emotes) {
-        const resolvedEmote = context.client.emojis.cache.get(emote.id);
+        const resolvedEmote =
+            context.client.emojis.cache.get(emote.id) || context.client.emojis.resolveId(emote.id);
         if (!resolvedEmote) {
             log.warn({ emote }, "Could not resolve emote");
             continue;
