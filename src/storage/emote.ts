@@ -22,10 +22,7 @@ export async function logMessageUse(
                 // not using emote.guild.id because the emote can originate from a different server
                 messageGuildId: message.guildId,
                 channelId: message.channelId,
-                messageId: message.id,
                 emoteId: existingEmote.id,
-                usedByUserId: message.author.id,
-                usedByUserName: message.author.displayName,
                 isReaction: false,
             })
             .execute();
@@ -38,7 +35,6 @@ export async function logReactionUse(
     isAnimated: boolean,
     url: string,
     message: Message<true>,
-    invoker: User,
     ctx = db(),
 ) {
     await ctx.transaction().execute(async ctx => {
@@ -49,10 +45,7 @@ export async function logReactionUse(
                 // not using emote.guild.id because the emote can originate from a different server
                 messageGuildId: message.guildId,
                 channelId: message.channelId,
-                messageId: message.id,
                 emoteId: existingEmote.id,
-                usedByUserId: invoker.id,
-                usedByUserName: invoker.displayName,
                 isReaction: true,
             })
             .execute();
@@ -107,11 +100,10 @@ export async function markAsDeleted(emoteId: Emote["id"], ctx = db()): Promise<v
         .execute();
 }
 
-export async function getUsage(user: User, limit: number, ctx = db()) {
+export async function getGlobalUsage(limit: number, ctx = db()) {
     return await ctx
         .selectFrom("emoteUse")
         .innerJoin("emote", "emote.id", "emoteUse.emoteId")
-        .where("usedByUserId", "=", user.id)
         .groupBy("emote.emoteId")
         .select([
             "emote.emoteId",

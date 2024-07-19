@@ -8,11 +8,7 @@ import * as emoteService from "./emoteService.js";
 
 import log from "@log";
 
-export async function processReactionAdd(
-    reactionEvent: MessageReaction,
-    invoker: User,
-    _context: BotContext,
-) {
+export async function processReactionAdd(reactionEvent: MessageReaction, _context: BotContext) {
     const message = reactionEvent.message;
     if (!message.inGuild()) {
         return;
@@ -37,17 +33,7 @@ export async function processReactionAdd(
         parsedEmote.animated,
         emoteService.getEmoteUrl(parsedEmote),
         message,
-        invoker,
     );
-}
-
-export async function processReactionRemove(
-    reactionEvent: MessageReaction,
-    invoker: User,
-    _context: BotContext,
-) {
-    // TODO: Implement
-    log.info({ emoji: reactionEvent.emoji }, "Reaction removed");
 }
 
 export async function processMessage(message: ProcessableMessage, context: BotContext) {
@@ -96,6 +82,6 @@ export async function persistCurrentGuildEmotes(context: BotContext) {
     }
 }
 
-export async function getUserStats(user: User, limit: number) {
-    return dbEmote.getUsage(user, limit | 0);
+export async function getGlobalStats(limit: number) {
+    return dbEmote.getGlobalUsage(limit | 0);
 }

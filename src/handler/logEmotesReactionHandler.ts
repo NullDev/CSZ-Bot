@@ -5,17 +5,15 @@ import * as emoteLogging from "../service/emoteLogging.js";
 export default {
     displayName: "Log Emotes Reaction Handler",
     async execute(reactionEvent, invoker, context, reactionWasRemoved) {
-        return;
-
-        // biome-ignore lint/correctness/noUnreachable: Deactivated due to privacy concerns
         if (invoker.bot) {
             return;
         }
 
+        // Not supported
         if (reactionWasRemoved) {
-            await emoteLogging.processReactionRemove(reactionEvent, invoker, context);
-        } else {
-            await emoteLogging.processReactionAdd(reactionEvent, invoker, context);
+            return;
         }
+
+        await emoteLogging.processReactionAdd(reactionEvent, context);
     },
 } satisfies ReactionHandler;
