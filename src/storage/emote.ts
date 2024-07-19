@@ -123,7 +123,7 @@ export async function searchEmote(
 ): Promise<Emote[]> {
     return await ctx
         .selectFrom("emote")
-        .where("emote.name", "ilike", `%${searchQuery}%`)
+        .where(sql`"UPPER(name)"`, "like", sql`%UPPER(${searchQuery})%`)
         .limit(limit)
         .selectAll()
         .execute();
