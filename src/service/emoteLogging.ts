@@ -85,3 +85,11 @@ export async function persistCurrentGuildEmotes(context: BotContext) {
 export async function getGlobalStats(limit: number) {
     return dbEmote.getGlobalUsage(limit | 0);
 }
+
+export async function getMatchingEmotes(query: string, limit: number) {
+    if (query.trim().length === 0) {
+        return [];
+    }
+
+    return dbEmote.searchEmote(query, limit | 0);
+}

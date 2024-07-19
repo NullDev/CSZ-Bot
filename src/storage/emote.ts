@@ -115,3 +115,16 @@ export async function getGlobalUsage(limit: number, ctx = db()) {
         .limit(limit)
         .execute();
 }
+
+export async function searchEmote(
+    searchQuery: string,
+    limit: number,
+    ctx = db(),
+): Promise<Emote[]> {
+    return await ctx
+        .selectFrom("emote")
+        .where("emote.name", "ilike", `%${searchQuery}%`)
+        .limit(limit)
+        .selectAll()
+        .execute();
+}
