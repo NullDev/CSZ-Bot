@@ -1,7 +1,7 @@
 import { sql, type Kysely } from "kysely";
 
 export async function up(db: Kysely<any>) {
-    db.schema.dropTable("emoteUse");
+    await db.schema.dropTable("emoteUse").execute();
 
     await db.schema
         .createTable("emoteUse")
