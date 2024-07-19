@@ -20,8 +20,8 @@ export default class EmoteStatsCommand implements ApplicationCommand {
                 {
                     title: "Emote-Statistiken",
                     author: {
-                        name: command.user.username,
-                        icon_url: command.user.displayAvatarURL(),
+                        name: context.guild.name,
+                        icon_url: context.guild.iconURL() ?? undefined,
                     },
                     fields: stats.map(s => ({
                         name: `<${s.isAnimated ? "a" : ""}:${s.name}:${s.emoteId}>`,
