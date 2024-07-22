@@ -22,6 +22,7 @@
             cairo
             pango
             biome
+            nodejs_22
           ] ++ lib.optionals stdenv.isDarwin (with darwin.apple_sdk.frameworks; [
             CoreText
           ]);
