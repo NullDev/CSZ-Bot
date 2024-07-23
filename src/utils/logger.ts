@@ -7,7 +7,10 @@ const nodeEnv = process.env.NODE_ENV ?? "development";
 
 const logDir = "logs";
 
-await mkdir(logDir, { recursive: true });
+const usesLogDir = nodeEnv === "production";
+if (usesLogDir) {
+    await mkdir(logDir, { recursive: true });
+}
 
 const loggingConfigs = {
     development: {
