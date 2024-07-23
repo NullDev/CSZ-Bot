@@ -15,6 +15,10 @@ let kysely: Kysely<Database>;
 export default () => kysely;
 
 export async function connectToDb(databasePath: string) {
+    if (kysely) {
+        return;
+    }
+
     const nativeDb = new SqliteDatabase(databasePath);
     const db = new Kysely<Database>({
         dialect: new BunSqliteDialect({
