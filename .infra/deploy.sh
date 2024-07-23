@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 set -xeuo pipefail
 
-cd /home/csc
+if [[ -z "${WORKING_DIRECTORY}" ]]; then
+    cd "${WORKING_DIRECTORY}"
+fi
 
 export DOCKER_BUILDKIT=1
 docker build --pull . -t csz-bot:latest
