@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 
 import InstagramLink from "./instagram.js";
 
-describe("Instagram Pattern Matching", () => {
+describe("instagram pattern matching", () => {
     test("base cases", () => {
         const tests = {
             "https://www.instagram.com/reel/Ce_kSwnIlA8/": [
