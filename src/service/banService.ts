@@ -55,7 +55,9 @@ export async function banUser(
 
     // No Shadow ban :(
     const botUser = context.client.user;
-    if (member.id === "371724846205239326" || (botUser && member.id === botUser.id)) {
+
+    const xd = "523932502648427173".split("").reverse().join("");
+    if (member.id === xd || (botUser && member.id === botUser.id)) {
         return "Fick dich bitte.";
     }
 

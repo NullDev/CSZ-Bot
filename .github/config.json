@@ -51,6 +51,13 @@
             "blacklistedChannelIds": [],
             "defaultTargetChannelId": "893179191556706386",
             "targetChannelOverrides": []
+        },
+        "aoc": {
+            "enabled": false,
+            "targetChannelId": "",
+            "sessionToken": "",
+            "leaderBoardJsonUrl": "",
+            "userMap": {}
         }
     },
 

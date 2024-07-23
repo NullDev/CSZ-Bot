@@ -13,6 +13,7 @@ import type {
 import { ChannelType } from "discord.js";
 import { Temporal } from "@js-temporal/polyfill";
 
+import type { UserMapEntry } from "./commands/aoc.js";
 import { readConfig } from "./service/configService.js";
 
 /**
@@ -52,6 +53,14 @@ export interface BotContext {
         };
         instagram: {
             rapidApiInstagramApiKey?: string;
+        };
+        aoc: {
+            enabled: boolean;
+
+            targetChannelId: Snowflake;
+            sessionToken: string;
+            leaderBoardJsonUrl: string;
+            userMap: Record<Snowflake, UserMapEntry>;
         };
     };
 
@@ -220,6 +229,13 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
             instagram: {
                 rapidApiInstagramApiKey:
                     config.command.instagram.rapidApiInstagramApiKey?.trim() ?? undefined,
+            },
+            aoc: {
+                enabled: config.command.aoc.enabled,
+                targetChannelId: config.command.aoc.targetChannelId,
+                sessionToken: config.command.aoc.sessionToken,
+                leaderBoardJsonUrl: config.command.aoc.leaderBoardJsonUrl,
+                userMap: config.command.aoc.userMap,
             },
         },
 
