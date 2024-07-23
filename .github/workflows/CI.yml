@@ -57,8 +57,6 @@ jobs:
   smoke-test:
     name: Smoke Test
 
-    if: ${{ github.event_name == 'push' }}
-
     uses: ./.github/workflows/create-e2e-environment.yml
     with:
       dry-run: true
