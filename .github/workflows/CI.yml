@@ -53,6 +53,13 @@ jobs:
         load: true
         cache-from: type=gha
         cache-to: type=gha,mode=max
+        outputs: type=docker,dest=/tmp/csz-bot.tar
+
+    - name: Upload image tarball
+      uses: actions/upload-artifact@v4
+      with:
+        name: csz-bot
+        path: /tmp/csz-bot.tar
 
   smoke-test:
     name: Smoke Test
@@ -60,7 +67,8 @@ jobs:
     uses: ./.github/workflows/create-e2e-environment.yml
     with:
       dry-run: true
-      docker-image: csz-bot:latest
+      image-artifact-name: csz-bot
+      image-artifact-filename: csz-bot.tar
     secrets:
       bot-token: ${{ secrets.CI_BOT_TOKEN }}
       client-id: ${{ secrets.CI_CLIENT_ID }}
