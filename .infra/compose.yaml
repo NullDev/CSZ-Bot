@@ -2,7 +2,7 @@ services:
   bot:
     container_name: csz-bot
     restart: unless-stopped
-    image: csz-bot
+    image: ghcr.io/nulldev/csz-bot:latest
     environment:
       - LOG_LEVEL=debug
     env_file:
