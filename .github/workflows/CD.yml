@@ -59,6 +59,11 @@ jobs:
     if: ${{ !github.event.repository.fork }}
 
     steps:
+    - uses: actions/checkout@v4
+      with:
+        show-progress: false
+    - id: deploy-script
+      run: echo "content=$(cat /scripts/deploy.sh)" >> "$GITHUB_OUTPUT"
     - name: Deploy CSZ Bot
       uses: appleboy/ssh-action@029f5b4aeeeb58fdfe1410a5d17f967dacf36262
       env:
@@ -69,4 +74,4 @@ jobs:
         key: ${{ secrets.SSH_KEY }}
         port: ${{ secrets.SSH_PORT }}
         envs: DOCKER_BUILDKIT
-        script: /home/csc/deploy.sh
+        script: ${{ steps.deploy-script.outputs.content }}
