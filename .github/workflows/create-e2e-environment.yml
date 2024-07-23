@@ -8,12 +8,16 @@ on:
         required: false
         type: boolean
         default: false
+      image-name:
+        description: 'Name of the docker image'
+        required: true
+        type: string
       image-artifact-name:
-        description: 'Docker image artifact name to use'
+        description: 'Name of artifact where image tarball is located'
         required: true
         type: string
       image-artifact-filename:
-        description: 'Docker image artifact filename to use'
+        description: 'Name of tarball filename within the artifact'
         required: true
         type: string
     secrets:
@@ -76,4 +80,4 @@ jobs:
             -e DATABASE_PATH=:memory: \
             -v "$PWD/config.json:/app/config.json" \
             -v "$PWD/aoc.config.json:/app/aoc.config.json" \
-            ${{ inputs.docker-image }} "$BOT_ARGS"
+            ${{ inputs.image-name }} "$BOT_ARGS"

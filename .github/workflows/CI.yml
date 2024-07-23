@@ -69,6 +69,7 @@ jobs:
 
     with:
       dry-run: true
+      image-name: csz-bot:latest
       image-artifact-name: csz-bot
       image-artifact-filename: csz-bot.tar
     secrets:
