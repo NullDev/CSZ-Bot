@@ -23,6 +23,16 @@ const loggingConfigs = {
             },
         },
     },
+    test: {
+        level: logLevel,
+        transport: {
+            target: "pino-pretty",
+            options: {
+                colorize: false,
+                ignore: "pid,hostname",
+            },
+        },
+    },
     production: {
         level: logLevel,
         transport: {
