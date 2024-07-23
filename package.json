@@ -7,7 +7,7 @@
   "type": "module",
   "scripts": {
     "start": "bun src/app.ts",
-    "test": "tsc --noEmit",
+    "test": "bun test && tsc",
     "ci": "biome ci ./src",
     "format": "biome format --write ./src",
     "lint": "biome lint ./src",
