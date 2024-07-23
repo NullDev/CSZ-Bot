@@ -61,8 +61,6 @@ jobs:
         sed -i 's/<BOT_TOKEN>/${{ secrets.CI_BOT_TOKEN }}/g' config.json
         sed -i 's/<CLIENT_ID>/${{ secrets.CI_CLIENT_ID }}/g' config.json
 
-        cp .github/aoc.config.json aoc.config.json
-
     - name: Check if bot starts correctly
       if: ${{ github.event_name == 'push' }}
       run: |
@@ -71,6 +69,5 @@ jobs:
           -e NODE_ENV=development \
           -e DATABASE_PATH=:memory: \
           -v "$PWD/config.json:/app/config.json" \
-          -v "$PWD/aoc.config.json:/app/aoc.config.json" \
           csz-bot:latest --dry-run
 

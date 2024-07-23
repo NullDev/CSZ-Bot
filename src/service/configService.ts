@@ -105,6 +105,20 @@ export interface Config {
             targetChannelOverrides: Record<string, string>;
             defaultTargetChannelId: Snowflake;
         };
+        aoc: {
+            enabled: boolean;
+
+            targetChannelId: Snowflake;
+            sessionToken: string;
+            leaderBoardJsonUrl: string;
+            userMap: Record<
+                Snowflake,
+                {
+                    displayName: string;
+                    language: string;
+                }
+            >;
+        };
     };
 
     deleteThreadMessagesInChannelIds: readonly Snowflake[];

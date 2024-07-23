@@ -1,6 +1,3 @@
-import * as fs from "node:fs/promises";
-import * as path from "node:path";
-
 import {
     type CacheType,
     type CommandInteraction,
@@ -14,21 +11,12 @@ import type { ApplicationCommand } from "./command.js";
 
 import log from "@log";
 
-const aocConfigPath = path.resolve("aoc.config.json");
+type CompletionInfo = Record<1 | 2, { get_start_ts: number }>;
 
-type UserMapEntry = {
+export type UserMapEntry = {
     displayName: string;
     language: string;
 };
-
-type AoCConfig = {
-    targetChannelId: string;
-    sessionToken: string;
-    leaderBoardJsonUrl: string;
-    userMap: Record<string, UserMapEntry>;
-};
-
-type CompletionInfo = Record<1 | 2, { get_start_ts: number }>;
 
 type AoCMember = {
     id: string;
@@ -46,7 +34,6 @@ type LeaderBoard = {
     members: Record<number, AoCMember>;
 };
 
-const aocConfig = JSON.parse(await fs.readFile(aocConfigPath, "utf8")) as AoCConfig;
 const medals = ["🥇", "🥈", "🥉", "🪙", "🏵️", "🌹"];
 
 const getLanguage = (member: AoCMember, userMap: Record<string, UserMapEntry>): string => {
@@ -120,10 +107,13 @@ const createEmbedFromLeaderBoard = (
     };
 };
 
-const getLeaderBoard = async (): Promise<LeaderBoard> => {
-    const leaderBoard = (await fetch(aocConfig.leaderBoardJsonUrl, {
+const getLeaderBoard = async (
+    leaderBoardJsonUrl: string,
+    sessionToken: string,
+): Promise<LeaderBoard> => {
+    const leaderBoard = (await fetch(leaderBoardJsonUrl, {
         headers: {
-            Cookie: `session=${aocConfig.sessionToken}`,
+            Cookie: `session=${encodeURIComponent(sessionToken)}`,
         },
     }).then(r => r.json())) as LeaderBoard;
     return leaderBoard;
@@ -132,6 +122,8 @@ const getLeaderBoard = async (): Promise<LeaderBoard> => {
 export async function publishAocLeaderBoard(context: BotContext) {
     log.debug("Entered `AoCHandler#publishLeaderBoard`");
 
+    const aocConfig = context.commandConfig.aoc;
+
     const targetChannel = context.guild.channels.cache.get(aocConfig.targetChannelId);
     if (!targetChannel) {
         log.error(`Target channel ${aocConfig.targetChannelId} not found`);
@@ -139,7 +131,7 @@ export async function publishAocLeaderBoard(context: BotContext) {
     }
 
     const channel = targetChannel as discord.ThreadChannel;
-    const leaderBoard = await getLeaderBoard();
+    const leaderBoard = await getLeaderBoard(aocConfig.leaderBoardJsonUrl, aocConfig.sessionToken);
     const embed = createEmbedFromLeaderBoard(aocConfig.userMap, leaderBoard, "local_score");
     return channel.send({ embeds: [embed] });
 }
@@ -171,16 +163,25 @@ export default class AoCCommand implements ApplicationCommand {
                 .setRequired(false),
         );
 
-    async handleInteraction(command: CommandInteraction<CacheType>) {
+    async handleInteraction(command: CommandInteraction<CacheType>, context: BotContext) {
         if (!command.isChatInputCommand()) {
             // TODO: Solve this on a type level
             return;
         }
 
-        const { channel } = command;
-        if (!channel?.isTextBased()) {
+        const aocConfig = context.commandConfig.aoc;
+
+        if (!command.channel?.isTextBased()) {
             await command.reply({
                 content: "Mach mal nicht hier",
+                ephemeral: true,
+            });
+            return;
+        }
+
+        if (!aocConfig.enabled) {
+            await command.reply({
+                content: "AoC ist gerade nicht",
                 ephemeral: true,
             });
             return;
@@ -193,7 +194,10 @@ export default class AoCCommand implements ApplicationCommand {
             throw new Error(`Invalid order ${order}`);
         }
 
-        const leaderBoard = await getLeaderBoard();
+        const leaderBoard = await getLeaderBoard(
+            aocConfig.leaderBoardJsonUrl,
+            aocConfig.sessionToken,
+        );
         const embed = createEmbedFromLeaderBoard(aocConfig.userMap, leaderBoard, order);
         await command.reply({ embeds: [embed] });
     }
