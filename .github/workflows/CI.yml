@@ -59,7 +59,7 @@ jobs:
 
     if: ${{ github.event_name == 'push' }}
 
-    uses: .github/workflows/create-e2e-environment.yml
+    uses: .github/workflows/create-e2e-environment.yml@main
     with:
       dry-run: true
       docker-image: csz-bot:latest
