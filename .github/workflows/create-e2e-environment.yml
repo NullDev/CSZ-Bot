@@ -1,0 +1,57 @@
+name: Create E2E environment
+
+on:
+  workflow_call:
+    inputs:
+      dry-run:
+        description: 'Exit after startup'
+        required: false
+        type: boolean
+        default: false
+      docker-image:
+        description: 'Docker image to use'
+        required: true
+        type: string
+    secrets:
+      bot-token:
+        required: true
+      client-id:
+        required: true
+
+jobs:
+  create-e2e-environment:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Update configuration
+      run: |
+        cp .github/config.json config.json
+        sed -i 's/<BOT_TOKEN>/${{ secrets.bot-token }}/g' config.json
+        sed -i 's/<CLIENT_ID>/${{ secrets.client-id }}/g' config.json
+
+        cp .github/aoc.config.json aoc.config.json
+
+    - name: Build bot args
+      env:
+        DRY_RUN: ${{ inputs.dry-run }}
+      run: |
+        ARGS=""
+
+        if [[ "$DRY_RUN"  ]]
+        then
+            ARGS="$ARGS --dry-run"
+        fi
+
+        echo "BOT_ARGS=$ARGS" >> "$GITHUB_ENV"
+
+
+    - name: Start bot
+      run: |
+        docker run \
+            --rm \
+            -e NODE_ENV=development \
+            -e DATABASE_PATH=:memory: \
+            -v "$PWD/config.json:/app/config.json" \
+            -v "$PWD/aoc.config.json:/app/aoc.config.json" \
+            ${{ inputs.docker-image }} "$BOT_ARGS"
