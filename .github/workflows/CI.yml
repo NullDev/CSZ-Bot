@@ -63,8 +63,10 @@ jobs:
 
   smoke-test:
     name: Smoke Test
-
     uses: ./.github/workflows/create-e2e-environment.yml
+
+    needs: [ build ]
+
     with:
       dry-run: true
       image-artifact-name: csz-bot
