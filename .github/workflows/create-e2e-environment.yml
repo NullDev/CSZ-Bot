@@ -51,10 +51,11 @@ jobs:
         docker load --input /tmp/${{ inputs.image-artifact-filename }}
 
     - name: Update configuration
+      env:
+        BOT_TOKEN: ${{ secrets.bot-token }}
+        CLIENT_ID: ${{ secrets.client-id }}
       run: |
-        cp .github/config.json config.json
-        sed -i 's/<BOT_TOKEN>/${{ secrets.bot-token }}/g' config.json
-        sed -i 's/<CLIENT_ID>/${{ secrets.client-id }}/g' config.json
+        envsubst < .github/config.json > config.json
 
         cp .github/aoc.config.json aoc.config.json
 
