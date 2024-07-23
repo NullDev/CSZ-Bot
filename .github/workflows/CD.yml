@@ -63,7 +63,7 @@ jobs:
       with:
         show-progress: false
     - id: deploy-script
-      run: echo "content=$(cat /scripts/deploy.sh)" >> "$GITHUB_OUTPUT"
+      run: echo "content=$(cat ./scripts/deploy.sh)" >> "$GITHUB_OUTPUT"
     - name: Deploy CSZ Bot
       uses: appleboy/ssh-action@029f5b4aeeeb58fdfe1410a5d17f967dacf36262
       env:
