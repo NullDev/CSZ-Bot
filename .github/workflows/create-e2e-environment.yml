@@ -23,6 +23,10 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    concurrency: e2e
+    environment:
+      name: e2e
+
     steps:
     - uses: actions/checkout@v4
       with:
