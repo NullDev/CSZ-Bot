@@ -87,4 +87,4 @@ jobs:
         key: ${{ secrets.SSH_KEY }}
         port: ${{ secrets.SSH_PORT }}
         envs: WORKING_DIRECTORY
-        script: ${{ steps.deploy-script.outputs.content }}
+        script: ${{ env.BOT_HOME_DIR }}/deploy.sh
