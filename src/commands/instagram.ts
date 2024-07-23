@@ -24,14 +24,14 @@ export default class InstagramLink implements SpecialCommand {
             return false;
         }
 
+        // See instagram.test.ts for spec
+        return InstagramLink.matchesPattern(message.content);
+    }
+
+    static matchesPattern(message: string) {
         // TODO: Refactor this to URLPattern once bun ships with it:
         // https://developer.mozilla.org/en-US/docs/Web/API/URL_Pattern_API
-
-        // https://www.instagram.com/reel/Ce_kSwnIlA8/
-        // https://www.instagram.com/tv/CfOBVIsFpyg/
-        // https://www.instagram.com/p/CfOCQKhj7UC/?__a=1
-        const pattern = instagramOptions.uriPattern;
-        return pattern.test(message.content);
+        return instagramOptions.uriPattern.test(message);
     }
 
     async handleSpecialMessage(message: Message, context: BotContext) {
