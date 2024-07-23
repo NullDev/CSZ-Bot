@@ -3,11 +3,11 @@ name: Create E2E environment
 on:
   workflow_call:
     inputs:
-      dry-run:
-        description: 'Exit after startup'
+      args:
+        description: 'Additional arguments'
         required: false
-        type: boolean
-        default: false
+        type: string
+        default: ""
       image-name:
         description: 'Name of the docker image'
         required: true
@@ -58,20 +58,6 @@ jobs:
 
         cp .github/aoc.config.json aoc.config.json
 
-    - name: Build bot args
-      env:
-        DRY_RUN: ${{ inputs.dry-run }}
-      run: |
-        ARGS=""
-
-        if [[ "$DRY_RUN"  ]]
-        then
-            ARGS="$ARGS --dry-run"
-        fi
-
-        echo "BOT_ARGS=$ARGS" >> "$GITHUB_ENV"
-
-
     - name: Start bot
       run: |
         docker run \
@@ -80,4 +66,4 @@ jobs:
             -e DATABASE_PATH=:memory: \
             -v "$PWD/config.json:/app/config.json" \
             -v "$PWD/aoc.config.json:/app/aoc.config.json" \
-            ${{ inputs.image-name }} "$BOT_ARGS"
+            ${{ inputs.image-name }} ${{ inputs.args }}

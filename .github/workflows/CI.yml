@@ -68,7 +68,7 @@ jobs:
     needs: [ build ]
 
     with:
-      dry-run: true
+      args: --dry-run
       image-name: csz-bot:latest
       image-artifact-name: csz-bot
       image-artifact-filename: csz-bot.tar
