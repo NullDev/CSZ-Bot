@@ -103,7 +103,7 @@ jobs:
 
     with:
       args: --dry-run
-      image: ${{ needs.build.outputs.image-tag }}@${{ needs.build.outputs.image-digest }}
+      image: ${{ needs.build.outputs.image-tag }}
     secrets:
       bot-token: ${{ secrets.CI_BOT_TOKEN }}
       client-id: ${{ secrets.CI_CLIENT_ID }}
