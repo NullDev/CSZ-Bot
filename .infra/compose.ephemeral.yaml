@@ -7,4 +7,7 @@ services:
     container_name: csz-bot-ephemeral
     restart: none
     command: "${BOT_ARGS}"
+    environment:
+      NODE_ENV: development
+      DATABASE_PATH: ":memory:"
 
