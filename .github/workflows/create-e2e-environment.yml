@@ -58,7 +58,7 @@ jobs:
       run: |
         args=""
 
-        if [[ ${{ inputs.dry-run }} ]]; then
+        if [[ ${{ inputs.dry-run }} = true ]]; then
           args="--dry-run"
         fi
 
