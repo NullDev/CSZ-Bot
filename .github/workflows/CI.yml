@@ -92,5 +92,9 @@ jobs:
     secrets:
       bot-token: ${{ secrets.CI_BOT_TOKEN }}
       client-id: ${{ secrets.CI_CLIENT_ID }}
+      ssh-host: ${{ secrets.SSH_HOST }}
+      ssh-username: ${{ secrets.SSH_USERNAME }}
+      ssh-key: ${{ secrets.SSH_KEY }}
+      ssh-port: ${{ secrets.SSH_PORT }}
 
 

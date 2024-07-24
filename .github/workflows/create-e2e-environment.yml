@@ -17,6 +17,14 @@ on:
         required: true
       client-id:
         required: true
+      ssh-host:
+        required: true
+      ssh-username:
+        required: true
+      ssh-key:
+        required: true
+      ssh-port:
+        required: true
 
 jobs:
   create-e2e-environment:
@@ -53,9 +61,9 @@ jobs:
         BOT_ARGS: ${{ inputs.args }}
         BOT_IMAGE: ${{ inputs.image }}
       with:
-        host: ${{ secrets.SSH_HOST }}
-        username: ${{ secrets.SSH_USERNAME }}
-        key: ${{ secrets.SSH_KEY }}
-        port: ${{ secrets.SSH_PORT }}
+        host: ${{ secrets.ssh-host }}
+        username: ${{ secrets.ssh-username }}
+        key: ${{ secrets.ssh-key }}
+        port: ${{ secrets.ssh-port }}
         envs: BOT_HOME_PATH,EPHEMERAL_BOT_CONFIG,BOT_ARGS,BOT_IMAGE
         script: ${{ env.BOT_HOME_PATH }}/deploy-ephemeral.sh
