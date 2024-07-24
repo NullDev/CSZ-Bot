@@ -78,3 +78,10 @@ jobs:
         port: ${{ secrets.ssh-port }}
         envs: BOT_HOME_PATH,EPHEMERAL_BOT_CONFIG,BOT_ARGS,BOT_IMAGE
         script: ${{ env.BOT_HOME_PATH }}/deploy-ephemeral.sh
+
+    - name: Comment PR
+      uses: thollander/actions-comment-pull-request@v2
+      if: ${{ github.event_name == 'pull_request' }}
+      with:
+        message: |
+          Hallo, hier kannst du jetzt deine tolle neue Funktion testen: https://discord.gg/pJjfF6n2ec
