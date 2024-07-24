@@ -22,7 +22,7 @@ cp -r "$BOT_HOME_PATH/compose.ephemeral.yaml" "$TEMP_DIR"
 echo "$EPHEMERAL_BOT_CONFIG" >config.json
 echo "" >.env # Dummy env
 
+docker compose -f compose.ephemeral.yaml pull bot
 docker compose -f compose.ephemeral.yaml up \
-    --pull \
     -d \
     --remove-orphans

@@ -5,5 +5,6 @@ if [[ -z "${WORKING_DIRECTORY}" ]]; then
     cd "${WORKING_DIRECTORY}"
 fi
 
-docker compose up --pull -d --remove-orphans
+docker compose pull bot
+docker compose up -d --remove-orphans
 docker image prune -a -f
