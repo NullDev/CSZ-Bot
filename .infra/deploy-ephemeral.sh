@@ -15,10 +15,10 @@ TEMP_DIR=$(mktemp -d)
 cd "$TEMP_DIR"
 
 rsync -av \
-    --exclude='logs' \
-    --exclude='backups' \
-    --exclude='storage.db' \
-    --exclude='config.json' \
+    --include='banners' \
+    --include='sounds' \
+    --include='compose.yaml' \
+    --include='compose.ephemeral.yaml' \
     "$BOT_HOME_PATH" "$TEMP_DIR"
 
 echo "$EPHEMERAL_BOT_CONFIG" >config.json
