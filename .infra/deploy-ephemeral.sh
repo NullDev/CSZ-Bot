@@ -22,6 +22,7 @@ rsync -av \
     "$BOT_HOME_PATH" "$TEMP_DIR"
 
 echo "$EPHEMERAL_BOT_CONFIG" >config.json
+echo "" >.env # Dummy env
 
 docker compose up \
     -f compose.ephemeral.yaml \
