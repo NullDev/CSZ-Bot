@@ -16,6 +16,7 @@ cd "$TEMP_DIR"
 
 rsync -av \
     --exclude='logs' \
+    --exclude='backups' \
     --exclude='storage.db' \
     --exclude='config.json' \
     "$BOT_HOME_PATH" "$TEMP_DIR"
