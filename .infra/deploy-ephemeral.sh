@@ -22,6 +22,8 @@ cp -r "$BOT_HOME_PATH/compose.ephemeral.yaml" "$TEMP_DIR"
 echo "$EPHEMERAL_BOT_CONFIG" >config.json
 echo "" >.env # Dummy env
 
+docker stop csz-bot-ephemeral || true
+docker rm csz-bot-ephemeral || true
 docker compose -f compose.ephemeral.yaml pull bot
 docker compose -f compose.ephemeral.yaml up \
     -d \
