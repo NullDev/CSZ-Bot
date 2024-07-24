@@ -78,9 +78,9 @@ jobs:
       env:
         INPUT_TAGS: ${{ steps.meta.outputs.tags }}
       run: |
-        IFS=',' read -r TAGS <<< "$INPUT_TAGS"
+        first=$("$INPUT_TAGS" | cut -d',' -f1)
 
-        echo "first=${TAGS[1]}" >> "$GITHUB_OUTPUT"
+        echo "first=$first" >> "$GITHUB_OUTPUT"
 
 
     - name: Build and export
