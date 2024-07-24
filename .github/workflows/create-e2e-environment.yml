@@ -33,6 +33,9 @@ jobs:
         show-progress: false
 
     - name: Update configuration
+      env:
+        BOT_TOKEN: ${{ secrets.bot-token }}
+        CLIENT_ID: ${{ secrets.client-id }}
       run: |
         envsubst < .github/config.json > config.json
 
