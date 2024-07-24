@@ -43,6 +43,10 @@ jobs:
       contents: read
       packages: write
 
+    outputs:
+      image-tag: ${{ steps.tag.outputs.first }}
+      image-digest: ${{ steps.build.outputs.digest }}
+
     steps:
     - uses: actions/checkout@v4
       with:
@@ -69,8 +73,19 @@ jobs:
           type=semver,pattern={{version}}
           type=semver,pattern={{major}}.{{minor}}
 
+    - name: Extract tag
+      id: tag
+      env:
+        INPUT_TAGS: ${{ steps.meta.outputs.tags }}
+      run: |
+        IFS=',' read -r TAGS <<< "$INPUT_TAGS"
+
+        echo "first=${TAGS[1]}" >> "$GITHUB_OUTPUT"
+
+
     - name: Build and export
       uses: docker/build-push-action@v6
+      id: build
       with:
         push: true
         tags: ${{ steps.meta.outputs.tags }}
@@ -88,7 +103,7 @@ jobs:
 
     with:
       args: --dry-run
-      image: ghcr.io/nulldev/csz-bot:latest
+      image: ${{ needs.build.outputs.image-tag }}@${{ needs.build.outputs.image-digest }}
     secrets:
       bot-token: ${{ secrets.CI_BOT_TOKEN }}
       client-id: ${{ secrets.CI_CLIENT_ID }}
