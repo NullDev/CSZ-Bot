@@ -78,7 +78,7 @@ jobs:
       env:
         INPUT_TAGS: ${{ steps.meta.outputs.tags }}
       run: |
-        first=$("$INPUT_TAGS" | cut -d',' -f1)
+        first=$(echo "$INPUT_TAGS" | cut -d',' -f1)
 
         echo "first=$first" >> "$GITHUB_OUTPUT"
 
