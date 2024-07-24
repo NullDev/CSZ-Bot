@@ -14,18 +14,15 @@ fi
 TEMP_DIR=$(mktemp -d)
 cd "$TEMP_DIR"
 
-rsync -av \
-    --include='banners' \
-    --include='sounds' \
-    --include='compose.yaml' \
-    --include='compose.ephemeral.yaml' \
-    "$BOT_HOME_PATH" "$TEMP_DIR"
+cp -r "$BOT_HOME_PATH/banners" "$TEMP_DIR"
+cp -r "$BOT_HOME_PATH/sounds" "$TEMP_DIR"
+cp -r "$BOT_HOME_PATH/compose.yaml" "$TEMP_DIR"
+cp -r "$BOT_HOME_PATH/compose.ephemeral.yaml" "$TEMP_DIR"
 
 echo "$EPHEMERAL_BOT_CONFIG" >config.json
 echo "" >.env # Dummy env
 
-docker compose up \
-    -f compose.ephemeral.yaml \
+docker compose -f compose.ephemeral.yaml up \
     --pull \
     -d \
     --remove-orphans
