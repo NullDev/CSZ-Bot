@@ -3,8 +3,8 @@ name: Create E2E environment
 on:
   workflow_call:
     inputs:
-      args:
-        description: 'Additional arguments'
+      dry-run:
+        description: 'Dry run'
         required: false
         type: string
         default: ""
@@ -53,12 +53,23 @@ jobs:
       with:
         path: ./config.json
 
+    - name: Build args
+      id: args
+      run: |
+        args=""
+
+        if [[ ${{ inputs.dry-run }} ]]; then
+          args="--dry-run"
+        fi
+
+        echo "args=$args" >> "$GITHUB_OUTPUT"
+
     - name: Deploy CSZ Bot
       uses: appleboy/ssh-action@029f5b4aeeeb58fdfe1410a5d17f967dacf36262
       env:
         BOT_HOME_PATH: /home/csc
         EPHEMERAL_BOT_CONFIG: ${{ steps.config.outputs.content }}
-        BOT_ARGS: ${{ inputs.args }}
+        BOT_ARGS: ${{ steps.args.outputs.args }}
         BOT_IMAGE: ${{ inputs.image }}
       with:
         host: ${{ secrets.ssh-host }}

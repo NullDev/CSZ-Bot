@@ -94,15 +94,15 @@ jobs:
         cache-from: type=gha
         cache-to: type=gha,mode=max
 
-  smoke-test:
-    name: Smoke Test
+  deploy-e2e:
+    name: Deploy e2e
     uses: ./.github/workflows/create-e2e-environment.yml
     if: ${{ !github.event.repository.fork }}
 
     needs: [ build ]
 
     with:
-      args: --dry-run
+      dry-run: ${{ github.ref == 'refs/heads/master' }}
       image: ${{ needs.build.outputs.image-tag }}
     secrets:
       bot-token: ${{ secrets.CI_BOT_TOKEN }}
