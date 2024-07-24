@@ -1,0 +1,10 @@
+services:
+  bot:
+    image: ${BOT_IMAGE}
+    extends:
+      file: ./compose.yaml
+      service: bot
+    container_name: csz-bot-ephemeral
+    restart: none
+    command: "${BOT_ARGS}"
+
