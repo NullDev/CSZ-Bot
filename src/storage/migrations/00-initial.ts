@@ -16,7 +16,7 @@ export async function up(db: Kysely<any>) {
         endTime DATETIME,
         createdAt DATETIME NOT NULL,
         updatedAt DATETIME NOT NULL
-    );
+    ) STRICT;
     `.execute(db);
     await sql`
     CREATE TABLE IF NOT EXISTS AdditionalMessageData (
@@ -27,7 +27,7 @@ export async function up(db: Kysely<any>) {
         customData TEXT DEFAULT '{}',
         createdAt DATETIME NOT NULL,
         updatedAt DATETIME NOT NULL
-    );
+    ) STRICT;
     `.execute(db);
     await sql`
     CREATE TABLE IF NOT EXISTS GuildRagequits (
@@ -37,7 +37,7 @@ export async function up(db: Kysely<any>) {
         numRagequits INTEGER NOT NULL DEFAULT 0,
         createdAt DATETIME NOT NULL,
         updatedAt DATETIME NOT NULL
-    );
+    ) STRICT;
     `.execute(db);
     await sql`
     CREATE TABLE IF NOT EXISTS Stempels (
@@ -46,7 +46,7 @@ export async function up(db: Kysely<any>) {
         invitedMember VARCHAR(32) NOT NULL UNIQUE,
         createdAt DATETIME NOT NULL,
         updatedAt DATETIME NOT NULL
-    );
+    ) STRICT;
     `.execute(db);
     await sql`
     CREATE TABLE IF NOT EXISTS Bans (
@@ -57,7 +57,7 @@ export async function up(db: Kysely<any>) {
         isSelfBan TINYINT(1) NOT NULL,
         createdAt DATETIME NOT NULL,
         updatedAt DATETIME NOT NULL
-    );
+    ) STRICT;
     `.execute(db);
     await sql`
     CREATE TABLE IF NOT EXISTS Birthdays (
@@ -67,7 +67,7 @@ export async function up(db: Kysely<any>) {
         month INTEGER NOT NULL,
         createdAt DATETIME NOT NULL,
         updatedAt DATETIME NOT NULL
-    );
+    ) STRICT;
     `.execute(db);
     await sql`
     CREATE TABLE IF NOT EXISTS Penis (
@@ -78,7 +78,7 @@ export async function up(db: Kysely<any>) {
         createdAt DATETIME NOT NULL,
         updatedAt DATETIME NOT NULL,
         diameter INTEGER
-    );
+    ) STRICT;
     `.execute(db);
     await sql`
     CREATE TABLE IF NOT EXISTS Nicknames (
@@ -87,7 +87,7 @@ export async function up(db: Kysely<any>) {
         nickName VARCHAR(32) NOT NULL,
         createdAt DATETIME NOT NULL,
         updatedAt DATETIME NOT NULL
-    );
+    ) STRICT;
     `.execute(db);
     await sql`
     CREATE TABLE IF NOT EXISTS Boobs (
@@ -97,7 +97,7 @@ export async function up(db: Kysely<any>) {
         size INTEGER NOT NULL,
         createdAt DATETIME NOT NULL,
         updatedAt DATETIME NOT NULL
-    );
+    ) STRICT;
     `.execute(db);
     await sql`
     CREATE TABLE IF NOT EXISTS AustrianTranslations (
@@ -106,7 +106,7 @@ export async function up(db: Kysely<any>) {
         austrian VARCHAR(255) NOT NULL UNIQUE,
         createdAt DATETIME NOT NULL,
         updatedAt DATETIME NOT NULL
-    );
+    ) STRICT;
     `.execute(db);
     await sql`
     CREATE TABLE IF NOT EXISTS Reminders (
@@ -119,7 +119,7 @@ export async function up(db: Kysely<any>) {
         createdAt DATETIME NOT NULL,
         updatedAt DATETIME NOT NULL,
         reminderNote VARCHAR(32) NULL
-    );
+    ) STRICT;
     `.execute(db);
     await sql`
     CREATE TABLE IF NOT EXISTS EhrePoints (
@@ -128,7 +128,7 @@ export async function up(db: Kysely<any>) {
         points DOUBLE PRECISION NOT NULL,
         createdAt DATETIME NOT NULL,
         updatedAt DATETIME NOT NULL
-    );
+    ) STRICT;
     `.execute(db);
     await sql`
     CREATE TABLE IF NOT EXISTS EhreVotes (
@@ -136,7 +136,7 @@ export async function up(db: Kysely<any>) {
         userId VARCHAR(32) NOT NULL UNIQUE,
         createdAt DATETIME NOT NULL,
         updatedAt DATETIME NOT NULL
-    );
+    ) STRICT;
     `.execute(db);
     await sql`
     CREATE TABLE IF NOT EXISTS WoisActions (
@@ -148,7 +148,7 @@ export async function up(db: Kysely<any>) {
         createdAt DATETIME NOT NULL,
         updatedAt DATETIME NOT NULL,
         isWoisgangAction BOOLEAN
-    );
+    ) STRICT;
     `.execute(db);
     await sql`
     CREATE TABLE IF NOT EXISTS SplidGroups (
@@ -160,7 +160,7 @@ export async function up(db: Kysely<any>) {
         longDescription VARCHAR(1000),
         createdAt DATETIME NOT NULL,
         updatedAt DATETIME NOT NULL
-    );
+    ) STRICT;
     `.execute(db);
     await sql`
     CREATE TABLE IF NOT EXISTS SplidLinks (
@@ -170,7 +170,7 @@ export async function up(db: Kysely<any>) {
         externalSplidId VARCHAR(420) NOT NULL,
         createdAt DATETIME NOT NULL,
         updatedAt DATETIME NOT NULL
-    );
+    ) STRICT;
     `.execute(db);
     await sql`CREATE UNIQUE INDEX IF NOT EXISTS additional_message_data_guild_id_channel_id_message_id ON AdditionalMessageData (guildId, channelId, messageId);`.execute(
         db,
