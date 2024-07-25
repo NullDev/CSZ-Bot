@@ -26,7 +26,7 @@ import log from "@log";
 
 const lootTimeoutMs = 60 * 1000;
 
-const excludedLootIds = [0, 7, 8, 13, 14];
+const excludedLootIds = [0, 7, 8, 13, 14, 23];
 
 export enum LootTypeId {
     NICHTS = 0,
