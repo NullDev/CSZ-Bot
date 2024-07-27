@@ -6,16 +6,18 @@ import type { BotContext } from "../context.js";
 
 import log from "@log";
 
+interface LinkEntry {
+    quality: string;
+    link: string;
+}
+
 interface ApiResponse {
     success: boolean;
     message: string;
     src_url: string;
     title: string;
     picture: string;
-    links?: Array<{
-        quality: string;
-        link: string;
-    }>;
+    links?: LinkEntry[];
     images: unknown[];
     timeTaken: string;
     r_id: string;
@@ -82,11 +84,20 @@ export async function downloadInstagramContent(
             };
         }
 
-        log.info({ links: result.links }, "Instagram download links");
+        log.debug({ links: result.links }, "Instagram download links");
+
+        const videoLinks = result.links.filter(l => l.quality.startsWith("video_"));
+        if (videoLinks.length === 0) {
+            return {
+                success: false,
+                message: "Got no links :(",
+                raw: result,
+            };
+        }
 
         return {
             success: true,
-            mediaUrl: result.links[0].link,
+            mediaUrl: sortLinksByVideoQuality(videoLinks, "desc")[0].link,
         };
     } catch (error) {
         return {
@@ -95,4 +106,34 @@ export async function downloadInstagramContent(
             raw: error,
         };
     }
+}
+
+// Example links from docs
+// https://rapidapi.com/ugoBoy/api/social-media-video-downloader
+/*
+{"quality": "video_sd_0", "link": "(link unavailable)"},
+{"quality": "video_hd_0", "link": "(link unavailable)"},
+{"quality": "video_render_360p_0", "link": "(link unavailable)"},
+{"quality": "video_render_540p_0", "link": "(link unavailable)"},
+{"quality": "video_render_720p_0", "link": "(link unavailable)"},
+{"quality": "video_render_1080p_0", "link": "(link unavailable)"},
+{"quality": "audio_0", "link": "(link unavailable)"}
+*/
+const priorityMap: Record<string, number> = {
+    video_sd_0: 0,
+    video_render_360p_0: 1,
+    video_render_540p_0: 2,
+    video_render_720p_0: 3,
+    video_hd_0: 4,
+    video_render_1080p_0: 5,
+};
+function sortLinksByVideoQuality(
+    links: readonly LinkEntry[],
+    direction: "asc" | "desc",
+): LinkEntry[] {
+    return links.toSorted(
+        direction === "asc"
+            ? (a, b) => (priorityMap[a.quality] ?? -1) - (priorityMap[b.quality] ?? -1)
+            : (b, a) => (priorityMap[a.quality] ?? -1) - (priorityMap[b.quality] ?? -1),
+    );
 }
