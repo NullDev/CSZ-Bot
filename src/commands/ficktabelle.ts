@@ -1,5 +1,5 @@
 import type { MessageCommand } from "./command.js";
-import type { ProcessableMessage } from "../service/commandService.js";
+import type { ProcessableMessage } from "../service/command.js";
 import { randomEntry } from "../utils/arrayUtils.js";
 
 const FICKTABELLE_URL =

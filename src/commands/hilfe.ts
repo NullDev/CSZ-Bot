@@ -1,6 +1,6 @@
 import type { BotContext } from "../context.js";
 import type { MessageCommand } from "./command.js";
-import * as commandService from "../service/commandService.js";
+import * as commandService from "../service/command.js";
 import * as chunking from "../service/chunking.js";
 
 export default class HilfeCommand implements MessageCommand {

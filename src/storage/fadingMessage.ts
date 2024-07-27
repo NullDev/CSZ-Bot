@@ -1,4 +1,4 @@
-import type { ProcessableMessage } from "../service/commandService.js";
+import type { ProcessableMessage } from "../service/command.js";
 import type { FadingMessage } from "./db/model.js";
 import db from "@db";
 

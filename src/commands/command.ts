@@ -6,7 +6,7 @@ import type {
     SlashCommandBuilder,
 } from "discord.js";
 
-import type { ProcessableMessage } from "../service/commandService.js";
+import type { ProcessableMessage } from "../service/command.js";
 import type { BotContext } from "../context.js";
 
 export type Command = ApplicationCommand | AutocompleteCommand | MessageCommand | SpecialCommand;

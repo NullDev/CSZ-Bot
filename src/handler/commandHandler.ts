@@ -19,16 +19,16 @@ import {
  */
 import type { ApplicationCommand, Command, SpecialCommand } from "../commands/command.js";
 import type { BotContext } from "../context.js";
-import * as banService from "../service/banService.js";
+import * as banService from "../service/ban.js";
 import log from "@log";
 
-import * as commandService from "../service/commandService.js";
+import * as commandService from "../service/command.js";
 
 import TriggerReactOnKeyword from "../commands/special/keywordReact.js";
 
 import SplidCommand from "../commands/splid.js";
 
-import { isProcessableMessage, type ProcessableMessage } from "../service/commandService.js";
+import { isProcessableMessage, type ProcessableMessage } from "../service/command.js";
 import { isMessageInBotSpam } from "../utils/channelUtils.js";
 
 /**  Commands that need special init parameters and cannot be instantiated automatically */

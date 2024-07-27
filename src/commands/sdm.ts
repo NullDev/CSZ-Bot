@@ -10,7 +10,7 @@ import {
 } from "discord.js";
 
 import type { ApplicationCommand, MessageCommand } from "./command.js";
-import type { ProcessableMessage } from "../service/commandService.js";
+import type { ProcessableMessage } from "../service/command.js";
 import { substringAfter } from "../utils/stringUtils.js";
 
 const createSecureDecisionMessage = (

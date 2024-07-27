@@ -2,7 +2,7 @@ import { type CommandInteraction, SlashCommandBuilder, SlashCommandUserOption } 
 
 import type { BotContext } from "../context.js";
 import type { ApplicationCommand } from "./command.js";
-import * as lootService from "../service/lootService.js";
+import * as lootService from "../service/loot.js";
 import { ensureChatInputCommand } from "../utils/interactionUtils.js";
 import { format } from "../utils/stringUtils.js";
 

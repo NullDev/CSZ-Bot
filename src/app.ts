@@ -1,7 +1,7 @@
 import { GatewayIntentBits, Partials, Client } from "discord.js";
 import * as sentry from "@sentry/node";
 
-import { readConfig, databasePath, args } from "./service/configService.js";
+import { readConfig, databasePath, args } from "./service/config.js";
 import log from "@log";
 
 import "./polyfills.js";
@@ -14,7 +14,7 @@ import defaultReactionHandler from "./handler/defaultReactionHandler.js";
 import logEmotesReactionHandler from "./handler/logEmotesReactionHandler.js";
 import quoteReactionHandler from "./handler/quoteHandler.js";
 import { woisVoteReactionHandler } from "./commands/woisvote.js";
-import * as voiceStateService from "./service/voiceStateService.js";
+import * as voiceStateService from "./service/voiceState.js";
 
 import {
     handleInteractionEvent,
@@ -27,7 +27,7 @@ import { createBotContext, type BotContext } from "./context.js";
 import { ehreReactionHandler } from "./commands/ehre.js";
 import * as terminal from "./utils/terminal.js";
 import * as guildRageQuit from "./storage/guildRageQuit.js";
-import * as cronService from "./service/cronService.js";
+import * as cronService from "./service/cron.js";
 
 {
     const prodMode =

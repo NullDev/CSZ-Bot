@@ -20,7 +20,7 @@ import type { Loot } from "../storage/db/model.js";
 import { randomEntry, randomEntryWeighted } from "../utils/arrayUtils.js";
 import * as loot from "../storage/loot.js";
 import * as time from "../utils/time.js";
-import * as emote from "./emoteService.js";
+import * as emote from "./emote.js";
 
 import log from "@log";
 
@@ -127,7 +127,7 @@ const lootTemplates: loot.LootTemplate[] = [
         emote: "🎲",
         asset: "assets/loot/07-wuerfelwurf.jpg",
         specialAction: async (_content, winner, channel, _loot) => {
-            const rollService = await import("./rollService.js");
+            const rollService = await import("./roll.js");
             await rollService.rollInChannel(winner.user, channel, 1, 6);
         },
     },
@@ -198,7 +198,7 @@ const lootTemplates: loot.LootTemplate[] = [
         emote: "💡",
         asset: null,
         specialAction: async (_context, winner, channel, _loot) => {
-            const erleuchtungService = await import("./erleuchtungService.js");
+            const erleuchtungService = await import("./erleuchtung.js");
             await setTimeout(3000);
 
             const embed = await erleuchtungService.getInspirationsEmbed(winner);
@@ -216,7 +216,7 @@ const lootTemplates: loot.LootTemplate[] = [
         emote: "🔨",
         asset: "assets/loot/15-ban.jpg",
         specialAction: async (context, winner, _channel, _loot) => {
-            const banService = await import("./banService.js");
+            const banService = await import("./ban.js");
             await banService.banUser(
                 context,
                 winner,

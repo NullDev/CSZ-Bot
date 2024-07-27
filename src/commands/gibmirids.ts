@@ -1,6 +1,6 @@
 import { ChannelType } from "discord.js";
 
-import type { ProcessableMessage } from "../service/commandService.js";
+import type { ProcessableMessage } from "../service/command.js";
 import * as chunking from "../service/chunking.js";
 import type { MessageCommand } from "./command.js";
 import type { BotContext } from "../context.js";

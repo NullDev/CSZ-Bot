@@ -2,10 +2,10 @@ import { time, TimestampStyles } from "discord.js";
 
 import type { MessageCommand } from "./command.js";
 import type { BotContext } from "../context.js";
-import type { ProcessableMessage } from "../service/commandService.js";
+import type { ProcessableMessage } from "../service/command.js";
 
-import * as banService from "../service/banService.js";
-import { parseLegacyMessageParts } from "../service/commandService.js";
+import * as banService from "../service/ban.js";
+import { parseLegacyMessageParts } from "../service/command.js";
 
 export default class MinCommand implements MessageCommand {
     name = "selfban";

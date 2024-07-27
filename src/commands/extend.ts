@@ -2,10 +2,10 @@ import { type APIEmbedField, EmbedBuilder, type Message } from "discord.js";
 
 import type { MessageCommand } from "./command.js";
 import type { BotContext } from "../context.js";
-import type { ProcessableMessage } from "../service/commandService.js";
+import type { ProcessableMessage } from "../service/command.js";
 
-import { parseLegacyMessageParts } from "../service/commandService.js";
-import { LETTERS, EMOJI } from "../service/pollService.js";
+import { parseLegacyMessageParts } from "../service/command.js";
+import { LETTERS, EMOJI } from "../service/poll.js";
 import * as poll from "./poll.js";
 import log from "@log";
 
