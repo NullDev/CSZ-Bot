@@ -97,7 +97,8 @@ export async function downloadInstagramContent(
 
         return {
             success: true,
-            mediaUrl: sortLinksByVideoQuality(videoLinks, "desc")[0].link,
+            // biome-ignore lint/style/noNonNullAssertion: It exists
+            mediaUrl: sortLinksByVideoQuality(videoLinks).at(-1)!.link,
         };
     } catch (error) {
         return {
@@ -127,13 +128,8 @@ const priorityMap: Record<string, number> = {
     video_hd_0: 4,
     video_render_1080p_0: 5,
 };
-function sortLinksByVideoQuality(
-    links: readonly LinkEntry[],
-    direction: "asc" | "desc",
-): LinkEntry[] {
+function sortLinksByVideoQuality<T extends LinkEntry>(links: readonly T[]): T[] {
     return links.toSorted(
-        direction === "asc"
-            ? (a, b) => (priorityMap[a.quality] ?? -1) - (priorityMap[b.quality] ?? -1)
-            : (b, a) => (priorityMap[a.quality] ?? -1) - (priorityMap[b.quality] ?? -1),
+        (a, b) => (priorityMap[a.quality] ?? -1) - (priorityMap[b.quality] ?? -1),
     );
 }
