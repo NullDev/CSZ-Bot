@@ -84,8 +84,6 @@ export async function downloadInstagramContent(
             };
         }
 
-        log.debug({ links: result.links }, "Instagram download links");
-
         const videoLinks = result.links.filter(l => l.quality.startsWith("video_"));
         if (videoLinks.length === 0) {
             return {
