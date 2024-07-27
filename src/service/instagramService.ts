@@ -4,6 +4,8 @@
 
 import type { BotContext } from "../context.js";
 
+import log from "@log";
+
 interface ApiResponse {
     success: boolean;
     message: string;
@@ -79,6 +81,8 @@ export async function downloadInstagramContent(
                 raw: result,
             };
         }
+
+        log.info({ links: result.links }, "Instagram download links");
 
         return {
             success: true,
