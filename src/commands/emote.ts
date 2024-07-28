@@ -6,9 +6,10 @@ import {
     SlashCommandStringOption,
     SlashCommandSubcommandBuilder,
     type CommandInteraction,
+    type AutocompleteInteraction,
 } from "discord.js";
 
-import type { ApplicationCommand } from "@/commands/command.js";
+import type { ApplicationCommand, AutocompleteCommand } from "@/commands/command.js";
 import type { BotContext } from "@/context.js";
 import type { Emote } from "@/storage/db/model.js";
 import * as emoteLoggingService from "@/service/emoteLogging.js";
@@ -41,7 +42,7 @@ function buildSingleEmoteResponse(
     return [embed, file];
 }
 
-export default class EmoteCommand implements ApplicationCommand {
+export default class EmoteCommand implements ApplicationCommand, AutocompleteCommand {
     name = "emote";
     description = "Emoteverwaltung des Servers";
 
@@ -67,7 +68,7 @@ export default class EmoteCommand implements ApplicationCommand {
                 .setDescription("Zeigt Emote-Statistiken."),
         );
 
-    async handleInteraction(command: CommandInteraction, context: BotContext): Promise<void> {
+    async handleInteraction(command: CommandInteraction, context: BotContext) {
         if (!command.isChatInputCommand()) {
             return;
         }
@@ -81,6 +82,30 @@ export default class EmoteCommand implements ApplicationCommand {
             default:
                 throw new Error("Unknown subcommand");
         }
+    }
+
+    async autocomplete(interaction: AutocompleteInteraction, context: BotContext) {
+        const subCommand = interaction.options.getSubcommand(true);
+        if (subCommand !== "search") {
+            return;
+        }
+
+        const query = interaction.options.get("query", true).value;
+        if (typeof query !== "string" || !query) {
+            return;
+        }
+
+        const searchResults = await emoteLoggingService.getMatchingEmotes(query, 20);
+
+        const names = searchResults
+            .map(e => e.name)
+            .toSorted((a, b) => a.localeCompare(b))
+            .map(name => ({
+                name,
+                value: name,
+            }));
+
+        await interaction.respond(names);
     }
 
     async #search(command: ChatInputCommandInteraction, context: BotContext) {
