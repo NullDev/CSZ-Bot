@@ -24,7 +24,7 @@ echo "" >.env # Dummy env
 
 docker stop csz-bot-ephemeral || true
 docker rm csz-bot-ephemeral || true
-docker compose -f compose.ephemeral.yaml pull bot
-docker compose -f compose.ephemeral.yaml up \
+docker compose -p e2e -f compose.ephemeral.yaml pull bot
+docker compose -p e2e -f compose.ephemeral.yaml up \
     -d \
     --remove-orphans
