@@ -29,11 +29,10 @@ import * as terminal from "@/utils/terminal.js";
 import * as guildRageQuit from "@/storage/guildRageQuit.js";
 import * as cronService from "@/service/cron.js";
 
+const env = process.env;
 {
     const prodMode =
-        process.env.NODE_ENV === "production"
-            ? ` ${terminal.highlightWarn(" production ")} mode`
-            : "";
+        env.NODE_ENV === "production" ? ` ${terminal.highlightWarn(" production ")} mode` : "";
 
     const cszBot = terminal.highlight(" CSZ Bot ");
     const year = new Date().getFullYear();
@@ -44,8 +43,8 @@ import * as cronService from "@/service/cron.js";
     console.log(` └───────────┘${prodMode}`);
     console.log();
 
-    if (process.env.RELEASE_IDENTIFIER) {
-        console.log(`Release: ${process.env.RELEASE_IDENTIFIER}`);
+    if (env.RELEASE_IDENTIFIER) {
+        console.log(`Release: ${env.RELEASE_IDENTIFIER}`);
         console.log();
     }
 }
@@ -53,13 +52,15 @@ import * as cronService from "@/service/cron.js";
 log.info("Bot starting up...");
 const config = await readConfig();
 
-if (process.env.RELEASE_IDENTIFIER) {
-    log.info(`Release: ${process.env.RELEASE_IDENTIFIER}`);
+if (env.RELEASE_IDENTIFIER) {
+    log.info(`Release: ${env.RELEASE_IDENTIFIER}`);
 }
 
 if (config.sentry?.dsn) {
     sentry.init({
         dsn: config.sentry.dsn,
+        environment: env.NODE_ENV,
+        release: env.RELEASE_IDENTIFIER || undefined, // || instead of ?? to make empty string undefined
     });
 }
 
