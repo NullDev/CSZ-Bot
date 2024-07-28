@@ -43,10 +43,19 @@ import * as cronService from "@/service/cron.js";
     console.log(` │ ${cszBot} │ Copyright (c) ${year} Users of the CSZ`);
     console.log(` └───────────┘${prodMode}`);
     console.log();
+
+    if (process.env.RELEASE_IDENTIFIER) {
+        console.log(`Release: ${process.env.RELEASE_IDENTIFIER}`);
+        console.log();
+    }
 }
 
 log.info("Bot starting up...");
 const config = await readConfig();
+
+if (process.env.RELEASE_IDENTIFIER) {
+    log.info(`Release: ${process.env.RELEASE_IDENTIFIER}`);
+}
 
 if (config.sentry?.dsn) {
     sentry.init({

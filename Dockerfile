@@ -19,4 +19,7 @@ FROM oven/bun:alpine
     COPY --from=runtime-dependencies /app/node_modules /app/node_modules
     COPY ./ /app/
 
+    ARG RELEASE_IDENTIFIER
+    RUN echo "RELEASE_IDENTIFIER=$RELEASE_IDENTIFIER" >> /app/.env
+
     ENTRYPOINT ["bun", "src/app.ts"]
