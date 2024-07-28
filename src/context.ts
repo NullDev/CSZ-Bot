@@ -123,6 +123,10 @@ export interface BotContext {
         hasRoleDenyRole: (member: GuildMember | APIInteractionGuildMember) => boolean;
         isRejoiner: (member: GuildMember | APIInteractionGuildMember) => boolean;
     };
+
+    channelGuard: {
+        isInBotSpam: (message: { channelId: Snowflake }) => boolean;
+    };
 }
 
 export interface QuoteConfig {
@@ -296,6 +300,10 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
             hasBotDenyRole: member => hasRoleById(member, config.role.botDenyRoleId),
             hasRoleDenyRole: member => hasRoleById(member, config.role.roleDenyRoleId),
             isRejoiner: member => hasRoleById(member, config.role.shameRoleId),
+        },
+
+        channelGuard: {
+            isInBotSpam: message => message.channelId === config.textChannel.botSpamChannelId,
         },
     };
 }
