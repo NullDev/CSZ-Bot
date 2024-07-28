@@ -84,17 +84,13 @@ export default class EmoteCommand implements ApplicationCommand, AutocompleteCom
         }
     }
 
-    async autocomplete(interaction: AutocompleteInteraction, context: BotContext) {
+    async autocomplete(interaction: AutocompleteInteraction, _context: BotContext) {
         const subCommand = interaction.options.getSubcommand(true);
         if (subCommand !== "search") {
             return;
         }
 
-        const query = interaction.options.get("query", true).value;
-        if (typeof query !== "string" || !query) {
-            return;
-        }
-
+        const query = interaction.options.getFocused();
         const searchResults = await emoteLoggingService.getMatchingEmotes(query, 20);
 
         const names = searchResults
