@@ -9,9 +9,9 @@ import {
 } from "discord.js";
 import { Resvg } from "@resvg/resvg-js";
 
-import type { ApplicationCommand } from "./command.js";
+import type { ApplicationCommand } from "@/commands/command.js";
 import type { BotContext } from "@/context.js";
-import * as stempel from "../storage/stempel.js";
+import * as stempel from "@/storage/stempel.js";
 import log from "@log";
 
 const supportedLayoutEngines = [

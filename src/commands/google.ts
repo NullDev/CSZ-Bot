@@ -6,8 +6,8 @@ import {
     SlashCommandUserOption,
 } from "discord.js";
 
-import type { ApplicationCommand } from "./command.js";
-import { randomEntry } from "../utils/arrayUtils.js";
+import type { ApplicationCommand } from "@/commands/command.js";
+import { randomEntry } from "@/utils/arrayUtils.js";
 
 const replies = [
     "Da bitte, dein Suchergebnis, du Opfer: {0}",

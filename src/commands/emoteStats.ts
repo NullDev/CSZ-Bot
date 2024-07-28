@@ -1,8 +1,8 @@
 import { SlashCommandBuilder, type CommandInteraction } from "discord.js";
 
-import type { ApplicationCommand } from "./command.js";
+import type { ApplicationCommand } from "@/commands/command.js";
 import type { BotContext } from "@/context.js";
-import * as emoteLogging from "../service/emoteLogging.js";
+import * as emoteLogging from "@/service/emoteLogging.js";
 
 export default class EmoteStatsCommand implements ApplicationCommand {
     name = "emote-stats";

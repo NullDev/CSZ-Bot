@@ -10,10 +10,10 @@ import {
     ChatInputCommandInteraction,
 } from "discord.js";
 
-import * as stempel from "../storage/stempel.js";
+import * as stempel from "@/storage/stempel.js";
 import log from "@log";
-import type { ApplicationCommand } from "./command.js";
-import { chunkArray } from "../utils/arrayUtils.js";
+import type { ApplicationCommand } from "@/commands/command.js";
+import { chunkArray } from "@/utils/arrayUtils.js";
 
 const stempelLocations = [
     // 1-3

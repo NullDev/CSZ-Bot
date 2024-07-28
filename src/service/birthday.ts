@@ -1,7 +1,7 @@
 import type { GuildMember, Role } from "discord.js";
 
 import log from "@log";
-import * as birthday from "../storage/birthday.js";
+import * as birthday from "@/storage/birthday.js";
 
 import type { BotContext } from "@/context.js";
 import { format } from "src/utils/stringUtils.js";

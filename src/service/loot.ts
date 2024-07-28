@@ -16,10 +16,10 @@ import {
 import { Temporal } from "@js-temporal/polyfill";
 
 import type { BotContext } from "@/context.js";
-import type { Loot } from "../storage/db/model.js";
-import { randomEntry, randomEntryWeighted } from "../utils/arrayUtils.js";
-import * as loot from "../storage/loot.js";
-import * as time from "../utils/time.js";
+import type { Loot } from "@/storage/db/model.js";
+import { randomEntry, randomEntryWeighted } from "@/utils/arrayUtils.js";
+import * as loot from "@/storage/loot.js";
+import * as time from "@/utils/time.js";
 import * as emote from "./emote.js";
 
 import log from "@log";
@@ -303,7 +303,7 @@ const lootTemplates: loot.LootTemplate[] = [
         emote: ":aehre:",
         asset: "assets/loot/23-ehre.jpg",
         specialAction: async (context, winner, _channel, _loot) => {
-            const ehre = await import("../storage/ehre.js");
+            const ehre = await import("@/storage/ehre.js");
             await ehre.addPoints(winner.id, 1);
         },
     },

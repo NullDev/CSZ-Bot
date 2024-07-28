@@ -1,10 +1,10 @@
 import type { User } from "discord.js";
 
-import type { ProcessableMessage } from "../service/command.js";
-import type { MessageCommand } from "./command.js";
-import * as boob from "../storage/boob.js";
+import type { ProcessableMessage } from "@/service/command.js";
+import type { MessageCommand } from "@/commands/command.js";
+import * as boob from "@/storage/boob.js";
 import log from "@log";
-import { formatTime } from "../utils/dateUtils.js";
+import { formatTime } from "@/utils/dateUtils.js";
 
 interface Booba {
     description: string;

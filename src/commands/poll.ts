@@ -13,13 +13,13 @@ import {
 } from "discord.js";
 
 import type { BotContext } from "@/context.js";
-import type { MessageCommand } from "./command.js";
-import { parseLegacyMessageParts, type ProcessableMessage } from "../service/command.js";
-import * as timeUtils from "../utils/time.js";
+import type { MessageCommand } from "@/commands/command.js";
+import { parseLegacyMessageParts, type ProcessableMessage } from "@/service/command.js";
+import * as timeUtils from "@/utils/time.js";
 
 import log from "@log";
-import * as additionalMessageData from "../storage/additionalMessageData.js";
-import { LETTERS, EMOJI } from "../service/poll.js";
+import * as additionalMessageData from "@/storage/additionalMessageData.js";
+import { LETTERS, EMOJI } from "@/service/poll.js";
 
 export const TEXT_LIMIT = 4096;
 export const FIELD_NAME_LIMIT = 256;

@@ -1,7 +1,7 @@
 import type { Snowflake } from "discord.js";
 import type { ColumnType, Generated, GeneratedAlways, Selectable } from "kysely";
 
-import type { Radius } from "../../commands/penis.js";
+import type { Radius } from "@/commands/penis.js";
 
 export interface Database {
     birthdays: BirthdayTable;

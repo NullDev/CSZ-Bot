@@ -4,7 +4,7 @@ import * as path from "node:path";
 import type { Guild, GuildMember, Message } from "discord.js";
 
 import type { BotContext } from "@/context.js";
-import type { Command } from "../commands/command.js";
+import type { Command } from "@/commands/command.js";
 
 import log from "@log";
 

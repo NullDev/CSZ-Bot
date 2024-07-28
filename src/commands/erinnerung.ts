@@ -9,14 +9,14 @@ import {
 } from "discord.js";
 import * as chrono from "chrono-node";
 
-import type { MessageCommand, ApplicationCommand } from "./command.js";
-import type { ProcessableMessage } from "../service/command.js";
+import type { MessageCommand, ApplicationCommand } from "@/commands/command.js";
+import type { ProcessableMessage } from "@/service/command.js";
 import type { BotContext } from "@/context.js";
 import log from "@log";
-import * as reminderService from "../storage/reminders.js";
-import type { Reminder } from "../storage/db/model.js";
+import * as reminderService from "@/storage/reminders.js";
+import type { Reminder } from "@/storage/db/model.js";
 
-import { ensureChatInputCommand } from "../utils/interactionUtils.js";
+import { ensureChatInputCommand } from "@/utils/interactionUtils.js";
 
 const validateDate = (date: Date): true | string => {
     if (Number.isNaN(date.getTime()) || !Number.isFinite(date.getTime())) {

@@ -3,7 +3,7 @@ import type { TextChannel } from "discord.js";
 import type { BotContext } from "@/context.js";
 
 import log from "@log";
-import * as fadingMessage from "../storage/fadingMessage.js";
+import * as fadingMessage from "@/storage/fadingMessage.js";
 
 export async function handleFadingMessages(context: BotContext) {
     const now = new Date();

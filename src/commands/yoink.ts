@@ -10,11 +10,11 @@ import {
 
 import log from "@log";
 
-import type { ApplicationCommand, MessageCommand } from "./command.js";
-import type { ProcessableMessage } from "../service/command.js";
+import type { ApplicationCommand, MessageCommand } from "@/commands/command.js";
+import type { ProcessableMessage } from "@/service/command.js";
 import type { BotContext } from "@/context.js";
-import { ensureChatInputCommand } from "../utils/interactionUtils.js";
-import * as emoteService from "../service/emote.js";
+import { ensureChatInputCommand } from "@/utils/interactionUtils.js";
+import * as emoteService from "@/service/emote.js";
 
 /**
  * Sends instructions on how to ask better questions

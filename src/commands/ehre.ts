@@ -10,11 +10,11 @@ import {
     type User,
 } from "discord.js";
 
-import type { ApplicationCommand } from "./command.js";
+import type { ApplicationCommand } from "@/commands/command.js";
 import type { BotContext } from "@/context.js";
-import type { EhrePoints } from "../storage/db/model.js";
-import type { ReactionHandler } from "../handler/ReactionHandler.js";
-import * as ehre from "../storage/ehre.js";
+import type { EhrePoints } from "@/storage/db/model.js";
+import type { ReactionHandler } from "@/handler/ReactionHandler.js";
+import * as ehre from "@/storage/ehre.js";
 import db from "@db";
 
 const ehreFormatter = new Intl.NumberFormat("de-DE", {

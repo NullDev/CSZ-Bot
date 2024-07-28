@@ -7,7 +7,7 @@ import { FileMigrationProvider, Kysely, Migrator } from "kysely";
 import { BunSqliteDialect } from "kysely-bun-sqlite";
 
 import type { Database } from "./model.js";
-import assertNever from "../../utils/assertNever.js";
+import assertNever from "@/utils/assertNever.js";
 import log from "@log";
 
 let kysely: Kysely<Database>;

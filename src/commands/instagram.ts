@@ -1,8 +1,8 @@
 import type { Message } from "discord.js";
 
-import type { SpecialCommand } from "./command.js";
+import type { SpecialCommand } from "@/commands/command.js";
 import type { BotContext } from "@/context.js";
-import * as instagramService from "../service/instagram.js";
+import * as instagramService from "@/service/instagram.js";
 
 const instagramOptions = {
     uriPattern: /https?:\/\/(?:www\.)?instagram\.com\/(?:reel|tv|p)\/(?:[0-9a-zA-Z_-]+)\/?/gi,

@@ -15,13 +15,13 @@ import {
 import { SplidClient } from "splid-js";
 
 import type { BotContext } from "@/context.js";
-import type { ApplicationCommand, AutocompleteCommand } from "./command.js";
-import type { SplidGroup } from "../storage/db/model.js";
-import { ensureChatInputCommand } from "../utils/interactionUtils.js";
+import type { ApplicationCommand, AutocompleteCommand } from "@/commands/command.js";
+import type { SplidGroup } from "@/storage/db/model.js";
+import { ensureChatInputCommand } from "@/utils/interactionUtils.js";
 import logger from "@log";
-import * as splidLink from "../storage/splidLink.js";
-import * as splidGroup from "../storage/splidGroup.js";
-import * as time from "../utils/time.js";
+import * as splidLink from "@/storage/splidLink.js";
+import * as splidGroup from "@/storage/splidGroup.js";
+import * as time from "@/utils/time.js";
 
 const createNumberFormatter = (currency: string) =>
     new Intl.NumberFormat("de-DE", {

@@ -1,8 +1,8 @@
 import { type CommandInteraction, type CacheType, SlashCommandBuilder } from "discord.js";
 
-import type { ApplicationCommand } from "./command.js";
+import type { ApplicationCommand } from "@/commands/command.js";
 import log from "@log";
-import * as birthday from "../storage/birthday.js";
+import * as birthday from "@/storage/birthday.js";
 
 export default class GeburtstagCommand implements ApplicationCommand {
     name = "geburtstag";

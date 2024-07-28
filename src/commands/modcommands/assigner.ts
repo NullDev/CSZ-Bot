@@ -1,6 +1,6 @@
-import type { MessageCommand } from "../command.js";
-import type { BotContext } from "../../context.js";
-import { parseLegacyMessageParts, type ProcessableMessage } from "../../service/command.js";
+import type { MessageCommand } from "@/commands/command.js";
+import type { BotContext } from "@/context.js";
+import { parseLegacyMessageParts, type ProcessableMessage } from "@/service/command.js";
 import log from "@log";
 
 export default class AssignerCommand implements MessageCommand {

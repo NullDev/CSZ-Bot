@@ -1,7 +1,7 @@
 import { type CommandInteraction, SlashCommandBuilder } from "discord.js";
 
-import type { ApplicationCommand } from "./command.js";
-import * as voiceStateService from "../service/voiceState.js";
+import type { ApplicationCommand } from "@/commands/command.js";
+import * as voiceStateService from "@/service/voiceState.js";
 
 export default class WoisLog implements ApplicationCommand {
     name = "woislog";

@@ -1,6 +1,6 @@
 import type { Message } from "discord.js";
 
-import type { SpecialCommand } from "./command.js";
+import type { SpecialCommand } from "@/commands/command.js";
 
 const proxitokInstance = "https://proxitok.pussthecat.org";
 // const downloadUrlRegex = /href=["'](\/download[^"']*)["']/;

@@ -13,8 +13,8 @@ import type {
 import { ChannelType } from "discord.js";
 import { Temporal } from "@js-temporal/polyfill";
 
-import type { UserMapEntry } from "./commands/aoc.js";
-import { readConfig } from "./service/config.js";
+import type { UserMapEntry } from "@/commands/aoc.js";
+import { readConfig } from "@/service/config.js";
 
 /**
  * Object that's passed to every executed command to make it easier to access common channels without repeatedly retrieving stuff via IDs.

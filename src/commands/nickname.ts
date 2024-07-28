@@ -14,11 +14,11 @@ import {
 } from "discord.js";
 
 import type { BotContext } from "@/context.js";
-import type { ApplicationCommand, AutocompleteCommand } from "./command.js";
+import type { ApplicationCommand, AutocompleteCommand } from "@/commands/command.js";
 import log from "@log";
-import { ensureChatInputCommand } from "../utils/interactionUtils.js";
-import * as nickName from "../storage/nickName.js";
-import * as time from "../utils/time.js";
+import { ensureChatInputCommand } from "@/utils/interactionUtils.js";
+import * as nickName from "@/storage/nickName.js";
+import * as time from "@/utils/time.js";
 
 type Vote = "YES" | "NO";
 
