@@ -15,16 +15,16 @@ import type { BotContext } from "@/context.js";
 import type { EhrePoints } from "@/storage/db/model.js";
 import type { ReactionHandler } from "@/handler/ReactionHandler.js";
 
-import * as ehre from "@/service/ehre.js";
+import * as ehreService from "@/service/ehre.js";
 
 function createUserPointString(e: EhrePoints) {
-    return `<@${e.userId}> : ${ehre.formatPoints(e.points)}`;
+    return `<@${e.userId}> : ${ehreService.formatPoints(e.points)}`;
 }
 
 async function createEhreTable(
     context: BotContext,
 ): Promise<MessagePayload | InteractionReplyOptions> {
-    const ranking = await ehre.getRanking();
+    const ranking = await ehreService.getRanking();
     return {
         embeds: [
             {
@@ -101,12 +101,12 @@ export const ehreReactionHandler = {
             return;
         }
 
-        if (await ehre.hasVoted(invoker)) {
+        if (await ehreService.hasVoted(invoker)) {
             // Same when the user already voted; just swallow it
             return;
         }
 
-        await ehre.addEhre(invoker, ehrenbruder);
+        await ehreService.addEhre(invoker, ehrenbruder);
 
         const replyChannel = reactionEvent.message.channel;
         const replyChannelHasSlowMode =
@@ -161,7 +161,7 @@ export default class EhreCommand implements ApplicationCommand {
 
         const user = command.options.getUser("user", true);
         if (subcommand === "add") {
-            const reply = await ehre.addEhre(command.user, user);
+            const reply = await ehreService.addEhre(command.user, user);
             await command.reply(reply);
         }
     }

@@ -10,7 +10,7 @@ import type { ApplicationCommand } from "@/commands/command.js";
 import type { BotContext } from "@/context.js";
 import type { Ban } from "@/storage/db/model.js";
 
-import * as ban from "@/service/ban.js";
+import * as banService from "@/service/ban.js";
 import log from "@log";
 
 export default class BanListCommand implements ApplicationCommand {
@@ -21,7 +21,7 @@ export default class BanListCommand implements ApplicationCommand {
         .setDescription(this.description);
 
     async handleInteraction(command: CommandInteraction<CacheType>, context: BotContext) {
-        const bans = await ban.getActiveBans();
+        const bans = await banService.getActiveBans();
 
         if (bans.length === 0) {
             await command.reply({
