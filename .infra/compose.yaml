@@ -6,7 +6,7 @@ services:
     environment:
       - LOG_LEVEL=debug
     env_file:
-      - .env
+      - ../.env
     volumes:
       - ../config.json:/app/config.json:ro
       - ../sounds:/app/sounds:ro
