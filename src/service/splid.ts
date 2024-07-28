@@ -1,8 +1,10 @@
+import type { Guild, User } from "discord.js";
 // @ts-ignore Types are somehow broken :shrug:
 import { SplidClient } from "splid-js";
 
 import type { SplidGroup } from "@/storage/db/model.js";
 
+import * as splidGroup from "@/storage/splidGroup.js";
 import * as time from "@/utils/time.js";
 import log from "@log";
 
@@ -237,4 +239,32 @@ export async function getMemberBalances(group: SplidGroup, members: readonly Spl
 
     const paymentMatrix = buildPaymentMatrix(members, entries);
     return computeAccountBalances(members, paymentMatrix);
+}
+
+export async function createGroup(
+    creator: User,
+    guild: Guild,
+    groupCode: string,
+    shortDescription: string,
+    longDescription: string | null,
+) {
+    return await splidGroup.createSplidGroup(
+        creator,
+        guild,
+        groupCode,
+        shortDescription,
+        longDescription,
+    );
+}
+
+export async function getGroupByCode(guild: Guild, groupCode: string) {
+    return await splidGroup.findOneByCodeForGuild(guild, groupCode);
+}
+
+export async function getAllGroups(guild: Guild) {
+    return await splidGroup.findAllGroups(guild);
+}
+
+export async function deleteByInviteCode(code: string) {
+    return await splidGroup.deleteByInviteCode(code);
 }

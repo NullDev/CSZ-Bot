@@ -17,7 +17,6 @@ import type { SplidMember } from "@/service/splid.js";
 
 import { ensureChatInputCommand } from "@/utils/interactionUtils.js";
 import * as splidLink from "@/storage/splidLink.js";
-import * as splidGroup from "@/storage/splidGroup.js";
 import * as splidService from "@/service/splid.js";
 import log from "@log";
 
@@ -230,7 +229,7 @@ export default class SplidGroupCommand implements ApplicationCommand, Autocomple
 
             const longDescription = command.options.getString("description-long", false) ?? null;
 
-            const result = await splidGroup.createSplidGroup(
+            const result = await splidService.createGroup(
                 command.user,
                 command.guild,
                 normalizedCode,
@@ -255,7 +254,7 @@ export default class SplidGroupCommand implements ApplicationCommand, Autocomple
             return;
         }
 
-        const groups = await splidGroup.findAllGroups(command.guild);
+        const groups = await splidService.getAllGroups(command.guild);
 
         if (groups.length === 0) {
             await command.reply({
@@ -291,7 +290,7 @@ export default class SplidGroupCommand implements ApplicationCommand, Autocomple
             return;
         }
         const code = command.options.getString("invite-code", true);
-        const group = await splidGroup.findOneByCodeForGuild(command.guild, code);
+        const group = await splidService.getGroupByCode(command.guild, code);
 
         if (!group) {
             await command.reply({
@@ -361,7 +360,7 @@ export default class SplidGroupCommand implements ApplicationCommand, Autocomple
         }
 
         const groupCode = command.options.getString("invite-code", true);
-        const group = await splidGroup.findOneByCodeForGuild(command.guild, groupCode);
+        const group = await splidService.getGroupByCode(command.guild, groupCode);
 
         if (!group) {
             await command.reply({
@@ -411,7 +410,7 @@ export default class SplidGroupCommand implements ApplicationCommand, Autocomple
     async handleDeleteGroup(command: ChatInputCommandInteraction) {
         const code = command.options.getString("invite-code", true);
 
-        await splidGroup.deleteByInviteCode(code);
+        await splidService.deleteByInviteCode(code);
 
         await command.reply({
             content: `Ok Bruder, habe Splid-Gruppe mit Invite-Code \`${code}\` gelöscht.`,
@@ -450,7 +449,7 @@ export default class SplidGroupCommand implements ApplicationCommand, Autocomple
                     case "split-person": {
                         const groupCode = interaction.options.getString("invite-code", true);
 
-                        const group = await splidGroup.findOneByCodeForGuild(
+                        const group = await splidService.getGroupByCode(
                             interaction.guild,
                             groupCode,
                         );
@@ -483,7 +482,7 @@ export default class SplidGroupCommand implements ApplicationCommand, Autocomple
     }
 
     async #getSplidGroupCompletions(focusedValue: string, guild: Guild) {
-        const groups = await splidGroup.findAllGroups(guild);
+        const groups = await splidService.getAllGroups(guild);
 
         const focusedValueNormalized = focusedValue.toLowerCase();
         return groups
