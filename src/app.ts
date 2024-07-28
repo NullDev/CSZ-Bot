@@ -32,8 +32,8 @@ import * as cronService from "@/service/cron.js";
 const env = process.env;
 
 const commitHash = env.RELEASE_IDENTIFIER || undefined; // || instead of ?? to make empty string undefined
-const buildMetadata = env.BUILD_NUMBER ? `+build.${env.BUILD_NUMBER}` : "";
-const release = commitHash ? `csz-bot@${commitHash}${buildMetadata}` : undefined;
+const buildMetadata = env.BUILD_NUMBER ? `-build.${env.BUILD_NUMBER}` : "";
+const release = commitHash ? `csz-bot@0.0.0${buildMetadata}+${commitHash}` : undefined;
 
 {
     const prodMode =
