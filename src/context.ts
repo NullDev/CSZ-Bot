@@ -9,6 +9,7 @@ import type {
     TextChannel,
     VoiceChannel,
     APIInteractionGuildMember,
+    Message,
 } from "discord.js";
 import { ChannelType } from "discord.js";
 import { Temporal } from "@js-temporal/polyfill";
@@ -125,7 +126,7 @@ export interface BotContext {
     };
 
     channelGuard: {
-        isInBotSpam: (message: { channelId: Snowflake }) => boolean;
+        isInBotSpam: (message: Message) => boolean;
     };
 }
 
