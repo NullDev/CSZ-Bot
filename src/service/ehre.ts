@@ -18,3 +18,20 @@ export async function addEhre(thankingUser: User, ehrenbruder: User): Promise<st
     return `${thankingUser} hat ${ehrenbruder} geährt`;
 }
 
+export async function getRanking() {
+    return await ehre.getUserInGroups(false);
+}
+
+export async function hasVoted(user: User): Promise<boolean> {
+    return await ehre.hasVoted(user.id);
+}
+
+const ehreFormatter = new Intl.NumberFormat("de-DE", {
+    style: "decimal",
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
+});
+
+export function formatPoints(points: number): string {
+    return ehreFormatter.format(points * 10);
+}

@@ -14,24 +14,17 @@ import type { ApplicationCommand } from "@/commands/command.js";
 import type { BotContext } from "@/context.js";
 import type { EhrePoints } from "@/storage/db/model.js";
 import type { ReactionHandler } from "@/handler/ReactionHandler.js";
-import * as ehre from "@/storage/ehre.js";
-import * as ehreService from "@/service/ehre.js";
 
-const ehreFormatter = new Intl.NumberFormat("de-DE", {
-    style: "decimal",
-    minimumFractionDigits: 1,
-    maximumFractionDigits: 1,
-});
+import * as ehre from "@/service/ehre.js";
 
 function createUserPointString(e: EhrePoints) {
-    return `<@${e.userId}> : ${ehreFormatter.format(e.points * 10)}`;
+    return `<@${e.userId}> : ${ehre.formatPoints(e.points)}`;
 }
 
 async function createEhreTable(
     context: BotContext,
 ): Promise<MessagePayload | InteractionReplyOptions> {
-    const userInGroups = await ehre.getUserInGroups(false);
-
+    const ranking = await ehre.getRanking();
     return {
         embeds: [
             {
@@ -40,34 +33,32 @@ async function createEhreTable(
                     name: context.client.user.username,
                 },
                 fields: [
-                    userInGroups.best
+                    ranking.best
                         ? {
                               name: "Ehrenpate",
-                              value: userInGroups.best
-                                  ? createUserPointString(userInGroups.best)
-                                  : "",
+                              value: ranking.best ? createUserPointString(ranking.best) : "",
                               inline: false,
                           }
                         : {
                               name: "Fangt an",
                               value: "Noch ist niemand geährt worden",
                           },
-                    ...(userInGroups.middle.length > 0
+                    ...(ranking.middle.length > 0
                         ? [
                               {
                                   name: "Ehrenbrudis",
-                                  value: userInGroups.middle
+                                  value: ranking.middle
                                       .map(user => createUserPointString(user))
                                       .join("\n"),
                                   inline: false,
                               },
                           ]
                         : []),
-                    ...(userInGroups.bottom.length > 0
+                    ...(ranking.bottom.length > 0
                         ? [
                               {
                                   name: "Ehrenhafte User",
-                                  value: userInGroups.bottom
+                                  value: ranking.bottom
                                       .map(user => createUserPointString(user))
                                       .join("\n"),
                                   inline: false,
@@ -110,12 +101,12 @@ export const ehreReactionHandler = {
             return;
         }
 
-        if (await ehre.hasVoted(invoker.id)) {
+        if (await ehre.hasVoted(invoker)) {
             // Same when the user already voted; just swallow it
             return;
         }
 
-        await ehre.addVote(invoker.id, ehrenbruder.id);
+        await ehre.addEhre(invoker, ehrenbruder);
 
         const replyChannel = reactionEvent.message.channel;
         const replyChannelHasSlowMode =
@@ -170,7 +161,7 @@ export default class EhreCommand implements ApplicationCommand {
 
         const user = command.options.getUser("user", true);
         if (subcommand === "add") {
-            const reply = await ehreService.addEhre(command.user, user);
+            const reply = await ehre.addEhre(command.user, user);
             await command.reply(reply);
         }
     }

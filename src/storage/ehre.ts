@@ -15,7 +15,6 @@ export async function hasVoted(userId: Snowflake, ctx = db()): Promise<boolean> 
     return votes !== 0;
 }
 
-
 export async function addPoints(userId: Snowflake, points: number, ctx = db()) {
     await ctx
         .insertInto("ehrePoints")
@@ -34,19 +33,17 @@ export async function addPoints(userId: Snowflake, points: number, ctx = db()) {
 }
 
 export async function addVote(voter: Snowflake, userId: Snowflake, ctx = db()) {
-    ctx
-        .transaction()
-        .execute(async tx => {
-            const userInGroups = await getUserInGroups(true, tx);
-            const voteValue = getVoteValue(userInGroups, voter)
-            await tx
+    await ctx.transaction().execute(async tx => {
+        const userInGroups = await getUserInGroups(true, tx);
+        const voteValue = getVoteValue(userInGroups, voter);
+        await tx
             .insertInto("ehreVotes")
             .values({
                 userId: voter,
             })
-            .execute();;
-            await addPoints(userId, voteValue, tx);
-        });
+            .execute();
+        await addPoints(userId, voteValue, tx);
+    });
 }
 
 function getVoteValue(userInGroups: EhreGroups, voter: string): number {
@@ -58,7 +55,6 @@ function getVoteValue(userInGroups: EhreGroups, voter: string): number {
     }
     return 1;
 }
-
 
 export function findPoints(userId: Snowflake, ctx = db()): Promise<EhrePoints | undefined> {
     return ctx.selectFrom("ehrePoints").where("userId", "=", userId).selectAll().executeTakeFirst();
