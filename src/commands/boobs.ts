@@ -1,10 +1,9 @@
-import type { User } from "discord.js";
+import { time, TimestampStyles, type User } from "discord.js";
 
 import type { ProcessableMessage } from "@/service/command.js";
 import type { MessageCommand } from "@/commands/command.js";
 import * as boob from "@/storage/boob.js";
 import log from "@log";
-import { formatTime } from "@/utils/dateUtils.js";
 
 interface Booba {
     description: string;
@@ -109,9 +108,8 @@ const sendBoob = async (
         throw new Error(`Booba with size ${size} not defined`);
     }
 
-    const measuredAt = formatTime(measurement);
     await message.reply(
-        `${booba.description} von ${user}, gemessen um ${measuredAt}:\n${booba.representation}`,
+        `${booba.description} von ${user}, gemessen um ${time(measurement, TimestampStyles.LongDateTime)}:\n${booba.representation}`,
     );
 };
 
