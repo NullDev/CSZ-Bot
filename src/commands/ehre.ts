@@ -15,7 +15,7 @@ import type { BotContext } from "@/context.js";
 import type { EhrePoints } from "@/storage/db/model.js";
 import type { ReactionHandler } from "@/handler/ReactionHandler.js";
 import * as ehre from "@/storage/ehre.js";
-import db from "@db";
+import * as ehreService from "@/service/ehre.js";
 
 const ehreFormatter = new Intl.NumberFormat("de-DE", {
     style: "decimal",
@@ -30,7 +30,7 @@ function createUserPointString(e: EhrePoints) {
 async function createEhreTable(
     context: BotContext,
 ): Promise<MessagePayload | InteractionReplyOptions> {
-    const userInGroups = await ehre.getUserInGroups();
+    const userInGroups = await ehre.getUserInGroups(false);
 
     return {
         embeds: [
@@ -81,28 +81,6 @@ async function createEhreTable(
     };
 }
 
-function getVote(userInGroups: ehre.EhreGroups, voter: string): number {
-    if (userInGroups.best?.userId === voter) {
-        return 5;
-    }
-
-    if (userInGroups.middle.map(u => u.userId).includes(voter)) {
-        return 2;
-    }
-
-    return 1;
-}
-
-async function handleVote(voter: string, user: string) {
-    db()
-        .transaction()
-        .execute(async tx => {
-            const userInGroups = await ehre.getUserInGroups(tx);
-            await ehre.insertVote(voter, tx);
-            await ehre.addPoints(user, getVote(userInGroups, voter), tx);
-        });
-}
-
 export const ehreReactionHandler = {
     displayName: "Ehre Reaction Handler",
     async execute(
@@ -137,7 +115,7 @@ export const ehreReactionHandler = {
             return;
         }
 
-        await handleVote(invoker.id, ehrenbruder.id);
+        await ehre.addVote(invoker.id, ehrenbruder.id);
 
         const replyChannel = reactionEvent.message.channel;
         const replyChannelHasSlowMode =
@@ -178,20 +156,6 @@ export default class EhreCommand implements ApplicationCommand {
             new SlashCommandSubcommandBuilder().setName("tabelle").setDescription("Alle Ehrenuser"),
         );
 
-    static async addEhre(thankingUser: User, ehrenbruder: User): Promise<string> {
-        if (thankingUser.id === ehrenbruder.id) {
-            await ehre.removeEhrePoints(ehrenbruder);
-            return "Willst dich selber ähren? Dreckiger Abschaum. Sowas verdient einfach keinen Respekt!";
-        }
-
-        if (await ehre.hasVoted(thankingUser.id)) {
-            return "Ey, Einmal pro tag. Nicht gierig werden";
-        }
-
-        await handleVote(thankingUser.id, ehrenbruder.id);
-        return `${thankingUser} hat ${ehrenbruder} geährt`;
-    }
-
     async handleInteraction(command: CommandInteraction, context: BotContext) {
         if (!command.isChatInputCommand()) {
             // TODO: Solve this on a type level
@@ -206,7 +170,7 @@ export default class EhreCommand implements ApplicationCommand {
 
         const user = command.options.getUser("user", true);
         if (subcommand === "add") {
-            const reply = await EhreCommand.addEhre(command.user, user);
+            const reply = await ehreService.addEhre(command.user, user);
             await command.reply(reply);
         }
     }
