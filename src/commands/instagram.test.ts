@@ -31,6 +31,7 @@ describe("instagram pattern matching", () => {
                     "https://www.instagram.com/p/CfOCQKhj7UC/",
                     "https://www.instagram.com/tv/CfOBVIsFpyg",
                 ],
+            "https://www.instagram.com/reel/C98-NW9oz_p/": "https://www.instagram.com/reel/C98-NW9oz_p/",
         };
 
         for (const [message, result] of Object.entries(tests)) {
