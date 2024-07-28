@@ -1,11 +1,10 @@
-// @ts-ignore
-import type { User } from "discord.js";
+import { time, TimestampStyles, type User } from "discord.js";
 
 import type { BotContext } from "@/context.js";
-import * as penis from "@/storage/penis.js";
 import type { MessageCommand } from "@/commands/command.js";
 import type { ProcessableMessage } from "@/service/command.js";
-import { formatTime } from "@/utils/dateUtils.js";
+
+import * as penis from "@/storage/penis.js";
 import log from "@log";
 
 export type Radius = 1 | 2 | 3;
@@ -29,10 +28,9 @@ const sendPenis = async (
     const diameterChar = DIAMETER_CHARS[radius];
     const penis = `8${diameterChar.repeat(size)}D`;
     const circumference = (Math.PI * radius * 2).toFixed(2);
-    const measuredAt = formatTime(measurement);
 
     await message.reply(
-        `Pimmel von <@${user.id}>:\n${penis}\n(Länge: ${size} cm, Umfang: ${circumference} cm, Gemessen um ${measuredAt})`,
+        `Pimmel von <@${user.id}>:\n${penis}\n(Länge: ${size} cm, Umfang: ${circumference} cm, Gemessen um ${time(measurement, TimestampStyles.LongDateTime)})`,
     );
 };
 

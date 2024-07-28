@@ -37,6 +37,10 @@ export async function processBans(context: BotContext) {
     }
 }
 
+export async function getActiveBans() {
+    return await ban.findAll();
+}
+
 export async function isBanned(user: User | GuildMember): Promise<boolean> {
     return (await ban.findExisting(user)) !== undefined;
 }

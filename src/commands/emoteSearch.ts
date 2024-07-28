@@ -1,10 +1,6 @@
 import {
     AttachmentBuilder,
-    BaseMessageOptions,
     EmbedBuilder,
-    InteractionReplyOptions,
-    MessagePayload,
-    RawFile,
     SlashCommandBuilder,
     SlashCommandStringOption,
     type CommandInteraction,
@@ -12,9 +8,9 @@ import {
 
 import type { ApplicationCommand } from "@/commands/command.js";
 import type { BotContext } from "@/context.js";
-import * as emoteLogging from "@/service/emoteLogging.js";
-import type { Emote } from "src/storage/db/model.js";
-import { formatDateTime } from "src/utils/dateUtils.js";
+import type { Emote } from "@/storage/db/model.js";
+import * as emoteLoggingService from "@/service/emoteLogging.js";
+import { formatDateTime } from "@/utils/dateUtils.js";
 
 function buildSingleEmoteResponse(
     emote: Emote,
@@ -63,7 +59,7 @@ export default class EmoteStatsCommand implements ApplicationCommand {
         }
 
         const query = command.options.getString("query", true);
-        const emotes = await emoteLogging.getMatchingEmotes(query, 5);
+        const emotes = await emoteLoggingService.getMatchingEmotes(query, 5);
 
         if (emotes.length === 0) {
             await command.reply({
