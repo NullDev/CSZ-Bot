@@ -36,6 +36,7 @@ jobs:
         port: ${{ secrets.SSH_PORT }}
         source: .infra
         target: ${{ env.BOT_HOME_DIR }}
+        overwrite: true
 
 
     - name: Deploy CSZ Bot
