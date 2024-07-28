@@ -34,7 +34,7 @@ export async function addPoints(userId: Snowflake, points: number, ctx = db()) {
 
 export async function addVote(voter: Snowflake, userId: Snowflake, ctx = db()) {
     await ctx.transaction().execute(async tx => {
-        const userInGroups = await getUserInGroups(true, tx);
+        const userInGroups = await getUserInGroups(tx);
         const voteValue = getVoteValue(userInGroups, voter);
         await tx
             .insertInto("ehreVotes")
@@ -81,10 +81,9 @@ export interface EhreGroups {
     bottom: EhrePoints[];
 }
 
-export async function getUserInGroups(forUpdate: boolean, ctx = db()): Promise<EhreGroups> {
+export async function getUserInGroups(ctx = db()): Promise<EhreGroups> {
     const pointHolders = await ctx
         .selectFrom("ehrePoints")
-        .$if(forUpdate, qb => qb.forUpdate())
         .where("points", ">=", 0.1)
         .orderBy("points desc")
         .selectAll()

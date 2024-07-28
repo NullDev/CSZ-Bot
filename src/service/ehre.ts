@@ -19,7 +19,7 @@ export async function addEhre(thankingUser: User, ehrenbruder: User): Promise<st
 }
 
 export async function getRanking() {
-    return await ehre.getUserInGroups(false);
+    return await ehre.getUserInGroups();
 }
 
 export async function hasVoted(user: User): Promise<boolean> {
