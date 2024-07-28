@@ -12,8 +12,8 @@ import {
 
 import type { ApplicationCommand } from "@/commands/command.js";
 import type { BotContext } from "@/context.js";
-import * as emoteLogging from "@/service/emoteLogging.js";
 import type { Emote } from "src/storage/db/model.js";
+import * as emoteLogging from "@/service/emoteLogging.js";
 import { formatDateTime } from "src/utils/dateUtils.js";
 
 function buildSingleEmoteResponse(
