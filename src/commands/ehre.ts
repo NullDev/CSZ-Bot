@@ -149,20 +149,23 @@ export default class EhreCommand implements ApplicationCommand {
 
     async handleInteraction(command: CommandInteraction, context: BotContext) {
         if (!command.isChatInputCommand()) {
-            // TODO: Solve this on a type level
             return;
         }
 
-        const subcommand = command.options.getSubcommand();
-        if (subcommand === "tabelle") {
-            await command.reply(await createEhreTable(context));
-            return;
-        }
-
-        const user = command.options.getUser("user", true);
-        if (subcommand === "add") {
-            const reply = await ehreService.addEhre(command.user, user);
-            await command.reply(reply);
+        const subCommand = command.options.getSubcommand();
+        switch (subCommand) {
+            case "tabelle": {
+                await command.reply(await createEhreTable(context));
+                return;
+            }
+            case "add": {
+                const user = command.options.getUser("user", true);
+                const reply = await ehreService.addEhre(command.user, user);
+                await command.reply(reply);
+                return;
+            }
+            default:
+                throw new Error("Unknown subcommand");
         }
     }
 }
