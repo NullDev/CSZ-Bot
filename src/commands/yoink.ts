@@ -12,7 +12,7 @@ import log from "@log";
 
 import type { ApplicationCommand, MessageCommand } from "./command.js";
 import type { ProcessableMessage } from "../service/command.js";
-import type { BotContext } from "../context.js";
+import type { BotContext } from "@/context.js";
 import { ensureChatInputCommand } from "../utils/interactionUtils.js";
 import * as emoteService from "../service/emote.js";
 

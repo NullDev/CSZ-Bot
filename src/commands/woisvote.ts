@@ -17,7 +17,7 @@ import {
 import type { ReactionHandler } from "../handler/ReactionHandler.js";
 import type { ApplicationCommand } from "./command.js";
 import * as woisAction from "../storage/woisAction.js";
-import type { BotContext } from "../context.js";
+import type { BotContext } from "@/context.js";
 import { chunkArray } from "../utils/arrayUtils.js";
 import log from "@log";
 

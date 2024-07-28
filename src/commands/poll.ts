@@ -12,7 +12,7 @@ import {
     type User,
 } from "discord.js";
 
-import type { BotContext } from "../context.js";
+import type { BotContext } from "@/context.js";
 import type { MessageCommand } from "./command.js";
 import { parseLegacyMessageParts, type ProcessableMessage } from "../service/command.js";
 import * as timeUtils from "../utils/time.js";

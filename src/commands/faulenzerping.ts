@@ -12,7 +12,7 @@ import {
     type Snowflake,
 } from "discord.js";
 
-import type { BotContext } from "../context.js";
+import type { BotContext } from "@/context.js";
 import type { ApplicationCommand } from "./command.js";
 import { chunkArray } from "../utils/arrayUtils.js";
 import * as time from "../utils/time.js";

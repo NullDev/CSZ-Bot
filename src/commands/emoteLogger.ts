@@ -1,6 +1,6 @@
 import type { ProcessableMessage } from "../service/command.js";
 import type { SpecialCommand } from "./command.js";
-import type { BotContext } from "../context.js";
+import type { BotContext } from "@/context.js";
 
 import * as emoteService from "../service/emote.js";
 import * as emoteLogging from "../service/emoteLogging.js";

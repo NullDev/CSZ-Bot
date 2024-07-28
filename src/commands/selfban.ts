@@ -1,7 +1,7 @@
 import { time, TimestampStyles } from "discord.js";
 
 import type { MessageCommand } from "./command.js";
-import type { BotContext } from "../context.js";
+import type { BotContext } from "@/context.js";
 import type { ProcessableMessage } from "../service/command.js";
 
 import * as banService from "../service/ban.js";

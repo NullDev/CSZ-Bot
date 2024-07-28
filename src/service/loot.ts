@@ -15,7 +15,7 @@ import {
 } from "discord.js";
 import { Temporal } from "@js-temporal/polyfill";
 
-import type { BotContext } from "../context.js";
+import type { BotContext } from "@/context.js";
 import type { Loot } from "../storage/db/model.js";
 import { randomEntry, randomEntryWeighted } from "../utils/arrayUtils.js";
 import * as loot from "../storage/loot.js";

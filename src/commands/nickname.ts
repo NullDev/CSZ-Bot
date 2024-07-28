@@ -13,7 +13,7 @@ import {
     type Snowflake,
 } from "discord.js";
 
-import type { BotContext } from "../context.js";
+import type { BotContext } from "@/context.js";
 import type { ApplicationCommand, AutocompleteCommand } from "./command.js";
 import log from "@log";
 import { ensureChatInputCommand } from "../utils/interactionUtils.js";

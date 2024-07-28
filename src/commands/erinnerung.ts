@@ -11,7 +11,7 @@ import * as chrono from "chrono-node";
 
 import type { MessageCommand, ApplicationCommand } from "./command.js";
 import type { ProcessableMessage } from "../service/command.js";
-import type { BotContext } from "../context.js";
+import type { BotContext } from "@/context.js";
 import log from "@log";
 import * as reminderService from "../storage/reminders.js";
 import type { Reminder } from "../storage/db/model.js";

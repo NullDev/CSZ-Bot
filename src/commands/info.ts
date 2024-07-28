@@ -10,7 +10,7 @@ import {
 
 import type { ApplicationCommand, MessageCommand } from "./command.js";
 import type { ProcessableMessage } from "../service/command.js";
-import type { BotContext } from "../context.js";
+import type { BotContext } from "@/context.js";
 import assertNever from "../utils/assertNever.js";
 
 interface GitHubContributor {

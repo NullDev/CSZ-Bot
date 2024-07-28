@@ -1,7 +1,7 @@
 import * as nickName from "../storage/nickName.js";
 import { randomEntry } from "../utils/arrayUtils.js";
 import log from "@log";
-import type { BotContext } from "../context.js";
+import type { BotContext } from "@/context.js";
 
 export async function rerollNicknames(context: BotContext) {
     log.debug("Entered `rerollNicknames`");

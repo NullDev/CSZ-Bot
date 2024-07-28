@@ -1,6 +1,6 @@
 import type { MessageReaction, User } from "discord.js";
 
-import type { BotContext } from "../context.js";
+import type { BotContext } from "@/context.js";
 import type { ProcessableMessage } from "./command.js";
 
 import * as dbEmote from "../storage/emote.js";

@@ -11,7 +11,7 @@ import {
 } from "discord.js";
 
 import type { ApplicationCommand } from "./command.js";
-import type { BotContext } from "../context.js";
+import type { BotContext } from "@/context.js";
 import type { EhrePoints } from "../storage/db/model.js";
 import type { ReactionHandler } from "../handler/ReactionHandler.js";
 import * as ehre from "../storage/ehre.js";

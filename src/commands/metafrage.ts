@@ -1,7 +1,7 @@
 import { parseArgs, type ParseArgsConfig } from "node:util";
 
 import type { MessageCommand } from "./command.js";
-import type { BotContext } from "../context.js";
+import type { BotContext } from "@/context.js";
 import type { ProcessableMessage } from "../service/command.js";
 
 import { parseLegacyMessageParts } from "../service/command.js";

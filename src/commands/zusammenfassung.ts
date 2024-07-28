@@ -1,5 +1,5 @@
 import type { MessageCommand } from "./command.js";
-import type { BotContext } from "../context.js";
+import type { BotContext } from "@/context.js";
 import type { ProcessableMessage } from "../service/command.js";
 
 export default class ZusammenfassungCommand implements MessageCommand {

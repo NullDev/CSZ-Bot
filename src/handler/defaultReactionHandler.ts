@@ -1,7 +1,7 @@
 import type { MessageReaction, User } from "discord.js";
 
 import type { ProcessableMessage } from "../service/command.js";
-import type { BotContext } from "../context.js";
+import type { BotContext } from "@/context.js";
 import * as additionalMessageData from "../storage/additionalMessageData.js";
 import * as fadingMessage from "../storage/fadingMessage.js";
 import type { ReactionHandler } from "./ReactionHandler.js";

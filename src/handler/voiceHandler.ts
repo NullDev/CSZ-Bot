@@ -17,7 +17,7 @@ import {
 import type { VoiceChannel } from "discord.js";
 import * as gad from "get-audio-duration";
 
-import type { BotContext } from "../context.js";
+import type { BotContext } from "@/context.js";
 
 import { randomEntry } from "../utils/arrayUtils.js";
 import log from "@log";

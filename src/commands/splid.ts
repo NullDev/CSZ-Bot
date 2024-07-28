@@ -14,7 +14,7 @@ import {
 // @ts-ignore Types are somehow broken :shrug:
 import { SplidClient } from "splid-js";
 
-import type { BotContext } from "../context.js";
+import type { BotContext } from "@/context.js";
 import type { ApplicationCommand, AutocompleteCommand } from "./command.js";
 import type { SplidGroup } from "../storage/db/model.js";
 import { ensureChatInputCommand } from "../utils/interactionUtils.js";

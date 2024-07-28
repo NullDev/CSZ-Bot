@@ -1,7 +1,7 @@
 import { type CacheType, type CommandInteraction, TimestampStyles, time } from "discord.js";
 import { SlashCommandBuilder } from "discord.js";
 import type { ApplicationCommand } from "./command.js";
-import type { BotContext } from "../context.js";
+import type { BotContext } from "@/context.js";
 import * as banService from "../storage/ban.js";
 import type { Ban } from "../storage/db/model.js";
 import log from "@log";

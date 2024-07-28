@@ -2,7 +2,7 @@ import { type CommandInteraction, SlashCommandBuilder, SlashCommandStringOption 
 
 import * as austrianTranslation from "../storage/austrianTranslation.js";
 import type { ApplicationCommand } from "./command.js";
-import type { BotContext } from "../context.js";
+import type { BotContext } from "@/context.js";
 import { ensureChatInputCommand } from "../utils/interactionUtils.js";
 
 export default class OidaCommand implements ApplicationCommand {

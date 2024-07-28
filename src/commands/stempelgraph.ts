@@ -10,7 +10,7 @@ import {
 import { Resvg } from "@resvg/resvg-js";
 
 import type { ApplicationCommand } from "./command.js";
-import type { BotContext } from "../context.js";
+import type { BotContext } from "@/context.js";
 import * as stempel from "../storage/stempel.js";
 import log from "@log";
 

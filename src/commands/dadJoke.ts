@@ -2,7 +2,7 @@ import { cleanContent } from "discord.js";
 
 import type { ProcessableMessage } from "../service/command.js";
 import type { SpecialCommand } from "./command.js";
-import type { BotContext } from "../context.js";
+import type { BotContext } from "@/context.js";
 import { substringAfter } from "../utils/stringUtils.js";
 import { randomEntry } from "../utils/arrayUtils.js";
 

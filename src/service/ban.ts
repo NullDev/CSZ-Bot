@@ -1,5 +1,5 @@
 import { time, type GuildMember, type User, TimestampStyles } from "discord.js";
-import type { BotContext } from "../context.js";
+import type { BotContext } from "@/context.js";
 
 import * as ban from "../storage/ban.js";
 import { formatDuration } from "../utils/dateUtils.js";

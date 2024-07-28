@@ -1,4 +1,4 @@
-import type { BotContext } from "../context.js";
+import type { BotContext } from "@/context.js";
 import type { ProcessableMessage } from "../service/command.js";
 import type { MessageCommand } from "./command.js";
 

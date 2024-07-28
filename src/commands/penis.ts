@@ -1,7 +1,7 @@
 // @ts-ignore
 import type { User } from "discord.js";
 
-import type { BotContext } from "../context.js";
+import type { BotContext } from "@/context.js";
 import * as penis from "../storage/penis.js";
 import type { MessageCommand } from "./command.js";
 import type { ProcessableMessage } from "../service/command.js";

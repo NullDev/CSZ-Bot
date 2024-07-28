@@ -1,6 +1,6 @@
 import type { Collection, GuildMember, Snowflake } from "discord.js";
 
-import type { BotContext } from "../context.js";
+import type { BotContext } from "@/context.js";
 import * as penis from "../storage/penis.js";
 import * as boob from "../storage/boob.js";
 import { shuffleArray } from "../utils/arrayUtils.js";

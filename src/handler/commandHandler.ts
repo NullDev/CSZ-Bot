@@ -18,7 +18,7 @@ import {
  * message commands and relies on the "new commands"
  */
 import type { ApplicationCommand, Command, SpecialCommand } from "../commands/command.js";
-import type { BotContext } from "../context.js";
+import type { BotContext } from "@/context.js";
 import * as banService from "../service/ban.js";
 import log from "@log";
 

@@ -1,6 +1,6 @@
 import scheduleCron, { type CronOptions } from "croner";
 
-import type { BotContext } from "../context.js";
+import type { BotContext } from "@/context.js";
 import { rerollNicknames } from "../service/nickNameRoll.js";
 import { connectAndPlaySaufen } from "../handler/voiceHandler.js";
 import { reminderHandler } from "../commands/erinnerung.js";

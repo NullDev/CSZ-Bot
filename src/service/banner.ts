@@ -1,7 +1,7 @@
 import * as path from "node:path";
 import * as fs from "node:fs/promises";
 
-import type { BotContext } from "../context.js";
+import type { BotContext } from "@/context.js";
 import { randomEntry } from "../utils/arrayUtils.js";
 import log from "@log";
 

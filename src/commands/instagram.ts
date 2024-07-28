@@ -1,7 +1,7 @@
 import type { Message } from "discord.js";
 
 import type { SpecialCommand } from "./command.js";
-import type { BotContext } from "../context.js";
+import type { BotContext } from "@/context.js";
 import * as instagramService from "../service/instagram.js";
 
 const instagramOptions = {

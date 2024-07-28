@@ -1,7 +1,7 @@
 import { ChannelType } from "discord.js";
 
 import type { MessageCommand } from "./command.js";
-import type { BotContext } from "../context.js";
+import type { BotContext } from "@/context.js";
 
 import { parseLegacyMessageParts, type ProcessableMessage } from "../service/command.js";
 import { defer } from "../utils/interactionUtils.js";

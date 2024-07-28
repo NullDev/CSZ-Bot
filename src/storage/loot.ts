@@ -1,6 +1,6 @@
 import type { GuildChannel, GuildMember, Message, TextChannel, User } from "discord.js";
 
-import type { BotContext } from "../context.js";
+import type { BotContext } from "@/context.js";
 import type { Loot } from "./db/model.js";
 
 import db from "@db";
