@@ -53,6 +53,8 @@ export enum LootTypeId {
     RADIOACTIVE_WASTE = 21,
     SAHNE = 22,
     AEHRE = 23,
+    CROWDSTRIKE = 24,
+    POWERADE_BLAU = 25,
 }
 const lootTemplates: loot.LootTemplate[] = [
     {
@@ -304,6 +306,23 @@ const lootTemplates: loot.LootTemplate[] = [
             const ehre = await import("../storage/ehre.js");
             await ehre.addPoints(winner.id, 1);
         },
+    },
+    {
+        id: LootTypeId.CROWDSTRIKE,
+        weight: 1,
+        displayName: "Crowdstrike Falcon",
+        titleText: "Crowdstrike Falcon Installation",
+        description: "Bitti nicht rebooti und Bilocki nutzi",
+        emote: ":eagle:",
+        asset: "assets/loot/24-crowdstrike.jpg",
+    },
+    {
+        id: LootTypeId.POWERADE_BLAU,
+        weight: 1,
+        displayName: "Blaue Powerade",
+        titleText: "Blaue Powerade",
+        description: "Efrischend erquickend. Besonders mit Vodka. Oder Korn.",
+        asset: "assets/loot/24-powerrade-blau.jpg"
     },
 ] as const;
 
