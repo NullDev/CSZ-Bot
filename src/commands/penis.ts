@@ -1,4 +1,3 @@
-// @ts-ignore
 import { time, TimestampStyles, type User } from "discord.js";
 
 import type { BotContext } from "@/context.js";
