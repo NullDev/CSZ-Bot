@@ -49,4 +49,4 @@ jobs:
         key: ${{ secrets.SSH_KEY }}
         port: ${{ secrets.SSH_PORT }}
         envs: WORKING_DIRECTORY
-        script: ${{ env.BOT_HOME_DIR }}/deploy.sh
+        script: ${{ env.BOT_HOME_DIR }}/.infra/deploy.sh

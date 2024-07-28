@@ -148,7 +148,7 @@ jobs:
         key: ${{ secrets.SSH_KEY }}
         port: ${{ secrets.SSH_PORT }}
         envs: BOT_HOME_PATH,EPHEMERAL_BOT_CONFIG,BOT_ARGS,BOT_IMAGE
-        script: ${{ env.BOT_HOME_PATH }}/deploy-ephemeral.sh
+        script: ${{ env.BOT_HOME_PATH }}/.infra/deploy-ephemeral.sh
 
     - name: Comment PR
       uses: thollander/actions-comment-pull-request@v2
