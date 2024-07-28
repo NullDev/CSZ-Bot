@@ -9,6 +9,7 @@ import type { Command } from "@/commands/command.js";
 import log from "@log";
 
 const commandExtensions = [".ts", ".js"];
+const ignoredExtensions = [".spec.ts", ".test.ts", ".d.ts", ".test.js", ".spec.js"];
 
 export async function readAvailableCommands(context: BotContext): Promise<Command[]> {
     const modules = loadRawCommandModules(context, context.path.commands);
@@ -28,6 +29,9 @@ async function* loadRawCommandModules(context: BotContext, commandDir: string) {
 
     for (const file of commandFiles) {
         if (!commandExtensions.some(extension => file.endsWith(extension))) {
+            continue;
+        }
+        if (ignoredExtensions.some(extension => file.endsWith(extension))) {
             continue;
         }
 
