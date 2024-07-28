@@ -9,6 +9,7 @@ import type {
     TextChannel,
     VoiceChannel,
     APIInteractionGuildMember,
+    Message,
 } from "discord.js";
 import { ChannelType } from "discord.js";
 import { Temporal } from "@js-temporal/polyfill";
@@ -122,6 +123,10 @@ export interface BotContext {
         hasBotDenyRole: (member: GuildMember | APIInteractionGuildMember) => boolean;
         hasRoleDenyRole: (member: GuildMember | APIInteractionGuildMember) => boolean;
         isRejoiner: (member: GuildMember | APIInteractionGuildMember) => boolean;
+    };
+
+    channelGuard: {
+        isInBotSpam: (message: Message) => boolean;
     };
 }
 
@@ -296,6 +301,10 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
             hasBotDenyRole: member => hasRoleById(member, config.role.botDenyRoleId),
             hasRoleDenyRole: member => hasRoleById(member, config.role.roleDenyRoleId),
             isRejoiner: member => hasRoleById(member, config.role.shameRoleId),
+        },
+
+        channelGuard: {
+            isInBotSpam: message => message.channelId === config.textChannel.botSpamChannelId,
         },
     };
 }

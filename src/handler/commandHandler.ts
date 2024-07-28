@@ -29,7 +29,6 @@ import TriggerReactOnKeyword from "@/commands/special/keywordReact.js";
 import SplidCommand from "@/commands/splid.js";
 
 import { isProcessableMessage, type ProcessableMessage } from "@/service/command.js";
-import { isMessageInBotSpam } from "@/utils/channelUtils.js";
 
 /**  Commands that need special init parameters and cannot be instantiated automatically */
 const staticCommands: readonly Command[] = [
@@ -190,7 +189,10 @@ const commandMessageHandler = async (
         cmd => cmd.name.toLowerCase() === lowerCommand || cmd.aliases?.includes(lowerCommand),
     );
 
-    if (context.roleGuard.hasBotDenyRole(message.member) && !isMessageInBotSpam(context, message)) {
+    if (
+        context.roleGuard.hasBotDenyRole(message.member) &&
+        !context.channelGuard.isInBotSpam(message)
+    ) {
         await message.member.send(
             "Du hast dich scheinbar beschissen verhalten und darfst daher keine Befehle in diesem Channel ausführen!",
         );
