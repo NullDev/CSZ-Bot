@@ -321,7 +321,7 @@ const lootTemplates: loot.LootTemplate[] = [
         weight: 1,
         displayName: "Blaue Powerade",
         titleText: "Blaue Powerade",
-        description: "Efrischend erquickend. Besonders mit Vodka. Oder Korn.",
+        description: "Erfrischend erquickend. Besonders mit Vodka. Oder Korn.",
         asset: "assets/loot/24-powerade-blau.jpg",
     },
 ] as const;
