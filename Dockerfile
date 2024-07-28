@@ -20,6 +20,8 @@ FROM oven/bun:alpine
     COPY ./ /app/
 
     ARG RELEASE_IDENTIFIER
-    RUN echo "RELEASE_IDENTIFIER=$RELEASE_IDENTIFIER" >> /app/.env
+    ARG BUILD_NUMBER
+    RUN echo "RELEASE_IDENTIFIER=$RELEASE_IDENTIFIER" >> /app/.env && \
+        echo "BUILD_NUMBER=$BUILD_NUMBER" >> /app/.env
 
     ENTRYPOINT ["bun", "src/app.ts"]

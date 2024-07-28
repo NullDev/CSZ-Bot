@@ -92,6 +92,7 @@ jobs:
         labels: ${{ steps.meta.outputs.labels }}
         build-args: |
           RELEASE_IDENTIFIER=${{ github.sha }}
+          BUILD_NUMBER=${{ github.run_number }}
         load: true
         cache-from: type=gha
         cache-to: type=gha,mode=max

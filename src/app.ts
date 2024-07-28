@@ -30,6 +30,11 @@ import * as guildRageQuit from "@/storage/guildRageQuit.js";
 import * as cronService from "@/service/cron.js";
 
 const env = process.env;
+
+const commitHash = env.RELEASE_IDENTIFIER || undefined; // || instead of ?? to make empty string undefined
+const buildMetadata = env.BUILD_NUMBER ? `+build.${env.BUILD_NUMBER}` : "";
+const release = commitHash ? `csz-bot@${commitHash}${buildMetadata}` : undefined;
+
 {
     const prodMode =
         env.NODE_ENV === "production" ? ` ${terminal.highlightWarn(" production ")} mode` : "";
@@ -43,26 +48,21 @@ const env = process.env;
     console.log(` └───────────┘${prodMode}`);
     console.log();
 
-    if (env.RELEASE_IDENTIFIER) {
-        console.log(`Release: ${env.RELEASE_IDENTIFIER}`);
+    if (release) {
+        console.log(`Release: ${release}`);
         console.log();
     }
 }
 
-log.info("Bot starting up...");
+log.info(`Bot starting up...${release ? ` (release: ${release})` : ""}`);
+
 const config = await readConfig();
 
-if (env.RELEASE_IDENTIFIER) {
-    log.info(`Release: ${env.RELEASE_IDENTIFIER}`);
-}
-
 if (config.sentry?.dsn) {
-    // || instead of ?? to make empty string undefined
-    const commitHash = env.RELEASE_IDENTIFIER || undefined;
     sentry.init({
         dsn: config.sentry.dsn,
         environment: env.NODE_ENV,
-        release: commitHash ? `csz-bot@${commitHash}` : undefined,
+        release,
     });
 }
 
