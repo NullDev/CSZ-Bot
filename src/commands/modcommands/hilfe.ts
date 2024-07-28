@@ -1,7 +1,7 @@
 import type { MessageCommand } from "@/commands/command.js";
 import type { BotContext } from "@/context.js";
 import type { ProcessableMessage } from "@/service/command.js";
-import * as chunking from "@/service/chunking.js";
+import * as chunkingService from "@/service/chunking.js";
 
 import { replacePrefixPlaceholders } from "@/commands/hilfe.js";
 import * as commandService from "@/service/command.js";
@@ -37,7 +37,7 @@ export default class ModHilfeCommand implements MessageCommand {
             return;
         }
 
-        const chunks = chunking.splitInChunks(lines, {
+        const chunks = chunkingService.splitInChunks(lines, {
             charLimitPerChunk: 2000,
             chunkOpeningLine: "```css",
             chunkClosingLine: "```",

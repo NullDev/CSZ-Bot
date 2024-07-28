@@ -1,7 +1,7 @@
 import type { ProcessableMessage } from "@/service/command.js";
 import type { SpecialCommand } from "@/commands/command.js";
 
-import * as ehre from "@/service/ehre.js";
+import * as ehreService from "@/service/ehre.js";
 
 export default class AutoEhreCommand implements SpecialCommand {
     name = "AutoEhre";
@@ -38,7 +38,7 @@ export default class AutoEhreCommand implements SpecialCommand {
             return;
         }
 
-        const reply = await ehre.addEhre(message.author, repliedToMessage.author);
+        const reply = await ehreService.addEhre(message.author, repliedToMessage.author);
         await message.reply(reply);
     }
 }

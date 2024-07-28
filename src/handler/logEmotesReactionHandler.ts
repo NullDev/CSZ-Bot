@@ -1,6 +1,6 @@
 import type { ReactionHandler } from "./ReactionHandler.js";
 
-import * as emoteLogging from "@/service/emoteLogging.js";
+import * as emoteLoggingService from "@/service/emoteLogging.js";
 
 export default {
     displayName: "Log Emotes Reaction Handler",
@@ -14,6 +14,6 @@ export default {
             return;
         }
 
-        await emoteLogging.processReactionAdd(reactionEvent, context);
+        await emoteLoggingService.processReactionAdd(reactionEvent, context);
     },
 } satisfies ReactionHandler;

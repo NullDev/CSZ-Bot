@@ -2,7 +2,7 @@ import { SlashCommandBuilder, type CommandInteraction } from "discord.js";
 
 import type { ApplicationCommand } from "@/commands/command.js";
 import type { BotContext } from "@/context.js";
-import * as emoteLogging from "@/service/emoteLogging.js";
+import * as emoteLoggingService from "@/service/emoteLogging.js";
 
 export default class EmoteStatsCommand implements ApplicationCommand {
     name = "emote-stats";
@@ -13,7 +13,7 @@ export default class EmoteStatsCommand implements ApplicationCommand {
         .setDescription(this.description);
 
     async handleInteraction(command: CommandInteraction, context: BotContext): Promise<void> {
-        const stats = await emoteLogging.getGlobalStats(10);
+        const stats = await emoteLoggingService.getGlobalStats(10);
         const totalEmotes = Math.sumPrecise(stats.map(s => s.count)) | 0;
         await command.reply({
             embeds: [

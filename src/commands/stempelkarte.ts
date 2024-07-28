@@ -13,7 +13,7 @@ import {
 
 import type { ApplicationCommand } from "@/commands/command.js";
 
-import * as stempel from "@/service/stempel.js";
+import * as stempelService from "@/service/stempel.js";
 import { chunkArray } from "@/utils/arrayUtils.js";
 import log from "@log";
 
@@ -133,7 +133,7 @@ export default class StempelkarteCommand implements ApplicationCommand {
         const getUserById = (id: Snowflake) =>
             command.guild?.members.cache.find(member => member.id === id);
 
-        const allInvitees = await stempel.getStempelByInviter(ofMember);
+        const allInvitees = await stempelService.getStempelByInviter(ofMember);
 
         if (allInvitees.length === 0) {
             await command.reply({

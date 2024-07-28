@@ -6,7 +6,7 @@ import {
 } from "discord.js";
 
 import type { ApplicationCommand } from "@/commands/command.js";
-import * as stempel from "@/service/stempel.js";
+import * as stempelService from "@/service/stempel.js";
 import { randomEntry } from "@/utils/arrayUtils.js";
 
 const replies = [
@@ -55,7 +55,7 @@ export default class StempelCommand implements ApplicationCommand {
             return;
         }
 
-        const isNewInvite = await stempel.createStempel(inviter, invitedUser);
+        const isNewInvite = await stempelService.createStempel(inviter, invitedUser);
         if (isNewInvite) {
             const reply = randomEntry(replies)
                 .replace("{0}", inviter.toString())

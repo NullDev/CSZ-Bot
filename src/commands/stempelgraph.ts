@@ -11,7 +11,7 @@ import { Resvg } from "@resvg/resvg-js";
 
 import type { ApplicationCommand } from "@/commands/command.js";
 import type { BotContext } from "@/context.js";
-import * as stempel from "@/service/stempel.js";
+import * as stempelService from "@/service/stempel.js";
 import log from "@log";
 
 const supportedLayoutEngines = [
@@ -223,7 +223,7 @@ export default class StempelgraphCommand implements ApplicationCommand {
             return;
         }
 
-        const stempels = await stempel.getAllStempels();
+        const stempels = await stempelService.getAllStempels();
         log.debug(`Found ${stempels.length} Stempels`);
 
         const allUserIds = new Set<string>(

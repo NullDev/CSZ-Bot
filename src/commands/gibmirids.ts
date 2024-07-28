@@ -1,7 +1,7 @@
 import { ChannelType } from "discord.js";
 
 import type { ProcessableMessage } from "@/service/command.js";
-import * as chunking from "@/service/chunking.js";
+import * as chunkingService from "@/service/chunking.js";
 import type { MessageCommand } from "@/commands/command.js";
 import type { BotContext } from "@/context.js";
 
@@ -55,7 +55,7 @@ export default class GibMirIdsCommand implements MessageCommand {
         );
         lines.push(...roles.map(r => `- ${r.name}: \`${r.id}\``));
 
-        const chunks = chunking.splitInChunks(lines, {
+        const chunks = chunkingService.splitInChunks(lines, {
             chunkOpeningLine: "```css",
             chunkClosingLine: "```",
         });
