@@ -57,10 +57,12 @@ if (env.RELEASE_IDENTIFIER) {
 }
 
 if (config.sentry?.dsn) {
+    // || instead of ?? to make empty string undefined
+    const commitHash = env.RELEASE_IDENTIFIER || undefined;
     sentry.init({
         dsn: config.sentry.dsn,
         environment: env.NODE_ENV,
-        release: env.RELEASE_IDENTIFIER || undefined, // || instead of ?? to make empty string undefined
+        release: commitHash ? `csz-bot@${commitHash}` : undefined,
     });
 }
 
