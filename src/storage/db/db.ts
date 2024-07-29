@@ -3,7 +3,7 @@ import { fileURLToPath } from "node:url";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
 
-import * as sentry from "@sentry/bun";
+import { captureException, startInactiveSpan } from "@sentry/bun";
 import { FileMigrationProvider, Kysely, Migrator } from "kysely";
 import { BunSqliteDialect } from "kysely-bun-sqlite";
 
@@ -34,7 +34,7 @@ export async function connectToDb(databasePath: string) {
             switch (e.level) {
                 case "error":
                     log.error(info, "Error running query");
-                    sentry.captureException(e.error);
+                    captureException(e.error);
                     break;
                 case "query":
                     if (
@@ -46,6 +46,14 @@ export async function connectToDb(databasePath: string) {
                     ) {
                         return;
                     }
+
+                    startInactiveSpan({
+                        name: info.sql,
+                        op: "db.query",
+                        startTime: new Date(Date.now() - info.duration),
+                        onlyIfParent: true,
+                    }).end();
+
                     log.debug(info, "DB Query");
                     break;
                 default:
