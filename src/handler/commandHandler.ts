@@ -136,7 +136,7 @@ const commandInteractionHandler = async (
     log.debug(`Found a matching command ${matchingCommand.name}`);
 
     await sentry.startSpan(
-        { name: matchingCommand.name },
+        { name: matchingCommand.name, op: "command.interaction" },
         async () => await matchingCommand.handleInteraction(command, context),
     );
 };
@@ -211,7 +211,7 @@ const commandMessageHandler = async (
 
     if (hasPermissions(invoker, matchingCommand.requiredPermissions ?? [])) {
         return await sentry.startSpan(
-            { name: matchingCommand.name },
+            { name: matchingCommand.name, op: "command.message" },
             async () => await matchingCommand.handleMessage(message, context),
         );
     }
