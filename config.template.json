@@ -5,7 +5,8 @@
         "token": "<BOT_TOKEN>"
     },
     "sentry": {
-        "dsn": null
+        "dsn": null,
+        "tracesSampleRate": null
     },
     "activity": {
         // https://discord.com/developers/docs/topics/gateway-events#activity-object-activity-types

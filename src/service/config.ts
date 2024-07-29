@@ -55,6 +55,7 @@ export interface Config {
 
     sentry?: {
         dsn?: string | null;
+        tracesSampleRate?: number;
     };
 
     activity: {

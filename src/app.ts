@@ -59,6 +59,7 @@ if (config.sentry?.dsn) {
         dsn: config.sentry.dsn,
         environment: env.NODE_ENV,
         release,
+        tracesSampleRate: config.sentry?.tracesSampleRate ?? 1,
     });
 }
 
