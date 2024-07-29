@@ -16,15 +16,14 @@ cd "$TEMP_DIR"
 
 cp -r "$BOT_HOME_PATH/banners" "$TEMP_DIR"
 cp -r "$BOT_HOME_PATH/sounds" "$TEMP_DIR"
-cp -r "$BOT_HOME_PATH/compose.yaml" "$TEMP_DIR"
-cp -r "$BOT_HOME_PATH/compose.ephemeral.yaml" "$TEMP_DIR"
+cp -r "$BOT_HOME_PATH/.infra" "$TEMP_DIR"
 
 echo "$EPHEMERAL_BOT_CONFIG" >config.json
 echo "" >.env # Dummy env
 
 docker stop csz-bot-ephemeral || true
 docker rm csz-bot-ephemeral || true
-docker compose -p e2e -f compose.ephemeral.yaml pull bot
-docker compose -p e2e -f compose.ephemeral.yaml up \
+docker compose -p e2e -f .infra/compose.ephemeral.yaml pull bot
+docker compose -p e2e -f .infra/compose.ephemeral.yaml up \
     -d \
     --remove-orphans
