@@ -134,7 +134,11 @@ const commandInteractionHandler = async (
     }
 
     log.debug(`Found a matching command ${matchingCommand.name}`);
-    await matchingCommand.handleInteraction(command, context);
+
+    return sentry.startSpan(
+        { name: matchingCommand.name },
+        async () => await matchingCommand.handleInteraction(command, context),
+    );
 };
 
 const autocompleteInteractionHandler = async (
