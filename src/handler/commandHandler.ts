@@ -135,7 +135,7 @@ const commandInteractionHandler = async (
 
     log.debug(`Found a matching command ${matchingCommand.name}`);
 
-    return sentry.startSpan(
+    await sentry.startSpan(
         { name: matchingCommand.name },
         async () => await matchingCommand.handleInteraction(command, context),
     );
@@ -210,7 +210,7 @@ const commandMessageHandler = async (
     const invoker = message.member;
 
     if (hasPermissions(invoker, matchingCommand.requiredPermissions ?? [])) {
-        return sentry.startSpan(
+        return await sentry.startSpan(
             { name: matchingCommand.name },
             async () => await matchingCommand.handleMessage(message, context),
         );
