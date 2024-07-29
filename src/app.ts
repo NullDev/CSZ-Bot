@@ -38,8 +38,7 @@ const release =
         : undefined;
 
 {
-    const prodMode =
-        env.NODE_ENV === "production" ? ` ${terminal.highlightWarn(" production ")} mode` : "";
+    const prodMode = env.NODE_ENV === "production" ? terminal.highlightWarn(" prod mode ") : "";
 
     const cszBot = terminal.highlight(" CSZ Bot ");
     const year = new Date().getFullYear();
@@ -47,8 +46,8 @@ const release =
     console.log();
     console.log(" ┌───────────┐");
     console.log(` │ ${cszBot} │ Copyright (c) ${year} Users of the CSZ`);
-    console.log(` └───────────┘${prodMode}${release ? ` (${release})` : ""}`);
-    console.log();
+    console.log(" └───────────┘");
+    console.log(`  ${prodMode} ${release ? `(${release})` : ""}`);
 }
 
 log.info(`Bot starting up...${release ? ` (release: ${release})` : ""}`);
