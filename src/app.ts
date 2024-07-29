@@ -10,6 +10,7 @@ import * as kysely from "@/storage/db/db.js";
 
 import type { ReactionHandler } from "@/handler/ReactionHandler.js";
 import messageDeleteHandler from "@/handler/messageDeleteHandler.js";
+import roleAssignerHandler from "@/handler/roleAssignerHandler.js";
 import defaultReactionHandler from "@/handler/defaultReactionHandler.js";
 import logEmotesReactionHandler from "@/handler/logEmotesReactionHandler.js";
 import quoteReactionHandler from "@/handler/quoteHandler.js";
@@ -105,6 +106,7 @@ const reactionHandlers: ReactionHandler[] = [
     quoteReactionHandler,
     ehreReactionHandler,
     woisVoteReactionHandler,
+    roleAssignerHandler,
 ];
 
 process.on("unhandledRejection", err => log.error(err, "Unhandled rejection"));
