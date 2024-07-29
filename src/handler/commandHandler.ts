@@ -10,8 +10,8 @@ import {
     type PermissionsString,
     REST,
     Routes,
-    Snowflake,
 } from "discord.js";
+import * as sentry from "@sentry/bun";
 
 /**
  * Completely new bullish command handler it unifies slash commands and
@@ -288,6 +288,7 @@ export const messageCommandHandler = async (
                 await commandMessageHandler(cmdString, message, context);
             } catch (err) {
                 log.error(err, "Error while handling message command");
+                sentry.captureException(err);
 
                 // Not using message.reply because the original message might be deleted by the command handler
                 await message.channel.send(
