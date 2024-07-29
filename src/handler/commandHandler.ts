@@ -206,8 +206,9 @@ const commandMessageHandler = async (
     const invoker = message.member;
 
     if (hasPermissions(invoker, matchingCommand.requiredPermissions ?? [])) {
-        return sentry.startSpan({ name: matchingCommand.name }, () =>
-            matchingCommand.handleMessage(message, context),
+        return sentry.startSpan(
+            { name: matchingCommand.name },
+            async () => await matchingCommand.handleMessage(message, context),
         );
     }
 
