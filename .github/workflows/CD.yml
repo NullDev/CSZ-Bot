@@ -42,11 +42,11 @@ jobs:
     - name: Deploy CSZ Bot
       uses: appleboy/ssh-action@029f5b4aeeeb58fdfe1410a5d17f967dacf36262
       env:
-        WORKING_DIRECTORY: ${{ env.BOT_HOME_DIR }}/.infra
+        BOT_HOME_DIR: ${{ env.BOT_HOME_DIR }}
       with:
         host: ${{ secrets.SSH_HOST }}
         username: ${{ secrets.SSH_USERNAME }}
         key: ${{ secrets.SSH_KEY }}
         port: ${{ secrets.SSH_PORT }}
-        envs: WORKING_DIRECTORY
+        envs: BOT_HOME_DIR
         script: ${{ env.BOT_HOME_DIR }}/.infra/deploy.sh
