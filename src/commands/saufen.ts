@@ -112,7 +112,7 @@ export default class Saufen implements ApplicationCommand, AutocompleteCommand {
                 }
 
                 const ab = await res.arrayBuffer();
-                await fs.writeFile(targetPath, Buffer.from(ab));
+                await fs.writeFile(targetPath, new Uint8Array(ab));
 
                 await command.reply("Jo, habs eingefügt");
                 return;
