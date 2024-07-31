@@ -26,8 +26,6 @@ import log from "@log";
 
 const lootTimeoutMs = 60 * 1000;
 
-const excludedLootIds = [0, 7, 8, 13, 14, 15, 23];
-
 export enum LootTypeId {
     NICHTS = 0,
     KADSE = 1,
@@ -64,6 +62,7 @@ const lootTemplates: loot.LootTemplate[] = [
         titleText: "✨Nichts✨",
         description: "¯\\_(ツ)_/¯",
         asset: null,
+        excludeFromInventory: true,
     },
     {
         id: LootTypeId.KADSE,
@@ -128,6 +127,7 @@ const lootTemplates: loot.LootTemplate[] = [
         description: "🎲",
         emote: "🎲",
         asset: "assets/loot/07-wuerfelwurf.jpg",
+        excludeFromInventory: true,
         specialAction: async (_content, winner, channel, _loot) => {
             const rollService = await import("./roll.js");
             await rollService.rollInChannel(winner.user, channel, 1, 6);
@@ -141,6 +141,7 @@ const lootTemplates: loot.LootTemplate[] = [
         description: ":O",
         emote: "🎁",
         asset: null,
+        excludeFromInventory: true,
         specialAction: async (context, _winner, channel, _loot) => {
             await setTimeout(3000);
             await postLootDrop(context, channel);
@@ -190,6 +191,7 @@ const lootTemplates: loot.LootTemplate[] = [
         description: "Glückwunsch!",
         emote: "🤝",
         asset: "assets/loot/13-haendedruck.jpg",
+        excludeFromInventory: true,
     },
     {
         id: LootTypeId.ERLEUCHTUNG,
@@ -199,6 +201,7 @@ const lootTemplates: loot.LootTemplate[] = [
         description: "💡",
         emote: "💡",
         asset: null,
+        excludeFromInventory: true,
         specialAction: async (_context, winner, channel, _loot) => {
             const erleuchtungService = await import("./erleuchtung.js");
             await setTimeout(3000);
@@ -217,6 +220,7 @@ const lootTemplates: loot.LootTemplate[] = [
         description: "Tschüsseldorf!",
         emote: "🔨",
         asset: "assets/loot/15-ban.jpg",
+        excludeFromInventory: true,
         specialAction: async (context, winner, _channel, _loot) => {
             const banService = await import("./ban.js");
             await banService.banUser(
@@ -302,6 +306,7 @@ const lootTemplates: loot.LootTemplate[] = [
             "Irgendjemand muss ja den Server am laufen halten, kriegst dafür wertlose Internetpunkte",
         emote: ":aehre:",
         asset: "assets/loot/23-ehre.jpg",
+        excludeFromInventory: true,
         specialAction: async (context, winner, _channel, _loot) => {
             const ehre = await import("@/storage/ehre.js");
             await ehre.addPoints(winner.id, 1);
@@ -509,7 +514,9 @@ async function postLootDrop(context: BotContext, channel: GuildChannel) {
 
 export async function getInventoryContents(user: User) {
     const contents = await loot.findOfUser(user);
-    const displayableLoot = contents.filter(e => !excludedLootIds.includes(e.lootKindId));
+    const displayableLoot = contents.filter(
+        l => !(resolveLootTemplate(l.lootKindId)?.excludeFromInventory ?? true),
+    );
 
     const now = Date.now();
     const maxKebabAge = time.days(3);
@@ -538,4 +545,8 @@ export async function getInventoryContents(user: User) {
 export function getEmote(guild: Guild, item: Loot) {
     const e = lootTemplates.find(t => t.id === item.lootKindId)?.emote;
     return emote.resolveEmote(guild, e);
+}
+
+export function resolveLootTemplate(lootKindId: number) {
+    return lootTemplates.find(loot => loot.id === lootKindId);
 }

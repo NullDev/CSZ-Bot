@@ -12,6 +12,7 @@ export interface LootTemplate {
     titleText: string;
     description: string;
     emote?: string;
+    excludeFromInventory?: boolean;
     specialAction?: (
         context: BotContext,
         winner: GuildMember,
