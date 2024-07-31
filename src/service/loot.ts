@@ -515,7 +515,7 @@ async function postLootDrop(context: BotContext, channel: GuildChannel) {
 export async function getInventoryContents(user: User) {
     const contents = await loot.findOfUser(user);
     const displayableLoot = contents.filter(
-        l => !(resolveLootTemplate(l.lootKindId)?.excludeFromInventory ?? true),
+        l => !(resolveLootTemplate(l.lootKindId)?.excludeFromInventory ?? false),
     );
 
     const now = Date.now();
