@@ -1,3 +1,6 @@
+# syntax=docker/dockerfile:1
+# check=error=true
+
 FROM oven/bun:alpine AS runtime-dependencies
     WORKDIR /app
     RUN --mount=type=bind,source=package.json,target=package.json \
