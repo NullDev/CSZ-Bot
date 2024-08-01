@@ -24,7 +24,7 @@ FROM oven/bun:alpine
 
     ARG RELEASE_IDENTIFIER
     ARG BUILD_NUMBER
-    RUN echo "RELEASE_IDENTIFIER=$RELEASE_IDENTIFIER" >> /app/.env && \
-        echo "BUILD_NUMBER=$BUILD_NUMBER" >> /app/.env
+    RUN echo "RELEASE_IDENTIFIER=${RELEASE_IDENTIFIER:-debug}" >> /app/.env && \
+        echo "BUILD_NUMBER=${BUILD_NUMBER:-0}" >> /app/.env
 
     ENTRYPOINT ["bun", "src/app.ts"]
