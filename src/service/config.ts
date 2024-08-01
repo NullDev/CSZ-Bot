@@ -94,7 +94,12 @@ export interface Config {
             dropChance: number;
             allowedChannelIds?: Array<Snowflake> | null;
             /** ISO8601 duration */
-            max_time_passed_since_last_message: string;
+            maxTimePassedSinceLastMessage: string;
+
+            roles: {
+                /** ISO8601 duration */
+                asseGuardShiftDuration: string;
+            }
         };
         quotes: {
             emojiName: string;

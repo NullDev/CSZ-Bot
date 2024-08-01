@@ -41,7 +41,10 @@
         "loot": {
             "enabled": true,
             "scheduleCron": "*/15 * * * *",
-            "dropChance": 0.05
+            "dropChance": 0.05,
+            "roles": {
+                "asseGuardShiftDuration": "PT8H",
+            },
         },
         "quotes": {
             "emojiName": "zitat",

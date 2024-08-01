@@ -51,6 +51,10 @@ export interface BotContext {
             dropChance: number;
             allowedChannelIds?: readonly Snowflake[];
             maxTimePassedSinceLastMessage: Temporal.Duration;
+
+            roles: {
+                asseGuardShiftDuration: Temporal.Duration,
+            },
         };
         instagram: {
             rapidApiInstagramApiKey?: string;
@@ -233,8 +237,14 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
                 dropChance: config.command.loot?.dropChance ?? 0.05,
                 allowedChannelIds: config.command.loot?.allowedChannelIds ?? undefined,
                 maxTimePassedSinceLastMessage: Temporal.Duration.from(
-                    config.command.loot?.max_time_passed_since_last_message ?? "PT30M",
+                    config.command.loot?.maxTimePassedSinceLastMessage ?? "PT30M",
                 ),
+
+                roles: {
+                    asseGuardShiftDuration: Temporal.Duration.from(
+                        config.command.loot?.roles?.asseGuardShiftDuration ?? "PT8H",
+                    ),
+                }
             },
             instagram: {
                 rapidApiInstagramApiKey:
