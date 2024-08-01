@@ -54,6 +54,8 @@ export enum LootTypeId {
     AEHRE = 23,
     CROWDSTRIKE = 24,
     POWERADE_BLAU = 25,
+    GAULOISES_BLAU = 26,
+    MAXWELL = 27,
 }
 const lootTemplates: loot.LootTemplate[] = [
     {
@@ -329,6 +331,25 @@ const lootTemplates: loot.LootTemplate[] = [
         titleText: "Blaue Powerade",
         description: "Erfrischend erquickend. Besonders mit Vodka. Oder Korn.",
         asset: "assets/loot/25-powerade-blau.jpg",
+    },
+    {
+        id: LootTypeId.GAULOISES_BLAU,
+        weight: 1,
+        displayName: "Gauloises Blau",
+        titleText: "Eine Schachtel Gauloises Blau",
+        description:
+            "Rauchig, kräftig, französisch. Wie du in deinen Träumen.\n\nVerursacht Herzanfälle, genau wie dieser Server",
+        emote: "🚬",
+        asset: "assets/loot/26-gauloises-blau.jpg",
+    },
+    {
+        id: LootTypeId.MAXWELL,
+        weight: 1,
+        displayName: "Maxwell",
+        titleText: "Einen Maxwell",
+        description: "Der ist doch tot, oder?",
+        emote: "😸",
+        asset: "assets/loot/27-maxwell.jpg",
     },
 ] as const;
 
