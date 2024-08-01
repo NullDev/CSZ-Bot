@@ -79,6 +79,9 @@ export interface BotContext {
         woisgang: Role;
         winner: Role;
         emotifizierer: Role;
+
+        // Loot-Specific Roles
+        lootRoleAsseGuard: Role;
     };
 
     moderatorRoles: readonly Role[];
@@ -123,6 +126,8 @@ export interface BotContext {
         hasBotDenyRole: (member: GuildMember | APIInteractionGuildMember) => boolean;
         hasRoleDenyRole: (member: GuildMember | APIInteractionGuildMember) => boolean;
         isRejoiner: (member: GuildMember | APIInteractionGuildMember) => boolean;
+
+        isLootRoleAsseGuard: (member: GuildMember | APIInteractionGuildMember) => boolean;
     };
 
     channelGuard: {
@@ -262,6 +267,7 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
             woisgang: ensureRole(guild, role.woisgangRoleId),
             winner: ensureRole(guild, role.winnerRoleId),
             emotifizierer: ensureRole(guild, role.emotifiziererRoleId),
+            lootRoleAsseGuard: ensureRole(guild, role.lootRoleAsseGuardRoleId),
         },
 
         textChannels: {
@@ -301,6 +307,8 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
             hasBotDenyRole: member => hasRoleById(member, config.role.botDenyRoleId),
             hasRoleDenyRole: member => hasRoleById(member, config.role.roleDenyRoleId),
             isRejoiner: member => hasRoleById(member, config.role.shameRoleId),
+
+            isLootRoleAsseGuard: member => hasRoleById(member, config.role.lootRoleAsseGuardRoleId),
         },
 
         channelGuard: {

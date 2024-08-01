@@ -155,5 +155,6 @@ export interface Config {
         woisgangRoleId: Snowflake;
         winnerRoleId: Snowflake;
         emotifiziererRoleId: Snowflake;
+        lootRoleAsseGuardRoleId: Snowflake;
     };
 }
