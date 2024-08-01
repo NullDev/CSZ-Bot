@@ -59,7 +59,7 @@ export default class GebenCommand implements ApplicationCommand {
         const messages = [
             `Du hast dem Wärter ${currentGuard} etwas Atommüll und etwas süßes gegeben.`,
             `${currentGuard} hat sich über deinen Atommüll und die süßen Sachen gefreut.`,
-            `${currentGuard} hat sich gerade die hübschen Vögel angeschaut. Du konntest ihm unbemerkt ein Fass Atommüll an im vorbei rollen und hast ihm als Geschenk etwas süßes hinterlassen.`,
+            `${currentGuard} hat sich gerade die hübschen Vögel angeschaut. Du konntest unbemerkt ein Fass Atommüll an im vorbei rollen und hast ihm als Geschenk etwas süßes hinterlassen.`,
         ];
 
         await interaction.reply({
