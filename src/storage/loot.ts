@@ -86,3 +86,15 @@ export async function getUserLootsById(userId: User["id"], lootKindId: number, c
         .selectAll()
         .execute();
 }
+
+export async function transferLootToUser(lootId: Loot["id"], userId: User["id"], ctx = db()) {
+    // TODO: Maybe we need a "previous owner" field to track who gave the loot to the user
+    // Or we could add a soft-delete option, so we can just add a new entry
+    return await ctx
+        .updateTable("loot")
+        .set({
+            winnerId: userId,
+        })
+        .where("id", "=", lootId)
+        .execute();
+}

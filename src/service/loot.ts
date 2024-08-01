@@ -584,3 +584,11 @@ export function getEmote(guild: Guild, item: Loot) {
 export function resolveLootTemplate(lootKindId: number) {
     return lootTemplates.find(loot => loot.id === lootKindId);
 }
+
+export async function getUserLootsById(user: User, lootTypeId: number) {
+    return await loot.getUserLootsById(user.id, lootTypeId);
+}
+
+export function transferLootToUser(lootId: number, user: User) {
+    return loot.transferLootToUser(lootId, user.id);
+}

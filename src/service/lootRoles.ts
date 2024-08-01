@@ -2,8 +2,8 @@ import type { GuildChannel, GuildMember, TextChannel } from "discord.js";
 
 import type { BotContext } from "@/context.js";
 
-import * as lootModel from "@/storage/loot.js";
-import { LootTypeId } from "./loot.js";
+import log from "@log";
+import * as lootService from "@/service/loot.js";
 
 export async function startAsseGuardShift(
     context: BotContext,
@@ -39,7 +39,10 @@ export async function checkExpiredShifts(context: BotContext) {
 
     const currentGuards = context.roles.lootRoleAsseGuard.members;
     for (const m of currentGuards.values()) {
-        const drops = await lootModel.getUserLootsById(m.id, LootTypeId.SCHICHTBEGINN_ASSE_2);
+        const drops = await lootService.getUserLootsById(
+            m.user,
+            lootService.LootTypeId.SCHICHTBEGINN_ASSE_2,
+        );
         if (drops.length === 0) {
             await endAsseGuardShift(context, m);
             continue;
