@@ -77,3 +77,12 @@ export async function assignUserToLootDrop(
         .returningAll()
         .executeTakeFirst()) as ClaimedLoot | undefined;
 }
+
+export async function getUserLootsById(userId: User["id"], lootKindId: number, ctx = db()) {
+    return await ctx
+        .selectFrom("loot")
+        .where("winnerId", "=", userId)
+        .where("lootKindId", "=", lootKindId)
+        .selectAll()
+        .execute();
+}
