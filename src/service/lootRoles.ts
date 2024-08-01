@@ -1,11 +1,15 @@
-import type { GuildMember } from "discord.js";
+import type { GuildChannel, GuildMember, TextChannel } from "discord.js";
 
 import type { BotContext } from "@/context.js";
 
 import * as lootModel from "@/storage/loot.js";
 import { LootTypeId } from "./loot.js";
 
-export async function startAsseGuardShift(context: BotContext, member: GuildMember) {
+export async function startAsseGuardShift(
+    context: BotContext,
+    member: GuildMember,
+    announcementChannel: GuildChannel & TextChannel,
+) {
     const currentGuards = context.roles.lootRoleAsseGuard.members;
     if (currentGuards.has(member.id)) {
         return;
@@ -15,6 +19,15 @@ export async function startAsseGuardShift(context: BotContext, member: GuildMemb
         await m.roles.remove(context.roles.lootRoleAsseGuard);
     }
     await member.roles.add(context.roles.lootRoleAsseGuard);
+    await announcementChannel.send({
+        embeds: [
+            {
+                title: "Schichtbeginn",
+                description: `Die Wärterschicht von ${member} am Eingang des Atommüllendlagers hat begonnen.\n\nGegen etwas Süßes lässt er vielleicht ein Fass in die Grube werfen.`,
+                color: 0x00ff00,
+            },
+        ],
+    });
 }
 
 export async function checkExpiredShifts(context: BotContext) {

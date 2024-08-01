@@ -361,9 +361,9 @@ const lootTemplates: loot.LootTemplate[] = [
         emote: "🔒",
         asset: "assets/loot/28-asse-2.jpg",
         excludeFromInventory: true,
-        specialAction: async (context, winner, _channel, _loot) => {
+        specialAction: async (context, winner, channel, _loot) => {
             const lootRoles = await import("./lootRoles.js");
-            await lootRoles.startAsseGuardShift(context, winner);
+            await lootRoles.startAsseGuardShift(context, winner, channel);
         },
     },
 ] as const;
