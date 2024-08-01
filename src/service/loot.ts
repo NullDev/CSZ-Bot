@@ -57,7 +57,7 @@ export enum LootTypeId {
 const lootTemplates: loot.LootTemplate[] = [
     {
         id: LootTypeId.NICHTS,
-        weight: 25,
+        weight: 50,
         displayName: "Nichts",
         titleText: "✨Nichts✨",
         description: "¯\\_(ツ)_/¯",
