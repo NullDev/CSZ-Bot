@@ -57,3 +57,11 @@ export async function checkExpiredShifts(context: BotContext) {
 async function endAsseGuardShift(context: BotContext, member: GuildMember) {
     await member.roles.remove(context.roles.lootRoleAsseGuard);
 }
+
+export async function getCurrentAsseGuardOnDuty(context: BotContext) {
+    const currentGuards = context.roles.lootRoleAsseGuard.members;
+    if (currentGuards.size > 1) {
+        log.warn({ guards: [...currentGuards.keys()] }, "More than one guard is currently on duty");
+    }
+    return currentGuards.first();
+}

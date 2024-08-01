@@ -373,7 +373,7 @@ const lootTemplates: loot.LootTemplate[] = [
         - Pfeffi
         - eine Heiligsprechung von Jesus höchstpersönlich
         - Vogerlsalat
-        - Zugangsberechtigung für Asse II - Der Besitzer kann dort seine radioaktiven Müll entsorgen (der Wärter will für den Einlass trotzdem "etwas süßes" (also 1 Kadse))
+        - Einlass in den Berghain
 
     Special Loots mit besonderer Aktion?
         - Timeout?
