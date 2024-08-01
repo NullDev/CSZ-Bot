@@ -56,6 +56,7 @@ export enum LootTypeId {
     POWERADE_BLAU = 25,
     GAULOISES_BLAU = 26,
     MAXWELL = 27,
+    SCHICHTBEGINN_ASSE_2 = 28,
 }
 const lootTemplates: loot.LootTemplate[] = [
     {
@@ -350,6 +351,20 @@ const lootTemplates: loot.LootTemplate[] = [
         description: "Der ist doch tot, oder?",
         emote: "😸",
         asset: "assets/loot/27-maxwell.jpg",
+    },
+    {
+        id: LootTypeId.SCHICHTBEGINN_ASSE_2,
+        weight: 1,
+        displayName: "Wärter Asse II",
+        titleText: "Den Schichtbeginn in der Asse II",
+        description: "Deine Wärterschicht bei der Asse II beginnt!",
+        emote: "🔒",
+        asset: "assets/loot/28-asse-2.jpg",
+        excludeFromInventory: true,
+        specialAction: async (context, winner, _channel, _loot) => {
+            const lootRoles = await import("./lootRoles.js");
+            await lootRoles.startAsseGuardShift(context, winner);
+        },
     },
 ] as const;
 

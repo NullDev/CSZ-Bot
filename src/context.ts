@@ -53,8 +53,8 @@ export interface BotContext {
             maxTimePassedSinceLastMessage: Temporal.Duration;
 
             roles: {
-                asseGuardShiftDuration: Temporal.Duration,
-            },
+                asseGuardShiftDuration: Temporal.Duration;
+            };
         };
         instagram: {
             rapidApiInstagramApiKey?: string;
@@ -244,7 +244,7 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
                     asseGuardShiftDuration: Temporal.Duration.from(
                         config.command.loot?.roles?.asseGuardShiftDuration ?? "PT8H",
                     ),
-                }
+                },
             },
             instagram: {
                 rapidApiInstagramApiKey:

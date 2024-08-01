@@ -99,7 +99,7 @@ export interface Config {
             roles: {
                 /** ISO8601 duration */
                 asseGuardShiftDuration: string;
-            }
+            };
         };
         quotes: {
             emojiName: string;
