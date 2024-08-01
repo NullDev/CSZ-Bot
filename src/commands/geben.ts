@@ -48,7 +48,7 @@ export default class GebenCommand implements ApplicationCommand {
 
         if (sweetContent.length === 0) {
             await interaction.reply({
-                content: "Du hast keine süßen Sachen, mit dem du den Wärter bestechen kannst.",
+                content: "Du hast keine süßen Sachen, mit denen du den Wärter bestechen kannst.",
             });
             return;
         }
