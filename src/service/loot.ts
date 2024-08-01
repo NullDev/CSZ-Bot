@@ -337,7 +337,7 @@ const lootTemplates: loot.LootTemplate[] = [
         - Pfeffi
         - eine Heiligsprechung von Jesus höchstpersönlich
         - Vogerlsalat
-        - Zugangsberechtigung für Asse II - Der Besitzer kann dort seine radioaktiven Müll entsorgen
+        - Zugangsberechtigung für Asse II - Der Besitzer kann dort seine radioaktiven Müll entsorgen (der Wärter will für den Einlass trotzdem ein süßes Kätzchen)
 
     Special Loots mit besonderer Aktion?
         - Timeout?
