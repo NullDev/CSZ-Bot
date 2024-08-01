@@ -358,11 +358,11 @@ const lootTemplates: loot.LootTemplate[] = [
         - Pfeffi
         - eine Heiligsprechung von Jesus höchstpersönlich
         - Vogerlsalat
-        - Zugangsberechtigung für Asse II - Der Besitzer kann dort seine radioaktiven Müll entsorgen (der Wärter will für den Einlass trotzdem ein süßes Kätzchen)
+        - Zugangsberechtigung für Asse II - Der Besitzer kann dort seine radioaktiven Müll entsorgen (der Wärter will für den Einlass trotzdem "etwas süßes" (also 1 Kadse))
 
     Special Loots mit besonderer Aktion?
         - Timeout?
-        - Sonderrolle, die man nur mit Geschenk gewinnen kann und jedes Mal weitergereicht wird (Wächter des Pfeffis?)?
+        - Sonderrolle, die man nur mit Geschenk gewinnen kann und jedes Mal weitergereicht wird (Wächter des Pfeffis?)? Wärter bei Asse II?
 */
 
 export async function runDropAttempt(context: BotContext) {
