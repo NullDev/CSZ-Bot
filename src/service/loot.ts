@@ -8,10 +8,11 @@ import {
     ChannelType,
     ComponentType,
     type TextChannel,
-    type GuildChannel,
     type User,
     type Interaction,
     type Guild,
+    type GuildBasedChannel,
+    type TextBasedChannel,
 } from "discord.js";
 import { Temporal } from "@js-temporal/polyfill";
 
@@ -391,11 +392,7 @@ export async function runDropAttempt(context: BotContext) {
     await postLootDrop(context, targetChannel);
 }
 
-async function postLootDrop(context: BotContext, channel: GuildChannel) {
-    if (!channel.isTextBased()) {
-        return;
-    }
-
+async function postLootDrop(context: BotContext, channel: GuildBasedChannel & TextBasedChannel) {
     const hamster = context.guild.emojis.cache.find(e => e.name === "sad_hamster") ?? ":(";
 
     const validUntil = new Date(Date.now() + lootTimeoutMs);
