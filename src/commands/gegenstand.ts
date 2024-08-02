@@ -21,6 +21,11 @@ export default class GegenstandCommand implements ApplicationCommand {
         .addSubcommand(
             new SlashCommandSubcommandBuilder()
                 .setName("dispose-radioactive-waste")
+                .setNameLocalizations({
+                    de: "entsorge-atommüll",
+                    "en-US": "dispose-radioactive-waste",
+                    "en-GB": "dispose-radioactive-waste",
+                })
                 .setDescription("Gebe dem Wärter etwas Atommüll und etwas süßes"),
         );
 
