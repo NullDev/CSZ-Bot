@@ -1,20 +1,42 @@
-import { type CommandInteraction, SlashCommandBuilder } from "discord.js";
+import {
+    type CommandInteraction,
+    SlashCommandBuilder,
+    SlashCommandSubcommandBuilder,
+} from "discord.js";
 
 import type { BotContext } from "@/context.js";
 import type { ApplicationCommand } from "@/commands/command.js";
 import * as lootService from "@/service/loot.js";
 import * as lootRoleService from "@/service/lootRoles.js";
 import { randomEntry } from "@/utils/arrayUtils.js";
+import { ensureChatInputCommand } from "@/utils/interactionUtils.js";
 
-export default class GebenCommand implements ApplicationCommand {
-    name = "geben";
-    description = "Gebe dem Wärter etwas Atommüll und etwas süßes";
+export default class GegenstandCommand implements ApplicationCommand {
+    name = "gegenstand";
+    description = "Mache Dinge mit Gegenständen";
 
     applicationCommand = new SlashCommandBuilder()
         .setName(this.name)
-        .setDescription(this.description);
+        .setDescription(this.description)
+        .addSubcommand(
+            new SlashCommandSubcommandBuilder()
+                .setName("dispose-radioactive-waste")
+                .setDescription("Gebe dem Wärter etwas Atommüll und etwas süßes"),
+        );
 
     async handleInteraction(interaction: CommandInteraction, context: BotContext) {
+        const command = ensureChatInputCommand(interaction);
+        const subCommand = command.options.getSubcommand();
+        switch (subCommand) {
+            case "dispose-radioactive-waste":
+                await this.#disposeRadioactiveWaste(interaction, context);
+                break;
+            default:
+                throw new Error(`Unknown subcommand: "${subCommand}"`);
+        }
+    }
+
+    async #disposeRadioactiveWaste(interaction: CommandInteraction, context: BotContext) {
         const currentGuard = await lootRoleService.getCurrentAsseGuardOnDuty(context);
         if (!currentGuard) {
             await interaction.reply({
