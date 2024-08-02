@@ -23,7 +23,7 @@ export async function startAsseGuardShift(
         embeds: [
             {
                 title: "Schichtbeginn",
-                description: `Die Wärterschicht von ${member} am Eingang des Atommüllendlagers hat begonnen.\n\nGegen etwas Süßes lässt ${member} vielleicht ein Fass in die Grube werfen.`,
+                description: `Die Wärterschicht von ${member} am Eingang des Atommüllendlagers hat begonnen.\n\nGegen etwas Süßes lässt ${member} vielleicht ein Fass in der Grube verschwinden.`,
                 color: 0x00ff00,
             },
         ],
