@@ -373,7 +373,7 @@ const lootTemplates: loot.LootTemplate[] = [
         - Pfeffi
         - eine Heiligsprechung von Jesus höchstpersönlich
         - Vogerlsalat
-        - Einlass in den Berghain
+        - Einlass in den Berghain, am Eingang steht ein Golem, der 3 verschimnelte Döner frisst
 
     Special Loots mit besonderer Aktion?
         - Timeout?
