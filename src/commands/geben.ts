@@ -67,6 +67,9 @@ export default class GebenCommand implements ApplicationCommand {
                 {
                     title: "Atommüll entsorgt!",
                     description: randomEntry(messages),
+                    footer: {
+                      text: "Jetzt ist es das Problem vom deutschen Steuerzahler",
+                    },
                     color: 0x00ff00,
                 },
             ],
