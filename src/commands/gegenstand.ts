@@ -20,12 +20,7 @@ export default class GegenstandCommand implements ApplicationCommand {
         .setDescription(this.description)
         .addSubcommand(
             new SlashCommandSubcommandBuilder()
-                .setName("dispose-radioactive-waste")
-                .setNameLocalizations({
-                    de: "entsorge-atommüll",
-                    "en-US": "dispose-radioactive-waste",
-                    "en-GB": "dispose-radioactive-waste",
-                })
+                .setName("entsorgen")
                 .setDescription("Gebe dem Wärter etwas Atommüll und etwas süßes"),
         );
 
@@ -33,7 +28,7 @@ export default class GegenstandCommand implements ApplicationCommand {
         const command = ensureChatInputCommand(interaction);
         const subCommand = command.options.getSubcommand();
         switch (subCommand) {
-            case "dispose-radioactive-waste":
+            case "entsorgen":
                 await this.#disposeRadioactiveWaste(interaction, context);
                 break;
             default:
