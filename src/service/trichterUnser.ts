@@ -7,7 +7,7 @@ export async function getTrichterUnserEmbed(ctx: BotContext) {
         return;
     }
 
-    return new EmbedBuilder().setTitle(`Das ${trichterEmote}-Unser`).setDescription(`
+    const embed = new EmbedBuilder().setTitle(`Das ${trichterEmote}-Unser`).setDescription(`
 Unser Bier, das im Kühlschrank steht,
 geheiligt werde Dein Rausch.
 Dein Kater komme,
@@ -27,4 +27,8 @@ in Ewigkeit.
 
 Prost. �
 `);
+
+    await ctx.textChannels.hauptchat.send({
+        embeds: [embed],
+    });
 }
