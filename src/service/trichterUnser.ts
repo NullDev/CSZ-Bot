@@ -25,7 +25,7 @@ und der Kater
 und der Rausch
 in Ewigkeit.
 
-Prost. �
+Prost. 🍻
 `);
 
     await ctx.textChannels.hauptchat.send({
