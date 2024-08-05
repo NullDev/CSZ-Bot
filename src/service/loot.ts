@@ -56,6 +56,7 @@ export enum LootTypeId {
     POWERADE_BLAU = 25,
     GAULOISES_BLAU = 26,
     MAXWELL = 27,
+    SCHICHTBEGINN_ASSE_2 = 28,
 }
 const lootTemplates: loot.LootTemplate[] = [
     {
@@ -351,6 +352,20 @@ const lootTemplates: loot.LootTemplate[] = [
         emote: "😸",
         asset: "assets/loot/27-maxwell.jpg",
     },
+    {
+        id: LootTypeId.SCHICHTBEGINN_ASSE_2,
+        weight: 1,
+        displayName: "Wärter Asse II",
+        titleText: "Den Schichtbeginn in der Asse II",
+        description: "Deine Wärterschicht bei der Asse II beginnt!",
+        emote: "🔒",
+        asset: "assets/loot/28-asse-2.jpg",
+        excludeFromInventory: true,
+        specialAction: async (context, winner, channel, _loot) => {
+            const lootRoles = await import("./lootRoles.js");
+            await lootRoles.startAsseGuardShift(context, winner, channel);
+        },
+    },
 ] as const;
 
 /*
@@ -358,7 +373,7 @@ const lootTemplates: loot.LootTemplate[] = [
         - Pfeffi
         - eine Heiligsprechung von Jesus höchstpersönlich
         - Vogerlsalat
-        - Zugangsberechtigung für Asse II - Der Besitzer kann dort seine radioaktiven Müll entsorgen (der Wärter will für den Einlass trotzdem "etwas süßes" (also 1 Kadse))
+        - Einlass in den Berghain, am Eingang steht ein Golem, der einen verschimmelten Superdöner (besteht aus 3 verschimnelten Dönern) frisst
 
     Special Loots mit besonderer Aktion?
         - Timeout?
@@ -568,4 +583,12 @@ export function getEmote(guild: Guild, item: Loot) {
 
 export function resolveLootTemplate(lootKindId: number) {
     return lootTemplates.find(loot => loot.id === lootKindId);
+}
+
+export async function getUserLootsById(user: User, lootTypeId: number) {
+    return await loot.getUserLootsById(user.id, lootTypeId);
+}
+
+export function transferLootToUser(lootId: number, user: User) {
+    return loot.transferLootToUser(lootId, user.id);
 }
