@@ -321,7 +321,7 @@ const lootTemplates: loot.LootTemplate[] = [
         weight: 1,
         displayName: "Crowdstrike Falcon",
         titleText: "Crowdstrike Falcon Installation",
-        description: "Bitti nicht rebooti und Bilocki nutzi",
+        description: "Bitti nicht rebooti und Bitlocki nutzi",
         emote: ":eagle:",
         asset: "assets/loot/24-crowdstrike.jpg",
     },
