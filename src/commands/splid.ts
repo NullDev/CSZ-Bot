@@ -187,7 +187,7 @@ export default class SplidGroupCommand implements ApplicationCommand, Autocomple
             case "delete-group":
                 return this.handleDeleteGroup(command);
             default:
-                throw new Error(`Unknown subcommand ${subCommand}`);
+                throw new Error(`Unknown subcommand "${subCommand}"`);
         }
     }
 

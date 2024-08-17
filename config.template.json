@@ -41,7 +41,10 @@
         "loot": {
             "enabled": true,
             "scheduleCron": "*/15 * * * *",
-            "dropChance": 0.05
+            "dropChance": 0.05,
+            "roles": {
+                "asseGuardShiftDuration": "PT8H",
+            },
         },
         "quotes": {
             "emojiName": "zitat",
@@ -87,6 +90,7 @@
         "trustedBannedRoleId": "893179190571044914",
         "woisgangRoleId": "893179190235508825",
         "winnerRoleId": "1045422896740311070",
-        "emotifiziererRoleId": "893179190709477410"
+        "emotifiziererRoleId": "893179190709477410",
+        "lootRoleAsseGuardRoleId": "1268706685753622529"
     }
 }

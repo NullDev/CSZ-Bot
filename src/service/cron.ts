@@ -14,6 +14,7 @@ import { runDropAttempt } from "@/service/loot.js";
 import { clearWoisLogTask } from "@/service/voiceState.js";
 import { checkBirthdays } from "@/service/birthday.js";
 import { handleFadingMessages } from "@/service/fadingMessage.js";
+import { checkExpiredShifts } from "@/service/lootRoles.js";
 import { getTrichterUnserEmbed } from "@/service/trichterUnser.js";
 
 import * as poll from "@/commands/poll.js";
@@ -41,6 +42,7 @@ export async function schedule(context: BotContext) {
     cron("37 13 * * *", () => leetTask(context));
     cron("5 * * * *", () => clearWoisLogTask());
     cron("* * * * * *", () => handleFadingMessages(context));
+    cron("*/15 * * * *", () => checkExpiredShifts(context));
     cron("0 20 * * FRI", () => getTrichterUnserEmbed(context));
 
     const loot = context.commandConfig.loot;
