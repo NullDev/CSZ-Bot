@@ -9,6 +9,7 @@ const prices = {
     fridge: 10_000,
     inkPerMonth: 1,
     meal: 40,
+    ghettorade: 1.2955
 };
 
 export default class DoenerCommand implements MessageCommand {
