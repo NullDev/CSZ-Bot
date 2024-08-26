@@ -99,6 +99,11 @@ export default class DoenerCommand implements MessageCommand {
                 ? `Alternativ kannst du davon maximal ${(amount / prices.meal).toFixed(0)} mal essen gehen.`
                 : "";
 
+        const ghettoradeStr =
+            Math.random() > 0.7
+                ? `Du könntest dir aber auch knapp ${(amount / prices.ghettorade).toFixed(0)} köstliche Ghettorade Mischen zubereiten.`
+                : "";
+
         await targetMessage.reply({
             content:
                 knivesStr !== undefined
@@ -109,6 +114,7 @@ export default class DoenerCommand implements MessageCommand {
                           fridgeStr,
                           inkStr,
                           mealStr,
+                          ghettoradeStr,
                       ]
                           .filter(s => !!s)
                           .join("\n")
