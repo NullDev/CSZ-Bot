@@ -96,13 +96,12 @@ async function runMigrationsIfNeeded(db: Kysely<Database>) {
         const errors = results?.filter(r => r.status === "Error");
         if (errors) {
             for (const e of errors) {
-                log.error("Migration %s failed.", e.migrationName);
+                log.error(e, "Migration %s failed.", e.migrationName);
             }
         }
 
         if (error) {
-            log.error("Failed to migrate. Exiting.");
-            log.error(error);
+            log.error(error, "Failed to migrate. Exiting.");
             process.exit(1);
         }
 

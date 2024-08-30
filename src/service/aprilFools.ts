@@ -70,7 +70,7 @@ const logRenameResult = (result: PromiseSettledResult<GuildMember>[]) => {
 
     log.info(`${fulfilled.length} users where renamed. ${rejected.length} rename ops failed`);
     for (const rejection of rejected) {
-        log.error(`Rename failed because of: ${rejection.reason}`);
+        log.error(rejection, `Rename failed because of: ${rejection.reason}`);
     }
 };
 
