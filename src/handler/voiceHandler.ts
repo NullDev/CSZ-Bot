@@ -65,7 +65,7 @@ export async function connectAndPlaySaufen(context: BotContext, filename?: strin
     const fileToPlay = filename ?? randomEntry(files);
     const file = path.resolve(context.path.sounds, fileToPlay);
     try {
-        const duration = (await gad.getAudioDurationInSeconds(file)) * 1000;
+        const duration = (await gad.getAudioDurationInSeconds(file, "ffprobe")) * 1000;
         await playSaufen(file, duration);
         const connection = await connectToHauptwois(wois);
         connection.subscribe(player);
