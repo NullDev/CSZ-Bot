@@ -10,9 +10,11 @@ FROM oven/bun:alpine AS runtime-dependencies
 
 FROM oven/bun:alpine
     WORKDIR /app
+    # ffmpeg needed for get-audio-duration
     RUN apk add --no-cache \
         font-noto-emoji \
         fontconfig \
+        ffmpeg \
         font-liberation \
         && fc-cache -f -v
 

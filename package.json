@@ -47,7 +47,6 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^1.8.3",
-    "@ffprobe-installer/ffprobe": "^2.1.2",
     "@types/bun": "^1.1.8",
     "@types/jsdom": "^21.1.7",
     "@types/minimist": "^1.2.5",
@@ -58,11 +57,6 @@
     "typescript": "^5.6.0-dev.20240801"
   },
   "trustedDependencies": [
-    "@ffprobe-installer/ffprobe",
-    "@ffprobe-installer/linux-x64",
-    "@ffprobe-installer/linux-arm64",
-    "@ffprobe-installer/darwin-arm64",
-    "@ffprobe-installer/win32-x64",
     "@biomejs/biome",
     "lefthook"
   ],
