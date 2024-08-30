@@ -52,6 +52,10 @@ export default {
                 return;
             }
 
+            if (message.author.id !== botUser.id) {
+                return;
+            }
+
             const embedAuthor = message.embeds[0].author;
             if (embedAuthor === null) {
                 throw new Error("Embed author is null");
