@@ -32,7 +32,7 @@ export async function schedule(context: BotContext) {
     cron("1 0 * * *", () => checkBirthdays(context));
     cron("0 20 1-25 12 *", () => publishAocLeaderBoard(context));
     cron("0 0 * * 0", () => rerollNicknames(context));
-    cron("9 0-23 * * FRI-SUN", () => connectAndPlaySaufen(context));
+    cron("36 0-23 * * FRI-SUN", () => connectAndPlaySaufen(context));
     cron("* * * * *", () => reminderHandler(context));
     cron("* * * * *", () => woisVoteScheduler(context));
     cron("* * * * *", () => processBans(context));
