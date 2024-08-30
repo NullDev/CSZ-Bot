@@ -1,4 +1,5 @@
 import path from "node:path";
+import fs from "node:fs/promises";
 import { setTimeout } from "node:timers/promises";
 import { readdir } from "node:fs/promises";
 
@@ -65,6 +66,8 @@ export async function connectAndPlaySaufen(context: BotContext, filename?: strin
     const fileToPlay = filename ?? randomEntry(files);
     const file = path.resolve(context.path.sounds, fileToPlay);
     try {
+        await fs.chmod(ffprobe.path, 0o555);
+
         const duration = (await gad.getAudioDurationInSeconds(file, ffprobe.path)) * 1000;
         await playSaufen(file, duration);
         const connection = await connectToHauptwois(wois);
