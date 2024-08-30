@@ -15,6 +15,7 @@ import {
     VoiceConnectionStatus,
 } from "@discordjs/voice";
 import type { VoiceChannel } from "discord.js";
+import * as ffprobe from "@ffprobe-installer/ffprobe";
 import * as gad from "get-audio-duration";
 import * as sentry from "@sentry/bun";
 
@@ -64,7 +65,7 @@ export async function connectAndPlaySaufen(context: BotContext, filename?: strin
     const fileToPlay = filename ?? randomEntry(files);
     const file = path.resolve(context.path.sounds, fileToPlay);
     try {
-        const duration = (await gad.getAudioDurationInSeconds(file)) * 1000;
+        const duration = (await gad.getAudioDurationInSeconds(file, ffprobe.path)) * 1000;
         await playSaufen(file, duration);
         const connection = await connectToHauptwois(wois);
         connection.subscribe(player);
