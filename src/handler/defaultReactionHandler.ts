@@ -56,6 +56,10 @@ export default {
                 return;
             }
 
+            if (message.embeds.length !== 1) {
+                return;
+            }
+
             const embedAuthor = message.embeds[0].author;
             if (embedAuthor === null) {
                 throw new Error("Embed author is null");
