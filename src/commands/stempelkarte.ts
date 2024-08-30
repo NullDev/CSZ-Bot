@@ -10,6 +10,7 @@ import {
     SlashCommandUserOption,
     ChatInputCommandInteraction,
 } from "discord.js";
+import * as sentry from "@sentry/bun";
 
 import type { ApplicationCommand } from "@/commands/command.js";
 
@@ -171,6 +172,7 @@ export default class StempelkarteCommand implements ApplicationCommand {
                 files,
             });
         } catch (err) {
+            sentry.captureException(err);
             log.error(err, "Could not send stempelkarten");
         }
     }

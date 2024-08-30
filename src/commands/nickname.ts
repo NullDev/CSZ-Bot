@@ -12,6 +12,7 @@ import {
     type AutocompleteInteraction,
     type Snowflake,
 } from "discord.js";
+import * as sentry from "@sentry/bun";
 
 import type { BotContext } from "@/context.js";
 import type { ApplicationCommand, AutocompleteCommand } from "@/commands/command.js";
@@ -189,6 +190,7 @@ export default class NicknameCommand implements ApplicationCommand, Autocomplete
                 }
             }
         } catch (e) {
+            sentry.captureException(e);
             log.error(e);
             await cmd.reply("Das hätte nie passieren dürfen");
         }

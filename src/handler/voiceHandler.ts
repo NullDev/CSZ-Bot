@@ -16,6 +16,7 @@ import {
 } from "@discordjs/voice";
 import type { VoiceChannel } from "discord.js";
 import * as gad from "get-audio-duration";
+import * as sentry from "@sentry/bun";
 
 import type { BotContext } from "@/context.js";
 
@@ -35,7 +36,8 @@ async function connectToHauptwois(woisChannel: VoiceChannel): Promise<VoiceConne
         await entersState(connection, VoiceConnectionStatus.Ready, 30_000);
         return connection;
     } catch (err) {
-        log.error("Couldn't connect to Hauptwois", err);
+        sentry.captureException(err);
+        log.error(err, "Couldn't connect to Hauptwois");
         throw err;
     }
 }
@@ -70,6 +72,7 @@ export async function connectAndPlaySaufen(context: BotContext, filename?: strin
         await setTimeout(duration);
         connection.disconnect();
     } catch (err) {
-        log.error("Could not play saufen", err);
+        log.error(err, "Could not play saufen");
+        sentry.captureException(err);
     }
 }

@@ -111,6 +111,7 @@ export const registerAllApplicationCommandsAsGuildCommands = async (
         })) as unknown[];
         log.info(`Registered ${response.length} guild commands`);
     } catch (err) {
+        sentry.captureException(err);
         log.error(err, `Could not register application commands for guild ${context.guild.id}`);
     }
 };

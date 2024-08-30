@@ -1,4 +1,5 @@
 import type { Collection, GuildMember, Snowflake } from "discord.js";
+import * as sentry from "@sentry/bun";
 
 import type { BotContext } from "@/context.js";
 import * as penis from "@/storage/penis.js";
@@ -80,6 +81,7 @@ export const startAprilFools = async (context: BotContext): Promise<void> => {
         const result = await shuffleAllNicknames(context);
         logRenameResult(result);
     } catch (err) {
+        sentry.captureException(err);
         log.error(err, "Could not perform april fools joke");
     }
 };
@@ -91,6 +93,7 @@ export const endAprilFools = async (context: BotContext): Promise<void> => {
         const result = await resetAll(context);
         logRenameResult(result);
     } catch (err) {
+        sentry.captureException(err);
         log.error(err, "Could not end april fools joke");
     }
 };

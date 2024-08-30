@@ -8,6 +8,7 @@ import {
     SlashCommandStringOption,
 } from "discord.js";
 import { Resvg } from "@resvg/resvg-js";
+import * as sentry from "@sentry/bun";
 
 import type { ApplicationCommand } from "@/commands/command.js";
 import type { BotContext } from "@/context.js";
@@ -266,6 +267,7 @@ export default class StempelgraphCommand implements ApplicationCommand {
                 ],
             });
         } catch (err) {
+            sentry.captureException(err);
             log.error(err, "Could not draw stempelgraph");
         }
     }

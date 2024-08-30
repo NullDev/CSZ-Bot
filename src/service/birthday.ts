@@ -1,4 +1,5 @@
 import type { GuildMember, Role } from "discord.js";
+import * as sentry from "@sentry/bun";
 
 import log from "@log";
 import * as birthday from "@/storage/birthday.js";
@@ -37,6 +38,7 @@ export async function checkBirthdays(context: BotContext) {
         try {
             await member.roles.remove(birthdayRole);
         } catch (e) {
+            sentry.captureException(e);
             log.error(e, `Could not remove role "${birthdayRole}" from "${member}"`);
         }
     }

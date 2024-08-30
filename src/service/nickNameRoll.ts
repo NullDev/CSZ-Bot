@@ -1,3 +1,5 @@
+import * as sentry from "@sentry/bun";
+
 import * as nickName from "@/storage/nickName.js";
 import { randomEntry } from "@/utils/arrayUtils.js";
 import log from "@log";
@@ -23,6 +25,7 @@ async function updateNickname(context: BotContext, userId: string, storedNicknam
         const randomNickname = randomEntry(pickableNicknames);
         await member.setNickname(randomNickname);
     } catch (err) {
+        sentry.captureException(err);
         log.error(err, `Couldn't update user '${userId}' nickname`);
     }
 }

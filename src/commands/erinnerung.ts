@@ -8,6 +8,7 @@ import {
     time as formatTime,
 } from "discord.js";
 import * as chrono from "chrono-node";
+import * as sentry from "@sentry/bun";
 
 import type { MessageCommand, ApplicationCommand } from "@/commands/command.js";
 import type { ProcessableMessage } from "@/service/command.js";
@@ -177,6 +178,7 @@ const sendReminder = async (reminder: Reminder, context: BotContext) => {
         });
     } catch (err) {
         log.error(err, "Couldn't send reminder. Removing it...");
+        sentry.captureException(err);
     }
     await reminderService.removeReminder(reminder.id);
 };

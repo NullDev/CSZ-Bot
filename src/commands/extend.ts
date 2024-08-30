@@ -1,4 +1,5 @@
 import { type APIEmbedField, EmbedBuilder, type Message } from "discord.js";
+import * as sentry from "@sentry/bun";
 
 import type { MessageCommand } from "@/commands/command.js";
 import type { BotContext } from "@/context.js";
@@ -53,6 +54,7 @@ export default class ExtendCommand implements MessageCommand {
             replyMessage = await channel.messages.fetch(message.reference.messageId);
         } catch (err) {
             log.error(err, "Could not fetch replies");
+            sentry.captureException(err);
             return "Bruder irgendwas stimmt nicht mit deinem Reply ¯\\_(ツ)_/¯";
         }
 

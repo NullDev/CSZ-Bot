@@ -202,9 +202,10 @@ client.on("messageDelete", async message => {
         return;
     }
 
-    await messageDeleteHandler(message, botContext).catch(err =>
-        log.error(err, `[messageDelete] Error for ${message.id}`),
-    );
+    await messageDeleteHandler(message, botContext).catch(err => {
+        log.error(err, `[messageDelete] Error for ${message.id}`);
+        sentry.captureException(err);
+    });
 });
 
 client.on("error", e => log.error(e, "Discord Client Error"));
@@ -222,28 +223,23 @@ client.on("messageReactionAdd", async (event, user) => {
     const [entireEvent, entireUser] = await Promise.all([event.fetch(), user.fetch()]);
 
     for (const handler of reactionHandlers) {
-        await handler
-            .execute(entireEvent, entireUser, botContext, false)
-            .catch(err =>
-                log.error(
-                    err,
-                    `Handler "${handler.displayName}" failed during "messageReactionAdd".`,
-                ),
-            );
+        await handler.execute(entireEvent, entireUser, botContext, false).catch(err => {
+            log.error(err, `Handler "${handler.displayName}" failed during "messageReactionAdd".`);
+            sentry.captureException(err);
+        });
     }
 });
 client.on("messageReactionRemove", async (event, user) => {
     const [entireEvent, entireUser] = await Promise.all([event.fetch(), user.fetch()]);
 
     for (const handler of reactionHandlers) {
-        await handler
-            .execute(entireEvent, entireUser, botContext, true)
-            .catch(err =>
-                log.error(
-                    err,
-                    `Handler "${handler.displayName}" failed during "messageReactionRemove".`,
-                ),
+        await handler.execute(entireEvent, entireUser, botContext, true).catch(err => {
+            log.error(
+                err,
+                `Handler "${handler.displayName}" failed during "messageReactionRemove".`,
             );
+            sentry.captureException(err);
+        });
     }
 });
 

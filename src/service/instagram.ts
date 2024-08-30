@@ -2,6 +2,8 @@
 // https://rapidapi.com/ugoBoy/api/social-media-video-downloader
 // We're using the free tier, which has 150 videos per month
 
+import * as sentry from "@sentry/bun";
+
 import type { BotContext } from "@/context.js";
 
 import log from "@log";
@@ -99,6 +101,7 @@ export async function downloadInstagramContent(
             mediaUrl: sortLinksByVideoQuality(videoLinks).at(-1)!.link,
         };
     } catch (error) {
+        sentry.captureException(error);
         return {
             success: false,
             message: "Some random error occurred",

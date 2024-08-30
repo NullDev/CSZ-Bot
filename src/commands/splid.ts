@@ -10,6 +10,7 @@ import {
     SlashCommandUserOption,
     userMention,
 } from "discord.js";
+import * as sentry from "@sentry/bun";
 
 import type { BotContext } from "@/context.js";
 import type { ApplicationCommand, AutocompleteCommand } from "@/commands/command.js";
@@ -245,6 +246,7 @@ export default class SplidGroupCommand implements ApplicationCommand, Autocomple
                 content: "Hurensohn. Irgendwas ging schief. Schau mal in den Logs.",
             });
             log.error(err, "Error while adding Splid group");
+            sentry.captureException(err);
             return;
         }
     }

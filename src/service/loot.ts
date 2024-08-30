@@ -15,6 +15,7 @@ import {
     type TextBasedChannel,
 } from "discord.js";
 import { Temporal } from "@js-temporal/polyfill";
+import * as sentry from "@sentry/bun";
 
 import type { BotContext } from "@/context.js";
 import type { Loot } from "@/storage/db/model.js";
@@ -539,9 +540,10 @@ async function postLootDrop(context: BotContext, channel: GuildBasedChannel & Te
             .specialAction(context, winner, channel as TextChannel, claimedLoot)
             .catch(err => {
                 log.error(
-                    `Error while executing special action for loot ${claimedLoot.id} (template: ${template.id})`,
                     err,
+                    `Error while executing special action for loot ${claimedLoot.id} (template: ${template.id})`,
                 );
+                sentry.captureException(err);
             });
     }
 }

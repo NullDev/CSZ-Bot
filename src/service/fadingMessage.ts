@@ -1,4 +1,5 @@
 import type { TextChannel } from "discord.js";
+import * as sentry from "@sentry/bun";
 
 import type { BotContext } from "@/context.js";
 
@@ -22,6 +23,7 @@ export async function handleFadingMessages(context: BotContext) {
 
             await message.delete();
         } catch (error: unknown) {
+            sentry.captureException(error);
             if (error instanceof Error) {
                 log.warn(
                     `Failed to handle FadingMessage [${fadingMessage.id}] properly: ${error.stack}`,

@@ -1,6 +1,7 @@
 import { time, type GuildMember, type User, TimestampStyles } from "discord.js";
-import type { BotContext } from "@/context.js";
+import * as sentry from "@sentry/bun";
 
+import type { BotContext } from "@/context.js";
 import * as ban from "@/storage/ban.js";
 import { formatDuration } from "@/utils/dateUtils.js";
 
@@ -33,6 +34,7 @@ export async function processBans(context: BotContext) {
             await user.send(msg);
         }
     } catch (err) {
+        sentry.captureException(err);
         log.error(err, "Error processing bans.");
     }
 }

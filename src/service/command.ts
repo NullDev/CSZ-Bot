@@ -2,6 +2,7 @@ import * as fs from "node:fs/promises";
 import * as path from "node:path";
 
 import type { Guild, GuildMember, Message } from "discord.js";
+import * as sentry from "@sentry/bun";
 
 import type { BotContext } from "@/context.js";
 import type { Command } from "@/commands/command.js";
@@ -45,6 +46,7 @@ async function* loadRawCommandModules(context: BotContext, commandDir: string) {
         try {
             module = await import(moduleUrl.toString());
         } catch (err) {
+            sentry.captureException(err);
             log.error(err, `Could not load module "${moduleUrl}"`);
             continue;
         }
