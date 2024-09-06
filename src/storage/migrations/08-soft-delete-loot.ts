@@ -1,0 +1,12 @@
+import type { Kysely } from "kysely";
+
+export async function up(db: Kysely<any>) {
+    await db.schema
+        .alterTable("loot")
+        .addColumn("deletedAt", "timestamp", c => c.defaultTo(null))
+        .execute();
+}
+
+export async function down(_db: Kysely<any>) {
+    throw new Error("Not supported lol");
+}
