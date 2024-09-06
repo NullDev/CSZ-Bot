@@ -1,8 +1,8 @@
 import type { GuildChannel, GuildMember, Message, TextChannel, User } from "discord.js";
-import { sql } from "kysely";
+import { type ExpressionBuilder, sql } from "kysely";
 
 import type { BotContext } from "@/context.js";
-import type { Loot, LootId, LootInsertable, LootOrigin } from "./db/model.js";
+import type { Database, Loot, LootId, LootInsertable, LootOrigin } from "./db/model.js";
 
 import db from "@db";
 
@@ -22,6 +22,9 @@ export interface LootTemplate {
     ) => Promise<void>;
     asset: string | null;
 }
+
+const notDeleted = (eb: ExpressionBuilder<Database, "loot">) =>
+    eb.or([eb("deletedAt", "is", null), eb("deletedAt", ">", sql<string>`current_timestamp`)]);
 
 export async function createLoot(
     template: LootTemplate,
@@ -53,12 +56,7 @@ export async function findOfUser(user: User, ctx = db()) {
     return await ctx
         .selectFrom("loot")
         .where("winnerId", "=", user.id)
-        .where(eb =>
-            eb.or([
-                eb("deletedAt", "is", null),
-                eb("deletedAt", ">", sql<string>`current_timestamp`),
-            ]),
-        )
+        .where(notDeleted)
         .selectAll()
         .execute();
 }
@@ -67,12 +65,7 @@ export async function findOfMessage(message: Message<true>, ctx = db()) {
     return await ctx
         .selectFrom("loot")
         .where("messageId", "=", message.id)
-        .where(eb =>
-            eb.or([
-                eb("deletedAt", "is", null),
-                eb("deletedAt", ">", sql<string>`current_timestamp`),
-            ]),
-        )
+        .where(notDeleted)
         .selectAll()
         .executeTakeFirst();
 }
@@ -82,12 +75,7 @@ export async function getUserLootsById(userId: User["id"], lootKindId: number, c
         .selectFrom("loot")
         .where("winnerId", "=", userId)
         .where("lootKindId", "=", lootKindId)
-        .where(eb =>
-            eb.or([
-                eb("deletedAt", "is", null),
-                eb("deletedAt", ">", sql<string>`current_timestamp`),
-            ]),
-        )
+        .where(notDeleted)
         .selectAll()
         .execute();
 }
@@ -96,16 +84,10 @@ export async function getLootsByKindId(lootKindId: number, ctx = db()) {
     return await ctx
         .selectFrom("loot")
         .where("lootKindId", "=", lootKindId)
-        .where(eb =>
-            eb.or([
-                eb("deletedAt", "is", null),
-                eb("deletedAt", ">", sql<string>`current_timestamp`),
-            ]),
-        )
+        .where(notDeleted)
         .selectAll()
         .execute();
 }
-
 export async function transferLootToUser(
     lootId: Loot["id"],
     userId: User["id"],
