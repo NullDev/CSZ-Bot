@@ -2,7 +2,7 @@ import type { GuildChannel, GuildMember, Message, TextChannel, User } from "disc
 import { sql } from "kysely";
 
 import type { BotContext } from "@/context.js";
-import type { Loot, LootInsertable } from "./db/model.js";
+import type { Loot, LootId, LootInsertable } from "./db/model.js";
 
 import db from "@db";
 
@@ -78,16 +78,40 @@ export async function getLootsByKindId(lootKindId: number, ctx = db()) {
         .execute();
 }
 
-export async function transferLootToUser(lootId: Loot["id"], userId: User["id"], ctx = db()) {
+export async function transferLootToUser(
+    lootId: Loot["id"],
+    userId: User["id"],
+    trackPredecessor: boolean,
+    ctx = db(),
+) {
     // TODO: Maybe we need a "previous owner" field to track who gave the loot to the user
     // Or we could add a soft-delete option, so we can just add a new entry
-    return await ctx
-        .updateTable("loot")
-        .set({
-            winnerId: userId,
-        })
-        .where("id", "=", lootId)
-        .execute();
+    return await ctx.transaction().execute(async ctx => {
+        const oldLoot = await ctx
+            .selectFrom("loot")
+            .where("id", "=", lootId)
+            .forUpdate()
+            .selectAll()
+            .executeTakeFirstOrThrow();
+
+        await deleteLoot(oldLoot.id, ctx);
+
+        const replacement = trackPredecessor
+            ? { ...oldLoot, winnerId: userId, predecessor: lootId }
+            : { ...oldLoot, winnerId: userId, predecessor: null };
+
+        if ("id" in replacement) {
+            //@ts-ignore
+            // biome-ignore lint/performance/noDelete: Setting it to undefined would keep the key
+            delete replacement.id;
+        }
+
+        return await ctx
+            .insertInto("loot")
+            .values(replacement)
+            .returningAll()
+            .executeTakeFirstOrThrow();
+    });
 }
 
 export async function replaceLoot(
@@ -97,15 +121,11 @@ export async function replaceLoot(
     ctx = db(),
 ): Promise<Loot> {
     return await ctx.transaction().execute(async ctx => {
-        await ctx
-            .updateTable("loot")
-            .where("id", "=", lootId)
-            .set({ deletedAt: sql`current_timestamp` })
-            .execute();
+        await deleteLoot(lootId, ctx);
 
         const replacement = trackPredecessor
-            ? ({ ...replacementLoot, predecessor: lootId } as const)
-            : ({ ...replacementLoot, predecessor: null } as const);
+            ? { ...replacementLoot, predecessor: lootId }
+            : { ...replacementLoot, predecessor: null };
 
         return await ctx
             .insertInto("loot")
@@ -113,4 +133,14 @@ export async function replaceLoot(
             .returningAll()
             .executeTakeFirstOrThrow();
     });
+}
+
+export async function deleteLoot(lootId: Loot["id"], ctx = db()): Promise<LootId> {
+    const res = await ctx
+        .updateTable("loot")
+        .where("id", "=", lootId)
+        .set({ deletedAt: sql`current_timestamp` })
+        .returning("id")
+        .executeTakeFirstOrThrow();
+    return res.id;
 }

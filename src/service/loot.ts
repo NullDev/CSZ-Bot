@@ -614,8 +614,12 @@ export async function getLootsByKindId(lootTykeId: LootTypeId) {
     return await loot.getLootsByKindId(lootTykeId);
 }
 
-export function transferLootToUser(lootId: LootId, user: User) {
-    return loot.transferLootToUser(lootId, user.id);
+export function transferLootToUser(lootId: LootId, user: User, trackPredecessor: boolean) {
+    return loot.transferLootToUser(lootId, user.id, trackPredecessor);
+}
+
+export function deleteLoot(lootId: LootId) {
+    return loot.deleteLoot(lootId);
 }
 
 export function replaceLoot(
