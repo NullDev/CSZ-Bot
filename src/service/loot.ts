@@ -521,7 +521,7 @@ async function postLootDrop(context: BotContext, channel: GuildBasedChannel & Te
 
     const defaultWeights = lootTemplates.map(t => t.weight);
 
-    const weights = await getDropWeightAdjustments(interaction.user, defaultWeights);
+    const { messages, weights } = await getDropWeightAdjustments(interaction.user, defaultWeights);
 
     const template = randomEntryWeighted(lootTemplates, weights);
     const l = await loot.createLoot(template, validUntil, message);
@@ -557,7 +557,7 @@ async function postLootDrop(context: BotContext, channel: GuildBasedChannel & Te
                       }
                     : undefined,
                 footer: {
-                    text: `🎉 ${winner.displayName} hat das Geschenk geöffnet`,
+                    text: `🎉 ${winner.displayName} hat das Geschenk geöffnet\n${messages.join("\n")}`.trim(),
                 },
             },
         ],
@@ -632,6 +632,29 @@ export function transferLootToUser(lootId: number, user: User) {
     return loot.transferLootToUser(lootId, user.id);
 }
 
-async function getDropWeightAdjustments(user: User, weights: readonly number[]): Promise<number[]> {
-    return [...weights]; // TODO: User penalties
+type AdjustmentResult = {
+    messages: string[];
+    weights: number[];
+};
+
+async function getDropWeightAdjustments(
+    user: User,
+    weights: readonly number[],
+): Promise<AdjustmentResult> {
+    const waste = await getUserLootsById(user, LootTypeId.RADIOACTIVE_WASTE);
+    const messages = [];
+
+    let wasteFactor = 1;
+    if (waste.length > 0) {
+        const wasteDropPenalty = 1.05;
+        wasteFactor = Math.min(2, waste.length ** wasteDropPenalty);
+        messages.push(
+            "Du hast schon radioaktiven Müll, deshalb ist die Chance auf ein Geschenk geringer.",
+        );
+    }
+
+    return {
+        messages,
+        weights: [Math.ceil(weights[0] * wasteFactor) | 0, ...weights.slice(1)],
+    };
 }
