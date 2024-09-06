@@ -13,6 +13,7 @@ import {
     type Guild,
     type GuildBasedChannel,
     type TextBasedChannel,
+    GuildMember,
 } from "discord.js";
 import { Temporal } from "@js-temporal/polyfill";
 import * as sentry from "@sentry/bun";
@@ -518,7 +519,9 @@ async function postLootDrop(context: BotContext, channel: GuildBasedChannel & Te
         return;
     }
 
-    const weights = lootTemplates.map(t => t.weight); // TODO: User penalties
+    const defaultWeights = lootTemplates.map(t => t.weight);
+
+    const weights = await getDropWeightAdjustments(interaction.user, defaultWeights);
 
     const template = randomEntryWeighted(lootTemplates, weights);
     const l = await loot.createLoot(template, validUntil, message);
@@ -627,4 +630,8 @@ export async function getUserLootsById(user: User, lootTypeId: number) {
 
 export function transferLootToUser(lootId: number, user: User) {
     return loot.transferLootToUser(lootId, user.id);
+}
+
+async function getDropWeightAdjustments(user: User, weights: readonly number[]): Promise<number[]> {
+    return [...weights]; // TODO: User penalties
 }
