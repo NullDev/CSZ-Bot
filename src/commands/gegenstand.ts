@@ -79,7 +79,7 @@ export default class GegenstandCommand implements ApplicationCommand {
         await lootService.transferLootToUser(wasteContents[0].id, currentGuard.user, true);
 
         const messages = [
-            `Du hast dem Wärter ${currentGuard} etwas Atommüll und etwas süßes zum Naschen gegeben.`,
+            `Du hast dem Wärter ${currentGuard} etwas Atommüll und etwas Süßes zum Naschen gegeben.`,
             `${currentGuard} hat sich über deinen Atommüll und die süßen Sachen gefreut.`,
             `${currentGuard} hat sich gerade die hübschen Vögel angeschaut. Du konntest unbemerkt ein Fass Atommüll an im vorbei rollen und hast ihm als Geschenk etwas süßes hinterlassen.`,
         ];
