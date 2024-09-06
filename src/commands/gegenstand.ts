@@ -52,7 +52,7 @@ export default class GegenstandCommand implements ApplicationCommand {
         }
 
         const wasteContents = await lootService.getUserLootsById(
-            interaction.user,
+            interaction.user.id,
             lootService.LootTypeId.RADIOACTIVE_WASTE,
         );
 
@@ -64,7 +64,7 @@ export default class GegenstandCommand implements ApplicationCommand {
         }
 
         const sweetContent = await lootService.getUserLootsById(
-            interaction.user,
+            interaction.user.id,
             lootService.LootTypeId.KADSE,
         );
 

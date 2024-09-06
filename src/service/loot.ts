@@ -615,8 +615,8 @@ export function resolveLootTemplate(lootKindId: number) {
     return lootTemplates.find(loot => loot.id === lootKindId);
 }
 
-export async function getUserLootsById(user: User | Snowflake, lootTypeId: number) {
-    return await loot.getUserLootsById(typeof user === "string" ? user : user.id, lootTypeId);
+export async function getUserLootsById(userId: Snowflake, lootTypeId: number) {
+    return await loot.getUserLootsById(userId, lootTypeId);
 }
 
 export async function getLootsByKindId(lootTykeId: LootTypeId) {
@@ -648,7 +648,7 @@ async function getDropWeightAdjustments(
     user: User,
     weights: readonly number[],
 ): Promise<AdjustmentResult> {
-    const waste = await getUserLootsById(user, LootTypeId.RADIOACTIVE_WASTE);
+    const waste = await getUserLootsById(user.id, LootTypeId.RADIOACTIVE_WASTE);
     const messages = [];
 
     let wasteFactor = 1;
