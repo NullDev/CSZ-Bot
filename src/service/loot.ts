@@ -13,21 +13,21 @@ import {
     type Guild,
     type GuildBasedChannel,
     type TextBasedChannel,
-    GuildMember,
 } from "discord.js";
 import { Temporal } from "@js-temporal/polyfill";
 import * as sentry from "@sentry/bun";
 
 import type { BotContext } from "@/context.js";
-import type { Loot } from "@/storage/db/model.js";
+import type { Loot, LootId, LootInsertable } from "@/storage/db/model.js";
 import { randomEntry, randomEntryWeighted } from "@/utils/arrayUtils.js";
 import * as loot from "@/storage/loot.js";
-import * as time from "@/utils/time.js";
 import * as emote from "./emote.js";
 
 import log from "@log";
 
 const lootTimeoutMs = 60 * 1000;
+
+const ACHTUNG_NICHT_DROPBAR_WEIGHT_KG = 0;
 
 export enum LootTypeId {
     NICHTS = 0,
@@ -62,6 +62,7 @@ export enum LootTypeId {
     DRECK = 29,
     EI = 30,
     BRAVO = 31,
+    VERSCHIMMELTER_DOENER = 32,
 }
 
 const lootTemplates: loot.LootTemplate[] = [
@@ -400,6 +401,15 @@ const lootTemplates: loot.LootTemplate[] = [
         emote: ":newspaper2:",
         asset: "assets/loot/31-bravo.jpg",
     },
+    {
+        id: LootTypeId.VERSCHIMMELTER_DOENER,
+        weight: ACHTUNG_NICHT_DROPBAR_WEIGHT_KG,
+        displayName: "Verschimmelter Döner",
+        titleText: "Einen verschimmelten Döner",
+        description: "Du hättest ihn früher essen sollen",
+        emote: "🥙",
+        asset: null,
+    },
 ] as const;
 
 /*
@@ -465,8 +475,6 @@ export async function runDropAttempt(context: BotContext) {
 async function postLootDrop(context: BotContext, channel: GuildBasedChannel & TextBasedChannel) {
     const hamster = context.guild.emojis.cache.find(e => e.name === "sad_hamster") ?? ":(";
 
-    const validUntil = new Date(Date.now() + lootTimeoutMs);
-
     const takeLootButton = new ButtonBuilder()
         .setCustomId("take-loot")
         .setLabel("Geschenk nehmen")
@@ -524,11 +532,15 @@ async function postLootDrop(context: BotContext, channel: GuildBasedChannel & Te
     const { messages, weights } = await getDropWeightAdjustments(interaction.user, defaultWeights);
 
     const template = randomEntryWeighted(lootTemplates, weights);
-    const l = await loot.createLoot(template, validUntil, message);
+    const claimedLoot = await loot.createLoot(
+        template,
+        interaction.user,
+        message,
+        new Date(),
+        "drop",
+    );
 
     const reply = await interaction.deferReply({ ephemeral: true });
-
-    const claimedLoot = await loot.assignUserToLootDrop(interaction.user, l.id, new Date());
     if (!claimedLoot) {
         await reply.edit({
             content: `Upsi, da ist was schief gelaufi oder jemand anderes war schnelli ${hamster}`,
@@ -590,29 +602,7 @@ export async function getInventoryContents(user: User) {
     const displayableLoot = contents.filter(
         l => !(resolveLootTemplate(l.lootKindId)?.excludeFromInventory ?? false),
     );
-
-    const now = Date.now();
-    const maxKebabAge = time.days(3);
-
-    const res: typeof displayableLoot = [];
-    for (const loot of displayableLoot) {
-        if (!loot.claimedAt) {
-            continue;
-        }
-
-        const itemAge = now - new Date(loot.claimedAt).getTime();
-
-        if (loot.lootKindId === LootTypeId.DOENER && itemAge > maxKebabAge) {
-            res.push({
-                ...loot,
-                displayName: "Verschimmelter Döner",
-            });
-            continue;
-        }
-
-        res.push(loot);
-    }
-    return res;
+    return displayableLoot;
 }
 
 export function getEmote(guild: Guild, item: Loot) {
@@ -628,8 +618,24 @@ export async function getUserLootsById(user: User, lootTypeId: number) {
     return await loot.getUserLootsById(user.id, lootTypeId);
 }
 
-export function transferLootToUser(lootId: number, user: User) {
-    return loot.transferLootToUser(lootId, user.id);
+export async function getLootsByKindId(lootTykeId: LootTypeId) {
+    return await loot.getLootsByKindId(lootTykeId);
+}
+
+export function transferLootToUser(lootId: LootId, user: User, trackPredecessor: boolean) {
+    return loot.transferLootToUser(lootId, user.id, trackPredecessor);
+}
+
+export function deleteLoot(lootId: LootId) {
+    return loot.deleteLoot(lootId);
+}
+
+export function replaceLoot(
+    lootId: LootId,
+    replacement: LootInsertable,
+    trackPredecessor: boolean,
+) {
+    return loot.replaceLoot(lootId, replacement, trackPredecessor);
 }
 
 type AdjustmentResult = {
