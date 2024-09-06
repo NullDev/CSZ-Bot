@@ -58,7 +58,11 @@ export enum LootTypeId {
     GAULOISES_BLAU = 26,
     MAXWELL = 27,
     SCHICHTBEGINN_ASSE_2 = 28,
+    DRECK = 24,
+    EI = 25,
+    BRAVO = 26,
 }
+
 const lootTemplates: loot.LootTemplate[] = [
     {
         id: LootTypeId.NICHTS,
@@ -366,6 +370,34 @@ const lootTemplates: loot.LootTemplate[] = [
             const lootRoles = await import("./lootRoles.js");
             await lootRoles.startAsseGuardShift(context, winner, channel);
         },
+    },
+    {
+        id: LootTypeId.DRECK,
+        weight: 7,
+        displayName: "Ein Glas Dreck",
+        titleText: "Ein Glas Dreck",
+        description: "Ich hab ein Glas voll Dreck",
+        emote: ":jar:",
+        asset: "assets/loot/29-dirt.jpg",
+    },
+    {
+        id: LootTypeId.EI,
+        weight: 3,
+        displayName: "Ei",
+        titleText: "Ein Ei",
+        description:
+            "Jetzt wär geklärt, was zu erst da war, Ei oder ... (Ja was schlüpft daraus eigentlich?)",
+        emote: ":egg:",
+        asset: "assets/loot/30-egg.jpg",
+    },
+    {
+        id: LootTypeId.BRAVO,
+        weight: 2,
+        displayName: "Bravo",
+        titleText: "Eine Bravo von Speicher",
+        description: "Die Seiten kleben noch ein bisschen",
+        emote: ":newspaper2:",
+        asset: "assets/loot/31-bravo.jpg",
     },
 ] as const;
 
