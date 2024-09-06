@@ -378,7 +378,7 @@ const lootTemplates: loot.LootTemplate[] = [
         titleText: "Ein Glas Dreck",
         description: "Ich hab ein Glas voll Dreck",
         emote: ":jar:",
-        asset: "assets/loot/24-dirt.jpg",
+        asset: "assets/loot/29-dirt.jpg",
     },
     {
         id: LootTypeId.EI,
@@ -388,7 +388,7 @@ const lootTemplates: loot.LootTemplate[] = [
         description:
             "Jetzt wär geklärt, was zu erst da war, Ei oder ... (Ja was schlüpft daraus eigentlich?)",
         emote: ":egg:",
-        asset: "assets/loot/25-egg.jpg",
+        asset: "assets/loot/30-egg.jpg",
     },
     {
         id: LootTypeId.BRAVO,
@@ -397,7 +397,7 @@ const lootTemplates: loot.LootTemplate[] = [
         titleText: "Eine Bravo von Speicher",
         description: "Die Seiten kleben noch ein bisschen",
         emote: ":newspaper2:",
-        asset: "assets/loot/26-bravo.jpg",
+        asset: "assets/loot/31-bravo.jpg",
     },
 ] as const;
 
