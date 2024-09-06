@@ -491,7 +491,9 @@ async function postLootDrop(context: BotContext, channel: GuildBasedChannel & Te
         components: [new ActionRowBuilder<ButtonBuilder>().addComponents(takeLootButton)],
     });
 
-    const template = randomEntryWeighted(lootTemplates);
+    const weights = lootTemplates.map(t => t.weight);
+
+    const template = randomEntryWeighted(lootTemplates, weights);
     const l = await loot.createLoot(template, validUntil, message);
 
     let interaction: Interaction | undefined = undefined;

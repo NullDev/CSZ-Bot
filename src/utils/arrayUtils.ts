@@ -13,20 +13,20 @@ export function randomEntry<T>(array: readonly T[]): T {
     return array[(array.length * Math.random()) | 0];
 }
 
-export type WeightedElement = {
-    weight: number;
-};
-
-export function randomEntryWeighted<T extends WeightedElement>(
+export function randomEntryWeighted<T>(
     array: readonly Readonly<T>[],
+    weights: readonly number[],
 ): Readonly<T> {
     if (array.length === 0) {
         throw new Error("Cannot select random entry from empty array");
     }
+    if (array.length !== weights.length) {
+        throw new Error("Array and weights must have the same length");
+    }
 
     const prefixSum = [0];
-    for (let i = 1; i < array.length; ++i) {
-        prefixSum[i] = array[i].weight + prefixSum[i - 1];
+    for (let i = 1; i < weights.length; ++i) {
+        prefixSum[i] = weights[i] + prefixSum[i - 1];
     }
 
     const offset = Math.random() * prefixSum[prefixSum.length - 1];
