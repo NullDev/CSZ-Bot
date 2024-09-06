@@ -27,6 +27,8 @@ import log from "@log";
 
 const lootTimeoutMs = 60 * 1000;
 
+const ACHTUNG_NICHT_DROPBAR_WEIGHT_KG = 0;
+
 export enum LootTypeId {
     NICHTS = 0,
     KADSE = 1,
@@ -401,7 +403,7 @@ const lootTemplates: loot.LootTemplate[] = [
     },
     {
         id: LootTypeId.VERSCHIMMELTER_DOENER,
-        weight: 0, // cannot be obtained via drop
+        weight: ACHTUNG_NICHT_DROPBAR_WEIGHT_KG,
         displayName: "Verschimmelter Döner",
         titleText: "Einen verschimmelten Döner",
         description: "Du hättest ihn früher essen sollen",
