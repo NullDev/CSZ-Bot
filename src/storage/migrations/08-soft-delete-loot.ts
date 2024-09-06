@@ -7,6 +7,7 @@ export async function up(db: Kysely<any>) {
         .addColumn("predecessor", "integer", c => c.references("loot.id").defaultTo(null))
         .dropColumn("validUntil")
         .execute();
+    await db.deleteFrom("loot").where("winnerId", "is", null).execute();
 
     // IDs at the time of migration
     enum LootKindId {
