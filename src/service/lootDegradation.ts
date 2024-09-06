@@ -17,6 +17,16 @@ export async function degradeItems(_context: BotContext) {
             continue;
         }
 
+        const fridges = await lootService.getUserLootsById(
+            k.winnerId,
+            lootService.LootTypeId.KUEHLSCHRANK,
+        );
+
+        if (fridges.length > 0) {
+            // user has a fridge, don't verschimmel döner
+            continue;
+        }
+
         await lootService.replaceLoot(
             k.id,
             {

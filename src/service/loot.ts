@@ -13,6 +13,7 @@ import {
     type Guild,
     type GuildBasedChannel,
     type TextBasedChannel,
+    type Snowflake,
 } from "discord.js";
 import { Temporal } from "@js-temporal/polyfill";
 import * as sentry from "@sentry/bun";
@@ -614,8 +615,8 @@ export function resolveLootTemplate(lootKindId: number) {
     return lootTemplates.find(loot => loot.id === lootKindId);
 }
 
-export async function getUserLootsById(user: User, lootTypeId: number) {
-    return await loot.getUserLootsById(user.id, lootTypeId);
+export async function getUserLootsById(user: User | Snowflake, lootTypeId: number) {
+    return await loot.getUserLootsById(typeof user === "string" ? user : user.id, lootTypeId);
 }
 
 export async function getLootsByKindId(lootTykeId: LootTypeId) {
