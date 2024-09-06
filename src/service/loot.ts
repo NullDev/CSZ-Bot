@@ -58,9 +58,9 @@ export enum LootTypeId {
     GAULOISES_BLAU = 26,
     MAXWELL = 27,
     SCHICHTBEGINN_ASSE_2 = 28,
-    DRECK = 24,
-    EI = 25,
-    BRAVO = 26,
+    DRECK = 29,
+    EI = 30,
+    BRAVO = 31,
 }
 
 const lootTemplates: loot.LootTemplate[] = [
