@@ -1,18 +1,14 @@
-import type { MessageReaction, User } from "discord.js";
+import type { MessageReaction } from "discord.js";
 
-import type { BotContext } from "../context.js";
-import type { ProcessableMessage } from "./commandService.js";
+import type { BotContext } from "@/context.js";
+import type { ProcessableMessage } from "@/service/command.js";
 
-import * as dbEmote from "../storage/emote.js";
-import * as emoteService from "./emoteService.js";
+import * as dbEmote from "@/storage/emote.js";
+import * as emoteService from "./emote.js";
 
 import log from "@log";
 
-export async function processReactionAdd(
-    reactionEvent: MessageReaction,
-    invoker: User,
-    _context: BotContext,
-) {
+export async function processReactionAdd(reactionEvent: MessageReaction, _context: BotContext) {
     const message = reactionEvent.message;
     if (!message.inGuild()) {
         return;
@@ -37,23 +33,14 @@ export async function processReactionAdd(
         parsedEmote.animated,
         emoteService.getEmoteUrl(parsedEmote),
         message,
-        invoker,
     );
-}
-
-export async function processReactionRemove(
-    reactionEvent: MessageReaction,
-    invoker: User,
-    _context: BotContext,
-) {
-    // TODO: Implement
-    log.info({ emoji: reactionEvent.emoji }, "Reaction removed");
 }
 
 export async function processMessage(message: ProcessableMessage, context: BotContext) {
     const emotes = emoteService.extractEmotesFromMessage(message.content);
     for (const emote of emotes) {
-        const resolvedEmote = context.client.emojis.cache.get(emote.id);
+        const resolvedEmote =
+            context.client.emojis.cache.get(emote.id) || context.client.emojis.resolveId(emote.id);
         if (!resolvedEmote) {
             log.warn({ emote }, "Could not resolve emote");
             continue;
@@ -96,6 +83,14 @@ export async function persistCurrentGuildEmotes(context: BotContext) {
     }
 }
 
-export async function getUserStats(user: User, limit: number) {
-    return dbEmote.getUsage(user, limit | 0);
+export async function getGlobalStats(limit: number) {
+    return dbEmote.getGlobalUsage(limit | 0);
+}
+
+export async function getMatchingEmotes(query: string, limit: number) {
+    if (query.trim().length === 0) {
+        return [];
+    }
+
+    return dbEmote.searchEmote(query, limit | 0);
 }

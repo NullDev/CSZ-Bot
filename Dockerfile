@@ -1,3 +1,6 @@
+# syntax=docker/dockerfile:1
+# check=error=true
+
 FROM oven/bun:alpine AS runtime-dependencies
     WORKDIR /app
     RUN --mount=type=bind,source=package.json,target=package.json \
@@ -7,9 +10,11 @@ FROM oven/bun:alpine AS runtime-dependencies
 
 FROM oven/bun:alpine
     WORKDIR /app
+    # ffmpeg needed for get-audio-duration
     RUN apk add --no-cache \
         font-noto-emoji \
         fontconfig \
+        ffmpeg \
         font-liberation \
         && fc-cache -f -v
 
@@ -18,5 +23,10 @@ FROM oven/bun:alpine
 
     COPY --from=runtime-dependencies /app/node_modules /app/node_modules
     COPY ./ /app/
+
+    ARG RELEASE_IDENTIFIER
+    ARG BUILD_NUMBER
+    RUN echo "RELEASE_IDENTIFIER=${RELEASE_IDENTIFIER:-debug}" >> /app/.env && \
+        echo "BUILD_NUMBER=${BUILD_NUMBER:-0}" >> /app/.env
 
     ENTRYPOINT ["bun", "src/app.ts"]

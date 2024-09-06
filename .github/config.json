@@ -1,11 +1,12 @@
 {
     // This file supports comments and trailing commas
     "auth": {
-        "clientId": "<CLIENT_ID>",
-        "token": "<BOT_TOKEN>"
+        "clientId": "${CLIENT_ID}",
+        "token": "${BOT_TOKEN}"
     },
     "sentry": {
-        "dsn": null
+        "dsn": null,
+        "tracesSampleRate": null
     },
     "activity": {
         // https://discord.com/developers/docs/topics/gateway-events#activity-object-activity-types
@@ -40,7 +41,10 @@
         "loot": {
             "enabled": true,
             "scheduleCron": "*/15 * * * *",
-            "dropChance": 0.05
+            "dropChance": 0.05,
+            "roles": {
+                "asseGuardShiftDuration": "PT8H",
+            },
         },
         "quotes": {
             "emojiName": "zitat",
@@ -51,6 +55,13 @@
             "blacklistedChannelIds": [],
             "defaultTargetChannelId": "893179191556706386",
             "targetChannelOverrides": []
+        },
+        "aoc": {
+            "enabled": false,
+            "targetChannelId": "",
+            "sessionToken": "",
+            "leaderBoardJsonUrl": "",
+            "userMap": {}
         }
     },
 
@@ -86,6 +97,7 @@
         "trustedBannedRoleId": "893179190571044914",
         "woisgangRoleId": "893179190235508825",
         "winnerRoleId": "1045422896740311070",
-        "emotifiziererRoleId": "893179190709477410"
+        "emotifiziererRoleId": "893179190709477410",
+        "lootRoleAsseGuardRoleId": "1268706685753622529"
     }
 }

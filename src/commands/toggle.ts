@@ -1,10 +1,10 @@
 import { type APIEmbedField, EmbedBuilder, type Message } from "discord.js";
 
-import type { MessageCommand } from "./command.js";
-import type { BotContext } from "../context.js";
-import type { ProcessableMessage } from "../service/commandService.js";
+import type { MessageCommand } from "@/commands/command.js";
+import type { BotContext } from "@/context.js";
+import type { ProcessableMessage } from "@/service/command.js";
 
-import { LETTERS } from "../service/pollService.js";
+import { LETTERS } from "@/service/poll.js";
 import * as poll from "./poll.js";
 
 export default class ToggleCommand implements MessageCommand {

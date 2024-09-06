@@ -1,5 +1,5 @@
-import type { ProcessableMessage } from "../service/commandService.js";
-import type { SpecialCommand } from "./command.js";
+import type { ProcessableMessage } from "@/service/command.js";
+import type { SpecialCommand } from "@/commands/command.js";
 
 export default class NischdaaaCommand implements SpecialCommand {
     name = "Nischdaaa";

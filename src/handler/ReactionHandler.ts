@@ -1,5 +1,5 @@
 import type { MessageReaction, User } from "discord.js";
-import type { BotContext } from "../context.js";
+import type { BotContext } from "@/context.js";
 
 export interface ReactionHandler {
     displayName: string;

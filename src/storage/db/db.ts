@@ -3,11 +3,12 @@ import { fileURLToPath } from "node:url";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
 
+import { captureException, startInactiveSpan } from "@sentry/bun";
 import { FileMigrationProvider, Kysely, Migrator } from "kysely";
 import { BunSqliteDialect } from "kysely-bun-sqlite";
 
 import type { Database } from "./model.js";
-import assertNever from "../../utils/assertNever.js";
+import assertNever from "@/utils/assertNever.js";
 import log from "@log";
 
 let kysely: Kysely<Database>;
@@ -15,6 +16,10 @@ let kysely: Kysely<Database>;
 export default () => kysely;
 
 export async function connectToDb(databasePath: string) {
+    if (kysely) {
+        return;
+    }
+
     const nativeDb = new SqliteDatabase(databasePath);
     const db = new Kysely<Database>({
         dialect: new BunSqliteDialect({
@@ -29,6 +34,7 @@ export async function connectToDb(databasePath: string) {
             switch (e.level) {
                 case "error":
                     log.error(info, "Error running query");
+                    captureException(e.error);
                     break;
                 case "query":
                     if (
@@ -40,6 +46,14 @@ export async function connectToDb(databasePath: string) {
                     ) {
                         return;
                     }
+
+                    startInactiveSpan({
+                        name: info.sql,
+                        op: "db.query",
+                        startTime: new Date(Date.now() - info.duration),
+                        onlyIfParent: true,
+                    }).end();
+
                     log.debug(info, "DB Query");
                     break;
                 default:
@@ -82,13 +96,12 @@ async function runMigrationsIfNeeded(db: Kysely<Database>) {
         const errors = results?.filter(r => r.status === "Error");
         if (errors) {
             for (const e of errors) {
-                log.error("Migration %s failed.", e.migrationName);
+                log.error(e, "Migration %s failed.", e.migrationName);
             }
         }
 
         if (error) {
-            log.error("Failed to migrate. Exiting.");
-            log.error(error);
+            log.error(error, "Failed to migrate. Exiting.");
             process.exit(1);
         }
 

@@ -30,4 +30,3 @@ dist
 *.db
 .idea/
 built/
-aoc.config.json

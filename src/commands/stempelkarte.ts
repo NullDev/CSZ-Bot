@@ -1,4 +1,5 @@
 import * as fs from "node:fs/promises";
+
 import { createCanvas, loadImage } from "@napi-rs/canvas";
 import {
     type ImageSize,
@@ -9,11 +10,13 @@ import {
     SlashCommandUserOption,
     ChatInputCommandInteraction,
 } from "discord.js";
+import * as sentry from "@sentry/bun";
 
-import * as stempel from "../storage/stempel.js";
+import type { ApplicationCommand } from "@/commands/command.js";
+
+import * as stempelService from "@/service/stempel.js";
+import { chunkArray } from "@/utils/arrayUtils.js";
 import log from "@log";
-import type { ApplicationCommand } from "./command.js";
-import { chunkArray } from "../utils/arrayUtils.js";
 
 const stempelLocations = [
     // 1-3
@@ -131,7 +134,7 @@ export default class StempelkarteCommand implements ApplicationCommand {
         const getUserById = (id: Snowflake) =>
             command.guild?.members.cache.find(member => member.id === id);
 
-        const allInvitees = await stempel.getStempelByInvitator(ofMember);
+        const allInvitees = await stempelService.getStempelByInviter(ofMember);
 
         if (allInvitees.length === 0) {
             await command.reply({
@@ -169,6 +172,7 @@ export default class StempelkarteCommand implements ApplicationCommand {
                 files,
             });
         } catch (err) {
+            sentry.captureException(err);
             log.error(err, "Could not send stempelkarten");
         }
     }

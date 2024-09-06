@@ -1,11 +1,12 @@
 import { type APIEmbedField, EmbedBuilder, type Message } from "discord.js";
+import * as sentry from "@sentry/bun";
 
-import type { MessageCommand } from "./command.js";
-import type { BotContext } from "../context.js";
-import type { ProcessableMessage } from "../service/commandService.js";
+import type { MessageCommand } from "@/commands/command.js";
+import type { BotContext } from "@/context.js";
+import type { ProcessableMessage } from "@/service/command.js";
 
-import { parseLegacyMessageParts } from "../service/commandService.js";
-import { LETTERS, EMOJI } from "../service/pollService.js";
+import { parseLegacyMessageParts } from "@/service/command.js";
+import { LETTERS, EMOJI } from "@/service/poll.js";
 import * as poll from "./poll.js";
 import log from "@log";
 
@@ -53,6 +54,7 @@ export default class ExtendCommand implements MessageCommand {
             replyMessage = await channel.messages.fetch(message.reference.messageId);
         } catch (err) {
             log.error(err, "Could not fetch replies");
+            sentry.captureException(err);
             return "Bruder irgendwas stimmt nicht mit deinem Reply ¯\\_(ツ)_/¯";
         }
 
@@ -120,7 +122,12 @@ export default class ExtendCommand implements MessageCommand {
 
         embed.fields = [...oldPollOptionFields, ...newFields, ...metaFields];
 
-        const msg = await replyMessage.edit({ embeds: [embed] });
+        const msg = await replyMessage.edit({
+            embeds: [embed],
+            // Re-Applying embed thumbnails from attachments will post a picture,
+            // therefore we keep attachments empty.
+            attachments: [],
+        });
 
         for (const i in additionalPollOptions) {
             // Disabling rule because the order is important

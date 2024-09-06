@@ -3,8 +3,8 @@ import { readFile } from "node:fs/promises";
 import { type Message, cleanContent } from "discord.js";
 import { createCanvas, loadImage, GlobalFonts } from "@napi-rs/canvas";
 
-import type { SpecialCommand } from "./command.js";
-import { countWords, substringAfter } from "../utils/stringUtils.js";
+import type { SpecialCommand } from "@/commands/command.js";
+import { countWords, substringAfter } from "@/utils/stringUtils.js";
 
 if (process.env.NODE_ENV === "production") {
     // This is a simple detection if we're running inside docker

@@ -7,12 +7,12 @@ import {
     SlashCommandUserOption,
 } from "discord.js";
 
-import type { ApplicationCommand, MessageCommand } from "../command.js";
-import type { ProcessableMessage } from "../../service/commandService.js";
-import type { BotContext } from "../../context.js";
+import type { ApplicationCommand, MessageCommand } from "@/commands/command.js";
+import type { ProcessableMessage } from "@/service/command.js";
+import type { BotContext } from "@/context.js";
 
-import * as banService from "../../service/banService.js";
-import { formatDuration } from "../../utils/dateUtils.js";
+import * as banService from "@/service/ban.js";
+import { formatDuration } from "@/utils/dateUtils.js";
 
 export default class BanCommand implements ApplicationCommand, MessageCommand {
     name = "ban";

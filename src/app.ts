@@ -1,39 +1,44 @@
 import { GatewayIntentBits, Partials, Client } from "discord.js";
-import * as sentry from "@sentry/node";
+import * as sentry from "@sentry/bun";
 
-import { readConfig, databasePath, args } from "./service/configService.js";
+import { readConfig, databasePath, args } from "@/service/config.js";
 import log from "@log";
 
-import "./polyfills.js";
+import "@/polyfills.js";
 
-import * as kysely from "./storage/db/db.js";
+import * as kysely from "@/storage/db/db.js";
 
-import type { ReactionHandler } from "./handler/ReactionHandler.js";
-import messageDeleteHandler from "./handler/messageDeleteHandler.js";
-import defaultReactionHandler from "./handler/defaultReactionHandler.js";
-import logEmotesReactionHandler from "./handler/logEmotesReactionHandler.js";
-import quoteReactionHandler from "./handler/quoteHandler.js";
-import { woisVoteReactionHandler } from "./commands/woisvote.js";
-import * as voiceStateService from "./service/voiceStateService.js";
+import type { ReactionHandler } from "@/handler/ReactionHandler.js";
+import messageDeleteHandler from "@/handler/messageDeleteHandler.js";
+import roleAssignerHandler from "@/handler/roleAssignerHandler.js";
+import defaultReactionHandler from "@/handler/defaultReactionHandler.js";
+import logEmotesReactionHandler from "@/handler/logEmotesReactionHandler.js";
+import quoteReactionHandler from "@/handler/quoteHandler.js";
+import { woisVoteReactionHandler } from "@/commands/woisvote.js";
+import * as voiceStateService from "@/service/voiceState.js";
 
 import {
     handleInteractionEvent,
     loadCommands,
     messageCommandHandler,
     registerAllApplicationCommandsAsGuildCommands,
-} from "./handler/commandHandler.js";
-import deleteThreadMessagesHandler from "./handler/deleteThreadMessagesHandler.js";
-import { createBotContext, type BotContext } from "./context.js";
-import { ehreReactionHandler } from "./commands/ehre.js";
-import * as terminal from "./utils/terminal.js";
-import * as guildRageQuit from "./storage/guildRageQuit.js";
-import * as cronService from "./service/cronService.js";
+} from "@/handler/commandHandler.js";
+import deleteThreadMessagesHandler from "@/handler/deleteThreadMessagesHandler.js";
+import { createBotContext, type BotContext } from "@/context.js";
+import { ehreReactionHandler } from "@/commands/ehre.js";
+import * as terminal from "@/utils/terminal.js";
+import * as guildRageQuit from "@/storage/guildRageQuit.js";
+import * as cronService from "@/service/cron.js";
+
+const env = process.env;
+
+const release =
+    env.RELEASE_IDENTIFIER && env.BUILD_NUMBER
+        ? `csz-bot@0.0.0-build.${env.BUILD_NUMBER}+commit.${env.RELEASE_IDENTIFIER}`
+        : undefined;
 
 {
-    const prodMode =
-        process.env.NODE_ENV === "production"
-            ? ` ${terminal.highlightWarn(" production ")} mode`
-            : "";
+    const prodMode = env.NODE_ENV === "production" ? terminal.highlightWarn(" prod mode ") : "";
 
     const cszBot = terminal.highlight(" CSZ Bot ");
     const year = new Date().getFullYear();
@@ -41,16 +46,20 @@ import * as cronService from "./service/cronService.js";
     console.log();
     console.log(" ┌───────────┐");
     console.log(` │ ${cszBot} │ Copyright (c) ${year} Users of the CSZ`);
-    console.log(` └───────────┘${prodMode}`);
-    console.log();
+    console.log(" └───────────┘");
+    console.log(`  ${prodMode} ${release ? `(${release})` : ""}`);
 }
 
-log.info("Bot starting up...");
+log.info(`Bot starting up...${release ? ` (release: ${release})` : ""}`);
+
 const config = await readConfig();
 
 if (config.sentry?.dsn) {
     sentry.init({
         dsn: config.sentry.dsn,
+        environment: env.NODE_ENV,
+        release,
+        tracesSampleRate: config.sentry?.tracesSampleRate ?? 1,
     });
 }
 
@@ -96,6 +105,7 @@ const reactionHandlers: ReactionHandler[] = [
     quoteReactionHandler,
     ehreReactionHandler,
     woisVoteReactionHandler,
+    roleAssignerHandler,
 ];
 
 process.on("unhandledRejection", err => log.error(err, "Unhandled rejection"));
@@ -192,9 +202,10 @@ client.on("messageDelete", async message => {
         return;
     }
 
-    await messageDeleteHandler(message, botContext).catch(err =>
-        log.error(err, `[messageDelete] Error for ${message.id}`),
-    );
+    await messageDeleteHandler(message, botContext).catch(err => {
+        log.error(err, `[messageDelete] Error for ${message.id}`);
+        sentry.captureException(err);
+    });
 });
 
 client.on("error", e => log.error(e, "Discord Client Error"));
@@ -212,28 +223,23 @@ client.on("messageReactionAdd", async (event, user) => {
     const [entireEvent, entireUser] = await Promise.all([event.fetch(), user.fetch()]);
 
     for (const handler of reactionHandlers) {
-        await handler
-            .execute(entireEvent, entireUser, botContext, false)
-            .catch(err =>
-                log.error(
-                    err,
-                    `Handler "${handler.displayName}" failed during "messageReactionAdd".`,
-                ),
-            );
+        await handler.execute(entireEvent, entireUser, botContext, false).catch(err => {
+            log.error(err, `Handler "${handler.displayName}" failed during "messageReactionAdd".`);
+            sentry.captureException(err);
+        });
     }
 });
 client.on("messageReactionRemove", async (event, user) => {
     const [entireEvent, entireUser] = await Promise.all([event.fetch(), user.fetch()]);
 
     for (const handler of reactionHandlers) {
-        await handler
-            .execute(entireEvent, entireUser, botContext, true)
-            .catch(err =>
-                log.error(
-                    err,
-                    `Handler "${handler.displayName}" failed during "messageReactionRemove".`,
-                ),
+        await handler.execute(entireEvent, entireUser, botContext, true).catch(err => {
+            log.error(
+                err,
+                `Handler "${handler.displayName}" failed during "messageReactionRemove".`,
             );
+            sentry.captureException(err);
+        });
     }
 });
 

@@ -23,7 +23,7 @@ export async function insertStempel(
     return typeof res?.id === "string";
 }
 
-export function getStempelByInvitator(inviter: GuildMember, ctx = db()): Promise<Stempel[]> {
+export function getStempelByInviter(inviter: GuildMember, ctx = db()): Promise<Stempel[]> {
     return ctx.selectFrom("stempels").where("inviterId", "=", inviter.id).selectAll().execute();
 }
 

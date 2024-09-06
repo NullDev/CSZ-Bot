@@ -1,10 +1,10 @@
 import { Temporal } from "@js-temporal/polyfill"; // TODO: Remove once bun ships temporal
 import type { Snowflake, User } from "discord.js";
 
-import type { Radius } from "../commands/penis.js";
-import type { Penis } from "./db/model.js";
+import type { Radius } from "@/commands/penis.js";
+import type { Penis } from "@/storage/db/model.js";
 
-import { getStartAndEndDay } from "../utils/dateUtils.js";
+import { getStartAndEndDay } from "@/utils/dateUtils.js";
 import db from "@db";
 import log from "@log";
 

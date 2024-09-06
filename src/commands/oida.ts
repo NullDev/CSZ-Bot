@@ -1,9 +1,9 @@
 import { type CommandInteraction, SlashCommandBuilder, SlashCommandStringOption } from "discord.js";
 
-import * as austrianTranslation from "../storage/austrianTranslation.js";
-import type { ApplicationCommand } from "./command.js";
-import type { BotContext } from "../context.js";
-import { ensureChatInputCommand } from "../utils/interactionUtils.js";
+import * as austrianTranslation from "@/storage/austrianTranslation.js";
+import type { ApplicationCommand } from "@/commands/command.js";
+import type { BotContext } from "@/context.js";
+import { ensureChatInputCommand } from "@/utils/interactionUtils.js";
 
 export default class OidaCommand implements ApplicationCommand {
     name = "oida";

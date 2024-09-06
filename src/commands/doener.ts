@@ -1,6 +1,6 @@
-import type { BotContext } from "../context.js";
-import type { ProcessableMessage } from "../service/commandService.js";
-import type { MessageCommand } from "./command.js";
+import type { BotContext } from "@/context.js";
+import type { ProcessableMessage } from "@/service/command.js";
+import type { MessageCommand } from "@/commands/command.js";
 
 const prices = {
     kebab: 5.5,
@@ -9,6 +9,7 @@ const prices = {
     fridge: 10_000,
     inkPerMonth: 1,
     meal: 40,
+    ghettorade: 1.2955,
 };
 
 export default class DoenerCommand implements MessageCommand {
@@ -98,6 +99,11 @@ export default class DoenerCommand implements MessageCommand {
                 ? `Alternativ kannst du davon maximal ${(amount / prices.meal).toFixed(0)} mal essen gehen.`
                 : "";
 
+        const ghettoradeStr =
+            Math.random() > 0.7
+                ? `Du könntest dir aber auch knapp ${(amount / prices.ghettorade).toFixed(0)} köstliche Ghettorade Mischen zubereiten.`
+                : "";
+
         await targetMessage.reply({
             content:
                 knivesStr !== undefined
@@ -108,6 +114,7 @@ export default class DoenerCommand implements MessageCommand {
                           fridgeStr,
                           inkStr,
                           mealStr,
+                          ghettoradeStr,
                       ]
                           .filter(s => !!s)
                           .join("\n")

@@ -1,13 +1,13 @@
 import { parseArgs, type ParseArgsConfig } from "node:util";
 
-import type { MessageCommand } from "./command.js";
-import type { BotContext } from "../context.js";
-import type { ProcessableMessage } from "../service/commandService.js";
+import type { MessageCommand } from "@/commands/command.js";
+import type { BotContext } from "@/context.js";
+import type { ProcessableMessage } from "@/service/command.js";
 
-import { parseLegacyMessageParts } from "../service/commandService.js";
-import { defer } from "../utils/interactionUtils.js";
+import { parseLegacyMessageParts } from "@/service/command.js";
+import { defer } from "@/utils/interactionUtils.js";
 
-import { randomEntry } from "../utils/arrayUtils.js";
+import { randomEntry } from "@/utils/arrayUtils.js";
 
 const argsConfig = {
     options: {

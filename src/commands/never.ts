@@ -8,9 +8,9 @@ import {
     SlashCommandStringOption,
 } from "discord.js";
 
-import type { ApplicationCommand, MessageCommand } from "./command.js";
-import type { ProcessableMessage } from "../service/commandService.js";
-import type { BotContext } from "../context.js";
+import type { ApplicationCommand, MessageCommand } from "@/commands/command.js";
+import type { ProcessableMessage } from "@/service/command.js";
+import type { BotContext } from "@/context.js";
 
 type Prompt = string;
 

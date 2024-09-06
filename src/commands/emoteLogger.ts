@@ -1,9 +1,9 @@
-import type { ProcessableMessage } from "../service/commandService.js";
-import type { SpecialCommand } from "./command.js";
-import type { BotContext } from "../context.js";
+import type { ProcessableMessage } from "@/service/command.js";
+import type { SpecialCommand } from "@/commands/command.js";
+import type { BotContext } from "@/context.js";
 
-import * as emoteService from "../service/emoteService.js";
-import * as emoteLogging from "../service/emoteLogging.js";
+import * as emoteService from "@/service/emote.js";
+import * as emoteLoggingService from "@/service/emoteLogging.js";
 
 export default class EmoteLoggerCommand implements SpecialCommand {
     name = "EmoteLogger";
@@ -18,6 +18,6 @@ export default class EmoteLoggerCommand implements SpecialCommand {
     }
 
     async handleSpecialMessage(message: ProcessableMessage, context: BotContext) {
-        await emoteLogging.processMessage(message, context);
+        await emoteLoggingService.processMessage(message, context);
     }
 }

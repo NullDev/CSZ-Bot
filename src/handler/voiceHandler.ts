@@ -1,4 +1,5 @@
 import path from "node:path";
+import fs from "node:fs/promises";
 import { setTimeout } from "node:timers/promises";
 import { readdir } from "node:fs/promises";
 
@@ -16,10 +17,11 @@ import {
 } from "@discordjs/voice";
 import type { VoiceChannel } from "discord.js";
 import * as gad from "get-audio-duration";
+import * as sentry from "@sentry/bun";
 
-import type { BotContext } from "../context.js";
+import type { BotContext } from "@/context.js";
 
-import { randomEntry } from "../utils/arrayUtils.js";
+import { randomEntry } from "@/utils/arrayUtils.js";
 import log from "@log";
 
 const player = createAudioPlayer();
@@ -35,7 +37,8 @@ async function connectToHauptwois(woisChannel: VoiceChannel): Promise<VoiceConne
         await entersState(connection, VoiceConnectionStatus.Ready, 30_000);
         return connection;
     } catch (err) {
-        log.error("Couldn't connect to Hauptwois", err);
+        sentry.captureException(err);
+        log.error(err, "Couldn't connect to Hauptwois");
         throw err;
     }
 }
@@ -62,7 +65,7 @@ export async function connectAndPlaySaufen(context: BotContext, filename?: strin
     const fileToPlay = filename ?? randomEntry(files);
     const file = path.resolve(context.path.sounds, fileToPlay);
     try {
-        const duration = (await gad.getAudioDurationInSeconds(file)) * 1000;
+        const duration = (await gad.getAudioDurationInSeconds(file, "ffprobe")) * 1000;
         await playSaufen(file, duration);
         const connection = await connectToHauptwois(wois);
         connection.subscribe(player);
@@ -70,6 +73,7 @@ export async function connectAndPlaySaufen(context: BotContext, filename?: strin
         await setTimeout(duration);
         connection.disconnect();
     } catch (err) {
-        log.error("Could not play saufen", err);
+        log.error(err, "Could not play saufen");
+        sentry.captureException(err);
     }
 }

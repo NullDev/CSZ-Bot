@@ -90,7 +90,8 @@ Formatieren und Linten passiert durch lefthook automatisch beim Committen/Pushen
 - Linten: `bun lint`
 - Fixbare Linter-Fehler automatisch fixen: `bun lint:fix`
 - CI-Checks lokal laufen lassen: `bun ci`
-- Unit-Tests ausführen:
+- Unit-Tests ausführen: `bun test`
+    - Nur Tests, die auf ein Pattern matchen: `bun test <pattern>` (z. B. `bun test smoke`)
 
 ## ❄ Nix
 Entweder via `nix-shell` oder `nix develop` letzteres benötigt Nix-Flake support.

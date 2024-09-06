@@ -1,8 +1,9 @@
 import { type CommandInteraction, type CacheType, SlashCommandBuilder } from "discord.js";
+import * as sentry from "@sentry/bun";
 
-import type { ApplicationCommand } from "./command.js";
+import type { ApplicationCommand } from "@/commands/command.js";
 import log from "@log";
-import * as birthday from "../storage/birthday.js";
+import * as birthday from "@/storage/birthday.js";
 
 export default class GeburtstagCommand implements ApplicationCommand {
     name = "geburtstag";
@@ -52,6 +53,7 @@ export default class GeburtstagCommand implements ApplicationCommand {
             await command.reply("Danke mein G, ich hab dein Geburtstag eingetragen!");
         } catch (err) {
             log.error(err, "Geburtstag ist schief gelaufen");
+            sentry.captureException(err);
             await command.reply(
                 "Shit, da ist was schief gegangen - hast du deinen Geburtstag schon eingetragen und bist so dumm das jetzt nochmal zu machen? Piss dich.",
             );

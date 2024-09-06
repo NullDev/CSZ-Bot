@@ -19,7 +19,7 @@
 
         "baseUrl": "./",
         "paths": {
-            // "@/*": ["./src/*"],
+            "@/*": ["./src/*"],
             "@log": ["./src/utils/logger.ts"],
             "@db": ["./src/storage/db/db.ts"]
         }

@@ -1,6 +1,6 @@
 import type { GuildChannel, GuildMember, Message, TextChannel, User } from "discord.js";
 
-import type { BotContext } from "../context.js";
+import type { BotContext } from "@/context.js";
 import type { Loot } from "./db/model.js";
 
 import db from "@db";
@@ -12,6 +12,7 @@ export interface LootTemplate {
     titleText: string;
     description: string;
     emote?: string;
+    excludeFromInventory?: boolean;
     specialAction?: (
         context: BotContext,
         winner: GuildMember,
@@ -75,4 +76,25 @@ export async function assignUserToLootDrop(
         .where("winnerId", "is", null)
         .returningAll()
         .executeTakeFirst()) as ClaimedLoot | undefined;
+}
+
+export async function getUserLootsById(userId: User["id"], lootKindId: number, ctx = db()) {
+    return await ctx
+        .selectFrom("loot")
+        .where("winnerId", "=", userId)
+        .where("lootKindId", "=", lootKindId)
+        .selectAll()
+        .execute();
+}
+
+export async function transferLootToUser(lootId: Loot["id"], userId: User["id"], ctx = db()) {
+    // TODO: Maybe we need a "previous owner" field to track who gave the loot to the user
+    // Or we could add a soft-delete option, so we can just add a new entry
+    return await ctx
+        .updateTable("loot")
+        .set({
+            winnerId: userId,
+        })
+        .where("id", "=", lootId)
+        .execute();
 }

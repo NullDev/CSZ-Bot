@@ -8,15 +8,16 @@ import {
     time as formatTime,
 } from "discord.js";
 import * as chrono from "chrono-node";
+import * as sentry from "@sentry/bun";
 
-import type { MessageCommand, ApplicationCommand } from "./command.js";
-import type { ProcessableMessage } from "../service/commandService.js";
-import type { BotContext } from "../context.js";
+import type { MessageCommand, ApplicationCommand } from "@/commands/command.js";
+import type { ProcessableMessage } from "@/service/command.js";
+import type { BotContext } from "@/context.js";
 import log from "@log";
-import * as reminderService from "../storage/reminders.js";
-import type { Reminder } from "../storage/db/model.js";
+import * as reminderService from "@/storage/reminders.js";
+import type { Reminder } from "@/storage/db/model.js";
 
-import { ensureChatInputCommand } from "../utils/interactionUtils.js";
+import { ensureChatInputCommand } from "@/utils/interactionUtils.js";
 
 const validateDate = (date: Date): true | string => {
     if (Number.isNaN(date.getTime()) || !Number.isFinite(date.getTime())) {
@@ -177,6 +178,7 @@ const sendReminder = async (reminder: Reminder, context: BotContext) => {
         });
     } catch (err) {
         log.error(err, "Couldn't send reminder. Removing it...");
+        sentry.captureException(err);
     }
     await reminderService.removeReminder(reminder.id);
 };

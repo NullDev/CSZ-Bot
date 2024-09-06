@@ -10,26 +10,25 @@ import {
     type PermissionsString,
     REST,
     Routes,
-    Snowflake,
 } from "discord.js";
+import * as sentry from "@sentry/bun";
 
 /**
  * Completely new bullish command handler it unifies slash commands and
  * message commands and relies on the "new commands"
  */
-import type { ApplicationCommand, Command, SpecialCommand } from "../commands/command.js";
-import type { BotContext } from "../context.js";
-import * as banService from "../service/banService.js";
+import type { ApplicationCommand, Command, SpecialCommand } from "@/commands/command.js";
+import type { BotContext } from "@/context.js";
+import * as banService from "@/service/ban.js";
 import log from "@log";
 
-import * as commandService from "../service/commandService.js";
+import * as commandService from "@/service/command.js";
 
-import TriggerReactOnKeyword from "../commands/special/keywordReact.js";
+import TriggerReactOnKeyword from "@/commands/special/keywordReact.js";
 
-import SplidCommand from "../commands/splid.js";
+import SplidCommand from "@/commands/splid.js";
 
-import { isProcessableMessage, type ProcessableMessage } from "../service/commandService.js";
-import { isMessageInBotSpam } from "../utils/channelUtils.js";
+import { isProcessableMessage, type ProcessableMessage } from "@/service/command.js";
 
 /**  Commands that need special init parameters and cannot be instantiated automatically */
 const staticCommands: readonly Command[] = [
@@ -112,6 +111,7 @@ export const registerAllApplicationCommandsAsGuildCommands = async (
         })) as unknown[];
         log.info(`Registered ${response.length} guild commands`);
     } catch (err) {
+        sentry.captureException(err);
         log.error(err, `Could not register application commands for guild ${context.guild.id}`);
     }
 };
@@ -135,7 +135,11 @@ const commandInteractionHandler = async (
     }
 
     log.debug(`Found a matching command ${matchingCommand.name}`);
-    await matchingCommand.handleInteraction(command, context);
+
+    await sentry.startSpan(
+        { name: matchingCommand.name, op: "command.interaction" },
+        async () => await matchingCommand.handleInteraction(command, context),
+    );
 };
 
 const autocompleteInteractionHandler = async (
@@ -190,7 +194,10 @@ const commandMessageHandler = async (
         cmd => cmd.name.toLowerCase() === lowerCommand || cmd.aliases?.includes(lowerCommand),
     );
 
-    if (context.roleGuard.hasBotDenyRole(message.member) && !isMessageInBotSpam(context, message)) {
+    if (
+        context.roleGuard.hasBotDenyRole(message.member) &&
+        !context.channelGuard.isInBotSpam(message)
+    ) {
         await message.member.send(
             "Du hast dich scheinbar beschissen verhalten und darfst daher keine Befehle in diesem Channel ausführen!",
         );
@@ -204,7 +211,10 @@ const commandMessageHandler = async (
     const invoker = message.member;
 
     if (hasPermissions(invoker, matchingCommand.requiredPermissions ?? [])) {
-        return matchingCommand.handleMessage(message, context);
+        return await sentry.startSpan(
+            { name: matchingCommand.name, op: "command.message" },
+            async () => await matchingCommand.handleMessage(message, context),
+        );
     }
 
     return Promise.all([
@@ -286,6 +296,7 @@ export const messageCommandHandler = async (
                 await commandMessageHandler(cmdString, message, context);
             } catch (err) {
                 log.error(err, "Error while handling message command");
+                sentry.captureException(err);
 
                 // Not using message.reply because the original message might be deleted by the command handler
                 await message.channel.send(

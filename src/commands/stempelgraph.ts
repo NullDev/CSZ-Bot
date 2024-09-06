@@ -8,10 +8,11 @@ import {
     SlashCommandStringOption,
 } from "discord.js";
 import { Resvg } from "@resvg/resvg-js";
+import * as sentry from "@sentry/bun";
 
-import type { ApplicationCommand } from "./command.js";
-import type { BotContext } from "../context.js";
-import * as stempel from "../storage/stempel.js";
+import type { ApplicationCommand } from "@/commands/command.js";
+import type { BotContext } from "@/context.js";
+import * as stempelService from "@/service/stempel.js";
 import log from "@log";
 
 const supportedLayoutEngines = [
@@ -223,7 +224,7 @@ export default class StempelgraphCommand implements ApplicationCommand {
             return;
         }
 
-        const stempels = await stempel.findAll();
+        const stempels = await stempelService.getAllStempels();
         log.debug(`Found ${stempels.length} Stempels`);
 
         const allUserIds = new Set<string>(
@@ -266,6 +267,7 @@ export default class StempelgraphCommand implements ApplicationCommand {
                 ],
             });
         } catch (err) {
+            sentry.captureException(err);
             log.error(err, "Could not draw stempelgraph");
         }
     }

@@ -11,10 +11,10 @@ import {
     type AutocompleteInteraction,
 } from "discord.js";
 
-import type { ApplicationCommand, AutocompleteCommand } from "./command.js";
-import type { BotContext } from "../context.js";
-import { connectAndPlaySaufen } from "../handler/voiceHandler.js";
-import assertNever from "../utils/assertNever.js";
+import type { ApplicationCommand, AutocompleteCommand } from "@/commands/command.js";
+import type { BotContext } from "@/context.js";
+import { connectAndPlaySaufen } from "@/handler/voiceHandler.js";
+import assertNever from "@/utils/assertNever.js";
 
 type SubCommand = "los" | "add" | "list" | "select";
 
@@ -112,7 +112,7 @@ export default class Saufen implements ApplicationCommand, AutocompleteCommand {
                 }
 
                 const ab = await res.arrayBuffer();
-                await fs.writeFile(targetPath, Buffer.from(ab));
+                await fs.writeFile(targetPath, new Uint8Array(ab));
 
                 await command.reply("Jo, habs eingefügt");
                 return;

@@ -9,11 +9,13 @@ import type {
     TextChannel,
     VoiceChannel,
     APIInteractionGuildMember,
+    Message,
 } from "discord.js";
 import { ChannelType } from "discord.js";
 import { Temporal } from "@js-temporal/polyfill";
 
-import { readConfig } from "./service/configService.js";
+import type { UserMapEntry } from "@/commands/aoc.js";
+import { readConfig } from "@/service/config.js";
 
 /**
  * Object that's passed to every executed command to make it easier to access common channels without repeatedly retrieving stuff via IDs.
@@ -49,9 +51,21 @@ export interface BotContext {
             dropChance: number;
             allowedChannelIds?: readonly Snowflake[];
             maxTimePassedSinceLastMessage: Temporal.Duration;
+
+            roles: {
+                asseGuardShiftDuration: Temporal.Duration;
+            };
         };
         instagram: {
             rapidApiInstagramApiKey?: string;
+        };
+        aoc: {
+            enabled: boolean;
+
+            targetChannelId: Snowflake;
+            sessionToken: string;
+            leaderBoardJsonUrl: string;
+            userMap: Record<Snowflake, UserMapEntry>;
         };
     };
 
@@ -69,6 +83,9 @@ export interface BotContext {
         woisgang: Role;
         winner: Role;
         emotifizierer: Role;
+
+        // Loot-Specific Roles
+        lootRoleAsseGuard: Role;
     };
 
     moderatorRoles: readonly Role[];
@@ -113,6 +130,12 @@ export interface BotContext {
         hasBotDenyRole: (member: GuildMember | APIInteractionGuildMember) => boolean;
         hasRoleDenyRole: (member: GuildMember | APIInteractionGuildMember) => boolean;
         isRejoiner: (member: GuildMember | APIInteractionGuildMember) => boolean;
+
+        isLootRoleAsseGuard: (member: GuildMember | APIInteractionGuildMember) => boolean;
+    };
+
+    channelGuard: {
+        isInBotSpam: (message: Message) => boolean;
     };
 }
 
@@ -214,12 +237,25 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
                 dropChance: config.command.loot?.dropChance ?? 0.05,
                 allowedChannelIds: config.command.loot?.allowedChannelIds ?? undefined,
                 maxTimePassedSinceLastMessage: Temporal.Duration.from(
-                    config.command.loot?.max_time_passed_since_last_message ?? "PT30M",
+                    config.command.loot?.maxTimePassedSinceLastMessage ?? "PT30M",
                 ),
+
+                roles: {
+                    asseGuardShiftDuration: Temporal.Duration.from(
+                        config.command.loot?.roles?.asseGuardShiftDuration ?? "PT8H",
+                    ),
+                },
             },
             instagram: {
                 rapidApiInstagramApiKey:
                     config.command.instagram.rapidApiInstagramApiKey?.trim() ?? undefined,
+            },
+            aoc: {
+                enabled: config.command.aoc.enabled,
+                targetChannelId: config.command.aoc.targetChannelId,
+                sessionToken: config.command.aoc.sessionToken,
+                leaderBoardJsonUrl: config.command.aoc.leaderBoardJsonUrl,
+                userMap: config.command.aoc.userMap,
             },
         },
 
@@ -241,6 +277,7 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
             woisgang: ensureRole(guild, role.woisgangRoleId),
             winner: ensureRole(guild, role.winnerRoleId),
             emotifizierer: ensureRole(guild, role.emotifiziererRoleId),
+            lootRoleAsseGuard: ensureRole(guild, role.lootRoleAsseGuardRoleId),
         },
 
         textChannels: {
@@ -280,6 +317,12 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
             hasBotDenyRole: member => hasRoleById(member, config.role.botDenyRoleId),
             hasRoleDenyRole: member => hasRoleById(member, config.role.roleDenyRoleId),
             isRejoiner: member => hasRoleById(member, config.role.shameRoleId),
+
+            isLootRoleAsseGuard: member => hasRoleById(member, config.role.lootRoleAsseGuardRoleId),
+        },
+
+        channelGuard: {
+            isInBotSpam: message => message.channelId === config.textChannel.botSpamChannelId,
         },
     };
 }
