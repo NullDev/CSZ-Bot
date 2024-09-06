@@ -64,7 +64,12 @@ export async function getUserLootsById(userId: User["id"], lootKindId: number, c
         .selectFrom("loot")
         .where("winnerId", "=", userId)
         .where("lootKindId", "=", lootKindId)
-        .where("deletedAt", "is", null)
+        .where(eb =>
+            eb.or([
+                eb("deletedAt", "is", null),
+                eb("deletedAt", ">", sql<string>`current_timestamp`),
+            ]),
+        )
         .selectAll()
         .execute();
 }
@@ -73,7 +78,12 @@ export async function getLootsByKindId(lootKindId: number, ctx = db()) {
     return await ctx
         .selectFrom("loot")
         .where("lootKindId", "=", lootKindId)
-        .where("deletedAt", "is", null)
+        .where(eb =>
+            eb.or([
+                eb("deletedAt", "is", null),
+                eb("deletedAt", ">", sql<string>`current_timestamp`),
+            ]),
+        )
         .selectAll()
         .execute();
 }
