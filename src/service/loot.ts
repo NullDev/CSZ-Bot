@@ -599,29 +599,7 @@ export async function getInventoryContents(user: User) {
     const displayableLoot = contents.filter(
         l => !(resolveLootTemplate(l.lootKindId)?.excludeFromInventory ?? false),
     );
-
-    const now = Date.now();
-    const maxKebabAge = time.days(3);
-
-    const res: typeof displayableLoot = [];
-    for (const loot of displayableLoot) {
-        if (!loot.claimedAt) {
-            continue;
-        }
-
-        const itemAge = now - new Date(loot.claimedAt).getTime();
-
-        if (loot.lootKindId === LootTypeId.DOENER && itemAge > maxKebabAge) {
-            res.push({
-                ...loot,
-                displayName: "Verschimmelter Döner",
-            });
-            continue;
-        }
-
-        res.push(loot);
-    }
-    return res;
+    return displayableLoot;
 }
 
 export function getEmote(guild: Guild, item: Loot) {

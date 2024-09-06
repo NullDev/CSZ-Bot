@@ -83,6 +83,7 @@ export async function getUserLootsById(userId: User["id"], lootKindId: number, c
         .selectFrom("loot")
         .where("winnerId", "=", userId)
         .where("lootKindId", "=", lootKindId)
+        .where("deletedAt", "is", null)
         .selectAll()
         .execute();
 }
