@@ -491,11 +491,6 @@ async function postLootDrop(context: BotContext, channel: GuildBasedChannel & Te
         components: [new ActionRowBuilder<ButtonBuilder>().addComponents(takeLootButton)],
     });
 
-    const weights = lootTemplates.map(t => t.weight);
-
-    const template = randomEntryWeighted(lootTemplates, weights);
-    const l = await loot.createLoot(template, validUntil, message);
-
     let interaction: Interaction | undefined = undefined;
 
     try {
@@ -505,7 +500,7 @@ async function postLootDrop(context: BotContext, channel: GuildBasedChannel & Te
             time: lootTimeoutMs,
         });
     } catch (err) {
-        log.info(`Loot drop ${message.id} timed out; loot ${l.id} was not claimed, cleaning up`);
+        log.info(`Loot drop ${message.id} timed out; loot was not claimed, cleaning up`);
         const original = message.embeds[0];
         await message.edit({
             embeds: [
@@ -522,6 +517,11 @@ async function postLootDrop(context: BotContext, channel: GuildBasedChannel & Te
         });
         return;
     }
+
+    const weights = lootTemplates.map(t => t.weight); // TODO: User penalties
+
+    const template = randomEntryWeighted(lootTemplates, weights);
+    const l = await loot.createLoot(template, validUntil, message);
 
     const reply = await interaction.deferReply({ ephemeral: true });
 
