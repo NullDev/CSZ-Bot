@@ -31,7 +31,7 @@ export async function up(db: Kysely<any>) {
 
         await db
             .updateTable("loot")
-            .where("id", "=", 1)
+            .where("id", "=", k.id)
             .set({ deletedAt: sql`current_timestamp` })
             .execute();
 

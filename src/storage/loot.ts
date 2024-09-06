@@ -1,7 +1,8 @@
 import type { GuildChannel, GuildMember, Message, TextChannel, User } from "discord.js";
+import { sql } from "kysely";
 
 import type { BotContext } from "@/context.js";
-import type { Loot } from "./db/model.js";
+import type { Loot, LootInsertable } from "./db/model.js";
 
 import db from "@db";
 
@@ -78,4 +79,29 @@ export async function transferLootToUser(lootId: Loot["id"], userId: User["id"],
         })
         .where("id", "=", lootId)
         .execute();
+}
+
+export async function replaceLoot(
+    lootId: Loot["id"],
+    replacementLoot: LootInsertable,
+    trackPredecessor: boolean,
+    ctx = db(),
+): Promise<Loot> {
+    return await ctx.transaction().execute(async ctx => {
+        await ctx
+            .updateTable("loot")
+            .where("id", "=", lootId)
+            .set({ deletedAt: sql`current_timestamp` })
+            .execute();
+
+        const replacement = trackPredecessor
+            ? ({ ...replacementLoot, predecessor: lootId } as const)
+            : ({ ...replacementLoot, predecessor: null } as const);
+
+        return await ctx
+            .insertInto("loot")
+            .values(replacement)
+            .returningAll()
+            .executeTakeFirstOrThrow();
+    });
 }

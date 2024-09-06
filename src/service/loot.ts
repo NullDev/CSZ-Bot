@@ -18,10 +18,9 @@ import { Temporal } from "@js-temporal/polyfill";
 import * as sentry from "@sentry/bun";
 
 import type { BotContext } from "@/context.js";
-import type { Loot } from "@/storage/db/model.js";
+import type { Loot, LootId, LootInsertable } from "@/storage/db/model.js";
 import { randomEntry, randomEntryWeighted } from "@/utils/arrayUtils.js";
 import * as loot from "@/storage/loot.js";
-import * as time from "@/utils/time.js";
 import * as emote from "./emote.js";
 
 import log from "@log";
@@ -611,8 +610,20 @@ export async function getUserLootsById(user: User, lootTypeId: number) {
     return await loot.getUserLootsById(user.id, lootTypeId);
 }
 
-export function transferLootToUser(lootId: number, user: User) {
+export async function getLootsByKindId(lootTykeId: LootTypeId) {
+    return await loot.getLootsByKindId(lootTykeId);
+}
+
+export function transferLootToUser(lootId: LootId, user: User) {
     return loot.transferLootToUser(lootId, user.id);
+}
+
+export function replaceLoot(
+    lootId: LootId,
+    replacement: LootInsertable,
+    trackPredecessor: boolean,
+) {
+    return loot.replaceLoot(lootId, replacement, trackPredecessor);
 }
 
 type AdjustmentResult = {

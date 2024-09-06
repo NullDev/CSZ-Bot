@@ -1,5 +1,5 @@
 import type { Snowflake } from "discord.js";
-import type { ColumnType, Generated, GeneratedAlways, Selectable } from "kysely";
+import type { ColumnType, Generated, GeneratedAlways, Insertable, Selectable } from "kysely";
 
 import type { Radius } from "@/commands/penis.js";
 
@@ -204,6 +204,7 @@ export interface ReminderTable extends AuditedTable {
 export type LootId = number;
 
 export type Loot = Selectable<LootTable>;
+export type LootInsertable = Insertable<LootTable>;
 export interface LootTable extends AuditedTable {
     id: GeneratedAlways<LootId>;
 
@@ -211,6 +212,7 @@ export interface LootTable extends AuditedTable {
     description: string;
     lootKindId: number;
     winnerId: string;
+    /** Different from createdAt. If the item is replaced, this may be copied form the previous loot item */
     claimedAt: ColumnType<string, string, string>; // TODO: Date is not supported by the DB driver
     guildId: Snowflake;
     channelId: Snowflake;
