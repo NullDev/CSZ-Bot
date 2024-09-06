@@ -32,11 +32,18 @@ export function randomEntryWeighted<T>(
     const offset = Math.random() * prefixSum[prefixSum.length - 1];
 
     for (let i = 0; i < array.length; ++i) {
-        if (prefixSum[i] > offset) {
+        if (prefixSum[i] > offset && weights[i] > 0) {
             return array[i];
         }
     }
-    return array[array.length - 1];
+
+    for (let i = weights.length - 1; i >= 0; --i) {
+        if (weights[i] > 0) {
+            return array[i];
+        }
+    }
+
+    throw new Error("No valid entry found");
 }
 
 export function shuffleArray<T>(array: readonly T[], biasFn: (item: T) => number): T[] {
