@@ -24,7 +24,7 @@ export default class WhereCommand implements SpecialCommand {
         return msg.startsWith("wo ") && countWords(substringAfter(msg, "wo ")) <= 3;
     }
 
-    async handleSpecialMessage(message: Message) {
+    async handleSpecialMessage(message: Message<true>) {
         const subject = cleanContent(message.content.trim().toUpperCase(), message.channel);
 
         const whereMemeBuffer = await WhereCommand.createWhereMeme(subject);

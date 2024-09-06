@@ -58,7 +58,7 @@ export default class GhostwriterCommand implements ApplicationCommand {
         const reply = command.options.getString("reply", false);
         const { channel } = command;
 
-        if (!channel?.isTextBased()) {
+        if (!channel?.isTextBased() || !("guild" in channel)) {
             return;
         }
 

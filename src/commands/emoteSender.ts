@@ -27,7 +27,7 @@ export default class EmoteSenderCommand implements SpecialCommand {
         return Object.keys(this.emotes).some(emote => emote === trimmedContent.toLowerCase());
     }
 
-    async handleSpecialMessage(message: Message, context: BotContext) {
+    async handleSpecialMessage(message: Message<true>, context: BotContext) {
         const trimmedContent = this.#trimMessage(message);
         const pickedEmotes: string[] | undefined = this.emotes[trimmedContent];
         if (pickedEmotes === undefined) {

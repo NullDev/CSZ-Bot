@@ -9,6 +9,7 @@ import {
     ChannelType,
     type Channel,
     type Snowflake,
+    type GuildTextBasedChannel,
 } from "discord.js";
 
 import type { BotContext, QuoteConfig } from "@/context.js";
@@ -79,14 +80,22 @@ const isQuoterQuotingHimself = (quoter: GuildMember, messageAuthor: GuildMember)
 
 const generateRandomColor = () => Math.floor(Math.random() * 0xffffff);
 
-const getTargetChannel = (sourceChannelId: Snowflake, context: BotContext) => {
+const getTargetChannel = (
+    sourceChannelId: Snowflake,
+    context: BotContext,
+): { id: Snowflake; channel: GuildTextBasedChannel | undefined } => {
     const { targetChannelOverrides, defaultTargetChannelId } = context.commandConfig.quote;
 
     const targetChannelId = targetChannelOverrides[sourceChannelId] ?? defaultTargetChannelId;
 
+    const channel = context.client.channels.cache.get(targetChannelId);
+    if ((channel && !("guild" in channel)) || !channel?.isTextBased()) {
+        throw new Error(`Channel ${targetChannelId} is not a guild channel`);
+    }
+
     return {
         id: targetChannelId,
-        channel: context.client.channels.cache.get(targetChannelId),
+        channel,
     };
 };
 

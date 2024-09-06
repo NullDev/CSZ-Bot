@@ -39,7 +39,7 @@ export default class InstagramLink implements SpecialCommand {
         return [...res].map(match => match[0]);
     }
 
-    async handleSpecialMessage(message: Message, context: BotContext) {
+    async handleSpecialMessage(message: Message<true>, context: BotContext) {
         const content = message.content.replace("http://", "https://");
 
         const uris = InstagramLink.extractLinks(content);

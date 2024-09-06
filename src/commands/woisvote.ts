@@ -7,11 +7,11 @@ import {
     type Role,
     SlashCommandBuilder,
     SlashCommandStringOption,
-    type TextBasedChannel,
     type User,
     type Snowflake,
     time,
     TimestampStyles,
+    type GuildTextBasedChannel,
 } from "discord.js";
 
 import type { ReactionHandler } from "@/handler/ReactionHandler.js";
@@ -29,7 +29,7 @@ const woisVoteConstant = "⚠️🍻 **WOISVOTE** 🍻⚠️";
 const createWoisMessage = async (
     reason: string,
     date: Date,
-    channel: TextBasedChannel,
+    channel: GuildTextBasedChannel,
 ): Promise<Message> => {
     const woisMessage = await channel.send(
         `${woisVoteConstant}\nWois in ${time(
@@ -85,10 +85,8 @@ export default class WoisCommand implements ApplicationCommand {
             // TODO: Solve this on a type level
             return;
         }
-        if (command.channel === null) {
-            return;
-        }
-        if (command.channel.isTextBased() === false) {
+        const channel = command.channel;
+        if (!channel || !channel.isTextBased() || !("guild" in channel)) {
             return;
         }
 
@@ -129,7 +127,7 @@ export default class WoisCommand implements ApplicationCommand {
         const woisMessage = await createWoisMessage(
             reason,
             new Date(timeForWois.toString()),
-            command.channel,
+            channel,
         );
 
         if (isWoisgangVote) {
@@ -143,7 +141,7 @@ export default class WoisCommand implements ApplicationCommand {
             isWoisgangVote,
         );
         if (!result) {
-            await command.channel.send(
+            await channel.send(
                 "Ich konnte den Woisvote nicht erstellen. Da hat wohl jemand kacke gebaut.",
             );
         }
