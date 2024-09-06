@@ -10,7 +10,7 @@ export async function up(db: Kysely<any>) {
     await db.deleteFrom("loot").where("winnerId", "is", null).execute();
 
     // IDs at the time of migration
-    enum LootKindId {
+    enum LootTypeId {
         DOENER = 4,
         VERSCHIMMELTER_DOENER = 32,
     }
@@ -19,7 +19,7 @@ export async function up(db: Kysely<any>) {
     const maxKebabAge = 3 * 24 * 60 * 60 * 1000;
     const kebabs = await db
         .selectFrom("loot")
-        .where("lootKindId", "=", LootKindId.DOENER)
+        .where("lootKindId", "=", LootTypeId.DOENER)
         .selectAll()
         .execute();
 
@@ -41,7 +41,7 @@ export async function up(db: Kysely<any>) {
                 ...k,
                 id: undefined,
                 predecessor: k.id,
-                lootKindId: LootKindId.VERSCHIMMELTER_DOENER,
+                lootKindId: LootTypeId.VERSCHIMMELTER_DOENER,
                 displayName: "Verschimmelter Döner",
                 description: "Du hättest ihn früher essen sollen",
                 usedImage: null,
