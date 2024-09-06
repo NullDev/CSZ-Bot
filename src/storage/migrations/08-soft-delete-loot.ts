@@ -4,9 +4,14 @@ export async function up(db: Kysely<any>) {
     await db.schema
         .alterTable("loot")
         .addColumn("deletedAt", "timestamp", c => c.defaultTo(null))
-        .addColumn("predecessor", "integer", c => c.references("loot.id").defaultTo(null))
-        .dropColumn("validUntil")
         .execute();
+
+    await db.schema
+        .alterTable("loot")
+        .addColumn("predecessor", "integer", c => c.references("loot.id").defaultTo(null))
+        .execute();
+
+    await db.schema.alterTable("loot").dropColumn("validUntil").execute();
     await db.deleteFrom("loot").where("winnerId", "is", null).execute();
 
     // IDs at the time of migration
