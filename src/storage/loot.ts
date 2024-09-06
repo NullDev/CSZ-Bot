@@ -24,8 +24,9 @@ export interface LootTemplate {
 
 export async function createLoot(
     template: LootTemplate,
-    validUntil: Date,
+    winner: User,
     message: Message<true> | null,
+    now: Date,
     ctx = db(),
 ) {
     return await ctx
@@ -34,14 +35,14 @@ export async function createLoot(
             displayName: template.displayName,
             description: template.description,
             lootKindId: template.id,
-            validUntil: validUntil.toISOString(),
             usedImage: template.asset,
-            winnerId: null,
+            winnerId: winner.id,
+            claimedAt: now.toISOString(),
             guildId: message?.guildId ?? "",
             channelId: message?.channelId ?? "",
             messageId: message?.id ?? "",
         })
-        .returning(["id", "validUntil"])
+        .returningAll()
         .executeTakeFirstOrThrow();
 }
 
@@ -55,27 +56,6 @@ export async function findOfMessage(message: Message<true>, ctx = db()) {
         .where("messageId", "=", message.id)
         .selectAll()
         .executeTakeFirst();
-}
-
-export type ClaimedLoot = Loot & { winnerId: User["id"]; claimedAt: string };
-
-export async function assignUserToLootDrop(
-    user: User,
-    lootId: Loot["id"],
-    now: Date,
-    ctx = db(),
-): Promise<ClaimedLoot | undefined> {
-    return (await ctx
-        .updateTable("loot")
-        .set({
-            winnerId: user.id,
-            claimedAt: now.toISOString(),
-        })
-        .where("id", "=", lootId)
-        .where("validUntil", ">=", now.toISOString())
-        .where("winnerId", "is", null)
-        .returningAll()
-        .executeTakeFirst()) as ClaimedLoot | undefined;
 }
 
 export async function getUserLootsById(userId: User["id"], lootKindId: number, ctx = db()) {

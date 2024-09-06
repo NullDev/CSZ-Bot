@@ -474,8 +474,6 @@ export async function runDropAttempt(context: BotContext) {
 async function postLootDrop(context: BotContext, channel: GuildBasedChannel & TextBasedChannel) {
     const hamster = context.guild.emojis.cache.find(e => e.name === "sad_hamster") ?? ":(";
 
-    const validUntil = new Date(Date.now() + lootTimeoutMs);
-
     const takeLootButton = new ButtonBuilder()
         .setCustomId("take-loot")
         .setLabel("Geschenk nehmen")
@@ -533,11 +531,9 @@ async function postLootDrop(context: BotContext, channel: GuildBasedChannel & Te
     const { messages, weights } = await getDropWeightAdjustments(interaction.user, defaultWeights);
 
     const template = randomEntryWeighted(lootTemplates, weights);
-    const l = await loot.createLoot(template, validUntil, message);
+    const claimedLoot = await loot.createLoot(template, interaction.user, message, new Date());
 
     const reply = await interaction.deferReply({ ephemeral: true });
-
-    const claimedLoot = await loot.assignUserToLootDrop(interaction.user, l.id, new Date());
     if (!claimedLoot) {
         await reply.edit({
             content: `Upsi, da ist was schief gelaufi oder jemand anderes war schnelli ${hamster}`,

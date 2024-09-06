@@ -5,6 +5,7 @@ export async function up(db: Kysely<any>) {
         .alterTable("loot")
         .addColumn("deletedAt", "timestamp", c => c.defaultTo(null))
         .addColumn("predecessor", "integer", c => c.references("loot.id").defaultTo(null))
+        .dropColumn("validUntil")
         .execute();
 
     // IDs at the time of migration
@@ -44,7 +45,7 @@ export async function up(db: Kysely<any>) {
                 description: "Du hättest ihn früher essen sollen",
                 usedImage: null,
             })
-            .returning(["id", "validUntil"])
+            .returning(["id"])
             .executeTakeFirstOrThrow();
     }
 }
