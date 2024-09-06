@@ -50,13 +50,29 @@ export async function createLoot(
 }
 
 export async function findOfUser(user: User, ctx = db()) {
-    return await ctx.selectFrom("loot").where("winnerId", "=", user.id).selectAll().execute();
+    return await ctx
+        .selectFrom("loot")
+        .where("winnerId", "=", user.id)
+        .where(eb =>
+            eb.or([
+                eb("deletedAt", "is", null),
+                eb("deletedAt", ">", sql<string>`current_timestamp`),
+            ]),
+        )
+        .selectAll()
+        .execute();
 }
 
 export async function findOfMessage(message: Message<true>, ctx = db()) {
     return await ctx
         .selectFrom("loot")
         .where("messageId", "=", message.id)
+        .where(eb =>
+            eb.or([
+                eb("deletedAt", "is", null),
+                eb("deletedAt", ">", sql<string>`current_timestamp`),
+            ]),
+        )
         .selectAll()
         .executeTakeFirst();
 }
