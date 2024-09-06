@@ -649,7 +649,7 @@ async function getDropWeightAdjustments(
         const wasteDropPenalty = 1.05;
         wasteFactor = Math.min(2, waste.length ** wasteDropPenalty);
         messages.push(
-            "Du hast radioaktiven Müll, deshalb ist die Chance auf ein Geschenk geringer.",
+            `Du hast ${waste.length} Tonnen radioaktiven Müll, deshalb ist die Chance auf ein Geschenk geringer.`,
         );
     }
 
