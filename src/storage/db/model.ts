@@ -202,6 +202,7 @@ export interface ReminderTable extends AuditedTable {
 }
 
 export type LootId = number;
+export type LootOrigin = "drop" | "owner-transfer" | "replacement";
 
 export type Loot = Selectable<LootTable>;
 export type LootInsertable = Insertable<LootTable>;
@@ -222,6 +223,7 @@ export interface LootTable extends AuditedTable {
     deletedAt: ColumnType<string | null, string | null, string | null>; // TODO: Date is not supported by the DB driver
 
     predecessor: LootId | null;
+    origin: LootOrigin;
 }
 
 export type Emote = Selectable<EmoteTable>;

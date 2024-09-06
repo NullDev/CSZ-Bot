@@ -12,7 +12,13 @@ export async function up(db: Kysely<any>) {
         .execute();
 
     await db.schema.alterTable("loot").dropColumn("validUntil").execute();
+
     await db.deleteFrom("loot").where("winnerId", "is", null).execute();
+
+    await db.schema
+        .alterTable("loot")
+        .addColumn("origin", "text", c => c.notNull().defaultTo("drop"))
+        .execute();
 }
 
 export async function down(_db: Kysely<any>) {

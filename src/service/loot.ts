@@ -530,7 +530,13 @@ async function postLootDrop(context: BotContext, channel: GuildBasedChannel & Te
     const { messages, weights } = await getDropWeightAdjustments(interaction.user, defaultWeights);
 
     const template = randomEntryWeighted(lootTemplates, weights);
-    const claimedLoot = await loot.createLoot(template, interaction.user, message, new Date());
+    const claimedLoot = await loot.createLoot(
+        template,
+        interaction.user,
+        message,
+        new Date(),
+        "drop",
+    );
 
     const reply = await interaction.deferReply({ ephemeral: true });
     if (!claimedLoot) {

@@ -29,6 +29,7 @@ export async function degradeItems(_context: BotContext) {
                 guildId: k.guildId,
                 channelId: k.channelId,
                 messageId: k.messageId,
+                origin: "replacement",
             },
             true,
         );

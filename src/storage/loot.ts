@@ -2,7 +2,7 @@ import type { GuildChannel, GuildMember, Message, TextChannel, User } from "disc
 import { sql } from "kysely";
 
 import type { BotContext } from "@/context.js";
-import type { Loot, LootId, LootInsertable } from "./db/model.js";
+import type { Loot, LootId, LootInsertable, LootOrigin } from "./db/model.js";
 
 import db from "@db";
 
@@ -28,6 +28,7 @@ export async function createLoot(
     winner: User,
     message: Message<true> | null,
     now: Date,
+    origin: LootOrigin,
     ctx = db(),
 ) {
     return await ctx
@@ -42,6 +43,7 @@ export async function createLoot(
             guildId: message?.guildId ?? "",
             channelId: message?.channelId ?? "",
             messageId: message?.id ?? "",
+            origin,
         })
         .returningAll()
         .executeTakeFirstOrThrow();
@@ -94,8 +96,6 @@ export async function transferLootToUser(
     trackPredecessor: boolean,
     ctx = db(),
 ) {
-    // TODO: Maybe we need a "previous owner" field to track who gave the loot to the user
-    // Or we could add a soft-delete option, so we can just add a new entry
     return await ctx.transaction().execute(async ctx => {
         const oldLoot = await ctx
             .selectFrom("loot")
@@ -106,12 +106,15 @@ export async function transferLootToUser(
 
         await deleteLoot(oldLoot.id, ctx);
 
-        const replacement = trackPredecessor
-            ? { ...oldLoot, winnerId: userId, predecessor: lootId }
-            : { ...oldLoot, winnerId: userId, predecessor: null };
+        const replacement = {
+            ...oldLoot,
+            winnerId: userId,
+            origin: "owner-transfer",
+            predecessor: trackPredecessor ? lootId : null,
+        } as const;
 
         if ("id" in replacement) {
-            //@ts-ignore
+            // @ts-ignore
             // biome-ignore lint/performance/noDelete: Setting it to undefined would keep the key
             delete replacement.id;
         }
