@@ -201,9 +201,11 @@ export interface ReminderTable extends AuditedTable {
     reminderNote: string | null;
 }
 
+export type LootId = number;
+
 export type Loot = Selectable<LootTable>;
 export interface LootTable extends AuditedTable {
-    id: GeneratedAlways<number>;
+    id: GeneratedAlways<LootId>;
 
     displayName: string;
     description: string;
@@ -215,6 +217,10 @@ export interface LootTable extends AuditedTable {
     channelId: Snowflake;
     messageId: Snowflake;
     usedImage: string | null;
+
+    deletedAt: ColumnType<string | null, string | null, string | null>; // TODO: Date is not supported by the DB driver
+
+    predecessor: LootId | null;
 }
 
 export type Emote = Selectable<EmoteTable>;

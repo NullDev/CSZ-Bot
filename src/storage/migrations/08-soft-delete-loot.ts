@@ -4,6 +4,7 @@ export async function up(db: Kysely<any>) {
     await db.schema
         .alterTable("loot")
         .addColumn("deletedAt", "timestamp", c => c.defaultTo(null))
+        .addColumn("predecessor", "integer", c => c.references("loot.id").defaultTo(null))
         .execute();
 }
 
