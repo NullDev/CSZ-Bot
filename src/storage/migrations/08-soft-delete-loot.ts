@@ -1,4 +1,4 @@
-import type { Kysely } from "kysely";
+import { sql, type Kysely } from "kysely";
 
 export async function up(db: Kysely<any>) {
     await db.schema
@@ -6,6 +6,47 @@ export async function up(db: Kysely<any>) {
         .addColumn("deletedAt", "timestamp", c => c.defaultTo(null))
         .addColumn("predecessor", "integer", c => c.references("loot.id").defaultTo(null))
         .execute();
+
+    // IDs at the time of migration
+    enum LootKindId {
+        DOENER = 4,
+        VERSCHIMMELTER_DOENER = 32,
+    }
+
+    const now = Date.now();
+    const maxKebabAge = 3 * 24 * 60 * 60 * 1000;
+    const kebabs = await db
+        .selectFrom("loot")
+        .where("lootKindId", "=", LootKindId.DOENER)
+        .selectAll()
+        .execute();
+
+    for (const k of kebabs) {
+        const itemAge = now - new Date(k.claimedAt).getTime();
+        if (itemAge <= maxKebabAge) {
+            continue;
+        }
+
+        await db
+            .updateTable("loot")
+            .where("id", "=", 1)
+            .set({ deletedAt: sql`current_timestamp` })
+            .execute();
+
+        await db
+            .insertInto("loot")
+            .values({
+                ...k,
+                id: undefined,
+                predecessor: k.id,
+                lootKindId: LootKindId.VERSCHIMMELTER_DOENER,
+                displayName: "Verschimmelter Döner",
+                description: "Du hättest ihn früher essen sollen",
+                usedImage: null,
+            })
+            .returning(["id", "validUntil"])
+            .executeTakeFirstOrThrow();
+    }
 }
 
 export async function down(_db: Kysely<any>) {

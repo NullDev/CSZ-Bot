@@ -13,7 +13,6 @@ import {
     type Guild,
     type GuildBasedChannel,
     type TextBasedChannel,
-    GuildMember,
 } from "discord.js";
 import { Temporal } from "@js-temporal/polyfill";
 import * as sentry from "@sentry/bun";
@@ -62,6 +61,7 @@ export enum LootTypeId {
     DRECK = 29,
     EI = 30,
     BRAVO = 31,
+    VERSCHIMMELTER_DOENER = 32,
 }
 
 const lootTemplates: loot.LootTemplate[] = [
@@ -399,6 +399,15 @@ const lootTemplates: loot.LootTemplate[] = [
         description: "Die Seiten kleben noch ein bisschen",
         emote: ":newspaper2:",
         asset: "assets/loot/31-bravo.jpg",
+    },
+    {
+        id: LootTypeId.VERSCHIMMELTER_DOENER,
+        weight: 0, // cannot be obtained via drop
+        displayName: "Verschimmelter Döner",
+        titleText: "Einen verschimmelten Döner",
+        description: "Du hättest ihn früher essen sollen",
+        emote: "🥙",
+        asset: null,
     },
 ] as const;
 
