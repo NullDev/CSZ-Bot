@@ -619,6 +619,10 @@ export async function getUserLootsById(userId: Snowflake, lootTypeId: number) {
     return await loot.getUserLootsById(userId, lootTypeId);
 }
 
+export async function getUserLootCountById(userId: Snowflake, lootTypeId: number): Promise<number> {
+    return (await loot.getUserLootsById(userId, lootTypeId)).length;
+}
+
 export async function getLootsByKindId(lootTykeId: LootTypeId) {
     return await loot.getLootsByKindId(lootTykeId);
 }
@@ -648,20 +652,31 @@ async function getDropWeightAdjustments(
     user: User,
     weights: readonly number[],
 ): Promise<AdjustmentResult> {
-    const waste = await getUserLootsById(user.id, LootTypeId.RADIOACTIVE_WASTE);
+    const waste = await getUserLootCountById(user.id, LootTypeId.RADIOACTIVE_WASTE);
     const messages = [];
 
     let wasteFactor = 1;
-    if (waste.length > 0) {
+    if (waste > 0) {
         const wasteDropPenalty = 1.05;
-        wasteFactor = Math.min(2, waste.length ** wasteDropPenalty);
+        wasteFactor = Math.min(2, waste ** wasteDropPenalty);
         messages.push(
-            `Du hast ${waste.length} Tonnen radioaktiven Müll, deshalb ist die Chance auf ein Geschenk geringer.`,
+            `Du hast ${waste} Tonnen radioaktiven Müll, deshalb ist die Chance auf ein Geschenk geringer.`,
         );
     }
 
+    const pkv = await getUserLootCountById(user.id, LootTypeId.PKV);
+    let pkvFactor = 1;
+    if (pkv > 0) {
+        pkvFactor = 2;
+        messages.push("Da du privat versichert bist, hast du die doppelte Chance auf eine AU.");
+    }
+
+    const newWeights = [...weights];
+    newWeights[LootTypeId.NICHTS] = Math.ceil(weights[LootTypeId.NICHTS] * wasteFactor) | 0;
+    newWeights[LootTypeId.KRANKSCHREIBUNG] = (weights[LootTypeId.KRANKSCHREIBUNG] * pkvFactor) | 0;
+
     return {
         messages,
-        weights: [Math.ceil(weights[0] * wasteFactor) | 0, ...weights.slice(1)],
+        weights: newWeights,
     };
 }
