@@ -1,6 +1,8 @@
 import {
+    type AutocompleteInteraction,
     type CommandInteraction,
     SlashCommandBuilder,
+    SlashCommandStringOption,
     SlashCommandSubcommandBuilder,
 } from "discord.js";
 
@@ -26,7 +28,14 @@ export default class GegenstandCommand implements ApplicationCommand {
         .addSubcommand(
             new SlashCommandSubcommandBuilder()
                 .setName("info")
-                .setDescription("Zeigt Informationen über einen Gegenstand an"),
+                .setDescription("Zeigt Informationen über einen Gegenstand an")
+                .addStringOption(
+                    new SlashCommandStringOption()
+                        .setRequired(true)
+                        .setName("item")
+                        .setDescription("Der Gegenstand, über den du Informationen haben möchtest")
+                        .setAutocomplete(true),
+                ),
         );
 
     async handleInteraction(interaction: CommandInteraction, context: BotContext) {
@@ -107,4 +116,26 @@ export default class GegenstandCommand implements ApplicationCommand {
     }
 
     async #showItemInfo(interaction: CommandInteraction, context: BotContext) {}
+
+    async autocomplete(interaction: AutocompleteInteraction) {
+        const subCommand = interaction.options.getSubcommand(true);
+        if (subCommand !== "info") {
+            return;
+        }
+
+        const itemName = interaction.options.getFocused().toLowerCase();
+
+        const contents = await lootService.getInventoryContents(interaction.user);
+
+        const matchedItems = contents
+            .filter(i => i.displayName.toLowerCase().includes(itemName))
+            .slice(0, 20);
+
+        const completions = matchedItems.map(i => ({
+            name: i.displayName,
+            value: i.id,
+        }));
+
+        await interaction.respond(completions);
+    }
 }
