@@ -122,6 +122,9 @@ export default class GegenstandCommand implements ApplicationCommand {
         if (!interaction.isChatInputCommand()) {
             throw new Error("Interaction is not a chat input command");
         }
+        if (!interaction.guild) {
+            return;
+        }
 
         const itemId = Number(interaction.options.getString("item"));
         if (!Number.isSafeInteger(itemId)) {
@@ -152,10 +155,12 @@ export default class GegenstandCommand implements ApplicationCommand {
             ? await imageService.clampImageSizeByWidth(await fs.readFile(template.asset), 200)
             : null;
 
+        const emote = lootService.getEmote(interaction.guild, item);
+
         await interaction.reply({
             embeds: [
                 {
-                    title: item.displayName,
+                    title: emote ? `${emote} ${item.displayName}` : item.displayName,
                     description: item.description,
                     color: 0x00ff00,
                     image: attachment
@@ -205,7 +210,8 @@ export default class GegenstandCommand implements ApplicationCommand {
         for (const item of matchedItems) {
             const emote = lootService.getEmote(interaction.guild, item);
             completions.push({
-                name: emote ? `${emote} ${item.displayName}` : item.displayName,
+                // auto completions don't support discord emotes, only unicode ones
+                name: typeof emote === "string" ? `${emote} ${item.displayName}` : item.displayName,
                 value: String(item.id),
             });
         }
