@@ -616,15 +616,19 @@ export function resolveLootTemplate(lootKindId: number) {
 }
 
 export async function getUserLootsByTypeId(userId: Snowflake, lootTypeId: number) {
-    return await loot.getUserLootsById(userId, lootTypeId);
+    return await loot.getUserLootsByTypeId(userId, lootTypeId);
+}
+
+export async function getUserLootById(userId: Snowflake, id: LootId) {
+    return await loot.getUserLootById(userId, id);
 }
 
 export async function getUserLootCountById(userId: Snowflake, lootTypeId: number): Promise<number> {
-    return (await loot.getUserLootsById(userId, lootTypeId)).length;
+    return (await loot.getUserLootsByTypeId(userId, lootTypeId)).length;
 }
 
-export async function getLootsByKindId(lootTykeId: LootTypeId) {
-    return await loot.getLootsByKindId(lootTykeId);
+export async function getLootsByKindId(lootTypeId: LootTypeId) {
+    return await loot.getLootsByKindId(lootTypeId);
 }
 
 export function transferLootToUser(lootId: LootId, user: User, trackPredecessor: boolean) {

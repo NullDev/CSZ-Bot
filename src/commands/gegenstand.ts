@@ -1,6 +1,7 @@
 import {
     type AutocompleteInteraction,
     type CommandInteraction,
+    InteractionType,
     SlashCommandBuilder,
     SlashCommandStringOption,
     SlashCommandSubcommandBuilder,
@@ -115,7 +116,34 @@ export default class GegenstandCommand implements ApplicationCommand {
         });
     }
 
-    async #showItemInfo(interaction: CommandInteraction, context: BotContext) {}
+    async #showItemInfo(interaction: CommandInteraction, _context: BotContext) {
+        if (!interaction.isChatInputCommand()) {
+            throw new Error("Interaction is not a chat input command");
+        }
+
+        const itemId = Number(interaction.options.getString("item"));
+        if (!Number.isSafeInteger(itemId)) {
+            throw new Error("Invalid item ID");
+        }
+
+        const item = await lootService.getUserLootById(interaction.user.id, itemId);
+        if (!item) {
+            await interaction.reply({
+                content: "Diesen Gegensand hast du nicht.",
+            });
+            return;
+        }
+
+        await interaction.reply({
+            embeds: [
+                {
+                    title: item.displayName,
+                    description: item.description,
+                    color: 0x00ff00,
+                },
+            ],
+        });
+    }
 
     async autocomplete(interaction: AutocompleteInteraction) {
         const subCommand = interaction.options.getSubcommand(true);

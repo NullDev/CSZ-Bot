@@ -70,7 +70,7 @@ export async function findOfMessage(message: Message<true>, ctx = db()) {
         .executeTakeFirst();
 }
 
-export async function getUserLootsById(userId: User["id"], lootKindId: number, ctx = db()) {
+export async function getUserLootsByTypeId(userId: User["id"], lootKindId: number, ctx = db()) {
     return await ctx
         .selectFrom("loot")
         .where("winnerId", "=", userId)
@@ -78,6 +78,16 @@ export async function getUserLootsById(userId: User["id"], lootKindId: number, c
         .where(notDeleted)
         .selectAll()
         .execute();
+}
+
+export async function getUserLootById(userId: User["id"], lootId: LootId, ctx = db()) {
+    return await ctx
+        .selectFrom("loot")
+        .where("winnerId", "=", userId)
+        .where("id", "=", lootId)
+        .where(notDeleted)
+        .selectAll()
+        .executeTakeFirst();
 }
 
 export async function getLootsByKindId(lootKindId: number, ctx = db()) {
