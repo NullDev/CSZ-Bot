@@ -16,6 +16,7 @@ import { checkBirthdays } from "@/service/birthday.js";
 import { handleFadingMessages } from "@/service/fadingMessage.js";
 import { checkExpiredShifts } from "@/service/lootRoles.js";
 import { getTrichterUnserEmbed } from "@/service/trichterUnser.js";
+import { degradeItems } from "@/service/lootDegradation.js";
 
 import * as poll from "@/commands/poll.js";
 import * as ehre from "@/storage/ehre.js";
@@ -44,6 +45,7 @@ export async function schedule(context: BotContext) {
     cron("* * * * * *", () => handleFadingMessages(context));
     cron("*/15 * * * *", () => checkExpiredShifts(context));
     cron("0 20 * * FRI", () => getTrichterUnserEmbed(context));
+    cron("0 * * * *", () => degradeItems(context));
 
     const loot = context.commandConfig.loot;
     if (loot.enabled) {

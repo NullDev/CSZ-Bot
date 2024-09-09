@@ -1,7 +1,8 @@
 import type { GuildChannel, GuildMember, Message, TextChannel, User } from "discord.js";
+import { type ExpressionBuilder, sql } from "kysely";
 
 import type { BotContext } from "@/context.js";
-import type { Loot } from "./db/model.js";
+import type { Database, Loot, LootId, LootInsertable, LootOrigin } from "./db/model.js";
 
 import db from "@db";
 
@@ -22,10 +23,15 @@ export interface LootTemplate {
     asset: string | null;
 }
 
+const notDeleted = (eb: ExpressionBuilder<Database, "loot">) =>
+    eb.or([eb("deletedAt", "is", null), eb("deletedAt", ">", sql<string>`current_timestamp`)]);
+
 export async function createLoot(
     template: LootTemplate,
-    validUntil: Date,
+    winner: User,
     message: Message<true> | null,
+    now: Date,
+    origin: LootOrigin,
     ctx = db(),
 ) {
     return await ctx
@@ -34,48 +40,34 @@ export async function createLoot(
             displayName: template.displayName,
             description: template.description,
             lootKindId: template.id,
-            validUntil: validUntil.toISOString(),
             usedImage: template.asset,
-            winnerId: null,
+            winnerId: winner.id,
+            claimedAt: now.toISOString(),
             guildId: message?.guildId ?? "",
             channelId: message?.channelId ?? "",
             messageId: message?.id ?? "",
+            origin,
         })
-        .returning(["id", "validUntil"])
+        .returningAll()
         .executeTakeFirstOrThrow();
 }
 
 export async function findOfUser(user: User, ctx = db()) {
-    return await ctx.selectFrom("loot").where("winnerId", "=", user.id).selectAll().execute();
+    return await ctx
+        .selectFrom("loot")
+        .where("winnerId", "=", user.id)
+        .where(notDeleted)
+        .selectAll()
+        .execute();
 }
 
 export async function findOfMessage(message: Message<true>, ctx = db()) {
     return await ctx
         .selectFrom("loot")
         .where("messageId", "=", message.id)
+        .where(notDeleted)
         .selectAll()
         .executeTakeFirst();
-}
-
-export type ClaimedLoot = Loot & { winnerId: User["id"]; claimedAt: string };
-
-export async function assignUserToLootDrop(
-    user: User,
-    lootId: Loot["id"],
-    now: Date,
-    ctx = db(),
-): Promise<ClaimedLoot | undefined> {
-    return (await ctx
-        .updateTable("loot")
-        .set({
-            winnerId: user.id,
-            claimedAt: now.toISOString(),
-        })
-        .where("id", "=", lootId)
-        .where("validUntil", ">=", now.toISOString())
-        .where("winnerId", "is", null)
-        .returningAll()
-        .executeTakeFirst()) as ClaimedLoot | undefined;
 }
 
 export async function getUserLootsById(userId: User["id"], lootKindId: number, ctx = db()) {
@@ -83,18 +75,83 @@ export async function getUserLootsById(userId: User["id"], lootKindId: number, c
         .selectFrom("loot")
         .where("winnerId", "=", userId)
         .where("lootKindId", "=", lootKindId)
+        .where(notDeleted)
         .selectAll()
         .execute();
 }
 
-export async function transferLootToUser(lootId: Loot["id"], userId: User["id"], ctx = db()) {
-    // TODO: Maybe we need a "previous owner" field to track who gave the loot to the user
-    // Or we could add a soft-delete option, so we can just add a new entry
+export async function getLootsByKindId(lootKindId: number, ctx = db()) {
     return await ctx
-        .updateTable("loot")
-        .set({
-            winnerId: userId,
-        })
-        .where("id", "=", lootId)
+        .selectFrom("loot")
+        .where("lootKindId", "=", lootKindId)
+        .where(notDeleted)
+        .selectAll()
         .execute();
+}
+export async function transferLootToUser(
+    lootId: Loot["id"],
+    userId: User["id"],
+    trackPredecessor: boolean,
+    ctx = db(),
+) {
+    return await ctx.transaction().execute(async ctx => {
+        const oldLoot = await ctx
+            .selectFrom("loot")
+            .where("id", "=", lootId)
+            .forUpdate()
+            .selectAll()
+            .executeTakeFirstOrThrow();
+
+        await deleteLoot(oldLoot.id, ctx);
+
+        const replacement = {
+            ...oldLoot,
+            winnerId: userId,
+            origin: "owner-transfer",
+            predecessor: trackPredecessor ? lootId : null,
+        } as const;
+
+        if ("id" in replacement) {
+            // @ts-ignore
+            // biome-ignore lint/performance/noDelete: Setting it to undefined would keep the key
+            delete replacement.id;
+        }
+
+        return await ctx
+            .insertInto("loot")
+            .values(replacement)
+            .returningAll()
+            .executeTakeFirstOrThrow();
+    });
+}
+
+export async function replaceLoot(
+    lootId: Loot["id"],
+    replacementLoot: LootInsertable,
+    trackPredecessor: boolean,
+    ctx = db(),
+): Promise<Loot> {
+    return await ctx.transaction().execute(async ctx => {
+        await deleteLoot(lootId, ctx);
+
+        const replacement = trackPredecessor
+            ? { ...replacementLoot, predecessor: lootId }
+            : { ...replacementLoot, predecessor: null };
+
+        return await ctx
+            .insertInto("loot")
+            .values(replacement)
+            .returningAll()
+            .executeTakeFirstOrThrow();
+    });
+}
+
+export async function deleteLoot(lootId: Loot["id"], ctx = db()): Promise<LootId> {
+    const res = await ctx
+        .updateTable("loot")
+        .where("id", "=", lootId)
+        .set({ deletedAt: sql`current_timestamp` })
+        .returning("id")
+        .executeTakeFirstOrThrow();
+    return res.id;
 }

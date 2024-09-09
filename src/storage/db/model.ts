@@ -1,5 +1,5 @@
 import type { Snowflake } from "discord.js";
-import type { ColumnType, Generated, GeneratedAlways, Selectable } from "kysely";
+import type { ColumnType, Generated, GeneratedAlways, Insertable, Selectable } from "kysely";
 
 import type { Radius } from "@/commands/penis.js";
 
@@ -201,20 +201,29 @@ export interface ReminderTable extends AuditedTable {
     reminderNote: string | null;
 }
 
+export type LootId = number;
+export type LootOrigin = "drop" | "owner-transfer" | "replacement";
+
 export type Loot = Selectable<LootTable>;
+export type LootInsertable = Insertable<LootTable>;
 export interface LootTable extends AuditedTable {
-    id: GeneratedAlways<number>;
+    id: GeneratedAlways<LootId>;
 
     displayName: string;
     description: string;
     lootKindId: number;
-    validUntil: ColumnType<string, string, string>; // TODO: Date is not supported by the DB driver
-    winnerId: string | null;
-    claimedAt: ColumnType<string | null, string | null, string | null>; // TODO: Date is not supported by the DB driver
+    winnerId: string;
+    /** Different from createdAt. If the item is replaced, this may be copied form the previous loot item */
+    claimedAt: ColumnType<string, string, string>; // TODO: Date is not supported by the DB driver
     guildId: Snowflake;
     channelId: Snowflake;
     messageId: Snowflake;
     usedImage: string | null;
+
+    deletedAt: ColumnType<string | null, string | null, string | null>; // TODO: Date is not supported by the DB driver
+
+    predecessor: LootId | null;
+    origin: LootOrigin;
 }
 
 export type Emote = Selectable<EmoteTable>;

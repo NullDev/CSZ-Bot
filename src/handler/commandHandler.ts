@@ -134,7 +134,7 @@ const commandInteractionHandler = async (
         );
     }
 
-    log.debug(`Found a matching command ${matchingCommand.name}`);
+    log.debug(`Found a matching command "${matchingCommand.name}"`);
 
     await sentry.startSpan(
         { name: matchingCommand.name, op: "command.interaction" },
@@ -156,7 +156,7 @@ const autocompleteInteractionHandler = async (
         );
     }
 
-    log.debug(`Found a matching autocomplete handler for command ${matchingCommand.name}`);
+    log.debug(`Found a matching autocomplete handler for command "${matchingCommand.name}"`);
     await matchingCommand.autocomplete(interaction, context);
 };
 

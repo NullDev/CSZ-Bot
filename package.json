@@ -27,13 +27,13 @@
   "dependencies": {
     "@discordjs/voice": "^0.17.0",
     "@js-temporal/polyfill": "^0.4.4",
-    "@napi-rs/canvas": "^0.1.54",
+    "@napi-rs/canvas": "^0.1.55",
     "@resvg/resvg-js": "^2.6.2",
-    "@sentry/bun": "^8.27.0",
+    "@sentry/bun": "^8.29.0",
     "@std/jsonc": "npm:@jsr/std__jsonc@^1.0.1",
     "chrono-node": "^2.7.6",
     "croner": "^8.1.1",
-    "discord.js": "^14.15.3",
+    "discord.js": "^14.16.1",
     "get-audio-duration": "^4.0.1",
     "graphviz-wasm": "^3.0.2",
     "jsdom": "^25.0.0",
@@ -41,7 +41,7 @@
     "kysely-bun-sqlite": "^0.3.2",
     "libsodium-wrappers": "^0.7.15",
     "messageformat": "^4.0.0-7",
-    "pino": "^9.3.2",
+    "pino": "^9.4.0",
     "splid-js": "^1.1.1",
     "urlpattern-polyfill": "^10.0.0"
   },
@@ -52,9 +52,9 @@
     "@types/minimist": "^1.2.5",
     "@types/node-cron": "^3.0.11",
     "@types/sqlite3": "^3.1.11",
-    "lefthook": "^1.7.14",
+    "lefthook": "^1.7.15",
     "pino-pretty": "^11.2.2",
-    "typescript": "^5.6.0-dev.20240801"
+    "typescript": "^5.6.0-dev.20240819"
   },
   "trustedDependencies": [
     "@biomejs/biome",

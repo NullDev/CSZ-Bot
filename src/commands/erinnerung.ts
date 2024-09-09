@@ -1,9 +1,9 @@
 import {
     type CacheType,
     type CommandInteraction,
+    type GuildTextBasedChannel,
     SlashCommandBuilder,
     SlashCommandStringOption,
-    type TextBasedChannel,
     TimestampStyles,
     time as formatTime,
 } from "discord.js";
@@ -152,7 +152,7 @@ const sendReminder = async (reminder: Reminder, context: BotContext) => {
         if (!channel.isTextBased()) {
             throw new Error(`Channel ${reminder.channelId} is not a text channel`);
         }
-        const textChannel = channel as TextBasedChannel;
+        const textChannel = channel as GuildTextBasedChannel;
         const user = await guild.members.fetch(reminder.userId);
         const note = reminder.reminderNote || "Lol du Vollidiot hast nichts angegeben";
 

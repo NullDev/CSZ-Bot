@@ -77,6 +77,7 @@ export async function downloadInstagramContent(
         if (
             !result.links ||
             !Array.isArray(result.links) ||
+            result.links.length === 0 ||
             typeof result.links[0].link !== "string"
         ) {
             return {

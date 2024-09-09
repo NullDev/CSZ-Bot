@@ -17,7 +17,7 @@ export default class TikTokLink implements SpecialCommand {
         return pattern.test(message.content);
     }
 
-    async handleSpecialMessage(message: Message) {
+    async handleSpecialMessage(message: Message<true>) {
         await message.channel.sendTyping();
         const tikTokUrl = message.content;
         const searchUrl = `${proxitokInstance}/redirect/search?term=${tikTokUrl}&type=url`;

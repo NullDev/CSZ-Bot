@@ -13,20 +13,22 @@ import {
     type Guild,
     type GuildBasedChannel,
     type TextBasedChannel,
+    type Snowflake,
 } from "discord.js";
 import { Temporal } from "@js-temporal/polyfill";
 import * as sentry from "@sentry/bun";
 
 import type { BotContext } from "@/context.js";
-import type { Loot } from "@/storage/db/model.js";
+import type { Loot, LootId, LootInsertable } from "@/storage/db/model.js";
 import { randomEntry, randomEntryWeighted } from "@/utils/arrayUtils.js";
 import * as loot from "@/storage/loot.js";
-import * as time from "@/utils/time.js";
 import * as emote from "./emote.js";
 
 import log from "@log";
 
 const lootTimeoutMs = 60 * 1000;
+
+const ACHTUNG_NICHT_DROPBAR_WEIGHT_KG = 0;
 
 export enum LootTypeId {
     NICHTS = 0,
@@ -58,15 +60,16 @@ export enum LootTypeId {
     GAULOISES_BLAU = 26,
     MAXWELL = 27,
     SCHICHTBEGINN_ASSE_2 = 28,
-    DRECK = 24,
-    EI = 25,
-    BRAVO = 26,
+    DRECK = 29,
+    EI = 30,
+    BRAVO = 31,
+    VERSCHIMMELTER_DOENER = 32,
 }
 
 const lootTemplates: loot.LootTemplate[] = [
     {
         id: LootTypeId.NICHTS,
-        weight: 50,
+        weight: 55,
         displayName: "Nichts",
         titleText: "✨Nichts✨",
         description: "¯\\_(ツ)_/¯",
@@ -399,6 +402,15 @@ const lootTemplates: loot.LootTemplate[] = [
         emote: ":newspaper2:",
         asset: "assets/loot/31-bravo.jpg",
     },
+    {
+        id: LootTypeId.VERSCHIMMELTER_DOENER,
+        weight: ACHTUNG_NICHT_DROPBAR_WEIGHT_KG,
+        displayName: "Verschimmelter Döner",
+        titleText: "Einen verschimmelten Döner",
+        description: "Du hättest ihn früher essen sollen",
+        emote: "🥙",
+        asset: null,
+    },
 ] as const;
 
 /*
@@ -464,8 +476,6 @@ export async function runDropAttempt(context: BotContext) {
 async function postLootDrop(context: BotContext, channel: GuildBasedChannel & TextBasedChannel) {
     const hamster = context.guild.emojis.cache.find(e => e.name === "sad_hamster") ?? ":(";
 
-    const validUntil = new Date(Date.now() + lootTimeoutMs);
-
     const takeLootButton = new ButtonBuilder()
         .setCustomId("take-loot")
         .setLabel("Geschenk nehmen")
@@ -491,9 +501,6 @@ async function postLootDrop(context: BotContext, channel: GuildBasedChannel & Te
         components: [new ActionRowBuilder<ButtonBuilder>().addComponents(takeLootButton)],
     });
 
-    const template = randomEntryWeighted(lootTemplates);
-    const l = await loot.createLoot(template, validUntil, message);
-
     let interaction: Interaction | undefined = undefined;
 
     try {
@@ -503,7 +510,7 @@ async function postLootDrop(context: BotContext, channel: GuildBasedChannel & Te
             time: lootTimeoutMs,
         });
     } catch (err) {
-        log.info(`Loot drop ${message.id} timed out; loot ${l.id} was not claimed, cleaning up`);
+        log.info(`Loot drop ${message.id} timed out; loot was not claimed, cleaning up`);
         const original = message.embeds[0];
         await message.edit({
             embeds: [
@@ -521,9 +528,20 @@ async function postLootDrop(context: BotContext, channel: GuildBasedChannel & Te
         return;
     }
 
-    const reply = await interaction.deferReply({ ephemeral: true });
+    const defaultWeights = lootTemplates.map(t => t.weight);
 
-    const claimedLoot = await loot.assignUserToLootDrop(interaction.user, l.id, new Date());
+    const { messages, weights } = await getDropWeightAdjustments(interaction.user, defaultWeights);
+
+    const template = randomEntryWeighted(lootTemplates, weights);
+    const claimedLoot = await loot.createLoot(
+        template,
+        interaction.user,
+        message,
+        new Date(),
+        "drop",
+    );
+
+    const reply = await interaction.deferReply({ ephemeral: true });
     if (!claimedLoot) {
         await reply.edit({
             content: `Upsi, da ist was schief gelaufi oder jemand anderes war schnelli ${hamster}`,
@@ -552,7 +570,7 @@ async function postLootDrop(context: BotContext, channel: GuildBasedChannel & Te
                       }
                     : undefined,
                 footer: {
-                    text: `🎉 ${winner.displayName} hat das Geschenk geöffnet`,
+                    text: `🎉 ${winner.displayName} hat das Geschenk geöffnet\n${messages.join("\n")}`.trim(),
                 },
             },
         ],
@@ -585,29 +603,7 @@ export async function getInventoryContents(user: User) {
     const displayableLoot = contents.filter(
         l => !(resolveLootTemplate(l.lootKindId)?.excludeFromInventory ?? false),
     );
-
-    const now = Date.now();
-    const maxKebabAge = time.days(3);
-
-    const res: typeof displayableLoot = [];
-    for (const loot of displayableLoot) {
-        if (!loot.claimedAt) {
-            continue;
-        }
-
-        const itemAge = now - new Date(loot.claimedAt).getTime();
-
-        if (loot.lootKindId === LootTypeId.DOENER && itemAge > maxKebabAge) {
-            res.push({
-                ...loot,
-                displayName: "Verschimmelter Döner",
-            });
-            continue;
-        }
-
-        res.push(loot);
-    }
-    return res;
+    return displayableLoot;
 }
 
 export function getEmote(guild: Guild, item: Loot) {
@@ -619,10 +615,68 @@ export function resolveLootTemplate(lootKindId: number) {
     return lootTemplates.find(loot => loot.id === lootKindId);
 }
 
-export async function getUserLootsById(user: User, lootTypeId: number) {
-    return await loot.getUserLootsById(user.id, lootTypeId);
+export async function getUserLootsById(userId: Snowflake, lootTypeId: number) {
+    return await loot.getUserLootsById(userId, lootTypeId);
 }
 
-export function transferLootToUser(lootId: number, user: User) {
-    return loot.transferLootToUser(lootId, user.id);
+export async function getUserLootCountById(userId: Snowflake, lootTypeId: number): Promise<number> {
+    return (await loot.getUserLootsById(userId, lootTypeId)).length;
+}
+
+export async function getLootsByKindId(lootTykeId: LootTypeId) {
+    return await loot.getLootsByKindId(lootTykeId);
+}
+
+export function transferLootToUser(lootId: LootId, user: User, trackPredecessor: boolean) {
+    return loot.transferLootToUser(lootId, user.id, trackPredecessor);
+}
+
+export function deleteLoot(lootId: LootId) {
+    return loot.deleteLoot(lootId);
+}
+
+export function replaceLoot(
+    lootId: LootId,
+    replacement: LootInsertable,
+    trackPredecessor: boolean,
+) {
+    return loot.replaceLoot(lootId, replacement, trackPredecessor);
+}
+
+type AdjustmentResult = {
+    messages: string[];
+    weights: number[];
+};
+
+async function getDropWeightAdjustments(
+    user: User,
+    weights: readonly number[],
+): Promise<AdjustmentResult> {
+    const waste = await getUserLootCountById(user.id, LootTypeId.RADIOACTIVE_WASTE);
+    const messages = [];
+
+    let wasteFactor = 1;
+    if (waste > 0) {
+        const wasteDropPenalty = 1.05;
+        wasteFactor = Math.min(2, waste ** wasteDropPenalty);
+        messages.push(
+            `Du hast ${waste} Tonnen radioaktiven Müll, deshalb ist die Chance auf ein Geschenk geringer.`,
+        );
+    }
+
+    const pkv = await getUserLootCountById(user.id, LootTypeId.PKV);
+    let pkvFactor = 1;
+    if (pkv > 0) {
+        pkvFactor = 2;
+        messages.push("Da du privat versichert bist, hast du die doppelte Chance auf eine AU.");
+    }
+
+    const newWeights = [...weights];
+    newWeights[LootTypeId.NICHTS] = Math.ceil(weights[LootTypeId.NICHTS] * wasteFactor) | 0;
+    newWeights[LootTypeId.KRANKSCHREIBUNG] = (weights[LootTypeId.KRANKSCHREIBUNG] * pkvFactor) | 0;
+
+    return {
+        messages,
+        weights: newWeights,
+    };
 }

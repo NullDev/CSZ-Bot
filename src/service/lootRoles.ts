@@ -40,7 +40,7 @@ export async function checkExpiredShifts(context: BotContext) {
     const currentGuards = context.roles.lootRoleAsseGuard.members;
     for (const m of currentGuards.values()) {
         const drops = await lootService.getUserLootsById(
-            m.user,
+            m.user.id,
             lootService.LootTypeId.SCHICHTBEGINN_ASSE_2,
         );
         if (drops.length === 0) {
