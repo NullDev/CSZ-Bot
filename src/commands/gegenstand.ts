@@ -130,6 +130,7 @@ export default class GegenstandCommand implements ApplicationCommand {
         if (!item) {
             await interaction.reply({
                 content: "Diesen Gegensand hast du nicht.",
+                ephemeral: true,
             });
             return;
         }
