@@ -135,12 +135,19 @@ export default class GegenstandCommand implements ApplicationCommand {
             return;
         }
 
+        const effects = lootService.getEffects(item);
+
         await interaction.reply({
             embeds: [
                 {
                     title: item.displayName,
                     description: item.description,
                     color: 0x00ff00,
+                    fields: effects.map(value => ({
+                        name: "🌟 Effekt",
+                        value,
+                        inline: true,
+                    })),
                 },
             ],
         });

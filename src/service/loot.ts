@@ -642,6 +642,11 @@ export function deleteLoot(lootId: LootId) {
     return loot.deleteLoot(lootId);
 }
 
+export function getEffects(item: Loot) {
+    const template = resolveLootTemplate(item.lootKindId);
+    return template?.effects ?? [];
+}
+
 export function replaceLoot(
     lootId: LootId,
     replacement: LootInsertable,
