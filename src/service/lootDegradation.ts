@@ -17,7 +17,7 @@ export async function degradeItems(_context: BotContext) {
             continue;
         }
 
-        const fridges = await lootService.getUserLootsById(
+        const fridges = await lootService.getUserLootsByTypeId(
             k.winnerId,
             lootService.LootTypeId.KUEHLSCHRANK,
         );

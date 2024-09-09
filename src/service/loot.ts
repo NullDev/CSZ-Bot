@@ -615,7 +615,7 @@ export function resolveLootTemplate(lootKindId: number) {
     return lootTemplates.find(loot => loot.id === lootKindId);
 }
 
-export async function getUserLootsById(userId: Snowflake, lootTypeId: number) {
+export async function getUserLootsByTypeId(userId: Snowflake, lootTypeId: number) {
     return await loot.getUserLootsById(userId, lootTypeId);
 }
 
