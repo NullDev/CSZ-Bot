@@ -177,7 +177,7 @@ const lootTemplates: loot.LootTemplate[] = [
         description: "Fehlt dir nur noch das Geld zum Vorstrecken",
         emote: "💉",
         asset: "assets/loot/10-pkv.jpg",
-        effects: ["+100% Chance auf AU"],
+        effects: ["` +100% ` Chance auf AU"],
     },
     {
         id: LootTypeId.TRICHTER,
@@ -301,7 +301,7 @@ const lootTemplates: loot.LootTemplate[] = [
             "Sollte dir ja nichts mehr anhaben, du bist ja durch den Server schon genug verstrahlt 🤷‍♂️",
         emote: "☢️",
         asset: "assets/loot/21-radioaktiver-muell.jpg",
-        effects: ["+5% Chance auf leeres Geschenk"],
+        effects: ["` +5% ` Chance auf leeres Geschenk"],
     },
     {
         id: LootTypeId.SAHNE,
