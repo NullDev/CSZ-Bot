@@ -147,7 +147,9 @@ export default class GegenstandCommand implements ApplicationCommand {
 
         const effects = template.effects ?? [];
 
-        const attachment = template.asset ? await fs.readFile(template.asset) : null;
+        const attachment = template.asset
+            ? await resizeImageToCardPreviewFormat(await fs.readFile(template.asset), 200)
+            : null;
 
         await interaction.reply({
             embeds: [
@@ -201,4 +203,18 @@ export default class GegenstandCommand implements ApplicationCommand {
 
         await interaction.respond(completions);
     }
+}
+
+async function resizeImageToCardPreviewFormat(buffer: Buffer, maxWidth: number) {
+    const { createCanvas, loadImage } = await import("@napi-rs/canvas");
+
+    const largeImage = await loadImage(buffer);
+
+    const width = Math.min(maxWidth, largeImage.width);
+    const canvas = createCanvas(width, (width / largeImage.width) * largeImage.height);
+
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(largeImage, 0, 0, canvas.width, canvas.height);
+
+    return await canvas.encode("png");
 }
