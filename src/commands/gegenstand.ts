@@ -127,13 +127,14 @@ export default class GegenstandCommand implements ApplicationCommand {
 
         const contents = await lootService.getInventoryContents(interaction.user);
 
-        const matchedItems = contents
-            .filter(i => i.displayName.toLowerCase().includes(itemName))
-            .slice(0, 20);
+        const matchedItems =
+            itemName.length === 0
+                ? contents.slice(0, 20)
+                : contents.filter(i => i.displayName.toLowerCase().includes(itemName)).slice(0, 20);
 
         const completions = matchedItems.map(i => ({
             name: i.displayName,
-            value: i.id,
+            value: String(i.id),
         }));
 
         await interaction.respond(completions);
