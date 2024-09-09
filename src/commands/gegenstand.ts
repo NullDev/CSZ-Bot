@@ -188,6 +188,10 @@ export default class GegenstandCommand implements ApplicationCommand {
             return;
         }
 
+        if (!interaction.guild) {
+            return;
+        }
+
         const itemName = interaction.options.getFocused().toLowerCase();
 
         const contents = await lootService.getInventoryContents(interaction.user);
@@ -197,10 +201,14 @@ export default class GegenstandCommand implements ApplicationCommand {
                 ? contents.slice(0, 20)
                 : contents.filter(i => i.displayName.toLowerCase().includes(itemName)).slice(0, 20);
 
-        const completions = matchedItems.map(i => ({
-            name: i.displayName,
-            value: String(i.id),
-        }));
+        const completions = [];
+        for (const item of matchedItems) {
+            const emote = lootService.getEmote(interaction.guild, item);
+            completions.push({
+                name: emote ? `${emote} ${item.displayName}` : item.displayName,
+                value: String(item.id),
+            });
+        }
 
         await interaction.respond(completions);
     }
