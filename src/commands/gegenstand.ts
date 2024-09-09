@@ -1,7 +1,8 @@
+import * as fs from "node:fs/promises";
+
 import {
     type AutocompleteInteraction,
     type CommandInteraction,
-    InteractionType,
     SlashCommandBuilder,
     SlashCommandStringOption,
     SlashCommandSubcommandBuilder,
@@ -135,7 +136,18 @@ export default class GegenstandCommand implements ApplicationCommand {
             return;
         }
 
-        const effects = lootService.getEffects(item);
+        const template = lootService.resolveLootTemplate(item.lootKindId);
+        if (!template) {
+            await interaction.reply({
+                content: "Dieser Gegenstand ist unbekannt.",
+                ephemeral: true,
+            });
+            return;
+        }
+
+        const effects = template.effects ?? [];
+
+        const attachment = template.asset ? await fs.readFile(template.asset) : null;
 
         await interaction.reply({
             embeds: [
@@ -143,6 +155,12 @@ export default class GegenstandCommand implements ApplicationCommand {
                     title: item.displayName,
                     description: item.description,
                     color: 0x00ff00,
+                    image: attachment
+                        ? {
+                              url: "attachment://opened.gif",
+                              width: 128,
+                          }
+                        : undefined,
                     fields: effects.map(value => ({
                         name: "🌟 Effekt",
                         value,
@@ -150,6 +168,14 @@ export default class GegenstandCommand implements ApplicationCommand {
                     })),
                 },
             ],
+            files: attachment
+                ? [
+                      {
+                          name: "opened.gif",
+                          attachment,
+                      },
+                  ]
+                : [],
         });
     }
 
