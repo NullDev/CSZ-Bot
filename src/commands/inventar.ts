@@ -1,10 +1,10 @@
-import { type CommandInteraction, SlashCommandBuilder, SlashCommandUserOption } from "discord.js";
+import {type CommandInteraction, SlashCommandBuilder, SlashCommandUserOption} from "discord.js";
 
-import type { BotContext } from "@/context.js";
-import type { ApplicationCommand } from "@/commands/command.js";
+import type {BotContext} from "@/context.js";
+import type {ApplicationCommand} from "@/commands/command.js";
 import * as lootService from "@/service/loot.js";
-import { ensureChatInputCommand } from "@/utils/interactionUtils.js";
-import { format } from "@/utils/stringUtils.js";
+import {ensureChatInputCommand} from "@/utils/interactionUtils.js";
+import {format} from "@/utils/stringUtils.js";
 
 export default class InventarCommand implements ApplicationCommand {
     name = "inventar";
@@ -17,7 +17,7 @@ export default class InventarCommand implements ApplicationCommand {
             new SlashCommandUserOption()
                 .setRequired(false)
                 .setName("user")
-                .setDescription("Wem du tun willst"),
+                .setDescription("Wem du tun willst")
         );
 
     async handleInteraction(interaction: CommandInteraction, context: BotContext) {
@@ -29,7 +29,7 @@ export default class InventarCommand implements ApplicationCommand {
 
         if (contents.length === 0) {
             await interaction.reply({
-                content: "Dein Inventar ist ✨leer✨",
+                content: "Dein Inventar ist ✨leer✨"
             });
             return;
         }
@@ -70,12 +70,28 @@ export default class InventarCommand implements ApplicationCommand {
             embeds: [
                 {
                     title: `Inventar von ${user.displayName}`,
-                    description,
+                    fields: items
+                        .map(([item, count]) => {
+                            const emote = lootService.getEmote(context.guild, item);
+                            const e = emote ? `${emote} ` : "";
+                            return count === 1
+                                ? {
+                                    name: item.displayName,
+                                    value: "Normal",
+                                    inline: true
+                                }
+                                : {
+                                    name: `${count}x ${e}${item.displayName}`,
+                                    value: "",
+                                    inline: true
+                                };
+                        }),
+
                     footer: {
-                        text: format(message, { cuties, count: contents.length - cuties }),
-                    },
-                },
-            ],
+                        text: format(message, {cuties, count: contents.length - cuties})
+                    }
+                }
+            ]
         });
     }
 }
