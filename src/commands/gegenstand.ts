@@ -22,6 +22,11 @@ export default class GegenstandCommand implements ApplicationCommand {
             new SlashCommandSubcommandBuilder()
                 .setName("entsorgen")
                 .setDescription("Gebe dem Wärter etwas Atommüll und etwas süßes"),
+        )
+        .addSubcommand(
+            new SlashCommandSubcommandBuilder()
+                .setName("info")
+                .setDescription("Zeigt Informationen über einen Gegenstand an"),
         );
 
     async handleInteraction(interaction: CommandInteraction, context: BotContext) {
@@ -30,6 +35,9 @@ export default class GegenstandCommand implements ApplicationCommand {
         switch (subCommand) {
             case "entsorgen":
                 await this.#disposeRadioactiveWaste(interaction, context);
+                break;
+            case "info":
+                await this.#showItemInfo(interaction, context);
                 break;
             default:
                 throw new Error(`Unknown subcommand: "${subCommand}"`);
@@ -97,4 +105,6 @@ export default class GegenstandCommand implements ApplicationCommand {
             ],
         });
     }
+
+    async #showItemInfo(interaction: CommandInteraction, context: BotContext) {}
 }
