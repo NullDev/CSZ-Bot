@@ -14,6 +14,7 @@ import * as lootService from "@/service/loot.js";
 import * as lootRoleService from "@/service/lootRoles.js";
 import { randomEntry } from "@/utils/arrayUtils.js";
 import { ensureChatInputCommand } from "@/utils/interactionUtils.js";
+import * as imageService from "@/service/image.js";
 
 export default class GegenstandCommand implements ApplicationCommand {
     name = "gegenstand";
@@ -148,7 +149,7 @@ export default class GegenstandCommand implements ApplicationCommand {
         const effects = template.effects ?? [];
 
         const attachment = template.asset
-            ? await resizeImageToCardPreviewFormat(await fs.readFile(template.asset), 200)
+            ? await imageService.clampImageSizeByWidth(await fs.readFile(template.asset), 200)
             : null;
 
         await interaction.reply({
@@ -203,18 +204,4 @@ export default class GegenstandCommand implements ApplicationCommand {
 
         await interaction.respond(completions);
     }
-}
-
-async function resizeImageToCardPreviewFormat(buffer: Buffer, maxWidth: number) {
-    const { createCanvas, loadImage } = await import("@napi-rs/canvas");
-
-    const largeImage = await loadImage(buffer);
-
-    const width = Math.min(maxWidth, largeImage.width);
-    const canvas = createCanvas(width, (width / largeImage.width) * largeImage.height);
-
-    const ctx = canvas.getContext("2d");
-    ctx.drawImage(largeImage, 0, 0, canvas.width, canvas.height);
-
-    return await canvas.encode("png");
 }
