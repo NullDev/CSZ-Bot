@@ -161,7 +161,7 @@ export default class GegenstandCommand implements ApplicationCommand {
             embeds: [
                 {
                     title: emote ? `${emote} ${item.displayName}` : item.displayName,
-                    description: item.description,
+                    description: template.infoDescription ?? item.description,
                     color: 0x00ff00,
                     image: attachment
                         ? {

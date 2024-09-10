@@ -11,7 +11,8 @@ export interface LootTemplate {
     weight: number;
     displayName: string;
     titleText: string;
-    description: string;
+    dropDescription: string;
+    infoDescription?: string;
     emote?: string;
     excludeFromInventory?: boolean;
     effects?: string[];
@@ -39,7 +40,7 @@ export async function createLoot(
         .insertInto("loot")
         .values({
             displayName: template.displayName,
-            description: template.description,
+            description: template.dropDescription,
             lootKindId: template.id,
             usedImage: template.asset,
             winnerId: winner.id,
