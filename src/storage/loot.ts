@@ -34,6 +34,7 @@ export async function createLoot(
     message: Message<true> | null,
     now: Date,
     origin: LootOrigin,
+    predecessorLootId: LootId | null,
     ctx = db(),
 ) {
     return await ctx
@@ -49,6 +50,7 @@ export async function createLoot(
             channelId: message?.channelId ?? "",
             messageId: message?.id ?? "",
             origin,
+            predecessor: predecessorLootId,
         })
         .returningAll()
         .executeTakeFirstOrThrow();

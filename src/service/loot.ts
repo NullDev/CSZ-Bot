@@ -155,9 +155,9 @@ const lootTemplates: loot.LootTemplate[] = [
         emote: "🎁",
         asset: null,
         excludeFromInventory: true,
-        specialAction: async (context, _winner, channel, _loot) => {
+        specialAction: async (context, _winner, channel, loot) => {
             await setTimeout(3000);
-            await postLootDrop(context, channel);
+            await postLootDrop(context, channel, undefined, loot.id);
         },
     },
     {
@@ -473,10 +473,15 @@ export async function runDropAttempt(context: BotContext) {
     log.info(
         `Dice was ${dice}, which is lower than configured ${lootConfig.dropChance}. Dropping loot to ${targetChannel.name}!`,
     );
-    await postLootDrop(context, targetChannel);
+    await postLootDrop(context, targetChannel, undefined, undefined);
 }
 
-async function postLootDrop(context: BotContext, channel: GuildBasedChannel & TextBasedChannel) {
+async function postLootDrop(
+    context: BotContext,
+    channel: GuildBasedChannel & TextBasedChannel,
+    donor: User | undefined,
+    predecessorLootId: LootId | undefined,
+): Promise<Loot | undefined> {
     const hamster = context.guild.emojis.cache.find(e => e.name === "sad_hamster") ?? ":(";
 
     const takeLootButton = new ButtonBuilder()
@@ -489,7 +494,9 @@ async function postLootDrop(context: BotContext, channel: GuildBasedChannel & Te
         embeds: [
             {
                 title: "Geschenk",
-                description: `Ein Geschenk ist aufgetaucht! Öffne es schnell, in ${timeoutSeconds} Sekunden ist es weg!`,
+                description: donor
+                    ? `${donor} hat ein Geschenk fallen lassen! Öffne es schnell, in ${timeoutSeconds} Sekunden ist es weg!`
+                    : `Ein Geschenk ist aufgetaucht! Öffne es schnell, in ${timeoutSeconds} Sekunden ist es weg!`,
                 image: {
                     url: "attachment://00-unopened.gif",
                 },
@@ -519,7 +526,9 @@ async function postLootDrop(context: BotContext, channel: GuildBasedChannel & Te
             embeds: [
                 {
                     ...original,
-                    description: `Oki aber nächstes mal bitti aufmachi, sonst muss ichs wieder mitnehmi ${hamster}`,
+                    description: donor
+                        ? `Das Geschenk von ${donor} verpuffte im nichts :(`
+                        : `Oki aber nächstes mal bitti aufmachi, sonst muss ichs wieder mitnehmi ${hamster}`,
                     footer: {
                         text: "❌ Niemand war schnell genug",
                     },
@@ -542,6 +551,7 @@ async function postLootDrop(context: BotContext, channel: GuildBasedChannel & Te
         message,
         new Date(),
         "drop",
+        predecessorLootId ?? null,
     );
 
     const reply = await interaction.deferReply({ ephemeral: true });
