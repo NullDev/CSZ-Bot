@@ -29,7 +29,7 @@
     "@js-temporal/polyfill": "^0.4.4",
     "@napi-rs/canvas": "^0.1.55",
     "@resvg/resvg-js": "^2.6.2",
-    "@sentry/bun": "^8.29.0",
+    "@sentry/bun": "^8.30.0",
     "@std/jsonc": "npm:@jsr/std__jsonc@^1.0.1",
     "chrono-node": "^2.7.6",
     "croner": "^8.1.1",
