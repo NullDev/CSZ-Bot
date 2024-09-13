@@ -26,7 +26,7 @@ export function randomEntryWeighted<T>(
 
     const prefixSum = [0];
     for (let i = 0; i < weights.length; ++i) {
-        prefixSum[i] = weights[i] + (i > 0 ? prefixSum[i - 1] : 0);
+        prefixSum[i] = weights[i] + (prefixSum[i - 1] ?? 0);
     }
 
     const offset = Math.random() * prefixSum[prefixSum.length - 1];
