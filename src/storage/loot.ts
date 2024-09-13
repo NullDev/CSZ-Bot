@@ -24,7 +24,7 @@ export interface LootTemplate {
     emote?: string;
     excludeFromInventory?: boolean;
     effects?: string[];
-    specialAction?: (
+    onDrop?: (
         context: BotContext,
         winner: GuildMember,
         sourceChannel: TextChannel & GuildChannel,

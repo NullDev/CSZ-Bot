@@ -141,7 +141,7 @@ const lootTemplates: loot.LootTemplate[] = [
         emote: "🎲",
         asset: "assets/loot/07-wuerfelwurf.jpg",
         excludeFromInventory: true,
-        specialAction: async (_content, winner, channel, _loot) => {
+        onDrop: async (_content, winner, channel, _loot) => {
             const rollService = await import("./roll.js");
             await rollService.rollInChannel(winner.user, channel, 1, 6);
         },
@@ -215,7 +215,7 @@ const lootTemplates: loot.LootTemplate[] = [
         emote: "💡",
         asset: null,
         excludeFromInventory: true,
-        specialAction: async (_context, winner, channel, _loot) => {
+        onDrop: async (_context, winner, channel, _loot) => {
             const erleuchtungService = await import("./erleuchtung.js");
             await setTimeout(3000);
 
@@ -234,7 +234,7 @@ const lootTemplates: loot.LootTemplate[] = [
         emote: "🔨",
         asset: "assets/loot/15-ban.jpg",
         excludeFromInventory: true,
-        specialAction: async (context, winner, _channel, _loot) => {
+        onDrop: async (context, winner, _channel, _loot) => {
             const banService = await import("./ban.js");
             await banService.banUser(
                 context,
@@ -321,7 +321,7 @@ const lootTemplates: loot.LootTemplate[] = [
         emote: ":aehre:",
         asset: "assets/loot/23-ehre.jpg",
         excludeFromInventory: true,
-        specialAction: async (context, winner, _channel, _loot) => {
+        onDrop: async (context, winner, _channel, _loot) => {
             const ehre = await import("@/storage/ehre.js");
             await ehre.addPoints(winner.id, 1);
         },
@@ -371,7 +371,7 @@ const lootTemplates: loot.LootTemplate[] = [
         emote: "🔒",
         asset: "assets/loot/28-asse-2.jpg",
         excludeFromInventory: true,
-        specialAction: async (context, winner, channel, _loot) => {
+        onDrop: async (context, winner, channel, _loot) => {
             const lootRoles = await import("./lootRoles.js");
             await lootRoles.startAsseGuardShift(context, winner, channel);
         },
@@ -597,9 +597,9 @@ async function postLootDrop(
         components: [],
     });
 
-    if (template.specialAction) {
+    if (template.onDrop) {
         await template
-            .specialAction(context, winner, channel as TextChannel, claimedLoot)
+            .onDrop(context, winner, channel as TextChannel, claimedLoot)
             .catch(err => {
                 log.error(
                     err,
