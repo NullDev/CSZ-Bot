@@ -66,6 +66,9 @@ export enum LootTypeId {
     VERSCHIMMELTER_DOENER = 32,
 }
 
+/**
+ * @remarks The index of an item must be equal to the `LootTypeId` enum value.
+ */
 const lootTemplates: loot.LootTemplate[] = [
     {
         id: LootTypeId.NICHTS,
