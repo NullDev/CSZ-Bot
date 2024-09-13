@@ -214,9 +214,9 @@ export default class GegenstandCommand implements ApplicationCommand {
             return;
         }
 
-        let removeFromInventory = false;
+        let keepInInventory = true;
         try {
-            removeFromInventory = await template.onUse(
+            keepInInventory = await template.onUse(
                 interaction as LootUseCommandInteraction,
                 context,
                 item,
@@ -230,7 +230,7 @@ export default class GegenstandCommand implements ApplicationCommand {
             });
         }
 
-        if (removeFromInventory) {
+        if (!keepInInventory) {
             await lootService.deleteLoot(item.id);
         }
     }
