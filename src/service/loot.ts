@@ -154,7 +154,6 @@ const lootTemplates: loot.LootTemplate[] = [
         dropDescription: "Du kannst jemand anderem eine Freude machen :feelsamazingman:",
         emote: "🎁",
         asset: null,
-        excludeFromInventory: false,
         onUse: async (interaction, context, loot) => {
             await postLootDrop(context, interaction.channel, undefined, loot.id);
         },
@@ -598,15 +597,13 @@ async function postLootDrop(
     });
 
     if (template.onDrop) {
-        await template
-            .onDrop(context, winner, channel as TextChannel, claimedLoot)
-            .catch(err => {
-                log.error(
-                    err,
-                    `Error while executing special action for loot ${claimedLoot.id} (template: ${template.id})`,
-                );
-                sentry.captureException(err);
-            });
+        await template.onDrop(context, winner, channel as TextChannel, claimedLoot).catch(err => {
+            log.error(
+                err,
+                `Error while executing special action for loot ${claimedLoot.id} (template: ${template.id})`,
+            );
+            sentry.captureException(err);
+        });
     }
 }
 
