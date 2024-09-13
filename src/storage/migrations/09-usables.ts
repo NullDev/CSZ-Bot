@@ -1,7 +1,7 @@
 import { type Kysely, sql } from "kysely";
 
 export async function up(db: Kysely<any>) {
-    // geschenke have already been used, but in the future they will be used on-demand.
+    // All existing Geschenke have already been used, but in the future they will be used on-demand.
     await db
         .updateTable("loot")
         .where("lootKindId", "=", 8 /* GESCHENK */)

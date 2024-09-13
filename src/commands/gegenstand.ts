@@ -2,14 +2,17 @@ import * as fs from "node:fs/promises";
 
 import {
     type AutocompleteInteraction,
+    type ChatInputCommandInteraction,
     type CommandInteraction,
     SlashCommandBuilder,
     SlashCommandStringOption,
     SlashCommandSubcommandBuilder,
 } from "discord.js";
+import * as sentry from "@sentry/bun";
 
 import type { BotContext } from "@/context.js";
 import type { ApplicationCommand } from "@/commands/command.js";
+import type { LootUseCommandInteraction } from "@/storage/loot.js";
 import * as lootService from "@/service/loot.js";
 import * as lootRoleService from "@/service/lootRoles.js";
 import { randomEntry } from "@/utils/arrayUtils.js";
@@ -136,7 +139,10 @@ export default class GegenstandCommand implements ApplicationCommand {
     }
 
     async #showItemInfo(interaction: CommandInteraction, _context: BotContext) {
-        if (!interaction.guild) {
+        if (!interaction.isChatInputCommand()) {
+            throw new Error("Interaction is not a chat input command");
+        }
+        if (!interaction.guild || !interaction.channel) {
             return;
         }
 
@@ -186,7 +192,10 @@ export default class GegenstandCommand implements ApplicationCommand {
     }
 
     async #useItem(interaction: CommandInteraction, context: BotContext) {
-        if (!interaction.guild) {
+        if (!interaction.isChatInputCommand()) {
+            throw new Error("Interaction is not a chat input command");
+        }
+        if (!interaction.guild || !interaction.channel) {
             return;
         }
 
@@ -197,14 +206,36 @@ export default class GegenstandCommand implements ApplicationCommand {
 
         const { item, template } = info;
 
-        // TODO
-    }
-
-    async #fetchItem(interaction: CommandInteraction) {
-        if (!interaction.isChatInputCommand()) {
-            throw new Error("Interaction is not a chat input command");
+        if (template.onUse === undefined) {
+            await interaction.reply({
+                content: "Dieser Gegenstand kann nicht benutzt werden.",
+                ephemeral: true,
+            });
+            return;
         }
 
+        let removeFromInventory = false;
+        try {
+            removeFromInventory = await template.onUse(
+                interaction as LootUseCommandInteraction,
+                context,
+                item,
+            );
+        } catch (error) {
+            log.error(error, "Error while using item");
+            sentry.captureException(error);
+            await interaction.reply({
+                content: "Beim Benutzen dieses Gegenstands ist ein Fehler aufgetreten.",
+                ephemeral: true,
+            });
+        }
+
+        if (removeFromInventory) {
+            await lootService.deleteLoot(item.id);
+        }
+    }
+
+    async #fetchItem(interaction: ChatInputCommandInteraction) {
         const itemId = Number(interaction.options.getString("item"));
         if (!Number.isSafeInteger(itemId)) {
             throw new Error("Invalid item ID");

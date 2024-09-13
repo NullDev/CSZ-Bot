@@ -14,6 +14,10 @@ import type { Database, Loot, LootId, LootInsertable, LootOrigin } from "./db/mo
 
 import db from "@db";
 
+export type LootUseCommandInteraction = ChatInputCommandInteraction & {
+    channel: GuildTextBasedChannel;
+};
+
 export interface LootTemplate {
     id: number;
     weight: number;
@@ -34,7 +38,7 @@ export interface LootTemplate {
 
     /** @returns Return `true` if the item should be kept in the inventory, `false`/falsy if it should be deleted. If an exception occurs, the item will be kept. */
     onUse?: (
-        interaction: ChatInputCommandInteraction & { channel: GuildTextBasedChannel },
+        interaction: LootUseCommandInteraction,
         context: BotContext,
         loot: Loot,
     ) => Promise<boolean>;
