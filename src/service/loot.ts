@@ -179,7 +179,7 @@ const lootTemplates: loot.LootTemplate[] = [
         dropDescription: "Fehlt dir nur noch das Geld zum Vorstrecken",
         emote: "💉",
         asset: "assets/loot/10-pkv.jpg",
-        effects: ["` +100% ` Chance auf AU"],
+        effects: ["` +100% ` Chance auf AU 📈"],
     },
     {
         id: LootTypeId.TRICHTER,
@@ -303,7 +303,7 @@ const lootTemplates: loot.LootTemplate[] = [
             "Sollte dir ja nichts mehr anhaben, du bist ja durch den Server schon genug verstrahlt 🤷‍♂️",
         emote: "☢️",
         asset: "assets/loot/21-radioaktiver-muell.jpg",
-        effects: ["` +5% ` Chance auf leeres Geschenk"],
+        effects: ["` +5% ` Chance auf leeres Geschenk 🔻"],
     },
     {
         id: LootTypeId.SAHNE,
@@ -324,7 +324,7 @@ const lootTemplates: loot.LootTemplate[] = [
         emote: ":aehre:",
         asset: "assets/loot/23-ehre.jpg",
         excludeFromInventory: true,
-        onDrop: async (context, winner, _channel, _loot) => {
+        onDrop: async (_context, winner, _channel, _loot) => {
             const ehre = await import("@/storage/ehre.js");
             await ehre.addPoints(winner.id, 1);
         },
