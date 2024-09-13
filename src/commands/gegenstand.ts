@@ -133,35 +133,16 @@ export default class GegenstandCommand implements ApplicationCommand {
     }
 
     async #showItemInfo(interaction: CommandInteraction, _context: BotContext) {
-        if (!interaction.isChatInputCommand()) {
-            throw new Error("Interaction is not a chat input command");
-        }
         if (!interaction.guild) {
             return;
         }
 
-        const itemId = Number(interaction.options.getString("item"));
-        if (!Number.isSafeInteger(itemId)) {
-            throw new Error("Invalid item ID");
-        }
-
-        const item = await lootService.getUserLootById(interaction.user.id, itemId);
-        if (!item) {
-            await interaction.reply({
-                content: "Diesen Gegensand hast du nicht.",
-                ephemeral: true,
-            });
+        const info = await this.#fetchItem(interaction);
+        if (!info) {
             return;
         }
 
-        const template = lootService.resolveLootTemplate(item.lootKindId);
-        if (!template) {
-            await interaction.reply({
-                content: "Dieser Gegenstand ist unbekannt.",
-                ephemeral: true,
-            });
-            return;
-        }
+        const { item, template } = info;
 
         const effects = template.effects ?? [];
 
@@ -201,6 +182,52 @@ export default class GegenstandCommand implements ApplicationCommand {
         });
     }
 
+    async #useItem(interaction: CommandInteraction, context: BotContext) {
+        if (!interaction.guild) {
+            return;
+        }
+
+        const info = await this.#fetchItem(interaction);
+        if (!info) {
+            return;
+        }
+
+        const { item, template } = info;
+
+        // TODO
+    }
+
+    async #fetchItem(interaction: CommandInteraction) {
+        if (!interaction.isChatInputCommand()) {
+            throw new Error("Interaction is not a chat input command");
+        }
+
+        const itemId = Number(interaction.options.getString("item"));
+        if (!Number.isSafeInteger(itemId)) {
+            throw new Error("Invalid item ID");
+        }
+
+        const item = await lootService.getUserLootById(interaction.user.id, itemId);
+        if (!item) {
+            await interaction.reply({
+                content: "Diesen Gegensand hast du nicht.",
+                ephemeral: true,
+            });
+            return;
+        }
+
+        const template = lootService.resolveLootTemplate(item.lootKindId);
+        if (!template) {
+            await interaction.reply({
+                content: "Dieser Gegenstand ist unbekannt.",
+                ephemeral: true,
+            });
+            return;
+        }
+
+        return { item, template };
+    }
+
     async autocomplete(interaction: AutocompleteInteraction) {
         const subCommand = interaction.options.getSubcommand(true);
         if (subCommand !== "info" && subCommand !== "benutzen") {
@@ -223,9 +250,9 @@ export default class GegenstandCommand implements ApplicationCommand {
         const completions = [];
         for (const item of matchedItems) {
             const template = lootService.resolveLootTemplate(item.lootKindId);
-            if(template === undefined) {
+            if (template === undefined) {
                 log.error(`Item ${item.id} has no template`);
-                continue
+                continue;
             }
 
             if (subCommand === "benutzen" && template.onUse === undefined) {
