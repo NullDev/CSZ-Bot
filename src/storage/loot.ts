@@ -24,17 +24,20 @@ export interface LootTemplate {
     emote?: string;
     excludeFromInventory?: boolean;
     effects?: string[];
+
     onDrop?: (
         context: BotContext,
         winner: GuildMember,
         sourceChannel: TextChannel & GuildChannel,
         claimedLoot: Loot,
     ) => Promise<void>;
+
+    /** @returns Return `true` if the item should be kept in the inventory, `false`/falsy if it should be deleted. If an exception occurs, the item will be kept. */
     onUse?: (
         interaction: ChatInputCommandInteraction & { channel: GuildTextBasedChannel },
         context: BotContext,
         loot: Loot,
-    ) => Promise<void>;
+    ) => Promise<boolean>;
     asset: string | null;
 }
 

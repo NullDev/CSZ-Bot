@@ -156,6 +156,7 @@ const lootTemplates: loot.LootTemplate[] = [
         asset: null,
         onUse: async (interaction, context, loot) => {
             await postLootDrop(context, interaction.channel, undefined, loot.id);
+            return false;
         },
     },
     {
