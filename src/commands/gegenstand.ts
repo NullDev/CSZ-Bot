@@ -1,6 +1,7 @@
 import * as fs from "node:fs/promises";
 
 import {
+    type APIEmbedField,
     type AutocompleteInteraction,
     type ChatInputCommandInteraction,
     type CommandInteraction,
@@ -161,6 +162,12 @@ export default class GegenstandCommand implements ApplicationCommand {
 
         const emote = lootService.getEmote(interaction.guild, item);
 
+        const extraFields: (APIEmbedField | undefined)[] = [
+            template.onUse !== undefined
+                ? { name: "🔧 Benutzbar", value: "", inline: true }
+                : undefined,
+        ];
+
         await interaction.reply({
             embeds: [
                 {
@@ -173,11 +180,14 @@ export default class GegenstandCommand implements ApplicationCommand {
                               width: 128,
                           }
                         : undefined,
-                    fields: effects.map(value => ({
-                        name: "🌟 Effekt",
-                        value,
-                        inline: true,
-                    })),
+                    fields: [
+                        ...effects.map(value => ({
+                            name: "🌟 Effekt",
+                            value,
+                            inline: true,
+                        })),
+                        ...extraFields.filter(e => e !== undefined),
+                    ],
                 },
             ],
             files: attachment
