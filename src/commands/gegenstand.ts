@@ -65,6 +65,9 @@ export default class GegenstandCommand implements ApplicationCommand {
             case "info":
                 await this.#showItemInfo(interaction, context);
                 break;
+            case "benutzen":
+                await this.#useItem(interaction, context);
+                break;
             default:
                 throw new Error(`Unknown subcommand: "${subCommand}"`);
         }
