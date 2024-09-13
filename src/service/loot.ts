@@ -150,14 +150,13 @@ const lootTemplates: loot.LootTemplate[] = [
         id: LootTypeId.GESCHENK,
         weight: 2,
         displayName: "Geschenk",
-        titleText: "Ein weiteres Geschenk",
-        dropDescription: ":O",
+        titleText: "Ein Geschenk",
+        dropDescription: "Du kannst jemand anderem eine Freude machen :feelsamazingman:",
         emote: "🎁",
         asset: null,
-        excludeFromInventory: true,
-        specialAction: async (context, _winner, channel, loot) => {
-            await setTimeout(3000);
-            await postLootDrop(context, channel, undefined, loot.id);
+        excludeFromInventory: false,
+        onUse: async (interaction, context, loot) => {
+            await postLootDrop(context, interaction.channel, undefined, loot.id);
         },
     },
     {

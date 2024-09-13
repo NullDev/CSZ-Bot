@@ -1,4 +1,12 @@
-import type { GuildChannel, GuildMember, Message, TextChannel, User } from "discord.js";
+import type {
+    ChatInputCommandInteraction,
+    GuildChannel,
+    GuildMember,
+    GuildTextBasedChannel,
+    Message,
+    TextChannel,
+    User,
+} from "discord.js";
 import { type ExpressionBuilder, sql } from "kysely";
 
 import type { BotContext } from "@/context.js";
@@ -21,6 +29,11 @@ export interface LootTemplate {
         winner: GuildMember,
         sourceChannel: TextChannel & GuildChannel,
         claimedLoot: Loot,
+    ) => Promise<void>;
+    onUse?: (
+        interaction: ChatInputCommandInteraction & { channel: GuildTextBasedChannel },
+        context: BotContext,
+        loot: Loot,
     ) => Promise<void>;
     asset: string | null;
 }

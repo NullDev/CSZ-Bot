@@ -16,6 +16,8 @@ import { randomEntry } from "@/utils/arrayUtils.js";
 import { ensureChatInputCommand } from "@/utils/interactionUtils.js";
 import * as imageService from "@/service/image.js";
 
+import log from "@log";
+
 export default class GegenstandCommand implements ApplicationCommand {
     name = "gegenstand";
     description = "Mache Dinge mit Gegenständen";
@@ -37,6 +39,18 @@ export default class GegenstandCommand implements ApplicationCommand {
                         .setRequired(true)
                         .setName("item")
                         .setDescription("Der Gegenstand, über den du Informationen haben möchtest")
+                        .setAutocomplete(true),
+                ),
+        )
+        .addSubcommand(
+            new SlashCommandSubcommandBuilder()
+                .setName("benutzen")
+                .setDescription("Benutze einen benutzbaren Gegenstand")
+                .addStringOption(
+                    new SlashCommandStringOption()
+                        .setRequired(true)
+                        .setName("item")
+                        .setDescription("Die Sau, die du benutzen möchtest")
                         .setAutocomplete(true),
                 ),
         );
@@ -189,7 +203,7 @@ export default class GegenstandCommand implements ApplicationCommand {
 
     async autocomplete(interaction: AutocompleteInteraction) {
         const subCommand = interaction.options.getSubcommand(true);
-        if (subCommand !== "info") {
+        if (subCommand !== "info" && subCommand !== "benutzen") {
             return;
         }
 
@@ -208,6 +222,16 @@ export default class GegenstandCommand implements ApplicationCommand {
 
         const completions = [];
         for (const item of matchedItems) {
+            const template = lootService.resolveLootTemplate(item.lootKindId);
+            if(template === undefined) {
+                log.error(`Item ${item.id} has no template`);
+                continue
+            }
+
+            if (subCommand === "benutzen" && template.onUse === undefined) {
+                continue;
+            }
+
             const emote = lootService.getEmote(interaction.guild, item);
             completions.push({
                 // auto completions don't support discord emotes, only unicode ones
