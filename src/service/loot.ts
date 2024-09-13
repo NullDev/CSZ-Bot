@@ -155,7 +155,7 @@ const lootTemplates: loot.LootTemplate[] = [
         emote: "🎁",
         asset: null,
         onUse: async (interaction, context, loot) => {
-            await postLootDrop(context, interaction.channel, undefined, loot.id);
+            await postLootDrop(context, interaction.channel, interaction.user, loot.id);
             return false;
         },
     },
@@ -539,6 +539,13 @@ async function postLootDrop(
         return;
     }
 
+    if (donor !== undefined && interaction.user.id === donor.id) {
+        await message.edit({
+            content: `${interaction.user} hat versucht, das Geschenki selbst zu öffnen. Das geht aber nichti ${hamster}\nDas Geschenk macht plopp und ist weg! 🎈`,
+        });
+        return;
+    }
+
     const defaultWeights = lootTemplates.map(t => t.weight);
 
     const { messages, weights } = await getDropWeightAdjustments(interaction.user, defaultWeights);
@@ -554,6 +561,7 @@ async function postLootDrop(
     );
 
     const reply = await interaction.deferReply({ ephemeral: true });
+
     if (!claimedLoot) {
         await reply.edit({
             content: `Upsi, da ist was schief gelaufi oder jemand anderes war schnelli ${hamster}`,
