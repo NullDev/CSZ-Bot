@@ -2,7 +2,6 @@ import {
     type APIApplicationCommand,
     ApplicationCommandPermissionType,
     type AutocompleteInteraction,
-    type ButtonInteraction,
     type CommandInteraction,
     type GuildMember,
     type Interaction,
