@@ -264,12 +264,10 @@ export const handleInteractionEvent = async (
     if (interaction.isCommand()) {
         return commandInteractionHandler(interaction, context);
     }
-
     if (interaction.isAutocomplete()) {
         return autocompleteInteractionHandler(interaction, context);
     }
-
-    throw new Error("Not supported");
+    throw new Error(`Not type not supported: ${interaction.type}`);
 };
 
 export const messageCommandHandler = async (
