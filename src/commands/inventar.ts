@@ -121,11 +121,12 @@ export async function getInvAsEmb(
 ): Promise<InteractionReplyOptions> {
     const pageSize = 25;
 
-    const contents = await lootService.getInventoryContents(user);
+    const contentsUnsorted = await lootService.getInventoryContents(user);
+    const contents = contentsUnsorted.toSorted((a, b) => b.createdAt.localeCompare(a.createdAt));
 
     const lastPageIndex = Math.floor(contents.length / pageSize);
 
-    const slice = contents.slice(pageIndex * pageSize, pageIndex * pageSize + pageSize);
+    const pageContents = contents.slice(pageIndex * pageSize, pageIndex * pageSize + pageSize);
 
     const prev = new ButtonBuilder()
         .setCustomId(`lootTable/${user.id}/${Math.max(pageIndex - pageSize, 0)}`)
@@ -139,7 +140,7 @@ export async function getInvAsEmb(
         .setDisabled(pageIndex >= lastPageIndex)
         .setStyle(ButtonStyle.Secondary);
 
-    const embedsItems = slice.map(item => ({
+    const embedsItems = pageContents.map(item => ({
         name: `${lootService.getEmote(context.guild, item)} ${item.displayName}`,
         value: "",
         inline: false,
