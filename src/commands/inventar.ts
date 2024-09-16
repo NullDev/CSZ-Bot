@@ -1,10 +1,20 @@
-import {type CommandInteraction, SlashCommandBuilder, SlashCommandUserOption} from "discord.js";
+import {
+    ActionRowBuilder,
+    ButtonBuilder,
+    ButtonStyle,
+    type CacheType,
+    type CommandInteraction,
+    SlashCommandBooleanOption,
+    SlashCommandBuilder,
+    SlashCommandUserOption,
+    type User,
+} from "discord.js";
 
-import type {BotContext} from "@/context.js";
-import type {ApplicationCommand} from "@/commands/command.js";
+import type { BotContext } from "@/context.js";
+import type { ApplicationCommand } from "@/commands/command.js";
 import * as lootService from "@/service/loot.js";
-import {ensureChatInputCommand} from "@/utils/interactionUtils.js";
-import {format} from "@/utils/stringUtils.js";
+import { ensureChatInputCommand } from "@/utils/interactionUtils.js";
+import { format } from "@/utils/stringUtils.js";
 
 export default class InventarCommand implements ApplicationCommand {
     name = "inventar";
@@ -17,23 +27,41 @@ export default class InventarCommand implements ApplicationCommand {
             new SlashCommandUserOption()
                 .setRequired(false)
                 .setName("user")
-                .setDescription("Wem du tun willst")
+                .setDescription("Wem du tun willst"),
+        )
+        .addBooleanOption(
+            new SlashCommandBooleanOption()
+                .setName("unique_items")
+                .setRequired(false)
+                .setDescription("kurz oder lang"),
         );
 
     async handleInteraction(interaction: CommandInteraction, context: BotContext) {
         const cmd = ensureChatInputCommand(interaction);
 
         const user = cmd.options.getUser("user") ?? cmd.user;
+        const short = cmd.options.getBoolean("long") ?? false;
 
         const contents = await lootService.getInventoryContents(user);
-
         if (contents.length === 0) {
             await interaction.reply({
-                content: "Dein Inventar ist ✨leer✨"
+                content: "Dein Inventar ist ✨leer✨",
             });
             return;
         }
+        if (short) {
+            await this.createLongEmbed(context, interaction, user);
+        } else {
+            await this.createShortEmbed(context, interaction, user);
+        }
+    }
 
+    private async createShortEmbed(
+        context: BotContext,
+        interaction: CommandInteraction<CacheType>,
+        user: User,
+    ) {
+        const contents = await lootService.getInventoryContents(user);
         const groupedByLoot = Object.groupBy(contents, item => item.displayName);
 
         const items = Object.entries(groupedByLoot)
@@ -70,28 +98,52 @@ export default class InventarCommand implements ApplicationCommand {
             embeds: [
                 {
                     title: `Inventar von ${user.displayName}`,
-                    fields: items
-                        .map(([item, count]) => {
-                            const emote = lootService.getEmote(context.guild, item);
-                            const e = emote ? `${emote} ` : "";
-                            return count === 1
-                                ? {
-                                    name: item.displayName,
-                                    value: "Normal",
-                                    inline: true
-                                }
-                                : {
-                                    name: `${count}x ${e}${item.displayName}`,
-                                    value: "",
-                                    inline: true
-                                };
-                        }),
-
+                    description,
                     footer: {
-                        text: format(message, {cuties, count: contents.length - cuties})
-                    }
-                }
-            ]
+                        text: format(message, { cuties, count: contents.length - cuties }),
+                    },
+                },
+            ],
         });
     }
+
+    async createLongEmbed(context: BotContext, interaction: CommandInteraction, user: User) {
+        await interaction.reply(await getInvAsEmb(context, user, 0));
+    }
+}
+
+export async function getInvAsEmb(context: BotContext, user: User, index: number) {
+    const contents = await lootService.getInventoryContents(user);
+    const slice = contents.slice(index, index + 25);
+    const prev = new ButtonBuilder()
+        .setCustomId(`lootTable/${user.id}/${Math.max(index - 25, 0)}`)
+        .setLabel("<<")
+        .setDisabled(index <= 0)
+        .setStyle(ButtonStyle.Secondary);
+    const next = new ButtonBuilder()
+        .setCustomId(`lootTable/${user.id}/${index + 25}`)
+        .setLabel(">>")
+        .setDisabled(index + 25 > contents.length)
+        .setStyle(ButtonStyle.Secondary);
+
+    const embedsItems = slice.map(item => {
+        console.log(item);
+        return {
+            name: `${lootService.getEmote(context.guild, item)}${item.displayName}`,
+            value: "",
+            inline: false,
+        };
+    });
+    return {
+        components: [new ActionRowBuilder<ButtonBuilder>().setComponents(prev, next)],
+        embeds: [
+            {
+                title: `Inventar von ${user.displayName}`,
+                description: `Seite ${index % 25} von ${contents.length % 25}`,
+                fields: embedsItems,
+            },
+        ],
+        fetchReply: true,
+        tts: false,
+    };
 }

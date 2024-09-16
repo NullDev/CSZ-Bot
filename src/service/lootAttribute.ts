@@ -1,12 +1,12 @@
-import { LootAttribute } from "@/storage/lootAttributes.js";
+import type { LootAttribute } from "@/storage/lootAttributes.js";
 
 export enum LootAttributeTypeId {
-    NORMAL,
-    SELTEN,
-    SEHRSELTEN,
-    VERSCHIMMELT,
-    VERSTRAHLT,
-    VERDRECKT,
+    NORMAL = 0,
+    SELTEN = 1,
+    SEHRSELTEN = 2,
+    VERSCHIMMELT = 3,
+    VERSTRAHLT = 4,
+    VERDRECKT = 5,
 }
 
 export const lootAttributesList: LootAttribute[] = [
