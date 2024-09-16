@@ -64,15 +64,19 @@ export enum LootTypeId {
     EI = 30,
     BRAVO = 31,
     VERSCHIMMELTER_DOENER = 32,
+    THUNFISCHSHAKE = 33,
 }
 
+/**
+ * @remarks The index of an item must be equal to the `LootTypeId` enum value.
+ */
 const lootTemplates: loot.LootTemplate[] = [
     {
         id: LootTypeId.NICHTS,
         weight: 55,
         displayName: "Nichts",
         titleText: "✨Nichts✨",
-        description: "¯\\_(ツ)_/¯",
+        dropDescription: "¯\\_(ツ)_/¯",
         asset: null,
         excludeFromInventory: true,
     },
@@ -81,7 +85,7 @@ const lootTemplates: loot.LootTemplate[] = [
         weight: 4,
         displayName: "Niedliche Kadse",
         titleText: "Eine niedliche Kadse",
-        description: "Awww",
+        dropDescription: "Awww",
         emote: ":catsmile:",
         asset: "assets/loot/01-kadse.jpg",
     },
@@ -90,7 +94,7 @@ const lootTemplates: loot.LootTemplate[] = [
         weight: 1,
         displayName: "Messerblock",
         titleText: "Einen Messerblock",
-        description: "🔪",
+        dropDescription: "🔪",
         emote: "🔪",
         asset: "assets/loot/02-messerblock.jpg",
     },
@@ -99,17 +103,18 @@ const lootTemplates: loot.LootTemplate[] = [
         weight: 1,
         displayName: "Sehr teurer Kühlschrank",
         titleText: "Ein sehr teurer Kühlschrank",
-        description:
+        dropDescription:
             "Dafür haben wir keine Kosten und Mühen gescheut und extra einen Kredit aufgenommen.",
         emote: "🧊",
         asset: "assets/loot/03-kuehlschrank.jpg",
+        effects: ["Lässt Essen nicht schimmeln"],
     },
     {
         id: LootTypeId.DOENER,
         weight: 5,
         displayName: "Döner",
         titleText: "Einen Döner",
-        description: "Bewahre ihn gut als Geldanlage auf!",
+        dropDescription: "Bewahre ihn gut als Geldanlage auf!",
         emote: "🥙",
         asset: "assets/loot/04-doener.jpg",
     },
@@ -118,7 +123,7 @@ const lootTemplates: loot.LootTemplate[] = [
         weight: 0.5,
         displayName: "Kinn",
         titleText: "Ein Kinn",
-        description: "Pass gut drauf auf, sonst flieht es!",
+        dropDescription: "Pass gut drauf auf, sonst flieht es!",
         emote: "👶",
         asset: "assets/loot/05-kinn.jpg",
     },
@@ -127,7 +132,7 @@ const lootTemplates: loot.LootTemplate[] = [
         weight: 0.5,
         displayName: "Arbeitsunfähigkeitsbescheinigung",
         titleText: "Einen gelben Urlaubsschein",
-        description: "Benutze ihn weise!",
+        dropDescription: "Benutze ihn weise!",
         emote: "🩺",
         asset: "assets/loot/06-krankschreibung.jpg",
     },
@@ -136,11 +141,11 @@ const lootTemplates: loot.LootTemplate[] = [
         weight: 5,
         displayName: "Würfelwurf",
         titleText: "Einen Wurf mit einem Würfel",
-        description: "🎲",
+        dropDescription: "🎲",
         emote: "🎲",
         asset: "assets/loot/07-wuerfelwurf.jpg",
         excludeFromInventory: true,
-        specialAction: async (_content, winner, channel, _loot) => {
+        onDrop: async (_content, winner, channel, _loot) => {
             const rollService = await import("./roll.js");
             await rollService.rollInChannel(winner.user, channel, 1, 6);
         },
@@ -149,14 +154,13 @@ const lootTemplates: loot.LootTemplate[] = [
         id: LootTypeId.GESCHENK,
         weight: 2,
         displayName: "Geschenk",
-        titleText: "Ein weiteres Geschenk",
-        description: ":O",
+        titleText: "Ein Geschenk",
+        dropDescription: "Du kannst jemand anderem eine Freude machen :feelsamazingman:",
         emote: "🎁",
         asset: null,
-        excludeFromInventory: true,
-        specialAction: async (context, _winner, channel, _loot) => {
-            await setTimeout(3000);
-            await postLootDrop(context, channel);
+        onUse: async (interaction, context, loot) => {
+            await postLootDrop(context, interaction.channel, interaction.user, loot.id);
+            return false;
         },
     },
     {
@@ -164,7 +168,7 @@ const lootTemplates: loot.LootTemplate[] = [
         weight: 1,
         displayName: "Ayran",
         titleText: "Einen Ayran",
-        description: "Der gute von Müller",
+        dropDescription: "Der gute von Müller",
         emote: "🥛",
         asset: "assets/loot/09-ayran.jpg",
     },
@@ -173,16 +177,17 @@ const lootTemplates: loot.LootTemplate[] = [
         weight: 1,
         displayName: "Private Krankenversicherung",
         titleText: "Eine private Krankenversicherung",
-        description: "Fehlt dir nur noch das Geld zum Vorstrecken",
+        dropDescription: "Fehlt dir nur noch das Geld zum Vorstrecken",
         emote: "💉",
         asset: "assets/loot/10-pkv.jpg",
+        effects: ["` +100% ` Chance auf AU 📈"],
     },
     {
         id: LootTypeId.TRICHTER,
         weight: 1,
         displayName: "Trichter",
         titleText: "Einen Trichter",
-        description: "Für die ganz großen Schlücke",
+        dropDescription: "Für die ganz großen Schlücke",
         emote: ":trichter:",
         asset: "assets/loot/11-trichter.jpg",
     },
@@ -191,7 +196,7 @@ const lootTemplates: loot.LootTemplate[] = [
         weight: 1,
         displayName: "Grafikkarte aus der Zukunft",
         titleText: "Eine Grafikkarte aus der Zukunft",
-        description: "Leider ohne Treiber, die gibt es erst in 3 Monaten",
+        dropDescription: "Leider ohne Treiber, die gibt es erst in 3 Monaten",
         emote: "🖥️",
         asset: "assets/loot/12-grafikkarte.png",
     },
@@ -200,7 +205,7 @@ const lootTemplates: loot.LootTemplate[] = [
         weight: 1,
         displayName: "Feuchter Händedruck",
         titleText: "Einen feuchten Händedruck",
-        description: "Glückwunsch!",
+        dropDescription: "Glückwunsch!",
         emote: "🤝",
         asset: "assets/loot/13-haendedruck.jpg",
         excludeFromInventory: true,
@@ -210,11 +215,11 @@ const lootTemplates: loot.LootTemplate[] = [
         weight: 1,
         displayName: "Erleuchtung",
         titleText: "Eine Erleuchtung",
-        description: "💡",
+        dropDescription: "💡",
         emote: "💡",
         asset: null,
         excludeFromInventory: true,
-        specialAction: async (_context, winner, channel, _loot) => {
+        onDrop: async (_context, winner, channel, _loot) => {
             const erleuchtungService = await import("./erleuchtung.js");
             await setTimeout(3000);
 
@@ -229,11 +234,11 @@ const lootTemplates: loot.LootTemplate[] = [
         weight: 1,
         displayName: "Willkürban",
         titleText: "Einen Ban aus reiner Willkür",
-        description: "Tschüsseldorf!",
+        dropDescription: "Tschüsseldorf!",
         emote: "🔨",
         asset: "assets/loot/15-ban.jpg",
         excludeFromInventory: true,
-        specialAction: async (context, winner, _channel, _loot) => {
+        onDrop: async (context, winner, _channel, _loot) => {
             const banService = await import("./ban.js");
             await banService.banUser(
                 context,
@@ -250,7 +255,7 @@ const lootTemplates: loot.LootTemplate[] = [
         weight: 1,
         displayName: "Oettinger",
         titleText: "Ein warmes Oettinger",
-        description: "Ja dann Prost ne!",
+        dropDescription: "Ja dann Prost ne!",
         emote: "🍺",
         asset: "assets/loot/16-oettinger.jpg",
     },
@@ -259,7 +264,7 @@ const lootTemplates: loot.LootTemplate[] = [
         weight: 1,
         displayName: "Achievement",
         titleText: "Ein Achievement",
-        description: "Das erreichen echt nicht viele",
+        dropDescription: "Das erreichen echt nicht viele",
         emote: "🏆",
         asset: "assets/loot/17-achievement.png",
     },
@@ -268,7 +273,7 @@ const lootTemplates: loot.LootTemplate[] = [
         weight: 5,
         displayName: "Wertlose GME-Aktie",
         titleText: "Eine wertlose GME-Aktie",
-        description: "Der squeeze kommt bald!",
+        dropDescription: "Der squeeze kommt bald!",
         emote: "📉",
         asset: "assets/loot/18-gme.jpg",
     },
@@ -277,7 +282,7 @@ const lootTemplates: loot.LootTemplate[] = [
         weight: 3,
         displayName: "Ferris",
         titleText: "Einen Ferris - Die Krabbe",
-        description: "Damit kann man ja endlich den Bot in Rust neuschreiben",
+        dropDescription: "Damit kann man ja endlich den Bot in Rust neuschreiben",
         emote: "🦀",
         asset: "assets/loot/19-ferris.png",
     },
@@ -286,7 +291,7 @@ const lootTemplates: loot.LootTemplate[] = [
         weight: 5,
         displayName: "HomePod",
         titleText: "Einen Apple:registered: HomePod:copyright:",
-        description: 'Damit dein "Smart Home" nicht mehr ganz so smart ist',
+        dropDescription: 'Damit dein "Smart Home" nicht mehr ganz so smart ist',
         emote: "🍎",
         asset: "assets/loot/20-homepod.jpg",
     },
@@ -295,17 +300,18 @@ const lootTemplates: loot.LootTemplate[] = [
         weight: 1,
         displayName: "Radioaktiver Müll",
         titleText: "Radioaktiver Müll",
-        description:
+        dropDescription:
             "Sollte dir ja nichts mehr anhaben, du bist ja durch den Server schon genug verstrahlt 🤷‍♂️",
         emote: "☢️",
         asset: "assets/loot/21-radioaktiver-muell.jpg",
+        effects: ["` +5% ` Chance auf leeres Geschenk 🔻"],
     },
     {
         id: LootTypeId.SAHNE,
         weight: 1,
         displayName: "Sprühsahne",
         titleText: "Sprühsahne",
-        description: "Fürs Frühstück oder so",
+        dropDescription: "Fürs Frühstück oder so",
         emote: ":sahne:",
         asset: "assets/loot/22-sahne.jpg",
     },
@@ -314,12 +320,12 @@ const lootTemplates: loot.LootTemplate[] = [
         weight: 1,
         displayName: "Ehre",
         titleText: "Ehre aus Mitleid",
-        description:
+        dropDescription:
             "Irgendjemand muss ja den Server am laufen halten, kriegst dafür wertlose Internetpunkte",
         emote: ":aehre:",
         asset: "assets/loot/23-ehre.jpg",
         excludeFromInventory: true,
-        specialAction: async (context, winner, _channel, _loot) => {
+        onDrop: async (_context, winner, _channel, _loot) => {
             const ehre = await import("@/storage/ehre.js");
             await ehre.addPoints(winner.id, 1);
         },
@@ -329,7 +335,7 @@ const lootTemplates: loot.LootTemplate[] = [
         weight: 1,
         displayName: "Crowdstrike Falcon",
         titleText: "Crowdstrike Falcon Installation",
-        description: "Bitti nicht rebooti und Bitlocki nutzi",
+        dropDescription: "Bitti nicht rebooti und Bitlocki nutzi",
         emote: ":eagle:",
         asset: "assets/loot/24-crowdstrike.jpg",
     },
@@ -338,7 +344,7 @@ const lootTemplates: loot.LootTemplate[] = [
         weight: 1,
         displayName: "Blaue Powerade",
         titleText: "Blaue Powerade",
-        description: "Erfrischend erquickend. Besonders mit Vodka. Oder Korn.",
+        dropDescription: "Erfrischend erquickend. Besonders mit Vodka. Oder Korn.",
         asset: "assets/loot/25-powerade-blau.jpg",
     },
     {
@@ -346,7 +352,7 @@ const lootTemplates: loot.LootTemplate[] = [
         weight: 1,
         displayName: "Gauloises Blau",
         titleText: "Eine Schachtel Gauloises Blau",
-        description:
+        dropDescription:
             "Rauchig, kräftig, französisch. Wie du in deinen Träumen.\n\nVerursacht Herzanfälle, genau wie dieser Server",
         emote: "🚬",
         asset: "assets/loot/26-gauloises-blau.jpg",
@@ -356,7 +362,7 @@ const lootTemplates: loot.LootTemplate[] = [
         weight: 1,
         displayName: "Maxwell",
         titleText: "Einen Maxwell",
-        description: "Der ist doch tot, oder?",
+        dropDescription: "Der ist doch tot, oder?",
         emote: "😸",
         asset: "assets/loot/27-maxwell.jpg",
     },
@@ -365,11 +371,11 @@ const lootTemplates: loot.LootTemplate[] = [
         weight: 1,
         displayName: "Wärter Asse II",
         titleText: "Den Schichtbeginn in der Asse II",
-        description: "Deine Wärterschicht bei der Asse II beginnt!",
+        dropDescription: "Deine Wärterschicht bei der Asse II beginnt!",
         emote: "🔒",
         asset: "assets/loot/28-asse-2.jpg",
         excludeFromInventory: true,
-        specialAction: async (context, winner, channel, _loot) => {
+        onDrop: async (context, winner, channel, _loot) => {
             const lootRoles = await import("./lootRoles.js");
             await lootRoles.startAsseGuardShift(context, winner, channel);
         },
@@ -379,7 +385,7 @@ const lootTemplates: loot.LootTemplate[] = [
         weight: 7,
         displayName: "Ein Glas Dreck",
         titleText: "Ein Glas Dreck",
-        description: "Ich hab ein Glas voll Dreck",
+        dropDescription: "Ich hab ein Glas voll Dreck",
         emote: ":jar:",
         asset: "assets/loot/29-dirt.jpg",
     },
@@ -388,7 +394,7 @@ const lootTemplates: loot.LootTemplate[] = [
         weight: 3,
         displayName: "Ei",
         titleText: "Ein Ei",
-        description:
+        dropDescription:
             "Jetzt wär geklärt, was zu erst da war, Ei oder ... (Ja was schlüpft daraus eigentlich?)",
         emote: ":egg:",
         asset: "assets/loot/30-egg.jpg",
@@ -397,8 +403,8 @@ const lootTemplates: loot.LootTemplate[] = [
         id: LootTypeId.BRAVO,
         weight: 2,
         displayName: "Bravo",
-        titleText: "Eine Bravo von Speicher",
-        description: "Die Seiten kleben noch ein bisschen",
+        titleText: "Eine Bravo vom Dachboden",
+        dropDescription: "Die Seiten kleben noch ein bisschen",
         emote: ":newspaper2:",
         asset: "assets/loot/31-bravo.jpg",
     },
@@ -407,9 +413,18 @@ const lootTemplates: loot.LootTemplate[] = [
         weight: ACHTUNG_NICHT_DROPBAR_WEIGHT_KG,
         displayName: "Verschimmelter Döner",
         titleText: "Einen verschimmelten Döner",
-        description: "Du hättest ihn früher essen sollen",
+        dropDescription: "Du hättest ihn früher essen sollen",
         emote: "🥙",
         asset: null,
+    },
+    {
+        id: LootTypeId.THUNFISCHSHAKE,
+        weight: 2,
+        displayName: "Thunfischshake",
+        titleText: "Ein Thunfischshake, serviert von Markus Rühl persönlich",
+        dropDescription: "Nach Rezept zubereitet, bestehend aus Thunfisch und Reiswaffeln",
+        emote: ":baby_bottle:",
+        asset: "assets/loot/32-thunfischshake.jpg",
     },
 ] as const;
 
@@ -470,10 +485,15 @@ export async function runDropAttempt(context: BotContext) {
     log.info(
         `Dice was ${dice}, which is lower than configured ${lootConfig.dropChance}. Dropping loot to ${targetChannel.name}!`,
     );
-    await postLootDrop(context, targetChannel);
+    await postLootDrop(context, targetChannel, undefined, undefined);
 }
 
-async function postLootDrop(context: BotContext, channel: GuildBasedChannel & TextBasedChannel) {
+async function postLootDrop(
+    context: BotContext,
+    channel: GuildBasedChannel & TextBasedChannel,
+    donor: User | undefined,
+    predecessorLootId: LootId | undefined,
+): Promise<Loot | undefined> {
     const hamster = context.guild.emojis.cache.find(e => e.name === "sad_hamster") ?? ":(";
 
     const takeLootButton = new ButtonBuilder()
@@ -486,7 +506,9 @@ async function postLootDrop(context: BotContext, channel: GuildBasedChannel & Te
         embeds: [
             {
                 title: "Geschenk",
-                description: `Ein Geschenk ist aufgetaucht! Öffne es schnell, in ${timeoutSeconds} Sekunden ist es weg!`,
+                description: donor
+                    ? `${donor} hat ein Geschenk fallen lassen! Öffne es schnell, in ${timeoutSeconds} Sekunden ist es weg!`
+                    : `Ein Geschenk ist aufgetaucht! Öffne es schnell, in ${timeoutSeconds} Sekunden ist es weg!`,
                 image: {
                     url: "attachment://00-unopened.gif",
                 },
@@ -516,7 +538,9 @@ async function postLootDrop(context: BotContext, channel: GuildBasedChannel & Te
             embeds: [
                 {
                     ...original,
-                    description: `Oki aber nächstes mal bitti aufmachi, sonst muss ichs wieder mitnehmi ${hamster}`,
+                    description: donor
+                        ? `Das Geschenk von ${donor} verpuffte im nichts :(`
+                        : `Oki aber nächstes mal bitti aufmachi, sonst muss ichs wieder mitnehmi ${hamster}`,
                     footer: {
                         text: "❌ Niemand war schnell genug",
                     },
@@ -524,6 +548,13 @@ async function postLootDrop(context: BotContext, channel: GuildBasedChannel & Te
             ],
             files: [],
             components: [],
+        });
+        return;
+    }
+
+    if (donor !== undefined && interaction.user.id === donor.id) {
+        await message.edit({
+            content: `${interaction.user} hat versucht, das Geschenki selbst zu öffnen. Das geht aber nichti ${hamster}\nDas Geschenk macht plopp und ist weg! 🎈`,
         });
         return;
     }
@@ -539,9 +570,11 @@ async function postLootDrop(context: BotContext, channel: GuildBasedChannel & Te
         message,
         new Date(),
         "drop",
+        predecessorLootId ?? null,
     );
 
     const reply = await interaction.deferReply({ ephemeral: true });
+
     if (!claimedLoot) {
         await reply.edit({
             content: `Upsi, da ist was schief gelaufi oder jemand anderes war schnelli ${hamster}`,
@@ -563,7 +596,7 @@ async function postLootDrop(context: BotContext, channel: GuildBasedChannel & Te
         embeds: [
             {
                 title: `Das Geschenk enthielt: ${template.titleText}`,
-                description: template.description,
+                description: template.dropDescription,
                 image: attachment
                     ? {
                           url: "attachment://opened.gif",
@@ -585,16 +618,14 @@ async function postLootDrop(context: BotContext, channel: GuildBasedChannel & Te
         components: [],
     });
 
-    if (template.specialAction) {
-        await template
-            .specialAction(context, winner, channel as TextChannel, claimedLoot)
-            .catch(err => {
-                log.error(
-                    err,
-                    `Error while executing special action for loot ${claimedLoot.id} (template: ${template.id})`,
-                );
-                sentry.captureException(err);
-            });
+    if (template.onDrop) {
+        await template.onDrop(context, winner, channel as TextChannel, claimedLoot).catch(err => {
+            log.error(
+                err,
+                `Error while executing special action for loot ${claimedLoot.id} (template: ${template.id})`,
+            );
+            sentry.captureException(err);
+        });
     }
 }
 
@@ -615,16 +646,20 @@ export function resolveLootTemplate(lootKindId: number) {
     return lootTemplates.find(loot => loot.id === lootKindId);
 }
 
-export async function getUserLootsById(userId: Snowflake, lootTypeId: number) {
-    return await loot.getUserLootsById(userId, lootTypeId);
+export async function getUserLootsByTypeId(userId: Snowflake, lootTypeId: number) {
+    return await loot.getUserLootsByTypeId(userId, lootTypeId);
+}
+
+export async function getUserLootById(userId: Snowflake, id: LootId) {
+    return await loot.getUserLootById(userId, id);
 }
 
 export async function getUserLootCountById(userId: Snowflake, lootTypeId: number): Promise<number> {
-    return (await loot.getUserLootsById(userId, lootTypeId)).length;
+    return (await loot.getUserLootsByTypeId(userId, lootTypeId)).length;
 }
 
-export async function getLootsByKindId(lootTykeId: LootTypeId) {
-    return await loot.getLootsByKindId(lootTykeId);
+export async function getLootsByKindId(lootTypeId: LootTypeId) {
+    return await loot.getLootsByKindId(lootTypeId);
 }
 
 export function transferLootToUser(lootId: LootId, user: User, trackPredecessor: boolean) {
