@@ -50,13 +50,13 @@ export default class InventarCommand implements ApplicationCommand {
             return;
         }
         if (short) {
-            await this.createLongEmbed(context, interaction, user);
+            await this.#createLongEmbed(context, interaction, user);
         } else {
-            await this.createShortEmbed(context, interaction, user);
+            await this.#createShortEmbed(context, interaction, user);
         }
     }
 
-    private async createShortEmbed(
+    async #createShortEmbed(
         context: BotContext,
         interaction: CommandInteraction<CacheType>,
         user: User,
@@ -107,23 +107,30 @@ export default class InventarCommand implements ApplicationCommand {
         });
     }
 
-    async createLongEmbed(context: BotContext, interaction: CommandInteraction, user: User) {
+    async #createLongEmbed(context: BotContext, interaction: CommandInteraction, user: User) {
         await interaction.reply(await getInvAsEmb(context, user, 0));
     }
 }
 
-export async function getInvAsEmb(context: BotContext, user: User, index: number) {
+export async function getInvAsEmb(context: BotContext, user: User, pageIndex: number) {
+    const pageSize = 25;
+
     const contents = await lootService.getInventoryContents(user);
-    const slice = contents.slice(index, index + 25);
+
+    const lastPageIndex = Math.floor(contents.length / pageSize);
+
+    const slice = contents.slice(pageIndex * pageSize, pageIndex * pageSize + pageSize);
+
     const prev = new ButtonBuilder()
-        .setCustomId(`lootTable/${user.id}/${Math.max(index - 25, 0)}`)
+        .setCustomId(`lootTable/${user.id}/${Math.max(pageIndex - pageSize, 0)}`)
         .setLabel("<<")
-        .setDisabled(index <= 0)
+        .setDisabled(pageIndex <= 0)
         .setStyle(ButtonStyle.Secondary);
+
     const next = new ButtonBuilder()
-        .setCustomId(`lootTable/${user.id}/${index + 25}`)
+        .setCustomId(`lootTable/${user.id}/${pageIndex + pageSize}`)
         .setLabel(">>")
-        .setDisabled(index + 25 > contents.length)
+        .setDisabled(pageIndex >= lastPageIndex)
         .setStyle(ButtonStyle.Secondary);
 
     const embedsItems = slice.map(item => {
@@ -139,7 +146,7 @@ export async function getInvAsEmb(context: BotContext, user: User, index: number
         embeds: [
             {
                 title: `Inventar von ${user.displayName}`,
-                description: `Seite ${index % 25} von ${contents.length % 25}`,
+                description: `Seite ${pageIndex % pageSize} von ${contents.length % pageSize}`,
                 fields: embedsItems,
             },
         ],

@@ -30,7 +30,6 @@ import TriggerReactOnKeyword from "@/commands/special/keywordReact.js";
 import SplidCommand from "@/commands/splid.js";
 
 import { isProcessableMessage, type ProcessableMessage } from "@/service/command.js";
-import { number } from "messageformat/functions";
 import { getInvAsEmb } from "@/commands/inventar.js";
 
 /**  Commands that need special init parameters and cannot be instantiated automatically */
