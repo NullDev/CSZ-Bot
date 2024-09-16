@@ -113,7 +113,7 @@ export default class InventarCommand implements ApplicationCommand {
     }
 
     async #createLongEmbed(context: BotContext, interaction: CommandInteraction, user: User) {
-        const pageSize = 25;
+        const pageSize = 10;
 
         const contentsUnsorted = await lootService.getInventoryContents(user);
         const contents = contentsUnsorted.toSorted((a, b) =>
