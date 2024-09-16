@@ -64,6 +64,7 @@ export enum LootTypeId {
     EI = 30,
     BRAVO = 31,
     VERSCHIMMELTER_DOENER = 32,
+    THUNFISCHSHAKE=33
 }
 
 const lootTemplates: loot.LootTemplate[] = [
@@ -397,7 +398,7 @@ const lootTemplates: loot.LootTemplate[] = [
         id: LootTypeId.BRAVO,
         weight: 2,
         displayName: "Bravo",
-        titleText: "Eine Bravo von Speicher",
+        titleText: "Eine Bravo vom Dachboden",
         description: "Die Seiten kleben noch ein bisschen",
         emote: ":newspaper2:",
         asset: "assets/loot/31-bravo.jpg",
@@ -410,6 +411,15 @@ const lootTemplates: loot.LootTemplate[] = [
         description: "Du hättest ihn früher essen sollen",
         emote: "🥙",
         asset: null,
+    },
+    {
+        id: LootTypeId.THUNFISCHSHAKE,
+        weight: 2,
+        displayName: "Thunfischshake",
+        titleText: "Ein Thunfischshake, serviert von Markus Rühl persönlich",
+        description: "Nach Rezept zubereitet, bestehend aus Thunfisch und Reiswaffeln",
+        emote: ":baby_bottle:",
+        asset: "assets/loot/32-thunfischshake.jpg",
     },
 ] as const;
 
