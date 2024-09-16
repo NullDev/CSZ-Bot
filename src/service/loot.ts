@@ -64,7 +64,7 @@ export enum LootTypeId {
     EI = 30,
     BRAVO = 31,
     VERSCHIMMELTER_DOENER = 32,
-    THUNFISCHSHAKE=33
+    THUNFISCHSHAKE = 33,
 }
 
 const lootTemplates: loot.LootTemplate[] = [
