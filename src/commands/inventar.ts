@@ -31,7 +31,7 @@ export default class InventarCommand implements ApplicationCommand {
         )
         .addBooleanOption(
             new SlashCommandBooleanOption()
-                .setName("unique_items")
+                .setName("long")
                 .setRequired(false)
                 .setDescription("kurz oder lang"),
         );
