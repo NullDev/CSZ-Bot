@@ -110,11 +110,11 @@ export default class InventarCommand implements ApplicationCommand {
     }
 
     async #createLongEmbed(context: BotContext, interaction: CommandInteraction, user: User) {
-        await interaction.reply(await getInvAsEmb(context, user, 0));
+        await interaction.reply(await getPaginatedInventoryEmbed(context, user, 0));
     }
 }
 
-export async function getInvAsEmb(
+export async function getPaginatedInventoryEmbed(
     context: BotContext,
     user: User,
     pageIndex: number,
@@ -129,13 +129,13 @@ export async function getInvAsEmb(
     const pageContents = contents.slice(pageIndex * pageSize, pageIndex * pageSize + pageSize);
 
     const prev = new ButtonBuilder()
-        .setCustomId(`lootTable/${user.id}/${Math.max(pageIndex - pageSize, 0)}`)
+        .setCustomId(`lootTable/${user.id}/${Math.max(0, pageIndex - 1)}`)
         .setLabel("<<")
         .setDisabled(pageIndex <= 0)
         .setStyle(ButtonStyle.Secondary);
 
     const next = new ButtonBuilder()
-        .setCustomId(`lootTable/${user.id}/${pageIndex + pageSize}`)
+        .setCustomId(`lootTable/${user.id}/${Math.min(pageIndex + 1, lastPageIndex)}`)
         .setLabel(">>")
         .setDisabled(pageIndex >= lastPageIndex)
         .setStyle(ButtonStyle.Secondary);

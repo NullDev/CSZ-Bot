@@ -30,7 +30,7 @@ import TriggerReactOnKeyword from "@/commands/special/keywordReact.js";
 import SplidCommand from "@/commands/splid.js";
 
 import { isProcessableMessage, type ProcessableMessage } from "@/service/command.js";
-import { getInvAsEmb } from "@/commands/inventar.js";
+import { getPaginatedInventoryEmbed } from "@/commands/inventar.js";
 
 /**  Commands that need special init parameters and cannot be instantiated automatically */
 const staticCommands: readonly Command[] = [
@@ -265,7 +265,7 @@ const buttonEventHandler = async (interaction: ButtonInteraction, context: BotCo
         const userid = customID[1];
         const index = Number(customID[2]);
         const user = await context.client.users.fetch(userid);
-        await interaction.message.edit(await getInvAsEmb(context, user, index));
+        await interaction.message.edit(await getPaginatedInventoryEmbed(context, user, index));
         await interaction.deferUpdate();
     }
 };
