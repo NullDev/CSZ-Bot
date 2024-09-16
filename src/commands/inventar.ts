@@ -5,7 +5,7 @@ import {
     ButtonStyle,
     type CacheType,
     type CommandInteraction,
-    type InteractionReplyOptions,
+    ComponentType,
     SlashCommandBooleanOption,
     SlashCommandBuilder,
     SlashCommandUserOption,
@@ -17,6 +17,8 @@ import type { ApplicationCommand } from "@/commands/command.js";
 import * as lootService from "@/service/loot.js";
 import { ensureChatInputCommand } from "@/utils/interactionUtils.js";
 import { format } from "@/utils/stringUtils.js";
+
+import log from "@log";
 
 export default class InventarCommand implements ApplicationCommand {
     name = "inventar";
@@ -110,54 +112,84 @@ export default class InventarCommand implements ApplicationCommand {
     }
 
     async #createLongEmbed(context: BotContext, interaction: CommandInteraction, user: User) {
-        await interaction.reply(await getPaginatedInventoryEmbed(context, user, 0));
-    }
-}
+        const pageSize = 25;
 
-export async function getPaginatedInventoryEmbed(
-    context: BotContext,
-    user: User,
-    pageIndex: number,
-): Promise<InteractionReplyOptions> {
-    const pageSize = 25;
+        const contentsUnsorted = await lootService.getInventoryContents(user);
+        const contents = contentsUnsorted.toSorted((a, b) =>
+            b.createdAt.localeCompare(a.createdAt),
+        );
 
-    const contentsUnsorted = await lootService.getInventoryContents(user);
-    const contents = contentsUnsorted.toSorted((a, b) => b.createdAt.localeCompare(a.createdAt));
+        const lastPageIndex = Math.floor(contents.length / pageSize);
 
-    const lastPageIndex = Math.floor(contents.length / pageSize);
+        function buildMessageData(pageIndex: number) {
+            const firstItemIndex = pageIndex * pageSize;
+            const pageContents = contents.slice(firstItemIndex, firstItemIndex + pageSize);
 
-    const pageContents = contents.slice(pageIndex * pageSize, pageIndex * pageSize + pageSize);
-
-    const prev = new ButtonBuilder()
-        .setCustomId(`lootTable/${user.id}/${Math.max(0, pageIndex - 1)}`)
-        .setLabel("<<")
-        .setDisabled(pageIndex <= 0)
-        .setStyle(ButtonStyle.Secondary);
-
-    const next = new ButtonBuilder()
-        .setCustomId(`lootTable/${user.id}/${Math.min(pageIndex + 1, lastPageIndex)}`)
-        .setLabel(">>")
-        .setDisabled(pageIndex >= lastPageIndex)
-        .setStyle(ButtonStyle.Secondary);
-
-    const embedsItems = pageContents.map(item => ({
-        name: `${lootService.getEmote(context.guild, item)} ${item.displayName}`,
-        value: "",
-        inline: false,
-    }));
-
-    return {
-        components: [new ActionRowBuilder<ButtonBuilder>().setComponents(prev, next)],
-        embeds: [
-            {
+            const embed = {
                 title: `Inventar von ${user.displayName}`,
-                fields: embedsItems,
+                fields: pageContents.map(item => ({
+                    name: `${lootService.getEmote(context.guild, item)} ${item.displayName}`,
+                    value: "",
+                    inline: false,
+                })),
                 footer: {
                     text: `Seite ${pageIndex + 1} von ${lastPageIndex + 1}`,
                 },
-            } satisfies APIEmbed,
-        ],
-        fetchReply: true,
-        tts: false,
-    };
+            } satisfies APIEmbed;
+
+            const component = new ActionRowBuilder<ButtonBuilder>().setComponents(
+                new ButtonBuilder()
+                    .setCustomId("page-prev")
+                    .setLabel("<<")
+                    .setDisabled(pageIndex <= 0)
+                    .setStyle(ButtonStyle.Secondary),
+                new ButtonBuilder()
+                    .setCustomId("page-next")
+                    .setLabel(">>")
+                    .setDisabled(pageIndex >= lastPageIndex)
+                    .setStyle(ButtonStyle.Secondary),
+            );
+
+            return { components: [component], embeds: [embed] };
+        }
+
+        let pageIndex = 0;
+
+        const message = await interaction.reply({
+            ...buildMessageData(pageIndex),
+            fetchReply: true,
+            tts: false,
+        });
+
+        const collector = message.createMessageComponentCollector({
+            componentType: ComponentType.Button,
+            time: 45_000,
+        });
+
+        collector.on("collect", async i => {
+            switch (i.customId) {
+                case "page-prev":
+                    pageIndex = Math.max(0, pageIndex - 1);
+                    await message.edit({
+                        ...buildMessageData(pageIndex),
+                    });
+                    break;
+                case "page-next":
+                    pageIndex = Math.min(lastPageIndex, pageIndex + 1);
+                    await message.edit({
+                        ...buildMessageData(pageIndex),
+                    });
+                    break;
+                default:
+                    log.warn(`Unknown customId: "${i.customId}"`);
+                    break;
+            }
+        });
+
+        collector.on("end", async () => {
+            await message.edit({
+                components: [],
+            });
+        });
+    }
 }
