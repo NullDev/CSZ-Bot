@@ -21,6 +21,7 @@ export interface Database {
     bans: BanTable;
     reminders: ReminderTable;
     loot: LootTable;
+    lootAttribute: LootAttributeTable;
     emote: EmoteTable;
     emoteUse: EmoteUseTable;
 }
@@ -224,6 +225,20 @@ export interface LootTable extends AuditedTable {
 
     predecessor: LootId | null;
     origin: LootOrigin;
+}
+
+export type LootAttributeId = number;
+export interface LootAttributeTable extends AuditedTable {
+    id: GeneratedAlways<LootAttributeId>;
+
+    lootId: LootId;
+    lootAttributeKindId: number;
+
+    // displayName: string;
+    // color: number | null;
+    // initialDropWeight: number | null;
+    // visible: boolean;
+    // overridingDescription: string | null;
 }
 
 export type Emote = Selectable<EmoteTable>;
