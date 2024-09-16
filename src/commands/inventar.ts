@@ -1,5 +1,6 @@
 import {
     ActionRowBuilder,
+    APIEmbed,
     ButtonBuilder,
     ButtonStyle,
     type CacheType,
@@ -133,22 +134,22 @@ export async function getInvAsEmb(context: BotContext, user: User, pageIndex: nu
         .setDisabled(pageIndex >= lastPageIndex)
         .setStyle(ButtonStyle.Secondary);
 
-    const embedsItems = slice.map(item => {
-        console.log(item);
-        return {
-            name: `${lootService.getEmote(context.guild, item)}${item.displayName}`,
-            value: "",
-            inline: false,
-        };
-    });
+    const embedsItems = slice.map(item => ({
+        name: `${lootService.getEmote(context.guild, item)} ${item.displayName}`,
+        value: "",
+        inline: false,
+    }));
+
     return {
         components: [new ActionRowBuilder<ButtonBuilder>().setComponents(prev, next)],
         embeds: [
             {
                 title: `Inventar von ${user.displayName}`,
-                description: `Seite ${pageIndex % pageSize} von ${contents.length % pageSize}`,
                 fields: embedsItems,
-            },
+                footer: {
+                    text: `Seite ${pageIndex + 1} von ${lastPageIndex + 1}`,
+                },
+            } satisfies APIEmbed,
         ],
         fetchReply: true,
         tts: false,
