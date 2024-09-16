@@ -44,7 +44,7 @@ export default class InventarCommand implements ApplicationCommand {
         const cmd = ensureChatInputCommand(interaction);
 
         const user = cmd.options.getUser("user") ?? cmd.user;
-        const short = cmd.options.getBoolean("long") ?? false;
+        const long = cmd.options.getBoolean("long") ?? false;
 
         const contents = await lootService.getInventoryContents(user);
         if (contents.length === 0) {
@@ -54,11 +54,11 @@ export default class InventarCommand implements ApplicationCommand {
             return;
         }
 
-        if (short) {
-            await this.#createShortEmbed(context, interaction, user);
+        if (long) {
+            await this.#createLongEmbed(context, interaction, user);
             return;
         }
-        await this.#createLongEmbed(context, interaction, user);
+        await this.#createShortEmbed(context, interaction, user);
     }
 
     async #createShortEmbed(
