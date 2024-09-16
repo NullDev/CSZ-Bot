@@ -31,7 +31,7 @@
     "@resvg/resvg-js": "^2.6.2",
     "@sentry/bun": "^8.30.0",
     "@std/jsonc": "npm:@jsr/std__jsonc@^1.0.1",
-    "chrono-node": "^2.7.6",
+    "chrono-node": "^2.7.7",
     "croner": "^8.1.1",
     "discord.js": "^14.16.2",
     "get-audio-duration": "^4.0.1",
@@ -46,7 +46,7 @@
     "urlpattern-polyfill": "^10.0.0"
   },
   "devDependencies": {
-    "@biomejs/biome": "^1.9.0",
+    "@biomejs/biome": "^1.9.1",
     "@types/bun": "^1.1.9",
     "@types/jsdom": "^21.1.7",
     "@types/minimist": "^1.2.5",
