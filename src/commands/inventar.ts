@@ -53,11 +53,12 @@ export default class InventarCommand implements ApplicationCommand {
             });
             return;
         }
+
         if (short) {
-            await this.#createLongEmbed(context, interaction, user);
-        } else {
             await this.#createShortEmbed(context, interaction, user);
+            return;
         }
+        await this.#createLongEmbed(context, interaction, user);
     }
 
     async #createShortEmbed(
