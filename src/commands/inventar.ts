@@ -1,10 +1,11 @@
 import {
     ActionRowBuilder,
-    APIEmbed,
+    type APIEmbed,
     ButtonBuilder,
     ButtonStyle,
     type CacheType,
     type CommandInteraction,
+    type InteractionReplyOptions,
     SlashCommandBooleanOption,
     SlashCommandBuilder,
     SlashCommandUserOption,
@@ -113,7 +114,11 @@ export default class InventarCommand implements ApplicationCommand {
     }
 }
 
-export async function getInvAsEmb(context: BotContext, user: User, pageIndex: number) {
+export async function getInvAsEmb(
+    context: BotContext,
+    user: User,
+    pageIndex: number,
+): Promise<InteractionReplyOptions> {
     const pageSize = 25;
 
     const contents = await lootService.getInventoryContents(user);
