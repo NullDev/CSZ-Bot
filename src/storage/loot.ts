@@ -1,4 +1,12 @@
-import type { GuildChannel, GuildMember, Message, TextChannel, User } from "discord.js";
+import type {
+    ChatInputCommandInteraction,
+    GuildChannel,
+    GuildMember,
+    GuildTextBasedChannel,
+    Message,
+    TextChannel,
+    User,
+} from "discord.js";
 import { type ExpressionBuilder, sql } from "kysely";
 
 import type { BotContext } from "@/context.js";
@@ -6,20 +14,34 @@ import type { Database, Loot, LootId, LootInsertable, LootOrigin } from "./db/mo
 
 import db from "@db";
 
+export type LootUseCommandInteraction = ChatInputCommandInteraction & {
+    channel: GuildTextBasedChannel;
+};
+
 export interface LootTemplate {
     id: number;
     weight: number;
     displayName: string;
     titleText: string;
-    description: string;
+    dropDescription: string;
+    infoDescription?: string;
     emote?: string;
     excludeFromInventory?: boolean;
-    specialAction?: (
+    effects?: string[];
+
+    onDrop?: (
         context: BotContext,
         winner: GuildMember,
         sourceChannel: TextChannel & GuildChannel,
         claimedLoot: Loot,
     ) => Promise<void>;
+
+    /** @returns Return `true` if the item should be kept in the inventory, `false`/falsy if it should be deleted. If an exception occurs, the item will be kept. */
+    onUse?: (
+        interaction: LootUseCommandInteraction,
+        context: BotContext,
+        loot: Loot,
+    ) => Promise<boolean>;
     asset: string | null;
 }
 
@@ -32,13 +54,14 @@ export async function createLoot(
     message: Message<true> | null,
     now: Date,
     origin: LootOrigin,
+    predecessorLootId: LootId | null,
     ctx = db(),
 ) {
     return await ctx
         .insertInto("loot")
         .values({
             displayName: template.displayName,
-            description: template.description,
+            description: template.dropDescription,
             lootKindId: template.id,
             usedImage: template.asset,
             winnerId: winner.id,
@@ -47,6 +70,7 @@ export async function createLoot(
             channelId: message?.channelId ?? "",
             messageId: message?.id ?? "",
             origin,
+            predecessor: predecessorLootId,
         })
         .returningAll()
         .executeTakeFirstOrThrow();
@@ -70,7 +94,7 @@ export async function findOfMessage(message: Message<true>, ctx = db()) {
         .executeTakeFirst();
 }
 
-export async function getUserLootsById(userId: User["id"], lootKindId: number, ctx = db()) {
+export async function getUserLootsByTypeId(userId: User["id"], lootKindId: number, ctx = db()) {
     return await ctx
         .selectFrom("loot")
         .where("winnerId", "=", userId)
@@ -78,6 +102,16 @@ export async function getUserLootsById(userId: User["id"], lootKindId: number, c
         .where(notDeleted)
         .selectAll()
         .execute();
+}
+
+export async function getUserLootById(userId: User["id"], lootId: LootId, ctx = db()) {
+    return await ctx
+        .selectFrom("loot")
+        .where("winnerId", "=", userId)
+        .where("id", "=", lootId)
+        .where(notDeleted)
+        .selectAll()
+        .executeTakeFirst();
 }
 
 export async function getLootsByKindId(lootKindId: number, ctx = db()) {
