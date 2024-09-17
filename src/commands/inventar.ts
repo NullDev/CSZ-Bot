@@ -168,6 +168,7 @@ export default class InventarCommand implements ApplicationCommand {
         });
 
         collector.on("collect", async i => {
+            i.deferUpdate();
             switch (i.customId) {
                 case "page-prev":
                     pageIndex = Math.max(0, pageIndex - 1);
