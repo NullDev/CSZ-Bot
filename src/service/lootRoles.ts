@@ -41,7 +41,7 @@ export async function checkExpiredShifts(context: BotContext) {
     for (const m of currentGuards.values()) {
         const drops = await lootService.getUserLootsByTypeId(
             m.user.id,
-            lootService.LootTypeId.SCHICHTBEGINN_ASSE_2,
+            lootService.LootKindId.SCHICHTBEGINN_ASSE_2,
         );
         if (drops.length === 0) {
             await endAsseGuardShift(context, m);

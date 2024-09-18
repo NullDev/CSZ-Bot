@@ -30,7 +30,7 @@ const lootTimeoutMs = 60 * 1000;
 
 const ACHTUNG_NICHT_DROPBAR_WEIGHT_KG = 0;
 
-export enum LootTypeId {
+export enum LootKindId {
     NICHTS = 0,
     KADSE = 1,
     MESSERBLOCK = 2,
@@ -72,7 +72,7 @@ export enum LootTypeId {
  */
 const lootTemplates: loot.LootTemplate[] = [
     {
-        id: LootTypeId.NICHTS,
+        id: LootKindId.NICHTS,
         weight: 55,
         displayName: "Nichts",
         titleText: "✨Nichts✨",
@@ -81,7 +81,7 @@ const lootTemplates: loot.LootTemplate[] = [
         excludeFromInventory: true,
     },
     {
-        id: LootTypeId.KADSE,
+        id: LootKindId.KADSE,
         weight: 4,
         displayName: "Niedliche Kadse",
         titleText: "Eine niedliche Kadse",
@@ -90,7 +90,7 @@ const lootTemplates: loot.LootTemplate[] = [
         asset: "assets/loot/01-kadse.jpg",
     },
     {
-        id: LootTypeId.MESSERBLOCK,
+        id: LootKindId.MESSERBLOCK,
         weight: 1,
         displayName: "Messerblock",
         titleText: "Einen Messerblock",
@@ -99,7 +99,7 @@ const lootTemplates: loot.LootTemplate[] = [
         asset: "assets/loot/02-messerblock.jpg",
     },
     {
-        id: LootTypeId.KUEHLSCHRANK,
+        id: LootKindId.KUEHLSCHRANK,
         weight: 1,
         displayName: "Sehr teurer Kühlschrank",
         titleText: "Ein sehr teurer Kühlschrank",
@@ -110,7 +110,7 @@ const lootTemplates: loot.LootTemplate[] = [
         effects: ["Lässt Essen nicht schimmeln"],
     },
     {
-        id: LootTypeId.DOENER,
+        id: LootKindId.DOENER,
         weight: 5,
         displayName: "Döner",
         titleText: "Einen Döner",
@@ -119,7 +119,7 @@ const lootTemplates: loot.LootTemplate[] = [
         asset: "assets/loot/04-doener.jpg",
     },
     {
-        id: LootTypeId.KINN,
+        id: LootKindId.KINN,
         weight: 0.5,
         displayName: "Kinn",
         titleText: "Ein Kinn",
@@ -128,7 +128,7 @@ const lootTemplates: loot.LootTemplate[] = [
         asset: "assets/loot/05-kinn.jpg",
     },
     {
-        id: LootTypeId.KRANKSCHREIBUNG,
+        id: LootKindId.KRANKSCHREIBUNG,
         weight: 0.5,
         displayName: "Arbeitsunfähigkeitsbescheinigung",
         titleText: "Einen gelben Urlaubsschein",
@@ -137,7 +137,7 @@ const lootTemplates: loot.LootTemplate[] = [
         asset: "assets/loot/06-krankschreibung.jpg",
     },
     {
-        id: LootTypeId.WUERFELWURF,
+        id: LootKindId.WUERFELWURF,
         weight: 5,
         displayName: "Würfelwurf",
         titleText: "Einen Wurf mit einem Würfel",
@@ -151,7 +151,7 @@ const lootTemplates: loot.LootTemplate[] = [
         },
     },
     {
-        id: LootTypeId.GESCHENK,
+        id: LootKindId.GESCHENK,
         weight: 2,
         displayName: "Geschenk",
         titleText: "Ein Geschenk",
@@ -164,7 +164,7 @@ const lootTemplates: loot.LootTemplate[] = [
         },
     },
     {
-        id: LootTypeId.AYRAN,
+        id: LootKindId.AYRAN,
         weight: 1,
         displayName: "Ayran",
         titleText: "Einen Ayran",
@@ -173,7 +173,7 @@ const lootTemplates: loot.LootTemplate[] = [
         asset: "assets/loot/09-ayran.jpg",
     },
     {
-        id: LootTypeId.PKV,
+        id: LootKindId.PKV,
         weight: 1,
         displayName: "Private Krankenversicherung",
         titleText: "Eine private Krankenversicherung",
@@ -183,7 +183,7 @@ const lootTemplates: loot.LootTemplate[] = [
         effects: ["` +100% ` Chance auf AU 📈"],
     },
     {
-        id: LootTypeId.TRICHTER,
+        id: LootKindId.TRICHTER,
         weight: 1,
         displayName: "Trichter",
         titleText: "Einen Trichter",
@@ -192,7 +192,7 @@ const lootTemplates: loot.LootTemplate[] = [
         asset: "assets/loot/11-trichter.jpg",
     },
     {
-        id: LootTypeId.GRAFIKKARTE,
+        id: LootKindId.GRAFIKKARTE,
         weight: 1,
         displayName: "Grafikkarte aus der Zukunft",
         titleText: "Eine Grafikkarte aus der Zukunft",
@@ -201,7 +201,7 @@ const lootTemplates: loot.LootTemplate[] = [
         asset: "assets/loot/12-grafikkarte.png",
     },
     {
-        id: LootTypeId.HAENDEDRUCK,
+        id: LootKindId.HAENDEDRUCK,
         weight: 1,
         displayName: "Feuchter Händedruck",
         titleText: "Einen feuchten Händedruck",
@@ -211,7 +211,7 @@ const lootTemplates: loot.LootTemplate[] = [
         excludeFromInventory: true,
     },
     {
-        id: LootTypeId.ERLEUCHTUNG,
+        id: LootKindId.ERLEUCHTUNG,
         weight: 1,
         displayName: "Erleuchtung",
         titleText: "Eine Erleuchtung",
@@ -230,7 +230,7 @@ const lootTemplates: loot.LootTemplate[] = [
         },
     },
     {
-        id: LootTypeId.BAN,
+        id: LootKindId.BAN,
         weight: 1,
         displayName: "Willkürban",
         titleText: "Einen Ban aus reiner Willkür",
@@ -251,7 +251,7 @@ const lootTemplates: loot.LootTemplate[] = [
         },
     },
     {
-        id: LootTypeId.OETTINGER,
+        id: LootKindId.OETTINGER,
         weight: 1,
         displayName: "Oettinger",
         titleText: "Ein warmes Oettinger",
@@ -260,7 +260,7 @@ const lootTemplates: loot.LootTemplate[] = [
         asset: "assets/loot/16-oettinger.jpg",
     },
     {
-        id: LootTypeId.ACHIEVEMENT,
+        id: LootKindId.ACHIEVEMENT,
         weight: 1,
         displayName: "Achievement",
         titleText: "Ein Achievement",
@@ -269,7 +269,7 @@ const lootTemplates: loot.LootTemplate[] = [
         asset: "assets/loot/17-achievement.png",
     },
     {
-        id: LootTypeId.GME_AKTIE,
+        id: LootKindId.GME_AKTIE,
         weight: 5,
         displayName: "Wertlose GME-Aktie",
         titleText: "Eine wertlose GME-Aktie",
@@ -278,7 +278,7 @@ const lootTemplates: loot.LootTemplate[] = [
         asset: "assets/loot/18-gme.jpg",
     },
     {
-        id: LootTypeId.FERRIS,
+        id: LootKindId.FERRIS,
         weight: 3,
         displayName: "Ferris",
         titleText: "Einen Ferris - Die Krabbe",
@@ -287,7 +287,7 @@ const lootTemplates: loot.LootTemplate[] = [
         asset: "assets/loot/19-ferris.png",
     },
     {
-        id: LootTypeId.HOMEPOD,
+        id: LootKindId.HOMEPOD,
         weight: 5,
         displayName: "HomePod",
         titleText: "Einen Apple:registered: HomePod:copyright:",
@@ -296,7 +296,7 @@ const lootTemplates: loot.LootTemplate[] = [
         asset: "assets/loot/20-homepod.jpg",
     },
     {
-        id: LootTypeId.RADIOACTIVE_WASTE,
+        id: LootKindId.RADIOACTIVE_WASTE,
         weight: 1,
         displayName: "Radioaktiver Müll",
         titleText: "Radioaktiver Müll",
@@ -307,7 +307,7 @@ const lootTemplates: loot.LootTemplate[] = [
         effects: ["` +5% ` Chance auf leeres Geschenk 🔻"],
     },
     {
-        id: LootTypeId.SAHNE,
+        id: LootKindId.SAHNE,
         weight: 1,
         displayName: "Sprühsahne",
         titleText: "Sprühsahne",
@@ -316,7 +316,7 @@ const lootTemplates: loot.LootTemplate[] = [
         asset: "assets/loot/22-sahne.jpg",
     },
     {
-        id: LootTypeId.AEHRE,
+        id: LootKindId.AEHRE,
         weight: 1,
         displayName: "Ehre",
         titleText: "Ehre aus Mitleid",
@@ -331,7 +331,7 @@ const lootTemplates: loot.LootTemplate[] = [
         },
     },
     {
-        id: LootTypeId.CROWDSTRIKE,
+        id: LootKindId.CROWDSTRIKE,
         weight: 1,
         displayName: "Crowdstrike Falcon",
         titleText: "Crowdstrike Falcon Installation",
@@ -340,7 +340,7 @@ const lootTemplates: loot.LootTemplate[] = [
         asset: "assets/loot/24-crowdstrike.jpg",
     },
     {
-        id: LootTypeId.POWERADE_BLAU,
+        id: LootKindId.POWERADE_BLAU,
         weight: 1,
         displayName: "Blaue Powerade",
         titleText: "Blaue Powerade",
@@ -348,7 +348,7 @@ const lootTemplates: loot.LootTemplate[] = [
         asset: "assets/loot/25-powerade-blau.jpg",
     },
     {
-        id: LootTypeId.GAULOISES_BLAU,
+        id: LootKindId.GAULOISES_BLAU,
         weight: 1,
         displayName: "Gauloises Blau",
         titleText: "Eine Schachtel Gauloises Blau",
@@ -358,7 +358,7 @@ const lootTemplates: loot.LootTemplate[] = [
         asset: "assets/loot/26-gauloises-blau.jpg",
     },
     {
-        id: LootTypeId.MAXWELL,
+        id: LootKindId.MAXWELL,
         weight: 1,
         displayName: "Maxwell",
         titleText: "Einen Maxwell",
@@ -367,7 +367,7 @@ const lootTemplates: loot.LootTemplate[] = [
         asset: "assets/loot/27-maxwell.jpg",
     },
     {
-        id: LootTypeId.SCHICHTBEGINN_ASSE_2,
+        id: LootKindId.SCHICHTBEGINN_ASSE_2,
         weight: 1,
         displayName: "Wärter Asse II",
         titleText: "Den Schichtbeginn in der Asse II",
@@ -381,7 +381,7 @@ const lootTemplates: loot.LootTemplate[] = [
         },
     },
     {
-        id: LootTypeId.DRECK,
+        id: LootKindId.DRECK,
         weight: 7,
         displayName: "Ein Glas Dreck",
         titleText: "Ein Glas Dreck",
@@ -390,7 +390,7 @@ const lootTemplates: loot.LootTemplate[] = [
         asset: "assets/loot/29-dirt.jpg",
     },
     {
-        id: LootTypeId.EI,
+        id: LootKindId.EI,
         weight: 3,
         displayName: "Ei",
         titleText: "Ein Ei",
@@ -400,7 +400,7 @@ const lootTemplates: loot.LootTemplate[] = [
         asset: "assets/loot/30-egg.jpg",
     },
     {
-        id: LootTypeId.BRAVO,
+        id: LootKindId.BRAVO,
         weight: 2,
         displayName: "Bravo",
         titleText: "Eine Bravo vom Dachboden",
@@ -409,7 +409,7 @@ const lootTemplates: loot.LootTemplate[] = [
         asset: "assets/loot/31-bravo.jpg",
     },
     {
-        id: LootTypeId.VERSCHIMMELTER_DOENER,
+        id: LootKindId.VERSCHIMMELTER_DOENER,
         weight: ACHTUNG_NICHT_DROPBAR_WEIGHT_KG,
         displayName: "Verschimmelter Döner",
         titleText: "Einen verschimmelten Döner",
@@ -418,7 +418,7 @@ const lootTemplates: loot.LootTemplate[] = [
         asset: null,
     },
     {
-        id: LootTypeId.THUNFISCHSHAKE,
+        id: LootKindId.THUNFISCHSHAKE,
         weight: 2,
         displayName: "Thunfischshake",
         titleText: "Ein Thunfischshake, serviert von Markus Rühl persönlich",
@@ -658,7 +658,7 @@ export async function getUserLootCountById(userId: Snowflake, lootTypeId: number
     return (await loot.getUserLootsByTypeId(userId, lootTypeId)).length;
 }
 
-export async function getLootsByKindId(lootTypeId: LootTypeId) {
+export async function getLootsByKindId(lootTypeId: LootKindId) {
     return await loot.getLootsByKindId(lootTypeId);
 }
 
@@ -687,7 +687,7 @@ async function getDropWeightAdjustments(
     user: User,
     weights: readonly number[],
 ): Promise<AdjustmentResult> {
-    const waste = await getUserLootCountById(user.id, LootTypeId.RADIOACTIVE_WASTE);
+    const waste = await getUserLootCountById(user.id, LootKindId.RADIOACTIVE_WASTE);
     const messages = [];
 
     let wasteFactor = 1;
@@ -699,7 +699,7 @@ async function getDropWeightAdjustments(
         );
     }
 
-    const pkv = await getUserLootCountById(user.id, LootTypeId.PKV);
+    const pkv = await getUserLootCountById(user.id, LootKindId.PKV);
     let pkvFactor = 1;
     if (pkv > 0) {
         pkvFactor = 2;
@@ -707,8 +707,8 @@ async function getDropWeightAdjustments(
     }
 
     const newWeights = [...weights];
-    newWeights[LootTypeId.NICHTS] = Math.ceil(weights[LootTypeId.NICHTS] * wasteFactor) | 0;
-    newWeights[LootTypeId.KRANKSCHREIBUNG] = (weights[LootTypeId.KRANKSCHREIBUNG] * pkvFactor) | 0;
+    newWeights[LootKindId.NICHTS] = Math.ceil(weights[LootKindId.NICHTS] * wasteFactor) | 0;
+    newWeights[LootKindId.KRANKSCHREIBUNG] = (weights[LootKindId.KRANKSCHREIBUNG] * pkvFactor) | 0;
 
     return {
         messages,

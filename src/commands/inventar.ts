@@ -85,7 +85,7 @@ export default class InventarCommand implements ApplicationCommand {
             })
             .join("\n");
 
-        const cuties = contents.filter(i => i.lootKindId === lootService.LootTypeId.KADSE).length;
+        const cuties = contents.filter(i => i.lootKindId === lootService.LootKindId.KADSE).length;
 
         const message = /* mf2 */ `
 .match {$cuties :number} {$count :number}

@@ -1,17 +1,26 @@
 import type { LootAttribute } from "@/storage/lootAttributes.js";
 
-export enum LootAttributeTypeId {
+export enum LootAttributeClassId {
+    OTHER = 0,
+    RARITY = 1,
+}
+
+export enum LootAttributeKindId {
     NORMAL = 0,
     SELTEN = 1,
     SEHR_SELTEN = 2,
-    VERSCHIMMELT = 3,
-    VERSTRAHLT = 4,
-    VERDRECKT = 5,
+    VERSTRAHLT = 3,
+    // VERSCHIMMELT = 4,
+    // VERDRECKT = 5,
 }
 
-export const lootAttributesList: LootAttribute[] = [
+/**
+ * @remarks The index of an item must be equal to the `LootAttributeKindId` enum value.
+ */
+export const lootAttributes = [
     {
-        id: LootAttributeTypeId.NORMAL,
+        id: LootAttributeKindId.NORMAL,
+        classId: LootAttributeClassId.RARITY,
         displayName: "Normal",
         shortDisplay: "⭐",
         color: 0,
@@ -19,7 +28,8 @@ export const lootAttributesList: LootAttribute[] = [
         visible: false,
     },
     {
-        id: LootAttributeTypeId.SELTEN,
+        id: LootAttributeKindId.SELTEN,
+        classId: LootAttributeClassId.RARITY,
         displayName: "Selten",
         shortDisplay: "🌟",
         color: 0,
@@ -27,7 +37,8 @@ export const lootAttributesList: LootAttribute[] = [
         visible: true,
     },
     {
-        id: LootAttributeTypeId.SEHR_SELTEN,
+        id: LootAttributeKindId.SEHR_SELTEN,
+        classId: LootAttributeClassId.RARITY,
         displayName: "Sehr Selten",
         shortDisplay: "✨",
         color: 0,
@@ -35,25 +46,29 @@ export const lootAttributesList: LootAttribute[] = [
         visible: true,
     },
     {
-        id: LootAttributeTypeId.VERSCHIMMELT,
-        displayName: "Verschimmelt",
-        shortDisplay: "🤢",
-        color: 0,
-        initialDropWeight: 1,
-        visible: true,
-    },
-    {
-        id: LootAttributeTypeId.VERSTRAHLT,
+        id: LootAttributeKindId.VERSTRAHLT,
+        classId: LootAttributeClassId.OTHER,
         displayName: "Verstrahlt",
         shortDisplay: "☢️",
         color: 0xff_ff_ff,
         visible: true,
     },
+    /*
+    {
+        id: LootAttributeTypeId.VERSCHIMMELT,
+        classId: LootAttributeClassId.OTHER,
+        displayName: "Verschimmelt",
+        shortDisplay: "🤢",
+        color: 0,
+        visible: true,
+    },
     {
         id: LootAttributeTypeId.VERDRECKT,
+        classId: LootAttributeClassId.OTHER,
         displayName: "Verdreckt",
         shortDisplay: null,
         color: 0,
         visible: true,
     },
-];
+    */
+] satisfies LootAttribute[];

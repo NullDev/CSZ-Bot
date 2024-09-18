@@ -9,7 +9,7 @@ export async function degradeItems(_context: BotContext) {
 
     const now = Date.now();
     const maxKebabAge = time.days(3);
-    const kebabs = await lootService.getLootsByKindId(lootService.LootTypeId.DOENER);
+    const kebabs = await lootService.getLootsByKindId(lootService.LootKindId.DOENER);
 
     for (const k of kebabs) {
         const itemAge = now - new Date(k.claimedAt).getTime();
@@ -19,7 +19,7 @@ export async function degradeItems(_context: BotContext) {
 
         const fridges = await lootService.getUserLootsByTypeId(
             k.winnerId,
-            lootService.LootTypeId.KUEHLSCHRANK,
+            lootService.LootKindId.KUEHLSCHRANK,
         );
 
         if (fridges.length > 0) {
@@ -32,7 +32,7 @@ export async function degradeItems(_context: BotContext) {
             {
                 displayName: "Verschimmelter Döner",
                 description: "Du hättest ihn früher essen sollen",
-                lootKindId: lootService.LootTypeId.VERSCHIMMELTER_DOENER,
+                lootKindId: lootService.LootKindId.VERSCHIMMELTER_DOENER,
                 usedImage: null,
                 winnerId: k.winnerId,
                 claimedAt: k.claimedAt,

@@ -94,7 +94,7 @@ export default class GegenstandCommand implements ApplicationCommand {
 
         const wasteContents = await lootService.getUserLootsByTypeId(
             interaction.user.id,
-            lootService.LootTypeId.RADIOACTIVE_WASTE,
+            lootService.LootKindId.RADIOACTIVE_WASTE,
         );
 
         if (wasteContents.length === 0) {
@@ -106,7 +106,7 @@ export default class GegenstandCommand implements ApplicationCommand {
 
         const sweetContent = await lootService.getUserLootsByTypeId(
             interaction.user.id,
-            lootService.LootTypeId.KADSE,
+            lootService.LootKindId.KADSE,
         );
 
         if (sweetContent.length === 0) {

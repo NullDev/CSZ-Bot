@@ -8,6 +8,7 @@ import db from "@db";
 
 export interface LootAttribute {
     id: number;
+    classId: number;
     displayName: string;
     shortDisplay: string | null;
     color?: number;
