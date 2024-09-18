@@ -52,7 +52,6 @@ export interface LootAttribute {
     shortDisplay: string | null;
     color?: number;
     initialDropWeight?: number;
-    visible: boolean;
 }
 
 const notDeleted = (eb: ExpressionBuilder<Database, "loot">) =>
@@ -97,7 +96,6 @@ export async function createLoot(
                     displayName: rarityAttribute.displayName,
                     shortDisplay: rarityAttribute.shortDisplay,
                     color: rarityAttribute.color,
-                    visible: rarityAttribute.visible,
                     deletedAt: null,
                 })
                 .returningAll()

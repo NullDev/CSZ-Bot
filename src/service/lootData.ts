@@ -425,9 +425,9 @@ export const lootTemplates: LootTemplate[] = [
 */
 
 export enum LootAttributeKindId {
-    NORMAL = 0,
-    SELTEN = 1,
-    SEHR_SELTEN = 2,
+    RARITY_NORMAL = 0,
+    RARITY_RARE = 1,
+    RARITY_VERY_RARE = 2,
     VERSTRAHLT = 3,
 }
 
@@ -441,31 +441,25 @@ export enum LootAttributeClassId {
  */
 export const lootAttributes: LootAttribute[] = [
     {
-        id: LootAttributeKindId.NORMAL,
+        id: LootAttributeKindId.RARITY_NORMAL,
         classId: LootAttributeClassId.RARITY,
         displayName: "Normal",
         shortDisplay: "⭐",
-        color: 0,
         initialDropWeight: 90,
-        visible: false,
     },
     {
-        id: LootAttributeKindId.SELTEN,
+        id: LootAttributeKindId.RARITY_RARE,
         classId: LootAttributeClassId.RARITY,
         displayName: "Selten",
         shortDisplay: "🌟",
-        color: 0,
         initialDropWeight: 10,
-        visible: true,
     },
     {
-        id: LootAttributeKindId.SEHR_SELTEN,
+        id: LootAttributeKindId.RARITY_VERY_RARE,
         classId: LootAttributeClassId.RARITY,
         displayName: "Sehr Selten",
         shortDisplay: "✨",
-        color: 0,
         initialDropWeight: 1,
-        visible: true,
     },
     {
         id: LootAttributeKindId.VERSTRAHLT,
@@ -473,7 +467,6 @@ export const lootAttributes: LootAttribute[] = [
         displayName: "Verstrahlt",
         shortDisplay: "☢️",
         color: 0xff_ff_ff,
-        visible: true,
     },
 ];
 

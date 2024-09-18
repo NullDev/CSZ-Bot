@@ -241,7 +241,6 @@ export interface LootAttributeTable extends AuditedTable {
     displayName: string;
     shortDisplay: string | null;
     color: number | null;
-    visible: boolean;
 
     deletedAt: ColumnType<string | null, string | null, string | null>; // TODO: Date is not supported by the DB driver
 }

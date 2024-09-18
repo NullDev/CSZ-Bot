@@ -10,7 +10,6 @@ export async function up(db: Kysely<any>) {
         .addColumn("displayName", "text", c => c.notNull())
         .addColumn("shortDisplay", "text")
         .addColumn("color", "integer")
-        .addColumn("visible", "boolean", c => c.notNull())
 
         .addColumn("createdAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
         .addColumn("updatedAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
@@ -20,9 +19,9 @@ export async function up(db: Kysely<any>) {
     await createUpdatedAtTrigger(db, "lootAttribute");
 
     await db.schema
-        .createIndex("lootAttribute_lootId_visible_attributeClassId_attributeKindId")
+        .createIndex("lootAttribute_lootId_attributeClassId_attributeKindId")
         .on("lootAttribute")
-        .columns(["lootId", "visible", "attributeClassId", "attributeKindId"])
+        .columns(["lootId", "attributeClassId", "attributeKindId"])
         .execute();
 
     await db.schema
@@ -31,6 +30,23 @@ export async function up(db: Kysely<any>) {
         .columns(["id", "attributeKindId"])
         .unique()
         .execute();
+
+    const items = await db.selectFrom("loot").select("id").execute();
+    for (const { id } of items) {
+        await db
+            .insertInto("lootAttribute")
+            .values({
+                lootId: id,
+                attributeClassId: 1, // LootAttributeClassId.RARITY
+                attributeKindId: 0, // LootAttributeKindId.RARITY_NORMAL
+                displayName: "Normal",
+                shortDisplay: "⭐",
+                color: null,
+                deletedAt: null,
+            })
+            .returningAll()
+            .executeTakeFirstOrThrow();
+    }
 }
 
 function createUpdatedAtTrigger(db: Kysely<any>, tableName: string) {
