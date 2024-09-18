@@ -304,5 +304,4 @@ export async function addLootAttributeIfNotPresent(
         .onConflict(oc => oc.doNothing())
         .returningAll()
         .executeTakeFirstOrThrow();
-    throw new Error("Function not implemented.");
 }
