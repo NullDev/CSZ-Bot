@@ -267,7 +267,8 @@ export const handleInteractionEvent = async (
     if (interaction.isAutocomplete()) {
         return autocompleteInteractionHandler(interaction, context);
     }
-    throw new Error(`Not type not supported: ${interaction.type}`);
+
+    // No exception here because the event is probably handled by some local collector
 };
 
 export const messageCommandHandler = async (
