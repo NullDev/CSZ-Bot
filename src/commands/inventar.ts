@@ -17,6 +17,8 @@ import type { ApplicationCommand } from "@/commands/command.js";
 import * as lootService from "@/service/loot.js";
 import { ensureChatInputCommand } from "@/utils/interactionUtils.js";
 import { format } from "@/utils/stringUtils.js";
+import * as lootDataService from "@/service/lootData.js";
+import { LootKindId, LootAttributeKindId } from "@/service/lootData.js";
 
 import log from "@log";
 
@@ -77,15 +79,16 @@ export default class InventarCommand implements ApplicationCommand {
 
         const description = items
             .map(([item, count]) => {
-                const emote = lootService.getEmote(context.guild, item);
+                const emote = lootDataService.getEmote(context.guild, item);
                 const e = emote ? `${emote} ` : "";
+
                 return count === 1
                     ? `${e}${item.displayName}`
                     : `${count}x ${e}${item.displayName}`;
             })
             .join("\n");
 
-        const cuties = contents.filter(i => i.lootKindId === lootService.LootTypeId.KADSE).length;
+        const cuties = contents.filter(i => i.lootKindId === LootKindId.KADSE).length;
 
         const message = /* mf2 */ `
 .match {$cuties :number} {$count :number}
@@ -128,11 +131,22 @@ export default class InventarCommand implements ApplicationCommand {
 
             const embed = {
                 title: `Inventar von ${user.displayName}`,
-                fields: pageContents.map(item => ({
-                    name: `${lootService.getEmote(context.guild, item)} ${item.displayName}`,
-                    value: "",
-                    inline: false,
-                })),
+                fields: pageContents.map(item => {
+                    const rarityAttribute = lootDataService.extractRarityAttribute(item.attributes);
+                    const rarity =
+                        rarityAttribute &&
+                        rarityAttribute.attributeKindId !== LootAttributeKindId.RARITY_NORMAL
+                            ? ` (${rarityAttribute.displayName})`
+                            : "";
+
+                    const shortAttributeList = item.attributes.map(a => a.shortDisplay).join("");
+
+                    return {
+                        name: `${lootDataService.getEmote(context.guild, item)} ${item.displayName}${rarity} ${shortAttributeList}`.trim(),
+                        value: "",
+                        inline: false,
+                    };
+                }),
                 footer: {
                     text: `Seite ${pageIndex + 1} von ${lastPageIndex + 1}`,
                 },

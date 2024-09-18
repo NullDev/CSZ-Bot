@@ -21,6 +21,7 @@ export interface Database {
     bans: BanTable;
     reminders: ReminderTable;
     loot: LootTable;
+    lootAttribute: LootAttributeTable;
     emote: EmoteTable;
     emoteUse: EmoteUseTable;
 }
@@ -224,6 +225,24 @@ export interface LootTable extends AuditedTable {
 
     predecessor: LootId | null;
     origin: LootOrigin;
+}
+
+export type LootAttributeId = number;
+
+export type LootAttribute = Selectable<LootAttributeTable>;
+export type LootAttributeInsertable = Insertable<LootAttributeTable>;
+export interface LootAttributeTable extends AuditedTable {
+    id: GeneratedAlways<LootAttributeId>;
+
+    lootId: LootId;
+    attributeKindId: number;
+    attributeClassId: number;
+
+    displayName: string;
+    shortDisplay: string;
+    color: number | null;
+
+    deletedAt: ColumnType<string | null, string | null, string | null>; // TODO: Date is not supported by the DB driver
 }
 
 export type Emote = Selectable<EmoteTable>;

@@ -10,7 +10,14 @@ import type {
 import { type ExpressionBuilder, sql } from "kysely";
 
 import type { BotContext } from "@/context.js";
-import type { Database, Loot, LootId, LootInsertable, LootOrigin } from "./db/model.js";
+import type {
+    Database,
+    Loot,
+    LootId,
+    LootInsertable,
+    LootOrigin,
+    LootAttribute,
+} from "./db/model.js";
 
 import db from "@db";
 
@@ -45,7 +52,16 @@ export interface LootTemplate {
     asset: string | null;
 }
 
-const notDeleted = (eb: ExpressionBuilder<Database, "loot">) =>
+export interface LootAttributeTemplate {
+    id: number;
+    classId: number;
+    displayName: string;
+    shortDisplay: string;
+    color?: number;
+    initialDropWeight?: number;
+}
+
+const notDeleted = (eb: ExpressionBuilder<Database, "loot" | "lootAttribute">) =>
     eb.or([eb("deletedAt", "is", null), eb("deletedAt", ">", sql<string>`current_timestamp`)]);
 
 export async function createLoot(
@@ -55,25 +71,46 @@ export async function createLoot(
     now: Date,
     origin: LootOrigin,
     predecessorLootId: LootId | null,
+    rarityAttribute: LootAttributeTemplate | null,
     ctx = db(),
 ) {
-    return await ctx
-        .insertInto("loot")
-        .values({
-            displayName: template.displayName,
-            description: template.dropDescription,
-            lootKindId: template.id,
-            usedImage: template.asset,
-            winnerId: winner.id,
-            claimedAt: now.toISOString(),
-            guildId: message?.guildId ?? "",
-            channelId: message?.channelId ?? "",
-            messageId: message?.id ?? "",
-            origin,
-            predecessor: predecessorLootId,
-        })
-        .returningAll()
-        .executeTakeFirstOrThrow();
+    return ctx.transaction().execute(async ctx => {
+        const res = await ctx
+            .insertInto("loot")
+            .values({
+                displayName: template.displayName,
+                description: template.dropDescription,
+                lootKindId: template.id,
+                usedImage: template.asset,
+                winnerId: winner.id,
+                claimedAt: now.toISOString(),
+                guildId: message?.guildId ?? "",
+                channelId: message?.channelId ?? "",
+                messageId: message?.id ?? "",
+                origin,
+                predecessor: predecessorLootId,
+            })
+            .returningAll()
+            .executeTakeFirstOrThrow();
+
+        if (rarityAttribute) {
+            await ctx
+                .insertInto("lootAttribute")
+                .values({
+                    lootId: res.id,
+                    attributeClassId: rarityAttribute.classId,
+                    attributeKindId: template.id,
+                    displayName: rarityAttribute.displayName,
+                    shortDisplay: rarityAttribute.shortDisplay,
+                    color: rarityAttribute.color,
+                    deletedAt: null,
+                })
+                .returningAll()
+                .executeTakeFirstOrThrow();
+        }
+
+        return res;
+    });
 }
 
 export async function findOfUser(user: User, ctx = db()) {
@@ -83,6 +120,27 @@ export async function findOfUser(user: User, ctx = db()) {
         .where(notDeleted)
         .selectAll()
         .execute();
+}
+
+export type LootWithAttributes = Loot & { attributes: Readonly<LootAttribute>[] };
+export async function findOfUserWithAttributes(
+    user: User,
+    ctx = db(),
+): Promise<LootWithAttributes[]> {
+    return await ctx.transaction().execute(async ctx => {
+        const lootItems = (await findOfUser(user, ctx)) as LootWithAttributes[];
+
+        for (const loot of lootItems) {
+            loot.attributes = await ctx
+                .selectFrom("lootAttribute")
+                .where("lootId", "=", loot.id)
+                .where(notDeleted)
+                .selectAll()
+                .execute();
+        }
+
+        return lootItems;
+    });
 }
 
 export async function findOfMessage(message: Message<true>, ctx = db()) {
@@ -122,8 +180,9 @@ export async function getLootsByKindId(lootKindId: number, ctx = db()) {
         .selectAll()
         .execute();
 }
+
 export async function transferLootToUser(
-    lootId: Loot["id"],
+    lootId: LootId,
     userId: User["id"],
     trackPredecessor: boolean,
     ctx = db(),
@@ -160,7 +219,7 @@ export async function transferLootToUser(
 }
 
 export async function replaceLoot(
-    lootId: Loot["id"],
+    lootId: LootId,
     replacementLoot: LootInsertable,
     trackPredecessor: boolean,
     ctx = db(),
@@ -180,7 +239,7 @@ export async function replaceLoot(
     });
 }
 
-export async function deleteLoot(lootId: Loot["id"], ctx = db()): Promise<LootId> {
+export async function deleteLoot(lootId: LootId, ctx = db()): Promise<LootId> {
     const res = await ctx
         .updateTable("loot")
         .where("id", "=", lootId)
@@ -188,4 +247,14 @@ export async function deleteLoot(lootId: Loot["id"], ctx = db()): Promise<LootId
         .returning("id")
         .executeTakeFirstOrThrow();
     return res.id;
+}
+
+export async function getLootAttributes(lootId: LootId, ctx = db()) {
+    return await ctx
+        .selectFrom("lootAttribute")
+        .where("lootId", "=", lootId)
+        .where(notDeleted)
+        .orderBy("lootAttribute.attributeKindId asc")
+        .selectAll()
+        .execute();
 }

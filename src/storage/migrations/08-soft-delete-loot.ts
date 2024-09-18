@@ -8,7 +8,9 @@ export async function up(db: Kysely<any>) {
 
     await db.schema
         .alterTable("loot")
-        .addColumn("predecessor", "integer", c => c.references("loot.id").defaultTo(null))
+        .addColumn("predecessor", "integer", c =>
+            c.references("loot.id").defaultTo(null).onDelete("set null"),
+        )
         .execute();
 
     await db.schema.alterTable("loot").dropColumn("validUntil").execute();
