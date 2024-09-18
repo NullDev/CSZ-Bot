@@ -172,20 +172,18 @@ export default class InventarCommand implements ApplicationCommand {
             switch (i.customId) {
                 case "page-prev":
                     pageIndex = Math.max(0, pageIndex - 1);
-                    await message.edit({
-                        ...buildMessageData(pageIndex),
-                    });
                     break;
                 case "page-next":
                     pageIndex = Math.min(lastPageIndex, pageIndex + 1);
-                    await message.edit({
-                        ...buildMessageData(pageIndex),
-                    });
                     break;
                 default:
                     log.warn(`Unknown customId: "${i.customId}"`);
-                    break;
+                    return;
             }
+
+            await message.edit({
+                ...buildMessageData(pageIndex),
+            });
         });
 
         collector.on("end", async () => {
