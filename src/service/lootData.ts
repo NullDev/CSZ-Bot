@@ -426,16 +426,17 @@ export const lootTemplates: LootTemplate[] = [
         - Sonderrolle, die man nur mit Geschenk gewinnen kann und jedes Mal weitergereicht wird (Wächter des Pfeffi?)? Wärter bei Asse II?
 */
 
+export enum LootAttributeClassId {
+    OTHER = 0,
+    RARITY = 1,
+}
+
 export enum LootAttributeKindId {
     RARITY_NORMAL = 0,
     RARITY_RARE = 1,
     RARITY_VERY_RARE = 2,
     VERSTRAHLT = 3,
-}
-
-export enum LootAttributeClassId {
-    OTHER = 0,
-    RARITY = 1,
+    SWEET = 4,
 }
 
 /**
@@ -470,7 +471,12 @@ export const lootAttributes: LootAttributeTemplate[] = [
         shortDisplay: "☢️",
         color: 0xff_ff_ff,
     },
-    // TODO: SWEET? (for cat)
+    {
+        id: LootAttributeKindId.SWEET,
+        classId: LootAttributeClassId.OTHER,
+        displayName: "Süß",
+        shortDisplay: "🍬",
+    },
 ];
 
 export function resolveLootTemplate(lootKindId: number) {
