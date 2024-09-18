@@ -232,13 +232,13 @@ export interface LootAttributeTable extends AuditedTable {
     id: GeneratedAlways<LootAttributeId>;
 
     lootId: LootId;
-    lootAttributeKindId: number;
+    attributeKindId: number;
+    attributeClassId: number;
 
-    // displayName: string;
-    // color: number | null;
-    // initialDropWeight: number | null;
-    // visible: boolean;
-    // overridingDescription: string | null;
+    displayName: string;
+    shortDisplay: string | null;
+    color: number | null;
+    visible: boolean;
 }
 
 export type Emote = Selectable<EmoteTable>;

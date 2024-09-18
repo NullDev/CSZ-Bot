@@ -1,4 +1,4 @@
-import type { LootAttribute } from "@/storage/lootAttributes.js";
+import type { LootAttribute } from "@/storage/lootAttribute.js";
 
 export enum LootAttributeClassId {
     OTHER = 0,

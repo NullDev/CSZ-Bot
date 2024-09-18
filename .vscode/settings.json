@@ -19,6 +19,7 @@
         "editor.defaultFormatter": "biomejs.biome"
     },
     "cSpell.words": [
+        "insertable",
         "austrian",
         "splid",
         "emotifizierer",

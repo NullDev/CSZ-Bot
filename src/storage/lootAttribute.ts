@@ -14,5 +14,4 @@ export interface LootAttribute {
     color?: number;
     initialDropWeight?: number;
     visible: boolean;
-    overridingDescription?: string;
 }
