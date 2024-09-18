@@ -429,8 +429,6 @@ export enum LootAttributeKindId {
     SELTEN = 1,
     SEHR_SELTEN = 2,
     VERSTRAHLT = 3,
-    // VERSCHIMMELT = 4,
-    // VERDRECKT = 5,
 }
 
 export enum LootAttributeClassId {
@@ -477,24 +475,6 @@ export const lootAttributes: LootAttribute[] = [
         color: 0xff_ff_ff,
         visible: true,
     },
-    /*
-    {
-        id: LootAttributeTypeId.VERSCHIMMELT,
-        classId: LootAttributeClassId.OTHER,
-        displayName: "Verschimmelt",
-        shortDisplay: "🤢",
-        color: 0,
-        visible: true,
-    },
-    {
-        id: LootAttributeTypeId.VERDRECKT,
-        classId: LootAttributeClassId.OTHER,
-        displayName: "Verdreckt",
-        shortDisplay: null,
-        color: 0,
-        visible: true,
-    },
-    */
 ];
 
 export function resolveLootTemplate(lootKindId: number) {
