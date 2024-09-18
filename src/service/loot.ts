@@ -1,32 +1,11 @@
-import * as fs from "node:fs/promises";
 import { setTimeout } from "node:timers/promises";
 
-import {
-    ActionRowBuilder,
-    ButtonBuilder,
-    ButtonStyle,
-    ChannelType,
-    ComponentType,
-    type TextChannel,
-    type User,
-    type Interaction,
-    type Guild,
-    type GuildBasedChannel,
-    type TextBasedChannel,
-    type Snowflake,
-} from "discord.js";
-import { Temporal } from "@js-temporal/polyfill";
-import * as sentry from "@sentry/bun";
+import type { User, Guild, Snowflake, Message } from "discord.js";
 
-import type { BotContext } from "@/context.js";
-import type { Loot, LootId, LootInsertable } from "@/storage/db/model.js";
-import { randomEntry, randomEntryWeighted } from "@/utils/arrayUtils.js";
+import type { Loot, LootId, LootInsertable, LootOrigin } from "@/storage/db/model.js";
 import * as loot from "@/storage/loot.js";
 import * as emote from "./emote.js";
-
-import log from "@log";
-
-const lootTimeoutMs = 60 * 1000;
+import * as lootDropService from "@/service/lootDrop.js";
 
 const ACHTUNG_NICHT_DROPBAR_WEIGHT_KG = 0;
 
@@ -70,7 +49,7 @@ export enum LootKindId {
 /**
  * @remarks The index of an item must be equal to the `LootTypeId` enum value.
  */
-const lootTemplates: loot.LootTemplate[] = [
+export const lootTemplates: loot.LootTemplate[] = [
     {
         id: LootKindId.NICHTS,
         weight: 55,
@@ -159,7 +138,12 @@ const lootTemplates: loot.LootTemplate[] = [
         emote: "🎁",
         asset: null,
         onUse: async (interaction, context, loot) => {
-            await postLootDrop(context, interaction.channel, interaction.user, loot.id);
+            await lootDropService.postLootDrop(
+                context,
+                interaction.channel,
+                interaction.user,
+                loot.id,
+            );
             return false;
         },
     },
@@ -440,194 +424,78 @@ const lootTemplates: loot.LootTemplate[] = [
         - Sonderrolle, die man nur mit Geschenk gewinnen kann und jedes Mal weitergereicht wird (Wächter des Pfeffis?)? Wärter bei Asse II?
 */
 
-export async function runDropAttempt(context: BotContext) {
-    const lootConfig = context.commandConfig.loot;
-    const dice = Math.random();
-
-    log.info(`Rolled dice: ${dice}, against drop chance ${lootConfig.dropChance}`);
-    if (dice > lootConfig.dropChance) {
-        return;
-    }
-
-    const fallbackChannel = context.textChannels.hauptchat;
-    const targetChannelId = lootConfig.allowedChannelIds
-        ? randomEntry(lootConfig.allowedChannelIds)
-        : fallbackChannel.id;
-
-    const targetChannel = (await context.client.channels.fetch(targetChannelId)) ?? fallbackChannel;
-
-    if (targetChannel.type !== ChannelType.GuildText) {
-        log.error(
-            `Loot target channel ${targetChannelId} is not a guild+text channel, aborting drop`,
-        );
-        return;
-    }
-
-    const lm = targetChannel.lastMessage?.createdTimestamp;
-    if (lm === undefined) {
-        log.info(
-            `Would have dropped loot to ${targetChannel.name}, but it does not have any messages yet`,
-        );
-        return;
-    }
-
-    const now = Temporal.Now.instant();
-    const lastMessage = Temporal.Instant.fromEpochMilliseconds(lm);
-    const passedTime = now.since(lastMessage);
-
-    if (passedTime.subtract(lootConfig.maxTimePassedSinceLastMessage).sign > 0) {
-        log.info(
-            `Would have dropped loot to ${targetChannel.name}, but it was too soon since the last message (${lootConfig.maxTimePassedSinceLastMessage})`,
-        );
-        return;
-    }
-
-    log.info(
-        `Dice was ${dice}, which is lower than configured ${lootConfig.dropChance}. Dropping loot to ${targetChannel.name}!`,
-    );
-    await postLootDrop(context, targetChannel, undefined, undefined);
+export enum LootAttributeKindId {
+    NORMAL = 0,
+    SELTEN = 1,
+    SEHR_SELTEN = 2,
+    VERSTRAHLT = 3,
+    // VERSCHIMMELT = 4,
+    // VERDRECKT = 5,
 }
 
-async function postLootDrop(
-    context: BotContext,
-    channel: GuildBasedChannel & TextBasedChannel,
-    donor: User | undefined,
-    predecessorLootId: LootId | undefined,
-): Promise<Loot | undefined> {
-    const hamster = context.guild.emojis.cache.find(e => e.name === "sad_hamster") ?? ":(";
-
-    const takeLootButton = new ButtonBuilder()
-        .setCustomId("take-loot")
-        .setLabel("Geschenk nehmen")
-        .setStyle(ButtonStyle.Primary);
-
-    const timeoutSeconds = (lootTimeoutMs / 1000) | 0;
-    const message = await channel.send({
-        embeds: [
-            {
-                title: "Geschenk",
-                description: donor
-                    ? `${donor} hat ein Geschenk fallen lassen! Öffne es schnell, in ${timeoutSeconds} Sekunden ist es weg!`
-                    : `Ein Geschenk ist aufgetaucht! Öffne es schnell, in ${timeoutSeconds} Sekunden ist es weg!`,
-                image: {
-                    url: "attachment://00-unopened.gif",
-                },
-            },
-        ],
-        files: [
-            {
-                name: "00-unopened.gif",
-                attachment: await fs.readFile("assets/loot/00-unopened.gif"),
-            },
-        ],
-        components: [new ActionRowBuilder<ButtonBuilder>().addComponents(takeLootButton)],
-    });
-
-    let interaction: Interaction | undefined = undefined;
-
-    try {
-        interaction = await message.awaitMessageComponent({
-            filter: i => i.customId === "take-loot",
-            componentType: ComponentType.Button,
-            time: lootTimeoutMs,
-        });
-    } catch (err) {
-        log.info(`Loot drop ${message.id} timed out; loot was not claimed, cleaning up`);
-        const original = message.embeds[0];
-        await message.edit({
-            embeds: [
-                {
-                    ...original,
-                    description: donor
-                        ? `Das Geschenk von ${donor} verpuffte im nichts :(`
-                        : `Oki aber nächstes mal bitti aufmachi, sonst muss ichs wieder mitnehmi ${hamster}`,
-                    footer: {
-                        text: "❌ Niemand war schnell genug",
-                    },
-                },
-            ],
-            files: [],
-            components: [],
-        });
-        return;
-    }
-
-    if (donor !== undefined && interaction.user.id === donor.id) {
-        await message.edit({
-            content: `${interaction.user} hat versucht, das Geschenki selbst zu öffnen. Das geht aber nichti ${hamster}\nDas Geschenk macht plopp und ist weg! 🎈`,
-        });
-        return;
-    }
-
-    const defaultWeights = lootTemplates.map(t => t.weight);
-
-    const { messages, weights } = await getDropWeightAdjustments(interaction.user, defaultWeights);
-
-    const template = randomEntryWeighted(lootTemplates, weights);
-    const claimedLoot = await loot.createLoot(
-        template,
-        interaction.user,
-        message,
-        new Date(),
-        "drop",
-        predecessorLootId ?? null,
-    );
-
-    const reply = await interaction.deferReply({ ephemeral: true });
-
-    if (!claimedLoot) {
-        await reply.edit({
-            content: `Upsi, da ist was schief gelaufi oder jemand anderes war schnelli ${hamster}`,
-        });
-        return;
-    }
-
-    await reply.delete();
-
-    log.info(
-        `User ${interaction.user.username} claimed loot ${claimedLoot.id} (template: ${template.id})`,
-    );
-
-    const winner = await context.guild.members.fetch(claimedLoot.winnerId);
-
-    const attachment = template.asset ? await fs.readFile(template.asset) : null;
-
-    await message.edit({
-        embeds: [
-            {
-                title: `Das Geschenk enthielt: ${template.titleText}`,
-                description: template.dropDescription,
-                image: attachment
-                    ? {
-                          url: "attachment://opened.gif",
-                      }
-                    : undefined,
-                footer: {
-                    text: `🎉 ${winner.displayName} hat das Geschenk geöffnet\n${messages.join("\n")}`.trim(),
-                },
-            },
-        ],
-        files: attachment
-            ? [
-                  {
-                      name: "opened.gif",
-                      attachment,
-                  },
-              ]
-            : [],
-        components: [],
-    });
-
-    if (template.onDrop) {
-        await template.onDrop(context, winner, channel as TextChannel, claimedLoot).catch(err => {
-            log.error(
-                err,
-                `Error while executing special action for loot ${claimedLoot.id} (template: ${template.id})`,
-            );
-            sentry.captureException(err);
-        });
-    }
+export enum LootAttributeClassId {
+    OTHER = 0,
+    RARITY = 1,
 }
+
+/**
+ * @remarks The index of an item must be equal to the `LootAttributeKindId` enum value.
+ */
+export const lootAttributes = [
+    {
+        id: LootAttributeKindId.NORMAL,
+        classId: LootAttributeClassId.RARITY,
+        displayName: "Normal",
+        shortDisplay: "⭐",
+        color: 0,
+        initialDropWeight: 90,
+        visible: false,
+    },
+    {
+        id: LootAttributeKindId.SELTEN,
+        classId: LootAttributeClassId.RARITY,
+        displayName: "Selten",
+        shortDisplay: "🌟",
+        color: 0,
+        initialDropWeight: 10,
+        visible: true,
+    },
+    {
+        id: LootAttributeKindId.SEHR_SELTEN,
+        classId: LootAttributeClassId.RARITY,
+        displayName: "Sehr Selten",
+        shortDisplay: "✨",
+        color: 0,
+        initialDropWeight: 1,
+        visible: true,
+    },
+    {
+        id: LootAttributeKindId.VERSTRAHLT,
+        classId: LootAttributeClassId.OTHER,
+        displayName: "Verstrahlt",
+        shortDisplay: "☢️",
+        color: 0xff_ff_ff,
+        visible: true,
+    },
+    /*
+    {
+        id: LootAttributeTypeId.VERSCHIMMELT,
+        classId: LootAttributeClassId.OTHER,
+        displayName: "Verschimmelt",
+        shortDisplay: "🤢",
+        color: 0,
+        visible: true,
+    },
+    {
+        id: LootAttributeTypeId.VERDRECKT,
+        classId: LootAttributeClassId.OTHER,
+        displayName: "Verdreckt",
+        shortDisplay: null,
+        color: 0,
+        visible: true,
+    },
+    */
+] satisfies loot.LootAttribute[];
 
 export async function getInventoryContents(user: User) {
     const contents = await loot.findOfUser(user);
@@ -677,41 +545,12 @@ export function replaceLoot(
 ) {
     return loot.replaceLoot(lootId, replacement, trackPredecessor);
 }
-
-type AdjustmentResult = {
-    messages: string[];
-    weights: number[];
-};
-
-async function getDropWeightAdjustments(
-    user: User,
-    weights: readonly number[],
-): Promise<AdjustmentResult> {
-    const waste = await getUserLootCountById(user.id, LootKindId.RADIOACTIVE_WASTE);
-    const messages = [];
-
-    let wasteFactor = 1;
-    if (waste > 0) {
-        const wasteDropPenalty = 1.05;
-        wasteFactor = Math.min(2, waste ** wasteDropPenalty);
-        messages.push(
-            `Du hast ${waste} Tonnen radioaktiven Müll, deshalb ist die Chance auf ein Geschenk geringer.`,
-        );
-    }
-
-    const pkv = await getUserLootCountById(user.id, LootKindId.PKV);
-    let pkvFactor = 1;
-    if (pkv > 0) {
-        pkvFactor = 2;
-        messages.push("Da du privat versichert bist, hast du die doppelte Chance auf eine AU.");
-    }
-
-    const newWeights = [...weights];
-    newWeights[LootKindId.NICHTS] = Math.ceil(weights[LootKindId.NICHTS] * wasteFactor) | 0;
-    newWeights[LootKindId.KRANKSCHREIBUNG] = (weights[LootKindId.KRANKSCHREIBUNG] * pkvFactor) | 0;
-
-    return {
-        messages,
-        weights: newWeights,
-    };
+export async function createLoot(
+    template: loot.LootTemplate,
+    winner: User,
+    message: Message<true> | null,
+    origin: LootOrigin,
+    predecessorLootId: LootId | null,
+) {
+    return await loot.createLoot(template, winner, message, new Date(), origin, predecessorLootId);
 }

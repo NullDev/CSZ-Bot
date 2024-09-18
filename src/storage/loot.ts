@@ -45,6 +45,16 @@ export interface LootTemplate {
     asset: string | null;
 }
 
+export interface LootAttribute {
+    id: number;
+    classId: number;
+    displayName: string;
+    shortDisplay: string | null;
+    color?: number;
+    initialDropWeight?: number;
+    visible: boolean;
+}
+
 const notDeleted = (eb: ExpressionBuilder<Database, "loot">) =>
     eb.or([eb("deletedAt", "is", null), eb("deletedAt", ">", sql<string>`current_timestamp`)]);
 

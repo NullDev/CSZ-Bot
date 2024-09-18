@@ -10,7 +10,7 @@ import { publishAocLeaderBoard } from "@/commands/aoc.js";
 import { rotate } from "@/service/banner.js";
 import { leetTask } from "@/service/purge.js";
 import { processBans } from "@/service/ban.js";
-import { runDropAttempt } from "@/service/loot.js";
+import { runDropAttempt } from "@/service/lootDrop.js";
 import { clearWoisLogTask } from "@/service/voiceState.js";
 import { checkBirthdays } from "@/service/birthday.js";
 import { handleFadingMessages } from "@/service/fadingMessage.js";
