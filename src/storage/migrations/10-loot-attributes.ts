@@ -27,7 +27,7 @@ export async function up(db: Kysely<any>) {
     await db.schema
         .createIndex("lootAttribute_lootId_attributeKindId")
         .on("lootAttribute")
-        .columns(["id", "attributeKindId"])
+        .columns(["lootId", "attributeKindId"])
         .unique()
         .execute();
 

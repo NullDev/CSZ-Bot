@@ -68,6 +68,27 @@ export async function connectToDb(databasePath: string) {
 
     await runMigrationsIfNeeded(db);
 
+    const cats = await db
+        .selectFrom("loot")
+        .select(["id", "lootKindId"])
+        .where("lootKindId", "=", 1)
+        .execute();
+    for (const c of cats) {
+        await db
+            .insertInto("lootAttribute")
+            .values({
+                lootId: c.id,
+                attributeClassId: 0, // LootAttributeClassId.OTHER
+                attributeKindId: 4, // LootAttributeKindId.SWEET
+                displayName: "Süß",
+                shortDisplay: "🍬",
+                color: null,
+                deletedAt: null,
+            })
+            .returningAll()
+            .executeTakeFirstOrThrow();
+    }
+
     kysely = db;
 }
 
