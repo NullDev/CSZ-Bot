@@ -17,6 +17,8 @@ import type { ApplicationCommand } from "@/commands/command.js";
 import * as lootService from "@/service/loot.js";
 import { ensureChatInputCommand } from "@/utils/interactionUtils.js";
 import { format } from "@/utils/stringUtils.js";
+import * as lootDataService from "@/service/lootData.js";
+import { LootKindId } from "@/service/lootData.js";
 
 import log from "@log";
 
@@ -77,7 +79,7 @@ export default class InventarCommand implements ApplicationCommand {
 
         const description = items
             .map(([item, count]) => {
-                const emote = lootService.getEmote(context.guild, item);
+                const emote = lootDataService.getEmote(context.guild, item);
                 const e = emote ? `${emote} ` : "";
                 return count === 1
                     ? `${e}${item.displayName}`
@@ -85,7 +87,7 @@ export default class InventarCommand implements ApplicationCommand {
             })
             .join("\n");
 
-        const cuties = contents.filter(i => i.lootKindId === lootService.LootKindId.KADSE).length;
+        const cuties = contents.filter(i => i.lootKindId === LootKindId.KADSE).length;
 
         const message = /* mf2 */ `
 .match {$cuties :number} {$count :number}
@@ -129,7 +131,7 @@ export default class InventarCommand implements ApplicationCommand {
             const embed = {
                 title: `Inventar von ${user.displayName}`,
                 fields: pageContents.map(item => ({
-                    name: `${lootService.getEmote(context.guild, item)} ${item.displayName}`,
+                    name: `${lootDataService.getEmote(context.guild, item)} ${item.displayName}`,
                     value: "",
                     inline: false,
                 })),

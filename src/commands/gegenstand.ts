@@ -20,6 +20,9 @@ import { randomEntry } from "@/utils/arrayUtils.js";
 import { ensureChatInputCommand } from "@/utils/interactionUtils.js";
 import * as imageService from "@/service/image.js";
 
+import * as lootDataService from "@/service/lootData.js";
+import { LootKindId } from "@/service/lootData.js";
+
 import log from "@log";
 
 export default class GegenstandCommand implements ApplicationCommand {
@@ -94,7 +97,7 @@ export default class GegenstandCommand implements ApplicationCommand {
 
         const wasteContents = await lootService.getUserLootsByTypeId(
             interaction.user.id,
-            lootService.LootKindId.RADIOACTIVE_WASTE,
+            LootKindId.RADIOACTIVE_WASTE,
         );
 
         if (wasteContents.length === 0) {
@@ -106,7 +109,7 @@ export default class GegenstandCommand implements ApplicationCommand {
 
         const sweetContent = await lootService.getUserLootsByTypeId(
             interaction.user.id,
-            lootService.LootKindId.KADSE,
+            LootKindId.KADSE,
         );
 
         if (sweetContent.length === 0) {
@@ -160,7 +163,7 @@ export default class GegenstandCommand implements ApplicationCommand {
             ? await imageService.clampImageSizeByWidth(await fs.readFile(template.asset), 200)
             : null;
 
-        const emote = lootService.getEmote(interaction.guild, item);
+        const emote = lootDataService.getEmote(interaction.guild, item);
 
         const extraFields: (APIEmbedField | undefined)[] = [
             template.onUse !== undefined
@@ -260,7 +263,7 @@ export default class GegenstandCommand implements ApplicationCommand {
             return;
         }
 
-        const template = lootService.resolveLootTemplate(item.lootKindId);
+        const template = lootDataService.resolveLootTemplate(item.lootKindId);
         if (!template) {
             await interaction.reply({
                 content: "Dieser Gegenstand ist unbekannt.",
@@ -293,7 +296,7 @@ export default class GegenstandCommand implements ApplicationCommand {
 
         const completions = [];
         for (const item of matchedItems) {
-            const template = lootService.resolveLootTemplate(item.lootKindId);
+            const template = lootDataService.resolveLootTemplate(item.lootKindId);
             if (template === undefined) {
                 log.error(`Item ${item.id} has no template`);
                 continue;
@@ -303,7 +306,7 @@ export default class GegenstandCommand implements ApplicationCommand {
                 continue;
             }
 
-            const emote = lootService.getEmote(interaction.guild, item);
+            const emote = lootDataService.getEmote(interaction.guild, item);
             completions.push({
                 // auto completions don't support discord emotes, only unicode ones
                 name: typeof emote === "string" ? `${emote} ${item.displayName}` : item.displayName,

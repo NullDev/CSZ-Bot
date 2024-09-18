@@ -11,7 +11,6 @@ import {
     type Interaction,
     type GuildBasedChannel,
     type TextBasedChannel,
-    Message,
 } from "discord.js";
 import { Temporal } from "@js-temporal/polyfill";
 import * as sentry from "@sentry/bun";
@@ -21,7 +20,7 @@ import type { Loot, LootId } from "@/storage/db/model.js";
 import { randomEntry, randomEntryWeighted } from "@/utils/arrayUtils.js";
 
 import * as lootService from "@/service/loot.js";
-import { LootKindId } from "@/service/loot.js";
+import { LootKindId, lootTemplates } from "@/service/lootData.js";
 
 import log from "@log";
 
@@ -146,11 +145,11 @@ export async function postLootDrop(
         return;
     }
 
-    const defaultWeights = lootService.lootTemplates.map(t => t.weight);
+    const defaultWeights = lootTemplates.map(t => t.weight);
 
     const { messages, weights } = await getDropWeightAdjustments(interaction.user, defaultWeights);
 
-    const template = randomEntryWeighted(lootService.lootTemplates, weights);
+    const template = randomEntryWeighted(lootTemplates, weights);
     const claimedLoot = await lootService.createLoot(
         template,
         interaction.user,
