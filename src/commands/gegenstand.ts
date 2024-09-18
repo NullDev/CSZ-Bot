@@ -107,9 +107,9 @@ export default class GegenstandCommand implements ApplicationCommand {
             return;
         }
 
-        const sweetContent = await lootService.getUserLootsByTypeId(
+        const sweetContent = await lootService.getUserLootsWithAttribute(
             interaction.user.id,
-            LootKindId.KADSE,
+            LootAttributeKindId.SWEET,
         );
 
         if (sweetContent.length === 0) {
@@ -134,7 +134,7 @@ export default class GegenstandCommand implements ApplicationCommand {
                     title: "Atommüll entsorgt!",
                     description: randomEntry(messages),
                     footer: {
-                        text: "Jetzt ist es das Problem vom deutschen Steuerzahler",
+                        text: "Jetzt ist es das Problem des deutschen Steuerzahlers",
                     },
                     color: 0x00ff00,
                 },

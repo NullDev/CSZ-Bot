@@ -155,6 +155,27 @@ export async function getUserLootsByTypeId(userId: User["id"], lootKindId: numbe
         .execute();
 }
 
+export async function getUserLootsWithAttribute(
+    userId: User["id"],
+    attributeKindId: number,
+    ctx = db(),
+) {
+    return await ctx
+        .selectFrom("loot")
+        .where("winnerId", "=", userId)
+        .where(notDeleted)
+        .where(
+            "id",
+            "in",
+            ctx
+                .selectFrom("lootAttribute")
+                .where("attributeKindId", "=", attributeKindId)
+                .select("lootId"),
+        )
+        .selectAll()
+        .execute();
+}
+
 export async function getUserLootById(userId: User["id"], lootId: LootId, ctx = db()) {
     return await ctx
         .selectFrom("loot")

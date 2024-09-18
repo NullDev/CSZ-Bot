@@ -17,6 +17,10 @@ export async function getUserLootsByTypeId(userId: Snowflake, lootTypeId: number
     return await loot.getUserLootsByTypeId(userId, lootTypeId);
 }
 
+export async function getUserLootsWithAttribute(userId: Snowflake, attributeKindId: number) {
+    return await loot.getUserLootsWithAttribute(userId, attributeKindId);
+}
+
 export async function getUserLootById(userId: Snowflake, id: LootId) {
     return await loot.getUserLootById(userId, id);
 }

@@ -510,3 +510,10 @@ export function extractNonRarityAttributes(
 ): Readonly<LootAttribute>[] {
     return attributes.filter(a => a.attributeClassId !== LootAttributeClassId.RARITY);
 }
+
+export function itemHasAttribute(
+    attributes: readonly Readonly<LootAttribute>[],
+    kindId: LootAttributeKindId,
+): boolean {
+    return attributes.some(a => a.attributeKindId === kindId);
+}
