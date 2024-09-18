@@ -130,11 +130,15 @@ export default class InventarCommand implements ApplicationCommand {
 
             const embed = {
                 title: `Inventar von ${user.displayName}`,
-                fields: pageContents.map(item => ({
-                    name: `${lootDataService.getEmote(context.guild, item)} ${item.displayName}`,
-                    value: "",
-                    inline: false,
-                })),
+                fields: pageContents.map(item => {
+                    const rarityAttribute = lootDataService.getRarityAttribute(item.attributes);
+                    const rarity = rarityAttribute ? ` (${rarityAttribute.displayName})` : "";
+                    return {
+                        name: `${lootDataService.getEmote(context.guild, item)} ${item.displayName}${rarity}`,
+                        value: "",
+                        inline: false,
+                    };
+                }),
                 footer: {
                     text: `Seite ${pageIndex + 1} von ${lastPageIndex + 1}`,
                 },

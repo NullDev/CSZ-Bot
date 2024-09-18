@@ -3,7 +3,9 @@ import type { LootAttributeTemplate, LootTemplate } from "@/storage/loot.js";
 import * as lootDropService from "@/service/lootDrop.js";
 import * as emoteService from "@/service/emote.js";
 import type { Guild } from "discord.js";
-import type { Loot } from "@/storage/db/model.js";
+import type { Loot, LootAttribute } from "@/storage/db/model.js";
+
+import log from "@log";
 
 const ACHTUNG_NICHT_DROPBAR_WEIGHT_KG = 0;
 
@@ -477,4 +479,17 @@ export function resolveLootTemplate(lootKindId: number) {
 export function getEmote(guild: Guild, item: Loot) {
     const e = lootTemplates.find(t => t.id === item.lootKindId)?.emote;
     return emoteService.resolveEmote(guild, e);
+}
+
+export function getRarityAttribute(
+    attributes: readonly Readonly<LootAttribute>[],
+): Readonly<LootAttribute> | undefined {
+    const attribute = attributes.filter(a => a.attributeClassId === LootAttributeClassId.RARITY);
+    if (attribute.length === 0) {
+        return undefined;
+    }
+    if (attribute.length > 1) {
+        log.warn("Found multiple rarity attributes for loot item");
+    }
+    return attribute[0];
 }
