@@ -156,6 +156,7 @@ export async function postLootDrop(
         message,
         "drop",
         predecessorLootId ?? null,
+        null, // TODO
     );
 
     const reply = await interaction.deferReply({ ephemeral: true });

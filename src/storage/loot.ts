@@ -65,25 +65,47 @@ export async function createLoot(
     now: Date,
     origin: LootOrigin,
     predecessorLootId: LootId | null,
+    rarityAttribute: LootAttribute | null,
     ctx = db(),
 ) {
-    return await ctx
-        .insertInto("loot")
-        .values({
-            displayName: template.displayName,
-            description: template.dropDescription,
-            lootKindId: template.id,
-            usedImage: template.asset,
-            winnerId: winner.id,
-            claimedAt: now.toISOString(),
-            guildId: message?.guildId ?? "",
-            channelId: message?.channelId ?? "",
-            messageId: message?.id ?? "",
-            origin,
-            predecessor: predecessorLootId,
-        })
-        .returningAll()
-        .executeTakeFirstOrThrow();
+    return ctx.transaction().execute(async ctx => {
+        const res = await ctx
+            .insertInto("loot")
+            .values({
+                displayName: template.displayName,
+                description: template.dropDescription,
+                lootKindId: template.id,
+                usedImage: template.asset,
+                winnerId: winner.id,
+                claimedAt: now.toISOString(),
+                guildId: message?.guildId ?? "",
+                channelId: message?.channelId ?? "",
+                messageId: message?.id ?? "",
+                origin,
+                predecessor: predecessorLootId,
+            })
+            .returningAll()
+            .executeTakeFirstOrThrow();
+
+        if (rarityAttribute) {
+            await ctx
+                .insertInto("lootAttribute")
+                .values({
+                    attributeClassId: rarityAttribute.classId,
+                    attributeKindId: template.id,
+                    displayName: rarityAttribute.displayName,
+                    lootId: res.id,
+                    shortDisplay: rarityAttribute.shortDisplay,
+                    color: rarityAttribute.color,
+                    visible: rarityAttribute.visible,
+                    deletedAt: null,
+                })
+                .returningAll()
+                .executeTakeFirstOrThrow();
+        }
+
+        return res;
+    });
 }
 
 export async function findOfUser(user: User, ctx = db()) {

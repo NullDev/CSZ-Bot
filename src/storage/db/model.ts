@@ -228,6 +228,9 @@ export interface LootTable extends AuditedTable {
 }
 
 export type LootAttributeId = number;
+
+export type LootAttribute = Selectable<LootAttributeTable>;
+export type LootAttributeInsertable = Insertable<LootAttributeTable>;
 export interface LootAttributeTable extends AuditedTable {
     id: GeneratedAlways<LootAttributeId>;
 

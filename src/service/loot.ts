@@ -50,6 +50,15 @@ export async function createLoot(
     message: Message<true> | null,
     origin: LootOrigin,
     predecessorLootId: LootId | null,
+    rarityAttribute: loot.LootAttribute | null,
 ) {
-    return await loot.createLoot(template, winner, message, new Date(), origin, predecessorLootId);
+    return await loot.createLoot(
+        template,
+        winner,
+        message,
+        new Date(),
+        origin,
+        predecessorLootId,
+        rarityAttribute,
+    );
 }
