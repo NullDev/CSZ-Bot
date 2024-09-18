@@ -470,6 +470,7 @@ export const lootAttributes: LootAttributeTemplate[] = [
         shortDisplay: "☢️",
         color: 0xff_ff_ff,
     },
+    // TODO: SWEET? (for cat)
 ];
 
 export function resolveLootTemplate(lootKindId: number) {
