@@ -10,7 +10,14 @@ import type {
 import { type ExpressionBuilder, sql } from "kysely";
 
 import type { BotContext } from "@/context.js";
-import type { Database, Loot, LootId, LootInsertable, LootOrigin } from "./db/model.js";
+import type {
+    Database,
+    Loot,
+    LootId,
+    LootInsertable,
+    LootOrigin,
+    LootAttribute,
+} from "./db/model.js";
 
 import db from "@db";
 
@@ -45,7 +52,7 @@ export interface LootTemplate {
     asset: string | null;
 }
 
-export interface LootAttribute {
+export interface LootAttributeTemplate {
     id: number;
     classId: number;
     displayName: string;
@@ -54,7 +61,7 @@ export interface LootAttribute {
     initialDropWeight?: number;
 }
 
-const notDeleted = (eb: ExpressionBuilder<Database, "loot">) =>
+const notDeleted = (eb: ExpressionBuilder<Database, "loot" | "lootAttribute">) =>
     eb.or([eb("deletedAt", "is", null), eb("deletedAt", ">", sql<string>`current_timestamp`)]);
 
 export async function createLoot(
@@ -64,7 +71,7 @@ export async function createLoot(
     now: Date,
     origin: LootOrigin,
     predecessorLootId: LootId | null,
-    rarityAttribute: LootAttribute | null,
+    rarityAttribute: LootAttributeTemplate | null,
     ctx = db(),
 ) {
     return ctx.transaction().execute(async ctx => {
@@ -113,6 +120,27 @@ export async function findOfUser(user: User, ctx = db()) {
         .where(notDeleted)
         .selectAll()
         .execute();
+}
+
+export type LootWithAttributes = Loot & { attributes: Readonly<LootAttribute>[] };
+export async function findOfUserWithAttributes(
+    user: User,
+    ctx = db(),
+): Promise<LootWithAttributes[]> {
+    return await ctx.transaction().execute(async ctx => {
+        const lootItems = (await findOfUser(user, ctx)) as LootWithAttributes[];
+
+        for (const loot of lootItems) {
+            loot.attributes = await ctx
+                .selectFrom("lootAttribute")
+                .where("lootId", "=", loot.id)
+                .where(notDeleted)
+                .selectAll()
+                .execute();
+        }
+
+        return lootItems;
+    });
 }
 
 export async function findOfMessage(message: Message<true>, ctx = db()) {

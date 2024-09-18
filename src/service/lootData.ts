@@ -1,4 +1,4 @@
-import type { LootAttribute, LootTemplate } from "@/storage/loot.js";
+import type { LootAttributeTemplate, LootTemplate } from "@/storage/loot.js";
 
 import * as lootDropService from "@/service/lootDrop.js";
 import * as emoteService from "@/service/emote.js";
@@ -439,7 +439,7 @@ export enum LootAttributeClassId {
 /**
  * @remarks The index of an item must be equal to the `LootAttributeKindId` enum value.
  */
-export const lootAttributes: LootAttribute[] = [
+export const lootAttributes: LootAttributeTemplate[] = [
     {
         id: LootAttributeKindId.RARITY_NORMAL,
         classId: LootAttributeClassId.RARITY,
