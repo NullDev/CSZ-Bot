@@ -46,7 +46,7 @@ export default class InventarCommand implements ApplicationCommand {
         const cmd = ensureChatInputCommand(interaction);
 
         const user = cmd.options.getUser("user") ?? cmd.user;
-        const long = cmd.options.getBoolean("long") ?? false;
+        const long = cmd.options.getBoolean("long") ?? true;
 
         const contents = await lootService.getInventoryContents(user);
         if (contents.length === 0) {
