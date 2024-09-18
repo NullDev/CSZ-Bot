@@ -91,10 +91,10 @@ export async function createLoot(
             await ctx
                 .insertInto("lootAttribute")
                 .values({
+                    lootId: res.id,
                     attributeClassId: rarityAttribute.classId,
                     attributeKindId: template.id,
                     displayName: rarityAttribute.displayName,
-                    lootId: res.id,
                     shortDisplay: rarityAttribute.shortDisplay,
                     color: rarityAttribute.color,
                     visible: rarityAttribute.visible,
