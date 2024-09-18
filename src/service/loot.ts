@@ -6,7 +6,7 @@ import * as loot from "@/storage/loot.js";
 import * as lootDataService from "@/service/lootData.js";
 
 export async function getInventoryContents(user: User) {
-    const contents = await loot.findOfUser(user);
+    const contents = await loot.findOfUserWithAttributes(user);
     const displayableLoot = contents.filter(
         l => !(lootDataService.resolveLootTemplate(l.lootKindId)?.excludeFromInventory ?? false),
     );
