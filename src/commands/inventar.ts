@@ -18,7 +18,7 @@ import * as lootService from "@/service/loot.js";
 import { ensureChatInputCommand } from "@/utils/interactionUtils.js";
 import { format } from "@/utils/stringUtils.js";
 import * as lootDataService from "@/service/lootData.js";
-import { LootKindId } from "@/service/lootData.js";
+import { LootKindId, LootAttributeKindId } from "@/service/lootData.js";
 
 import log from "@log";
 
@@ -131,8 +131,14 @@ export default class InventarCommand implements ApplicationCommand {
             const embed = {
                 title: `Inventar von ${user.displayName}`,
                 fields: pageContents.map(item => {
+
                     const rarityAttribute = lootDataService.getRarityAttribute(item.attributes);
-                    const rarity = rarityAttribute ? ` (${rarityAttribute.displayName})` : "";
+                    const rarity =
+                        rarityAttribute &&
+                        rarityAttribute.attributeKindId !== LootAttributeKindId.RARITY_NORMAL
+                            ? ` (${rarityAttribute.displayName})`
+                            : "";
+
                     return {
                         name: `${lootDataService.getEmote(context.guild, item)} ${item.displayName}${rarity}`,
                         value: "",
