@@ -20,7 +20,7 @@ import type { Loot, LootId } from "@/storage/db/model.js";
 import { randomEntry, randomEntryWeighted } from "@/utils/arrayUtils.js";
 
 import * as lootService from "@/service/loot.js";
-import { LootKindId, lootTemplates } from "@/service/lootData.js";
+import { lootAttributes, LootKindId, lootTemplates } from "@/service/lootData.js";
 
 import log from "@log";
 
@@ -146,8 +146,10 @@ export async function postLootDrop(
     }
 
     const defaultWeights = lootTemplates.map(t => t.weight);
-
     const { messages, weights } = await getDropWeightAdjustments(interaction.user, defaultWeights);
+
+    const rarityWeights = lootAttributes.map(a => a.initialDropWeight ?? 0);
+    const initialAttribute = randomEntryWeighted(lootAttributes, rarityWeights);
 
     const template = randomEntryWeighted(lootTemplates, weights);
     const claimedLoot = await lootService.createLoot(
@@ -156,7 +158,7 @@ export async function postLootDrop(
         message,
         "drop",
         predecessorLootId ?? null,
-        null, // TODO
+        initialAttribute,
     );
 
     const reply = await interaction.deferReply({ ephemeral: true });
