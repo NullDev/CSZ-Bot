@@ -21,7 +21,7 @@ import { ensureChatInputCommand } from "@/utils/interactionUtils.js";
 import * as imageService from "@/service/image.js";
 
 import * as lootDataService from "@/service/lootData.js";
-import { LootKindId } from "@/service/lootData.js";
+import { LootAttributeClassId, LootAttributeKindId, LootKindId } from "@/service/lootData.js";
 
 import log from "@log";
 
@@ -155,7 +155,7 @@ export default class GegenstandCommand implements ApplicationCommand {
             return;
         }
 
-        const { item, template } = info;
+        const { item, template, attributes } = info;
 
         const effects = template.effects ?? [];
 
@@ -165,10 +165,22 @@ export default class GegenstandCommand implements ApplicationCommand {
 
         const emote = lootDataService.getEmote(interaction.guild, item);
 
+        const rarity =
+            lootDataService.extractRarityAttribute(attributes) ??
+            lootDataService.lootAttributes[LootAttributeKindId.RARITY_NORMAL];
+
+        const otherAttributes = lootDataService.extractNonRarityAttributes(attributes);
+
         const extraFields: (APIEmbedField | undefined)[] = [
             template.onUse !== undefined
                 ? { name: "🔧 Benutzbar", value: "", inline: true }
                 : undefined,
+
+            ...otherAttributes.map(attribute => ({
+                name: `${attribute.shortDisplay ?? ""} ${attribute.displayName}`.trim(),
+                value: "",
+                inline: true,
+            })),
         ];
 
         await interaction.reply({
@@ -185,12 +197,15 @@ export default class GegenstandCommand implements ApplicationCommand {
                         : undefined,
                     fields: [
                         ...effects.map(value => ({
-                            name: "🌟 Effekt",
+                            name: "⚡️ Effekt",
                             value,
                             inline: true,
                         })),
                         ...extraFields.filter(e => e !== undefined),
                     ],
+                    footer: {
+                        text: `${rarity.shortDisplay ?? ""} ${rarity.displayName}\t\t\t\t\t\t${otherAttributes.map(a => a.shortDisplay)}`.trim(),
+                    },
                 },
             ],
             files: attachment

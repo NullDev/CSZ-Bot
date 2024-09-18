@@ -164,7 +164,7 @@ export const lootTemplates: LootTemplate[] = [
         dropDescription: "Fehlt dir nur noch das Geld zum Vorstrecken",
         emote: "💉",
         asset: "assets/loot/10-pkv.jpg",
-        effects: ["` +100% ` Chance auf AU 📈"],
+        effects: ["` +100% ` Chance auf AU 🟢"],
     },
     {
         id: LootKindId.TRICHTER,
@@ -290,7 +290,7 @@ export const lootTemplates: LootTemplate[] = [
             "Sollte dir ja nichts mehr anhaben, du bist ja durch den Server schon genug verstrahlt 🤷‍♂️",
         emote: "☢️",
         asset: "assets/loot/21-radioaktiver-muell.jpg",
-        effects: ["` +5% ` Chance auf leeres Geschenk 🔻"],
+        effects: ["` +5% ` Chance auf leeres Geschenk 🔴"],
     },
     {
         id: LootKindId.SAHNE,
@@ -481,7 +481,7 @@ export function getEmote(guild: Guild, item: Loot) {
     return emoteService.resolveEmote(guild, e);
 }
 
-export function getRarityAttribute(
+export function extractRarityAttribute(
     attributes: readonly Readonly<LootAttribute>[],
 ): Readonly<LootAttribute> | undefined {
     const attribute = attributes.filter(a => a.attributeClassId === LootAttributeClassId.RARITY);
@@ -492,4 +492,10 @@ export function getRarityAttribute(
         log.warn("Found multiple rarity attributes for loot item");
     }
     return attribute[0];
+}
+
+export function extractNonRarityAttributes(
+    attributes: readonly Readonly<LootAttribute>[],
+): Readonly<LootAttribute>[] {
+    return attributes.filter(a => a.attributeClassId !== LootAttributeClassId.RARITY);
 }

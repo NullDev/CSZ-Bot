@@ -254,6 +254,7 @@ export async function getLootAttributes(lootId: LootId, ctx = db()) {
         .selectFrom("lootAttribute")
         .where("lootId", "=", lootId)
         .where(notDeleted)
+        .orderBy("lootAttribute.attributeKindId asc")
         .selectAll()
         .execute();
 }

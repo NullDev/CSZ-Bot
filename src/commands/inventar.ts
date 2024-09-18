@@ -131,7 +131,7 @@ export default class InventarCommand implements ApplicationCommand {
             const embed = {
                 title: `Inventar von ${user.displayName}`,
                 fields: pageContents.map(item => {
-                    const rarityAttribute = lootDataService.getRarityAttribute(item.attributes);
+                    const rarityAttribute = lootDataService.extractRarityAttribute(item.attributes);
                     const rarity =
                         rarityAttribute &&
                         rarityAttribute.attributeKindId !== LootAttributeKindId.RARITY_NORMAL
