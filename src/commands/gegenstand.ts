@@ -167,7 +167,7 @@ export default class GegenstandCommand implements ApplicationCommand {
 
         const rarity =
             lootDataService.extractRarityAttribute(attributes) ??
-            lootDataService.lootAttributes[LootAttributeKindId.RARITY_NORMAL];
+            lootDataService.lootAttributeTemplates[LootAttributeKindId.RARITY_NORMAL];
 
         const otherAttributes = lootDataService.extractNonRarityAttributes(attributes);
 

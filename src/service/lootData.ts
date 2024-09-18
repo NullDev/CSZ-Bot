@@ -442,7 +442,7 @@ export enum LootAttributeKindId {
 /**
  * @remarks The index of an item must be equal to the `LootAttributeKindId` enum value.
  */
-export const lootAttributes: LootAttributeTemplate[] = [
+export const lootAttributeTemplates: LootAttributeTemplate[] = [
     {
         id: LootAttributeKindId.RARITY_NORMAL,
         classId: LootAttributeClassId.RARITY,
@@ -481,6 +481,10 @@ export const lootAttributes: LootAttributeTemplate[] = [
 
 export function resolveLootTemplate(lootKindId: number) {
     return lootTemplates.find(loot => loot.id === lootKindId);
+}
+
+export function resolveLootAttributeTemplate(attributeKindId: number) {
+    return lootAttributeTemplates.find(a => a.id === attributeKindId);
 }
 
 export function getEmote(guild: Guild, item: Loot) {

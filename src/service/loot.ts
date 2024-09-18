@@ -1,7 +1,7 @@
 import type { User, Snowflake, Message } from "discord.js";
 
 import type { LootId, LootInsertable, LootOrigin } from "@/storage/db/model.js";
-import type { LootKindId } from "./lootData.js";
+import type { LootAttributeKindId, LootKindId } from "./lootData.js";
 import * as loot from "@/storage/loot.js";
 import * as lootDataService from "@/service/lootData.js";
 
@@ -65,4 +65,15 @@ export async function createLoot(
         predecessorLootId,
         rarityAttribute,
     );
+}
+
+export async function addLootAttributeIfNotPresent(
+    lootId: LootId,
+    attributeKindId: LootAttributeKindId,
+) {
+    const template = lootDataService.resolveLootAttributeTemplate(attributeKindId);
+    if (!template) {
+        throw new Error(`No attribute template found for kind id ${attributeKindId}`);
+    }
+    return await loot.addLootAttributeIfNotPresent(lootId, template);
 }

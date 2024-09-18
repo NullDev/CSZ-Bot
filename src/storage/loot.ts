@@ -20,6 +20,11 @@ import type {
 } from "./db/model.js";
 
 import db from "@db";
+import {
+    LootAttributeClassId,
+    LootAttributeKindId,
+    lootAttributeTemplates,
+} from "@/service/lootData.js";
 
 export type LootUseCommandInteraction = ChatInputCommandInteraction & {
     channel: GuildTextBasedChannel;
@@ -94,19 +99,7 @@ export async function createLoot(
             .executeTakeFirstOrThrow();
 
         if (rarityAttribute) {
-            await ctx
-                .insertInto("lootAttribute")
-                .values({
-                    lootId: res.id,
-                    attributeClassId: rarityAttribute.classId,
-                    attributeKindId: template.id,
-                    displayName: rarityAttribute.displayName,
-                    shortDisplay: rarityAttribute.shortDisplay,
-                    color: rarityAttribute.color,
-                    deletedAt: null,
-                })
-                .returningAll()
-                .executeTakeFirstOrThrow();
+            await addLootAttributeIfNotPresent(res.id, rarityAttribute, ctx);
         }
 
         return res;
@@ -257,4 +250,26 @@ export async function getLootAttributes(lootId: LootId, ctx = db()) {
         .orderBy("lootAttribute.attributeKindId asc")
         .selectAll()
         .execute();
+}
+
+export async function addLootAttributeIfNotPresent(
+    lootId: LootId,
+    attributeTemplate: LootAttributeTemplate,
+    ctx = db(),
+) {
+    await ctx
+        .insertInto("lootAttribute")
+        .values({
+            lootId,
+            attributeKindId: attributeTemplate.id,
+            attributeClassId: attributeTemplate.classId,
+            displayName: attributeTemplate.displayName,
+            shortDisplay: attributeTemplate.shortDisplay,
+            color: attributeTemplate.color,
+            deletedAt: null,
+        })
+        .onConflict(oc => oc.doNothing())
+        .returningAll()
+        .executeTakeFirstOrThrow();
+    throw new Error("Function not implemented.");
 }
