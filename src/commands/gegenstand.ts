@@ -272,7 +272,9 @@ export default class GegenstandCommand implements ApplicationCommand {
             return;
         }
 
-        return { item, template };
+        const attributes = await lootService.getLootAttributes(item.id);
+
+        return { item, template, attributes };
     }
 
     async autocomplete(interaction: AutocompleteInteraction) {

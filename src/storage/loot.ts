@@ -180,8 +180,9 @@ export async function getLootsByKindId(lootKindId: number, ctx = db()) {
         .selectAll()
         .execute();
 }
+
 export async function transferLootToUser(
-    lootId: Loot["id"],
+    lootId: LootId,
     userId: User["id"],
     trackPredecessor: boolean,
     ctx = db(),
@@ -218,7 +219,7 @@ export async function transferLootToUser(
 }
 
 export async function replaceLoot(
-    lootId: Loot["id"],
+    lootId: LootId,
     replacementLoot: LootInsertable,
     trackPredecessor: boolean,
     ctx = db(),
@@ -238,7 +239,7 @@ export async function replaceLoot(
     });
 }
 
-export async function deleteLoot(lootId: Loot["id"], ctx = db()): Promise<LootId> {
+export async function deleteLoot(lootId: LootId, ctx = db()): Promise<LootId> {
     const res = await ctx
         .updateTable("loot")
         .where("id", "=", lootId)
@@ -246,4 +247,13 @@ export async function deleteLoot(lootId: Loot["id"], ctx = db()): Promise<LootId
         .returning("id")
         .executeTakeFirstOrThrow();
     return res.id;
+}
+
+export async function getLootAttributes(lootId: LootId, ctx = db()) {
+    return await ctx
+        .selectFrom("lootAttribute")
+        .where("lootId", "=", lootId)
+        .where(notDeleted)
+        .selectAll()
+        .execute();
 }
