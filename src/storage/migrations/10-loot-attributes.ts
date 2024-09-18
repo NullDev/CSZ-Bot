@@ -31,8 +31,8 @@ export async function up(db: Kysely<any>) {
         .unique()
         .execute();
 
-    const items = await db.selectFrom("loot").select("id").execute();
-    for (const { id } of items) {
+    const items = await db.selectFrom("loot").select(["id", "lootKindId"]).execute();
+    for (const { id, lootKindId } of items) {
         await db
             .insertInto("lootAttribute")
             .values({
@@ -46,6 +46,22 @@ export async function up(db: Kysely<any>) {
             })
             .returningAll()
             .executeTakeFirstOrThrow();
+
+        if (lootKindId === 1 /* LootKindId.KADSE */) {
+            await db
+                .insertInto("lootAttribute")
+                .values({
+                    lootId: id,
+                    attributeClassId: 0, // LootAttributeClassId.OTHER
+                    attributeKindId: 4, // LootAttributeKindId.SWEET
+                    displayName: "Süß",
+                    shortDisplay: "🍬",
+                    color: null,
+                    deletedAt: null,
+                })
+                .returningAll()
+                .executeTakeFirstOrThrow();
+        }
     }
 }
 
