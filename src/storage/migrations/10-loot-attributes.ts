@@ -40,7 +40,7 @@ export async function up(db: Kysely<any>) {
                 attributeClassId: 1, // LootAttributeClassId.RARITY
                 attributeKindId: 0, // LootAttributeKindId.RARITY_NORMAL
                 displayName: "Normal",
-                shortDisplay: "⭐",
+                shortDisplay: "",
                 color: null,
                 deletedAt: null,
             })

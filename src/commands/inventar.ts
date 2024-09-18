@@ -81,6 +81,7 @@ export default class InventarCommand implements ApplicationCommand {
             .map(([item, count]) => {
                 const emote = lootDataService.getEmote(context.guild, item);
                 const e = emote ? `${emote} ` : "";
+
                 return count === 1
                     ? `${e}${item.displayName}`
                     : `${count}x ${e}${item.displayName}`;
@@ -138,13 +139,10 @@ export default class InventarCommand implements ApplicationCommand {
                             ? ` (${rarityAttribute.displayName})`
                             : "";
 
-                    const otherAttributes = lootDataService
-                        .extractNonRarityAttributes(item.attributes)
-                        .map(a => a.shortDisplay)
-                        .join("");
+                    const shortAttributeList = item.attributes.map(a => a.shortDisplay).join("");
 
                     return {
-                        name: `${lootDataService.getEmote(context.guild, item)} ${item.displayName}${rarity} ${otherAttributes}`.trim(),
+                        name: `${lootDataService.getEmote(context.guild, item)} ${item.displayName}${rarity} ${shortAttributeList}`.trim(),
                         value: "",
                         inline: false,
                     };
