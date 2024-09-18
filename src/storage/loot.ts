@@ -56,7 +56,7 @@ export interface LootAttributeTemplate {
     id: number;
     classId: number;
     displayName: string;
-    shortDisplay: string | null;
+    shortDisplay: string;
     color?: number;
     initialDropWeight?: number;
 }

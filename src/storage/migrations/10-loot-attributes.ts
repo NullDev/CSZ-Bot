@@ -8,7 +8,7 @@ export async function up(db: Kysely<any>) {
         .addColumn("attributeKindId", "integer", c => c.notNull())
         .addColumn("attributeClassId", "integer", c => c.notNull())
         .addColumn("displayName", "text", c => c.notNull())
-        .addColumn("shortDisplay", "text")
+        .addColumn("shortDisplay", "text", c => c.notNull())
         .addColumn("color", "integer")
 
         .addColumn("createdAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))

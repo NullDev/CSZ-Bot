@@ -138,8 +138,13 @@ export default class InventarCommand implements ApplicationCommand {
                             ? ` (${rarityAttribute.displayName})`
                             : "";
 
+                    const otherAttributes = lootDataService
+                        .extractNonRarityAttributes(item.attributes)
+                        .map(a => a.shortDisplay)
+                        .join("");
+
                     return {
-                        name: `${lootDataService.getEmote(context.guild, item)} ${item.displayName}${rarity}`,
+                        name: `${lootDataService.getEmote(context.guild, item)} ${item.displayName}${rarity} ${otherAttributes}`.trim(),
                         value: "",
                         inline: false,
                     };

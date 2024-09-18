@@ -177,7 +177,7 @@ export default class GegenstandCommand implements ApplicationCommand {
                 : undefined,
 
             ...otherAttributes.map(attribute => ({
-                name: `${attribute.shortDisplay ?? ""} ${attribute.displayName}`.trim(),
+                name: `${attribute.shortDisplay} ${attribute.displayName}`.trim(),
                 value: "",
                 inline: true,
             })),
@@ -204,7 +204,7 @@ export default class GegenstandCommand implements ApplicationCommand {
                         ...extraFields.filter(e => e !== undefined),
                     ],
                     footer: {
-                        text: `${rarity.shortDisplay ?? ""} ${rarity.displayName}\t\t\t\t\t\t${otherAttributes.map(a => a.shortDisplay)}`.trim(),
+                        text: `${rarity.shortDisplay} ${rarity.displayName}\t\t\t\t\t\t${otherAttributes.map(a => a.shortDisplay)}`.trim(),
                     },
                 },
             ],
