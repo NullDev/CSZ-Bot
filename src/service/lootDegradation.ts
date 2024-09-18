@@ -43,3 +43,7 @@ export async function degradeItems(_context: BotContext) {
         );
     }
 }
+
+export async function exposeWithRadiation(context: BotContext) {
+    const kebabs = await lootService.getLootsByKindId(LootKindId.DOENER);
+}

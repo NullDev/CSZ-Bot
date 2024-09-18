@@ -69,6 +69,16 @@ export interface LootAttributeTemplate {
 const notDeleted = (eb: ExpressionBuilder<Database, "loot" | "lootAttribute">) =>
     eb.or([eb("deletedAt", "is", null), eb("deletedAt", ">", sql<string>`current_timestamp`)]);
 
+const hasAttribute = (attributeKindId: number) => (eb: ExpressionBuilder<Database, "loot">) =>
+    eb(
+        "id",
+        "in",
+        eb
+            .selectFrom("lootAttribute")
+            .where("attributeKindId", "=", attributeKindId)
+            .select("lootId"),
+    );
+
 export async function createLoot(
     template: LootTemplate,
     winner: User,
@@ -164,14 +174,7 @@ export async function getUserLootsWithAttribute(
         .selectFrom("loot")
         .where("winnerId", "=", userId)
         .where(notDeleted)
-        .where(
-            "id",
-            "in",
-            ctx
-                .selectFrom("lootAttribute")
-                .where("attributeKindId", "=", attributeKindId)
-                .select("lootId"),
-        )
+        .where(hasAttribute(attributeKindId))
         .selectAll()
         .execute();
 }
@@ -191,6 +194,15 @@ export async function getLootsByKindId(lootKindId: number, ctx = db()) {
         .selectFrom("loot")
         .where("lootKindId", "=", lootKindId)
         .where(notDeleted)
+        .selectAll()
+        .execute();
+}
+
+export async function getLootsWithAttribute(attributeKindId: number, ctx = db()) {
+    return await ctx
+        .selectFrom("loot")
+        .where(notDeleted)
+        .where(hasAttribute(attributeKindId))
         .selectAll()
         .execute();
 }

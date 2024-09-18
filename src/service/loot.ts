@@ -13,11 +13,14 @@ export async function getInventoryContents(user: User) {
     return displayableLoot;
 }
 
-export async function getUserLootsByTypeId(userId: Snowflake, lootTypeId: number) {
+export async function getUserLootsByTypeId(userId: Snowflake, lootTypeId: LootKindId) {
     return await loot.getUserLootsByTypeId(userId, lootTypeId);
 }
 
-export async function getUserLootsWithAttribute(userId: Snowflake, attributeKindId: number) {
+export async function getUserLootsWithAttribute(
+    userId: Snowflake,
+    attributeKindId: LootAttributeKindId,
+) {
     return await loot.getUserLootsWithAttribute(userId, attributeKindId);
 }
 
@@ -35,6 +38,10 @@ export async function getUserLootCountById(userId: Snowflake, lootTypeId: number
 
 export async function getLootsByKindId(lootTypeId: LootKindId) {
     return await loot.getLootsByKindId(lootTypeId);
+}
+
+export async function getLootsWithAttribute(attributeKindId: LootAttributeKindId) {
+    return await loot.getLootsWithAttribute(attributeKindId);
 }
 
 export function transferLootToUser(lootId: LootId, user: User, trackPredecessor: boolean) {
