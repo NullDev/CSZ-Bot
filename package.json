@@ -27,7 +27,7 @@
   "dependencies": {
     "@discordjs/voice": "^0.17.0",
     "@js-temporal/polyfill": "^0.4.4",
-    "@napi-rs/canvas": "^0.1.55",
+    "@napi-rs/canvas": "^0.1.56",
     "@resvg/resvg-js": "^2.6.2",
     "@sentry/bun": "^8.30.0",
     "@std/jsonc": "npm:@jsr/std__jsonc@^1.0.1",
@@ -46,7 +46,7 @@
     "urlpattern-polyfill": "^10.0.0"
   },
   "devDependencies": {
-    "@biomejs/biome": "^1.9.1",
+    "@biomejs/biome": "^1.9.2",
     "@types/bun": "^1.1.9",
     "@types/jsdom": "^21.1.7",
     "@types/minimist": "^1.2.5",
