@@ -73,7 +73,7 @@ export async function exposeWithRadiation(context: BotContext) {
     await context.textChannels.hauptchat.send({
         embeds: [
             {
-                description: `:alarm_gelb: :radioactive: ${targetLoot.displayName} von <@${targetLoot.winnerId}> wurde verstrahlt. :radioactive: :alarm_gelb:`,
+                description: `:radioactive: ${targetLoot.displayName} von <@${targetLoot.winnerId}> wurde verstrahlt. :radioactive:`,
                 footer: {
                     text: "Du solltest deinen Müll besser entsorgen",
                 },
