@@ -435,7 +435,7 @@ export enum LootAttributeKindId {
     RARITY_NORMAL = 0,
     RARITY_RARE = 1,
     RARITY_VERY_RARE = 2,
-    VERSTRAHLT = 3,
+    RADIOACTIVE = 3,
     SWEET = 4,
 }
 
@@ -465,7 +465,7 @@ export const lootAttributeTemplates: LootAttributeTemplate[] = [
         initialDropWeight: 1,
     },
     {
-        id: LootAttributeKindId.VERSTRAHLT,
+        id: LootAttributeKindId.RADIOACTIVE,
         classId: LootAttributeClassId.OTHER,
         displayName: "Verstrahlt",
         shortDisplay: "☢️",

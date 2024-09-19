@@ -290,7 +290,7 @@ export async function addLootAttributeIfNotPresent(
     attributeTemplate: LootAttributeTemplate,
     ctx = db(),
 ) {
-    await ctx
+    return await ctx
         .insertInto("lootAttribute")
         .values({
             lootId,

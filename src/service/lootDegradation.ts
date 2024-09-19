@@ -2,8 +2,9 @@ import type { BotContext } from "@/context.js";
 
 import * as time from "@/utils/time.js";
 import * as lootService from "@/service/loot.js";
-import { LootKindId } from "@/service/lootData.js";
+import { LootAttributeKindId, LootKindId } from "@/service/lootData.js";
 import log from "@log";
+import { randomEntry } from "@/utils/arrayUtils.js";
 
 export async function degradeItems(_context: BotContext) {
     log.info("Degrading loot items");
@@ -45,5 +46,38 @@ export async function degradeItems(_context: BotContext) {
 }
 
 export async function exposeWithRadiation(context: BotContext) {
-    const kebabs = await lootService.getLootsByKindId(LootKindId.DOENER);
+    // currently also includes sweets that are already radioactive
+    const sweets = await lootService.getLootsWithAttribute(LootAttributeKindId.SWEET);
+
+    const targetLoot = randomEntry(sweets);
+    if (!targetLoot) {
+        return;
+    }
+
+    const wasteItems = await lootService.getUserLootsByTypeId(
+        targetLoot.winnerId,
+        LootKindId.RADIOACTIVE_WASTE,
+    );
+    if (wasteItems.length === 0) {
+        return;
+    }
+
+    const attribute = await lootService.addLootAttributeIfNotPresent(
+        targetLoot.id,
+        LootAttributeKindId.RADIOACTIVE,
+    );
+    if (!attribute) {
+        return;
+    }
+
+    await context.textChannels.hauptchat.send({
+        embeds: [
+            {
+                description: `:alarm_gelb: :radioactive: ${targetLoot.displayName} von <@${targetLoot.winnerId}> wurde verstrahlt. :radioactive: :alarm_gelb:`,
+                footer: {
+                    text: "Du solltest deinen Müll besser entsorgen",
+                },
+            },
+        ],
+    });
 }
