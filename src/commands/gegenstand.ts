@@ -329,7 +329,7 @@ export default class GegenstandCommand implements ApplicationCommand {
                 name:
                     typeof emote === "string"
                         ? `${emote} ${item.displayName} (${item.id})`
-                         : `${item.displayName} (${item.id})`,
+                        : `${item.displayName} (${item.id})`,
                 value: String(item.id),
             });
         }
