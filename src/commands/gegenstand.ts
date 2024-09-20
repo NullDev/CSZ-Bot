@@ -326,7 +326,10 @@ export default class GegenstandCommand implements ApplicationCommand {
             const emote = lootDataService.getEmote(interaction.guild, item);
             completions.push({
                 // auto completions don't support discord emotes, only unicode ones
-                name: typeof emote === "string" ? `${emote} ${item.displayName} (${item.id})` : item.displayName + " (" + item.id + ")",
+                name:
+                    typeof emote === "string"
+                        ? `${emote} ${item.displayName} (${item.id})`
+                         : `${item.displayName} (${item.id})`,
                 value: String(item.id),
             });
         }
