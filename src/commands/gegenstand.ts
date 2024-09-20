@@ -204,7 +204,7 @@ export default class GegenstandCommand implements ApplicationCommand {
                         ...extraFields.filter(e => e !== undefined),
                     ],
                     footer: {
-                        text: `${rarity.shortDisplay} ${rarity.displayName}\t\t\t\t\t\t${otherAttributes.map(a => a.shortDisplay)}`.trim(),
+                        text: `${rarity.shortDisplay} ${rarity.displayName}\t\t\t\t\t\t${otherAttributes.map(a => a.shortDisplay).join("")}`.trim(),
                     },
                 },
             ],
