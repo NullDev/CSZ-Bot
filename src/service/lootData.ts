@@ -2,7 +2,7 @@ import type { LootAttributeTemplate, LootTemplate } from "@/storage/loot.js";
 
 import * as lootDropService from "@/service/lootDrop.js";
 import * as emoteService from "@/service/emote.js";
-import type { Guild } from "discord.js";
+import { GuildMember, type Guild } from "discord.js";
 import type { Loot, LootAttribute } from "@/storage/db/model.js";
 
 import log from "@log";
@@ -112,8 +112,32 @@ export const lootTemplates: LootTemplate[] = [
         displayName: "Arbeitsunfähigkeitsbescheinigung",
         titleText: "Einen gelben Urlaubsschein",
         dropDescription: "Benutze ihn weise!",
+        infoDescription:
+            "Mit der Krankschreibung kannst du deine Wärterschicht abbrechen und dich ausruhen.",
         emote: "🩺",
         asset: "assets/loot/06-krankschreibung.jpg",
+        onUse: async (interaction, context, loot) => {
+            const lootRoles = await import("./lootRoles.js");
+            const member = interaction.member;
+            if (!member || !(member instanceof GuildMember)) {
+                return false;
+            }
+            const isOnDuty = await lootRoles.isInAsseGuardShift(context, member);
+
+            if (!isOnDuty) {
+                await interaction.reply(
+                    "Du bist gar nicht im Dienst, aber hast dir deinen Urlaub trotzdem wohl verdient.",
+                );
+                return false;
+            }
+
+            await lootRoles.endAsseGuardShift(context, member);
+            await interaction.reply(
+                "Du hast kränkelnd beim Werksleiter angerufen und dich krankgemeldet. Genieße deinen Tag zu Hause!",
+            );
+
+            return false;
+        },
     },
     {
         id: LootKindId.WUERFELWURF,

@@ -59,8 +59,12 @@ export async function checkExpiredShifts(context: BotContext) {
     }
 }
 
-async function endAsseGuardShift(context: BotContext, member: GuildMember) {
+export async function endAsseGuardShift(context: BotContext, member: GuildMember) {
     await member.roles.remove(context.roles.lootRoleAsseGuard);
+}
+
+export async function isInAsseGuardShift(context: BotContext, member: GuildMember) {
+    return context.roles.lootRoleAsseGuard.members.has(member.id);
 }
 
 export async function getCurrentAsseGuardOnDuty(context: BotContext) {
