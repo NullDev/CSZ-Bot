@@ -111,7 +111,7 @@ export async function postLootDrop(
                 attachment: await fs.readFile("assets/loot/00-unopened.gif"),
             },
         ],
-        components: [new ActionRowBuilder<ButtonBuilder>().addComponents(takeLootButton)],
+        components: [{ type: ComponentType.ActionRow, components: [takeLootButton] }],
     });
 
     let interaction: Interaction | undefined = undefined;

@@ -154,20 +154,30 @@ export default class InventarCommand implements ApplicationCommand {
                 },
             } satisfies APIEmbed;
 
-            const component = new ActionRowBuilder<ButtonBuilder>().setComponents(
-                new ButtonBuilder()
-                    .setCustomId("page-prev")
-                    .setLabel("<<")
-                    .setDisabled(pageIndex <= 0)
-                    .setStyle(ButtonStyle.Secondary),
-                new ButtonBuilder()
-                    .setCustomId("page-next")
-                    .setLabel(">>")
-                    .setDisabled(pageIndex >= lastPageIndex)
-                    .setStyle(ButtonStyle.Secondary),
-            );
-
-            return { components: [component], embeds: [embed] };
+            return {
+                components: [
+                    {
+                        type: ComponentType.ActionRow,
+                        components: [
+                            {
+                                type: ComponentType.Button,
+                                label: "<<",
+                                customId: "page-prev",
+                                disabled: pageIndex <= 0,
+                                style: ButtonStyle.Secondary,
+                            },
+                            {
+                                type: ComponentType.Button,
+                                label: ">>",
+                                customId: "page-next",
+                                disabled: pageIndex >= lastPageIndex,
+                                style: ButtonStyle.Secondary,
+                            },
+                        ],
+                    },
+                ],
+                embeds: [embed],
+            } as const;
         }
 
         let pageIndex = 0;

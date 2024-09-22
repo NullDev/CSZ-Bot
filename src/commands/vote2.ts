@@ -2,7 +2,6 @@ import { once } from "node:events";
 
 import {
     type APIEmbed,
-    ActionRowBuilder,
     ButtonBuilder,
     type ButtonInteraction,
     ButtonStyle,
@@ -123,7 +122,12 @@ export default class Vote2Command implements ApplicationCommand {
 
         const response = await command.reply({
             embeds: [embed],
-            components: [new ActionRowBuilder<ButtonBuilder>().addComponents(yesButton, noButton)],
+            components: [
+                {
+                    type: ComponentType.ActionRow,
+                    components: [yesButton, noButton],
+                },
+            ],
         });
 
         const votes = new Map<Snowflake, boolean>();
@@ -185,10 +189,13 @@ export default class Vote2Command implements ApplicationCommand {
                 },
             ],
             components: [
-                new ActionRowBuilder<ButtonBuilder>().addComponents(
-                    yesButton.setLabel(`${yesVotes} 👍`).setDisabled(true),
-                    noButton.setLabel(`${noVotes} 👎`).setDisabled(true),
-                ),
+                {
+                    type: ComponentType.ActionRow,
+                    components: [
+                        yesButton.setLabel(`${yesVotes} 👍`).setDisabled(true),
+                        noButton.setLabel(`${noVotes} 👎`).setDisabled(true),
+                    ],
+                },
             ],
         });
     }
