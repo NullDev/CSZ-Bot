@@ -126,7 +126,7 @@ export default class InventarCommand implements ApplicationCommand {
         );
 
         let lastPageIndex = Math.floor(contents.length / pageSize);
-        lastPageIndex -= content.length % pageSize === 0 ? 1 : 0;
+        lastPageIndex -= contents.length % pageSize === 0 ? 1 : 0;
 
         function buildMessageData(pageIndex: number) {
             const firstItemIndex = pageIndex * pageSize;
