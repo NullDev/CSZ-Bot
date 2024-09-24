@@ -125,7 +125,8 @@ export default class InventarCommand implements ApplicationCommand {
             b.createdAt.localeCompare(a.createdAt),
         );
 
-        const lastPageIndex = Math.floor(contents.length / pageSize);
+        let lastPageIndex = Math.floor(contents.length / pageSize);
+        lastPageIndex -= (content.length % pageSize) === 0 ? 1 : 0;
 
         function buildMessageData(pageIndex: number) {
             const firstItemIndex = pageIndex * pageSize;
