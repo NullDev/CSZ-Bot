@@ -378,7 +378,7 @@ export const lootTemplates: LootTemplate[] = [
     },
     {
         id: LootKindId.SCHICHTBEGINN_ASSE_2,
-        weight: 1,
+        weight: 4,
         displayName: "Wärter Asse II",
         titleText: "Den Schichtbeginn in der Asse II",
         dropDescription: "Deine Wärterschicht bei der Asse II beginnt!",
