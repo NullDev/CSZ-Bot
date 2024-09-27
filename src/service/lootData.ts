@@ -365,7 +365,7 @@ export const lootTemplates: LootTemplate[] = [
         dropDescription:
             "Rauchig, kräftig, französisch. Wie du in deinen Träumen.\n\nVerursacht Herzanfälle, genau wie dieser Server",
         emote: "🚬",
-        asset: "assets/loot/26-gauloises-blau.jpg",
+        asset: "assets/loot/26-gauloises-blau.png",
     },
     {
         id: LootKindId.MAXWELL,
