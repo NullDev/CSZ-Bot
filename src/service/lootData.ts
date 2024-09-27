@@ -374,7 +374,7 @@ export const lootTemplates: LootTemplate[] = [
         titleText: "Einen Maxwell",
         dropDescription: "Der ist doch tot, oder?",
         emote: "😸",
-        asset: "assets/loot/27-maxwell.jpg",
+        asset: "assets/loot/27-maxwell.gif",
     },
     {
         id: LootKindId.SCHICHTBEGINN_ASSE_2,
