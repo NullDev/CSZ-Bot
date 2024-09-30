@@ -5,6 +5,7 @@ import {
     type CommandInteraction,
     ComponentType,
     ContextMenuCommandBuilder,
+    type ContextMenuCommandType,
     type Message,
     type Role,
     RoleSelectMenuBuilder,
@@ -23,7 +24,7 @@ export default class FaulenzerPingCommand implements ApplicationCommand {
         "Pingt alle Leute, die noch nicht auf die ausgewählte Nachricht reagiert haben, aber in der angegebenen Gruppe sind.";
     applicationCommand = new ContextMenuCommandBuilder()
         .setName("Faulenzerping")
-        .setType(ApplicationCommandType.Message);
+        .setType(ApplicationCommandType.Message as ContextMenuCommandType);
 
     async handleInteraction(command: CommandInteraction, context: BotContext) {
         if (!command.isMessageContextMenuCommand()) {
