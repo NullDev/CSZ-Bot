@@ -94,7 +94,7 @@ export default class ErinnerungCommand implements MessageCommand, ApplicationCom
 
     async handleMessage(message: ProcessableMessage, context: BotContext) {
         // TODO: Create utility function that removes the command prefix for easier parsing
-        const param = message.content.split(`${context.prefix.command}${this.name} `)[1];
+        const param = message.content.slice(`${context.prefix.command}${this.name}`.length).trim();
         if (!param) {
             await message.reply("Brudi ich muss schon wissen wann ich dich erinnern soll");
             return;
