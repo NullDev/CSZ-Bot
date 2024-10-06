@@ -29,7 +29,7 @@
     "@js-temporal/polyfill": "^0.4.4",
     "@napi-rs/canvas": "^0.1.56",
     "@resvg/resvg-js": "^2.6.2",
-    "@sentry/bun": "^8.33.0",
+    "@sentry/bun": "^8.33.1",
     "@std/jsonc": "npm:@jsr/std__jsonc@^1.0.1",
     "chrono-node": "^2.7.7",
     "croner": "^8.1.2",
@@ -40,7 +40,7 @@
     "kysely": "^0.27.4",
     "kysely-bun-sqlite": "^0.3.2",
     "libsodium-wrappers": "^0.7.15",
-    "messageformat": "^4.0.0-7",
+    "messageformat": "^4.0.0-8",
     "pino": "^9.4.0",
     "splid-js": "^1.1.1",
     "urlpattern-polyfill": "^10.0.0"
