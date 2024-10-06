@@ -13,7 +13,7 @@ describe("loot template assets", () => {
 
 describe("loot template IDs", () => {
     test.each(lootTemplates.map(t => t.id))("template ID %p should match array index", id => {
-        expect(lootTemplates[id as number].id).toBe(id);
+        expect(lootTemplates[id].id).toBe(id);
         expect(lootTemplates.filter(t => t.id === id)).toHaveLength(1);
     });
 });
