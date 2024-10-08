@@ -45,6 +45,8 @@ export async function checkExpiredShifts(context: BotContext) {
             m.user.id,
             LootKindId.SCHICHTBEGINN_ASSE_2,
         );
+        log.info({ member: m.id, drops: drops.length }, "Checking AsseGuard shift");
+
         if (drops.length === 0) {
             await endAsseGuardShift(context, m);
             continue;
