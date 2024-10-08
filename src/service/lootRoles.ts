@@ -35,9 +35,8 @@ export async function startAsseGuardShift(
 export async function checkExpiredShifts(context: BotContext) {
     const now = Date.now();
 
-    const shiftDurationMs = context.commandConfig.loot.roles.asseGuardShiftDuration.milliseconds;
-
-    const neededShiftStartTs = now - shiftDurationMs;
+    const shiftDurationMs =
+        context.commandConfig.loot.roles.asseGuardShiftDuration.total("microsecond");
 
     const currentGuards = context.roles.lootRoleAsseGuard.members;
     for (const m of currentGuards.values()) {
@@ -54,13 +53,14 @@ export async function checkExpiredShifts(context: BotContext) {
         }
 
         const allShiftsExpired = drops.every(
-            d => new Date(d.createdAt).getTime() < neededShiftStartTs,
+            d => new Date(d.claimedAt).getTime() + shiftDurationMs < now,
         );
         if (allShiftsExpired) {
             log.info({ member: m.id }, "All shifts expired for AsseGuard");
             // await endAsseGuardShift(context, m);
         }
     }
+    log.info("Finished checking AsseGuard shifts");
 }
 
 export async function endAsseGuardShift(context: BotContext, member: GuildMember) {
