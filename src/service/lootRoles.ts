@@ -48,7 +48,8 @@ export async function checkExpiredShifts(context: BotContext) {
         log.info({ member: m.id, drops: drops.length }, "Checking AsseGuard shift");
 
         if (drops.length === 0) {
-            await endAsseGuardShift(context, m);
+            log.info({ member: m.id }, "No drops found for AsseGuard shift");
+            // await endAsseGuardShift(context, m);
             continue;
         }
 
@@ -56,7 +57,8 @@ export async function checkExpiredShifts(context: BotContext) {
             d => new Date(d.createdAt).getTime() < neededShiftStartTs,
         );
         if (allShiftsExpired) {
-            await endAsseGuardShift(context, m);
+            log.info({ member: m.id }, "All shifts expired for AsseGuard");
+            // await endAsseGuardShift(context, m);
         }
     }
 }
