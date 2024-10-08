@@ -60,6 +60,7 @@ export async function checkExpiredShifts(context: BotContext) {
 }
 
 export async function endAsseGuardShift(context: BotContext, member: GuildMember) {
+    log.info({ member: member.id }, "Ending AsseGuard shift");
     await member.roles.remove(context.roles.lootRoleAsseGuard);
 }
 
