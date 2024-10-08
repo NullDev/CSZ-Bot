@@ -217,7 +217,6 @@ export async function transferLootToUser(
         const oldLoot = await ctx
             .selectFrom("loot")
             .where("id", "=", lootId)
-            .forUpdate()
             .selectAll()
             .executeTakeFirstOrThrow();
 
