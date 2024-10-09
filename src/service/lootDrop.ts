@@ -146,6 +146,8 @@ export async function postLootDrop(
     if (donor !== undefined && interaction.user.id === donor.id) {
         await message.edit({
             content: `${interaction.user} hat versucht, das Geschenki selbst zu öffnen. Das geht aber nichti ${hamster}\nDas Geschenk macht plopp und ist weg! 🎈`,
+            embeds: [],
+            components: [],
         });
         return;
     }
