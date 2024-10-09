@@ -52,6 +52,10 @@ export interface LootTemplate {
     ) => Promise<boolean>;
 
     asset: string | null;
+
+    /**
+     * Image that should be used for the item on its info card. Order matters, the first one that is there will be used.
+     */
     attributeAsset?: Partial<Record<LootAttributeKindId, string>>;
 }
 

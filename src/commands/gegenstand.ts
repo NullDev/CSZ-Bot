@@ -159,10 +159,6 @@ export default class GegenstandCommand implements ApplicationCommand {
 
         const effects = template.effects ?? [];
 
-        const attachment = template.asset
-            ? await imageService.clampImageSizeByWidth(await fs.readFile(template.asset), 200)
-            : null;
-
         const emote = lootDataService.getEmote(interaction.guild, item);
 
         const rarity =
@@ -170,6 +166,22 @@ export default class GegenstandCommand implements ApplicationCommand {
             lootDataService.lootAttributeTemplates[LootAttributeKindId.RARITY_NORMAL];
 
         const otherAttributes = lootDataService.extractNonRarityAttributes(attributes);
+
+        let assetPath = template.asset;
+        if (template.attributeAsset) {
+            for (const attribute of otherAttributes) {
+                const asset =
+                    template.attributeAsset[attribute.attributeKindId as LootAttributeKindId];
+                if (asset) {
+                    assetPath = asset;
+                    break;
+                }
+            }
+        }
+
+        const attachment = assetPath
+            ? await imageService.clampImageSizeByWidth(await fs.readFile(assetPath), 200)
+            : null;
 
         const extraFields: (APIEmbedField | undefined)[] = [
             template.onUse !== undefined
@@ -191,7 +203,7 @@ export default class GegenstandCommand implements ApplicationCommand {
                     color: 0x00ff00,
                     image: attachment
                         ? {
-                              url: "attachment://opened.gif",
+                              url: "attachment://hero.gif",
                               width: 128,
                           }
                         : undefined,
@@ -211,7 +223,7 @@ export default class GegenstandCommand implements ApplicationCommand {
             files: attachment
                 ? [
                       {
-                          name: "opened.gif",
+                          name: "hero.gif",
                           attachment,
                       },
                   ]
