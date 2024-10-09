@@ -20,11 +20,7 @@ import type {
 } from "./db/model.js";
 
 import db from "@db";
-import {
-    LootAttributeClassId,
-    LootAttributeKindId,
-    lootAttributeTemplates,
-} from "@/service/lootData.js";
+import type { LootAttributeKindId } from "@/service/lootData.js";
 
 export type LootUseCommandInteraction = ChatInputCommandInteraction & {
     channel: GuildTextBasedChannel;
@@ -54,7 +50,9 @@ export interface LootTemplate {
         context: BotContext,
         loot: Loot,
     ) => Promise<boolean>;
+
     asset: string | null;
+    attributeAsset?: Partial<Record<LootAttributeKindId, string>>;
 }
 
 export interface LootAttributeTemplate {

@@ -46,6 +46,19 @@ export enum LootKindId {
     THUNFISCHSHAKE = 33,
 }
 
+export enum LootAttributeClassId {
+    OTHER = 0,
+    RARITY = 1,
+}
+
+export enum LootAttributeKindId {
+    RARITY_NORMAL = 0,
+    RARITY_RARE = 1,
+    RARITY_VERY_RARE = 2,
+    RADIOACTIVE = 3,
+    SWEET = 4,
+}
+
 /**
  * @remarks The index of an item must be equal to the `LootTypeId` enum value.
  */
@@ -67,6 +80,9 @@ export const lootTemplates: LootTemplate[] = [
         dropDescription: "Awww",
         emote: ":catsmile:",
         asset: "assets/loot/01-kadse.jpg",
+        attributeAsset: {
+            [LootAttributeKindId.RADIOACTIVE]: "assets/loot/attributes/01-kadse-verstrahlt.jpg",
+        },
     },
     {
         id: LootKindId.MESSERBLOCK,
@@ -449,19 +465,6 @@ export const lootTemplates: LootTemplate[] = [
         - Timeout?
         - Sonderrolle, die man nur mit Geschenk gewinnen kann und jedes Mal weitergereicht wird (Wächter des Pfeffi?)? Wärter bei Asse II?
 */
-
-export enum LootAttributeClassId {
-    OTHER = 0,
-    RARITY = 1,
-}
-
-export enum LootAttributeKindId {
-    RARITY_NORMAL = 0,
-    RARITY_RARE = 1,
-    RARITY_VERY_RARE = 2,
-    RADIOACTIVE = 3,
-    SWEET = 4,
-}
 
 /**
  * @remarks The index of an item must be equal to the `LootAttributeKindId` enum value.
