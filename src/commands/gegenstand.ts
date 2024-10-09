@@ -119,7 +119,8 @@ export default class GegenstandCommand implements ApplicationCommand {
             return;
         }
 
-        await lootService.deleteLoot(sweetContent[0].id);
+        // await lootService.deleteLoot(sweetContent[0].id);
+        await lootService.transferLootToUser(sweetContent[0].id, currentGuard.user, true);
         await lootService.transferLootToUser(wasteContents[0].id, currentGuard.user, true);
 
         const messages = [
