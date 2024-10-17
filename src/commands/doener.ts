@@ -104,7 +104,7 @@ export default class DoenerCommand implements MessageCommand {
             Math.random() > 0.7
                 ? `Du könntest dir aber auch knapp ${(amount / prices.ghettorade).toFixed(0)} köstliche Ghettorade Mischen zubereiten.`
                 : "";
-        
+
         const kaffeemuehleStr =
             Math.random() > 0.7
                 ? `Oder ${(amount / prices.ghettorade).toFixed(0)} absolut kranke Kaffeemühlen kaufen.`
