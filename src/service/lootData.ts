@@ -44,6 +44,7 @@ export enum LootKindId {
     BRAVO = 31,
     VERSCHIMMELTER_DOENER = 32,
     THUNFISCHSHAKE = 33,
+    KAFFEEMUEHLE = 34,
 }
 
 export enum LootAttributeClassId {
@@ -451,6 +452,15 @@ export const lootTemplates: LootTemplate[] = [
         dropDescription: "Nach Rezept zubereitet, bestehend aus Thunfisch und Reiswaffeln",
         emote: ":baby_bottle:",
         asset: "assets/loot/32-thunfischshake.jpg",
+    },
+    {
+        id: LootKindId.KAFFEEMUEHLE,
+        weight: 2,
+        displayName: "Kaffeemühle",
+        titleText: "Eine Kaffeemühle für 400€",
+        dropDescription: "Kann Kaffee mühlen. Und das gut. Mit Gold.",
+        emote: ":coffee:",
+        asset: "assets/loot/34-kaffeemuehle.jpg",
     },
 ] as const;
 
