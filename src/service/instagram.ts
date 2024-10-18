@@ -20,7 +20,7 @@ interface ApiResponse {
     title: string;
     picture: string;
     links?: LinkEntry[];
-    images: unknown[];
+    images: string[];
     timeTaken: string;
     r_id: string;
 }
@@ -29,7 +29,8 @@ export type InstagramResponse = SuccessInstagramResponse | ErrorInstagramRespons
 
 export interface SuccessInstagramResponse {
     success: true;
-    mediaUrls: string[];
+    videoUrls: string[];
+    imageUrls: string[];
 }
 
 export interface ErrorInstagramResponse {
@@ -99,10 +100,10 @@ export async function downloadInstagramContent(
             linksPerPage[idx].push(link);
         }
 
-        const mediaUrls = linksPerPage
+        const videoUrls = linksPerPage
             // biome-ignore lint/style/noNonNullAssertion: It exists
             .map(links => sortLinksByVideoQuality(links).at(-1)!.link);
-        if (mediaUrls.length === 0) {
+        if (videoUrls.length === 0 && result.images.length === 0) {
             return {
                 success: false,
                 message: "Got no links :(",
@@ -112,7 +113,8 @@ export async function downloadInstagramContent(
 
         return {
             success: true,
-            mediaUrls,
+            videoUrls,
+            imageUrls: result.images ?? [],
         };
     } catch (error) {
         sentry.captureException(error);

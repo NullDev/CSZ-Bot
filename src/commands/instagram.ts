@@ -60,13 +60,20 @@ export default class InstagramLink implements SpecialCommand {
                 return;
             }
 
+            const videoFiles = result.videoUrls.map((url, idx) => ({
+                attachment: url,
+                name: `Drecksvideo_${idx}.mp4`,
+            }));
+            const imageFiles = result.imageUrls.map((url, idx) => ({
+                attachment: url,
+                name: `Drecksbild_${idx}.jpg`,
+            }));
+            const files = [...imageFiles, ...videoFiles];
+
             // We need to reply, since we cannot edit a message created by a different user (only remove embeds)
             await message.reply({
                 content: "Dein Dreckspost du Hund:",
-                files: result.mediaUrls.map((url, idx) => ({
-                    attachment: url,
-                    name: `Drecksvideo_${idx}.mp4`,
-                })),
+                files,
             });
         }
         await message.suppressEmbeds(true);
