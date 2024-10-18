@@ -123,15 +123,20 @@ export async function downloadInstagramContent(
 {"quality": "audio_0", "link": "(link unavailable)"}
 */
 const priorityMap: Record<string, number> = {
-    video_sd_0: 0,
-    video_render_360p_0: 1,
-    video_render_540p_0: 2,
-    video_render_720p_0: 3,
-    video_hd_0: 4,
-    video_render_1080p_0: 5,
+    video_sd: 0,
+    video_render_360p: 1,
+    video_render_540p: 2,
+    video_render_720p: 3,
+    video_hd: 4,
+    video_render_1080p: 5,
 };
 function sortLinksByVideoQuality<T extends LinkEntry>(links: readonly T[]): T[] {
-    return links.toSorted(
-        (a, b) => (priorityMap[a.quality] ?? -1) - (priorityMap[b.quality] ?? -1),
-    );
+    const findMatchingPriority = (link: T) => {
+        const matchingKey = Object.keys(priorityMap).find(v => v.startsWith(link.quality));
+        if (matchingKey === undefined) {
+            return -1;
+        }
+        return priorityMap[matchingKey];
+    };
+    return links.toSorted((a, b) => findMatchingPriority(a) - findMatchingPriority(b));
 }
