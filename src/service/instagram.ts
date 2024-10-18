@@ -29,7 +29,7 @@ export type InstagramResponse = SuccessInstagramResponse | ErrorInstagramRespons
 
 export interface SuccessInstagramResponse {
     success: true;
-    mediaUrl: string;
+    mediaUrls: string[];
 }
 
 export interface ErrorInstagramResponse {
@@ -87,8 +87,22 @@ export async function downloadInstagramContent(
             };
         }
 
-        const videoLinks = result.links.filter(l => l.quality.startsWith("video_"));
-        if (videoLinks.length === 0) {
+        // I'm too stupid to do this in a reduce function.
+        const linksPerPage: LinkEntry[][] = [];
+        const linkCandidates = result.links.filter(l => l.quality.startsWith("video_"));
+        for (const link of linkCandidates) {
+            const lastIndexOfUnderscore = link.quality.lastIndexOf("_");
+            const idx = Number(link.quality.substring(lastIndexOfUnderscore + 1));
+            if (linksPerPage[idx] === undefined) {
+                linksPerPage[idx] = [];
+            }
+            linksPerPage[idx].push(link);
+        }
+
+        const mediaUrls = linksPerPage
+            // biome-ignore lint/style/noNonNullAssertion: It exists
+            .map(links => sortLinksByVideoQuality(links).at(-1)!.link);
+        if (mediaUrls.length === 0) {
             return {
                 success: false,
                 message: "Got no links :(",
@@ -98,8 +112,7 @@ export async function downloadInstagramContent(
 
         return {
             success: true,
-            // biome-ignore lint/style/noNonNullAssertion: It exists
-            mediaUrl: sortLinksByVideoQuality(videoLinks).at(-1)!.link,
+            mediaUrls,
         };
     } catch (error) {
         sentry.captureException(error);

@@ -5,6 +5,7 @@ import type { BotContext } from "@/context.js";
 import * as instagramService from "@/service/instagram.js";
 
 const instagramOptions = {
+    // TODO: https://www.instagram.com/p/C_OQe4FON7Q/
     uriPattern: /https?:\/\/(?:www\.)?instagram\.com\/(?:reel|tv|p)\/(?:[0-9a-zA-Z_-]+)\/?/gi,
     headers: {
         "User-Agent":
@@ -62,12 +63,10 @@ export default class InstagramLink implements SpecialCommand {
             // We need to reply, since we cannot edit a message created by a different user (only remove embeds)
             await message.reply({
                 content: "Dein Dreckspost du Hund:",
-                files: [
-                    {
-                        attachment: result.mediaUrl,
-                        name: "Drecksvideo.mp4",
-                    },
-                ],
+                files: result.mediaUrls.map((url, idx) => ({
+                    attachment: url,
+                    name: `Drecksvideo_${idx}.mp4`,
+                })),
             });
         }
         await message.suppressEmbeds(true);
