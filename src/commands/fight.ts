@@ -2,12 +2,12 @@ import type { ApplicationCommand } from "@/commands/command.js";
 import {
     APIEmbed,
     APIEmbedField,
-    CommandInteraction,
+    type CommandInteraction,
     ContextMenuCommandBuilder,
     SlashCommandBuilder,
     SlashCommandUserOption,
 } from "discord.js";
-import { BotContext } from "@/context.js";
+import type { BotContext } from "@/context.js";
 import { Entity, fight, FightScene } from "@/service/fight.js";
 import { JSONEncodable } from "@discordjs/util";
 
@@ -19,7 +19,7 @@ export default class FightCommand implements ApplicationCommand {
         .setDescription(this.description);
 
     async handleInteraction(command: CommandInteraction, context: BotContext) {
-        let interactionResponse = await command.deferReply();
+        const interactionResponse = await command.deferReply();
         fight(interactionResponse);
     }
 }
