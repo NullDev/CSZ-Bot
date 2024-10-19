@@ -89,7 +89,7 @@ export async function downloadInstagramContent(
         return {
             success: true,
             videoUrls: videoUrls ?? [],
-            imageUrls: result.images ?? [],
+            imageUrls: imageUrls ?? [],
         };
     } catch (error) {
         sentry.captureException(error);
