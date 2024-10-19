@@ -1,5 +1,5 @@
-import { APIEmbed, APIEmbedField, BooleanCache, CacheType, InteractionResponse } from "discord.js";
-import { JSONEncodable } from "@discordjs/util";
+import { type APIEmbed, APIEmbedField, type BooleanCache, type CacheType, type InteractionResponse } from "discord.js";
+import type { JSONEncodable } from "@discordjs/util";
 import { setTimeout } from "node:timers/promises";
 import { name } from "croner";
 import { en } from "chrono-node";
@@ -58,8 +58,8 @@ export class Entity {
         this.stats.items
             .filter(value => value.attackModifier)
             .forEach(value => (rawDamage += randomValue(value.attackModifier!)));
-        let defence = enemy.defend();
-        let result = calcDamage(rawDamage, defence);
+        const defence = enemy.defend();
+        const result = calcDamage(rawDamage, defence);
         console.log(
             this.stats.name +
                 " (" +
@@ -109,13 +109,13 @@ export interface FightScene {
     enemy: Entity;
 }
 
-let exampleWeapon: EquipableWeapon = { name: "dildo", attack: { min: 3, max: 8 } };
-let exampleArmor: EquipableArmor = { name: "nachthemd", defence: { min: 2, max: 5 }, health: 20 };
-let healitem: EquipableItem = {
+const exampleWeapon: EquipableWeapon = { name: "dildo", attack: { min: 3, max: 8 } };
+const exampleArmor: EquipableArmor = { name: "nachthemd", defence: { min: 2, max: 5 }, health: 20 };
+const healitem: EquipableItem = {
     name: "powerade",
     afterFight: scene1 => {
         if (Math.random() < 0.2) {
-            let health = randomValue({ min: 1, max: 5 });
+            const health = randomValue({ min: 1, max: 5 });
             scene1.player.stats.health += health;
             scene1.player.itemtext.push(healitem!.name + " +" + health + "HP");
             console.log(
@@ -145,7 +145,7 @@ function randomValue(range: Range) {
 }
 
 export async function fight(interactionResponse: InteractionResponse<BooleanCache<CacheType>>) {
-    let playerstats = {
+    const playerstats = {
         name: "Player",
         health: 80,
         baseDamage: 1,
@@ -153,7 +153,7 @@ export async function fight(interactionResponse: InteractionResponse<BooleanCach
         items: [],
         weapon: exampleWeapon,
     };
-    let enemystats = {
+    const enemystats = {
         name: "Gudrun die Hexe",
         health: 120,
         baseDamage: 1,
@@ -162,10 +162,10 @@ export async function fight(interactionResponse: InteractionResponse<BooleanCach
         armor: exampleArmor,
     };
 
-    let enemy = new Entity(enemystats);
-    let player = new Entity(playerstats);
+    const enemy = new Entity(enemystats);
+    const player = new Entity(playerstats);
 
-    let scene: FightScene = {
+    const scene: FightScene = {
         player: player,
         enemy: enemy,
     };
