@@ -75,35 +75,10 @@ export async function downloadInstagramContent(
             };
         }
 
-        if (
-            !result.links ||
-            !Array.isArray(result.links) ||
-            result.links.length === 0 ||
-            typeof result.links[0].link !== "string"
-        ) {
-            return {
-                success: false,
-                message: "Got no links :(",
-                raw: result,
-            };
-        }
+        const videoUrls = extractVideoUrls(result);
+        const imageUrls = extractImageUrls(result);
 
-        // I'm too stupid to do this in a reduce function.
-        const linksPerPage: LinkEntry[][] = [];
-        const linkCandidates = result.links.filter(l => l.quality.startsWith("video_"));
-        for (const link of linkCandidates) {
-            const lastIndexOfUnderscore = link.quality.lastIndexOf("_");
-            const idx = Number(link.quality.substring(lastIndexOfUnderscore + 1));
-            if (linksPerPage[idx] === undefined) {
-                linksPerPage[idx] = [];
-            }
-            linksPerPage[idx].push(link);
-        }
-
-        const videoUrls = linksPerPage
-            // biome-ignore lint/style/noNonNullAssertion: It exists
-            .map(links => sortLinksByVideoQuality(links).at(-1)!.link);
-        if (videoUrls.length === 0 && result.images.length === 0) {
+        if (imageUrls === null && videoUrls === null) {
             return {
                 success: false,
                 message: "Got no links :(",
@@ -113,7 +88,7 @@ export async function downloadInstagramContent(
 
         return {
             success: true,
-            videoUrls,
+            videoUrls: videoUrls ?? [],
             imageUrls: result.images ?? [],
         };
     } catch (error) {
@@ -124,6 +99,48 @@ export async function downloadInstagramContent(
             raw: error,
         };
     }
+}
+
+function extractImageUrls(response: ApiResponse) {
+    if (
+        !response.images ||
+        !Array.isArray(response.images) ||
+        response.images.length === 0 ||
+        typeof response.images !== "string"
+    ) {
+        return null;
+    }
+
+    return response.images;
+}
+
+function extractVideoUrls(response: ApiResponse) {
+    if (
+        !response.links ||
+        !Array.isArray(response.links) ||
+        response.links.length === 0 ||
+        typeof response.links[0].link !== "string"
+    ) {
+        return null;
+    }
+
+    // I'm too stupid to do this in a reduce function.
+    const linksPerPage: LinkEntry[][] = [];
+    const linkCandidates = response.links.filter(l => l.quality.startsWith("video_"));
+    for (const link of linkCandidates) {
+        const lastIndexOfUnderscore = link.quality.lastIndexOf("_");
+        const idx = Number(link.quality.substring(lastIndexOfUnderscore + 1));
+        if (linksPerPage[idx] === undefined) {
+            linksPerPage[idx] = [];
+        }
+        linksPerPage[idx].push(link);
+    }
+
+    return (
+        linksPerPage
+            // biome-ignore lint/style/noNonNullAssertion: It exists
+            .map(links => sortLinksByVideoQuality(links).at(-1)!.link)
+    );
 }
 
 // Example links from docs
