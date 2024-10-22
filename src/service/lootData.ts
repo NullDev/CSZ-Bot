@@ -6,6 +6,7 @@ import { GuildMember, type Guild } from "discord.js";
 import type { Loot, LootAttribute } from "@/storage/db/model.js";
 
 import log from "@log";
+import { gameItems } from "@/service/fightData.js";
 
 const ACHTUNG_NICHT_DROPBAR_WEIGHT_KG = 0;
 
@@ -196,6 +197,7 @@ export const lootTemplates: LootTemplate[] = [
         dropDescription: "Der gute von Müller",
         emote: "🥛",
         asset: "assets/loot/09-ayran.jpg",
+        gameEquip: gameItems.ayran,
     },
     {
         id: LootKindId.PKV,
@@ -285,6 +287,7 @@ export const lootTemplates: LootTemplate[] = [
         dropDescription: "Ja dann Prost ne!",
         emote: "🍺",
         asset: "assets/loot/16-oettinger.jpg",
+        gameEquip: gameItems.oettinger,
     },
     {
         id: LootKindId.ACHIEVEMENT,
