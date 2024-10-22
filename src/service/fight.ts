@@ -1,132 +1,18 @@
-import { type APIEmbed, APIEmbedField, type BooleanCache, type CacheType, type InteractionResponse } from "discord.js";
+import {
+    type APIEmbed,
+    APIEmbedField,
+    type BooleanCache,
+    type CacheType,
+    type InteractionResponse,
+} from "discord.js";
 import type { JSONEncodable } from "@discordjs/util";
 import { setTimeout } from "node:timers/promises";
-
-
-interface EquipableWeapon {
-    attack: Range;
-    name: string;
-}
-
-interface EquipableArmor {
-    defence: Range;
-    health: number;
-    name: string;
-}
-
-export interface BaseEntity {
-    health: number;
-    name: string;
-    baseDamage: number;
-    baseDefence: number;
-    items: EquipableItem[];
-    weapon?: EquipableWeapon;
-    armor?: EquipableArmor;
-    //TODO
-    permaBuffs?: undefined;
-}
-
-function calcDamage(rawDamage: number, defence: number) {
-    if (defence >= rawDamage) {
-        return { rawDamage: rawDamage, damage: 0, mitigated: rawDamage };
-    }
-    return { rawDamage: rawDamage, damage: rawDamage - defence, mitigated: defence };
-}
-
-export class Entity {
-    stats: BaseEntity;
-    maxhealth: number;
-    lastattack?: number;
-    lastdefence?: number;
-    itemtext: string[] = [];
-
-    constructor(entity: BaseEntity) {
-        this.stats = entity;
-        if (this.stats.armor) {
-            this.stats.health += this.stats.armor?.health;
-        }
-        this.maxhealth = this.stats.health;
-    }
-
-    attack(enemy: Entity) {
-        let rawDamage: number;
-        rawDamage = this.stats.baseDamage;
-        if (this.stats.weapon) {
-            rawDamage += randomValue(this.stats.weapon.attack);
-        }
-        this.stats.items
-            .filter(value => value.attackModifier)
-            .forEach(value => (rawDamage += randomValue(value.attackModifier!)));
-        const defence = enemy.defend();
-        const result = calcDamage(rawDamage, defence);
-        console.log(
-            this.stats.name +
-                " (" +
-                this.stats.health +
-                ") hits " +
-                enemy.stats.name +
-                " (" +
-                enemy.stats.health +
-                ") for " +
-                result.damage +
-                " mitigated " +
-                result.mitigated,
-        );
-        enemy.stats.health -= result.damage;
-        this.lastattack = result.rawDamage;
-        return result;
-    }
-
-    defend() {
-        let defence = this.stats.baseDefence;
-        if (this.stats.armor) {
-            defence += randomValue(this.stats.armor.defence);
-        }
-        this.stats.items
-            .filter(value => value.defenceModifier)
-            .forEach(value => (defence += randomValue(value.defenceModifier!)));
-        this.lastdefence = defence;
-        return defence;
-    }
-}
-
-interface Range {
-    min: number;
-    max: number;
-}
-
-interface EquipableItem {
-    name: string;
-    attackModifier?: Range;
-    defenceModifier?: Range;
-    afterFight?: (scene: FightScene) => void;
-    modifyAttack?: (scene: FightScene) => void;
-}
+import { BaseEntity, Entity } from "@/service/fightData.js";
 
 export interface FightScene {
     player: Entity;
     enemy: Entity;
 }
-
-const exampleWeapon: EquipableWeapon = { name: "dildo", attack: { min: 3, max: 8 } };
-const exampleArmor: EquipableArmor = { name: "nachthemd", defence: { min: 2, max: 5 }, health: 20 };
-const healitem: EquipableItem = {
-    name: "powerade",
-    afterFight: scene1 => {
-        if (Math.random() < 0.2) {
-            const health = randomValue({ min: 1, max: 5 });
-            scene1.player.stats.health += health;
-            scene1.player.itemtext.push(healitem!.name + " +" + health + "HP");
-            console.log(
-                scene1.player.stats.name +
-                    " gets healed by " +
-                    health +
-                    " from item" +
-                    healitem.name,
-            );
-        }
-    },
-};
 
 type result = "PLAYER" | "ENEMY" | undefined;
 
@@ -139,28 +25,11 @@ function checkWin(fightscene: FightScene): result {
     }
 }
 
-function randomValue(range: Range) {
-    return Math.round(range.min + Math.random() * (range.max - range.min));
-}
-
-export async function fight(interactionResponse: InteractionResponse<BooleanCache<CacheType>>) {
-    const playerstats = {
-        name: "Player",
-        health: 80,
-        baseDamage: 1,
-        baseDefence: 0,
-        items: [],
-        weapon: exampleWeapon,
-    };
-    const enemystats = {
-        name: "Gudrun die Hexe",
-        health: 120,
-        baseDamage: 1,
-        baseDefence: 1,
-        items: [healitem],
-        armor: exampleArmor,
-    };
-
+export async function fight(
+    playerstats: BaseEntity,
+    enemystats: BaseEntity,
+    interactionResponse: InteractionResponse<BooleanCache<CacheType>>,
+) {
     const enemy = new Entity(enemystats);
     const player = new Entity(playerstats);
 
