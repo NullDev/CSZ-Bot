@@ -237,11 +237,35 @@ export async function transferLootToUser(
             delete replacement.id;
         }
 
-        return await ctx
+        const newLoot = await ctx
             .insertInto("loot")
             .values(replacement)
             .returningAll()
             .executeTakeFirstOrThrow();
+
+        const oldLootAttributes = await ctx
+            .selectFrom("lootAttribute")
+            .where("lootId", "=", oldLoot.id)
+            .selectAll()
+            .execute();
+
+        const newLootAttributes = oldLootAttributes.map(attr => ({
+            ...attr,
+            id: undefined,
+            lootId: newLoot.id,
+        }));
+
+        const inserted = await ctx
+            .insertInto("lootAttribute")
+            .values(newLootAttributes)
+            .returningAll()
+            .execute();
+
+        if (inserted.length !== newLootAttributes.length) {
+            throw new Error("Not all attributes were inserted");
+        }
+
+        return newLoot;
     });
 }
 
