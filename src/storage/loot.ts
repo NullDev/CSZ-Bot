@@ -249,20 +249,22 @@ export async function transferLootToUser(
             .selectAll()
             .execute();
 
-        const newLootAttributes = oldLootAttributes.map(attr => ({
-            ...attr,
-            id: undefined,
-            lootId: newLoot.id,
-        }));
+        if (oldLootAttributes.length > 0) {
+            const newLootAttributes = oldLootAttributes.map(attr => ({
+                ...attr,
+                id: undefined,
+                lootId: newLoot.id,
+            }));
 
-        const inserted = await ctx
-            .insertInto("lootAttribute")
-            .values(newLootAttributes)
-            .returningAll()
-            .execute();
+            const inserted = await ctx
+                .insertInto("lootAttribute")
+                .values(newLootAttributes)
+                .returningAll()
+                .execute();
 
-        if (inserted.length !== newLootAttributes.length) {
-            throw new Error("Not all attributes were inserted");
+            if (inserted.length !== newLootAttributes.length) {
+                throw new Error("Not all attributes were inserted");
+            }
         }
 
         return newLoot;
