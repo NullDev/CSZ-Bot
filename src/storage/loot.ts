@@ -209,6 +209,21 @@ export async function getLootsWithAttribute(attributeKindId: number, ctx = db())
         .execute();
 }
 
+export async function transferMultipleLootToUser(
+    lootIds: readonly LootId[],
+    userId: User["id"],
+    trackPredecessor: boolean,
+    ctx = db(),
+) {
+    return ctx.transaction().execute(async ctx => {
+        const res = [];
+        for (const id of lootIds) {
+            res.push(await transferLootToUser(id, userId, trackPredecessor, ctx));
+        }
+        return res;
+    });
+}
+
 export async function transferLootToUser(
     lootId: LootId,
     userId: User["id"],

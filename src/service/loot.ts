@@ -4,6 +4,7 @@ import type { LootId, LootInsertable, LootOrigin } from "@/storage/db/model.js";
 import type { LootAttributeKindId, LootKindId } from "./lootData.js";
 import * as loot from "@/storage/loot.js";
 import * as lootDataService from "@/service/lootData.js";
+import db from "@/storage/db/db.js";
 
 export async function getInventoryContents(user: User) {
     const contents = await loot.findOfUserWithAttributes(user);
@@ -46,6 +47,14 @@ export async function getLootsWithAttribute(attributeKindId: LootAttributeKindId
 
 export function transferLootToUser(lootId: LootId, user: User, trackPredecessor: boolean) {
     return loot.transferLootToUser(lootId, user.id, trackPredecessor);
+}
+
+export function transferMultipleLootToUser(
+    lootIds: readonly LootId[],
+    user: User,
+    trackPredecessor: boolean,
+) {
+    return loot.transferMultipleLootToUser(lootIds, user.id, trackPredecessor);
 }
 
 export function deleteLoot(lootId: LootId) {
