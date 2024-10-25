@@ -1,12 +1,8 @@
 import {
-    ActionRowBuilder,
     type APIEmbed,
-    ButtonBuilder,
     ButtonStyle,
-    type CacheType,
     type CommandInteraction,
     ComponentType,
-    SlashCommandBooleanOption,
     SlashCommandBuilder,
     SlashCommandUserOption,
     type User,
@@ -16,9 +12,8 @@ import type { BotContext } from "@/context.js";
 import type { ApplicationCommand } from "@/commands/command.js";
 import * as lootService from "@/service/loot.js";
 import { ensureChatInputCommand } from "@/utils/interactionUtils.js";
-import { format } from "@/utils/stringUtils.js";
 import * as lootDataService from "@/service/lootData.js";
-import { LootKindId, LootAttributeKindId } from "@/service/lootData.js";
+import { LootAttributeKindId } from "@/service/lootData.js";
 
 import log from "@log";
 
@@ -34,19 +29,12 @@ export default class InventarCommand implements ApplicationCommand {
                 .setRequired(false)
                 .setName("user")
                 .setDescription("Wem du tun willst"),
-        )
-        .addBooleanOption(
-            new SlashCommandBooleanOption()
-                .setName("long")
-                .setRequired(false)
-                .setDescription("kurz oder lang"),
         );
 
     async handleInteraction(interaction: CommandInteraction, context: BotContext) {
         const cmd = ensureChatInputCommand(interaction);
 
         const user = cmd.options.getUser("user") ?? cmd.user;
-        const long = cmd.options.getBoolean("long") ?? true;
 
         const contents = await lootService.getInventoryContents(user);
         if (contents.length === 0) {
@@ -56,65 +44,7 @@ export default class InventarCommand implements ApplicationCommand {
             return;
         }
 
-        if (long) {
-            await this.#createLongEmbed(context, interaction, user);
-            return;
-        }
-        await this.#createShortEmbed(context, interaction, user);
-    }
-
-    async #createShortEmbed(
-        context: BotContext,
-        interaction: CommandInteraction<CacheType>,
-        user: User,
-    ) {
-        const contents = await lootService.getInventoryContents(user);
-        const groupedByLoot = Object.groupBy(contents, item => item.displayName);
-
-        const items = Object.entries(groupedByLoot)
-            .map(([_, items]) => items)
-            .filter(i => !!i && i.length > 0)
-            // biome-ignore lint/style/noNonNullAssertion: see filter above
-            .map(i => [i![0]!, i!.length] as const);
-
-        const description = items
-            .map(([item, count]) => {
-                const emote = lootDataService.getEmote(context.guild, item);
-                const e = emote ? `${emote} ` : "";
-
-                return count === 1
-                    ? `${e}${item.displayName}`
-                    : `${count}x ${e}${item.displayName}`;
-            })
-            .join("\n");
-
-        const cuties = contents.filter(i =>
-            lootDataService.itemHasAttribute(i.attributes, LootAttributeKindId.SWEET),
-        ).length;
-
-        const message = /* mf2 */ `
-.match {$cuties :number} {$count :number}
-0 0 {{Es befindet sich einfach überhaupt nichts in diesem Inventar}}
-0 1 {{Es befindet sich 1 Gegenstand im Inventar}}
-0 * {{Es befinden sich {$count} Gegenstände im Inventar}}
-1 0 {{Es befinden sich insgesamt 1 süßer und keine normalen Gegenstände im Inventar}}
-1 1 {{Es befinden sich insgesamt 1 süßer und 1 normaler Gegenstand im Inventar}}
-1 few {{Es befinden sich insgesamt 1 süßer und ein paar Gegenstände im Inventar}}
-1 * {{Es befinden sich insgesamt 1 süßer und {$count} normale Gegenstände im Inventar}}
-* * {{Es befinden sich insgesamt {$cuties} süße und {$count} normale Gegenstände im Inventar}}
-`.trim();
-
-        await interaction.reply({
-            embeds: [
-                {
-                    title: `Inventar von ${user.displayName}`,
-                    description,
-                    footer: {
-                        text: format(message, { cuties, count: contents.length - cuties }),
-                    },
-                },
-            ],
-        });
+        await this.#createLongEmbed(context, interaction, user);
     }
 
     async #createLongEmbed(context: BotContext, interaction: CommandInteraction, user: User) {
