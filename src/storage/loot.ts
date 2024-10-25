@@ -215,13 +215,12 @@ export async function transferMultipleLootToUser(
     trackPredecessor: boolean,
     ctx = db(),
 ) {
-    return ctx.transaction().execute(async ctx => {
-        const res = [];
-        for (const id of lootIds) {
-            res.push(await transferLootToUser(id, userId, trackPredecessor, ctx));
-        }
-        return res;
-    });
+    // SQLite does not support nested transactions, so we just don't do it xd
+    const res = [];
+    for (const id of lootIds) {
+        res.push(await transferLootToUser(id, userId, trackPredecessor, ctx));
+    }
+    return res;
 }
 
 export async function transferLootToUser(
