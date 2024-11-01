@@ -67,7 +67,7 @@ export enum LootAttributeKindId {
 export const lootTemplates: LootTemplate[] = [
     {
         id: LootKindId.NICHTS,
-        weight: 32,
+        weight: 24,
         displayName: "Nichts",
         titleText: "✨Nichts✨",
         dropDescription: "¯\\_(ツ)_/¯",
@@ -396,7 +396,7 @@ export const lootTemplates: LootTemplate[] = [
     },
     {
         id: LootKindId.SCHICHTBEGINN_ASSE_2,
-        weight: 12,
+        weight: 8,
         displayName: "Wärter Asse II",
         titleText: "Den Schichtbeginn in der Asse II",
         dropDescription: "Deine Wärterschicht bei der Asse II beginnt!",
