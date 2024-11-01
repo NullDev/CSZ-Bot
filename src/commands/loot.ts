@@ -50,7 +50,7 @@ export default class LootCommand implements ApplicationCommand {
         const lootWithProbabilitiy = loot
             .map(l => ({
                 ...l, // Oh no, please optimize for webscale. No need to copy the whole data :cry:
-                probability: Number((l.weight / totalWeight) * 100),
+                probability: Number(l.weight / totalWeight),
             }))
             .sort()
             .reverse();
