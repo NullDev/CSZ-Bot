@@ -29,7 +29,7 @@
     "@js-temporal/polyfill": "^0.4.4",
     "@napi-rs/canvas": "^0.1.59",
     "@resvg/resvg-js": "^2.6.2",
-    "@sentry/bun": "^8.35.0",
+    "@sentry/bun": "^8.36.0",
     "@std/jsonc": "npm:@jsr/std__jsonc@^1.0.1",
     "chrono-node": "^2.7.7",
     "croner": "^9.0.0",
@@ -52,7 +52,7 @@
     "@types/minimist": "^1.2.5",
     "@types/node-cron": "^3.0.11",
     "@types/sqlite3": "^3.1.11",
-    "lefthook": "^1.8.1",
+    "lefthook": "^1.8.2",
     "pino-pretty": "^11.3.0",
     "typescript": "^5.6.3"
   },
