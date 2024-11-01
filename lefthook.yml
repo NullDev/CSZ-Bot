@@ -12,6 +12,7 @@ pre-commit:
     format:
       glob: "*.{js,ts}"
       run: bun run format
+      stage_fixed: true
 
 skip_output:
   - meta
