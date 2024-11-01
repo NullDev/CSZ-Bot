@@ -1,29 +1,15 @@
-import * as fs from "node:fs/promises";
-
 import {
-    type APIEmbedField,
-    type AutocompleteInteraction,
     type ChatInputCommandInteraction,
     type CommandInteraction,
     SlashCommandBuilder,
-    SlashCommandStringOption,
     SlashCommandSubcommandBuilder,
 } from "discord.js";
-import * as sentry from "@sentry/bun";
 
 import type { BotContext } from "@/context.js";
 import type { ApplicationCommand } from "@/commands/command.js";
-import type { LootUseCommandInteraction } from "@/storage/loot.js";
-import * as lootService from "@/service/loot.js";
-import * as lootRoleService from "@/service/lootRoles.js";
-import { randomEntry } from "@/utils/arrayUtils.js";
 import { ensureChatInputCommand } from "@/utils/interactionUtils.js";
-import * as imageService from "@/service/image.js";
 
 import * as lootDataService from "@/service/lootData.js";
-import { LootAttributeClassId, LootAttributeKindId, LootKindId } from "@/service/lootData.js";
-
-import log from "@log";
 
 export default class LootCommand implements ApplicationCommand {
     name = "loot";
