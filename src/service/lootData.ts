@@ -452,7 +452,7 @@ export const lootTemplates: LootTemplate[] = [
         titleText: "Ein Thunfischshake, serviert von Markus Rühl persönlich",
         dropDescription: "Nach Rezept zubereitet, bestehend aus Thunfisch und Reiswaffeln",
         emote: ":baby_bottle:",
-        asset: "assets/loot/32-thunfischshake.jpg",
+        asset: "assets/loot/33-thunfischshake.jpg",
     },
     {
         id: LootKindId.KAFFEEMUEHLE,
