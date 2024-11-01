@@ -1,0 +1,81 @@
+import * as fs from "node:fs/promises";
+
+import {
+    type APIEmbedField,
+    type AutocompleteInteraction,
+    type ChatInputCommandInteraction,
+    type CommandInteraction,
+    SlashCommandBuilder,
+    SlashCommandStringOption,
+    SlashCommandSubcommandBuilder,
+} from "discord.js";
+import * as sentry from "@sentry/bun";
+
+import type { BotContext } from "@/context.js";
+import type { ApplicationCommand } from "@/commands/command.js";
+import type { LootUseCommandInteraction } from "@/storage/loot.js";
+import * as lootService from "@/service/loot.js";
+import * as lootRoleService from "@/service/lootRoles.js";
+import { randomEntry } from "@/utils/arrayUtils.js";
+import { ensureChatInputCommand } from "@/utils/interactionUtils.js";
+import * as imageService from "@/service/image.js";
+
+import * as lootDataService from "@/service/lootData.js";
+import { LootAttributeClassId, LootAttributeKindId, LootKindId } from "@/service/lootData.js";
+
+import log from "@log";
+
+export default class LootCommand implements ApplicationCommand {
+    name = "loot";
+    description = "Geht's um Loot?";
+
+    applicationCommand = new SlashCommandBuilder()
+        .setName(this.name)
+        .setDescription(this.description)
+        .addSubcommand(
+            new SlashCommandSubcommandBuilder()
+                .setName("wahrscheinlichkeiten")
+                .setDescription("Zeige die Wahrscheinlichkeiten für Loot Gegenstände an"),
+        );
+
+    async handleInteraction(interaction: CommandInteraction, context: BotContext) {
+        const command = ensureChatInputCommand(interaction);
+        const subCommand = command.options.getSubcommand();
+        switch (subCommand) {
+            case "wahrscheinlichkeiten":
+                await this.#showLootProbability(interaction, context);
+                break;
+            default:
+                throw new Error(`Unknown subcommand: "${subCommand}"`);
+        }
+    }
+
+    async #showLootProbability(interaction: CommandInteraction, context: BotContext) {
+        if (!interaction.isChatInputCommand()) {
+            throw new Error("Interaction is not a chat input command");
+        }
+        if (!interaction.guild || !interaction.channel) {
+            return;
+        }
+
+        // TODO: Lowperformer solution. A diagram with graphviz or something would be cooler
+        const loot = lootDataService.lootTemplates;
+        const totalWeight = loot.reduce((acc, curr) => acc + curr.weight, 0);
+        const lootWithProbabilitiy = loot
+            .map(l => ({
+                ...l, // Oh no, please optimize for webscale. No need to copy the whole data :cry:
+                probability: Number((l.weight / totalWeight) * 100),
+            }))
+            .sort()
+            .reverse();
+
+        const textRepresentation = lootWithProbabilitiy
+            .map(
+                l =>
+                    `${l.displayName}: ${l.probability.toLocaleString(undefined, { style: "percent", maximumFractionDigits: 2 })}`,
+            )
+            .join("\n");
+
+        await interaction.reply(textRepresentation);
+    }
+}
