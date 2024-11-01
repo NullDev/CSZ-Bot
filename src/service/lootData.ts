@@ -45,6 +45,7 @@ export enum LootKindId {
     VERSCHIMMELTER_DOENER = 32,
     THUNFISCHSHAKE = 33,
     KAFFEEMUEHLE = 34,
+    AWS_RECHNUNG = 35,
 }
 
 export enum LootAttributeClassId {
@@ -461,6 +462,15 @@ export const lootTemplates: LootTemplate[] = [
         dropDescription: "Kann Kaffee mühlen. Und das gut. Mit Gold.",
         emote: ":coffee:",
         asset: "assets/loot/34-kaffeemuehle.jpg",
+    },
+    {
+        id: LootKindId.AWS_RECHNUNG,
+        weight: 2,
+        displayName: "AWS Rechnung",
+        titleText: "Ne dicke AWS Rechnung",
+        dropDescription: "Bitti schnelli bezahli.",
+        emote: ":package:",
+        asset: "assets/loot/35-aws-rechnung.png",
     },
 ] as const;
 
