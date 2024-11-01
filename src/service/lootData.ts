@@ -466,9 +466,9 @@ export const lootTemplates: LootTemplate[] = [
     {
         id: LootKindId.AWS_RECHNUNG,
         weight: 2,
-        displayName: "AWS Rechnung",
-        titleText: "Ne dicke AWS Rechnung",
-        dropDescription: "Bitti schnelli bezahli.",
+        displayName: "AWS-Rechnung",
+        titleText: "Ne dicke AWS-Rechnung",
+        dropDescription: "Hast du schon versucht, in die Cloud zu gehen?",
         emote: ":package:",
         asset: "assets/loot/35-aws-rechnung.png",
     },
