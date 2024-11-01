@@ -52,8 +52,7 @@ export default class LootCommand implements ApplicationCommand {
                 ...l, // Oh no, please optimize for webscale. No need to copy the whole data :cry:
                 probability: Number(l.weight / totalWeight),
             }))
-            .sort()
-            .reverse();
+            .sort((a, b) => a.probability - b.probability);
 
         const textRepresentation = lootWithProbabilitiy
             .map(
