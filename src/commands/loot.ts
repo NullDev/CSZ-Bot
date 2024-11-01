@@ -45,7 +45,7 @@ export default class LootCommand implements ApplicationCommand {
         }
 
         // TODO: Lowperformer solution. A diagram with graphviz or something would be cooler
-        const loot = lootDataService.lootTemplates;
+        const loot = lootDataService.lootTemplates.filter(l => l.weight > 0);
         const totalWeight = loot.reduce((acc, curr) => acc + curr.weight, 0);
         const lootWithProbabilitiy = loot
             .map(l => ({
