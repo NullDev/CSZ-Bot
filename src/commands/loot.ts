@@ -10,7 +10,7 @@ import type { ApplicationCommand } from "@/commands/command.js";
 import { ensureChatInputCommand } from "@/utils/interactionUtils.js";
 
 import * as lootDataService from "@/service/lootData.js";
-import { adjustLootWithBuffsFromUser } from "@/service/lootDrop.js";
+import { adjustLootWithWeightEffectsFromUser } from "@/service/lootDrop.js";
 
 export default class LootCommand implements ApplicationCommand {
     name = "loot";
@@ -47,7 +47,10 @@ export default class LootCommand implements ApplicationCommand {
 
         // TODO: Lowperformer solution. A diagram with graphviz or something would be cooler
         const loot = (
-            await adjustLootWithBuffsFromUser(interaction.user, lootDataService.lootTemplates)
+            await adjustLootWithWeightEffectsFromUser(
+                interaction.user,
+                lootDataService.lootTemplates,
+            )
         ).loot.filter(l => l.weight > 0);
         const totalWeight = loot.reduce((acc, curr) => acc + curr.weight, 0);
         const lootWithProbabilitiy = loot

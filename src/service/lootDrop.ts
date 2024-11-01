@@ -152,7 +152,10 @@ export async function postLootDrop(
         return;
     }
 
-    const { messages, loot } = await adjustLootWithBuffsFromUser(interaction.user, lootTemplates);
+    const { messages, loot } = await adjustLootWithWeightEffectsFromUser(
+        interaction.user,
+        lootTemplates,
+    );
 
     const rarityWeights = lootAttributeTemplates.map(a => a.initialDropWeight ?? 0);
     const initialAttribute = randomEntryWeighted(lootAttributeTemplates, rarityWeights);
@@ -233,7 +236,7 @@ type AdjustmentResult = {
     loot: LootTemplate[];
 };
 
-export async function adjustLootWithBuffsFromUser(
+export async function adjustLootWithWeightEffectsFromUser(
     user: User,
     loot: readonly LootTemplate[],
 ): Promise<AdjustmentResult> {
