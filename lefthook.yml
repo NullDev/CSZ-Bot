@@ -11,7 +11,7 @@ pre-commit:
   commands:
     format:
       glob: "*.{js,ts}"
-      run: bun run format
+      run: bun run format --staged
       stage_fixed: true
 
 skip_output:
