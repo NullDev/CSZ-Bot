@@ -1,7 +1,6 @@
 import * as fs from "node:fs/promises";
 
 import {
-    ActionRowBuilder,
     ButtonBuilder,
     ButtonStyle,
     ChannelType,
@@ -28,6 +27,7 @@ import {
 } from "@/service/lootData.js";
 
 import log from "@log";
+import type { LootTemplate } from "@/storage/loot.js";
 
 const lootTimeoutMs = 60 * 1000;
 
@@ -152,13 +152,15 @@ export async function postLootDrop(
         return;
     }
 
-    const defaultWeights = lootTemplates.map(t => t.weight);
-    const { messages, weights } = await getDropWeightAdjustments(interaction.user, defaultWeights);
+    const { messages, loot } = await getDropWeightAdjustments(interaction.user, lootTemplates);
 
     const rarityWeights = lootAttributeTemplates.map(a => a.initialDropWeight ?? 0);
     const initialAttribute = randomEntryWeighted(lootAttributeTemplates, rarityWeights);
 
-    const template = randomEntryWeighted(lootTemplates, weights);
+    const template = randomEntryWeighted(
+        lootTemplates,
+        loot.map(l => l.weight),
+    );
     const claimedLoot = await lootService.createLoot(
         template,
         interaction.user,
@@ -228,12 +230,12 @@ export async function postLootDrop(
 
 type AdjustmentResult = {
     messages: string[];
-    weights: number[];
+    loot: LootTemplate[];
 };
 
-async function getDropWeightAdjustments(
+export async function getDropWeightAdjustments(
     user: User,
-    weights: readonly number[],
+    loot: readonly LootTemplate[],
 ): Promise<AdjustmentResult> {
     const waste = await lootService.getUserLootCountById(user.id, LootKindId.RADIOACTIVE_WASTE);
     const messages = [];
@@ -254,13 +256,19 @@ async function getDropWeightAdjustments(
         messages.push("Da du privat versichert bist, hast du die doppelte Chance auf eine AU.");
     }
 
-    const newWeights = [...weights];
-    newWeights[LootKindId.NICHTS] = Math.ceil(weights[LootKindId.NICHTS] * wasteFactor) | 0;
-    newWeights[LootKindId.KRANKSCHREIBUNG] = (weights[LootKindId.KRANKSCHREIBUNG] * pkvFactor) | 0;
+    const weights = loot.map(t => t.weight);
+    const newLoot = [...loot];
+    const updateEntry = (id: LootKindId, newValue: number) => {
+        const idx = newLoot.findIndex(l => l.id === id);
+        console.assert(idx !== -1);
+        newLoot[idx].weight = newValue;
+    };
+    updateEntry(LootKindId.NICHTS, Math.ceil(weights[LootKindId.NICHTS] * wasteFactor) | 0);
+    updateEntry(LootKindId.KRANKSCHREIBUNG, (weights[LootKindId.KRANKSCHREIBUNG] * pkvFactor) | 0);
 
     return {
         messages,
-        weights: newWeights,
+        loot: newLoot,
     };
 }
 

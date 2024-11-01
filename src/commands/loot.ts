@@ -10,6 +10,7 @@ import type { ApplicationCommand } from "@/commands/command.js";
 import { ensureChatInputCommand } from "@/utils/interactionUtils.js";
 
 import * as lootDataService from "@/service/lootData.js";
+import { getDropWeightAdjustments } from "@/service/lootDrop.js";
 
 export default class LootCommand implements ApplicationCommand {
     name = "loot";
@@ -45,7 +46,9 @@ export default class LootCommand implements ApplicationCommand {
         }
 
         // TODO: Lowperformer solution. A diagram with graphviz or something would be cooler
-        const loot = lootDataService.lootTemplates.filter(l => l.weight > 0);
+        const loot = (
+            await getDropWeightAdjustments(interaction.user, lootDataService.lootTemplates)
+        ).loot.filter(l => l.weight > 0);
         const totalWeight = loot.reduce((acc, curr) => acc + curr.weight, 0);
         const lootWithProbabilitiy = loot
             .map(l => ({
@@ -61,6 +64,8 @@ export default class LootCommand implements ApplicationCommand {
             )
             .join("\n");
 
-        await interaction.reply(textRepresentation);
+        await interaction.reply(
+            `Deine persönlichen Loot Wahrscheinlichkeiten:\n\n${textRepresentation}`,
+        );
     }
 }
