@@ -155,10 +155,15 @@ export async function postLootDrop(
     const defaultWeights = lootTemplates.map(t => t.weight);
     const { messages, weights } = await getDropWeightAdjustments(interaction.user, defaultWeights);
 
-    const rarityWeights = lootAttributeTemplates.map(a => a.initialDropWeight ?? 0);
-    const initialAttribute = randomEntryWeighted(lootAttributeTemplates, rarityWeights);
-
     const template = randomEntryWeighted(lootTemplates, weights);
+
+    const rarityWeights = lootAttributeTemplates.map(a => a.initialDropWeight ?? 0);
+
+    const initialAttribute =
+        template.id === LootKindId.NICHTS
+            ? null
+            : randomEntryWeighted(lootAttributeTemplates, rarityWeights);
+
     const claimedLoot = await lootService.createLoot(
         template,
         interaction.user,
@@ -192,7 +197,7 @@ export async function postLootDrop(
     await message.edit({
         embeds: [
             {
-                title: `Das Geschenk enthielt: ${template.titleText} ${initialAttribute.shortDisplay}`.trim(),
+                title: `Das Geschenk enthielt: ${template.titleText} ${initialAttribute?.shortDisplay ?? ""}`.trim(),
                 description: template.dropDescription,
                 image: attachment
                     ? {
