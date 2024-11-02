@@ -72,6 +72,8 @@ export const lootTemplates: LootTemplate[] = [
         titleText: "✨Nichts✨",
         dropDescription: "¯\\_(ツ)_/¯",
         asset: null,
+        // biome-ignore lint/style/noNonNullAssertion: Won't be shown anywhere else
+        emote: null!,
         excludeFromInventory: true,
     },
     {
@@ -374,6 +376,7 @@ export const lootTemplates: LootTemplate[] = [
         titleText: "Blaue Powerade",
         dropDescription: "Erfrischend erquickend. Besonders mit Vodka. Oder Korn.",
         asset: "assets/loot/25-powerade-blau.jpg",
+        emote: ":powerade:",
     },
     {
         id: LootKindId.GAULOISES_BLAU,

@@ -33,7 +33,7 @@ export interface LootTemplate {
     titleText: string;
     dropDescription: string;
     infoDescription?: string;
-    emote?: string;
+    emote: string;
     excludeFromInventory?: boolean;
     effects?: string[];
 
