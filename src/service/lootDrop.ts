@@ -219,7 +219,7 @@ export async function postLootDrop(
                         : []),
                 ],
                 footer: {
-                    text: `${messages.join("\n")}`.trim(),
+                    text: messages.join("\n").trim(),
                 },
             },
         ],
