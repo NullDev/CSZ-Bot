@@ -21,6 +21,7 @@ import { randomEntry, randomEntryWeighted } from "@/utils/arrayUtils.js";
 
 import * as lootService from "@/service/loot.js";
 import {
+    LootAttributeClassId,
     LootAttributeKindId,
     lootAttributeTemplates,
     LootKindId,
@@ -157,12 +158,11 @@ export async function postLootDrop(
 
     const template = randomEntryWeighted(lootTemplates, weights);
 
-    const rarityWeights = lootAttributeTemplates.map(a => a.initialDropWeight ?? 0);
+    const rarities = lootAttributeTemplates.filter(a => a.classId === LootAttributeClassId.RARITY);
+    const rarityWeights = rarities.map(a => a.initialDropWeight ?? 0);
 
     const initialAttribute =
-        template.id === LootKindId.NICHTS
-            ? null
-            : randomEntryWeighted(lootAttributeTemplates, rarityWeights);
+        template.id === LootKindId.NICHTS ? null : randomEntryWeighted(rarities, rarityWeights);
 
     const claimedLoot = await lootService.createLoot(
         template,
