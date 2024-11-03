@@ -159,7 +159,7 @@ jobs:
       uses: thollander/actions-comment-pull-request@v3
       if: ${{ github.event_name == 'pull_request' }}
       with:
-        comment_tag: discord-invite
+        comment-tag: discord-invite
         message: |
           Hallo, hier kannst du jetzt deine tolle neue Funktion testen: https://discord.gg/pJjfF6n2ec
 
