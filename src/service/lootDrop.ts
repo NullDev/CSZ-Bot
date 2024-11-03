@@ -204,8 +204,22 @@ export async function postLootDrop(
                           url: "attachment://opened.gif",
                       }
                     : undefined,
+                fields: [
+                    {
+                        name: "🎉 Geschenköffner",
+                        value: winner.toString(),
+                    },
+                    ...(initialAttribute
+                        ? [
+                              {
+                                  name: "⭐ Rarität",
+                                  value: initialAttribute?.displayName,
+                              },
+                          ]
+                        : []),
+                ],
                 footer: {
-                    text: `🎉 ${winner.displayName} hat das Geschenk geöffnet\n${messages.join("\n")}`.trim(),
+                    text: `${messages.join("\n")}`.trim(),
                 },
             },
         ],
