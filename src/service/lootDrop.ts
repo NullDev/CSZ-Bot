@@ -206,14 +206,16 @@ export async function postLootDrop(
                     : undefined,
                 fields: [
                     {
-                        name: "🎉 Geschenköffner",
+                        name: "🎉 Ehrenvoller Empfänger",
                         value: winner.toString(),
+                        inline: true,
                     },
                     ...(initialAttribute
                         ? [
                               {
-                                  name: "⭐ Rarität",
-                                  value: initialAttribute?.displayName,
+                                  name: "✨ Rarität",
+                                  value: `${initialAttribute.shortDisplay} ${initialAttribute.displayName}`.trim(),
+                                  inline: true,
                               },
                           ]
                         : []),
