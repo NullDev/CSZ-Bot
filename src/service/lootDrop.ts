@@ -206,7 +206,7 @@ export async function postLootDrop(
                     : undefined,
                 fields: [
                     {
-                        name: "🎉 Ehrenvoller Empfänger",
+                        name: "🎉 Ehrenwerter Empfänger",
                         value: winner.toString(),
                         inline: true,
                     },
