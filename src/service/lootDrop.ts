@@ -197,7 +197,7 @@ export async function postLootDrop(
     await message.edit({
         embeds: [
             {
-                title: `Das Geschenk enthielt: ${template.titleText} ${initialAttribute?.shortDisplay ?? ""}`.trim(),
+                title: `Das Geschenk enthielt: ${template.titleText}`,
                 description: template.dropDescription,
                 image: attachment
                     ? {
