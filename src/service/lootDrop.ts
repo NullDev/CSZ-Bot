@@ -21,6 +21,7 @@ import { randomEntry, randomEntryWeighted } from "@/utils/arrayUtils.js";
 
 import * as lootService from "@/service/loot.js";
 import {
+    LootAttributeClassId,
     LootAttributeKindId,
     lootAttributeTemplates,
     LootKindId,
@@ -157,12 +158,11 @@ export async function postLootDrop(
 
     const template = randomEntryWeighted(lootTemplates, weights);
 
-    const rarityWeights = lootAttributeTemplates.map(a => a.initialDropWeight ?? 0);
+    const rarities = lootAttributeTemplates.filter(a => a.classId === LootAttributeClassId.RARITY);
+    const rarityWeights = rarities.map(a => a.initialDropWeight ?? 0);
 
     const initialAttribute =
-        template.id === LootKindId.NICHTS
-            ? null
-            : randomEntryWeighted(lootAttributeTemplates, rarityWeights);
+        template.id === LootKindId.NICHTS ? null : randomEntryWeighted(rarities, rarityWeights);
 
     const claimedLoot = await lootService.createLoot(
         template,
@@ -197,15 +197,31 @@ export async function postLootDrop(
     await message.edit({
         embeds: [
             {
-                title: `Das Geschenk enthielt: ${template.titleText} ${initialAttribute?.shortDisplay ?? ""}`.trim(),
+                title: `Das Geschenk enthielt: ${template.titleText}`,
                 description: template.dropDescription,
                 image: attachment
                     ? {
                           url: "attachment://opened.gif",
                       }
                     : undefined,
+                fields: [
+                    {
+                        name: "🎉 Ehrenwerter Empfänger",
+                        value: winner.toString(),
+                        inline: true,
+                    },
+                    ...(initialAttribute
+                        ? [
+                              {
+                                  name: "✨ Rarität",
+                                  value: `${initialAttribute.shortDisplay} ${initialAttribute.displayName}`.trim(),
+                                  inline: true,
+                              },
+                          ]
+                        : []),
+                ],
                 footer: {
-                    text: `🎉 ${winner.displayName} hat das Geschenk geöffnet\n${messages.join("\n")}`.trim(),
+                    text: messages.join("\n").trim(),
                 },
             },
         ],
