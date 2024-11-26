@@ -20,7 +20,7 @@ import type {
 } from "./db/model.js";
 
 import db from "@db";
-import type { LootAttributeKindId } from "@/service/lootData.js";
+import { resolveLootAttributeTemplate, type LootAttributeKindId } from "@/service/lootData.js";
 
 export type LootUseCommandInteraction = ChatInputCommandInteraction & {
     channel: GuildTextBasedChannel;
@@ -36,6 +36,7 @@ export interface LootTemplate {
     emote: string;
     excludeFromInventory?: boolean;
     effects?: string[];
+    initialAttributes?: LootAttributeKindId[];
 
     onDrop?: (
         context: BotContext,
@@ -109,6 +110,13 @@ export async function createLoot(
             })
             .returningAll()
             .executeTakeFirstOrThrow();
+
+        for (const attributeId of template.initialAttributes ?? []) {
+            const attribute = resolveLootAttributeTemplate(attributeId);
+            if (!attribute) continue;
+
+            await addLootAttributeIfNotPresent(res.id, attribute, ctx);
+        }
 
         if (rarityAttribute) {
             await addLootAttributeIfNotPresent(res.id, rarityAttribute, ctx);
