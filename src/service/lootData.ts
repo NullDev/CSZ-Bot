@@ -46,6 +46,7 @@ export enum LootKindId {
     THUNFISCHSHAKE = 33,
     KAFFEEMUEHLE = 34,
     AWS_RECHNUNG = 35,
+    BIBER = 36,
 }
 
 export enum LootAttributeClassId {
@@ -474,6 +475,15 @@ export const lootTemplates: LootTemplate[] = [
         dropDescription: "Hast du schon versucht, in die Cloud zu gehen?",
         emote: ":package:",
         asset: "assets/loot/35-aws-rechnung.png",
+    },
+    {
+        id: LootKindId.BIBER,
+        weight: 2,
+        displayName: "Süßer Biber",
+        titleText: "Bóbr",
+        dropDescription: "Bóbr kurwa! Ja pierdolę! Jakie bydlę!",
+        emote: ":beaver:",
+        asset: "assets/loot/36-biber.jpg",
     },
 ] as const;
 
