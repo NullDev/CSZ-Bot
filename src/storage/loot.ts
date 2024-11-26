@@ -111,7 +111,7 @@ export async function createLoot(
             .returningAll()
             .executeTakeFirstOrThrow();
 
-        for (const attributeId of template.initialAttributes || []) {
+        for (const attributeId of template.initialAttributes ?? []) {
             const attribute = resolveLootAttributeTemplate(attributeId);
             if (!attribute) continue;
 
