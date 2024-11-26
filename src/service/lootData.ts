@@ -85,6 +85,9 @@ export const lootTemplates: LootTemplate[] = [
         dropDescription: "Awww",
         emote: ":catsmile:",
         asset: "assets/loot/01-kadse.jpg",
+        defaultAttributes: [
+            LootAttributeKindId.SWEET
+        ],
         attributeAsset: {
             [LootAttributeKindId.RADIOACTIVE]: "assets/loot/attributes/01-kadse-verstrahlt.jpg",
         },
@@ -484,6 +487,9 @@ export const lootTemplates: LootTemplate[] = [
         dropDescription: "Bóbr kurwa! Ja pierdolę! Jakie bydlę!",
         emote: ":beaver:",
         asset: "assets/loot/36-biber.jpg",
+        defaultAttributes: [
+            LootAttributeKindId.SWEET
+        ],
     },
 ] as const;
 

@@ -182,8 +182,6 @@ export async function postLootDrop(
         return;
     }
 
-    await awardPostDropLootAttributes(claimedLoot);
-
     await reply.delete();
 
     log.info(
@@ -283,14 +281,4 @@ async function getDropWeightAdjustments(
         messages,
         weights: newWeights,
     };
-}
-
-async function awardPostDropLootAttributes(loot: Loot) {
-    switch (loot.lootKindId) {
-        case LootKindId.KADSE:
-            await lootService.addLootAttributeIfNotPresent(loot.id, LootAttributeKindId.SWEET);
-            break;
-        default:
-            break;
-    }
 }
