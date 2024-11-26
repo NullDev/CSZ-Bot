@@ -36,7 +36,7 @@ export interface LootTemplate {
     emote: string;
     excludeFromInventory?: boolean;
     effects?: string[];
-    defaultAttributes?: LootAttributeKindId[];
+    initialAttributes?: LootAttributeKindId[];
 
     onDrop?: (
         context: BotContext,
@@ -111,7 +111,7 @@ export async function createLoot(
             .returningAll()
             .executeTakeFirstOrThrow();
 
-        for (const attributeId of template.defaultAttributes || []) {
+        for (const attributeId of template.initialAttributes || []) {
             const attribute = resolveLootAttributeTemplate(attributeId);
             if (!attribute) continue;
 
