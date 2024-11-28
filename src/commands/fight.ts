@@ -1,16 +1,19 @@
 import type { ApplicationCommand } from "@/commands/command.js";
 import {
     APIEmbed,
-    APIEmbedField, type BooleanCache, type CacheType,
+    APIEmbedField,
+    type BooleanCache,
+    type CacheType,
     type CommandInteraction,
-    ContextMenuCommandBuilder, type InteractionResponse,
+    ContextMenuCommandBuilder,
+    type InteractionResponse,
     SlashCommandBuilder,
-    SlashCommandUserOption
+    SlashCommandUserOption,
 } from "discord.js";
 import type { BotContext } from "@/context.js";
 import { JSONEncodable } from "@discordjs/util";
-import {BaseEntity, bossMap, Entity} from "@/service/fightData.js";
-import {setTimeout} from "node:timers/promises";
+import { BaseEntity, bossMap, Entity, FightScene } from "@/service/fightData.js";
+import { setTimeout } from "node:timers/promises";
 
 export default class FightCommand implements ApplicationCommand {
     readonly description = "TBD";
@@ -50,7 +53,6 @@ export default class FightCommand implements ApplicationCommand {
     }
 }
 
-
 type result = "PLAYER" | "ENEMY" | undefined;
 
 function checkWin(fightscene: FightScene): result {
@@ -65,14 +67,14 @@ function checkWin(fightscene: FightScene): result {
 export async function fight(
     playerstats: BaseEntity,
     enemystats: BaseEntity,
-    interactionResponse: InteractionResponse<BooleanCache<CacheType>>
+    interactionResponse: InteractionResponse<BooleanCache<CacheType>>,
 ) {
     const enemy = new Entity(enemystats);
     const player = new Entity(playerstats);
 
     const scene: FightScene = {
         player: player,
-        enemy: enemy
+        enemy: enemy,
     };
     while (checkWin(scene) === undefined) {
         player.itemtext = [];
@@ -93,9 +95,9 @@ export async function fight(
             if (!value.afterFight) {
                 return;
             }
-            value.afterFight({player: enemy, enemy: player});
+            value.afterFight({ player: enemy, enemy: player });
         });
-        await interactionResponse.edit({embeds: [renderFightEmbedded(scene)]});
+        await interactionResponse.edit({ embeds: [renderFightEmbedded(scene)] });
         await setTimeout(200);
     }
 }
@@ -114,7 +116,7 @@ function renderStats(player: Entity) {
             📚Items:
             ${player.itemtext.join("\n")}
         `,
-        inline: true
+        inline: true,
     };
 }
 
@@ -127,8 +129,8 @@ function renderFightEmbedded(fightscene: FightScene): JSONEncodable<APIEmbed> | 
             renderStats(fightscene.enemy),
             {
                 name: "Verlauf",
-                value: " "
-            }
-        ]
+                value: " ",
+            },
+        ],
     };
 }
