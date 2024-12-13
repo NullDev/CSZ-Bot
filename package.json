@@ -27,7 +27,7 @@
   "dependencies": {
     "@discordjs/voice": "^0.18.0",
     "@js-temporal/polyfill": "^0.4.4",
-    "@napi-rs/canvas": "^0.1.64",
+    "@napi-rs/canvas": "0.1.59",
     "@resvg/resvg-js": "^2.6.2",
     "@sentry/bun": "^8.40.0",
     "@std/jsonc": "npm:@jsr/std__jsonc@^1.0.1",
