@@ -21,7 +21,7 @@ import type {
 
 import db from "@db";
 import type { LootAttributeKindId } from "@/service/lootData.js";
-import { Equipable } from "@/service/fightData.js";
+import type { Equipable } from "@/service/fightData.js";
 
 export type LootUseCommandInteraction = ChatInputCommandInteraction & {
     channel: GuildTextBasedChannel;

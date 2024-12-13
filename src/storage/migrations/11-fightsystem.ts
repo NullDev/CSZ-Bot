@@ -4,18 +4,15 @@ import { createUpdatedAtTrigger } from "@/storage/migrations/10-loot-attributes.
 export async function up(db: Kysely<any>) {
     await db.schema
         .createTable("fightinventory")
+        .ifNotExists()
         .addColumn("id", "integer", c => c.primaryKey().autoIncrement())
-        .addColumn("gameType", "text", c => c.notNull())
-        .addColumn("gameTemplateName", "text", c => c.notNull())
         .addColumn("userid", "text")
-        .addColumn("lootId", "integer", c => c.references("loot.id").onDelete("cascade"))
-        .addColumn("equipped", "boolean", c => c.notNull())
-        .addColumn("createdAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
-        .addColumn("updatedAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
+        .addColumn("lootId", "integer", c => c.references("loot.id"))
+        .addColumn("equippedSlot", "text")
         .execute();
-    await createUpdatedAtTrigger(db, "fightinventory");
     await db.schema
         .createTable("fighthistory")
+        .ifNotExists()
         .addColumn("id", "integer", c => c.primaryKey().autoIncrement())
         .addColumn("userid", "text", c => c.notNull())
         .addColumn("bossName", "text", c => c.notNull())

@@ -24,6 +24,7 @@ import * as lootDataService from "@/service/lootData.js";
 import { LootAttributeClassId, LootAttributeKindId, LootKindId } from "@/service/lootData.js";
 
 import log from "@log";
+import { equipItembyLoot } from "@/storage/fightinventory.js";
 
 export default class GegenstandCommand implements ApplicationCommand {
     name = "gegenstand";
@@ -69,7 +70,7 @@ export default class GegenstandCommand implements ApplicationCommand {
                     new SlashCommandStringOption()
                         .setRequired(true)
                         .setName("item")
-                        .setDescription("Die Sau, die du ausrüsten möchtest")
+                        .setDescription("Rüste dich für deinen nächsten Kampf")
                         .setAutocomplete(true),
                 ),
         );
@@ -350,6 +351,9 @@ export default class GegenstandCommand implements ApplicationCommand {
             if (subCommand === "benutzen" && template.onUse === undefined) {
                 continue;
             }
+            if (subCommand === "ausrüsten" && template.gameEquip === undefined) {
+                continue;
+            }
 
             const emote = lootDataService.getEmote(interaction.guild, item);
             completions.push({
@@ -378,6 +382,7 @@ export default class GegenstandCommand implements ApplicationCommand {
             return;
         }
         const { item, template } = info;
+        log.info(item);
         if (template.gameEquip === undefined) {
             await interaction.reply({
                 content: "Dieser Gegenstand kann nicht ausgerüstet werden.",
@@ -385,5 +390,17 @@ export default class GegenstandCommand implements ApplicationCommand {
             });
             return;
         }
+        const result = await equipItembyLoot(interaction.user.id, item.id);
+        log.info(result);
+        const message =
+            result.unequipped.length == 0
+                ? "Du hast " + result.equipped?.displayName + " ausgerüstet"
+                : "Du hast " +
+                  result.unequipped.join(", ") +
+                  " abgelegt und dafür " +
+                  "" +
+                  result.equipped?.displayName +
+                  " ausgerüstet";
+        await interaction.reply(message);
     }
 }

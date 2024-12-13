@@ -24,6 +24,8 @@ export interface Database {
     lootAttribute: LootAttributeTable;
     emote: EmoteTable;
     emoteUse: EmoteUseTable;
+    fighthistory: FightHistoryTable;
+    fightinventory: FightInventoryTable;
 }
 
 export type OneBasedMonth = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
@@ -34,15 +36,17 @@ export interface AuditedTable {
 }
 
 export type Birthday = Selectable<BirthdayTable>;
+
 export interface BirthdayTable extends AuditedTable {
     id: GeneratedAlways<number>;
 
-    userId: Snowflake;
+    userid: Snowflake;
     month: OneBasedMonth;
     day: number;
 }
 
 export type Stempel = Selectable<StempelTable>;
+
 export interface StempelTable extends AuditedTable {
     id: GeneratedAlways<number>;
 
@@ -51,6 +55,7 @@ export interface StempelTable extends AuditedTable {
 }
 
 export type SplidLink = Selectable<SplidLinkTable>;
+
 export interface SplidLinkTable extends AuditedTable {
     id: GeneratedAlways<number>;
 
@@ -64,6 +69,7 @@ export interface SplidLinkTable extends AuditedTable {
 }
 
 export type SplidGroup = Selectable<SplidGroupTable>;
+
 export interface SplidGroupTable extends AuditedTable {
     id: GeneratedAlways<number>;
 
@@ -77,6 +83,7 @@ export interface SplidGroupTable extends AuditedTable {
 }
 
 export type GuildRagequit = Selectable<GuildRagequitTable>;
+
 export interface GuildRagequitTable extends AuditedTable {
     id: GeneratedAlways<number>;
 
@@ -86,6 +93,7 @@ export interface GuildRagequitTable extends AuditedTable {
 }
 
 export type NickName = Selectable<NickNameTable>;
+
 export interface NickNameTable extends AuditedTable {
     id: GeneratedAlways<number>;
 
@@ -94,6 +102,7 @@ export interface NickNameTable extends AuditedTable {
 }
 
 export type Penis = Selectable<PenisTable>;
+
 export interface PenisTable extends AuditedTable {
     id: GeneratedAlways<number>;
 
@@ -104,6 +113,7 @@ export interface PenisTable extends AuditedTable {
 }
 
 export type Boob = Selectable<BoobTable>;
+
 export interface BoobTable extends AuditedTable {
     id: GeneratedAlways<number>;
 
@@ -113,6 +123,7 @@ export interface BoobTable extends AuditedTable {
 }
 
 export type AustrianTranslation = Selectable<AustrianTranslationTable>;
+
 export interface AustrianTranslationTable extends AuditedTable {
     id: GeneratedAlways<number>;
 
@@ -123,6 +134,7 @@ export interface AustrianTranslationTable extends AuditedTable {
 }
 
 export type EhreVotes = Selectable<EhreVotesTable>;
+
 export interface EhreVotesTable extends AuditedTable {
     id: GeneratedAlways<number>;
 
@@ -130,6 +142,7 @@ export interface EhreVotesTable extends AuditedTable {
 }
 
 export type EhrePoints = Selectable<EhrePointsTable>;
+
 export interface EhrePointsTable extends AuditedTable {
     id: GeneratedAlways<number>;
 
@@ -138,6 +151,7 @@ export interface EhrePointsTable extends AuditedTable {
 }
 
 export type FadingMessage = Selectable<FadingMessageTable>;
+
 export interface FadingMessageTable extends AuditedTable {
     id: GeneratedAlways<number>;
 
@@ -150,6 +164,7 @@ export interface FadingMessageTable extends AuditedTable {
 }
 
 export type WoisAction = Selectable<WoisActionTable>;
+
 export interface WoisActionTable extends AuditedTable {
     id: GeneratedAlways<number>;
 
@@ -165,6 +180,7 @@ export interface WoisActionTable extends AuditedTable {
 export type DataUsage = "DELAYED_POLL";
 
 export type AdditionalMessageData = Selectable<AdditionalMessageDataTable>;
+
 export interface AdditionalMessageDataTable extends AuditedTable {
     id: GeneratedAlways<number>;
 
@@ -178,6 +194,7 @@ export interface AdditionalMessageDataTable extends AuditedTable {
 }
 
 export type Ban = Selectable<BanTable>;
+
 export interface BanTable extends AuditedTable {
     id: GeneratedAlways<number>;
 
@@ -189,6 +206,7 @@ export interface BanTable extends AuditedTable {
 }
 
 export type Reminder = Selectable<ReminderTable>;
+
 export interface ReminderTable extends AuditedTable {
     id: GeneratedAlways<number>;
 
@@ -207,6 +225,7 @@ export type LootOrigin = "drop" | "owner-transfer" | "replacement";
 
 export type Loot = Selectable<LootTable>;
 export type LootInsertable = Insertable<LootTable>;
+
 export interface LootTable extends AuditedTable {
     id: GeneratedAlways<LootId>;
 
@@ -231,6 +250,7 @@ export type LootAttributeId = number;
 
 export type LootAttribute = Selectable<LootAttributeTable>;
 export type LootAttributeInsertable = Insertable<LootAttributeTable>;
+
 export interface LootAttributeTable extends AuditedTable {
     id: GeneratedAlways<LootAttributeId>;
 
@@ -246,6 +266,7 @@ export interface LootAttributeTable extends AuditedTable {
 }
 
 export type Emote = Selectable<EmoteTable>;
+
 export interface EmoteTable extends AuditedTable {
     id: GeneratedAlways<number>;
 
@@ -259,6 +280,7 @@ export interface EmoteTable extends AuditedTable {
 }
 
 export type EmoteUse = Selectable<EmoteUseTable>;
+
 export interface EmoteUseTable extends AuditedTable {
     id: GeneratedAlways<number>;
 
@@ -266,4 +288,18 @@ export interface EmoteUseTable extends AuditedTable {
     channelId: ColumnType<Snowflake, Snowflake, never>;
     emoteId: ColumnType<number, number, never>;
     isReaction: boolean;
+}
+
+interface FightHistoryTable extends AuditedTable {
+    id: GeneratedAlways<number>;
+    userid: Snowflake;
+    bossname: string;
+    firsttime: boolean;
+}
+
+interface FightInventoryTable {
+    id: GeneratedAlways<number>;
+    userid: Snowflake;
+    lootId: LootId;
+    equippedSlot: string;
 }

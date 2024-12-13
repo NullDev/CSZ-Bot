@@ -1,13 +1,12 @@
 import {
-    ActionRowBuilder,
     type APIEmbed,
-    ButtonBuilder,
     ButtonStyle,
     type CacheType,
     type CommandInteraction,
     ComponentType,
-    SlashCommandBooleanOption,
+    type InteractionReplyOptions,
     SlashCommandBuilder,
+    SlashCommandStringOption,
     SlashCommandUserOption,
     type User,
 } from "discord.js";
@@ -18,9 +17,10 @@ import * as lootService from "@/service/loot.js";
 import { ensureChatInputCommand } from "@/utils/interactionUtils.js";
 import { format } from "@/utils/stringUtils.js";
 import * as lootDataService from "@/service/lootData.js";
-import { LootKindId, LootAttributeKindId } from "@/service/lootData.js";
+import { LootAttributeKindId } from "@/service/lootData.js";
 
 import log from "@log";
+import { getFightInventoryEnriched } from "@/storage/fightinventory.js";
 
 export default class InventarCommand implements ApplicationCommand {
     name = "inventar";
@@ -35,18 +35,23 @@ export default class InventarCommand implements ApplicationCommand {
                 .setName("user")
                 .setDescription("Wem du tun willst"),
         )
-        .addBooleanOption(
-            new SlashCommandBooleanOption()
-                .setName("long")
+        .addStringOption(
+            new SlashCommandStringOption()
+                .setName("typ")
+                .setDescription("Anzeige")
                 .setRequired(false)
-                .setDescription("kurz oder lang"),
+                .addChoices(
+                    { name: "Kampfausrüstung", value: "fightinventory" },
+                    { name: "Kurzfassung", value: "short" },
+                    { name: "Detailansicht", value: "long" },
+                ),
         );
 
     async handleInteraction(interaction: CommandInteraction, context: BotContext) {
         const cmd = ensureChatInputCommand(interaction);
 
         const user = cmd.options.getUser("user") ?? cmd.user;
-        const long = cmd.options.getBoolean("long") ?? true;
+        const type = cmd.options.getString("typ") ?? "short";
 
         const contents = await lootService.getInventoryContents(user);
         if (contents.length === 0) {
@@ -55,12 +60,16 @@ export default class InventarCommand implements ApplicationCommand {
             });
             return;
         }
-
-        if (long) {
-            await this.#createLongEmbed(context, interaction, user);
-            return;
+        switch (type) {
+            case "long":
+                await this.#createLongEmbed(context, interaction, user);
+                return;
+            case "fightinventory":
+                await this.#createFightEmbed(context, interaction, user);
+                return;
+            default:
+                await this.#createShortEmbed(context, interaction, user);
         }
-        await this.#createShortEmbed(context, interaction, user);
     }
 
     async #createShortEmbed(
@@ -218,5 +227,39 @@ export default class InventarCommand implements ApplicationCommand {
                 components: [],
             });
         });
+    }
+
+    async #createFightEmbed(context: BotContext, interaction: CommandInteraction, user: User) {
+        const fightinventory = await getFightInventoryEnriched(user.id);
+        const display = {
+            title: `Kampfausrüstung von ${user.displayName}`,
+            description:
+                "Du kannst maximal eine Rüstung, eine Waffe und drei Items tragen. Wenn du kämpfst, setzt du die Items ein und verlierst diese, egal ob du gewinnst oder verlierst.",
+            thumbnail: user.avatarURL() ? { url: user.avatarURL()! } : undefined,
+            fields: [
+                { name: "Waffe", value: fightinventory.weapon?.item?.displayName ?? "Nix" },
+                { name: "Rüstung", value: fightinventory.armor?.item?.displayName ?? "Nackt" },
+                ...fightinventory.items.map(item => {
+                    return {
+                        name: item.item!.displayName,
+                        value: "Hier sollten die buffs stehen",
+                        inline: true,
+                    };
+                }),
+                { name: "Buffs", value: "Nix" },
+            ],
+            footer: {
+                text: `Lol ist noch nicht fertig`,
+            },
+        } satisfies APIEmbed;
+
+        const embed = {
+            components: [],
+            embeds: [display],
+            fetchReply: true,
+            tts: false,
+        } as const satisfies InteractionReplyOptions;
+
+        const message = await interaction.reply(embed);
     }
 }
