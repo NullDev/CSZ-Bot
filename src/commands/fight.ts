@@ -1,6 +1,6 @@
 import type { ApplicationCommand } from "@/commands/command.js";
 import {
-    APIEmbed,
+    type APIEmbed,
     APIEmbedField,
     type BooleanCache,
     type CacheType,
@@ -11,8 +11,8 @@ import {
     SlashCommandUserOption,
 } from "discord.js";
 import type { BotContext } from "@/context.js";
-import { JSONEncodable } from "@discordjs/util";
-import { BaseEntity, bossMap, Entity, FightScene } from "@/service/fightData.js";
+import type { JSONEncodable } from "@discordjs/util";
+import { type BaseEntity, bossMap, Entity, type FightScene } from "@/service/fightData.js";
 import { setTimeout } from "node:timers/promises";
 
 export default class FightCommand implements ApplicationCommand {
@@ -85,18 +85,18 @@ export async function fight(
         enemy.attack(player);
         //special effects from items
 
-        player.stats.items.forEach(value => {
+        for (const value of player.stats.items) {
             if (!value.afterFight) {
-                return;
+                continue;
             }
             value.afterFight(scene);
-        });
-        enemy.stats.items.forEach(value => {
+        }
+        for (const value of enemy.stats.items) {
             if (!value.afterFight) {
-                return;
+                continue;
             }
             value.afterFight({ player: enemy, enemy: player });
-        });
+        }
         await interactionResponse.edit({ embeds: [renderFightEmbedded(scene)] });
         await setTimeout(200);
     }

@@ -43,7 +43,7 @@ const firmenstempelCenter = {
     y: 155,
 };
 
-const getAvatarUrlForMember = (member?: GuildMember, size: ImageSize = 32) => {
+export const getAvatarUrlForMember = (member?: GuildMember, size: ImageSize = 32) => {
     return (
         member?.user.avatarURL({
             size,

@@ -80,6 +80,8 @@ export const bossMap: { [name: string]: BaseEntity } = {
     },
 };
 
+export type FightItemType = "weapon" | "armor" | "item";
+
 export type Equipable = EquipableWeapon | EquipableItem | EquipableArmor;
 
 interface EquipableWeapon {
@@ -174,7 +176,8 @@ export interface Range {
     min: number;
     max: number;
 }
-interface PermaBuff {}
+
+type PermaBuff = {};
 
 interface EquipableItem {
     type: "item";

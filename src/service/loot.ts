@@ -4,6 +4,7 @@ import type { LootId, LootInsertable, LootOrigin } from "@/storage/db/model.js";
 import type { LootAttributeKindId, LootKindId } from "./lootData.js";
 import * as loot from "@/storage/loot.js";
 import * as lootDataService from "@/service/lootData.js";
+import db from "@db";
 
 export async function getInventoryContents(user: User) {
     const contents = await loot.findOfUserWithAttributes(user);
@@ -24,8 +25,8 @@ export async function getUserLootsWithAttribute(
     return await loot.getUserLootsWithAttribute(userId, attributeKindId);
 }
 
-export async function getUserLootById(userId: Snowflake, id: LootId) {
-    return await loot.getUserLootById(userId, id);
+export async function getUserLootById(userId: Snowflake, id: LootId, ctx = db()) {
+    return await loot.getUserLootById(userId, id, ctx);
 }
 
 export async function getLootAttributes(id: LootId) {
