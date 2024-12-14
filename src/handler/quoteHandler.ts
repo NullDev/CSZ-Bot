@@ -16,6 +16,8 @@ import type { BotContext, QuoteConfig } from "@/context.js";
 import type { ReactionHandler } from "./ReactionHandler.js";
 import log from "@log";
 
+const quoteMessage = "Ihr quoted echt jeden Scheiß, oder?";
+
 const isChannelAnonymous = async (context: BotContext, channel: Channel) => {
     const anonChannels = context.commandConfig.quote.anonymousChannelIds;
 
@@ -77,6 +79,8 @@ const hasMessageEnoughQuotes = (
 
 const isQuoterQuotingHimself = (quoter: GuildMember, messageAuthor: GuildMember) =>
     quoter.id === messageAuthor.id;
+
+const isQuoterQuotingQuoteMessage = (message: Message) => message.content === quoteMessage;
 
 const generateRandomColor = () => Math.floor(Math.random() * 0xffffff);
 
@@ -227,6 +231,14 @@ export default {
             return;
         }
 
+        if (
+            quotedMessage.author.id !== context.client.user.id &&
+            isQuoterQuotingQuoteMessage(quotedMessage)
+        ) {
+            await event.users.remove(quoter);
+            return;
+        }
+
         if (isQuoterQuotingHimself(quoter, quotedUser)) {
             await context.textChannels.hauptchat.send({
                 embeds: [
@@ -304,7 +316,7 @@ export default {
             quotedMessage.channel.isTextBased() &&
             quotedMessage.channel.type === ChannelType.GuildText
         ) {
-            await quotedMessage.reply("Ihr quoted echt jeden Scheiß, oder?");
+            await quotedMessage.reply(quoteMessage);
         }
     },
 } satisfies ReactionHandler;
