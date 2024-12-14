@@ -35,11 +35,23 @@ const loggingConfigs = {
     },
     production: {
         level: logLevel,
+
         transport: {
-            target: "pino/file",
-            options: {
-                destination: `${logDir}/error.log`,
-            },
+            targets: [
+                {
+                    target: "pino-pretty",
+                    options: {
+                        colorize: true,
+                        ignore: "pid,hostname",
+                    },
+                },
+                {
+                    target: "pino/file",
+                    options: {
+                        destination: `${logDir}/error.log`,
+                    },
+                },
+            ],
         },
     },
 } as Record<string, LoggerOptions>;
