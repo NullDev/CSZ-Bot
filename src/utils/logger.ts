@@ -35,7 +35,6 @@ const loggingConfigs = {
     },
     production: {
         level: logLevel,
-
         transport: {
             targets: [
                 {
