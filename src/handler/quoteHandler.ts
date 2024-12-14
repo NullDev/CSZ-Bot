@@ -232,7 +232,7 @@ export default {
         }
 
         if (
-            quotedMessage.author.id !== context.client.user.id &&
+            quotedMessage.author.id === context.client.user.id &&
             isQuoterQuotingQuoteMessage(quotedMessage)
         ) {
             await event.users.remove(quoter);
