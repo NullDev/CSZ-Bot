@@ -1,4 +1,4 @@
-import type {ApplicationCommand} from "@/commands/command.js";
+import type { ApplicationCommand } from "@/commands/command.js";
 import {
     type APIEmbed,
     APIEmbedField,
@@ -8,25 +8,31 @@ import {
     ContextMenuCommandBuilder,
     type InteractionResponse,
     SlashCommandBuilder,
-    SlashCommandUserOption, User
+    SlashCommandUserOption,
+    User,
 } from "discord.js";
-import type {BotContext} from "@/context.js";
-import type {JSONEncodable} from "@discordjs/util";
-import {type BaseEntity, baseStats, bossMap, Entity, type FightScene} from "@/service/fightData.js";
-import {setTimeout} from "node:timers/promises";
-import {getFightInventoryEnriched} from "@/storage/fightinventory.js";
-import {resolveLootTemplate} from "@/service/lootData.js";
+import type { BotContext } from "@/context.js";
+import type { JSONEncodable } from "@discordjs/util";
+import {
+    type BaseEntity,
+    baseStats,
+    bossMap,
+    Entity,
+    type FightScene,
+} from "@/service/fightData.js";
+import { setTimeout } from "node:timers/promises";
+import { getFightInventoryEnriched } from "@/storage/fightinventory.js";
+import { resolveLootTemplate } from "@/service/lootData.js";
 
 async function getFighter(user: User): Promise<BaseEntity> {
     const userInventory = await getFightInventoryEnriched(user.id);
-
 
     return {
         ...baseStats,
         name: user.displayName,
         weapon: userInventory.weapon,
         armor: userInventory.armor,
-        items: userInventory.items
+        items: userInventory.items,
     };
 }
 
@@ -46,10 +52,10 @@ export default class FightCommand implements ApplicationCommand {
                     Object.entries(bossMap).map(boss => {
                         return {
                             name: boss[1].name,
-                            value: boss[0]
+                            value: boss[0],
                         };
-                    })
-                )
+                    }),
+                ),
         );
 
     async handleInteraction(command: CommandInteraction, context: BotContext) {
@@ -77,14 +83,14 @@ function checkWin(fightscene: FightScene): result {
 export async function fight(
     playerstats: BaseEntity,
     enemystats: BaseEntity,
-    interactionResponse: InteractionResponse<BooleanCache<CacheType>>
+    interactionResponse: InteractionResponse<BooleanCache<CacheType>>,
 ) {
     const enemy = new Entity(enemystats);
     const player = new Entity(playerstats);
 
     const scene: FightScene = {
         player: player,
-        enemy: enemy
+        enemy: enemy,
     };
     while (checkWin(scene) === undefined) {
         player.itemtext = [];
@@ -104,9 +110,9 @@ export async function fight(
             if (!value.afterFight) {
                 continue;
             }
-            value.afterFight({player: enemy, enemy: player});
+            value.afterFight({ player: enemy, enemy: player });
         }
-        await interactionResponse.edit({embeds: [renderFightEmbedded(scene)]});
+        await interactionResponse.edit({ embeds: [renderFightEmbedded(scene)] });
         await setTimeout(200);
     }
 }
@@ -125,7 +131,7 @@ function renderStats(player: Entity) {
             📚Items:
             ${player.itemtext.join("\n")}
         `,
-        inline: true
+        inline: true,
     };
 }
 
@@ -138,8 +144,8 @@ function renderFightEmbedded(fightscene: FightScene): JSONEncodable<APIEmbed> | 
             renderStats(fightscene.enemy),
             {
                 name: "Verlauf",
-                value: " "
-            }
-        ]
+                value: " ",
+            },
+        ],
     };
 }
