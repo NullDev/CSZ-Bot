@@ -2,35 +2,35 @@ export const gameWeapons: { [name: string]: EquipableWeapon } = {
     dildo: {
         type: "weapon",
         name: "Dildo",
-        attack: { min: 3, max: 9 },
-    },
+        attack: {min: 3, max: 9}
+    }
 };
 export const gameArmor: { [name: string]: EquipableArmor } = {
     nachthemd: {
         type: "armor",
         name: "Nachthemd",
         health: 50,
-        defence: { min: 2, max: 5 },
+        defence: {min: 2, max: 5}
     },
     eierwaermer: {
         type: "armor",
         name: "Eierwaermer",
         health: 30,
-        defence: { min: 3, max: 5 },
-    },
+        defence: {min: 3, max: 5}
+    }
 };
 export const gameItems: { [name: string]: EquipableItem } = {
     ayran: {
         type: "item",
         name: "Ayran",
-        attackModifier: { min: 2, max: 3 },
+        attackModifier: {min: 2, max: 3}
     },
     oettinger: {
         type: "item",
         name: "Ötti",
-        attackModifier: { min: 1, max: 5 },
-        defenceModifier: { min: -3, max: 0 },
-    },
+        attackModifier: {min: 1, max: 5},
+        defenceModifier: {min: -3, max: 0}
+    }
 };
 export const bossMap: { [name: string]: BaseEntity } = {
     gudrun: {
@@ -41,7 +41,7 @@ export const bossMap: { [name: string]: BaseEntity } = {
         baseDefence: 0,
         armor: gameArmor.nachthemd,
         weapon: gameWeapons.dildo,
-        items: [],
+        items: []
     },
 
     deinchef: {
@@ -50,7 +50,7 @@ export const bossMap: { [name: string]: BaseEntity } = {
         health: 120,
         baseDamage: 1,
         baseDefence: 1,
-        items: [],
+        items: []
     },
     schutzheiliger: {
         name: "Schutzheiliger der Matjesverkäufer",
@@ -58,7 +58,7 @@ export const bossMap: { [name: string]: BaseEntity } = {
         health: 120,
         baseDamage: 1,
         baseDefence: 1,
-        items: [],
+        items: []
     },
     rentner: {
         name: "Reeeeeeentner",
@@ -66,7 +66,7 @@ export const bossMap: { [name: string]: BaseEntity } = {
         health: 200,
         baseDamage: 3,
         baseDefence: 5,
-        items: [],
+        items: []
     },
     barkeeper: {
         name: "Barkeeper aus Nürnia",
@@ -76,21 +76,28 @@ export const bossMap: { [name: string]: BaseEntity } = {
         health: 350,
         baseDamage: 5,
         baseDefence: 5,
-        items: [],
-    },
+        items: []
+    }
+};
+
+export const baseStats = {
+    description: "",
+    health: 80,
+    baseDamage: 1,
+    baseDefence: 0
 };
 
 export type FightItemType = "weapon" | "armor" | "item";
 
 export type Equipable = EquipableWeapon | EquipableItem | EquipableArmor;
 
-interface EquipableWeapon {
+export interface EquipableWeapon {
     type: "weapon";
     attack: Range;
     name: string;
 }
 
-interface EquipableArmor {
+export interface EquipableArmor {
     type: "armor";
     defence: Range;
     health: number;
@@ -142,17 +149,7 @@ export class Entity {
         const defence = enemy.defend();
         const result = calcDamage(rawDamage, defence);
         console.log(
-            this.stats.name +
-                " (" +
-                this.stats.health +
-                ") hits " +
-                enemy.stats.name +
-                " (" +
-                enemy.stats.health +
-                ") for " +
-                result.damage +
-                " mitigated " +
-                result.mitigated,
+            `${this.stats.name} (${this.stats.health}) hits ${enemy.stats.name} (${enemy.stats.health}) for ${result.damage} mitigated ${result.mitigated}`
         );
         enemy.stats.health -= result.damage;
         this.lastattack = result.rawDamage;
@@ -179,7 +176,7 @@ export interface Range {
 
 type PermaBuff = {};
 
-interface EquipableItem {
+export interface EquipableItem {
     type: "item";
     name: string;
     attackModifier?: Range;
@@ -194,7 +191,7 @@ function randomValue(range: Range) {
 
 function calcDamage(rawDamage: number, defence: number) {
     if (defence >= rawDamage) {
-        return { rawDamage: rawDamage, damage: 0, mitigated: rawDamage };
+        return {rawDamage: rawDamage, damage: 0, mitigated: rawDamage};
     }
-    return { rawDamage: rawDamage, damage: rawDamage - defence, mitigated: defence };
+    return {rawDamage: rawDamage, damage: rawDamage - defence, mitigated: defence};
 }
