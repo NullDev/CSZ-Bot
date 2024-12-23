@@ -1,12 +1,12 @@
-import type {LootAttributeTemplate, LootTemplate} from "@/storage/loot.js";
+import type { LootAttributeTemplate, LootTemplate } from "@/storage/loot.js";
 
 import * as lootDropService from "@/service/lootDrop.js";
 import * as emoteService from "@/service/emote.js";
-import {GuildMember, type Guild} from "discord.js";
-import type {Loot, LootAttribute} from "@/storage/db/model.js";
+import { GuildMember, type Guild } from "discord.js";
+import type { Loot, LootAttribute } from "@/storage/db/model.js";
 
 import log from "@log";
-import {fightTemplates} from "@/service/fightData.js";
+import { fightTemplates } from "@/service/fightData.js";
 
 const ACHTUNG_NICHT_DROPBAR_WEIGHT_KG = 0;
 
@@ -73,7 +73,7 @@ export const lootTemplateMap: { [id: string]: LootTemplate } = {
         titleText: "✨Nichts✨",
         dropDescription: "¯\\_(ツ)_/¯",
         asset: null,
-        excludeFromInventory: true
+        excludeFromInventory: true,
     },
     [LootKindId.KADSE]: {
         id: LootKindId.KADSE,
@@ -84,8 +84,8 @@ export const lootTemplateMap: { [id: string]: LootTemplate } = {
         emote: ":catsmile:",
         asset: "assets/loot/01-kadse.jpg",
         attributeAsset: {
-            [LootAttributeKindId.RADIOACTIVE]: "assets/loot/attributes/01-kadse-verstrahlt.jpg"
-        }
+            [LootAttributeKindId.RADIOACTIVE]: "assets/loot/attributes/01-kadse-verstrahlt.jpg",
+        },
     },
     [LootKindId.MESSERBLOCK]: {
         id: LootKindId.MESSERBLOCK,
@@ -95,7 +95,7 @@ export const lootTemplateMap: { [id: string]: LootTemplate } = {
         dropDescription: "🔪",
         emote: "🔪",
         asset: "assets/loot/02-messerblock.jpg",
-        gameEquip: fightTemplates.messerblock
+        gameEquip: fightTemplates.messerblock,
     },
     [LootKindId.KUEHLSCHRANK]: {
         id: LootKindId.KUEHLSCHRANK,
@@ -106,7 +106,7 @@ export const lootTemplateMap: { [id: string]: LootTemplate } = {
             "Dafür haben wir keine Kosten und Mühen gescheut und extra einen Kredit aufgenommen.",
         emote: "🧊",
         asset: "assets/loot/03-kuehlschrank.jpg",
-        effects: ["Lässt Essen nicht schimmeln"]
+        effects: ["Lässt Essen nicht schimmeln"],
     },
     [LootKindId.DOENER]: {
         id: LootKindId.DOENER,
@@ -115,7 +115,7 @@ export const lootTemplateMap: { [id: string]: LootTemplate } = {
         titleText: "Einen Döner",
         dropDescription: "Bewahre ihn gut als Geldanlage auf!",
         emote: "🥙",
-        asset: "assets/loot/04-doener.jpg"
+        asset: "assets/loot/04-doener.jpg",
     },
     [LootKindId.KINN]: {
         id: LootKindId.KINN,
@@ -124,7 +124,7 @@ export const lootTemplateMap: { [id: string]: LootTemplate } = {
         titleText: "Ein Kinn",
         dropDescription: "Pass gut drauf auf, sonst flieht es!",
         emote: "👶",
-        asset: "assets/loot/05-kinn.jpg"
+        asset: "assets/loot/05-kinn.jpg",
     },
     [LootKindId.KRANKSCHREIBUNG]: {
         id: LootKindId.KRANKSCHREIBUNG,
@@ -136,7 +136,7 @@ export const lootTemplateMap: { [id: string]: LootTemplate } = {
             "Mit der Krankschreibung kannst du deine Wärterschicht abbrechen und dich ausruhen.",
         emote: "🩺",
         asset: "assets/loot/06-krankschreibung.jpg",
-        onUse: async(interaction, context, loot) => {
+        onUse: async (interaction, context, loot) => {
             const lootRoles = await import("./lootRoles.js");
             const member = interaction.member;
             if (!member || !(member instanceof GuildMember)) {
@@ -146,18 +146,18 @@ export const lootTemplateMap: { [id: string]: LootTemplate } = {
 
             if (!isOnDuty) {
                 await interaction.reply(
-                    "Du bist gar nicht im Dienst, aber hast dir deinen Urlaub trotzdem wohl verdient."
+                    "Du bist gar nicht im Dienst, aber hast dir deinen Urlaub trotzdem wohl verdient.",
                 );
                 return false;
             }
 
             await lootRoles.endAsseGuardShift(context, member);
             await interaction.reply(
-                "Du hast kränkelnd beim Werksleiter angerufen und dich krankgemeldet. Genieße deinen Tag zu Hause!"
+                "Du hast kränkelnd beim Werksleiter angerufen und dich krankgemeldet. Genieße deinen Tag zu Hause!",
             );
 
             return false;
-        }
+        },
     },
     [LootKindId.WUERFELWURF]: {
         id: LootKindId.WUERFELWURF,
@@ -168,10 +168,10 @@ export const lootTemplateMap: { [id: string]: LootTemplate } = {
         emote: "🎲",
         asset: "assets/loot/07-wuerfelwurf.jpg",
         excludeFromInventory: true,
-        onDrop: async(_content, winner, channel, _loot) => {
+        onDrop: async (_content, winner, channel, _loot) => {
             const rollService = await import("./roll.js");
             await rollService.rollInChannel(winner.user, channel, 1, 6);
-        }
+        },
     },
     [LootKindId.GESCHENK]: {
         id: LootKindId.GESCHENK,
@@ -181,15 +181,15 @@ export const lootTemplateMap: { [id: string]: LootTemplate } = {
         dropDescription: "Du kannst jemand anderem eine Freude machen :feelsamazingman:",
         emote: "🎁",
         asset: null,
-        onUse: async(interaction, context, loot) => {
+        onUse: async (interaction, context, loot) => {
             await lootDropService.postLootDrop(
                 context,
                 interaction.channel,
                 interaction.user,
-                loot.id
+                loot.id,
             );
             return false;
-        }
+        },
     },
     [LootKindId.AYRAN]: {
         id: LootKindId.AYRAN,
@@ -199,7 +199,7 @@ export const lootTemplateMap: { [id: string]: LootTemplate } = {
         dropDescription: "Der gute von Müller",
         emote: "🥛",
         asset: "assets/loot/09-ayran.jpg",
-        gameEquip: fightTemplates.ayran
+        gameEquip: fightTemplates.ayran,
     },
     [LootKindId.PKV]: {
         id: LootKindId.PKV,
@@ -209,7 +209,7 @@ export const lootTemplateMap: { [id: string]: LootTemplate } = {
         dropDescription: "Fehlt dir nur noch das Geld zum Vorstrecken",
         emote: "💉",
         asset: "assets/loot/10-pkv.jpg",
-        effects: ["` +100% ` Chance auf AU 🟢"]
+        effects: ["` +100% ` Chance auf AU 🟢"],
     },
     [LootKindId.TRICHTER]: {
         id: LootKindId.TRICHTER,
@@ -218,7 +218,7 @@ export const lootTemplateMap: { [id: string]: LootTemplate } = {
         titleText: "Einen Trichter",
         dropDescription: "Für die ganz großen Schlücke",
         emote: ":trichter:",
-        asset: "assets/loot/11-trichter.jpg"
+        asset: "assets/loot/11-trichter.jpg",
     },
     [LootKindId.GRAFIKKARTE]: {
         id: LootKindId.GRAFIKKARTE,
@@ -227,7 +227,7 @@ export const lootTemplateMap: { [id: string]: LootTemplate } = {
         titleText: "Eine Grafikkarte aus der Zukunft",
         dropDescription: "Leider ohne Treiber, die gibt es erst in 3 Monaten",
         emote: "🖥️",
-        asset: "assets/loot/12-grafikkarte.png"
+        asset: "assets/loot/12-grafikkarte.png",
     },
     [LootKindId.HAENDEDRUCK]: {
         id: LootKindId.HAENDEDRUCK,
@@ -237,7 +237,7 @@ export const lootTemplateMap: { [id: string]: LootTemplate } = {
         dropDescription: "Glückwunsch!",
         emote: "🤝",
         asset: "assets/loot/13-haendedruck.jpg",
-        excludeFromInventory: true
+        excludeFromInventory: true,
     },
     [LootKindId.ERLEUCHTUNG]: {
         id: LootKindId.ERLEUCHTUNG,
@@ -248,17 +248,17 @@ export const lootTemplateMap: { [id: string]: LootTemplate } = {
         emote: "💡",
         asset: null,
         excludeFromInventory: true,
-        onDrop: async(_context, winner, channel, _loot) => {
+        onDrop: async (_context, winner, channel, _loot) => {
             const erleuchtungService = await import("./erleuchtung.js");
-            const {setTimeout} = await import("node:timers/promises");
+            const { setTimeout } = await import("node:timers/promises");
 
             await setTimeout(3000);
 
             const embed = await erleuchtungService.getInspirationsEmbed(winner);
             await channel.send({
-                embeds: [embed]
+                embeds: [embed],
             });
-        }
+        },
     },
     [LootKindId.BAN]: {
         id: LootKindId.BAN,
@@ -269,7 +269,7 @@ export const lootTemplateMap: { [id: string]: LootTemplate } = {
         emote: "🔨",
         asset: "assets/loot/15-ban.jpg",
         excludeFromInventory: true,
-        onDrop: async(context, winner, _channel, _loot) => {
+        onDrop: async (context, winner, _channel, _loot) => {
             const banService = await import("./ban.js");
             await banService.banUser(
                 context,
@@ -277,9 +277,9 @@ export const lootTemplateMap: { [id: string]: LootTemplate } = {
                 context.client.user,
                 "Willkürban aus der Lotterie",
                 false,
-                0.08
+                0.08,
             );
-        }
+        },
     },
     [LootKindId.OETTINGER]: {
         id: LootKindId.OETTINGER,
@@ -289,7 +289,7 @@ export const lootTemplateMap: { [id: string]: LootTemplate } = {
         dropDescription: "Ja dann Prost ne!",
         emote: "🍺",
         asset: "assets/loot/16-oettinger.jpg",
-        gameEquip: fightTemplates.oettinger
+        gameEquip: fightTemplates.oettinger,
     },
     [LootKindId.ACHIEVEMENT]: {
         id: LootKindId.ACHIEVEMENT,
@@ -298,7 +298,7 @@ export const lootTemplateMap: { [id: string]: LootTemplate } = {
         titleText: "Ein Achievement",
         dropDescription: "Das erreichen echt nicht viele",
         emote: "🏆",
-        asset: "assets/loot/17-achievement.png"
+        asset: "assets/loot/17-achievement.png",
     },
     [LootKindId.GME_AKTIE]: {
         id: LootKindId.GME_AKTIE,
@@ -307,7 +307,7 @@ export const lootTemplateMap: { [id: string]: LootTemplate } = {
         titleText: "Eine wertlose GME-Aktie",
         dropDescription: "Der squeeze kommt bald!",
         emote: "📉",
-        asset: "assets/loot/18-gme.jpg"
+        asset: "assets/loot/18-gme.jpg",
     },
     [LootKindId.FERRIS]: {
         id: LootKindId.FERRIS,
@@ -316,16 +316,16 @@ export const lootTemplateMap: { [id: string]: LootTemplate } = {
         titleText: "Einen Ferris - Die Krabbe",
         dropDescription: "Damit kann man ja endlich den Bot in Rust neuschreiben",
         emote: "🦀",
-        asset: "assets/loot/19-ferris.png"
+        asset: "assets/loot/19-ferris.png",
     },
     [LootKindId.HOMEPOD]: {
         id: LootKindId.HOMEPOD,
         weight: 5,
         displayName: "HomePod",
         titleText: "Einen Apple:registered: HomePod:copyright:",
-        dropDescription: "Damit dein \"Smart Home\" nicht mehr ganz so smart ist",
+        dropDescription: 'Damit dein "Smart Home" nicht mehr ganz so smart ist',
         emote: "🍎",
-        asset: "assets/loot/20-homepod.jpg"
+        asset: "assets/loot/20-homepod.jpg",
     },
     [LootKindId.RADIOACTIVE_WASTE]: {
         id: LootKindId.RADIOACTIVE_WASTE,
@@ -336,7 +336,7 @@ export const lootTemplateMap: { [id: string]: LootTemplate } = {
             "Sollte dir ja nichts mehr anhaben, du bist ja durch den Server schon genug verstrahlt 🤷‍♂️",
         emote: "☢️",
         asset: "assets/loot/21-radioaktiver-muell.jpg",
-        effects: ["` +5% ` Chance auf leeres Geschenk 🔴"]
+        effects: ["` +5% ` Chance auf leeres Geschenk 🔴"],
     },
     [LootKindId.SAHNE]: {
         id: LootKindId.SAHNE,
@@ -345,7 +345,7 @@ export const lootTemplateMap: { [id: string]: LootTemplate } = {
         titleText: "Sprühsahne",
         dropDescription: "Fürs Frühstück oder so",
         emote: ":sahne:",
-        asset: "assets/loot/22-sahne.jpg"
+        asset: "assets/loot/22-sahne.jpg",
     },
     [LootKindId.AEHRE]: {
         id: LootKindId.AEHRE,
@@ -357,10 +357,10 @@ export const lootTemplateMap: { [id: string]: LootTemplate } = {
         emote: ":aehre:",
         asset: "assets/loot/23-ehre.jpg",
         excludeFromInventory: true,
-        onDrop: async(_context, winner, _channel, _loot) => {
+        onDrop: async (_context, winner, _channel, _loot) => {
             const ehre = await import("@/storage/ehre.js");
             await ehre.addPoints(winner.id, 1);
-        }
+        },
     },
     [LootKindId.CROWDSTRIKE]: {
         id: LootKindId.CROWDSTRIKE,
@@ -369,7 +369,7 @@ export const lootTemplateMap: { [id: string]: LootTemplate } = {
         titleText: "Crowdstrike Falcon Installation",
         dropDescription: "Bitti nicht rebooti und Bitlocki nutzi",
         emote: ":eagle:",
-        asset: "assets/loot/24-crowdstrike.jpg"
+        asset: "assets/loot/24-crowdstrike.jpg",
     },
     [LootKindId.POWERADE_BLAU]: {
         id: LootKindId.POWERADE_BLAU,
@@ -377,7 +377,7 @@ export const lootTemplateMap: { [id: string]: LootTemplate } = {
         displayName: "Blaue Powerade",
         titleText: "Blaue Powerade",
         dropDescription: "Erfrischend erquickend. Besonders mit Vodka. Oder Korn.",
-        asset: "assets/loot/25-powerade-blau.jpg"
+        asset: "assets/loot/25-powerade-blau.jpg",
     },
     [LootKindId.GAULOISES_BLAU]: {
         id: LootKindId.GAULOISES_BLAU,
@@ -387,7 +387,7 @@ export const lootTemplateMap: { [id: string]: LootTemplate } = {
         dropDescription:
             "Rauchig, kräftig, französisch. Wie du in deinen Träumen.\n\nVerursacht Herzanfälle, genau wie dieser Server",
         emote: "🚬",
-        asset: "assets/loot/26-gauloises-blau.png"
+        asset: "assets/loot/26-gauloises-blau.png",
     },
     [LootKindId.MAXWELL]: {
         id: LootKindId.MAXWELL,
@@ -396,7 +396,7 @@ export const lootTemplateMap: { [id: string]: LootTemplate } = {
         titleText: "Einen Maxwell",
         dropDescription: "Der ist doch tot, oder?",
         emote: "😸",
-        asset: "assets/loot/27-maxwell.gif"
+        asset: "assets/loot/27-maxwell.gif",
     },
     [LootKindId.SCHICHTBEGINN_ASSE_2]: {
         id: LootKindId.SCHICHTBEGINN_ASSE_2,
@@ -407,10 +407,10 @@ export const lootTemplateMap: { [id: string]: LootTemplate } = {
         emote: "🔒",
         asset: "assets/loot/28-asse-2.jpg",
         excludeFromInventory: true,
-        onDrop: async(context, winner, channel, _loot) => {
+        onDrop: async (context, winner, channel, _loot) => {
             const lootRoles = await import("./lootRoles.js");
             await lootRoles.startAsseGuardShift(context, winner, channel);
-        }
+        },
     },
     [LootKindId.DRECK]: {
         id: LootKindId.DRECK,
@@ -419,7 +419,7 @@ export const lootTemplateMap: { [id: string]: LootTemplate } = {
         titleText: "Ein Glas Dreck",
         dropDescription: "Ich hab ein Glas voll Dreck",
         emote: ":jar:",
-        asset: "assets/loot/29-dirt.jpg"
+        asset: "assets/loot/29-dirt.jpg",
     },
     [LootKindId.EI]: {
         id: LootKindId.EI,
@@ -429,7 +429,7 @@ export const lootTemplateMap: { [id: string]: LootTemplate } = {
         dropDescription:
             "Jetzt wär geklärt, was zu erst da war, Ei oder ... (Ja was schlüpft daraus eigentlich?)",
         emote: ":egg:",
-        asset: "assets/loot/30-egg.jpg"
+        asset: "assets/loot/30-egg.jpg",
     },
     [LootKindId.BRAVO]: {
         id: LootKindId.BRAVO,
@@ -438,7 +438,7 @@ export const lootTemplateMap: { [id: string]: LootTemplate } = {
         titleText: "Eine Bravo vom Dachboden",
         dropDescription: "Die Seiten kleben noch ein bisschen",
         emote: ":newspaper2:",
-        asset: "assets/loot/31-bravo.jpg"
+        asset: "assets/loot/31-bravo.jpg",
     },
     [LootKindId.VERSCHIMMELTER_DOENER]: {
         id: LootKindId.VERSCHIMMELTER_DOENER,
@@ -447,7 +447,7 @@ export const lootTemplateMap: { [id: string]: LootTemplate } = {
         titleText: "Einen verschimmelten Döner",
         dropDescription: "Du hättest ihn früher essen sollen",
         emote: "🥙",
-        asset: null
+        asset: null,
     },
     [LootKindId.THUNFISCHSHAKE]: {
         id: LootKindId.THUNFISCHSHAKE,
@@ -457,7 +457,7 @@ export const lootTemplateMap: { [id: string]: LootTemplate } = {
         dropDescription: "Nach Rezept zubereitet, bestehend aus Thunfisch und Reiswaffeln",
         emote: ":baby_bottle:",
         asset: "assets/loot/32-thunfischshake.jpg",
-        gameEquip: fightTemplates.thunfischshake
+        gameEquip: fightTemplates.thunfischshake,
     },
     [LootKindId.KAFFEEMUEHLE]: {
         id: LootKindId.KAFFEEMUEHLE,
@@ -466,8 +466,8 @@ export const lootTemplateMap: { [id: string]: LootTemplate } = {
         titleText: "Eine Kaffeemühle für 400€",
         dropDescription: "Kann Kaffee mühlen. Und das gut. Mit Gold.",
         emote: ":coffee:",
-        asset: "assets/loot/34-kaffeemuehle.jpg"
-    }
+        asset: "assets/loot/34-kaffeemuehle.jpg",
+    },
 };
 
 export const lootTemplates: LootTemplate[] = Object.values(lootTemplateMap);
@@ -493,35 +493,35 @@ export const lootAttributeTemplates: LootAttributeTemplate[] = [
         classId: LootAttributeClassId.RARITY,
         displayName: "Normal",
         shortDisplay: "",
-        initialDropWeight: 90
+        initialDropWeight: 90,
     },
     {
         id: LootAttributeKindId.RARITY_RARE,
         classId: LootAttributeClassId.RARITY,
         displayName: "Selten",
         shortDisplay: "⭐",
-        initialDropWeight: 10
+        initialDropWeight: 10,
     },
     {
         id: LootAttributeKindId.RARITY_VERY_RARE,
         classId: LootAttributeClassId.RARITY,
         displayName: "Sehr Selten",
         shortDisplay: "🌟",
-        initialDropWeight: 1
+        initialDropWeight: 1,
     },
     {
         id: LootAttributeKindId.RADIOACTIVE,
         classId: LootAttributeClassId.OTHER,
         displayName: "Verstrahlt",
         shortDisplay: "☢️",
-        color: 0xff_ff_ff
+        color: 0xff_ff_ff,
     },
     {
         id: LootAttributeKindId.SWEET,
         classId: LootAttributeClassId.OTHER,
         displayName: "Süß",
-        shortDisplay: "🍬"
-    }
+        shortDisplay: "🍬",
+    },
 ];
 
 export function resolveLootTemplate(lootKindId: number) {
@@ -538,7 +538,7 @@ export function getEmote(guild: Guild, item: Loot) {
 }
 
 export function extractRarityAttribute(
-    attributes: readonly Readonly<LootAttribute>[]
+    attributes: readonly Readonly<LootAttribute>[],
 ): Readonly<LootAttribute> | undefined {
     const attribute = attributes.filter(a => a.attributeClassId === LootAttributeClassId.RARITY);
     if (attribute.length === 0) {
@@ -551,14 +551,14 @@ export function extractRarityAttribute(
 }
 
 export function extractNonRarityAttributes(
-    attributes: readonly Readonly<LootAttribute>[]
+    attributes: readonly Readonly<LootAttribute>[],
 ): Readonly<LootAttribute>[] {
     return attributes.filter(a => a.attributeClassId !== LootAttributeClassId.RARITY);
 }
 
 export function itemHasAttribute(
     attributes: readonly Readonly<LootAttribute>[],
-    kindId: LootAttributeKindId
+    kindId: LootAttributeKindId,
 ): boolean {
     return attributes.some(a => a.attributeKindId === kindId);
 }
