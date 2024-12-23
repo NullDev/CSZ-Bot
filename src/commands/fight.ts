@@ -1,4 +1,4 @@
-import type {ApplicationCommand} from "@/commands/command.js";
+import type { ApplicationCommand } from "@/commands/command.js";
 import {
     type APIEmbed,
     APIEmbedField,
@@ -7,13 +7,19 @@ import {
     type CommandInteraction,
     type InteractionResponse,
     SlashCommandBuilder,
-    User
+    User,
 } from "discord.js";
-import type {BotContext} from "@/context.js";
-import type {JSONEncodable} from "@discordjs/util";
-import {type BaseEntity, baseStats, bossMap, Entity, type FightScene} from "@/service/fightData.js";
-import {setTimeout} from "node:timers/promises";
-import {getFightInventoryEnriched} from "@/storage/fightinventory.js";
+import type { BotContext } from "@/context.js";
+import type { JSONEncodable } from "@discordjs/util";
+import {
+    type BaseEntity,
+    baseStats,
+    bossMap,
+    Entity,
+    type FightScene,
+} from "@/service/fightData.js";
+import { setTimeout } from "node:timers/promises";
+import { getFightInventoryEnriched } from "@/storage/fightinventory.js";
 
 async function getFighter(user: User): Promise<BaseEntity> {
     const userInventory = await getFightInventoryEnriched(user.id);
