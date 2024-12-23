@@ -1,28 +1,19 @@
-import type { ApplicationCommand } from "@/commands/command.js";
+import type {ApplicationCommand} from "@/commands/command.js";
 import {
     type APIEmbed,
     APIEmbedField,
     type BooleanCache,
     type CacheType,
     type CommandInteraction,
-    ContextMenuCommandBuilder,
     type InteractionResponse,
     SlashCommandBuilder,
-    SlashCommandUserOption,
-    User,
+    User
 } from "discord.js";
-import type { BotContext } from "@/context.js";
-import type { JSONEncodable } from "@discordjs/util";
-import {
-    type BaseEntity,
-    baseStats,
-    bossMap,
-    Entity,
-    type FightScene,
-} from "@/service/fightData.js";
-import { setTimeout } from "node:timers/promises";
-import { getFightInventoryEnriched } from "@/storage/fightinventory.js";
-import { resolveLootTemplate } from "@/service/lootData.js";
+import type {BotContext} from "@/context.js";
+import type {JSONEncodable} from "@discordjs/util";
+import {type BaseEntity, baseStats, bossMap, Entity, type FightScene} from "@/service/fightData.js";
+import {setTimeout} from "node:timers/promises";
+import {getFightInventoryEnriched} from "@/storage/fightinventory.js";
 
 async function getFighter(user: User): Promise<BaseEntity> {
     const userInventory = await getFightInventoryEnriched(user.id);
@@ -126,8 +117,8 @@ function renderStats(player: Entity) {
         name: player.stats.name,
         value: `❤️HP${player.stats.health}/${player.maxhealth}
             ❤️${"=".repeat(Math.max(0, (player.stats.health / player.maxhealth) * 10))}
-            ⚔️Waffe: ${player.stats.weapon?.name ?? "Schwengel"} ${player.lastattack}
-            🛡️Rüstung: ${player.stats.armor?.name ?? "Nackt"} ${player.lastdefence}
+            ⚔️Waffe: ${player.stats.weapon ?? "Schwengel"} ${player.lastattack}
+            🛡️Rüstung: ${player.stats.armor ?? "Nackt"} ${player.lastdefence}
             📚Items:
             ${player.itemtext.join("\n")}
         `,
