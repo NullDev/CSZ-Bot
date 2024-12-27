@@ -29,7 +29,7 @@
     "@js-temporal/polyfill": "^0.4.4",
     "@napi-rs/canvas": "0.1.59",
     "@resvg/resvg-js": "^2.6.2",
-    "@sentry/bun": "^8.40.0",
+    "@sentry/bun": "^8.47.0",
     "@std/jsonc": "npm:@jsr/std__jsonc@^1.0.1",
     "chrono-node": "^2.7.7",
     "croner": "^9.0.0",
@@ -37,12 +37,12 @@
     "get-audio-duration": "^4.0.1",
     "graphviz-wasm": "^3.0.2",
     "jsdom": "^25.0.1",
-    "kysely": "^0.27.4",
+    "kysely": "^0.27.5",
     "kysely-bun-sqlite": "^0.3.2",
     "libsodium-wrappers": "^0.7.15",
     "messageformat": "^4.0.0-8",
-    "pino": "^9.5.0",
-    "splid-js": "^1.2.1",
+    "pino": "^9.6.0",
+    "splid-js": "^1.5.2",
     "urlpattern-polyfill": "^10.0.0"
   },
   "devDependencies": {
@@ -52,7 +52,7 @@
     "@types/minimist": "^1.2.5",
     "@types/node-cron": "^3.0.11",
     "@types/sqlite3": "^3.1.11",
-    "lefthook": "^1.8.4",
+    "lefthook": "^1.10.1",
     "pino-pretty": "^13.0.0",
     "typescript": "^5.7.2"
   },
