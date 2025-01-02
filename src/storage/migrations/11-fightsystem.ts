@@ -16,6 +16,7 @@ export async function up(db: Kysely<any>) {
         .addColumn("id", "integer", c => c.primaryKey().autoIncrement())
         .addColumn("userid", "text", c => c.notNull())
         .addColumn("bossName", "text", c => c.notNull())
+        .addColumn("result", "boolean", c => c.notNull())
         .addColumn("firsttime", "boolean", c => c.notNull())
         .addColumn("createdAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
         .addColumn("updatedAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
