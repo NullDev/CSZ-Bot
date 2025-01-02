@@ -8,19 +8,19 @@ import {
     SlashCommandBuilder,
     SlashCommandStringOption,
     SlashCommandUserOption,
-    type User,
+    type User
 } from "discord.js";
 
-import type { BotContext } from "@/context.js";
-import type { ApplicationCommand } from "@/commands/command.js";
+import type {BotContext} from "@/context.js";
+import type {ApplicationCommand} from "@/commands/command.js";
 import * as lootService from "@/service/loot.js";
-import { ensureChatInputCommand } from "@/utils/interactionUtils.js";
-import { format } from "@/utils/stringUtils.js";
+import {ensureChatInputCommand} from "@/utils/interactionUtils.js";
+import {format} from "@/utils/stringUtils.js";
 import * as lootDataService from "@/service/lootData.js";
-import { LootAttributeKindId } from "@/service/lootData.js";
+import {LootAttributeKindId} from "@/service/lootData.js";
 
 import log from "@log";
-import { getFightInventoryEnriched } from "@/storage/fightinventory.js";
+import {getFightInventoryEnriched} from "@/storage/fightinventory.js";
 
 export default class InventarCommand implements ApplicationCommand {
     name = "inventar";
@@ -33,7 +33,7 @@ export default class InventarCommand implements ApplicationCommand {
             new SlashCommandUserOption()
                 .setRequired(false)
                 .setName("user")
-                .setDescription("Wem du tun willst"),
+                .setDescription("Wem du tun willst")
         )
         .addStringOption(
             new SlashCommandStringOption()
@@ -41,10 +41,10 @@ export default class InventarCommand implements ApplicationCommand {
                 .setDescription("Anzeige")
                 .setRequired(false)
                 .addChoices(
-                    { name: "Kampfausrüstung", value: "fightinventory" },
-                    { name: "Kurzfassung", value: "short" },
-                    { name: "Detailansicht", value: "long" },
-                ),
+                    {name: "Kampfausrüstung", value: "fightinventory"},
+                    {name: "Kurzfassung", value: "short"},
+                    {name: "Detailansicht", value: "long"}
+                )
         );
 
     async handleInteraction(interaction: CommandInteraction, context: BotContext) {
@@ -56,7 +56,7 @@ export default class InventarCommand implements ApplicationCommand {
         const contents = await lootService.getInventoryContents(user);
         if (contents.length === 0) {
             await interaction.reply({
-                content: "Dein Inventar ist ✨leer✨",
+                content: "Dein Inventar ist ✨leer✨"
             });
             return;
         }
@@ -75,7 +75,7 @@ export default class InventarCommand implements ApplicationCommand {
     async #createShortEmbed(
         context: BotContext,
         interaction: CommandInteraction<CacheType>,
-        user: User,
+        user: User
     ) {
         const contents = await lootService.getInventoryContents(user);
         const groupedByLoot = Object.groupBy(contents, item => item.displayName);
@@ -98,7 +98,7 @@ export default class InventarCommand implements ApplicationCommand {
             .join("\n");
 
         const cuties = contents.filter(i =>
-            lootDataService.itemHasAttribute(i.attributes, LootAttributeKindId.SWEET),
+            lootDataService.itemHasAttribute(i.attributes, LootAttributeKindId.SWEET)
         ).length;
 
         const message = /* mf2 */ `
@@ -119,10 +119,10 @@ export default class InventarCommand implements ApplicationCommand {
                     title: `Inventar von ${user.displayName}`,
                     description,
                     footer: {
-                        text: format(message, { cuties, count: contents.length - cuties }),
-                    },
-                },
-            ],
+                        text: format(message, {cuties, count: contents.length - cuties})
+                    }
+                }
+            ]
         });
     }
 
@@ -131,7 +131,7 @@ export default class InventarCommand implements ApplicationCommand {
 
         const contentsUnsorted = await lootService.getInventoryContents(user);
         const contents = contentsUnsorted.toSorted((a, b) =>
-            b.createdAt.localeCompare(a.createdAt),
+            b.createdAt.localeCompare(a.createdAt)
         );
 
         let lastPageIndex = Math.floor(contents.length / pageSize);
@@ -156,12 +156,12 @@ export default class InventarCommand implements ApplicationCommand {
                     return {
                         name: `${lootDataService.getEmote(context.guild, item)} ${item.displayName}${rarity} ${shortAttributeList}`.trim(),
                         value: "",
-                        inline: false,
+                        inline: false
                     };
                 }),
                 footer: {
-                    text: `Seite ${pageIndex + 1} von ${lastPageIndex + 1}`,
-                },
+                    text: `Seite ${pageIndex + 1} von ${lastPageIndex + 1}`
+                }
             } satisfies APIEmbed;
 
             return {
@@ -174,19 +174,19 @@ export default class InventarCommand implements ApplicationCommand {
                                 label: "<<",
                                 customId: "page-prev",
                                 disabled: pageIndex <= 0,
-                                style: ButtonStyle.Secondary,
+                                style: ButtonStyle.Secondary
                             },
                             {
                                 type: ComponentType.Button,
                                 label: ">>",
                                 customId: "page-next",
                                 disabled: pageIndex >= lastPageIndex,
-                                style: ButtonStyle.Secondary,
-                            },
-                        ],
-                    },
+                                style: ButtonStyle.Secondary
+                            }
+                        ]
+                    }
                 ],
-                embeds: [embed],
+                embeds: [embed]
             } as const;
         }
 
@@ -195,12 +195,12 @@ export default class InventarCommand implements ApplicationCommand {
         const message = await interaction.reply({
             ...buildMessageData(pageIndex),
             fetchReply: true,
-            tts: false,
+            tts: false
         });
 
         const collector = message.createMessageComponentCollector({
             componentType: ComponentType.Button,
-            time: 45_000,
+            time: 45_000
         });
 
         collector.on("collect", async i => {
@@ -218,13 +218,13 @@ export default class InventarCommand implements ApplicationCommand {
             }
 
             await message.edit({
-                ...buildMessageData(pageIndex),
+                ...buildMessageData(pageIndex)
             });
         });
 
-        collector.on("end", async () => {
+        collector.on("end", async() => {
             await message.edit({
-                components: [],
+                components: []
             });
         });
     }
@@ -235,29 +235,29 @@ export default class InventarCommand implements ApplicationCommand {
             title: `Kampfausrüstung von ${user.displayName}`,
             description:
                 "Du kannst maximal eine Rüstung, eine Waffe und drei Items tragen. Wenn du kämpfst, setzt du die Items ein und verlierst diese, egal ob du gewinnst oder verlierst.",
-            thumbnail: user.avatarURL() ? { url: user.avatarURL()! } : undefined,
+            thumbnail: user.avatarURL() ? {url: user.avatarURL()!} : undefined,
             fields: [
-                { name: "Waffe", value: fightinventory.weapon?.name ?? "Nix" },
-                { name: "Rüstung", value: fightinventory.armor?.name ?? "Nackt" },
+                {name: "Waffe", value: fightinventory.weapon?.itemInfo?.displayName ?? "Nix"},
+                {name: "Rüstung", value: fightinventory.armor?.itemInfo?.displayName ?? "Nackt"},
                 ...fightinventory.items.map(item => {
                     return {
-                        name: item.name,
+                        name: item.itemInfo?.displayName ?? "",
                         value: "Hier sollten die buffs stehen",
-                        inline: true,
+                        inline: true
                     };
                 }),
-                { name: "Buffs", value: "Nix" },
+                {name: "Buffs", value: "Nix"}
             ],
             footer: {
-                text: `Lol ist noch nicht fertig`,
-            },
+                text: `Lol ist noch nicht fertig`
+            }
         } satisfies APIEmbed;
 
         const embed = {
             components: [],
             embeds: [display],
             fetchReply: true,
-            tts: false,
+            tts: false
         } as const satisfies InteractionReplyOptions;
 
         const message = await interaction.reply(embed);
