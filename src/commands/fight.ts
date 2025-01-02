@@ -1,4 +1,4 @@
-import type {ApplicationCommand} from "@/commands/command.js";
+import type { ApplicationCommand } from "@/commands/command.js";
 import {
     type APIEmbed,
     APIEmbedField,
@@ -7,10 +7,10 @@ import {
     type CommandInteraction,
     type InteractionResponse,
     SlashCommandBuilder,
-    type User
+    type User,
 } from "discord.js";
-import type {BotContext} from "@/context.js";
-import type {JSONEncodable} from "@discordjs/util";
+import type { BotContext } from "@/context.js";
+import type { JSONEncodable } from "@discordjs/util";
 import {
     type BaseEntity,
     baseStats,
@@ -19,11 +19,11 @@ import {
     EquipableArmor,
     EquipableItem,
     EquipableWeapon,
-    type FightScene
+    type FightScene,
 } from "@/service/fightData.js";
-import {setTimeout} from "node:timers/promises";
-import {getFightInventoryEnriched, removeItemsAfterFight} from "@/storage/fightinventory.js";
-import {getLastFight, insertResult} from "@/storage/fighthistory.js";
+import { setTimeout } from "node:timers/promises";
+import { getFightInventoryEnriched, removeItemsAfterFight } from "@/storage/fightinventory.js";
+import { getLastFight, insertResult } from "@/storage/fighthistory.js";
 
 async function getFighter(user: User): Promise<BaseEntity> {
     const userInventory = await getFightInventoryEnriched(user.id);
@@ -33,19 +33,18 @@ async function getFighter(user: User): Promise<BaseEntity> {
         name: user.displayName,
         weapon: {
             name: userInventory.weapon?.itemInfo?.displayName ?? "Nichts",
-            ...userInventory.weapon?.gameTemplate as EquipableWeapon
+            ...(userInventory.weapon?.gameTemplate as EquipableWeapon),
         },
         armor: {
             name: userInventory.armor?.itemInfo?.displayName ?? "Nichts",
-            ...userInventory.armor?.gameTemplate as EquipableArmor
+            ...(userInventory.armor?.gameTemplate as EquipableArmor),
         },
         items: userInventory.items.map(value => {
             return {
                 name: value.itemInfo?.displayName ?? "Error",
-                ...value.gameTemplate as EquipableItem
+                ...(value.gameTemplate as EquipableItem),
             };
-
-        })
+        }),
     };
 }
 
@@ -62,13 +61,15 @@ export default class FightCommand implements ApplicationCommand {
                 .setDescription("Boss")
                 //switch to autocomplete when we reach 25
                 .addChoices(
-                    Object.entries(bossMap).filter(boss => boss[1].enabled).map(boss => {
-                        return {
-                            name: boss[1].name,
-                            value: boss[0]
-                        };
-                    })
-                )
+                    Object.entries(bossMap)
+                        .filter(boss => boss[1].enabled)
+                        .map(boss => {
+                            return {
+                                name: boss[1].name,
+                                value: boss[0],
+                            };
+                        }),
+                ),
         );
 
     async handleInteraction(command: CommandInteraction, context: BotContext) {
@@ -95,22 +96,13 @@ export default class FightCommand implements ApplicationCommand {
 
         const interactionResponse = await command.deferReply();
 
+        const playerstats = await getFighter(command.user);
 
-        const
-            playerstats = await getFighter(command.user);
-
-
-        await
-
-            fight(command
-                    .user, playerstats, boss, {...bossMap[boss]},
-                interactionResponse
-            );
-
+        await fight(command.user, playerstats, boss, { ...bossMap[boss] }, interactionResponse);
     }
 }
 
-type result = "PLAYER" | "ENEMY" | undefined
+type result = "PLAYER" | "ENEMY" | undefined;
 
 function checkWin(fightscene: FightScene): result {
     if (fightscene.player.stats.health < 0) {
@@ -128,50 +120,49 @@ function renderEndScreen(fightscene: FightScene): APIEmbed | JSONEncodable<APIEm
         renderStats(fightscene.enemy),
         {
             name: "Verlauf",
-            value: " "
+            value: " ",
         },
         {
             name: " Die Items sind dir leider beim Kampf kaputt gegangen: ",
-            value: fightscene.player.stats.items.map(value => value.name).join(" \n")
-        }
+            value: fightscene.player.stats.items.map(value => value.name).join(" \n"),
+        },
     ];
     if (result == "PLAYER") {
         return {
             title: `Mit viel Glück konnte ${fightscene.player.stats.name} ${fightscene.enemy.stats.name} besiegen `,
-            color: 0x57F287,
+            color: 0x57f287,
             description: fightscene.enemy.stats.description,
-            fields: fields
+            fields: fields,
         };
     }
     if (result == "ENEMY") {
         return {
             title: `${fightscene.enemy.stats.name} hat ${fightscene.player.stats.name} gnadenlos vernichtet`,
-            color: 0xED4245,
+            color: 0xed4245,
             description: fightscene.enemy.stats.description,
-            fields: fields
+            fields: fields,
         };
     }
     return {
         title: `Kampf zwischen ${fightscene.player.stats.name} und ${fightscene.enemy.stats.name}`,
         description: fightscene.enemy.stats.description,
-        fields: fields
+        fields: fields,
     };
 }
 
-
-export async function fight(user: User,
+export async function fight(
+    user: User,
     playerstats: BaseEntity,
     boss: string,
     enemystats: BaseEntity,
-    interactionResponse:
-        InteractionResponse<BooleanCache<CacheType>>
+    interactionResponse: InteractionResponse<BooleanCache<CacheType>>,
 ) {
     const enemy = new Entity(enemystats);
     const player = new Entity(playerstats);
 
     const scene: FightScene = {
         player: player,
-        enemy: enemy
+        enemy: enemy,
     };
     while (checkWin(scene) === undefined) {
         player.itemtext = [];
@@ -191,19 +182,17 @@ export async function fight(user: User,
             if (!value.afterFight) {
                 continue;
             }
-            value.afterFight({player: enemy, enemy: player});
+            value.afterFight({ player: enemy, enemy: player });
         }
-        await interactionResponse.edit({embeds: [renderFightEmbedded(scene)]});
+        await interactionResponse.edit({ embeds: [renderFightEmbedded(scene)] });
         await setTimeout(200);
     }
 
-    await interactionResponse.edit({embeds: [renderEndScreen(scene)]});
+    await interactionResponse.edit({ embeds: [renderEndScreen(scene)] });
     //delete items
     await removeItemsAfterFight(user.id);
     //
     await insertResult(user.id, boss, checkWin(scene) == "PLAYER");
-
-
 }
 
 function renderStats(player: Entity) {
@@ -219,7 +208,7 @@ function renderStats(player: Entity) {
             📚Items:
             ${player.itemtext.join("\n")}
         `,
-        inline: true
+        inline: true,
     };
 }
 
@@ -232,8 +221,8 @@ function renderFightEmbedded(fightscene: FightScene): JSONEncodable<APIEmbed> | 
             renderStats(fightscene.enemy),
             {
                 name: "Verlauf",
-                value: " "
-            }
-        ]
+                value: " ",
+            },
+        ],
     };
 }

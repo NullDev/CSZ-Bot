@@ -7,24 +7,24 @@ import {
     type CommandInteraction,
     SlashCommandBuilder,
     SlashCommandStringOption,
-    SlashCommandSubcommandBuilder
+    SlashCommandSubcommandBuilder,
 } from "discord.js";
 import * as sentry from "@sentry/bun";
 
-import type {BotContext} from "@/context.js";
-import type {ApplicationCommand} from "@/commands/command.js";
-import type {LootUseCommandInteraction} from "@/storage/loot.js";
+import type { BotContext } from "@/context.js";
+import type { ApplicationCommand } from "@/commands/command.js";
+import type { LootUseCommandInteraction } from "@/storage/loot.js";
 import * as lootService from "@/service/loot.js";
 import * as lootRoleService from "@/service/lootRoles.js";
-import {randomEntry} from "@/utils/arrayUtils.js";
-import {ensureChatInputCommand} from "@/utils/interactionUtils.js";
+import { randomEntry } from "@/utils/arrayUtils.js";
+import { ensureChatInputCommand } from "@/utils/interactionUtils.js";
 import * as imageService from "@/service/image.js";
 
 import * as lootDataService from "@/service/lootData.js";
-import {LootAttributeClassId, LootAttributeKindId, LootKindId} from "@/service/lootData.js";
+import { LootAttributeClassId, LootAttributeKindId, LootKindId } from "@/service/lootData.js";
 
 import log from "@log";
-import {equipItembyLoot, getFightInventoryUnsorted} from "@/storage/fightinventory.js";
+import { equipItembyLoot, getFightInventoryUnsorted } from "@/storage/fightinventory.js";
 
 export default class GegenstandCommand implements ApplicationCommand {
     name = "gegenstand";
@@ -36,7 +36,7 @@ export default class GegenstandCommand implements ApplicationCommand {
         .addSubcommand(
             new SlashCommandSubcommandBuilder()
                 .setName("entsorgen")
-                .setDescription("Gebe dem Wärter etwas Atommüll und etwas süßes")
+                .setDescription("Gebe dem Wärter etwas Atommüll und etwas süßes"),
         )
         .addSubcommand(
             new SlashCommandSubcommandBuilder()
@@ -47,8 +47,8 @@ export default class GegenstandCommand implements ApplicationCommand {
                         .setRequired(true)
                         .setName("item")
                         .setDescription("Der Gegenstand, über den du Informationen haben möchtest")
-                        .setAutocomplete(true)
-                )
+                        .setAutocomplete(true),
+                ),
         )
         .addSubcommand(
             new SlashCommandSubcommandBuilder()
@@ -59,8 +59,8 @@ export default class GegenstandCommand implements ApplicationCommand {
                         .setRequired(true)
                         .setName("item")
                         .setDescription("Die Sau, die du benutzen möchtest")
-                        .setAutocomplete(true)
-                )
+                        .setAutocomplete(true),
+                ),
         )
         .addSubcommand(
             new SlashCommandSubcommandBuilder()
@@ -71,8 +71,8 @@ export default class GegenstandCommand implements ApplicationCommand {
                         .setRequired(true)
                         .setName("item")
                         .setDescription("Rüste dich für deinen nächsten Kampf")
-                        .setAutocomplete(true)
-                )
+                        .setAutocomplete(true),
+                ),
         );
 
     async handleInteraction(interaction: CommandInteraction, context: BotContext) {
@@ -104,33 +104,33 @@ export default class GegenstandCommand implements ApplicationCommand {
                     {
                         description:
                             "Es ist kein Wärter im Dienst. Das Tor ist zu. Du rennst dagegen. Opfer.",
-                        color: 0xff0000
-                    }
-                ]
+                        color: 0xff0000,
+                    },
+                ],
             });
             return;
         }
 
         const wasteContents = await lootService.getUserLootsByTypeId(
             interaction.user.id,
-            LootKindId.RADIOACTIVE_WASTE
+            LootKindId.RADIOACTIVE_WASTE,
         );
 
         if (wasteContents.length === 0) {
             await interaction.reply({
-                content: "Du hast keinen Atommüll, den du in die Grube werfen kannst."
+                content: "Du hast keinen Atommüll, den du in die Grube werfen kannst.",
             });
             return;
         }
 
         const sweetContent = await lootService.getUserLootsWithAttribute(
             interaction.user.id,
-            LootAttributeKindId.SWEET
+            LootAttributeKindId.SWEET,
         );
 
         if (sweetContent.length === 0) {
             await interaction.reply({
-                content: "Du hast keine süßen Sachen, mit denen du den Wärter bestechen kannst."
+                content: "Du hast keine süßen Sachen, mit denen du den Wärter bestechen kannst.",
             });
             return;
         }
@@ -142,7 +142,7 @@ export default class GegenstandCommand implements ApplicationCommand {
         const messages = [
             `Du hast dem Wärter ${currentGuard} etwas Atommüll und etwas Süßes zum Naschen gegeben.`,
             `${currentGuard} hat sich über deinen Atommüll und die süßen Sachen gefreut.`,
-            `${currentGuard} hat sich gerade die hübschen Vögel angeschaut. Du konntest unbemerkt ein Fass Atommüll an im vorbei rollen und hast ihm als Geschenk etwas süßes hinterlassen.`
+            `${currentGuard} hat sich gerade die hübschen Vögel angeschaut. Du konntest unbemerkt ein Fass Atommüll an im vorbei rollen und hast ihm als Geschenk etwas süßes hinterlassen.`,
         ];
 
         await interaction.reply({
@@ -151,11 +151,11 @@ export default class GegenstandCommand implements ApplicationCommand {
                     title: "Atommüll entsorgt!",
                     description: randomEntry(messages),
                     footer: {
-                        text: "Jetzt ist es das Problem des deutschen Steuerzahlers"
+                        text: "Jetzt ist es das Problem des deutschen Steuerzahlers",
                     },
-                    color: 0x00ff00
-                }
-            ]
+                    color: 0x00ff00,
+                },
+            ],
         });
     }
 
@@ -172,7 +172,7 @@ export default class GegenstandCommand implements ApplicationCommand {
             return;
         }
 
-        const {item, template, attributes} = info;
+        const { item, template, attributes } = info;
 
         const effects = template.effects ?? [];
 
@@ -202,14 +202,14 @@ export default class GegenstandCommand implements ApplicationCommand {
 
         const extraFields: (APIEmbedField | undefined)[] = [
             template.onUse !== undefined
-                ? {name: "🔧 Benutzbar", value: "", inline: true}
+                ? { name: "🔧 Benutzbar", value: "", inline: true }
                 : undefined,
 
             ...otherAttributes.map(attribute => ({
                 name: `${attribute.shortDisplay} ${attribute.displayName}`.trim(),
                 value: "",
-                inline: true
-            }))
+                inline: true,
+            })),
         ];
 
         await interaction.reply({
@@ -220,31 +220,31 @@ export default class GegenstandCommand implements ApplicationCommand {
                     color: 0x00ff00,
                     image: attachment
                         ? {
-                            url: "attachment://hero.gif",
-                            width: 128
-                        }
+                              url: "attachment://hero.gif",
+                              width: 128,
+                          }
                         : undefined,
                     fields: [
                         ...effects.map(value => ({
                             name: "⚡️ Effekt",
                             value,
-                            inline: true
+                            inline: true,
                         })),
-                        ...extraFields.filter(e => e !== undefined)
+                        ...extraFields.filter(e => e !== undefined),
                     ],
                     footer: {
-                        text: `${rarity.shortDisplay} ${rarity.displayName}\t\t\t\t\t\t${otherAttributes.map(a => a.shortDisplay).join("")}`.trim()
-                    }
-                }
+                        text: `${rarity.shortDisplay} ${rarity.displayName}\t\t\t\t\t\t${otherAttributes.map(a => a.shortDisplay).join("")}`.trim(),
+                    },
+                },
             ],
             files: attachment
                 ? [
-                    {
-                        name: "hero.gif",
-                        attachment
-                    }
-                ]
-                : []
+                      {
+                          name: "hero.gif",
+                          attachment,
+                      },
+                  ]
+                : [],
         });
     }
 
@@ -261,12 +261,12 @@ export default class GegenstandCommand implements ApplicationCommand {
             return;
         }
 
-        const {item, template} = info;
+        const { item, template } = info;
 
         if (template.onUse === undefined) {
             await interaction.reply({
                 content: "Dieser Gegenstand kann nicht benutzt werden.",
-                ephemeral: true
+                ephemeral: true,
             });
             return;
         }
@@ -276,14 +276,14 @@ export default class GegenstandCommand implements ApplicationCommand {
             keepInInventory = await template.onUse(
                 interaction as LootUseCommandInteraction,
                 context,
-                item
+                item,
             );
         } catch (error) {
             log.error(error, "Error while using item");
             sentry.captureException(error);
             await interaction.reply({
                 content: "Beim Benutzen dieses Gegenstands ist ein Fehler aufgetreten.",
-                ephemeral: true
+                ephemeral: true,
             });
         }
 
@@ -302,7 +302,7 @@ export default class GegenstandCommand implements ApplicationCommand {
         if (!item) {
             await interaction.reply({
                 content: "Diesen Gegensand hast du nicht.",
-                ephemeral: true
+                ephemeral: true,
             });
             return;
         }
@@ -311,14 +311,14 @@ export default class GegenstandCommand implements ApplicationCommand {
         if (!template) {
             await interaction.reply({
                 content: "Dieser Gegenstand ist unbekannt.",
-                ephemeral: true
+                ephemeral: true,
             });
             return;
         }
 
         const attributes = await lootService.getLootAttributes(item.id);
 
-        return {item, template, attributes};
+        return { item, template, attributes };
     }
 
     async autocomplete(interaction: AutocompleteInteraction) {
@@ -362,7 +362,7 @@ export default class GegenstandCommand implements ApplicationCommand {
                     typeof emote === "string"
                         ? `${emote} ${item.displayName} (${item.id})`
                         : `${item.displayName} (${item.id})`,
-                value: String(item.id)
+                value: String(item.id),
             });
         }
 
@@ -381,12 +381,12 @@ export default class GegenstandCommand implements ApplicationCommand {
         if (!info) {
             return;
         }
-        const {item, template} = info;
+        const { item, template } = info;
         log.info(item);
         if (template.gameEquip === undefined) {
             await interaction.reply({
                 content: ` ${item.displayName}  kann nicht ausgerüstet werden.`,
-                ephemeral: true
+                ephemeral: true,
             });
             return;
         }
@@ -396,7 +396,7 @@ export default class GegenstandCommand implements ApplicationCommand {
         if (items.filter(i => i.id === item.id).length !== 0) {
             await interaction.reply({
                 content: `Du hast ${item.displayName} schon ausgerüstet`,
-                ephemeral: true
+                ephemeral: true,
             });
             return;
         }
