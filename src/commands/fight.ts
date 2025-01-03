@@ -16,9 +16,9 @@ import {
     baseStats,
     bossMap,
     Entity,
-    EquipableArmor,
-    EquipableItem,
-    EquipableWeapon,
+    type EquipableArmor,
+    type EquipableItem,
+    type EquipableWeapon,
     type FightScene,
 } from "@/service/fightData.js";
 import { setTimeout } from "node:timers/promises";
@@ -75,7 +75,7 @@ export default class FightCommand implements ApplicationCommand {
     async handleInteraction(command: CommandInteraction, context: BotContext) {
         const boss = command.options.get("boss", true).value as string;
 
-        let lastFight = await getLastFight(command.user.id);
+        const lastFight = await getLastFight(command.user.id);
 
         //   if (lastFight !== undefined && (new Date(lastFight?.createdAt).getTime() > new Date().getTime() - 1000 * 60 * 60 * 24 * 5)) {
         //       await command.reply({
@@ -127,7 +127,7 @@ function renderEndScreen(fightscene: FightScene): APIEmbed | JSONEncodable<APIEm
             value: fightscene.player.stats.items.map(value => value.name).join(" \n"),
         },
     ];
-    if (result == "PLAYER") {
+    if (result === "PLAYER") {
         return {
             title: `Mit viel Glück konnte ${fightscene.player.stats.name} ${fightscene.enemy.stats.name} besiegen `,
             color: 0x57f287,
@@ -135,7 +135,7 @@ function renderEndScreen(fightscene: FightScene): APIEmbed | JSONEncodable<APIEm
             fields: fields,
         };
     }
-    if (result == "ENEMY") {
+    if (result === "ENEMY") {
         return {
             title: `${fightscene.enemy.stats.name} hat ${fightscene.player.stats.name} gnadenlos vernichtet`,
             color: 0xed4245,
@@ -192,7 +192,7 @@ export async function fight(
     //delete items
     await removeItemsAfterFight(user.id);
     //
-    await insertResult(user.id, boss, checkWin(scene) == "PLAYER");
+    await insertResult(user.id, boss, checkWin(scene) === "PLAYER");
 }
 
 function renderStats(player: Entity) {

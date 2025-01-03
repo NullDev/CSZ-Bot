@@ -1,7 +1,7 @@
 import type { User } from "discord.js";
 import db from "@db";
-import { type Equipable } from "@/service/fightData.js";
-import type { LootId } from "@/storage/db/model.js";
+import type { Equipable, FightItemType } from "@/service/fightData.js";
+import type { Loot, LootId } from "@/storage/db/model.js";
 import * as lootDataService from "@/service/lootData.js";
 import { type LootKindId, resolveLootTemplate } from "@/service/lootData.js";
 import * as lootService from "@/service/loot.js";
@@ -19,7 +19,7 @@ export async function getFightInventoryEnriched(userId: User["id"], ctx = db()) 
     const unsorted = await getFightInventoryUnsorted(userId, ctx);
     const enriched = [];
     for (const equip of unsorted) {
-        let itemInfo = await lootService.getUserLootById(userId, equip.lootId, ctx);
+        const itemInfo = await lootService.getUserLootById(userId, equip.lootId, ctx);
         enriched.push({
             gameTemplate: await getGameTemplate(itemInfo?.lootKindId),
             itemInfo: itemInfo,
@@ -61,20 +61,22 @@ export async function removeItemsAfterFight(userId: User["id"], ctx = db()) {
     });
 }
 
-export async function equipItembyLoot(userId: User["id"], lootId: LootId, ctx = db()) {
-    const item = await lootService.getUserLootById(userId, lootId);
-    const lootTemplate = lootDataService.resolveLootTemplate(item!.lootKindId)!;
-    const type = lootTemplate.gameEquip!.type;
+export async function equipItembyLoot(
+    userId: User["id"],
+    loot: Loot,
+    itemType: FightItemType,
+    ctx = db(),
+) {
     const maxItems = {
         weapon: 1,
         armor: 1,
         item: 3,
     };
-
     const unequippeditems: string[] = [];
+
     return await ctx.transaction().execute(async ctx => {
-        const equippedStuff = await getItemsByType(userId, type, ctx);
-        for (let i = 0; i <= equippedStuff.length - maxItems[type]; i++) {
+        const equippedStuff = await getItemsByType(userId, itemType, ctx);
+        for (let i = 0; i <= equippedStuff.length - maxItems[itemType]; i++) {
             const unequipitem = await lootService.getUserLootById(
                 userId,
                 equippedStuff[i].lootId,
@@ -88,10 +90,10 @@ export async function equipItembyLoot(userId: User["id"], lootId: LootId, ctx = 
             .insertInto("fightinventory")
             .values({
                 userid: userId,
-                lootId: lootId,
-                equippedSlot: type,
+                lootId: loot.id,
+                equippedSlot: itemType,
             })
             .execute();
-        return { unequipped: unequippeditems, equipped: item };
+        return { unequipped: unequippeditems, equipped: loot };
     });
 }
