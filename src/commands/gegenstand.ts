@@ -391,8 +391,6 @@ export default class GegenstandCommand implements ApplicationCommand {
             return;
         }
         const items = await getFightInventoryUnsorted(interaction.user.id);
-        console.log(item.id);
-        console.log(items);
         if (items.filter(i => i.id === item.id).length !== 0) {
             await interaction.reply({
                 content: `Du hast ${item.displayName} schon ausgerüstet`,
@@ -400,10 +398,9 @@ export default class GegenstandCommand implements ApplicationCommand {
             });
             return;
         }
-        const result = await equipItembyLoot(interaction.user.id, item.id);
-        log.info(result);
+        const result = await equipItembyLoot(interaction.user.id, item, template.gameEquip.type);
         const message =
-            result.unequipped.length == 0
+            result.unequipped.length === 0
                 ? `Du hast ${result.equipped?.displayName} ausgerüstet`
                 : `Du hast ${result.unequipped.join(", ")} abgelegt und dafür ${result.equipped?.displayName} ausgerüstet`;
         await interaction.reply(message);

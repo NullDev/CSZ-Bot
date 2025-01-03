@@ -10,7 +10,7 @@ export async function insertResult(userId: User["id"], boss: string, win: boolea
             userid: userId,
             result: win,
             bossName: boss,
-            firsttime: lastWins.length == 0 && win,
+            firsttime: lastWins.length === 0 && win,
         })
         .execute();
 }

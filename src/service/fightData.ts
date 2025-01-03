@@ -168,9 +168,11 @@ export class Entity {
         if (this.stats.weapon?.attack) {
             rawDamage += randomValue(this.stats.weapon.attack);
         }
-        this.stats.items
-            .filter(value => value.attackModifier)
-            .forEach(value => (rawDamage += randomValue(value.attackModifier!)));
+        for (const value1 of this.stats.items) {
+            if (value1.attackModifier) {
+                rawDamage += randomValue(value1.attackModifier);
+            }
+        }
         const defence = enemy.defend();
         const result = calcDamage(rawDamage, defence);
         console.log(
@@ -186,9 +188,11 @@ export class Entity {
         if (this.stats.armor?.defence) {
             defence += randomValue(this.stats.armor.defence);
         }
-        this.stats.items
-            .filter(value => value.defenceModifier)
-            .forEach(value => (defence += randomValue(value.defenceModifier!)));
+        for (const item of this.stats.items) {
+            if (item.defenceModifier) {
+                defence += randomValue(item.defenceModifier);
+            }
+        }
         this.lastdefence = defence;
         return defence;
     }
@@ -198,8 +202,6 @@ export interface Range {
     min: number;
     max: number;
 }
-
-type PermaBuff = {};
 
 export interface EquipableItem {
     type: "item";

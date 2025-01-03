@@ -152,26 +152,6 @@ export async function postLootDrop(
         return;
     }
 
-    for (let i = 0; i < 50; i++) {
-        const defaultWeights = lootTemplates.map(t => t.weight);
-        const { messages, weights } = await getDropWeightAdjustments(
-            interaction.user,
-            defaultWeights,
-        );
-
-        const rarityWeights = lootAttributeTemplates.map(a => a.initialDropWeight ?? 0);
-        const initialAttribute = randomEntryWeighted(lootAttributeTemplates, rarityWeights);
-
-        const template = randomEntryWeighted(lootTemplates, weights);
-        const claimedLoot = await lootService.createLoot(
-            template,
-            interaction.user,
-            message,
-            "drop",
-            predecessorLootId ?? null,
-            initialAttribute,
-        );
-    }
     const defaultWeights = lootTemplates.map(t => t.weight);
     const { messages, weights } = await getDropWeightAdjustments(interaction.user, defaultWeights);
 

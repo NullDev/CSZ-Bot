@@ -231,11 +231,12 @@ export default class InventarCommand implements ApplicationCommand {
 
     async #createFightEmbed(context: BotContext, interaction: CommandInteraction, user: User) {
         const fightinventory = await getFightInventoryEnriched(user.id);
+        const avatarURL = user.avatarURL();
         const display = {
             title: `Kampfausrüstung von ${user.displayName}`,
             description:
                 "Du kannst maximal eine Rüstung, eine Waffe und drei Items tragen. Wenn du kämpfst, setzt du die Items ein und verlierst diese, egal ob du gewinnst oder verlierst.",
-            thumbnail: user.avatarURL() ? { url: user.avatarURL()! } : undefined,
+            thumbnail: avatarURL ? { url: avatarURL } : undefined,
             fields: [
                 { name: "Waffe", value: fightinventory.weapon?.itemInfo?.displayName ?? "Nix" },
                 { name: "Rüstung", value: fightinventory.armor?.itemInfo?.displayName ?? "Nackt" },
@@ -249,7 +250,7 @@ export default class InventarCommand implements ApplicationCommand {
                 { name: "Buffs", value: "Nix" },
             ],
             footer: {
-                text: `Lol ist noch nicht fertig`,
+                text: "Lol ist noch nicht fertig",
             },
         } satisfies APIEmbed;
 
