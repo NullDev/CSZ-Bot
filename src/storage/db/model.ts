@@ -40,7 +40,7 @@ export type Birthday = Selectable<BirthdayTable>;
 export interface BirthdayTable extends AuditedTable {
     id: GeneratedAlways<number>;
 
-    userid: Snowflake;
+    userId: Snowflake;
     month: OneBasedMonth;
     day: number;
 }
