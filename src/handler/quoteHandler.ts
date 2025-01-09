@@ -10,6 +10,7 @@ import {
     type Channel,
     type Snowflake,
     type GuildTextBasedChannel,
+    type ApplicationEmoji,
 } from "discord.js";
 
 import type { BotContext, QuoteConfig } from "@/context.js";
@@ -35,7 +36,10 @@ const isChannelAnonymous = async (context: BotContext, channel: Channel) => {
     return false;
 };
 
-const isQuoteEmoji = (quoteConfig: QuoteConfig, emoji: GuildEmoji | ReactionEmoji) => {
+const isQuoteEmoji = (
+    quoteConfig: QuoteConfig,
+    emoji: GuildEmoji | ReactionEmoji | ApplicationEmoji,
+) => {
     return emoji.name === quoteConfig.emojiName;
 };
 
