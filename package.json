@@ -12,6 +12,7 @@
     "format": "biome format --write ./src",
     "lint": "biome lint ./src",
     "lint:fix": "biome lint --write ./src && biome check --write ./src",
+    "lint:fix:unsafe": "biome lint --write --unsafe ./src && biome check --write --unsafe ./src",
     "watch": "bun --watch src/app.ts"
   },
   "repository": {
