@@ -27,7 +27,20 @@ export async function checkBirthdays(context: BotContext) {
 
     if (todaysBirthdaysAsMembers.length > 0) {
         await Promise.all(todaysBirthdaysAsMembers.map(member => member?.roles?.add(birthdayRole)));
-        await sendBirthdayMessage(context, todaysBirthdaysAsMembers, birthdayRole);
+
+        let presentsGiven = false;
+        try {
+            await awardBirthdayPresents(context, todaysBirthdaysAsMembers);
+            presentsGiven = true;
+        } catch (e) {
+            sentry.captureException(e);
+            log.error(
+                { e, members: todaysBirthdaysAsMembers },
+                "Could not award birthday present to members",
+            );
+        }
+
+        await sendBirthdayMessage(context, todaysBirthdaysAsMembers, birthdayRole, presentsGiven);
     }
 
     for (const member of memberWithRoleThatDontHaveBirthday.values()) {
@@ -44,7 +57,12 @@ export async function checkBirthdays(context: BotContext) {
     }
 }
 
-async function sendBirthdayMessage(context: BotContext, users: GuildMember[], birthdayRole: Role) {
+async function sendBirthdayMessage(
+    context: BotContext,
+    users: GuildMember[],
+    birthdayRole: Role,
+    gotPresents: boolean,
+) {
     const userString = users.map(u => u.toString()).join(", ");
     const singularMessage = `Heute kann es regnen,
 stürmen oder schneien,
@@ -60,7 +78,8 @@ wir hätten dich sonst sehr vermisst.
 wie schön dass wir beisammen sind,
 wir gratulieren dir, ${birthdayRole}
 
-${userString}`.trim();
+${userString} ${gotPresents ? "Zum Geurtstag hast du ein Geschenk erhalten" : ""}`.trim();
+
     const pluralMessage = `Heute kann es regnen,
 stürmen oder schneien,
 denn ihr strahlt ja selber
@@ -75,7 +94,7 @@ wir hätten euch sonst sehr vermisst.
 wie schön dass wir beisammen sind,
 wir gratulieren euch, ${birthdayRole}
 
-${userString}`.trim();
+${userString} ${gotPresents ? "Zum Geurtstag habt ihr ein Geschenk erhalten" : ""}`.trim();
 
     const message = users.length === 1 ? singularMessage : pluralMessage;
     await context.textChannels.hauptchat.send(message.replaceAll(/\n\s+/g, "\n"));
