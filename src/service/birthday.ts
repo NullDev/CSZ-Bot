@@ -77,7 +77,5 @@ wir gratulieren euch, ${birthdayRole}
 ${userString}`.trim();
 
     const message = users.length === 1 ? singularMessage : pluralMessage;
-    await context.textChannels.hauptchat.send(
-        message.replaceAll(/\n\s+/g, "\n"),
-    );
+    await context.textChannels.hauptchat.send(message.replaceAll(/\n\s+/g, "\n"));
 }
