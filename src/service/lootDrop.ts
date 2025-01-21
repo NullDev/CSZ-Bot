@@ -131,7 +131,8 @@ export async function postLootDrop(
                 {
                     ...original,
                     description: donor
-                        ? `Das Geschenk von ${donor} verpuffte im nichts :(`
+                        ? // TODO: `Keiner wollte das Geschenk von ${donor} haben. ${donor} hat es wieder mitgenommen.`
+                          `Das Geschenk von ${donor} verpuffte im nichts :(`
                         : `Oki aber nächstes mal bitti aufmachi, sonst muss ichs wieder mitnehmi ${hamster}`,
                     footer: {
                         text: "❌ Niemand war schnell genug",
