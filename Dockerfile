@@ -4,7 +4,7 @@
 FROM oven/bun:alpine AS runtime-dependencies
     WORKDIR /app
     RUN --mount=type=bind,source=package.json,target=package.json \
-        --mount=type=bind,source=bun.lockb,target=bun.lockb \
+        --mount=type=bind,source=bun.lock,target=bun.lock \
         --mount=type=cache,target=/root/.bun/install/cache \
         NODE_ENV=production bun install
 
