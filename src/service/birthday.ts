@@ -113,7 +113,7 @@ async function awardBirthdayPresents(users: GuildMember[]) {
             present,
             member.user,
             null,
-            "drop",
+            "birthday",
             null,
             lootDataService.lootAttributeTemplates[
                 lootDataService.LootAttributeKindId.RARITY_NORMAL
