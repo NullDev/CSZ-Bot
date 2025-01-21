@@ -3,6 +3,8 @@ import * as sentry from "@sentry/bun";
 
 import log from "@log";
 import * as birthday from "@/storage/birthday.js";
+import * as lootService from "@/service/loot.js";
+import * as lootDataService from "@/service/lootData.js";
 
 import type { BotContext } from "@/context.js";
 
@@ -30,7 +32,7 @@ export async function checkBirthdays(context: BotContext) {
 
         let presentsGiven = false;
         try {
-            await awardBirthdayPresents(context, todaysBirthdaysAsMembers);
+            await awardBirthdayPresents(todaysBirthdaysAsMembers);
             presentsGiven = true;
         } catch (e) {
             sentry.captureException(e);
@@ -98,4 +100,24 @@ ${userString} ${gotPresents ? "Zum Geurtstag habt ihr ein Geschenk erhalten" : "
 
     const message = users.length === 1 ? singularMessage : pluralMessage;
     await context.textChannels.hauptchat.send(message.replaceAll(/\n\s+/g, "\n"));
+}
+
+async function awardBirthdayPresents(users: GuildMember[]) {
+    const present = lootDataService.resolveLootTemplate(lootDataService.LootKindId.GESCHENK);
+    if (!present) {
+        throw new Error("Could not resolve loot template");
+    }
+
+    for (const member of users) {
+        await lootService.createLoot(
+            present,
+            member.user,
+            null,
+            "drop",
+            null,
+            lootDataService.lootAttributeTemplates[
+                lootDataService.LootAttributeKindId.RARITY_NORMAL
+            ],
+        );
+    }
 }
