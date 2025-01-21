@@ -5,7 +5,6 @@ import log from "@log";
 import * as birthday from "@/storage/birthday.js";
 
 import type { BotContext } from "@/context.js";
-import { format } from "src/utils/stringUtils.js";
 
 /**
  * Iterates over the list of birthdays and assigns a role to people having their cake day.
@@ -46,10 +45,7 @@ export async function checkBirthdays(context: BotContext) {
 
 async function sendBirthdayMessage(context: BotContext, users: GuildMember[], birthdayRole: Role) {
     const userString = users.map(u => u.toString()).join(", ");
-    const message = /* mf2 */ `
-.match {$count :number}
-1 {{
-Heute kann es regnen,
+    const singularMessage = `Heute kann es regnen,
 stürmen oder schneien,
 denn du strahlst ja selber
 wie der Sonnenschein.
@@ -63,10 +59,8 @@ wir hätten dich sonst sehr vermisst.
 wie schön dass wir beisammen sind,
 wir gratulieren dir, ${birthdayRole}
 
-${userString}
-}}
-* {{
-Heute kann es regnen,
+${userString}`.trim();
+    const pluralMessage = `Heute kann es regnen,
 stürmen oder schneien,
 denn ihr strahlt ja selber
 wie der Sonnenschein.
@@ -80,10 +74,10 @@ wir hätten euch sonst sehr vermisst.
 wie schön dass wir beisammen sind,
 wir gratulieren euch, ${birthdayRole}
 
-${userString}
-}}
-`.trim();
+${userString}`.trim();
+
+    const message = users.length === 1 ? singularMessage : pluralMessage;
     await context.textChannels.hauptchat.send(
-        format(message, { count: users.length }).replaceAll(/\n\s+/g, "\n"),
+        message.replaceAll(/\n\s+/g, "\n"),
     );
 }
