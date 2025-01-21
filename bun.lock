@@ -19,7 +19,6 @@
         "kysely": "^0.27.5",
         "kysely-bun-sqlite": "^0.3.2",
         "libsodium-wrappers": "^0.7.15",
-        "messageformat": "^4.0.0-8",
         "pino": "^9.6.0",
         "splid-js": "^1.5.2",
         "urlpattern-polyfill": "^10.0.0",
@@ -417,8 +416,6 @@
     "magic-bytes.js": ["magic-bytes.js@1.10.0", "", {}, "sha512-/k20Lg2q8LE5xiaaSkMXk4sfvI+9EGEykFS4b0CHHGWqDYU0bGUFSwchNOMA56D7TCs9GwVTkqe9als1/ns8UQ=="],
 
     "merge-stream": ["merge-stream@2.0.0", "", {}, "sha512-abv/qOcuPfk3URPfDzmZU1LKmuw8kT+0nIHvKrKgFrwifol/doWcdA4ZqsWQ8ENrFKkd67Mfpo/LovbIUsbt3w=="],
-
-    "messageformat": ["messageformat@4.0.0-9", "", {}, "sha512-4QHEgN5EiK0w8XmMztn+hdnuJuaChp0bv6D1iw1GvFMR9FVDF9sDk0KfIM9XnBjqa0ekK8wBsX7lyMNfD53dqQ=="],
 
     "mime-db": ["mime-db@1.52.0", "", {}, "sha512-sPU4uV7dYlvtWJxwwxHD0PuihVNiE7TyAbQ5SWxDCB9mUYvOgroQOwYQQOKPJ8CIbE+1ETVlOoK1UC2nU3gYvg=="],
 
