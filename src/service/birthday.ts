@@ -18,7 +18,8 @@ export async function checkBirthdays(context: BotContext) {
 
     const todaysBirthdaysAsMembers = todaysBirthdays
         .map(b => context.guild.members.cache.get(b.userId))
-        .filter(b => b !== undefined && b.roles.cache.get(birthdayRole.id) === undefined);
+        .filter(b => b !== undefined) // separate .filter for !== undefined, so TS can infer the type properly
+        .filter(b => b.roles.cache.get(birthdayRole.id) === undefined);
 
     const memberWithRoleThatDontHaveBirthday = context.guild.members.cache
         .filter(m => m.roles.cache.get(birthdayRole.id) !== undefined)
@@ -26,7 +27,7 @@ export async function checkBirthdays(context: BotContext) {
 
     if (todaysBirthdaysAsMembers.length > 0) {
         await Promise.all(todaysBirthdaysAsMembers.map(member => member?.roles?.add(birthdayRole)));
-        await sendBirthdayMessage(context, todaysBirthdaysAsMembers as GuildMember[], birthdayRole);
+        await sendBirthdayMessage(context, todaysBirthdaysAsMembers, birthdayRole);
     }
 
     for (const member of memberWithRoleThatDontHaveBirthday.values()) {
