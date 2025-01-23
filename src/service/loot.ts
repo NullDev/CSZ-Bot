@@ -49,6 +49,14 @@ export function transferLootToUser(lootId: LootId, user: User, trackPredecessor:
     return loot.transferLootToUser(lootId, user.id, trackPredecessor);
 }
 
+export function transferMultipleLootToUser(
+    lootIds: readonly LootId[],
+    user: User,
+    trackPredecessor: boolean,
+) {
+    return loot.transferMultipleLootToUser(lootIds, user.id, trackPredecessor);
+}
+
 export function deleteLoot(lootId: LootId) {
     return loot.deleteLoot(lootId);
 }

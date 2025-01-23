@@ -3,9 +3,10 @@ import * as sentry from "@sentry/bun";
 
 import log from "@log";
 import * as birthday from "@/storage/birthday.js";
+import * as lootService from "@/service/loot.js";
+import * as lootDataService from "@/service/lootData.js";
 
 import type { BotContext } from "@/context.js";
-import { format } from "src/utils/stringUtils.js";
 
 /**
  * Iterates over the list of birthdays and assigns a role to people having their cake day.
@@ -19,7 +20,8 @@ export async function checkBirthdays(context: BotContext) {
 
     const todaysBirthdaysAsMembers = todaysBirthdays
         .map(b => context.guild.members.cache.get(b.userId))
-        .filter(b => b !== undefined && b.roles.cache.get(birthdayRole.id) === undefined);
+        .filter(b => b !== undefined) // separate .filter for !== undefined, so TS can infer the type properly
+        .filter(b => b.roles.cache.get(birthdayRole.id) === undefined);
 
     const memberWithRoleThatDontHaveBirthday = context.guild.members.cache
         .filter(m => m.roles.cache.get(birthdayRole.id) !== undefined)
@@ -27,7 +29,20 @@ export async function checkBirthdays(context: BotContext) {
 
     if (todaysBirthdaysAsMembers.length > 0) {
         await Promise.all(todaysBirthdaysAsMembers.map(member => member?.roles?.add(birthdayRole)));
-        await sendBirthdayMessage(context, todaysBirthdaysAsMembers as GuildMember[], birthdayRole);
+
+        let presentsGiven = false;
+        try {
+            await awardBirthdayPresents(todaysBirthdaysAsMembers);
+            presentsGiven = true;
+        } catch (e) {
+            sentry.captureException(e);
+            log.error(
+                { e, members: todaysBirthdaysAsMembers },
+                "Could not award birthday present to members",
+            );
+        }
+
+        await sendBirthdayMessage(context, todaysBirthdaysAsMembers, birthdayRole, presentsGiven);
     }
 
     for (const member of memberWithRoleThatDontHaveBirthday.values()) {
@@ -44,12 +59,14 @@ export async function checkBirthdays(context: BotContext) {
     }
 }
 
-async function sendBirthdayMessage(context: BotContext, users: GuildMember[], birthdayRole: Role) {
+async function sendBirthdayMessage(
+    context: BotContext,
+    users: GuildMember[],
+    birthdayRole: Role,
+    gotPresents: boolean,
+) {
     const userString = users.map(u => u.toString()).join(", ");
-    const message = /* mf2 */ `
-.match {$count :number}
-1 {{
-Heute kann es regnen,
+    const singularMessage = `Heute kann es regnen,
 stürmen oder schneien,
 denn du strahlst ja selber
 wie der Sonnenschein.
@@ -63,10 +80,9 @@ wir hätten dich sonst sehr vermisst.
 wie schön dass wir beisammen sind,
 wir gratulieren dir, ${birthdayRole}
 
-${userString}
-}}
-* {{
-Heute kann es regnen,
+${userString} ${gotPresents ? "Zum Geurtstag hast du ein Geschenk erhalten" : ""}`.trim();
+
+    const pluralMessage = `Heute kann es regnen,
 stürmen oder schneien,
 denn ihr strahlt ja selber
 wie der Sonnenschein.
@@ -80,10 +96,28 @@ wir hätten euch sonst sehr vermisst.
 wie schön dass wir beisammen sind,
 wir gratulieren euch, ${birthdayRole}
 
-${userString}
-}}
-`.trim();
-    await context.textChannels.hauptchat.send(
-        format(message, { count: users.length }).replaceAll(/\n\s+/g, "\n"),
-    );
+${userString} ${gotPresents ? "Zum Geurtstag habt ihr ein Geschenk erhalten" : ""}`.trim();
+
+    const message = users.length === 1 ? singularMessage : pluralMessage;
+    await context.textChannels.hauptchat.send(message.replaceAll(/\n\s+/g, "\n"));
+}
+
+async function awardBirthdayPresents(users: GuildMember[]) {
+    const present = lootDataService.resolveLootTemplate(lootDataService.LootKindId.GESCHENK);
+    if (!present) {
+        throw new Error("Could not resolve loot template");
+    }
+
+    for (const member of users) {
+        await lootService.createLoot(
+            present,
+            member.user,
+            null,
+            "birthday",
+            null,
+            lootDataService.lootAttributeTemplates[
+                lootDataService.LootAttributeKindId.RARITY_NORMAL
+            ],
+        );
+    }
 }

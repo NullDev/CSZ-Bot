@@ -36,7 +36,7 @@ export async function checkExpiredShifts(context: BotContext) {
     const now = Date.now();
 
     const shiftDurationMs =
-        context.commandConfig.loot.roles.asseGuardShiftDuration.total("microsecond");
+        context.commandConfig.loot.roles.asseGuardShiftDuration.total("millisecond");
 
     const currentGuards = context.roles.lootRoleAsseGuard.members;
     for (const m of currentGuards.values()) {

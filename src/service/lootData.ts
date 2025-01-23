@@ -46,6 +46,8 @@ export enum LootKindId {
     VERSCHIMMELTER_DOENER = 32,
     THUNFISCHSHAKE = 33,
     KAFFEEMUEHLE = 34,
+    AWS_RECHNUNG = 35,
+    BIBER = 36,
 }
 
 export enum LootAttributeClassId {
@@ -61,18 +63,16 @@ export enum LootAttributeKindId {
     SWEET = 4,
 }
 
-/**
- * @remarks The index of an item must be equal to the `LootTypeId` enum value.
- */
-
-export const lootTemplateMap: { [id: string]: LootTemplate } = {
+export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
     [LootKindId.NICHTS]: {
         id: LootKindId.NICHTS,
-        weight: 32,
+        weight: 24,
         displayName: "Nichts",
         titleText: "✨Nichts✨",
         dropDescription: "¯\\_(ツ)_/¯",
         asset: null,
+        // biome-ignore lint/style/noNonNullAssertion: Won't be shown anywhere else
+        emote: null!,
         excludeFromInventory: true,
     },
     [LootKindId.KADSE]: {
@@ -83,6 +83,7 @@ export const lootTemplateMap: { [id: string]: LootTemplate } = {
         dropDescription: "Awww",
         emote: ":catsmile:",
         asset: "assets/loot/01-kadse.jpg",
+        initialAttributes: [LootAttributeKindId.SWEET],
         attributeAsset: {
             [LootAttributeKindId.RADIOACTIVE]: "assets/loot/attributes/01-kadse-verstrahlt.jpg",
         },
@@ -378,6 +379,7 @@ export const lootTemplateMap: { [id: string]: LootTemplate } = {
         titleText: "Blaue Powerade",
         dropDescription: "Erfrischend erquickend. Besonders mit Vodka. Oder Korn.",
         asset: "assets/loot/25-powerade-blau.jpg",
+        emote: ":powerade:",
     },
     [LootKindId.GAULOISES_BLAU]: {
         id: LootKindId.GAULOISES_BLAU,
@@ -400,7 +402,7 @@ export const lootTemplateMap: { [id: string]: LootTemplate } = {
     },
     [LootKindId.SCHICHTBEGINN_ASSE_2]: {
         id: LootKindId.SCHICHTBEGINN_ASSE_2,
-        weight: 12,
+        weight: 8,
         displayName: "Wärter Asse II",
         titleText: "Den Schichtbeginn in der Asse II",
         dropDescription: "Deine Wärterschicht bei der Asse II beginnt!",
@@ -456,7 +458,7 @@ export const lootTemplateMap: { [id: string]: LootTemplate } = {
         titleText: "Ein Thunfischshake, serviert von Markus Rühl persönlich",
         dropDescription: "Nach Rezept zubereitet, bestehend aus Thunfisch und Reiswaffeln",
         emote: ":baby_bottle:",
-        asset: "assets/loot/32-thunfischshake.jpg",
+        asset: "assets/loot/33-thunfischshake.jpg",
         gameEquip: fightTemplates.thunfischshake,
     },
     [LootKindId.KAFFEEMUEHLE]: {
@@ -468,7 +470,26 @@ export const lootTemplateMap: { [id: string]: LootTemplate } = {
         emote: ":coffee:",
         asset: "assets/loot/34-kaffeemuehle.jpg",
     },
-};
+    [LootKindId.AWS_RECHNUNG]: {
+        id: LootKindId.AWS_RECHNUNG,
+        weight: 2,
+        displayName: "AWS-Rechnung",
+        titleText: "Ne dicke AWS-Rechnung",
+        dropDescription: "Hast du schon versucht, in die Cloud zu gehen?",
+        emote: ":package:",
+        asset: "assets/loot/35-aws-rechnung.png",
+    },
+    [LootKindId.BIBER]: {
+        id: LootKindId.BIBER,
+        weight: 2,
+        displayName: "Süßer Biber",
+        titleText: "Bóbr",
+        dropDescription: "Bóbr kurwa! Ja pierdolę! Jakie bydlę!",
+        emote: ":beaver:",
+        asset: "assets/loot/36-biber.jpg",
+        initialAttributes: [LootAttributeKindId.SWEET],
+    },
+} as const;
 
 export const lootTemplates: LootTemplate[] = Object.values(lootTemplateMap);
 

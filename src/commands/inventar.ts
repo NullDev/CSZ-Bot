@@ -1,7 +1,6 @@
 import {
     type APIEmbed,
     ButtonStyle,
-    type CacheType,
     type CommandInteraction,
     ComponentType,
     type InteractionReplyOptions,
@@ -15,7 +14,6 @@ import type { BotContext } from "@/context.js";
 import type { ApplicationCommand } from "@/commands/command.js";
 import * as lootService from "@/service/loot.js";
 import { ensureChatInputCommand } from "@/utils/interactionUtils.js";
-import { format } from "@/utils/stringUtils.js";
 import * as lootDataService from "@/service/lootData.js";
 import { LootAttributeKindId } from "@/service/lootData.js";
 
@@ -42,8 +40,7 @@ export default class InventarCommand implements ApplicationCommand {
                 .setRequired(false)
                 .addChoices(
                     { name: "Kampfausrüstung", value: "fightinventory" },
-                    { name: "Kurzfassung", value: "short" },
-                    { name: "Detailansicht", value: "long" },
+                    { name: "Komplett", value: "all" },
                 ),
         );
 
@@ -51,7 +48,7 @@ export default class InventarCommand implements ApplicationCommand {
         const cmd = ensureChatInputCommand(interaction);
 
         const user = cmd.options.getUser("user") ?? cmd.user;
-        const type = cmd.options.getString("typ") ?? "short";
+        const type = cmd.options.getString("typ") ?? "all";
 
         const contents = await lootService.getInventoryContents(user);
         if (contents.length === 0) {
@@ -60,70 +57,15 @@ export default class InventarCommand implements ApplicationCommand {
             });
             return;
         }
+
         switch (type) {
-            case "long":
-                await this.#createLongEmbed(context, interaction, user);
-                return;
             case "fightinventory":
-                await this.#createFightEmbed(context, interaction, user);
-                return;
+                return await this.#createFightEmbed(context, interaction, user);
+            case "all":
+                return await this.#createLongEmbed(context, interaction, user);
             default:
-                await this.#createShortEmbed(context, interaction, user);
+                throw new Error(`Unhandled type: "${type}"`);
         }
-    }
-
-    async #createShortEmbed(
-        context: BotContext,
-        interaction: CommandInteraction<CacheType>,
-        user: User,
-    ) {
-        const contents = await lootService.getInventoryContents(user);
-        const groupedByLoot = Object.groupBy(contents, item => item.displayName);
-
-        const items = Object.entries(groupedByLoot)
-            .map(([_, items]) => items)
-            .filter(i => !!i && i.length > 0)
-            // biome-ignore lint/style/noNonNullAssertion: see filter above
-            .map(i => [i![0]!, i!.length] as const);
-
-        const description = items
-            .map(([item, count]) => {
-                const emote = lootDataService.getEmote(context.guild, item);
-                const e = emote ? `${emote} ` : "";
-
-                return count === 1
-                    ? `${e}${item.displayName}`
-                    : `${count}x ${e}${item.displayName}`;
-            })
-            .join("\n");
-
-        const cuties = contents.filter(i =>
-            lootDataService.itemHasAttribute(i.attributes, LootAttributeKindId.SWEET),
-        ).length;
-
-        const message = /* mf2 */ `
-.match {$cuties :number} {$count :number}
-0 0 {{Es befindet sich einfach überhaupt nichts in diesem Inventar}}
-0 1 {{Es befindet sich 1 Gegenstand im Inventar}}
-0 * {{Es befinden sich {$count} Gegenstände im Inventar}}
-1 0 {{Es befinden sich insgesamt 1 süßer und keine normalen Gegenstände im Inventar}}
-1 1 {{Es befinden sich insgesamt 1 süßer und 1 normaler Gegenstand im Inventar}}
-1 few {{Es befinden sich insgesamt 1 süßer und ein paar Gegenstände im Inventar}}
-1 * {{Es befinden sich insgesamt 1 süßer und {$count} normale Gegenstände im Inventar}}
-* * {{Es befinden sich insgesamt {$cuties} süße und {$count} normale Gegenstände im Inventar}}
-`.trim();
-
-        await interaction.reply({
-            embeds: [
-                {
-                    title: `Inventar von ${user.displayName}`,
-                    description,
-                    footer: {
-                        text: format(message, { cuties, count: contents.length - cuties }),
-                    },
-                },
-            ],
-        });
     }
 
     async #createLongEmbed(context: BotContext, interaction: CommandInteraction, user: User) {

@@ -1,4 +1,4 @@
-import { mkdir } from "node:fs/promises";
+import { mkdir, exists } from "node:fs/promises";
 
 import { pino, type LoggerOptions } from "pino";
 
@@ -9,7 +9,9 @@ const logDir = "logs";
 
 const usesLogDir = nodeEnv === "production";
 if (usesLogDir) {
-    await mkdir(logDir, { recursive: true });
+    if (!(await exists(logDir))) {
+        await mkdir(logDir, { recursive: true });
+    }
 }
 
 const loggingConfigs = {
@@ -36,10 +38,21 @@ const loggingConfigs = {
     production: {
         level: logLevel,
         transport: {
-            target: "pino/file",
-            options: {
-                destination: `${logDir}/error.log`,
-            },
+            targets: [
+                {
+                    target: "pino-pretty",
+                    options: {
+                        colorize: true,
+                        ignore: "pid,hostname",
+                    },
+                },
+                {
+                    target: "pino/file",
+                    options: {
+                        destination: `${logDir}/error.log`,
+                    },
+                },
+            ],
         },
     },
 } as Record<string, LoggerOptions>;

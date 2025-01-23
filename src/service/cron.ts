@@ -1,4 +1,4 @@
-import scheduleCron, { type CronOptions } from "croner";
+import { Cron, type CronOptions } from "croner";
 
 import type { BotContext } from "@/context.js";
 import { rerollNicknames } from "@/service/nickNameRoll.js";
@@ -25,8 +25,8 @@ const options = {
     timezone: "Europe/Berlin",
 } satisfies CronOptions;
 
-const cron = (pattern: string, callback: Parameters<typeof scheduleCron>[1]) => {
-    scheduleCron(pattern, options, callback);
+const cron = (pattern: string, callback: ConstructorParameters<typeof Cron>[1]) => {
+    new Cron(pattern, options, callback);
 };
 
 export async function schedule(context: BotContext) {

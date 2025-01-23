@@ -158,16 +158,13 @@ export default class StempelkarteCommand implements ApplicationCommand {
             stempelkarten.push(drawStempelkarteBackside(subjectAvatarUrl, avatarUrls));
         }
 
-        const results = (await Promise.allSettled(stempelkarten)).filter(
-            result => result.status === "fulfilled",
-        ) as PromiseFulfilledResult<Buffer>[];
-
-        const files = results.map((result, index) => ({
-            name: `stempelkarte/${ofMember.nickname}-${index}.png`,
-            attachment: result.value,
-        }));
-
         try {
+            const results = await Promise.all(stempelkarten);
+            const files = results.map((attachment, index) => ({
+                name: `stempelkarte/${ofMember.nickname}-${index}.png`,
+                attachment,
+            }));
+
             await command.reply({
                 files,
             });
