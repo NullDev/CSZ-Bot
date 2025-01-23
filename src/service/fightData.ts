@@ -3,34 +3,34 @@ import { randomValue, type Range } from "@/service/random.js";
 export const fightTemplates: { [name: string]: Equipable } = {
     ayran: {
         type: "item",
-        attackModifier: { min: 2, max: 3 },
+        attackModifier: { min: 2, maxExclusive: 3 },
     },
     oettinger: {
         type: "item",
-        attackModifier: { min: 1, max: 5 },
-        defenceModifier: { min: -3, max: 0 },
+        attackModifier: { min: 1, maxExclusive: 5 },
+        defenceModifier: { min: -3, maxExclusive: 0 },
     },
     thunfischshake: {
         type: "item",
-        attackModifier: { min: 3, max: 5 },
+        attackModifier: { min: 3, maxExclusive: 5 },
     },
     nachthemd: {
         type: "armor",
         health: 50,
-        defence: { min: 2, max: 5 },
+        defence: { min: 2, maxExclusive: 5 },
     },
     eierwaermer: {
         type: "armor",
         health: 30,
-        defence: { min: 3, max: 5 },
+        defence: { min: 3, maxExclusive: 5 },
     },
     dildo: {
         type: "weapon",
-        attack: { min: 3, max: 9 },
+        attack: { min: 3, maxExclusive: 9 },
     },
     messerblock: {
         type: "weapon",
-        attack: { min: 1, max: 9 },
+        attack: { min: 1, maxExclusive: 9 },
     },
 };
 export const bossMap: { [name: string]: Enemy } = {
