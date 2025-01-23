@@ -184,7 +184,7 @@ export default class SdmCommand implements MessageCommand, ApplicationCommand {
             const o4 = command.options.getString("o4", false);
             const o5 = command.options.getString("o5", false);
 
-            const options = [o1, o2, o3, o4, o5].filter(o => o !== null) as string[];
+            const options = [o1, o2, o3, o4, o5].filter(o => o !== null);
 
             const msg = createSecureDecisionMessage(question, member, options);
             await command.reply(msg);
