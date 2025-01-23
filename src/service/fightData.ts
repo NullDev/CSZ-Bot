@@ -1,3 +1,5 @@
+import { randomValue, type Range } from "@/service/random.js";
+
 export const fightTemplates: { [name: string]: Equipable } = {
     ayran: {
         type: "item",
@@ -198,21 +200,12 @@ export class Entity {
     }
 }
 
-export interface Range {
-    min: number;
-    max: number;
-}
-
 export interface EquipableItem {
     type: "item";
     attackModifier?: Range;
     defenceModifier?: Range;
     afterFight?: (scene: FightScene) => void;
     modifyAttack?: (scene: FightScene) => void;
-}
-
-function randomValue(range: Range) {
-    return Math.round(range.min + Math.random() * (range.max - range.min));
 }
 
 function calcDamage(rawDamage: number, defence: number) {
