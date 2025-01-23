@@ -64,7 +64,7 @@ export async function up(db: Kysely<any>) {
     }
 }
 
-export function createUpdatedAtTrigger(db: Kysely<any>, tableName: string) {
+function createUpdatedAtTrigger(db: Kysely<any>, tableName: string) {
     return sql
         .raw(`
     create trigger ${tableName}_updatedAt

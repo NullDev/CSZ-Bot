@@ -1,5 +1,4 @@
 import { sql, type Kysely } from "kysely";
-import { createUpdatedAtTrigger } from "@/storage/migrations/10-loot-attributes.js";
 
 export async function up(db: Kysely<any>) {
     await db.schema
@@ -24,6 +23,20 @@ export async function up(db: Kysely<any>) {
         .execute();
 
     await createUpdatedAtTrigger(db, "fightHistory");
+}
+
+function createUpdatedAtTrigger(db: Kysely<any>, tableName: string) {
+    return sql
+        .raw(`
+    create trigger ${tableName}_updatedAt
+    after update on ${tableName} for each row
+    begin
+        update ${tableName}
+        set updatedAt = current_timestamp
+        where id = old.id;
+    end;
+    `)
+        .execute(db);
 }
 
 export async function down(_db: Kysely<any>) {
