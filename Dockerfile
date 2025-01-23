@@ -1,14 +1,14 @@
 # syntax=docker/dockerfile:1
 # check=error=true
 
-FROM oven/bun:alpine AS runtime-dependencies
+FROM oven/bun:1-alpine AS runtime-dependencies
     WORKDIR /app
     RUN --mount=type=bind,source=package.json,target=package.json \
         --mount=type=bind,source=bun.lock,target=bun.lock \
         --mount=type=cache,target=/root/.bun/install/cache \
         NODE_ENV=production bun install
 
-FROM oven/bun:alpine
+FROM oven/bun:1-alpine
     WORKDIR /app
     # ffmpeg needed for get-audio-duration
     RUN apk add --no-cache \
