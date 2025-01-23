@@ -74,7 +74,6 @@ export async function downloadInstagramContent(
                 raw: result,
             };
         }
-        console.log(result);
 
         const videoUrls = extractVideoUrls(result);
         const imageUrls = extractImageUrls(result);
