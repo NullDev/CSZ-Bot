@@ -165,8 +165,8 @@ export async function fight(
         enemy: enemy,
     };
     while (checkWin(scene) === undefined) {
-        player.itemtext = [];
-        enemy.itemtext = [];
+        player.itemText = [];
+        enemy.itemText = [];
         //playerhit first
         player.attack(enemy);
         // then enemny hit
@@ -196,17 +196,17 @@ export async function fight(
 }
 
 function renderStats(player: Entity) {
-    while (player.itemtext.length < 5) {
-        player.itemtext.push("-");
+    while (player.itemText.length < 5) {
+        player.itemText.push("-");
     }
     return {
         name: player.stats.name,
-        value: `❤️HP${player.stats.health}/${player.maxhealth}
-            ❤️${"=".repeat(Math.max(0, (player.stats.health / player.maxhealth) * 10))}
-            ⚔️Waffe: ${player.stats.weapon?.name ?? "Schwengel"} ${player.lastattack}
-            🛡️Rüstung: ${player.stats.armor?.name ?? "Nackt"} ${player.lastdefence}
-            📚Items:
-            ${player.itemtext.join("\n")}
+        value: `❤️ HP${player.stats.health}/${player.maxHealth}
+            ❤️ ${"=".repeat(Math.max(0, (player.stats.health / player.maxHealth) * 10))}
+            ⚔️ Waffe: ${player.stats.weapon?.name ?? "Schwengel"} ${player.lastAttack}
+            🛡️ Rüstung: ${player.stats.armor?.name ?? "Nackt"} ${player.lastDefense}
+            📚 Items:
+            ${player.itemText.join("\n")}
         `,
         inline: true,
     };

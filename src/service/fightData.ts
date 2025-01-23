@@ -151,17 +151,17 @@ export interface Enemy extends BaseEntity {
 
 export class Entity {
     stats: BaseEntity;
-    maxhealth: number;
-    lastattack?: number;
-    lastdefence?: number;
-    itemtext: string[] = [];
+    maxHealth: number;
+    lastAttack?: number;
+    lastDefense?: number;
+    itemText: string[] = [];
 
     constructor(entity: BaseEntity) {
         this.stats = entity;
         if (this.stats.armor?.health) {
             this.stats.health += this.stats.armor?.health;
         }
-        this.maxhealth = this.stats.health;
+        this.maxHealth = this.stats.health;
     }
 
     attack(enemy: Entity) {
@@ -181,7 +181,7 @@ export class Entity {
             `${this.stats.name} (${this.stats.health}) hits ${enemy.stats.name} (${enemy.stats.health}) for ${result.damage} mitigated ${result.mitigated}`,
         );
         enemy.stats.health -= result.damage;
-        this.lastattack = result.rawDamage;
+        this.lastAttack = result.rawDamage;
         return result;
     }
 
@@ -195,7 +195,7 @@ export class Entity {
                 defence += randomValue(item.defenceModifier);
             }
         }
-        this.lastdefence = defence;
+        this.lastDefense = defence;
         return defence;
     }
 }
