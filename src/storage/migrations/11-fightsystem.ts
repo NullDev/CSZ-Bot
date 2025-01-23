@@ -3,15 +3,16 @@ import { createUpdatedAtTrigger } from "@/storage/migrations/10-loot-attributes.
 
 export async function up(db: Kysely<any>) {
     await db.schema
-        .createTable("fightinventory")
+        .createTable("fightInventory")
         .ifNotExists()
         .addColumn("id", "integer", c => c.primaryKey().autoIncrement())
         .addColumn("userid", "text")
         .addColumn("lootId", "integer", c => c.references("loot.id"))
         .addColumn("equippedSlot", "text")
         .execute();
+
     await db.schema
-        .createTable("fighthistory")
+        .createTable("fightHistory")
         .ifNotExists()
         .addColumn("id", "integer", c => c.primaryKey().autoIncrement())
         .addColumn("userid", "text", c => c.notNull())
@@ -21,7 +22,8 @@ export async function up(db: Kysely<any>) {
         .addColumn("createdAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
         .addColumn("updatedAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
         .execute();
-    await createUpdatedAtTrigger(db, "fighthistory");
+
+    await createUpdatedAtTrigger(db, "fightHistory");
 }
 
 export async function down(_db: Kysely<any>) {

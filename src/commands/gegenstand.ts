@@ -24,7 +24,7 @@ import * as lootDataService from "@/service/lootData.js";
 import { LootAttributeClassId, LootAttributeKindId, LootKindId } from "@/service/lootData.js";
 
 import log from "@log";
-import { equipItembyLoot, getFightInventoryUnsorted } from "@/storage/fightinventory.js";
+import { equipItembyLoot, getFightInventoryUnsorted } from "@/storage/fightInventory.js";
 
 export default class GegenstandCommand implements ApplicationCommand {
     name = "gegenstand";

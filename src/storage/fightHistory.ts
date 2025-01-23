@@ -5,7 +5,7 @@ import { FightScene } from "@/service/fightData.js";
 export async function insertResult(userId: User["id"], boss: string, win: boolean, ctx = db()) {
     const lastWins = await getWinsForBoss(userId, boss);
     return await ctx
-        .insertInto("fighthistory")
+        .insertInto("fightHistory")
         .values({
             userid: userId,
             result: win,
@@ -17,7 +17,7 @@ export async function insertResult(userId: User["id"], boss: string, win: boolea
 
 export async function getWinsForBoss(userId: User["id"], boss: string, ctx = db()) {
     return await ctx
-        .selectFrom("fighthistory")
+        .selectFrom("fightHistory")
         .where("userid", "=", userId)
         .where("bossName", "=", boss)
         .where("result", "=", true)
@@ -27,7 +27,7 @@ export async function getWinsForBoss(userId: User["id"], boss: string, ctx = db(
 
 export async function getLastFight(userId: User["id"], ctx = db()) {
     return await ctx
-        .selectFrom("fighthistory")
+        .selectFrom("fightHistory")
         .where("userid", "=", userId)
         .orderBy("createdAt desc")
         .selectAll()

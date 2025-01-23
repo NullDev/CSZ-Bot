@@ -24,8 +24,8 @@ export interface Database {
     lootAttribute: LootAttributeTable;
     emote: EmoteTable;
     emoteUse: EmoteUseTable;
-    fighthistory: FightHistoryTable;
-    fightinventory: FightInventoryTable;
+    fightHistory: FightHistoryTable;
+    fightInventory: FightInventoryTable;
 }
 
 export type OneBasedMonth = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;

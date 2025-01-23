@@ -18,7 +18,7 @@ import * as lootDataService from "@/service/lootData.js";
 import { LootAttributeKindId } from "@/service/lootData.js";
 
 import log from "@log";
-import { getFightInventoryEnriched } from "@/storage/fightinventory.js";
+import { getFightInventoryEnriched } from "@/storage/fightInventory.js";
 
 export default class InventarCommand implements ApplicationCommand {
     name = "inventar";
@@ -39,7 +39,7 @@ export default class InventarCommand implements ApplicationCommand {
                 .setDescription("Anzeige")
                 .setRequired(false)
                 .addChoices(
-                    { name: "Kampfausrüstung", value: "fightinventory" },
+                    { name: "Kampfausrüstung", value: "fightInventory" },
                     { name: "Komplett", value: "all" },
                 ),
         );
@@ -59,7 +59,7 @@ export default class InventarCommand implements ApplicationCommand {
         }
 
         switch (type) {
-            case "fightinventory":
+            case "fightInventory":
                 return await this.#createFightEmbed(context, interaction, user);
             case "all":
                 return await this.#createLongEmbed(context, interaction, user);
@@ -172,7 +172,7 @@ export default class InventarCommand implements ApplicationCommand {
     }
 
     async #createFightEmbed(context: BotContext, interaction: CommandInteraction, user: User) {
-        const fightinventory = await getFightInventoryEnriched(user.id);
+        const fightInventory = await getFightInventoryEnriched(user.id);
         const avatarURL = user.avatarURL();
         const display = {
             title: `Kampfausrüstung von ${user.displayName}`,
@@ -180,9 +180,9 @@ export default class InventarCommand implements ApplicationCommand {
                 "Du kannst maximal eine Rüstung, eine Waffe und drei Items tragen. Wenn du kämpfst, setzt du die Items ein und verlierst diese, egal ob du gewinnst oder verlierst.",
             thumbnail: avatarURL ? { url: avatarURL } : undefined,
             fields: [
-                { name: "Waffe", value: fightinventory.weapon?.itemInfo?.displayName ?? "Nix" },
-                { name: "Rüstung", value: fightinventory.armor?.itemInfo?.displayName ?? "Nackt" },
-                ...fightinventory.items.map(item => {
+                { name: "Waffe", value: fightInventory.weapon?.itemInfo?.displayName ?? "Nix" },
+                { name: "Rüstung", value: fightInventory.armor?.itemInfo?.displayName ?? "Nackt" },
+                ...fightInventory.items.map(item => {
                     return {
                         name: item.itemInfo?.displayName ?? "",
                         value: "Hier sollten die buffs stehen",
