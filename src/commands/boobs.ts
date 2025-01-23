@@ -4,6 +4,7 @@ import type { ProcessableMessage } from "@/service/command.js";
 import type { MessageCommand } from "@/commands/command.js";
 import * as boob from "@/storage/boob.js";
 import log from "@log";
+import { randomEntry } from "@/utils/arrayUtils.js";
 
 interface Booba {
     description: string;
@@ -154,7 +155,7 @@ export default class BoobCommand implements MessageCommand {
                 `No recent boob measuring of ${userToMeasure.id} found. Creating Measurement`,
             );
 
-            const size = Math.floor(Math.random() * Object.keys(boobas).length);
+            const size = Number(randomEntry(Object.keys(boobas)));
 
             if (await isNewBiggestBoobs(size)) {
                 log.debug(`${userToMeasure} has the new biggest boobs with size ${size}`);
