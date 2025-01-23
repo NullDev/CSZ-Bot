@@ -30,7 +30,7 @@
     "@js-temporal/polyfill": "^0.4.4",
     "@napi-rs/canvas": "0.1.65",
     "@resvg/resvg-js": "^2.6.2",
-    "@sentry/bun": "^8.50.0",
+    "@sentry/bun": "^8.51.0",
     "@std/jsonc": "npm:@jsr/std__jsonc@^1.0.1",
     "chrono-node": "^2.7.7",
     "croner": "^9.0.0",
@@ -47,7 +47,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
-    "@types/bun": "^1.1.18",
+    "@types/bun": "^1.2.0",
     "@types/jsdom": "^21.1.7",
     "@types/node-cron": "^3.0.11",
     "lefthook": "^1.10.10",
