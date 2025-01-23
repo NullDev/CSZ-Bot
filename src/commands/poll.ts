@@ -228,7 +228,7 @@ Optionen:
 
         embed.addFields({
             name: `📝 ${options.straw ? "Einzelauswahl" : "Mehrfachauswahl"}`,
-            value: "",
+            value: "\u200b", // Zero-width space because there has to be some value
             inline: true,
         });
 
