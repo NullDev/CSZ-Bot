@@ -1,7 +1,7 @@
 import * as sentry from "@sentry/bun";
 
 import * as nickName from "@/storage/nickName.js";
-import { randomEntry } from "@/utils/arrayUtils.js";
+import { randomEntry } from "@/service/random.js";
 import log from "@log";
 import type { BotContext } from "@/context.js";
 

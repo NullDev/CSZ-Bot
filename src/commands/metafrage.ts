@@ -7,7 +7,7 @@ import type { ProcessableMessage } from "@/service/command.js";
 import { parseLegacyMessageParts } from "@/service/command.js";
 import { defer } from "@/utils/interactionUtils.js";
 
-import { randomEntry } from "@/utils/arrayUtils.js";
+import { randomEntry } from "@/service/random.js";
 
 const argsConfig = {
     options: {

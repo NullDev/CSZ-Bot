@@ -7,7 +7,7 @@ import {
 
 import type { ApplicationCommand } from "@/commands/command.js";
 import * as stempelService from "@/service/stempel.js";
-import { randomEntry } from "@/utils/arrayUtils.js";
+import { randomEntry } from "@/service/random.js";
 
 const replies = [
     "Der Bruder {0} hat den neuen Bruder {1} eingeladen und du hast dies so eben bestätigt!",
