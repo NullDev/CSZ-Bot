@@ -59,8 +59,7 @@ export default class BanCommand implements ApplicationCommand, MessageCommand {
         const reason = command.options.getString("reason", true);
         const durationHours = command.options.getInteger("hours", false);
         const durationMinutes = command.options.getInteger("minutes", false);
-        const duration =
-            (durationHours ? durationHours : 0) + (durationMinutes ? durationMinutes / 60 : 0);
+        const duration = (durationHours ?? 0) + (durationMinutes ? durationMinutes / 60 : 0);
 
         const userAsGuildMember = command.guild?.members.resolve(user);
         if (!userAsGuildMember) {
