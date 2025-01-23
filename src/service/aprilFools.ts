@@ -63,10 +63,8 @@ const shuffleAllNicknames = async (
 };
 
 const logRenameResult = (result: PromiseSettledResult<GuildMember>[]) => {
-    const fulfilled = result.filter(
-        p => p.status === "fulfilled",
-    ) as PromiseFulfilledResult<GuildMember>[];
-    const rejected = result.filter(p => p.status === "rejected") as PromiseRejectedResult[];
+    const fulfilled = result.filter(p => p.status === "fulfilled");
+    const rejected = result.filter(p => p.status === "rejected");
 
     log.info(`${fulfilled.length} users where renamed. ${rejected.length} rename ops failed`);
     for (const rejection of rejected) {
