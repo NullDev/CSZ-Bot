@@ -106,7 +106,7 @@ function extractImageUrls(response: ApiResponse) {
         !response.images ||
         !Array.isArray(response.images) ||
         response.images.length === 0 ||
-        typeof response.images !== "string"
+        typeof response.images[0] !== "string"
     ) {
         return null;
     }
