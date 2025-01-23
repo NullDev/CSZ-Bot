@@ -22,8 +22,8 @@ import {
     type FightScene,
 } from "@/service/fightData.js";
 import { setTimeout } from "node:timers/promises";
-import { getFightInventoryEnriched, removeItemsAfterFight } from "@/storage/fightinventory.js";
-import { getLastFight, insertResult } from "@/storage/fighthistory.js";
+import { getFightInventoryEnriched, removeItemsAfterFight } from "@/storage/fightInventory.js";
+import { getLastFight, insertResult } from "@/storage/fightHistory.js";
 
 async function getFighter(user: User): Promise<BaseEntity> {
     const userInventory = await getFightInventoryEnriched(user.id);
