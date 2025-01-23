@@ -6,7 +6,7 @@ export async function up(db: Kysely<any>) {
         .createTable("fightinventory")
         .ifNotExists()
         .addColumn("id", "integer", c => c.primaryKey().autoIncrement())
-        .addColumn("userid", "text")
+        .addColumn("userId", "text")
         .addColumn("lootId", "integer", c => c.references("loot.id"))
         .addColumn("equippedSlot", "text")
         .execute();
@@ -14,10 +14,10 @@ export async function up(db: Kysely<any>) {
         .createTable("fighthistory")
         .ifNotExists()
         .addColumn("id", "integer", c => c.primaryKey().autoIncrement())
-        .addColumn("userid", "text", c => c.notNull())
+        .addColumn("userId", "text", c => c.notNull())
         .addColumn("bossName", "text", c => c.notNull())
         .addColumn("result", "boolean", c => c.notNull())
-        .addColumn("firsttime", "boolean", c => c.notNull())
+        .addColumn("firstTime", "boolean", c => c.notNull())
         .addColumn("createdAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
         .addColumn("updatedAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
         .execute();
