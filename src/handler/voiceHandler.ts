@@ -1,5 +1,4 @@
 import path from "node:path";
-import fs from "node:fs/promises";
 import { setTimeout } from "node:timers/promises";
 import { readdir } from "node:fs/promises";
 
@@ -21,7 +20,7 @@ import * as sentry from "@sentry/bun";
 
 import type { BotContext } from "@/context.js";
 
-import { randomEntry } from "@/utils/arrayUtils.js";
+import { randomEntry } from "@/service/random.js";
 import log from "@log";
 
 const player = createAudioPlayer();

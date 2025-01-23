@@ -16,7 +16,7 @@ import type { ApplicationCommand } from "@/commands/command.js";
 import type { LootUseCommandInteraction } from "@/storage/loot.js";
 import * as lootService from "@/service/loot.js";
 import * as lootRoleService from "@/service/lootRoles.js";
-import { randomEntry } from "@/utils/arrayUtils.js";
+import { randomEntry } from "@/service/random.js";
 import { ensureChatInputCommand } from "@/utils/interactionUtils.js";
 import * as imageService from "@/service/image.js";
 

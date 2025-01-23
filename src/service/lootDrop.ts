@@ -16,12 +16,11 @@ import * as sentry from "@sentry/bun";
 
 import type { BotContext } from "@/context.js";
 import type { Loot, LootId } from "@/storage/db/model.js";
-import { randomEntry, randomEntryWeighted } from "@/utils/arrayUtils.js";
+import { randomEntry, randomEntryWeighted } from "@/service/random.js";
 
 import * as lootService from "@/service/loot.js";
 import {
     LootAttributeClassId,
-    LootAttributeKindId,
     lootAttributeTemplates,
     LootKindId,
     lootTemplates,

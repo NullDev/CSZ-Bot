@@ -4,7 +4,7 @@ import * as time from "@/utils/time.js";
 import * as lootService from "@/service/loot.js";
 import { LootAttributeKindId, LootKindId } from "@/service/lootData.js";
 import log from "@log";
-import { randomEntry } from "@/utils/arrayUtils.js";
+import { randomEntry } from "@/service/random.js";
 
 export async function degradeItems(_context: BotContext) {
     log.info("Degrading loot items");

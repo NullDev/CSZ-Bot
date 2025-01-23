@@ -7,7 +7,7 @@ import {
 } from "discord.js";
 
 import type { ApplicationCommand } from "@/commands/command.js";
-import { randomEntry } from "@/utils/arrayUtils.js";
+import { randomEntry } from "@/service/random.js";
 
 const replies = [
     "Da bitte, dein Suchergebnis, du Opfer: {0}",
