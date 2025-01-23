@@ -10,7 +10,7 @@ import { deleteLoot } from "@/storage/loot.js";
 export async function getFightInventoryUnsorted(userId: User["id"], ctx = db()) {
     return await ctx
         .selectFrom("fightInventory")
-        .where("userid", "=", userId)
+        .where("userId", "=", userId)
         .selectAll()
         .execute();
 }
@@ -41,7 +41,7 @@ export async function getGameTemplate(
 export async function getItemsByType(userId: User["id"], fightItemType: string, ctx = db()) {
     return await ctx
         .selectFrom("fightInventory")
-        .where("userid", "=", userId)
+        .where("userId", "=", userId)
         .where("equippedSlot", "=", fightItemType)
         .selectAll()
         .execute();
@@ -55,7 +55,7 @@ export async function removeItemsAfterFight(userId: User["id"], ctx = db()) {
         }
         await ctx
             .deleteFrom("fightInventory")
-            .where("userid", "=", userId)
+            .where("userId", "=", userId)
             .where("equippedSlot", "=", "item")
             .execute();
     });
@@ -89,7 +89,7 @@ export async function equipItembyLoot(
         await ctx
             .insertInto("fightInventory")
             .values({
-                userid: userId,
+                userId: userId,
                 lootId: loot.id,
                 equippedSlot: itemType,
             })

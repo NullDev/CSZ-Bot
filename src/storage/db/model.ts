@@ -292,15 +292,15 @@ export interface EmoteUseTable extends AuditedTable {
 
 interface FightHistoryTable extends AuditedTable {
     id: GeneratedAlways<number>;
-    userid: Snowflake;
+    userId: Snowflake;
     result: boolean;
     bossName: string;
-    firsttime: boolean;
+    firstTime: boolean;
 }
 
 interface FightInventoryTable {
     id: GeneratedAlways<number>;
-    userid: Snowflake;
+    userId: Snowflake;
     lootId: LootId;
     equippedSlot: string;
 }
