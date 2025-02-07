@@ -3,7 +3,9 @@ import {
     ButtonStyle,
     type CommandInteraction,
     ComponentType,
+    type InteractionReplyOptions,
     SlashCommandBuilder,
+    SlashCommandStringOption,
     SlashCommandUserOption,
     type User,
 } from "discord.js";
@@ -16,6 +18,7 @@ import * as lootDataService from "@/service/lootData.js";
 import { LootAttributeKindId } from "@/service/lootData.js";
 
 import log from "@log";
+import { getFightInventoryEnriched } from "@/storage/fightInventory.js";
 
 export default class InventarCommand implements ApplicationCommand {
     name = "inventar";
@@ -29,12 +32,23 @@ export default class InventarCommand implements ApplicationCommand {
                 .setRequired(false)
                 .setName("user")
                 .setDescription("Wem du tun willst"),
+        )
+        .addStringOption(
+            new SlashCommandStringOption()
+                .setName("typ")
+                .setDescription("Anzeige")
+                .setRequired(false)
+                .addChoices(
+                    { name: "Kampfausrüstung", value: "fightInventory" },
+                    { name: "Komplett", value: "all" },
+                ),
         );
 
     async handleInteraction(interaction: CommandInteraction, context: BotContext) {
         const cmd = ensureChatInputCommand(interaction);
 
         const user = cmd.options.getUser("user") ?? cmd.user;
+        const type = cmd.options.getString("typ") ?? "all";
 
         const contents = await lootService.getInventoryContents(user);
         if (contents.length === 0) {
@@ -44,7 +58,14 @@ export default class InventarCommand implements ApplicationCommand {
             return;
         }
 
-        await this.#createLongEmbed(context, interaction, user);
+        switch (type) {
+            case "fightInventory":
+                return await this.#createFightEmbed(context, interaction, user);
+            case "all":
+                return await this.#createLongEmbed(context, interaction, user);
+            default:
+                throw new Error(`Unhandled type: "${type}"`);
+        }
     }
 
     async #createLongEmbed(context: BotContext, interaction: CommandInteraction, user: User) {
@@ -148,5 +169,40 @@ export default class InventarCommand implements ApplicationCommand {
                 components: [],
             });
         });
+    }
+
+    async #createFightEmbed(context: BotContext, interaction: CommandInteraction, user: User) {
+        const fightInventory = await getFightInventoryEnriched(user.id);
+        const avatarURL = user.avatarURL();
+        const display = {
+            title: `Kampfausrüstung von ${user.displayName}`,
+            description:
+                "Du kannst maximal eine Rüstung, eine Waffe und drei Items tragen. Wenn du kämpfst, setzt du die Items ein und verlierst diese, egal ob du gewinnst oder verlierst.",
+            thumbnail: avatarURL ? { url: avatarURL } : undefined,
+            fields: [
+                { name: "Waffe", value: fightInventory.weapon?.itemInfo?.displayName ?? "Nix" },
+                { name: "Rüstung", value: fightInventory.armor?.itemInfo?.displayName ?? "Nackt" },
+                ...fightInventory.items.map(item => {
+                    return {
+                        name: item.itemInfo?.displayName ?? "",
+                        value: "Hier sollten die buffs stehen",
+                        inline: true,
+                    };
+                }),
+                { name: "Buffs", value: "Nix" },
+            ],
+            footer: {
+                text: "Lol ist noch nicht fertig",
+            },
+        } satisfies APIEmbed;
+
+        const embed = {
+            components: [],
+            embeds: [display],
+            fetchReply: true,
+            tts: false,
+        } as const satisfies InteractionReplyOptions;
+
+        const message = await interaction.reply(embed);
     }
 }
