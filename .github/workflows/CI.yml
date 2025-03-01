@@ -142,7 +142,7 @@ jobs:
         echo "args=$args" >> "$GITHUB_OUTPUT"
 
     - name: Deploy CSZ Bot
-      uses: appleboy/ssh-action@7eaf76671a0d7eec5d98ee897acda4f968735a17
+      uses: appleboy/ssh-action@8faa84277b88b6cd1455986f459aa66cf72bc8a3
       env:
         BOT_HOME_PATH: /home/csc
         EPHEMERAL_BOT_CONFIG: ${{ steps.config.outputs.content }}
