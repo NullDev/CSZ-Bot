@@ -86,16 +86,6 @@ const shuffleAllNicknames = async (
     );
 };
 
-const logRenameResult = (result: PromiseSettledResult<GuildMember>[]) => {
-    const fulfilled = result.filter(p => p.status === "fulfilled");
-    const rejected = result.filter(p => p.status === "rejected");
-
-    log.info(`${fulfilled.length} users where renamed. ${rejected.length} rename ops failed`);
-    for (const rejection of rejected) {
-        log.error(rejection, `Rename failed because of: ${rejection.reason}`);
-    }
-};
-
 const createColorfulRoles = async (context: BotContext): Promise<Role[]> => {
     const moderatorRole = context.moderatorRoles[0];
     const roleResults = await Promise.allSettled(
@@ -153,7 +143,7 @@ export const startAprilFools = async (context: BotContext): Promise<void> => {
 
     try {
         const result = await shuffleAllNicknames(context);
-        logRenameResult(result);
+        verboslyGetPromiseSettledResults("Nickname shuffle", result);
 
         const roles = await createColorfulRoles(context);
         await assignColorfulRoles(context, roles);
@@ -168,7 +158,7 @@ export const endAprilFools = async (context: BotContext): Promise<void> => {
 
     try {
         const result = await resetAll(context);
-        logRenameResult(result);
+        verboslyGetPromiseSettledResults("Nickname reset", result);
 
         await deleteColorfulRoles(context);
     } catch (err) {
