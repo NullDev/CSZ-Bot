@@ -24,6 +24,8 @@ export interface Database {
     lootAttribute: LootAttributeTable;
     emote: EmoteTable;
     emoteUse: EmoteUseTable;
+    fightHistory: FightHistoryTable;
+    fightInventory: FightInventoryTable;
 }
 
 export type OneBasedMonth = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
@@ -286,4 +288,19 @@ export interface EmoteUseTable extends AuditedTable {
     channelId: ColumnType<Snowflake, Snowflake, never>;
     emoteId: ColumnType<number, number, never>;
     isReaction: boolean;
+}
+
+interface FightHistoryTable extends AuditedTable {
+    id: GeneratedAlways<number>;
+    userId: Snowflake;
+    result: boolean;
+    bossName: string;
+    firstTime: boolean;
+}
+
+interface FightInventoryTable {
+    id: GeneratedAlways<number>;
+    userId: Snowflake;
+    lootId: LootId;
+    equippedSlot: string;
 }

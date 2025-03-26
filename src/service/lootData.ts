@@ -6,6 +6,7 @@ import { GuildMember, type Guild } from "discord.js";
 import type { Loot, LootAttribute } from "@/storage/db/model.js";
 
 import log from "@log";
+import { fightTemplates } from "@/service/fightData.js";
 
 const ACHTUNG_NICHT_DROPBAR_WEIGHT_KG = 0;
 
@@ -95,6 +96,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         dropDescription: "🔪",
         emote: "🔪",
         asset: "assets/loot/02-messerblock.jpg",
+        gameEquip: fightTemplates.messerblock,
     },
     [LootKindId.KUEHLSCHRANK]: {
         id: LootKindId.KUEHLSCHRANK,
@@ -198,6 +200,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         dropDescription: "Der gute von Müller",
         emote: "🥛",
         asset: "assets/loot/09-ayran.jpg",
+        gameEquip: fightTemplates.ayran,
     },
     [LootKindId.PKV]: {
         id: LootKindId.PKV,
@@ -287,6 +290,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         dropDescription: "Ja dann Prost ne!",
         emote: "🍺",
         asset: "assets/loot/16-oettinger.jpg",
+        gameEquip: fightTemplates.oettinger,
     },
     [LootKindId.ACHIEVEMENT]: {
         id: LootKindId.ACHIEVEMENT,
@@ -455,6 +459,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         dropDescription: "Nach Rezept zubereitet, bestehend aus Thunfisch und Reiswaffeln",
         emote: ":baby_bottle:",
         asset: "assets/loot/33-thunfischshake.jpg",
+        gameEquip: fightTemplates.thunfischshake,
     },
     [LootKindId.KAFFEEMUEHLE]: {
         id: LootKindId.KAFFEEMUEHLE,
