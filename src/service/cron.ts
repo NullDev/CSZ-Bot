@@ -53,8 +53,8 @@ export async function schedule(context: BotContext) {
         cron(loot.scheduleCron, () => runDropAttempt(context));
     }
 
-    cron("2022-04-01T00:00:00", () => startAprilFools(context));
-    cron("2022-04-02T00:00:00", () => endAprilFools(context));
+    cron("2025-04-01T00:00:00", () => startAprilFools(context));
+    cron("2025-04-02T00:00:00", () => endAprilFools(context));
 
     await poll.importPolls();
     cron("* * * * *", () => poll.processPolls(context));
