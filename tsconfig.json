@@ -1,9 +1,9 @@
 {
     "compilerOptions": {
-        "target": "es2022",
+        "target": "es2024",
         "module": "NodeNext",
         "strict": true,
-        "lib": ["ES2021"],
+        "lib": ["es2024"],
 
         // Additional Checks
         // "noUnusedLocals": true,
