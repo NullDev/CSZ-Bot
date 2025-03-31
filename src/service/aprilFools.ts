@@ -91,8 +91,8 @@ const createColorfulRoles = async (context: BotContext): Promise<Role[]> => {
     const createdRolesPromises = await Promise.allSettled(
         Object.entries(colorfulRoles).map(([name, color]) =>
             context.guild.roles.create({
-                    name,
-                    color,
+                name,
+                color,
             }),
         ),
     );
