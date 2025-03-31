@@ -88,22 +88,23 @@ const shuffleAllNicknames = async (
 
 const createColorfulRoles = async (context: BotContext): Promise<Role[]> => {
     const moderatorRole = context.moderatorRoles[0];
-    const roleResults = await Promise.allSettled(
+    const createdRolesPromises = await Promise.allSettled(
         Object.entries(colorfulRoles).map(([name, color]) =>
-            context.guild.roles
-                .create({
+            context.guild.roles.create({
                     name,
                     color,
-                })
-                .then(role =>
-                    context.guild.roles.setPosition(role.id, moderatorRole.position - 1, {
-                        reason: "April April!",
-                    }),
-                ),
+            }),
         ),
     );
+    const createdRoles = verboslyGetPromiseSettledResults(
+        "Colorful role creation",
+        createdRolesPromises,
+    );
+    await context.guild.roles.setPositions(
+        createdRoles.map((role, idx, arr) => ({ role: role.id, position: moderatorRole.position })),
+    );
 
-    return verboslyGetPromiseSettledResults("Colorful role creation", roleResults);
+    return createdRoles;
 };
 
 const deleteColorfulRoles = async (context: BotContext): Promise<void> => {
