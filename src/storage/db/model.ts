@@ -106,7 +106,7 @@ export interface PenisTable extends AuditedTable {
 
     userId: Snowflake;
     size: number;
-    diameter: Radius;
+    radius: Radius;
     measuredAt: Generated<string>; // TODO: Date is not supported by the DB driver
 }
 

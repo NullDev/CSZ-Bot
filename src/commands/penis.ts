@@ -10,7 +10,7 @@ import { randomValue } from "@/service/random.js";
 
 export type Radius = 0 | 1 | 2 | 3;
 
-const DIAMETER_CHARS: Record<Radius, string> = {
+const RADIUS_CHARS: Record<Radius, string> = {
     0: "",
     1: "‒",
     2: "=",
@@ -27,8 +27,8 @@ const sendPenis = async (
     radius: Radius,
     measurement: Date = new Date(),
 ): Promise<void> => {
-    const diameterChar = DIAMETER_CHARS[radius];
-    const penis = `8${diameterChar.repeat(size)}D`;
+    const radiusChar = RADIUS_CHARS[radius];
+    const penis = `8${radiusChar.repeat(size)}D`;
     const circumference = (Math.PI * radius * 2).toFixed(2);
 
     await message.reply(
@@ -114,7 +114,7 @@ export default class PenisCommand implements MessageCommand {
                 userToMeasure.id === context.client.user.id
                     ? PENIS_MAX
                     : randomValue({ min: 1, maxInclusive: PENIS_MAX });
-            const diameter: Radius =
+            const radius: Radius =
                 userToMeasure.id === context.client.user.id
                     ? RADIUS_MAX
                     : size === 0
@@ -126,8 +126,8 @@ export default class PenisCommand implements MessageCommand {
             }
 
             await Promise.all([
-                penis.insertMeasurement(userToMeasure, size, diameter),
-                sendPenis(userToMeasure, message, size, diameter),
+                penis.insertMeasurement(userToMeasure, size, radius),
+                sendPenis(userToMeasure, message, size, radius),
             ]);
             return;
         }
@@ -136,7 +136,7 @@ export default class PenisCommand implements MessageCommand {
             userToMeasure,
             message,
             recentMeasurement.size,
-            recentMeasurement.diameter,
+            recentMeasurement.radius,
             new Date(recentMeasurement.measuredAt),
         );
     }

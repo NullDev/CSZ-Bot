@@ -11,7 +11,7 @@ import log from "@log";
 export function insertMeasurement(
     user: User,
     size: number,
-    diameter: Radius,
+    radius: Radius,
     ctx = db(),
 ): Promise<Penis> {
     log.debug(`Saving Penis Measurement for user ${user.id} with size ${size}`);
@@ -21,7 +21,7 @@ export function insertMeasurement(
         .values({
             userId: user.id,
             size,
-            diameter,
+            radius,
         })
         .returningAll()
         .executeTakeFirstOrThrow();
