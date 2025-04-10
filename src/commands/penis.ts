@@ -7,9 +7,10 @@ import type { ProcessableMessage } from "@/service/command.js";
 import * as penis from "@/storage/penis.js";
 import log from "@log";
 
-export type Radius = 1 | 2 | 3;
+export type Radius = 0 | 1 | 2 | 3;
 
 const DIAMETER_CHARS: Record<Radius, string> = {
+    0: "",
     1: "‒",
     2: "=",
     3: "≡",
