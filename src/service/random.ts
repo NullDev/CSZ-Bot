@@ -20,7 +20,7 @@ export interface InclusiveRange {
  * Based on https://stackoverflow.com/a/24152886
  */
 export function randomValue(range: Range): number {
-    const upperLimit = "maxInclusive" in range ? range.maxInclusive + 1 : range.maxExclusive;
+    const upperLimit = "maxInclusive" in range ? range.maxInclusive : range.maxExclusive - 1;
     return Math.round(range.min + Math.random() * (upperLimit - range.min));
 }
 
