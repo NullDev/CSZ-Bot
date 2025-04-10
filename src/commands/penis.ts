@@ -115,7 +115,9 @@ export default class PenisCommand implements MessageCommand {
             const diameter: Radius =
                 userToMeasure.id === context.client.user.id
                     ? RADIUS_MAX
-                    : ((Math.floor(Math.random() * RADIUS_MAX) + 1) as Radius);
+                    : size === 0
+                      ? (0 as Radius)
+                      : ((Math.floor(Math.random() * RADIUS_MAX) + 1) as Radius);
 
             if (await isNewLongestDick(size)) {
                 log.debug(`${userToMeasure} has the new longest dick with size ${size}`);
