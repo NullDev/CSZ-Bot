@@ -6,6 +6,7 @@ import type { ProcessableMessage } from "@/service/command.js";
 
 import * as penis from "@/storage/penis.js";
 import log from "@log";
+import { randomValue } from "@/service/random.js";
 
 export type Radius = 0 | 1 | 2 | 3;
 
@@ -112,13 +113,13 @@ export default class PenisCommand implements MessageCommand {
             const size =
                 userToMeasure.id === context.client.user.id
                     ? PENIS_MAX
-                    : Math.floor(Math.random() * PENIS_MAX);
+                    : randomValue({ min: 1, maxInclusive: PENIS_MAX });
             const diameter: Radius =
                 userToMeasure.id === context.client.user.id
                     ? RADIUS_MAX
                     : size === 0
                       ? (0 as Radius)
-                      : ((Math.floor(Math.random() * RADIUS_MAX) + 1) as Radius);
+                      : (randomValue({ min: 1, maxInclusive: RADIUS_MAX }) as Radius);
 
             if (await isNewLongestDick(size)) {
                 log.debug(`${userToMeasure} has the new longest dick with size ${size}`);
