@@ -1,7 +1,10 @@
+import type { BotContext } from "@/context.js";
 import {
     insertRegistration,
     insertSpotifyLog,
+    insertTrackMetadata,
     isAcivatedForScrobbling,
+    trackMetadataExists,
 } from "@/storage/scrobbler.js";
 import { Temporal } from "@js-temporal/polyfill";
 import { type Activity, GuildMember, type User } from "discord.js";
@@ -22,20 +25,42 @@ export async function setUserRegistration(user: User, activated: boolean) {
     await insertRegistration(user, activated);
 }
 
-export async function handleSpotifyAcitivityUpdate(user: User, newSpotifyActivity: SpotifyActitiy) {
+export async function handleSpotifyAcitivityUpdate(
+    context: BotContext,
+    user: User,
+    newSpotifyActivity: SpotifyActitiy,
+) {
     const active = isAcivatedForScrobbling(user);
     if (!active) {
         return;
     }
 
-    handleSpotifyAcitivity(user, newSpotifyActivity);
+    handleSpotifyAcitivity(context, user, newSpotifyActivity);
 }
 
-async function handleSpotifyAcitivity(user: User, activity: SpotifyActitiy) {
-    console.log(activity);
+async function handleSpotifyAcitivity(context: BotContext, user: User, activity: SpotifyActitiy) {
+    await fetchTrackMetadata(context, activity.syncId);
     await insertSpotifyLog(
         user,
         activity.syncId,
         Temporal.Instant.fromEpochMilliseconds(activity.createdTimestamp),
     );
+}
+
+async function fetchTrackMetadata(context: BotContext, trackId: string) {
+    const client = context.spotifyClient;
+    if (!client) {
+        return;
+    }
+
+    const result = await context.spotifyClient?.tracks.get(trackId);
+    if (!result) {
+        return;
+    }
+
+    if (await trackMetadataExists(result)) {
+        return;
+    }
+
+    await insertTrackMetadata(result);
 }

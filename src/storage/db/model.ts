@@ -28,6 +28,9 @@ export interface Database {
     emoteUse: EmoteUseTable;
     scrobblerRegistration: ScrobblerRegistrationTable;
     scrobblerSpotifyLog: ScrobblerSpotifyLogTable;
+    spotifyArtists: SpotifyArtistTable;
+    spotifyTracks: SpotifyTrackTable;
+    spotifyTrackToArtists: SpotifyTrackToArtistTable;
 }
 
 export type OneBasedMonth = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
@@ -300,11 +303,32 @@ export interface ScrobblerRegistrationTable extends AuditedTable {
     activated: boolean;
 }
 
-export type ScrobblerSpotifyLog = Selectable<ScrobblerSpotifyLogTable>;
+export type ScrobblerSpotifyLog = Selectable<SpotifyTrackTable>;
 
 export interface ScrobblerSpotifyLogTable extends AuditedTable {
     id: GeneratedAlways<number>;
     userId: Snowflake;
     spotifyId: string;
     startedActivity: Date;
+}
+
+export type SpotifyTrack = Selectable<SpotifyTrackTable>;
+
+export interface SpotifyTrackTable {
+    trackId: string;
+    name: string;
+}
+
+export type SpotifyArtist = Selectable<SpotifyArtistTable>;
+
+export interface SpotifyArtistTable {
+    artistId: string;
+    name: string;
+}
+
+export type SpotifyTrackToArtists = Selectable<SpotifyArtistTable>;
+
+export interface SpotifyTrackToArtistTable {
+    trackId: string;
+    artistId: string;
 }

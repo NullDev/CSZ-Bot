@@ -9,6 +9,7 @@
         "@napi-rs/canvas": "0.1.69",
         "@resvg/resvg-js": "^2.6.2",
         "@sentry/bun": "^9.11.0",
+        "@spotify/web-api-ts-sdk": "^1.2.0",
         "@std/jsonc": "npm:@jsr/std__jsonc@^1.0.1",
         "chrono-node": "^2.8.0",
         "croner": "^9.0.0",
@@ -238,6 +239,8 @@
     "@sentry/node": ["@sentry/node@9.11.0", "", { "dependencies": { "@opentelemetry/api": "^1.9.0", "@opentelemetry/context-async-hooks": "^1.30.1", "@opentelemetry/core": "^1.30.1", "@opentelemetry/instrumentation": "^0.57.2", "@opentelemetry/instrumentation-amqplib": "^0.46.1", "@opentelemetry/instrumentation-connect": "0.43.1", "@opentelemetry/instrumentation-dataloader": "0.16.1", "@opentelemetry/instrumentation-express": "0.47.1", "@opentelemetry/instrumentation-fastify": "0.44.2", "@opentelemetry/instrumentation-fs": "0.19.1", "@opentelemetry/instrumentation-generic-pool": "0.43.1", "@opentelemetry/instrumentation-graphql": "0.47.1", "@opentelemetry/instrumentation-hapi": "0.45.2", "@opentelemetry/instrumentation-http": "0.57.2", "@opentelemetry/instrumentation-ioredis": "0.47.1", "@opentelemetry/instrumentation-kafkajs": "0.7.1", "@opentelemetry/instrumentation-knex": "0.44.1", "@opentelemetry/instrumentation-koa": "0.47.1", "@opentelemetry/instrumentation-lru-memoizer": "0.44.1", "@opentelemetry/instrumentation-mongodb": "0.52.0", "@opentelemetry/instrumentation-mongoose": "0.46.1", "@opentelemetry/instrumentation-mysql": "0.45.1", "@opentelemetry/instrumentation-mysql2": "0.45.2", "@opentelemetry/instrumentation-pg": "0.51.1", "@opentelemetry/instrumentation-redis-4": "0.46.1", "@opentelemetry/instrumentation-tedious": "0.18.1", "@opentelemetry/instrumentation-undici": "0.10.1", "@opentelemetry/resources": "^1.30.1", "@opentelemetry/sdk-trace-base": "^1.30.1", "@opentelemetry/semantic-conventions": "^1.30.0", "@prisma/instrumentation": "6.5.0", "@sentry/core": "9.11.0", "@sentry/opentelemetry": "9.11.0", "import-in-the-middle": "^1.13.0" } }, "sha512-luDsNDHsHkoXbL2Rf1cEKijh6hBfjzGQe09iP6kdZr+HB0bO+qoLe+nZLzSIQTWgWSt2XYNQyiLAsaMlbJZhJg=="],
 
     "@sentry/opentelemetry": ["@sentry/opentelemetry@9.11.0", "", { "dependencies": { "@sentry/core": "9.11.0" }, "peerDependencies": { "@opentelemetry/api": "^1.9.0", "@opentelemetry/context-async-hooks": "^1.30.1", "@opentelemetry/core": "^1.30.1", "@opentelemetry/instrumentation": "^0.57.1", "@opentelemetry/sdk-trace-base": "^1.30.1", "@opentelemetry/semantic-conventions": "^1.28.0" } }, "sha512-B6RumUFGb1+Q4MymY7IZbdl1Ayz2srqf46itFr1ohE/IpwY7OWKMntop8fxyccUW3ptmPp9cPkBJOaa9UdJhSg=="],
+
+    "@spotify/web-api-ts-sdk": ["@spotify/web-api-ts-sdk@1.2.0", "", {}, "sha512-JUaebva3Ohwo5I5tuTqyW/FKGOMbb40YevJMySAOINRxP7qQ/AMjBzfJx0zeO6yS+wAPfQSoGNsZaUggHw8vsA=="],
 
     "@std/jsonc": ["@jsr/std__jsonc@1.0.1", "https://npm.jsr.io/~/11/@jsr/std__jsonc/1.0.1.tgz", { "dependencies": { "@jsr/std__json": "^1.0.0" } }, "sha512-fQTEKMCiRWdecz0RE2+6KXIjo0sxpyiMBrx4jhNXvTmCytylC2vMzfHZcL1qbYrc3sEdV8v/WVxP0fnbIxsHiQ=="],
 

@@ -24,11 +24,14 @@
             "arrowParentheses": "asNeeded"
         }
     },
+    "json": {
+        "parser": {
+            "allowComments": true
+        }
+    },
     "overrides": [
         {
-            "include": [
-                "src/storage/migrations/**"
-            ],
+            "include": ["src/storage/migrations/**"],
             "linter": {
                 "rules": {
                     "suspicious": {

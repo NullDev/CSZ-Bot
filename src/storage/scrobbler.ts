@@ -5,6 +5,7 @@ import type { ScrobblerRegistration } from "@/storage/db/model.js";
 
 import db from "@db";
 import log from "@log";
+import type { Track } from "@spotify/web-api-ts-sdk";
 
 export function insertRegistration(
     user: User,
@@ -55,4 +56,48 @@ export async function insertSpotifyLog(
         .returningAll()
         .onConflict(oc => oc.columns(["userId", "startedActivity"]).doNothing())
         .execute();
+}
+
+export async function insertTrackMetadata(track: Track, ctx = db()) {
+    await ctx
+        .insertInto("spotifyTracks")
+        .values({
+            trackId: track.id,
+            name: track.name,
+        })
+        .onConflict(oc => oc.column("trackId").doNothing())
+        .executeTakeFirstOrThrow();
+
+    await ctx
+        .insertInto("spotifyArtists")
+        .values(
+            track.artists.map(artist => ({
+                artistId: artist.id,
+                name: artist.name,
+            })),
+        )
+        .onConflict(oc => oc.column("artistId").doNothing())
+        .executeTakeFirstOrThrow();
+
+    await ctx
+        .insertInto("spotifyTrackToArtists")
+        .values(
+            track.artists.map(artist => ({
+                artistId: artist.id,
+                trackId: track.id,
+            })),
+        )
+        .onConflict(oc => oc.columns(["artistId", "trackId"]).doNothing())
+        .executeTakeFirstOrThrow();
+}
+
+export async function trackMetadataExists(track: Track, ctx = db()): Promise<boolean> {
+    const trackMetadata = await ctx
+        .selectFrom("spotifyTracks")
+        .where("trackId", "=", track.id)
+        .limit(1)
+        .selectAll()
+        .executeTakeFirst();
+
+    return !!trackMetadata;
 }

@@ -8,6 +8,10 @@
         "dsn": null,
         "tracesSampleRate": null
     },
+    "spotify": {
+        "clientId": "<SPOTIFY_CLIENT_ID>",
+        "clientSecret": "<SPOTIFY_CLIENT_SECRET>"
+    },
     "activity": {
         // https://discord.com/developers/docs/topics/gateway-events#activity-object-activity-types
         "type": 0,
@@ -18,9 +22,7 @@
         "command": ".",
         "modCommand": "~"
     },
-    "moderatorRoleIds": [
-        "893179190709477413"
-    ],
+    "moderatorRoleIds": ["893179190709477413"],
 
     "command": {
         "faulenzerPing": {
@@ -43,8 +45,8 @@
             "scheduleCron": "*/15 * * * *",
             "dropChance": 0.05,
             "roles": {
-                "asseGuardShiftDuration": "PT8H",
-            },
+                "asseGuardShiftDuration": "PT8H"
+            }
         },
         "quotes": {
             "emojiName": "zitat",

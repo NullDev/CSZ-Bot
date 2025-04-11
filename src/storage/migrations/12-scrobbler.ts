@@ -12,6 +12,25 @@ export async function up(db: Kysely<any>) {
         .execute();
 
     await db.schema
+        .createTable("spotifyTracks")
+        .addColumn("trackId", "text", c => c.primaryKey())
+        .addColumn("name", "text", c => c.notNull())
+        .execute();
+
+    await db.schema
+        .createTable("spotifyArtists")
+        .addColumn("artistId", "text", c => c.primaryKey())
+        .addColumn("name", "text", c => c.notNull())
+        .execute();
+
+    await db.schema
+        .createTable("SpotifyTrackToArtists")
+        .addColumn("artistId", "text")
+        .addColumn("trackId", "text")
+        .addPrimaryKeyConstraint("artistId_trackId_primaryKey", ["artistId", "trackId"])
+        .execute();
+
+    await db.schema
         .createTable("scrobblerSpotifyLog")
         .addColumn("id", "integer", c => c.primaryKey().autoIncrement())
         .addColumn("createdAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
@@ -24,6 +43,9 @@ export async function up(db: Kysely<any>) {
 }
 
 export async function down(db: Kysely<any>) {
+    await db.schema.dropTable("scrobblerSpotifyLog").execute();
+    await db.schema.dropTable("SpotifyTrackToArtists").execute();
+    await db.schema.dropTable("spotifyTracks").execute();
     await db.schema.dropTable("scrobblerSpotifyLog").execute();
     await db.schema.dropTable("scrobblerRegistration").execute();
 }

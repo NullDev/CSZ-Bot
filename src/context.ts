@@ -16,6 +16,7 @@ import { Temporal } from "@js-temporal/polyfill";
 
 import type { UserMapEntry } from "@/commands/aoc.js";
 import { readConfig } from "@/service/config.js";
+import { SpotifyApi } from "@spotify/web-api-ts-sdk";
 
 /**
  * Object that's passed to every executed command to make it easier to access common channels without repeatedly retrieving stuff via IDs.
@@ -34,6 +35,8 @@ export interface BotContext {
         command: string;
         modCommand: string;
     };
+
+    spotifyClient: SpotifyApi | null;
 
     commandConfig: {
         faulenzerPing: {
@@ -209,6 +212,14 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
             command: config.prefix.command,
             modCommand: config.prefix.modCommand,
         },
+        spotifyClient:
+            config.spotify?.clientId && config.spotify?.clientSecret
+                ? SpotifyApi.withClientCredentials(
+                      config.spotify.clientId,
+                      config.spotify.clientSecret,
+                      [],
+                  )
+                : null,
         moderatorRoles: config.moderatorRoleIds.map(id => ensureRole(guild, id)),
         commandConfig: {
             faulenzerPing: {

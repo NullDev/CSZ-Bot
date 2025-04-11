@@ -15,7 +15,7 @@ export async function handlePresenceUpdate(
     }
 
     if (newSpotifyActivity) {
-        await handleSpotifyAcitivityUpdate(user, newSpotifyActivity);
+        await handleSpotifyAcitivityUpdate(context, user, newSpotifyActivity);
     }
 }
 
