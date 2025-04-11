@@ -24,6 +24,7 @@ export interface Database {
     lootAttribute: LootAttributeTable;
     emote: EmoteTable;
     emoteUse: EmoteUseTable;
+    scrobblerRegistration: ScrobblerRegistrationTable;
 }
 
 export type OneBasedMonth = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
@@ -286,4 +287,12 @@ export interface EmoteUseTable extends AuditedTable {
     channelId: ColumnType<Snowflake, Snowflake, never>;
     emoteId: ColumnType<number, number, never>;
     isReaction: boolean;
+}
+
+export type ScrobblerRegistration = Selectable<ScrobblerRegistrationTable>;
+
+export interface ScrobblerRegistrationTable extends AuditedTable {
+    id: GeneratedAlways<number>;
+    userId: Snowflake;
+    activated: boolean;
 }

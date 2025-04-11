@@ -3,13 +3,15 @@ import {
     type CacheType,
     SlashCommandBuilder,
     SlashCommandSubcommandBuilder,
+    SlashCommandBooleanOption,
 } from "discord.js";
 
 import type { ApplicationCommand, AutocompleteCommand } from "@/commands/command.js";
 import type { BotContext } from "@/context.js";
 import assertNever from "@/utils/assertNever.js";
+import { setUserRegistration } from "@/service/scrobbler.js";
 
-type SubCommand = "register";
+type SubCommand = "aktivierung";
 
 export default class Scrobble implements ApplicationCommand {
     name = "scrobble";
@@ -19,8 +21,13 @@ export default class Scrobble implements ApplicationCommand {
         .setDescription(this.description)
         .addSubcommand(
             new SlashCommandSubcommandBuilder()
-                .setName("register")
-                .setDescription("Registriert dich für's scrobblen"),
+                .setName("aktivierung")
+                .setDescription("Aktiviert oder deaktiviert dich für's scrobblen")
+                .addBooleanOption(
+                    new SlashCommandBooleanOption()
+                        .setName("aktiv")
+                        .setDescription("Soll ich dich aktivieren, bruder?"),
+                ),
         );
 
     async handleInteraction(command: CommandInteraction<CacheType>, context: BotContext) {
@@ -32,7 +39,13 @@ export default class Scrobble implements ApplicationCommand {
         const subCommand = command.options.getSubcommand() as SubCommand;
 
         switch (subCommand) {
-            case "register": {
+            case "aktivierung": {
+                const activated = command.options.getBoolean("aktiv", true);
+                await setUserRegistration(command.user, activated);
+                await command.reply({
+                    content: "Hab ik gemacht, dicker",
+                    ephemeral: true,
+                });
                 return;
             }
             default:
