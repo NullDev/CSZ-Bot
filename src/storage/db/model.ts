@@ -3,6 +3,8 @@ import type { ColumnType, Generated, GeneratedAlways, Insertable, Selectable } f
 
 import type { Radius } from "@/commands/penis.js";
 
+export type Date = ColumnType<string, string, string>; // TODO: Date is not supported by DB Driver
+
 export interface Database {
     birthdays: BirthdayTable;
     stempels: StempelTable;
@@ -25,6 +27,7 @@ export interface Database {
     emote: EmoteTable;
     emoteUse: EmoteUseTable;
     scrobblerRegistration: ScrobblerRegistrationTable;
+    scrobblerSpotifyLog: ScrobblerSpotifyLogTable;
 }
 
 export type OneBasedMonth = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
@@ -295,4 +298,13 @@ export interface ScrobblerRegistrationTable extends AuditedTable {
     id: GeneratedAlways<number>;
     userId: Snowflake;
     activated: boolean;
+}
+
+export type ScrobblerSpotifyLog = Selectable<ScrobblerSpotifyLogTable>;
+
+export interface ScrobblerSpotifyLogTable extends AuditedTable {
+    id: GeneratedAlways<number>;
+    userId: Snowflake;
+    spotifyId: string;
+    startedActivity: Date;
 }

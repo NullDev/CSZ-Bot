@@ -1,4 +1,9 @@
-import { insertRegistration, isAcivatedForScrobbling } from "@/storage/scrobbler.js";
+import {
+    insertRegistration,
+    insertSpotifyLog,
+    isAcivatedForScrobbling,
+} from "@/storage/scrobbler.js";
+import { Temporal } from "@js-temporal/polyfill";
 import { type Activity, GuildMember, type User } from "discord.js";
 
 export type SpotifyActitiy = {
@@ -17,29 +22,20 @@ export async function setUserRegistration(user: User, activated: boolean) {
     await insertRegistration(user, activated);
 }
 
-export async function handleSpotifyAcitivityUpdate(
-    user: User,
-    oldSpotifyActivity: SpotifyActitiy | undefined,
-    newSpotifyActivity: SpotifyActitiy | undefined,
-) {
-    if (!oldSpotifyActivity && !newSpotifyActivity) {
-        return;
-    }
-
+export async function handleSpotifyAcitivityUpdate(user: User, newSpotifyActivity: SpotifyActitiy) {
     const active = isAcivatedForScrobbling(user);
     if (!active) {
         return;
     }
 
-    if (oldSpotifyActivity) {
-        handleSpotifyAcitivity(oldSpotifyActivity);
-    }
-
-    if (newSpotifyActivity) {
-        handleSpotifyAcitivity(newSpotifyActivity);
-    }
+    handleSpotifyAcitivity(user, newSpotifyActivity);
 }
 
-async function handleSpotifyAcitivity(activity: SpotifyActitiy) {
+async function handleSpotifyAcitivity(user: User, activity: SpotifyActitiy) {
     console.log(activity);
+    await insertSpotifyLog(
+        user,
+        activity.syncId,
+        Temporal.Instant.fromEpochMilliseconds(activity.createdTimestamp),
+    );
 }

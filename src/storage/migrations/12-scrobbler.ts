@@ -4,12 +4,26 @@ export async function up(db: Kysely<any>) {
     await db.schema
         .createTable("scrobblerRegistration")
         .addColumn("id", "integer", c => c.primaryKey().autoIncrement())
+        .addColumn("createdAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
+        .addColumn("updatedAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
         .addColumn("userId", "text", c => c.notNull())
         .addColumn("activated", "boolean", c => c.notNull())
         .addUniqueConstraint("userId_unique", ["userId"])
         .execute();
+
+    await db.schema
+        .createTable("scrobblerSpotifyLog")
+        .addColumn("id", "integer", c => c.primaryKey().autoIncrement())
+        .addColumn("createdAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
+        .addColumn("updatedAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
+        .addColumn("userId", "text", c => c.notNull())
+        .addColumn("spotifyId", "text", c => c.notNull())
+        .addColumn("startedActivity", "timestamp", c => c.notNull())
+        .addUniqueConstraint("userId_startedActivity_unique", ["userId", "startedActivity"])
+        .execute();
 }
 
 export async function down(db: Kysely<any>) {
+    await db.schema.dropTable("scrobblerSpotifyLog").execute();
     await db.schema.dropTable("scrobblerRegistration").execute();
 }

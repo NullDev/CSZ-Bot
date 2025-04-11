@@ -9,13 +9,14 @@ export async function handlePresenceUpdate(
     newPresence: Presence,
 ) {
     const newSpotifyActivity = newPresence.activities.find(isSpotifyAcitivity);
-    const oldSpotifyActivity = oldPresence?.activities.find(isSpotifyAcitivity);
     const user = newPresence.user;
     if (!user) {
         return;
     }
 
-    await handleSpotifyAcitivityUpdate(user, oldSpotifyActivity, newSpotifyActivity);
+    if (newSpotifyActivity) {
+        await handleSpotifyAcitivityUpdate(user, newSpotifyActivity);
+    }
 }
 
 function isSpotifyAcitivity(activity: Activity): activity is SpotifyActitiy {

@@ -1,8 +1,8 @@
-import { Temporal } from "@js-temporal/polyfill"; // TODO: Remove once bun ships temporal
+import type { Temporal } from "@js-temporal/polyfill"; // TODO: Remove once bun ships temporal
 import type { Snowflake, User } from "discord.js";
 
 import type { Radius } from "@/commands/penis.js";
-import type { Penis, ScrobblerRegistration } from "@/storage/db/model.js";
+import type { Penis, ScrobblerRegistration, ScrobblerSpotifyLog } from "@/storage/db/model.js";
 
 import { getStartAndEndDay } from "@/utils/dateUtils.js";
 import db from "@db";
@@ -39,4 +39,22 @@ export async function isAcivatedForScrobbling(user: User, ctx = db()): Promise<b
     }
 
     return userRegistration.activated;
+}
+
+export async function insertSpotifyLog(
+    user: User,
+    spotifyId: string,
+    startedActivity: Temporal.Instant,
+    ctx = db(),
+) {
+    await ctx
+        .insertInto("scrobblerSpotifyLog")
+        .values({
+            userId: user.id,
+            spotifyId,
+            startedActivity: startedActivity.toString(),
+        })
+        .returningAll()
+        .onConflict(oc => oc.columns(["userId", "startedActivity"]).doNothing())
+        .execute();
 }
