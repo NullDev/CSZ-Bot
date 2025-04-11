@@ -15,12 +15,14 @@ export async function up(db: Kysely<any>) {
         .createTable("spotifyTracks")
         .addColumn("trackId", "text", c => c.primaryKey())
         .addColumn("name", "text", c => c.notNull())
+        .addColumn("imageUrl", "text")
         .execute();
 
     await db.schema
         .createTable("spotifyArtists")
         .addColumn("artistId", "text", c => c.primaryKey())
         .addColumn("name", "text", c => c.notNull())
+        .addColumn("imageUrl", "text")
         .execute();
 
     await db.schema

@@ -5,7 +5,7 @@ import type { ScrobblerRegistration } from "@/storage/db/model.js";
 
 import db from "@db";
 import log from "@log";
-import type { Track } from "@spotify/web-api-ts-sdk";
+import type { Artist, Track } from "@spotify/web-api-ts-sdk";
 
 export function insertRegistration(
     user: User,
@@ -58,12 +58,13 @@ export async function insertSpotifyLog(
         .execute();
 }
 
-export async function insertTrackMetadata(track: Track, ctx = db()) {
+export async function insertTrackMetadata(track: Track, artists: Artist[], ctx = db()) {
     await ctx
         .insertInto("spotifyTracks")
         .values({
             trackId: track.id,
             name: track.name,
+            imageUrl: track.album.images[0]?.url ?? null,
         })
         .onConflict(oc => oc.column("trackId").doNothing())
         .executeTakeFirstOrThrow();
@@ -71,9 +72,10 @@ export async function insertTrackMetadata(track: Track, ctx = db()) {
     await ctx
         .insertInto("spotifyArtists")
         .values(
-            track.artists.map(artist => ({
+            artists.map(artist => ({
                 artistId: artist.id,
                 name: artist.name,
+                imageUrl: artist.images[0]?.url ?? null,
             })),
         )
         .onConflict(oc => oc.column("artistId").doNothing())

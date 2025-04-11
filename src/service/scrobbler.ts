@@ -53,14 +53,21 @@ async function fetchTrackMetadata(context: BotContext, trackId: string) {
         return;
     }
 
-    const result = await context.spotifyClient?.tracks.get(trackId);
-    if (!result) {
+    const track = await context.spotifyClient?.tracks.get(trackId);
+    if (!track) {
         return;
     }
 
-    if (await trackMetadataExists(result)) {
+    if (await trackMetadataExists(track)) {
         return;
     }
 
-    await insertTrackMetadata(result);
+    // Fetch artists only if track is not already in the database
+    const artists = (
+        await Promise.all(
+            track.artists.map(artist => context.spotifyClient?.artists.get(artist.id)),
+        )
+    ).filter(a => a !== undefined);
+
+    await insertTrackMetadata(track, artists);
 }

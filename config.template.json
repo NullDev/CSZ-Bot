@@ -22,9 +22,7 @@
         "command": "xd",
         "modCommand": "yd"
     },
-    "moderatorRoleIds": [
-        "893179190709477413"
-    ],
+    "moderatorRoleIds": ["893179190709477413"],
 
     "command": {
         "faulenzerPing": {
