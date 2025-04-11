@@ -26,7 +26,7 @@ export async function up(db: Kysely<any>) {
         .execute();
 
     await db.schema
-        .createTable("SpotifyTrackToArtists")
+        .createTable("spotifyTrackToArtists")
         .addColumn("artistId", "text")
         .addColumn("trackId", "text")
         .addPrimaryKeyConstraint("artistId_trackId_primaryKey", ["artistId", "trackId"])
@@ -42,9 +42,39 @@ export async function up(db: Kysely<any>) {
         .addColumn("startedActivity", "timestamp", c => c.notNull())
         .addUniqueConstraint("userId_startedActivity_unique", ["userId", "startedActivity"])
         .execute();
+
+    await db.schema
+        .createView("scrobblerSpotifyLogView")
+        .as(
+            db
+                .selectFrom("scrobblerSpotifyLog")
+                .innerJoin(
+                    "spotifyTracks as track",
+                    "track.trackId",
+                    "scrobblerSpotifyLog.spotifyId",
+                )
+                .innerJoin(
+                    "spotifyTrackToArtists as artistRel",
+                    "artistRel.trackId",
+                    "track.trackId",
+                )
+                .innerJoin("spotifyArtists as artist", "artistRel.artistId", "artist.artistId")
+                .select([
+                    "scrobblerSpotifyLog.userId as userId",
+                    "track.trackId as trackId",
+                    "track.name as trackName",
+                    "track.imageUrl as trackImageUrl",
+                    "artist.artistId as artistId",
+                    "artist.name as artistName",
+                    "artist.imageUrl as artistImageUrl",
+                    "scrobblerSpotifyLog.startedActivity as startedActivity",
+                ]),
+        )
+        .execute();
 }
 
 export async function down(db: Kysely<any>) {
+    await db.schema.dropView("scrobblerSpotifyLogView").execute();
     await db.schema.dropTable("scrobblerSpotifyLog").execute();
     await db.schema.dropTable("SpotifyTrackToArtists").execute();
     await db.schema.dropTable("spotifyTracks").execute();

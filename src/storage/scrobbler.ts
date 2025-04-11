@@ -1,7 +1,7 @@
-import type { Temporal } from "@js-temporal/polyfill"; // TODO: Remove once bun ships temporal
+import { Temporal } from "@js-temporal/polyfill"; // TODO: Remove once bun ships temporal
 import type { User } from "discord.js";
 
-import type { ScrobblerRegistration } from "@/storage/db/model.js";
+import type { ScrobblerRegistration, ScrobblerSpotifyLogEntry } from "@/storage/db/model.js";
 
 import db from "@db";
 import log from "@log";
@@ -102,4 +102,70 @@ export async function trackMetadataExists(track: Track, ctx = db()): Promise<boo
         .executeTakeFirst();
 
     return !!trackMetadata;
+}
+
+export async function getRecentPlaybacks(
+    user: User,
+    duration: Temporal.Duration,
+    ctx = db(),
+): Promise<ScrobblerSpotifyLogEntry[]> {
+    const logs = await ctx
+        .selectFrom("scrobblerSpotifyLog")
+        .where("userId", "=", user.id)
+        .where("startedActivity", ">", Temporal.Now.instant().subtract(duration).toString())
+        .selectAll()
+        .execute();
+
+    const tracks = logs.map(log => log.spotifyId);
+
+    const trackMetadata = await ctx
+        .selectFrom("spotifyTracks")
+        .where("trackId", "in", tracks)
+        .selectAll()
+        .execute();
+
+    const artists = await ctx
+        .selectFrom("spotifyTrackToArtists")
+        .innerJoin("spotifyArtists", "spotifyTrackToArtists.artistId", "spotifyArtists.artistId")
+        .where("trackId", "in", tracks)
+        .selectAll()
+        .execute();
+
+    const trackMap = new Map(trackMetadata.map(track => [track.trackId, track]));
+    const artistMap = new Map(artists.map(artist => [artist.artistId, artist]));
+
+    const results: ScrobblerSpotifyLogEntry[] = [];
+
+    for (const log of logs) {
+        const trackMetadata = trackMap.get(log.spotifyId);
+        if (!trackMetadata) {
+            continue;
+        }
+        const trackArtists = artists
+            .filter(artist => artist.trackId === log.spotifyId)
+            .map(artist => artist.artistId);
+        const artistsMetadata = trackArtists
+            .map(artistId => artistMap.get(artistId))
+            .filter(artist => artist !== undefined);
+        if (artistsMetadata.length === 0) {
+            continue;
+        }
+
+        results.push({
+            userId: user.id,
+            startedActivity: log.startedActivity,
+            track: {
+                trackId: trackMetadata.trackId,
+                name: trackMetadata.name,
+                imageUrl: trackMetadata.imageUrl,
+            },
+            artists: artistsMetadata.map(artist => ({
+                artistId: artist.artistId,
+                name: artist.name,
+                imageUrl: artist.imageUrl,
+            })),
+        });
+    }
+
+    return results;
 }

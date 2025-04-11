@@ -28,6 +28,7 @@ export interface Database {
     emoteUse: EmoteUseTable;
     scrobblerRegistration: ScrobblerRegistrationTable;
     scrobblerSpotifyLog: ScrobblerSpotifyLogTable;
+    scrobblerSpotifyLogView: ScrobblerSpotifyLogView;
     spotifyArtists: SpotifyArtistTable;
     spotifyTracks: SpotifyTrackTable;
     spotifyTrackToArtists: SpotifyTrackToArtistTable;
@@ -333,4 +334,30 @@ export type SpotifyTrackToArtists = Selectable<SpotifyArtistTable>;
 export interface SpotifyTrackToArtistTable {
     trackId: string;
     artistId: string;
+}
+
+export type ScrobblerSpotifyLogEntry = {
+    userId: string;
+    startedActivity: string;
+    track: {
+        trackId: string;
+        name: string;
+        imageUrl: string | null;
+    };
+    artists: {
+        artistId: string;
+        name: string;
+        imageUrl: string | null;
+    }[];
+};
+
+export interface ScrobblerSpotifyLogView {
+    userId: string;
+    trackId: string;
+    trackName: string;
+    trackImageUrl: string | null;
+    artistId: string;
+    artistName: string;
+    artistImageUrl: string | null;
+    startedActivity: string;
 }
