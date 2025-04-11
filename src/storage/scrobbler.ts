@@ -112,7 +112,11 @@ export async function getRecentPlaybacks(
     const logs = await ctx
         .selectFrom("scrobblerSpotifyLog")
         .where("userId", "=", user.id)
-        .where("startedActivity", ">", Temporal.Now.instant().subtract(duration).toString())
+        .where(
+            "startedActivity",
+            ">",
+            Temporal.Now.zonedDateTimeISO().subtract(duration).toString(),
+        )
         .selectAll()
         .execute();
 

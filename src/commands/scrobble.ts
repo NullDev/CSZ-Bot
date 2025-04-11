@@ -9,9 +9,19 @@ import {
 import type { ApplicationCommand, AutocompleteCommand } from "@/commands/command.js";
 import type { BotContext } from "@/context.js";
 import assertNever from "@/utils/assertNever.js";
-import { setUserRegistration } from "@/service/scrobbler.js";
+import { getPlaybackStats, setUserRegistration } from "@/service/scrobbler.js";
+import { Temporal } from "@js-temporal/polyfill";
 
-type SubCommand = "aktivierung";
+type SubCommand = "aktivierung" | "stats";
+
+const intervals = {
+    last_week: Temporal.Duration.from({ weeks: 1 }),
+    last_month: Temporal.Duration.from({ months: 1 }),
+    last_3_months: Temporal.Duration.from({ months: 3 }),
+    last_6_months: Temporal.Duration.from({ months: 6 }),
+    last_year: Temporal.Duration.from({ years: 1 }),
+    all_time: Temporal.Duration.from({ years: 100 }),
+};
 
 export default class Scrobble implements ApplicationCommand {
     name = "scrobble";
@@ -27,6 +37,31 @@ export default class Scrobble implements ApplicationCommand {
                     new SlashCommandBooleanOption()
                         .setName("aktiv")
                         .setDescription("Soll ich dich aktivieren, bruder?"),
+                ),
+        )
+        .addSubcommand(
+            new SlashCommandSubcommandBuilder()
+                .setName("stats")
+                .setDescription("Zeigt deine Scrobble Stats an")
+                .addStringOption(option =>
+                    option
+                        .setName("zeitraum")
+                        .setDescription("Zeigt die Stats für einen bestimmten Zeitraum an")
+                        .setRequired(true)
+                        .addChoices(
+                            { name: "Letzte Woche", value: "last_week" },
+                            { name: "Letzter Monat", value: "last_month" },
+                            { name: "Letzte 3 Monate", value: "last_3_months" },
+                            { name: "Letztes Halbjahr", value: "last_6_months" },
+                            { name: "Letztes Jahr", value: "last_year" },
+                            { name: "Immer", value: "all_time" },
+                        ),
+                )
+                .addUserOption(option =>
+                    option
+                        .setName("user")
+                        .setDescription("Zeigt die Stats für einen anderen User an")
+                        .setRequired(false),
                 ),
         );
 
@@ -46,6 +81,27 @@ export default class Scrobble implements ApplicationCommand {
                     content: "Hab ik gemacht, dicker",
                     ephemeral: true,
                 });
+                return;
+            }
+            case "stats": {
+                const user = command.options.getUser("user", false) || command.user;
+                const timePeriod = command.options.getString("zeitraum", true);
+                const interval = intervals[timePeriod as keyof typeof intervals];
+                if (!interval) {
+                    await command.reply({
+                        content: "Das ist kein gültiger Zeitraum, bruder",
+                        ephemeral: true,
+                    });
+                    return;
+                }
+
+                const stats = await getPlaybackStats(user, interval);
+                console.log(stats);
+
+                await command.reply({
+                    content: "Ok",
+                });
+
                 return;
             }
             default:
