@@ -25,3 +25,18 @@ export function insertRegistration(
         .returningAll()
         .executeTakeFirstOrThrow();
 }
+
+export async function isAcivatedForScrobbling(user: User, ctx = db()): Promise<boolean> {
+    const userRegistration = await ctx
+        .selectFrom("scrobblerRegistration")
+        .where("userId", "=", user.id)
+        .limit(1)
+        .selectAll()
+        .executeTakeFirst();
+
+    if (!userRegistration) {
+        return false;
+    }
+
+    return userRegistration.activated;
+}
