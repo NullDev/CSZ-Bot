@@ -29,6 +29,7 @@ import { ehreReactionHandler } from "@/commands/ehre.js";
 import * as terminal from "@/utils/terminal.js";
 import * as guildRageQuit from "@/storage/guildRageQuit.js";
 import * as cronService from "@/service/cron.js";
+import { handlePresenceUpdate } from "./handler/presenceHandler.js";
 
 const env = process.env;
 
@@ -246,6 +247,10 @@ client.on("messageReactionRemove", async (event, user) => {
 client.on("voiceStateUpdate", (old, next) =>
     voiceStateService.checkVoiceUpdate(old, next, botContext),
 );
+
+client.on("presenceUpdate", async (oldPresence, newPresence) => {
+    await handlePresenceUpdate(botContext, oldPresence, newPresence);
+});
 
 function login() {
     return new Promise<Client<true>>(resolve => {
