@@ -1,5 +1,5 @@
 import type { BotContext } from "@/context.js";
-import { handleSpotifyAcitivityUpdate, type SpotifyActivity } from "@/service/scrobbler.js";
+import { handleSpotifyActivityUpdate, type SpotifyActivity } from "@/service/scrobbler.js";
 import { isActivatedForScrobbling } from "@/storage/scrobbler.js";
 import { type Activity, User, Utils, type Presence } from "discord.js";
 
@@ -15,7 +15,7 @@ export async function handlePresenceUpdate(
     }
 
     if (newSpotifyActivity) {
-        await handleSpotifyAcitivityUpdate(context, user, newSpotifyActivity);
+        await handleSpotifyActivityUpdate(context, user, newSpotifyActivity);
     }
 }
 

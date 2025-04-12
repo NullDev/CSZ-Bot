@@ -47,7 +47,7 @@ export async function setUserRegistration(user: User, activated: boolean) {
     await insertRegistration(user, activated);
 }
 
-export async function handleSpotifyAcitivityUpdate(
+export async function handleSpotifyActivityUpdate(
     context: BotContext,
     user: User,
     newSpotifyActivity: SpotifyActivity,
