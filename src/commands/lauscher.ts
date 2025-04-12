@@ -90,12 +90,51 @@ function buildTrackToplistEmbed(user: User, tracks: TrackStat[]): APIEmbed {
 }
 
 async function drawTrackToplistCanvas(user: User, tracks: TrackStat[]): Promise<Canvas> {
-    const canvas = createCanvas(1024, 768);
+    const canvas = createCanvas(1024, 1024);
     const ctx = canvas.getContext("2d");
 
-    const background = await fs.readFile("assets/lauscher/bg.png");
-    const backgroundImage = await loadImage(background);
-    ctx.drawImage(backgroundImage, 0, 0);
+    // Black background
+    ctx.fillStyle = "#000000";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "#FFFFFF";
+
+    //const background = await fs.readFile("assets/lauscher/bg.png");
+    //const backgroundImage = await loadImage(background);
+    //ctx.drawImage(backgroundImage, 0, 0);
+
+    ctx.font = "30px Arial";
+    for (let i = 0; i < 10; i++) {
+        const track = tracks[i];
+        if (!track) {
+            ctx.fillText(`${i + 1}. nicht vorhanden`, 20, i * 50);
+            continue;
+        }
+
+        const artists = track.artists.map(a => a.name).join(", ");
+        const artistStr = truncateToLength(artists, 100);
+        const trackStr = truncateToLength(track.name, 100);
+        const countStr = `${track.count}x gehört`;
+        const place = `${i + 1}.`;
+        ctx.fillText(place, 20, 55 + i * 100);
+        ctx.fillText(artistStr, 160, 30 + i * 100);
+        ctx.fillText(trackStr, 160, 80 + i * 100);
+        ctx.drawImage(await loadImage(track.imageUrl ?? ""), 80, 15 + i * 100, 64, 64);
+    }
+
+    // ctx.strokeStyle = "#FFD700";
+    // ctx.font = "30px Arial";
+    // ctx.lineWidth = 10;
+    // ctx.fillStyle = "#000000";
+    // ctx.strokeRect(10, 10, canvas.width - 20, 100);
+    // ctx.fillText("Top Spuren", 20, 50);
+
+    // 2.
+
+    // 3.
+
+    // 4.
+
+    // 5.
 
     return canvas;
 }
