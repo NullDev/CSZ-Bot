@@ -7,14 +7,20 @@ import {
     Embed,
     EmbedBuilder,
     type APIEmbed,
+    User,
 } from "discord.js";
 
 import type { ApplicationCommand, AutocompleteCommand } from "@/commands/command.js";
 import type { BotContext } from "@/context.js";
 import assertNever from "@/utils/assertNever.js";
-import { getPlaybackStats, setUserRegistration } from "@/service/lauscher.js";
+import {
+    ArtistStat,
+    getPlaybackStats,
+    setUserRegistration,
+    TrackStat,
+} from "@/service/lauscher.js";
 import { Temporal } from "@js-temporal/polyfill";
-import { de } from "chrono-node";
+import { truncateToLength } from "@/utils/stringUtils.js";
 
 type SubCommand = "aktivierung" | "stats";
 
@@ -32,21 +38,48 @@ type ToplistEntry = {
     count: number;
 };
 
-function buildToplistEmbed(title: string, description: string, content: ToplistEntry[]): APIEmbed {
+function buildArtistToplistEmbed(user: User, content: ArtistStat[]): APIEmbed {
     const embed: APIEmbed = {
-        title,
-        description,
+        title: `Top Künstler von ${user.username}`,
+        description: "Hier sind deine Top Künstler",
         color: 0x00b0f4,
     };
 
     const fields = content
-        .slice(0, 10)
         .sort((a, b) => b.count - a.count)
+        .slice(0, 10)
         .map((e, idx) => ({
-            name: `${idx + 1}. ${e.name} (${e.count}x gehört)`,
+            name: `${idx + 1}. ${truncateToLength(e.name, 200)} (${e.count}x gehört)`,
             value: "",
             inline: false,
         }));
+    embed.fields = fields;
+
+    return embed;
+}
+
+function buildTrackToplistEmbed(user: User, tracks: TrackStat[]): APIEmbed {
+    const embed: APIEmbed = {
+        title: `Top Spuren von ${user.username}`,
+        description: "Hier sind deine Top Spuren",
+        color: 0x00b0f4,
+    };
+
+    const topTracksWithArtists = tracks
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 10)
+        .map(track => ({
+            artists: track.artists.map(a => a.name).join(", "),
+            title: track.name,
+            count: `${track.count}x gehört`,
+            delimitator: " — ",
+        }));
+
+    const fields = topTracksWithArtists.map((track, idx) => ({
+        name: `${idx + 1}. ${truncateToLength(track.artists, 100)}${track.delimitator}${truncateToLength(track.title, 100)} (${track.count})`,
+        value: "",
+        inline: false,
+    }));
     embed.fields = fields;
 
     return embed;
@@ -134,16 +167,8 @@ export default class Lauscher implements ApplicationCommand {
                     return;
                 }
 
-                const titleEmbed = buildToplistEmbed(
-                    `Top Spuren von ${user.username}`,
-                    "Hier sind deine Top Spuren",
-                    stats.tracks,
-                );
-                const artistEmbed = buildToplistEmbed(
-                    `Top Künstler von ${user.username}`,
-                    "Hier sind deine Top Künstler",
-                    stats.artists,
-                );
+                const titleEmbed = buildTrackToplistEmbed(user, stats.tracks);
+                const artistEmbed = buildArtistToplistEmbed(user, stats.artists);
 
                 await command.reply({
                     embeds: [titleEmbed, artistEmbed],

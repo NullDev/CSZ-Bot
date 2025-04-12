@@ -16,3 +16,10 @@ export function countWords(str: string): number {
 export function substringAfter(str: string, s: string): string {
     return str.substring(str.indexOf(s) + s.length);
 }
+
+export function truncateToLength(str: string, length: number, ellipsis: string = "..."): string {
+    if (str.length > length) {
+        return str.substring(0, length - ellipsis.length) + ellipsis;
+    }
+    return str;
+}

@@ -22,7 +22,7 @@ export type SpotifyActivity = {
     createdTimestamp: number; // Unix timestamp
 } & Activity;
 
-type TrackStat = {
+export type TrackStat = {
     name: string;
     imageUrl: string | null;
     artists: {
@@ -32,7 +32,7 @@ type TrackStat = {
     count: number;
 };
 
-type ArtistStat = {
+export type ArtistStat = {
     name: string;
     imageUrl: string | null;
     count: number;
