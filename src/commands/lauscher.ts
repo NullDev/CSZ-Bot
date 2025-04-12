@@ -8,7 +8,10 @@ import {
     EmbedBuilder,
     type APIEmbed,
     type User,
+    GuildMember,
 } from "discord.js";
+
+import * as fs from "node:fs/promises";
 
 import type { ApplicationCommand, AutocompleteCommand } from "@/commands/command.js";
 import type { BotContext } from "@/context.js";
@@ -21,6 +24,7 @@ import {
 } from "@/service/lauscher.js";
 import { Temporal } from "@js-temporal/polyfill";
 import { truncateToLength } from "@/utils/stringUtils.js";
+import { type Canvas, createCanvas, loadImage } from "@napi-rs/canvas";
 
 type SubCommand = "aktivierung" | "stats";
 
@@ -83,6 +87,17 @@ function buildTrackToplistEmbed(user: User, tracks: TrackStat[]): APIEmbed {
     embed.fields = fields;
 
     return embed;
+}
+
+async function drawTrackToplistCanvas(user: User, tracks: TrackStat[]): Promise<Canvas> {
+    const canvas = createCanvas(1024, 768);
+    const ctx = canvas.getContext("2d");
+
+    const background = await fs.readFile("assets/lauscher/bg.png");
+    const backgroundImage = await loadImage(background);
+    ctx.drawImage(backgroundImage, 0, 0);
+
+    return canvas;
 }
 
 export default class Lauscher implements ApplicationCommand {
@@ -169,9 +184,21 @@ export default class Lauscher implements ApplicationCommand {
 
                 const titleEmbed = buildTrackToplistEmbed(user, stats.tracks);
                 const artistEmbed = buildArtistToplistEmbed(user, stats.artists);
+                const canvas = await drawTrackToplistCanvas(user, stats.tracks);
+                const attachment = canvas.toBuffer("image/png");
+                const image = new EmbedBuilder()
+                    .setTitle("Top Spuren")
+                    .setImage("attachment://top_tracks.png")
+                    .setColor(0x00b0f4);
 
                 await command.reply({
-                    embeds: [titleEmbed, artistEmbed],
+                    embeds: [titleEmbed, artistEmbed, image],
+                    files: [
+                        {
+                            name: "top_tracks.png",
+                            attachment,
+                        },
+                    ],
                 });
                 return;
             }
