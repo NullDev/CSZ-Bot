@@ -4,13 +4,13 @@ import {
     insertRegistration,
     insertSpotifyLog,
     insertTrackMetadata,
-    isAcivatedForScrobbling,
+    isActivatedForScrobbling,
     trackMetadataExists,
 } from "@/storage/scrobbler.js";
 import { Temporal } from "@js-temporal/polyfill";
 import { type Activity, GuildMember, type User } from "discord.js";
 
-export type SpotifyActitiy = {
+export type SpotifyActivity = {
     name: "Spotify";
     details: string; // Title
     state: string; // Artist
@@ -50,9 +50,9 @@ export async function setUserRegistration(user: User, activated: boolean) {
 export async function handleSpotifyAcitivityUpdate(
     context: BotContext,
     user: User,
-    newSpotifyActivity: SpotifyActitiy,
+    newSpotifyActivity: SpotifyActivity,
 ) {
-    const active = isAcivatedForScrobbling(user);
+    const active = isActivatedForScrobbling(user);
     if (!active) {
         return;
     }
@@ -60,7 +60,7 @@ export async function handleSpotifyAcitivityUpdate(
     handleSpotifyAcitivity(context, user, newSpotifyActivity);
 }
 
-async function handleSpotifyAcitivity(context: BotContext, user: User, activity: SpotifyActitiy) {
+async function handleSpotifyAcitivity(context: BotContext, user: User, activity: SpotifyActivity) {
     await fetchTrackMetadata(context, activity.syncId);
     await insertSpotifyLog(
         user,

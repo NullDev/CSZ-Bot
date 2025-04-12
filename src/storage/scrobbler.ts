@@ -25,7 +25,7 @@ export function insertRegistration(
         .executeTakeFirstOrThrow();
 }
 
-export async function isAcivatedForScrobbling(user: User, ctx = db()): Promise<boolean> {
+export async function isActivatedForScrobbling(user: User, ctx = db()): Promise<boolean> {
     const userRegistration = await ctx
         .selectFrom("scrobblerRegistration")
         .where("userId", "=", user.id)
