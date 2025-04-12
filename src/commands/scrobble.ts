@@ -134,7 +134,7 @@ export default class Scrobble implements ApplicationCommand {
                     return;
                 }
 
-                const titleEmebbed = buildToplistEmbed(
+                const titleEmbed = buildToplistEmbed(
                     `Top Spuren von ${user.username}`,
                     "Hier sind deine Top Spuren",
                     stats.tracks,
