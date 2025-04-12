@@ -3,6 +3,8 @@ import type { ColumnType, Generated, GeneratedAlways, Insertable, Selectable } f
 
 import type { Radius } from "@/commands/penis.js";
 
+export type Date = ColumnType<string, string, string>; // TODO: Date is not supported by DB Driver
+
 export interface Database {
     birthdays: BirthdayTable;
     stempels: StempelTable;
@@ -24,6 +26,12 @@ export interface Database {
     lootAttribute: LootAttributeTable;
     emote: EmoteTable;
     emoteUse: EmoteUseTable;
+    lauscherRegistration: LauscherRegistrationTable;
+    lauscherSpotifyLog: LauscherSpotifyLogTable;
+    lauscherSpotifyLogView: LauscherSpotifyLogView;
+    spotifyArtists: SpotifyArtistTable;
+    spotifyTracks: SpotifyTrackTable;
+    spotifyTrackToArtists: SpotifyTrackToArtistTable;
 }
 
 export type OneBasedMonth = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
@@ -286,4 +294,70 @@ export interface EmoteUseTable extends AuditedTable {
     channelId: ColumnType<Snowflake, Snowflake, never>;
     emoteId: ColumnType<number, number, never>;
     isReaction: boolean;
+}
+
+export type LauscherRegistration = Selectable<LauscherRegistrationTable>;
+
+export interface LauscherRegistrationTable extends AuditedTable {
+    id: GeneratedAlways<number>;
+    userId: Snowflake;
+    activated: boolean;
+}
+
+export type LauscherSpotifyLog = Selectable<LauscherSpotifyLogTable>;
+
+export interface LauscherSpotifyLogTable extends AuditedTable {
+    id: GeneratedAlways<number>;
+    userId: Snowflake;
+    spotifyId: string;
+    startedActivity: Date;
+}
+
+export type SpotifyTrack = Selectable<SpotifyTrackTable>;
+
+export interface SpotifyTrackTable {
+    trackId: string;
+    name: string;
+    imageUrl: string;
+}
+
+export type SpotifyArtist = Selectable<SpotifyArtistTable>;
+
+export interface SpotifyArtistTable {
+    artistId: string;
+    name: string;
+    imageUrl: string;
+}
+
+export type SpotifyTrackToArtists = Selectable<SpotifyTrackToArtistTable>;
+
+export interface SpotifyTrackToArtistTable {
+    trackId: string;
+    artistId: string;
+}
+
+export type LauscherSpotifyLogEntry = {
+    userId: string;
+    startedActivity: string;
+    track: {
+        trackId: string;
+        name: string;
+        imageUrl: string | null;
+    };
+    artists: {
+        artistId: string;
+        name: string;
+        imageUrl: string | null;
+    }[];
+};
+
+export interface LauscherSpotifyLogView {
+    userId: string;
+    trackId: string;
+    trackName: string;
+    trackImageUrl: string | null;
+    artistId: string;
+    artistName: string;
+    artistImageUrl: string | null;
+    startedActivity: string;
 }

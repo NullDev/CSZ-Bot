@@ -58,6 +58,11 @@ export interface Config {
         tracesSampleRate?: number;
     };
 
+    spotify?: {
+        clientId?: string;
+        clientSecret?: string;
+    };
+
     activity: {
         type: ActivityType;
         name: string;
