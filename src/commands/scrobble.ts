@@ -146,7 +146,7 @@ export default class Scrobble implements ApplicationCommand {
                 );
 
                 await command.reply({
-                    embeds: [titleEmebbed, artistEmbed],
+                    embeds: [titleEmbed, artistEmbed],
                 });
                 return;
             }
