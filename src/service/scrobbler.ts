@@ -32,7 +32,7 @@ type TrackStat = {
     count: number;
 };
 
-type AritstStat = {
+type ArtistStat = {
     name: string;
     imageUrl: string | null;
     count: number;
@@ -40,7 +40,7 @@ type AritstStat = {
 
 export type PlaybackStats = {
     tracks: TrackStat[];
-    artists: AritstStat[];
+    artists: ArtistStat[];
 };
 
 export async function setUserRegistration(user: User, activated: boolean) {
@@ -100,7 +100,7 @@ export async function getPlaybackStats(
 ): Promise<PlaybackStats> {
     const playbacks = await getRecentPlaybacks(user, duration);
     const tracks = new Map<string, TrackStat>();
-    const artists = new Map<string, AritstStat>();
+    const artists = new Map<string, ArtistStat>();
 
     for (const playback of playbacks) {
         if (!tracks.has(playback.track.trackId)) {
