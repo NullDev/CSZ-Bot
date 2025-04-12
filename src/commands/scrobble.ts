@@ -4,6 +4,9 @@ import {
     SlashCommandBuilder,
     SlashCommandSubcommandBuilder,
     SlashCommandBooleanOption,
+    Embed,
+    EmbedBuilder,
+    type APIEmbed,
 } from "discord.js";
 
 import type { ApplicationCommand, AutocompleteCommand } from "@/commands/command.js";
@@ -11,6 +14,7 @@ import type { BotContext } from "@/context.js";
 import assertNever from "@/utils/assertNever.js";
 import { getPlaybackStats, setUserRegistration } from "@/service/scrobbler.js";
 import { Temporal } from "@js-temporal/polyfill";
+import { de } from "chrono-node";
 
 type SubCommand = "aktivierung" | "stats";
 
@@ -22,6 +26,31 @@ const intervals = {
     last_year: Temporal.Duration.from({ years: 1 }),
     all_time: Temporal.Duration.from({ years: 100 }),
 };
+
+type ToplistEntry = {
+    name: string;
+    count: number;
+};
+
+function buildToplistEmbed(title: string, description: string, content: ToplistEntry[]): APIEmbed {
+    const embed: APIEmbed = {
+        title,
+        description,
+        color: 0x00ff00,
+    };
+
+    const fields = content
+        .slice(0, 10)
+        .sort((a, b) => b.count - a.count)
+        .map((e, idx) => ({
+            name: `${idx + 1}. ${e.name} (${e.count}x gehört)`,
+            value: "",
+            inline: false,
+        }));
+    embed.fields = fields;
+
+    return embed;
+}
 
 export default class Scrobble implements ApplicationCommand {
     name = "scrobble";
@@ -96,12 +125,29 @@ export default class Scrobble implements ApplicationCommand {
                 }
 
                 const stats = await getPlaybackStats(user, interval);
-                console.log(stats);
+
+                if (!stats || !stats?.tracks || stats.tracks.length === 0) {
+                    await command.reply({
+                        content: "Konnte keine Stats finden, bruder",
+                        ephemeral: true,
+                    });
+                    return;
+                }
+
+                const titleEmebbed = buildToplistEmbed(
+                    `Top Spuren von ${user.username}`,
+                    "Hier sind deine Top Spuren",
+                    stats.tracks,
+                );
+                const artistEmbed = buildToplistEmbed(
+                    `Top Künstler von ${user.username}`,
+                    "Hier sind deine Top Künstler",
+                    stats.artists,
+                );
 
                 await command.reply({
-                    content: "Ok",
+                    embeds: [titleEmebbed, artistEmbed],
                 });
-
                 return;
             }
             default:
