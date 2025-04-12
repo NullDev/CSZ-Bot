@@ -7,17 +7,17 @@ import {
     Embed,
     EmbedBuilder,
     type APIEmbed,
-    User,
+    type User,
 } from "discord.js";
 
 import type { ApplicationCommand, AutocompleteCommand } from "@/commands/command.js";
 import type { BotContext } from "@/context.js";
 import assertNever from "@/utils/assertNever.js";
 import {
-    ArtistStat,
+    type ArtistStat,
     getPlaybackStats,
     setUserRegistration,
-    TrackStat,
+    type TrackStat,
 } from "@/service/lauscher.js";
 import { Temporal } from "@js-temporal/polyfill";
 import { truncateToLength } from "@/utils/stringUtils.js";
