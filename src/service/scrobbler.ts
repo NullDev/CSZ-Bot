@@ -57,10 +57,10 @@ export async function handleSpotifyActivityUpdate(
         return;
     }
 
-    handleSpotifyAcitivity(context, user, newSpotifyActivity);
+    handleSpotifyActivity(context, user, newSpotifyActivity);
 }
 
-async function handleSpotifyAcitivity(context: BotContext, user: User, activity: SpotifyActivity) {
+async function handleSpotifyActivity(context: BotContext, user: User, activity: SpotifyActivity) {
     await fetchTrackMetadata(context, activity.syncId);
     await insertSpotifyLog(
         user,
