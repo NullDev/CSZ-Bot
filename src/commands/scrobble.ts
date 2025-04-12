@@ -36,7 +36,7 @@ function buildToplistEmbed(title: string, description: string, content: ToplistE
     const embed: APIEmbed = {
         title,
         description,
-        color: 0x00ff00,
+        color: 0x00b0f4,
     };
 
     const fields = content
