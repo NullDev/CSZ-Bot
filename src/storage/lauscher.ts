@@ -12,7 +12,7 @@ export function insertRegistration(
     activated: boolean,
     ctx = db(),
 ): Promise<LauscherRegistration> {
-    log.debug(`Saving Scrobbler registration for user ${user.id}`);
+    log.debug(`Saving Lauscher registration for user ${user.id}`);
 
     return ctx
         .insertInto("lauscherRegistration")

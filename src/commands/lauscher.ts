@@ -72,11 +72,11 @@ function buildTrackToplistEmbed(user: User, tracks: TrackStat[]): APIEmbed {
             artists: track.artists.map(a => a.name).join(", "),
             title: track.name,
             count: `${track.count}x gehört`,
-            delimitator: " — ",
+            separator: " — ",
         }));
 
     const fields = topTracksWithArtists.map((track, idx) => ({
-        name: `${idx + 1}. ${truncateToLength(track.artists, 100)}${track.delimitator}${truncateToLength(track.title, 100)} (${track.count})`,
+        name: `${idx + 1}. ${truncateToLength(track.artists, 100)}${track.separator}${truncateToLength(track.title, 100)} (${track.count})`,
         value: "",
         inline: false,
     }));
