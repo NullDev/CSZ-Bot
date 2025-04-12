@@ -1,7 +1,7 @@
 import { Temporal } from "@js-temporal/polyfill"; // TODO: Remove once bun ships temporal
 import type { User } from "discord.js";
 
-import type { ScrobblerRegistration, ScrobblerSpotifyLogEntry } from "@/storage/db/model.js";
+import type { LauscherRegistration, LauscherSpotifyLogEntry } from "@/storage/db/model.js";
 
 import db from "@db";
 import log from "@log";
@@ -11,11 +11,11 @@ export function insertRegistration(
     user: User,
     activated: boolean,
     ctx = db(),
-): Promise<ScrobblerRegistration> {
+): Promise<LauscherRegistration> {
     log.debug(`Saving Scrobbler registration for user ${user.id}`);
 
     return ctx
-        .insertInto("scrobblerRegistration")
+        .insertInto("lauscherRegistration")
         .values({
             userId: user.id,
             activated,
@@ -27,7 +27,7 @@ export function insertRegistration(
 
 export async function isActivatedForScrobbling(user: User, ctx = db()): Promise<boolean> {
     const userRegistration = await ctx
-        .selectFrom("scrobblerRegistration")
+        .selectFrom("lauscherRegistration")
         .where("userId", "=", user.id)
         .limit(1)
         .selectAll()
@@ -47,7 +47,7 @@ export async function insertSpotifyLog(
     ctx = db(),
 ) {
     await ctx
-        .insertInto("scrobblerSpotifyLog")
+        .insertInto("lauscherSpotifyLog")
         .values({
             userId: user.id,
             spotifyId,
@@ -108,9 +108,9 @@ export async function getRecentPlaybacks(
     user: User,
     duration: Temporal.Duration,
     ctx = db(),
-): Promise<ScrobblerSpotifyLogEntry[]> {
+): Promise<LauscherSpotifyLogEntry[]> {
     const logs = await ctx
-        .selectFrom("scrobblerSpotifyLog")
+        .selectFrom("lauscherSpotifyLog")
         .where("userId", "=", user.id)
         .where(
             "startedActivity",
@@ -138,7 +138,7 @@ export async function getRecentPlaybacks(
     const trackMap = new Map(trackMetadata.map(track => [track.trackId, track]));
     const artistMap = new Map(artists.map(artist => [artist.artistId, artist]));
 
-    const results: ScrobblerSpotifyLogEntry[] = [];
+    const results: LauscherSpotifyLogEntry[] = [];
 
     for (const log of logs) {
         const trackMetadata = trackMap.get(log.spotifyId);

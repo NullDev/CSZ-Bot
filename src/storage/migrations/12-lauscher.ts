@@ -2,7 +2,7 @@ import { sql, type Kysely } from "kysely";
 
 export async function up(db: Kysely<any>) {
     await db.schema
-        .createTable("scrobblerRegistration")
+        .createTable("lauscherRegistration")
         .addColumn("id", "integer", c => c.primaryKey().autoIncrement())
         .addColumn("createdAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
         .addColumn("updatedAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
@@ -11,8 +11,8 @@ export async function up(db: Kysely<any>) {
         .addUniqueConstraint("userId_unique", ["userId"])
         .execute();
     await db.schema
-        .createIndex("scrobblerRegistration_userId_index")
-        .on("scrobblerRegistration")
+        .createIndex("lauscherRegistration_userId_index")
+        .on("lauscherRegistration")
         .column("userId")
         .execute();
 
@@ -53,7 +53,7 @@ export async function up(db: Kysely<any>) {
         .execute();
 
     await db.schema
-        .createTable("scrobblerSpotifyLog")
+        .createTable("lauscherSpotifyLog")
         .addColumn("id", "integer", c => c.primaryKey().autoIncrement())
         .addColumn("createdAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
         .addColumn("updatedAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
@@ -63,20 +63,20 @@ export async function up(db: Kysely<any>) {
         .addUniqueConstraint("userId_startedActivity_unique", ["userId", "startedActivity"])
         .execute();
     await db.schema
-        .createIndex("scrobblerSpotifyLog_userId_index")
-        .on("scrobblerSpotifyLog")
+        .createIndex("lauscherSpotifyLog_userId_index")
+        .on("lauscherSpotifyLog")
         .column("userId")
         .execute();
 
     await db.schema
-        .createView("scrobblerSpotifyLogView")
+        .createView("lauscherSpotifyLogView")
         .as(
             db
-                .selectFrom("scrobblerSpotifyLog")
+                .selectFrom("lauscherSpotifyLog")
                 .innerJoin(
                     "spotifyTracks as track",
                     "track.trackId",
-                    "scrobblerSpotifyLog.spotifyId",
+                    "lauscherSpotifyLog.spotifyId",
                 )
                 .innerJoin(
                     "spotifyTrackToArtists as artistRel",
@@ -85,23 +85,23 @@ export async function up(db: Kysely<any>) {
                 )
                 .innerJoin("spotifyArtists as artist", "artistRel.artistId", "artist.artistId")
                 .select([
-                    "scrobblerSpotifyLog.userId as userId",
+                    "lauscherSpotifyLog.userId as userId",
                     "track.trackId as trackId",
                     "track.name as trackName",
                     "track.imageUrl as trackImageUrl",
                     "artist.artistId as artistId",
                     "artist.name as artistName",
                     "artist.imageUrl as artistImageUrl",
-                    "scrobblerSpotifyLog.startedActivity as startedActivity",
+                    "lauscherSpotifyLog.startedActivity as startedActivity",
                 ]),
         )
         .execute();
 }
 
 export async function down(db: Kysely<any>) {
-    await db.schema.dropView("scrobblerSpotifyLogView").execute();
-    await db.schema.dropTable("scrobblerSpotifyLog").execute();
+    await db.schema.dropView("lauscherSpotifyLogView").execute();
+    await db.schema.dropTable("lauscherSpotifyLog").execute();
     await db.schema.dropTable("spotifyTrackToArtists").execute();
     await db.schema.dropTable("spotifyTracks").execute();
-    await db.schema.dropTable("scrobblerRegistration").execute();
+    await db.schema.dropTable("lauscherRegistration").execute();
 }

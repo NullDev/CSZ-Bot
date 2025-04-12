@@ -6,7 +6,7 @@ import {
     insertTrackMetadata,
     isActivatedForScrobbling,
     trackMetadataExists,
-} from "@/storage/scrobbler.js";
+} from "@/storage/lauscher.js";
 import { Temporal } from "@js-temporal/polyfill";
 import { type Activity, GuildMember, type User } from "discord.js";
 

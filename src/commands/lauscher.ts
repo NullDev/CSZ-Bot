@@ -12,7 +12,7 @@ import {
 import type { ApplicationCommand, AutocompleteCommand } from "@/commands/command.js";
 import type { BotContext } from "@/context.js";
 import assertNever from "@/utils/assertNever.js";
-import { getPlaybackStats, setUserRegistration } from "@/service/scrobbler.js";
+import { getPlaybackStats, setUserRegistration } from "@/service/lauscher.js";
 import { Temporal } from "@js-temporal/polyfill";
 import { de } from "chrono-node";
 
@@ -52,8 +52,8 @@ function buildToplistEmbed(title: string, description: string, content: ToplistE
     return embed;
 }
 
-export default class Scrobble implements ApplicationCommand {
-    name = "scrobble";
+export default class Lauscher implements ApplicationCommand {
+    name = "lauscher";
     description = "Hört dir zu, wie du Musik hörst";
     applicationCommand = new SlashCommandBuilder()
         .setName(this.name)
@@ -61,7 +61,7 @@ export default class Scrobble implements ApplicationCommand {
         .addSubcommand(
             new SlashCommandSubcommandBuilder()
                 .setName("aktivierung")
-                .setDescription("Aktiviert oder deaktiviert dich für's scrobblen")
+                .setDescription("Aktiviert oder deaktiviert dich für's lauschen")
                 .addBooleanOption(
                     new SlashCommandBooleanOption()
                         .setName("aktiv")
@@ -71,7 +71,7 @@ export default class Scrobble implements ApplicationCommand {
         .addSubcommand(
             new SlashCommandSubcommandBuilder()
                 .setName("stats")
-                .setDescription("Zeigt deine Scrobble Stats an")
+                .setDescription("Zeigt deine Lausch-Statistiken an")
                 .addStringOption(option =>
                     option
                         .setName("zeitraum")

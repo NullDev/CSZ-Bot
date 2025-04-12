@@ -26,9 +26,9 @@ export interface Database {
     lootAttribute: LootAttributeTable;
     emote: EmoteTable;
     emoteUse: EmoteUseTable;
-    scrobblerRegistration: ScrobblerRegistrationTable;
-    scrobblerSpotifyLog: ScrobblerSpotifyLogTable;
-    scrobblerSpotifyLogView: ScrobblerSpotifyLogView;
+    lauscherRegistration: LauscherRegistrationTable;
+    lauscherSpotifyLog: LauscherSpotifyLogTable;
+    lauscherSpotifyLogView: LauscherSpotifyLogView;
     spotifyArtists: SpotifyArtistTable;
     spotifyTracks: SpotifyTrackTable;
     spotifyTrackToArtists: SpotifyTrackToArtistTable;
@@ -296,17 +296,17 @@ export interface EmoteUseTable extends AuditedTable {
     isReaction: boolean;
 }
 
-export type ScrobblerRegistration = Selectable<ScrobblerRegistrationTable>;
+export type LauscherRegistration = Selectable<LauscherRegistrationTable>;
 
-export interface ScrobblerRegistrationTable extends AuditedTable {
+export interface LauscherRegistrationTable extends AuditedTable {
     id: GeneratedAlways<number>;
     userId: Snowflake;
     activated: boolean;
 }
 
-export type ScrobblerSpotifyLog = Selectable<ScrobblerSpotifyLogTable>;
+export type LauscherSpotifyLog = Selectable<LauscherSpotifyLogTable>;
 
-export interface ScrobblerSpotifyLogTable extends AuditedTable {
+export interface LauscherSpotifyLogTable extends AuditedTable {
     id: GeneratedAlways<number>;
     userId: Snowflake;
     spotifyId: string;
@@ -336,7 +336,7 @@ export interface SpotifyTrackToArtistTable {
     artistId: string;
 }
 
-export type ScrobblerSpotifyLogEntry = {
+export type LauscherSpotifyLogEntry = {
     userId: string;
     startedActivity: string;
     track: {
@@ -351,7 +351,7 @@ export type ScrobblerSpotifyLogEntry = {
     }[];
 };
 
-export interface ScrobblerSpotifyLogView {
+export interface LauscherSpotifyLogView {
     userId: string;
     trackId: string;
     trackName: string;
