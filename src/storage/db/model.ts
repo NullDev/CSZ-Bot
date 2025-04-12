@@ -329,7 +329,7 @@ export interface SpotifyArtistTable {
     imageUrl: string;
 }
 
-export type SpotifyTrackToArtists = Selectable<SpotifyArtistTable>;
+export type SpotifyTrackToArtists = Selectable<SpotifyTrackToArtistTable>;
 
 export interface SpotifyTrackToArtistTable {
     trackId: string;
