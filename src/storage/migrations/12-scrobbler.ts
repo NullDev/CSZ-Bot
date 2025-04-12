@@ -103,6 +103,5 @@ export async function down(db: Kysely<any>) {
     await db.schema.dropTable("scrobblerSpotifyLog").execute();
     await db.schema.dropTable("spotifyTrackToArtists").execute();
     await db.schema.dropTable("spotifyTracks").execute();
-    await db.schema.dropTable("scrobblerSpotifyLog").execute();
     await db.schema.dropTable("scrobblerRegistration").execute();
 }
