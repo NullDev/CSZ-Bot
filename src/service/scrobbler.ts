@@ -52,7 +52,7 @@ export async function handleSpotifyAcitivityUpdate(
     user: User,
     newSpotifyActivity: SpotifyActivity,
 ) {
-    const active = isActivatedForScrobbling(user);
+    const active = await isActivatedForScrobbling(user);
     if (!active) {
         return;
     }
