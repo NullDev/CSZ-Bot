@@ -304,7 +304,7 @@ export interface ScrobblerRegistrationTable extends AuditedTable {
     activated: boolean;
 }
 
-export type ScrobblerSpotifyLog = Selectable<SpotifyTrackTable>;
+export type ScrobblerSpotifyLog = Selectable<ScrobblerSpotifyLogTable>;
 
 export interface ScrobblerSpotifyLogTable extends AuditedTable {
     id: GeneratedAlways<number>;
