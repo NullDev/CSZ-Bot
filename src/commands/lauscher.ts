@@ -81,7 +81,8 @@ async function drawTrackToplistCanvas(user: User, tracks: TrackStat[]): Promise<
         ctx.fillText(trackStr, 160, 80 + i * 100);
         ctx.textAlign = "right";
         ctx.fillText(`${track.count}x`, 1000, 55 + i * 100);
-        ctx.drawImage(await loadImage(track.imageUrl ?? ""), 80, 15 + i * 100, 64, 64);
+        const imageUrl = track.imageUrl && track.imageUrl.trim() !== "" ? track.imageUrl : "assets/images/fallback.png";
+        ctx.drawImage(await loadImage(imageUrl), 80, 15 + i * 100, 64, 64);
     }
 
     return canvas;
