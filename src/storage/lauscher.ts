@@ -67,7 +67,12 @@ export async function insertTrackMetadata(track: Track, artists: Artist[], ctx =
             durationInMs: track.duration_ms,
             imageUrl: track.album.images[0]?.url ?? null,
         })
-        .onConflict(oc => oc.column("trackId").doUpdateSet({ durationInMs: track.duration_ms }))
+        .onConflict(oc =>
+            oc.column("trackId").doUpdateSet({
+                durationInMs: track.duration_ms,
+                imageUrl: track.album.images[0]?.url ?? null,
+            }),
+        )
         .executeTakeFirstOrThrow();
 
     await ctx
@@ -99,6 +104,7 @@ export async function trackMetadataExists(track: Track, ctx = db()): Promise<boo
         .selectFrom("spotifyTracks")
         .where("trackId", "=", track.id)
         .where("durationInMs", "=", track.duration_ms)
+        .where("imageUrl", "=", track.album.images[0]?.url ?? null)
         .limit(1)
         .selectAll()
         .executeTakeFirst();
