@@ -319,6 +319,7 @@ export interface SpotifyTrackTable {
     trackId: string;
     name: string;
     imageUrl: string;
+    durationInMs: number;
 }
 
 export type SpotifyArtist = Selectable<SpotifyArtistTable>;

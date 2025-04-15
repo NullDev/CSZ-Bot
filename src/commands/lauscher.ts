@@ -4,23 +4,21 @@ import {
     SlashCommandBuilder,
     SlashCommandSubcommandBuilder,
     SlashCommandBooleanOption,
-    Embed,
     EmbedBuilder,
-    type APIEmbed,
     type User,
+    ButtonBuilder,
+    ButtonStyle,
+    ActionRowBuilder,
 } from "discord.js";
 
 import type { ApplicationCommand, AutocompleteCommand } from "@/commands/command.js";
 import type { BotContext } from "@/context.js";
 import assertNever from "@/utils/assertNever.js";
-import {
-    type ArtistStat,
-    getPlaybackStats,
-    setUserRegistration,
-    type TrackStat,
-} from "@/service/lauscher.js";
+import { getPlaybackStats, setUserRegistration, type TrackStat } from "@/service/lauscher.js";
 import { Temporal } from "@js-temporal/polyfill";
 import { truncateToLength } from "@/utils/stringUtils.js";
+import { type Canvas, createCanvas, GlobalFonts, loadImage } from "@napi-rs/canvas";
+import { chunkArray } from "@/utils/arrayUtils.js";
 
 type SubCommand = "aktivierung" | "stats";
 
@@ -38,51 +36,69 @@ type ToplistEntry = {
     count: number;
 };
 
-function buildArtistToplistEmbed(user: User, content: ArtistStat[]): APIEmbed {
-    const embed: APIEmbed = {
-        title: `Top Künstler von ${user.username}`,
-        description: "Hier sind deine Top Künstler",
-        color: 0x00b0f4,
-    };
+GlobalFonts.registerFromPath("assets/fonts/OpenSans-VariableFont_wdth,wght.ttf", "Open Sans");
+GlobalFonts.registerFromPath("assets/fonts/AppleColorEmoji@2x.ttf", "Apple Emoji");
 
-    const fields = content
-        .sort((a, b) => b.count - a.count)
-        .slice(0, 10)
-        .map((e, idx) => ({
-            name: `${idx + 1}. ${truncateToLength(e.name, 200)} (${e.count}x gehört)`,
-            value: "",
-            inline: false,
-        }));
-    embed.fields = fields;
+async function drawTrackToplistCanvas(user: User, tracks: TrackStat[]): Promise<Canvas> {
+    const canvas = createCanvas(1024, 1024);
+    const ctx = canvas.getContext("2d");
 
-    return embed;
+    ctx.fillStyle = "#000000";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "#FFFFFF";
+
+    for (let i = 0; i < 10; i++) {
+        const track = tracks[i];
+        if (!track) {
+            ctx.fillText(`${i + 1}. nicht vorhanden`, 20, i * 50);
+            continue;
+        }
+
+        const artists = track.artists.map(a => a.name).join(", ");
+        const artistStr = truncateToLength(artists, 50);
+        const trackStr = truncateToLength(track.name, 50);
+        const placeSymbols: Record<number, string> = {
+            1: "🥇",
+            2: "🥈",
+            3: "🥉",
+        };
+
+        const placeSymbol = placeSymbols[i + 1];
+        if (placeSymbol) {
+            const size = 60 - i * 5;
+            ctx.font = `${size}px Apple Emoji`;
+            ctx.textAlign = "left";
+            ctx.fillText(placeSymbol, 5, 80 + i * 98);
+        } else {
+            ctx.font = "bold 30px Open Sans";
+            ctx.textAlign = "left";
+            ctx.fillText(`${i + 1}`, 20, 55 + i * 100);
+        }
+
+        ctx.font = "30px Open Sans";
+        ctx.textAlign = "left";
+        ctx.fillText(artistStr, 160, 30 + i * 100);
+        ctx.fillText(trackStr, 160, 80 + i * 100);
+        ctx.textAlign = "right";
+        ctx.fillText(`${track.count}x`, 1000, 55 + i * 100);
+        const imageUrl =
+            track.imageUrl && track.imageUrl.trim() !== ""
+                ? track.imageUrl
+                : "assets/images/fallback.png";
+        ctx.drawImage(await loadImage(imageUrl), 80, 15 + i * 100, 64, 64);
+    }
+
+    return canvas;
 }
 
-function buildTrackToplistEmbed(user: User, tracks: TrackStat[]): APIEmbed {
-    const embed: APIEmbed = {
-        title: `Top Spuren von ${user.username}`,
-        description: "Hier sind deine Top Spuren",
-        color: 0x00b0f4,
-    };
-
-    const topTracksWithArtists = tracks
-        .sort((a, b) => b.count - a.count)
-        .slice(0, 10)
-        .map(track => ({
-            artists: track.artists.map(a => a.name).join(", "),
-            title: track.name,
-            count: `${track.count}x gehört`,
-            separator: " — ",
-        }));
-
-    const fields = topTracksWithArtists.map((track, idx) => ({
-        name: `${idx + 1}. ${truncateToLength(track.artists, 100)}${track.separator}${truncateToLength(track.title, 100)} (${track.count})`,
-        value: "",
-        inline: false,
-    }));
-    embed.fields = fields;
-
-    return embed;
+function buildTrackToplistLinkButtons(tracks: TrackStat[]): ButtonBuilder[] {
+    return tracks.map((track, idx) => {
+        const button = new ButtonBuilder()
+            .setLabel(String(idx + 1))
+            .setStyle(ButtonStyle.Link)
+            .setURL(`https://open.spotify.com/track/${track.trackId}`);
+        return button;
+    });
 }
 
 export default class Lauscher implements ApplicationCommand {
@@ -167,11 +183,28 @@ export default class Lauscher implements ApplicationCommand {
                     return;
                 }
 
-                const titleEmbed = buildTrackToplistEmbed(user, stats.tracks);
-                const artistEmbed = buildArtistToplistEmbed(user, stats.artists);
+                const topTenTracks = stats.tracks.sort((a, b) => b.count - a.count).slice(0, 10);
+
+                const canvas = await drawTrackToplistCanvas(user, topTenTracks);
+                const attachment = canvas.toBuffer("image/png");
+                const image = new EmbedBuilder()
+                    .setTitle("Top Spuren")
+                    .setImage("attachment://top_tracks.png")
+                    .setColor(0x00b0f4);
+
+                const buttons = chunkArray(buildTrackToplistLinkButtons(topTenTracks), 5).map(
+                    buttons => new ActionRowBuilder<ButtonBuilder>().addComponents(buttons),
+                );
 
                 await command.reply({
-                    embeds: [titleEmbed, artistEmbed],
+                    embeds: [image],
+                    components: [...buttons],
+                    files: [
+                        {
+                            name: "top_tracks.png",
+                            attachment,
+                        },
+                    ],
                 });
                 return;
             }
