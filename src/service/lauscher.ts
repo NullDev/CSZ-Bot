@@ -9,7 +9,7 @@ import {
     mostRecentPlayback,
 } from "@/storage/lauscher.js";
 import { Temporal } from "@js-temporal/polyfill";
-import { type Activity, type User } from "discord.js";
+import type { Activity, User } from "discord.js";
 import log from "@log";
 
 export type SpotifyActivity = {
