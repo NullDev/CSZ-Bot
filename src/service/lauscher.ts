@@ -46,6 +46,11 @@ export type PlaybackStats = {
     artists: ArtistStat[];
 };
 
+// This is a map of user IDs to timeouts for the Spotify activity update handler
+// This is used to prevent multiple updates from being sent in quick succession
+// e.g. when a user skips a song or changes their activity
+const userUpdateTasks = new Map<string, NodeJS.Timeout>();
+
 export async function setUserRegistration(user: User, activated: boolean) {
     await insertRegistration(user, activated);
 }
@@ -60,7 +65,17 @@ export async function handleSpotifyActivityUpdate(
         return;
     }
 
-    handleSpotifyActivity(context, user, newSpotifyActivity);
+    if (userUpdateTasks.has(user.id)) {
+        // biome-ignore lint/style/noNonNullAssertion: It exists
+        clearTimeout(userUpdateTasks.get(user.id)!);
+    }
+
+    userUpdateTasks.set(
+        user.id,
+        setTimeout(async () => {
+            await handleSpotifyActivity(context, user, newSpotifyActivity);
+        }, 1000 * 15),
+    );
 }
 
 async function handleSpotifyActivity(context: BotContext, user: User, activity: SpotifyActivity) {
