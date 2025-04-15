@@ -24,6 +24,7 @@ export type SpotifyActivity = {
 
 export type TrackStat = {
     name: string;
+    trackId: string;
     imageUrl: string | null;
     artists: {
         name: string;
@@ -34,6 +35,7 @@ export type TrackStat = {
 
 export type ArtistStat = {
     name: string;
+    artistId: string;
     imageUrl: string | null;
     count: number;
 };
@@ -106,6 +108,7 @@ export async function getPlaybackStats(
         if (!tracks.has(playback.track.trackId)) {
             tracks.set(playback.track.trackId, {
                 name: playback.track.name,
+                trackId: playback.track.trackId,
                 imageUrl: playback.track.imageUrl,
                 artists: playback.artists.map(artist => ({
                     name: artist.name,
@@ -122,6 +125,7 @@ export async function getPlaybackStats(
             if (!artists.has(artist.artistId)) {
                 artists.set(artist.artistId, {
                     name: artist.name,
+                    artistId: artist.artistId,
                     imageUrl: artist.imageUrl,
                     count: 1,
                 });

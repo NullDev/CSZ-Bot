@@ -4,27 +4,21 @@ import {
     SlashCommandBuilder,
     SlashCommandSubcommandBuilder,
     SlashCommandBooleanOption,
-    Embed,
     EmbedBuilder,
-    type APIEmbed,
     type User,
-    GuildMember,
+    ButtonBuilder,
+    ButtonStyle,
+    ActionRowBuilder,
 } from "discord.js";
-
-import * as fs from "node:fs/promises";
 
 import type { ApplicationCommand, AutocompleteCommand } from "@/commands/command.js";
 import type { BotContext } from "@/context.js";
 import assertNever from "@/utils/assertNever.js";
-import {
-    type ArtistStat,
-    getPlaybackStats,
-    setUserRegistration,
-    type TrackStat,
-} from "@/service/lauscher.js";
+import { getPlaybackStats, setUserRegistration, type TrackStat } from "@/service/lauscher.js";
 import { Temporal } from "@js-temporal/polyfill";
 import { truncateToLength } from "@/utils/stringUtils.js";
 import { type Canvas, createCanvas, GlobalFonts, loadImage } from "@napi-rs/canvas";
+import { chunkArray } from "@/utils/arrayUtils.js";
 
 type SubCommand = "aktivierung" | "stats";
 
@@ -44,53 +38,6 @@ type ToplistEntry = {
 
 GlobalFonts.registerFromPath("assets/fonts/OpenSans-VariableFont_wdth,wght.ttf", "Open Sans");
 GlobalFonts.registerFromPath("assets/fonts/AppleColorEmoji@2x.ttf", "Apple Emoji");
-
-function buildArtistToplistEmbed(user: User, content: ArtistStat[]): APIEmbed {
-    const embed: APIEmbed = {
-        title: `Top Künstler von ${user.username}`,
-        description: "Hier sind deine Top Künstler",
-        color: 0x00b0f4,
-    };
-
-    const fields = content
-        .sort((a, b) => b.count - a.count)
-        .slice(0, 10)
-        .map((e, idx) => ({
-            name: `${idx + 1}. ${truncateToLength(e.name, 200)} (${e.count}x gehört)`,
-            value: "",
-            inline: false,
-        }));
-    embed.fields = fields;
-
-    return embed;
-}
-
-function buildTrackToplistEmbed(user: User, tracks: TrackStat[]): APIEmbed {
-    const embed: APIEmbed = {
-        title: `Top Spuren von ${user.username}`,
-        description: "Hier sind deine Top Spuren",
-        color: 0x00b0f4,
-    };
-
-    const topTracksWithArtists = tracks
-        .sort((a, b) => b.count - a.count)
-        .slice(0, 10)
-        .map(track => ({
-            artists: track.artists.map(a => a.name).join(", "),
-            title: track.name,
-            count: `${track.count}x gehört`,
-            separator: " — ",
-        }));
-
-    const fields = topTracksWithArtists.map((track, idx) => ({
-        name: `${idx + 1}. ${truncateToLength(track.artists, 100)}${track.separator}${truncateToLength(track.title, 100)} (${track.count})`,
-        value: "",
-        inline: false,
-    }));
-    embed.fields = fields;
-
-    return embed;
-}
 
 async function drawTrackToplistCanvas(user: User, tracks: TrackStat[]): Promise<Canvas> {
     const canvas = createCanvas(1024, 1024);
@@ -138,6 +85,16 @@ async function drawTrackToplistCanvas(user: User, tracks: TrackStat[]): Promise<
     }
 
     return canvas;
+}
+
+function buildTrackToplistLinkButtons(tracks: TrackStat[]): ButtonBuilder[] {
+    return tracks.map((track, idx) => {
+        const button = new ButtonBuilder()
+            .setLabel(String(idx + 1))
+            .setStyle(ButtonStyle.Link)
+            .setURL(`https://open.spotify.com/track/${track.trackId}`);
+        return button;
+    });
 }
 
 export default class Lauscher implements ApplicationCommand {
@@ -222,17 +179,22 @@ export default class Lauscher implements ApplicationCommand {
                     return;
                 }
 
-                const titleEmbed = buildTrackToplistEmbed(user, stats.tracks);
-                const artistEmbed = buildArtistToplistEmbed(user, stats.artists);
-                const canvas = await drawTrackToplistCanvas(user, stats.tracks);
+                const topTenTracks = stats.tracks.sort((a, b) => b.count - a.count).slice(0, 10);
+
+                const canvas = await drawTrackToplistCanvas(user, topTenTracks);
                 const attachment = canvas.toBuffer("image/png");
                 const image = new EmbedBuilder()
                     .setTitle("Top Spuren")
                     .setImage("attachment://top_tracks.png")
                     .setColor(0x00b0f4);
 
+                const buttons = chunkArray(buildTrackToplistLinkButtons(topTenTracks), 5).map(
+                    buttons => new ActionRowBuilder<ButtonBuilder>().addComponents(buttons),
+                );
+
                 await command.reply({
-                    embeds: [titleEmbed, artistEmbed, image],
+                    embeds: [image],
+                    components: [...buttons],
                     files: [
                         {
                             name: "top_tracks.png",
