@@ -5,10 +5,11 @@ import {
     insertSpotifyLog,
     insertTrackMetadata,
     isActivatedForScrobbling,
-    trackMetadataExists,
+    getTrackMetadata,
+    mostRecentPlayback,
 } from "@/storage/lauscher.js";
 import { Temporal } from "@js-temporal/polyfill";
-import { type Activity, GuildMember, type User } from "discord.js";
+import { type Activity, type User } from "discord.js";
 
 export type SpotifyActivity = {
     name: "Spotify";
@@ -63,7 +64,17 @@ export async function handleSpotifyActivityUpdate(
 }
 
 async function handleSpotifyActivity(context: BotContext, user: User, activity: SpotifyActivity) {
-    await fetchTrackMetadata(context, activity.syncId);
+    const metadata = await fetchTrackMetadata(context, activity.syncId);
+    if (!metadata) {
+        return;
+    }
+
+    const recent = await mostRecentPlayback(user);
+    // Prevent Double Scrobbling
+    if (recent && recent.trackId === metadata.trackId) {
+        return;
+    }
+
     await insertSpotifyLog(
         user,
         activity.syncId,
@@ -74,16 +85,18 @@ async function handleSpotifyActivity(context: BotContext, user: User, activity: 
 async function fetchTrackMetadata(context: BotContext, trackId: string) {
     const client = context.spotifyClient;
     if (!client) {
-        return;
+        return null;
     }
 
     const track = await context.spotifyClient?.tracks.get(trackId);
     if (!track) {
-        return;
+        return null;
     }
 
-    if (await trackMetadataExists(track)) {
-        return;
+    const existingMetadata = await getTrackMetadata(track);
+
+    if (existingMetadata) {
+        return existingMetadata;
     }
 
     // Fetch artists only if track is not already in the database
@@ -93,7 +106,7 @@ async function fetchTrackMetadata(context: BotContext, trackId: string) {
         )
     ).filter(a => a !== undefined);
 
-    await insertTrackMetadata(track, artists);
+    return insertTrackMetadata(track, artists);
 }
 
 export async function getPlaybackStats(

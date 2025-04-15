@@ -97,10 +97,12 @@ export async function insertTrackMetadata(track: Track, artists: Artist[], ctx =
         )
         .onConflict(oc => oc.columns(["artistId", "trackId"]).doNothing())
         .executeTakeFirstOrThrow();
+
+    return getTrackMetadata(track, ctx);
 }
 
-export async function trackMetadataExists(track: Track, ctx = db()): Promise<boolean> {
-    const trackMetadata = await ctx
+export async function getTrackMetadata(track: Track, ctx = db()) {
+    return ctx
         .selectFrom("spotifyTracks")
         .where("trackId", "=", track.id)
         .where("durationInMs", "=", track.duration_ms)
@@ -108,8 +110,26 @@ export async function trackMetadataExists(track: Track, ctx = db()): Promise<boo
         .limit(1)
         .selectAll()
         .executeTakeFirst();
+}
 
-    return !!trackMetadata;
+export async function mostRecentPlayback(user: User, ctx = db()) {
+    const log = await ctx
+        .selectFrom("lauscherSpotifyLog")
+        .where("userId", "=", user.id)
+        .orderBy("startedActivity", "desc")
+        .limit(1)
+        .selectAll()
+        .executeTakeFirst();
+
+    if (!log) {
+        return null;
+    }
+
+    return {
+        userId: user.id,
+        startedActivity: log.startedActivity,
+        trackId: log.spotifyId,
+    };
 }
 
 export async function getRecentPlaybacks(
