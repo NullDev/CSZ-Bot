@@ -59,46 +59,48 @@ export async function insertSpotifyLog(
 }
 
 export async function insertTrackMetadata(track: Track, artists: Artist[], ctx = db()) {
-    await ctx
-        .insertInto("spotifyTracks")
-        .values({
-            trackId: track.id,
-            name: track.name,
-            durationInMs: track.duration_ms,
-            imageUrl: track.album.images[0]?.url ?? null,
-        })
-        .onConflict(oc =>
-            oc.column("trackId").doUpdateSet({
+    await ctx.transaction().execute(async ctx => {
+        await ctx
+            .insertInto("spotifyTracks")
+            .values({
+                trackId: track.id,
+                name: track.name,
                 durationInMs: track.duration_ms,
                 imageUrl: track.album.images[0]?.url ?? null,
-            }),
-        )
-        .executeTakeFirstOrThrow();
+            })
+            .onConflict(oc =>
+                oc.column("trackId").doUpdateSet({
+                    durationInMs: track.duration_ms,
+                    imageUrl: track.album.images[0]?.url ?? null,
+                }),
+            )
+            .executeTakeFirstOrThrow();
 
-    await ctx
-        .insertInto("spotifyArtists")
-        .values(
-            artists.map(artist => ({
-                artistId: artist.id,
-                name: artist.name,
-                imageUrl: artist.images[0]?.url ?? null,
-            })),
-        )
-        .onConflict(oc => oc.column("artistId").doNothing())
-        .executeTakeFirstOrThrow();
+        await ctx
+            .insertInto("spotifyArtists")
+            .values(
+                artists.map(artist => ({
+                    artistId: artist.id,
+                    name: artist.name,
+                    imageUrl: artist.images[0]?.url ?? null,
+                })),
+            )
+            .onConflict(oc => oc.column("artistId").doNothing())
+            .executeTakeFirstOrThrow();
 
-    await ctx
-        .insertInto("spotifyTrackToArtists")
-        .values(
-            track.artists.map(artist => ({
-                artistId: artist.id,
-                trackId: track.id,
-            })),
-        )
-        .onConflict(oc => oc.columns(["artistId", "trackId"]).doNothing())
-        .executeTakeFirstOrThrow();
+        await ctx
+            .insertInto("spotifyTrackToArtists")
+            .values(
+                track.artists.map(artist => ({
+                    artistId: artist.id,
+                    trackId: track.id,
+                })),
+            )
+            .onConflict(oc => oc.columns(["artistId", "trackId"]).doNothing())
+            .executeTakeFirstOrThrow();
 
-    return getTrackMetadata(track, ctx);
+        return getTrackMetadata(track, ctx);
+    });
 }
 
 export async function getTrackMetadata(track: Track, ctx = db()) {
