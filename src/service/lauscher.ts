@@ -10,6 +10,7 @@ import {
 } from "@/storage/lauscher.js";
 import { Temporal } from "@js-temporal/polyfill";
 import { type Activity, type User } from "discord.js";
+import log from "@log";
 
 export type SpotifyActivity = {
     name: "Spotify";
@@ -79,6 +80,9 @@ export async function handleSpotifyActivityUpdate(
 }
 
 async function handleSpotifyActivity(context: BotContext, user: User, activity: SpotifyActivity) {
+    log.debug(
+        `Handling Spotify activity update for user ${user.username} (${user.id}) with spotify track ${activity.details} (${activity.syncId})`,
+    );
     const metadata = await fetchTrackMetadata(context, activity.syncId);
     if (!metadata) {
         return;
