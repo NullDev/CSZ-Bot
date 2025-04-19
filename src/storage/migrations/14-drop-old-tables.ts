@@ -1,4 +1,4 @@
-import { sql, type Kysely } from "kysely";
+import type { Kysely } from "kysely";
 
 export async function up(db: Kysely<any>): Promise<void> {
     await db.schema.dropTable("old_birthdays").execute();
