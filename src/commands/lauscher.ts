@@ -84,10 +84,12 @@ async function drawTrackToplistCanvas(user: User, tracks: TrackStat[]): Promise<
         ctx.font = "16px Open Sans";
         ctx.textAlign = "left";
         ctx.fillStyle = "#7f7f7f";
-        ctx.fillText(artistStr, 160, 30 + 15 + i * entrySize.height);
+        ctx.fillText(artistStr, 160, 35 + i * entrySize.height);
 
         ctx.font = "30px Open Sans";
-        ctx.fillText(trackStr, 160, 80 + i * entrySize.height);
+        ctx.fillStyle = "#ffffff";
+        ctx.fillText(trackStr, 160, 70 + i * entrySize.height);
+
         ctx.textAlign = "right";
         ctx.fillText(`${track.count}x`, 1000, 55 + i * entrySize.height);
 
