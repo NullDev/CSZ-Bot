@@ -249,7 +249,11 @@ client.on("voiceStateUpdate", (old, next) =>
 );
 
 client.on("presenceUpdate", async (oldPresence, newPresence) => {
-    await handlePresenceUpdate(botContext, oldPresence, newPresence);
+    try {
+        await handlePresenceUpdate(botContext, oldPresence, newPresence);
+    } catch (cause) {
+        log.warn(cause, "Exception during `presenceUpdate`.");
+    }
 });
 
 function login() {
