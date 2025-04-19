@@ -140,34 +140,27 @@ export async function getPlaybackStats(
     const artists = new Map<string, ArtistStat>();
 
     for (const playback of playbacks) {
-        if (!tracks.has(playback.track.trackId)) {
-            tracks.set(playback.track.trackId, {
-                name: playback.track.name,
-                trackId: playback.track.trackId,
-                imageUrl: playback.track.imageUrl,
-                artists: playback.artists.map(artist => ({
-                    name: artist.name,
-                    imageUrl: artist.imageUrl,
-                })),
-                count: 1,
-            });
-        } else {
-            // biome-ignore lint/style/noNonNullAssertion: It exists
-            tracks.get(playback.track.trackId)!.count++;
-        }
+        const trackStat = tracks.getOrInsertComputed(playback.track.trackId, () => ({
+            name: playback.track.name,
+            trackId: playback.track.trackId,
+            imageUrl: playback.track.imageUrl,
+            artists: playback.artists.map(artist => ({
+                name: artist.name,
+                imageUrl: artist.imageUrl,
+            })),
+            count: 0,
+        }));
+
+        trackStat.count++;
 
         for (const artist of playback.artists) {
-            if (!artists.has(artist.artistId)) {
-                artists.set(artist.artistId, {
-                    name: artist.name,
-                    artistId: artist.artistId,
-                    imageUrl: artist.imageUrl,
-                    count: 1,
-                });
-            } else {
-                // biome-ignore lint/style/noNonNullAssertion: It exists
-                artists.get(artist.artistId)!.count++;
-            }
+            const artistStat = artists.getOrInsertComputed(artist.artistId, () => ({
+                name: artist.name,
+                artistId: artist.artistId,
+                imageUrl: artist.imageUrl,
+                count: 0,
+            }));
+            artistStat.count++;
         }
     }
 
