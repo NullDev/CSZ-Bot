@@ -89,11 +89,20 @@ export class UnsafePseudoRandomSource implements RandomSource {
     }
 }
 export class SecureRandomSource implements RandomSource {
+    readonly #shift = 2 ** -52;
+
     getFloat(): number {
-        const int = new Uint32Array(1);
-        crypto.getRandomValues(int);
-        // See: https://stackoverflow.com/a/13694869
-        return int[0] * (0xff_ff_ff_ff + 1);
+        // https://stackoverflow.com/a/13694869
+        // The solutions from the other comments don't produce numbers in [0, 1)
+
+        const ints = new Uint32Array(2);
+        crypto.getRandomValues(ints);
+
+        // keep all 32 bits of the the first, top 20 of the second for 52 random bits
+        const mantissa = ints[0] * 0x100000 + (ints[1] >>> 12);
+
+        // shift all 52 bits to the right of the decimal point
+        return mantissa * this.#shift;
     }
 }
 
