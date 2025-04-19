@@ -66,21 +66,20 @@ export async function handleSpotifyActivityUpdate(
         return;
     }
 
-    if (userUpdateTasks.has(user.id)) {
-        // biome-ignore lint/style/noNonNullAssertion: It exists
-        clearTimeout(userUpdateTasks.get(user.id)!);
+    const existingTask = userUpdateTasks.get(user.id);
+    if (existingTask) {
+        clearTimeout(existingTask);
     }
 
-    userUpdateTasks.set(
-        user.id,
-        setTimeout(async () => {
-            try {
-                await handleSpotifyActivity(context, user, newSpotifyActivity);
-            } catch (e) {
-                log.error(`Error handling Spotify activity update: ${e}`);
-            }
-        }, 1000 * 15),
-    );
+    const newTask = setTimeout(() => {
+        handleSpotifyActivity(context, user, newSpotifyActivity).catch(e =>
+            log.error(e, "Error handling Spotify activity update"),
+        );
+    }, 1000 * 15);
+
+    newTask.unref(); // unref timer, so it doesn't keep the event loop waiting if Node.js wants to shut down
+
+    userUpdateTasks.set(user.id, newTask);
 }
 
 async function handleSpotifyActivity(context: BotContext, user: User, activity: SpotifyActivity) {
