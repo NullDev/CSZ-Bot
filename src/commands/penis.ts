@@ -4,11 +4,11 @@ import type { BotContext } from "@/context.js";
 import type { MessageCommand } from "@/commands/command.js";
 import type { ProcessableMessage } from "@/service/command.js";
 import type { Penis } from "@/storage/db/model.js";
-
-import * as penis from "@/storage/penis.js";
-import log from "@log";
 import { NormalDistribution, RandomNumberGenerator, SecureRandomSource } from "@/service/random.js";
+import * as penis from "@/storage/penis.js";
 import { clamp } from "@/utils/math.js";
+
+import log from "@log";
 
 export type Radius = 0 | 1 | 2 | 3;
 
@@ -124,13 +124,16 @@ export default class PenisCommand implements MessageCommand {
     async handleMessage(message: ProcessableMessage, context: BotContext) {
         const { author } = message;
         const mention = message.mentions.users.first();
-        const userToMeasure = mention !== undefined ? mention : author;
+        const userToMeasure = mention ?? author;
+
+        const isBotCock = userToMeasure.id === context.client.user.id;
+        if (isBotCock) {
+            await message.reply(`${userToMeasure} hat natürlich den längsten.`);
+            return;
+        }
 
         log.debug(`${author.id} wants to measure penis of user ${userToMeasure.id}`);
-        const measurement = await this.#getOrCreateMeasurement(
-            userToMeasure,
-            userToMeasure.id === context.client.user.id,
-        );
+        const measurement = await this.#getOrCreateMeasurement(userToMeasure);
 
         await sendPenis(
             userToMeasure,
@@ -141,24 +144,18 @@ export default class PenisCommand implements MessageCommand {
         );
     }
 
-    async #getOrCreateMeasurement(userToMeasure: User, hasLongest: boolean): Promise<Penis> {
+    async #getOrCreateMeasurement(userToMeasure: User): Promise<Penis> {
         const recentMeasurement = await penis.fetchRecentMeasurement(userToMeasure);
         if (recentMeasurement !== undefined) {
             return recentMeasurement;
         }
 
-        log.debug(`No recent measuring of ${userToMeasure.id} found. Creating Measurement`);
+        log.debug(`No recent measuring of ${userToMeasure.id} found. Creating Measurement.`);
 
-        const size = hasLongest
-            ? PENIS_LENGTH_MAX
-            : clamp(sizeGenerator.get(), 1, PENIS_LENGTH_MAX); // TODO: Do we really want to clamp here? Maybe just clamp(v, 1, Infinity)?
-
-        const radiusRaw = hasLongest
-            ? PENIS_RADIUS_MAX
-            : clamp(radiusGenerator.get(), 1, PENIS_RADIUS_MAX); // TODO: Do we really want to clamp here? Maybe just clamp(v, 1, Infinity)?
+        const size = clamp(sizeGenerator.get(), 1, PENIS_LENGTH_MAX); // TODO: Do we really want to clamp here? Maybe just clamp(v, 1, Infinity)?
 
         // TODO: Maye we want the radius to be integer only for display (and keep the float internally)
-        const radius = clamp(Math.round(radiusRaw), 1, PENIS_RADIUS_MAX) as Radius;
+        const radius = clamp(Math.round(radiusGenerator.get()), 1, PENIS_RADIUS_MAX) as Radius; // TODO: Do we really want to clamp here? Maybe just clamp(v, 1, Infinity)?
 
         if (await isNewLongestDick(size)) {
             log.debug(`${userToMeasure} has the new longest dick with size ${size}`);
