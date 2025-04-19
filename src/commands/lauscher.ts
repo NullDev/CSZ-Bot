@@ -39,6 +39,12 @@ type ToplistEntry = {
 GlobalFonts.registerFromPath("assets/fonts/OpenSans-VariableFont_wdth,wght.ttf", "Open Sans");
 GlobalFonts.registerFromPath("assets/fonts/AppleColorEmoji@2x.ttf", "Apple Emoji");
 
+const placeSymbols: Record<number, string> = {
+    1: "🥇",
+    2: "🥈",
+    3: "🥉",
+};
+
 async function drawTrackToplistCanvas(user: User, tracks: TrackStat[]): Promise<Canvas> {
     const canvas = createCanvas(1024, 1024);
     const ctx = canvas.getContext("2d");
@@ -57,11 +63,6 @@ async function drawTrackToplistCanvas(user: User, tracks: TrackStat[]): Promise<
         const artists = track.artists.map(a => a.name).join(", ");
         const artistStr = truncateToLength(artists, 50);
         const trackStr = truncateToLength(track.name, 50);
-        const placeSymbols: Record<number, string> = {
-            1: "🥇",
-            2: "🥈",
-            3: "🥉",
-        };
 
         const placeSymbol = placeSymbols[i + 1];
         if (placeSymbol) {
@@ -91,10 +92,14 @@ async function drawTrackToplistCanvas(user: User, tracks: TrackStat[]): Promise<
     return canvas;
 }
 
-function buildTrackToplistLinkButtons(tracks: TrackStat[]): ButtonBuilder[] {
+function buildTrackToplistLinkButtons(
+    placeSymbols: Record<string, string>,
+    tracks: TrackStat[],
+): ButtonBuilder[] {
     return tracks.map((track, idx) => {
+        const place = idx + 1;
         const button = new ButtonBuilder()
-            .setLabel(String(idx + 1))
+            .setLabel(placeSymbols[place] ?? place.toString())
             .setStyle(ButtonStyle.Link)
             .setURL(`https://open.spotify.com/track/${track.trackId}`);
         return button;
@@ -175,7 +180,7 @@ export default class Lauscher implements ApplicationCommand {
 
                 const stats = await getPlaybackStats(user, interval);
 
-                if (!stats || !stats?.tracks || stats.tracks.length === 0) {
+                if (!stats?.tracks || stats.tracks.length === 0) {
                     await command.reply({
                         content: "Konnte keine Stats finden, bruder",
                         ephemeral: true,
@@ -192,9 +197,10 @@ export default class Lauscher implements ApplicationCommand {
                     .setImage("attachment://top_tracks.png")
                     .setColor(0x00b0f4);
 
-                const buttons = chunkArray(buildTrackToplistLinkButtons(topTenTracks), 5).map(
-                    buttons => new ActionRowBuilder<ButtonBuilder>().addComponents(buttons),
-                );
+                const buttons = chunkArray(
+                    buildTrackToplistLinkButtons(placeSymbols, topTenTracks),
+                    5,
+                ).map(buttons => new ActionRowBuilder<ButtonBuilder>().addComponents(buttons));
 
                 await command.reply({
                     embeds: [image],
