@@ -144,3 +144,16 @@ export class Vec4 {
         return this.divide(this.length());
     }
 }
+
+/**
+ * Once https://github.com/tc39/proposal-math-clamp is a thing, we can use that instead.
+ */
+export function clamp(number: number, minimum: number, maximum: number) {
+    if (number < minimum) {
+        return minimum;
+    }
+    if (number > maximum) {
+        return maximum;
+    }
+    return number;
+}
