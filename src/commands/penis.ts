@@ -6,7 +6,13 @@ import type { ProcessableMessage } from "@/service/command.js";
 
 import * as penis from "@/storage/penis.js";
 import log from "@log";
-import { randomValue } from "@/service/random.js";
+import {
+    NormalDistribution,
+    RandomNumberGenerator,
+    randomValue,
+    SafeRandomSource,
+} from "@/service/random.js";
+import { clamp } from "@/utils/math.js";
 
 export type Radius = 0 | 1 | 2 | 3;
 
@@ -17,8 +23,8 @@ const RADIUS_CHARS: Record<Radius, string> = {
     3: "≡",
 };
 
-const PENIS_MAX = 30;
-const RADIUS_MAX = 3;
+const PENIS_LENGTH_MAX = 30;
+const PENIS_RADIUS_MAX = 3;
 
 const sendPenis = async (
     user: User,
@@ -41,6 +47,26 @@ const isNewLongestDick = async (size: number): Promise<boolean> => {
     return oldLongest < size;
 };
 
+const lengthDistribution = new NormalDistribution(
+    14.65, // chatgpt: μ ≈ 14.5 to 14.8 cm
+    1.85, // chatgpt: σ ≈ 1.7 to 2.0 cm
+);
+const randomSource = new SafeRandomSource();
+
+/**
+ * ChatGPT emits these values for circumference:
+ * - μ ≈ 11.7 to 12.0 cm
+ * - σ ≈ 1.0 cm (estimated via studies like Veale et al.)
+ *
+ * -> we use (11.7 cm + 12.0 cm)/2 = 11.85 cm as circumference
+ * -> radius = circumference / (2*pi)
+ *
+ * We do the same for σ.
+ */
+const radiusDistribution = new NormalDistribution(11.85 / (Math.PI * 2), 1 / (Math.PI * 2));
+
+const sizeGenerator = new RandomNumberGenerator(lengthDistribution, randomSource);
+const radiusGenerator = new RandomNumberGenerator(radiusDistribution, randomSource);
 /**
  * Penis command. Displays the users penis length
  */
@@ -112,14 +138,15 @@ export default class PenisCommand implements MessageCommand {
 
             const size =
                 userToMeasure.id === context.client.user.id
-                    ? PENIS_MAX
-                    : randomValue({ min: 1, maxInclusive: PENIS_MAX });
-            const radius: Radius =
+                    ? PENIS_LENGTH_MAX
+                    : clamp(sizeGenerator.get(), 0, PENIS_LENGTH_MAX); // TODO: Do we really want to clamp here? Maybe just clamp(v, 0, Infinity)?
+
+            const radius =
                 userToMeasure.id === context.client.user.id
-                    ? RADIUS_MAX
+                    ? PENIS_RADIUS_MAX
                     : size === 0
-                      ? (0 as Radius)
-                      : (randomValue({ min: 1, maxInclusive: RADIUS_MAX }) as Radius);
+                      ? 0
+                      : (clamp(radiusGenerator.get(), 0, PENIS_RADIUS_MAX) as Radius); // TODO: Do we really want to clamp here? Maybe just clamp(v, 0, Infinity)?
 
             if (await isNewLongestDick(size)) {
                 log.debug(`${userToMeasure} has the new longest dick with size ${size}`);
