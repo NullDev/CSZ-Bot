@@ -30,11 +30,11 @@ const sendPenis = async (
     measurement: Date = new Date(),
 ): Promise<void> => {
     const radiusChar = RADIUS_CHARS[radius];
-    const penis = `8${radiusChar.repeat(size)}D`;
+    const penis = `8${radiusChar.repeat(size | 0)}D`;
     const circumference = (Math.PI * radius * 2).toFixed(2);
 
     await message.reply(
-        `Pimmel von <@${user.id}>:\n${penis}\n(Länge: ${size} cm, Umfang: ${circumference} cm, Gemessen um ${time(measurement, TimestampStyles.LongDateTime)})`,
+        `Pimmel von ${user}:\n${penis}\n(Länge: ${size.toFixed(2)} cm, Umfang: ${circumference} cm, Gemessen um ${time(measurement, TimestampStyles.LongDateTime)})`,
     );
 };
 
