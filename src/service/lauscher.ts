@@ -141,9 +141,7 @@ export async function getPlaybackStats(
 
     for (const playback of playbacks) {
         const trackStat = tracks.getOrInsertComputed(playback.track.trackId, () => ({
-            name: playback.track.name,
-            trackId: playback.track.trackId,
-            imageUrl: playback.track.imageUrl,
+            ...playback.track,
             artists: playback.artists.map(artist => ({
                 name: artist.name,
                 imageUrl: artist.imageUrl,
@@ -155,9 +153,7 @@ export async function getPlaybackStats(
 
         for (const artist of playback.artists) {
             const artistStat = artists.getOrInsertComputed(artist.artistId, () => ({
-                name: artist.name,
-                artistId: artist.artistId,
-                imageUrl: artist.imageUrl,
+                ...artist,
                 count: 0,
             }));
             artistStat.count++;
