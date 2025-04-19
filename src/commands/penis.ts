@@ -153,9 +153,12 @@ export default class PenisCommand implements MessageCommand {
             ? PENIS_LENGTH_MAX
             : clamp(sizeGenerator.get(), 1, PENIS_LENGTH_MAX); // TODO: Do we really want to clamp here? Maybe just clamp(v, 1, Infinity)?
 
-        const radius = hasLongest
+        const radiusRaw = hasLongest
             ? PENIS_RADIUS_MAX
-            : (clamp(radiusGenerator.get(), 1, PENIS_RADIUS_MAX) as Radius); // TODO: Do we really want to clamp here? Maybe just clamp(v, 1, Infinity)?
+            : clamp(radiusGenerator.get(), 1, PENIS_RADIUS_MAX); // TODO: Do we really want to clamp here? Maybe just clamp(v, 1, Infinity)?
+
+        // TODO: Maye we want the radius to be integer only for display (and keep the float internally)
+        const radius = clamp(Math.round(radiusRaw), 1, PENIS_RADIUS_MAX) as Radius;
 
         if (await isNewLongestDick(size)) {
             log.debug(`${userToMeasure} has the new longest dick with size ${size}`);
