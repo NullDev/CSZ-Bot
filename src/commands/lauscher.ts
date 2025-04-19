@@ -51,7 +51,7 @@ async function drawTrackToplistCanvas(user: User, tracks: TrackStat[]): Promise<
 
     ctx.fillStyle = "#000000";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = "#FFFFFF";
+    ctx.fillStyle = "#ffffff";
 
     for (let i = 0; i < 10; i++) {
         const track = tracks[i];
@@ -77,16 +77,21 @@ async function drawTrackToplistCanvas(user: User, tracks: TrackStat[]): Promise<
             ctx.fillText(place.toString(), 20, 55 + i * 100);
         }
 
-        ctx.font = "30px Open Sans";
+        ctx.font = "16px Open Sans";
         ctx.textAlign = "left";
-        ctx.fillText(artistStr, 160, 30 + i * 100);
+        ctx.fillStyle = "#7f7f7f";
+        ctx.fillText(artistStr, 160, 30 + 15 + i * 100);
+
+        ctx.font = "30px Open Sans";
         ctx.fillText(trackStr, 160, 80 + i * 100);
         ctx.textAlign = "right";
         ctx.fillText(`${track.count}x`, 1000, 55 + i * 100);
+
         const imageUrl =
             track.imageUrl && track.imageUrl.trim() !== ""
                 ? track.imageUrl
                 : "assets/images/fallback.png";
+
         ctx.drawImage(await loadImage(imageUrl), 80, 15 + i * 100, 64, 64);
     }
 
