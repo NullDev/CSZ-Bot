@@ -3,17 +3,12 @@ import { time, TimestampStyles, type User } from "discord.js";
 import type { BotContext } from "@/context.js";
 import type { MessageCommand } from "@/commands/command.js";
 import type { ProcessableMessage } from "@/service/command.js";
+import type { Penis } from "@/storage/db/model.js";
 
 import * as penis from "@/storage/penis.js";
 import log from "@log";
-import {
-    NormalDistribution,
-    RandomNumberGenerator,
-    randomValue,
-    SecureRandomSource,
-} from "@/service/random.js";
+import { NormalDistribution, RandomNumberGenerator, SecureRandomSource } from "@/service/random.js";
 import { clamp } from "@/utils/math.js";
-import { Penis } from "@/storage/db/model.js";
 
 export type Radius = 0 | 1 | 2 | 3;
 
@@ -132,41 +127,42 @@ export default class PenisCommand implements MessageCommand {
         const userToMeasure = mention !== undefined ? mention : author;
 
         log.debug(`${author.id} wants to measure penis of user ${userToMeasure.id}`);
-
-        const recentMeasurement = await penis.fetchRecentMeasurement(userToMeasure);
-
-        if (recentMeasurement === undefined) {
-            log.debug(`No recent measuring of ${userToMeasure.id} found. Creating Measurement`);
-
-            const size =
-                userToMeasure.id === context.client.user.id
-                    ? PENIS_LENGTH_MAX
-                    : clamp(sizeGenerator.get(), 0, PENIS_LENGTH_MAX); // TODO: Do we really want to clamp here? Maybe just clamp(v, 0, Infinity)?
-
-            const radius =
-                userToMeasure.id === context.client.user.id
-                    ? PENIS_RADIUS_MAX
-                    : size === 0
-                      ? 0
-                      : (clamp(radiusGenerator.get(), 0, PENIS_RADIUS_MAX) as Radius); // TODO: Do we really want to clamp here? Maybe just clamp(v, 0, Infinity)?
-
-            if (await isNewLongestDick(size)) {
-                log.debug(`${userToMeasure} has the new longest dick with size ${size}`);
-            }
-
-            await Promise.all([
-                penis.insertMeasurement(userToMeasure, size, radius),
-                sendPenis(userToMeasure, message, size, radius),
-            ]);
-            return;
-        }
+        const measurement = await this.#getOrCreateMeasurement(
+            userToMeasure,
+            userToMeasure.id === context.client.user.id,
+        );
 
         await sendPenis(
             userToMeasure,
             message,
-            recentMeasurement.size,
-            recentMeasurement.radius,
-            new Date(recentMeasurement.measuredAt),
+            measurement.size,
+            measurement.radius,
+            new Date(measurement.measuredAt),
         );
+    }
+
+    async #getOrCreateMeasurement(userToMeasure: User, hasLongest: boolean): Promise<Penis> {
+        const recentMeasurement = await penis.fetchRecentMeasurement(userToMeasure);
+        if (recentMeasurement !== undefined) {
+            return recentMeasurement;
+        }
+
+        log.debug(`No recent measuring of ${userToMeasure.id} found. Creating Measurement`);
+
+        const size = hasLongest
+            ? PENIS_LENGTH_MAX
+            : clamp(sizeGenerator.get(), 0, PENIS_LENGTH_MAX); // TODO: Do we really want to clamp here? Maybe just clamp(v, 0, Infinity)?
+
+        const radius = hasLongest
+            ? PENIS_RADIUS_MAX
+            : size === 0
+              ? 0
+              : (clamp(radiusGenerator.get(), 0, PENIS_RADIUS_MAX) as Radius); // TODO: Do we really want to clamp here? Maybe just clamp(v, 0, Infinity)?
+
+        if (await isNewLongestDick(size)) {
+            log.debug(`${userToMeasure} has the new longest dick with size ${size}`);
+        }
+
+        return await penis.insertMeasurement(userToMeasure, size, radius);
     }
 }
