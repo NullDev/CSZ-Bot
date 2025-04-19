@@ -56,6 +56,10 @@ async function drawTrackToplistCanvas(user: User, tracks: TrackStat[]): Promise<
     const entrySize = {
         height: 100,
     };
+    const coverSize = {
+        width: 64,
+        height: 64,
+    };
 
     for (let i = 0; i < 10; i++) {
         const track = tracks[i];
@@ -98,7 +102,13 @@ async function drawTrackToplistCanvas(user: User, tracks: TrackStat[]): Promise<
                 ? track.imageUrl
                 : "assets/images/fallback.png";
 
-        ctx.drawImage(await loadImage(imageUrl), 80, 15 + i * entrySize.height, 64, 64);
+        ctx.drawImage(
+            await loadImage(imageUrl),
+            80,
+            15 + i * entrySize.height,
+            coverSize.width,
+            coverSize.height,
+        );
     }
 
     return canvas;
