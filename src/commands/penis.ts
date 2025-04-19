@@ -10,9 +10,10 @@ import {
     NormalDistribution,
     RandomNumberGenerator,
     randomValue,
-    SafeRandomSource,
+    SecureRandomSource,
 } from "@/service/random.js";
 import { clamp } from "@/utils/math.js";
+import { Penis } from "@/storage/db/model.js";
 
 export type Radius = 0 | 1 | 2 | 3;
 
@@ -47,11 +48,12 @@ const isNewLongestDick = async (size: number): Promise<boolean> => {
     return oldLongest < size;
 };
 
+const randomSource = new SecureRandomSource();
+
 const lengthDistribution = new NormalDistribution(
     14.65, // chatgpt: μ ≈ 14.5 to 14.8 cm
     1.85, // chatgpt: σ ≈ 1.7 to 2.0 cm
 );
-const randomSource = new SafeRandomSource();
 
 /**
  * ChatGPT emits these values for circumference:

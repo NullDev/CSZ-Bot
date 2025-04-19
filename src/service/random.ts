@@ -88,7 +88,7 @@ export class UnsafePseudoRandomSource implements RandomSource {
         return Math.random();
     }
 }
-export class SafeRandomSource implements RandomSource {
+export class SecureRandomSource implements RandomSource {
     getFloat(): number {
         const int = new Uint32Array(1);
         crypto.getRandomValues(int);
