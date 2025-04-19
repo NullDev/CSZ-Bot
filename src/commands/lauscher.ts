@@ -55,8 +55,9 @@ async function drawTrackToplistCanvas(user: User, tracks: TrackStat[]): Promise<
 
     for (let i = 0; i < 10; i++) {
         const track = tracks[i];
+        const place = i + 1;
         if (!track) {
-            ctx.fillText(`${i + 1}. nicht vorhanden`, 20, i * 50);
+            ctx.fillText(`${place}. nicht vorhanden`, 20, i * 50);
             continue;
         }
 
@@ -64,7 +65,7 @@ async function drawTrackToplistCanvas(user: User, tracks: TrackStat[]): Promise<
         const artistStr = truncateToLength(artists, 50);
         const trackStr = truncateToLength(track.name, 50);
 
-        const placeSymbol = placeSymbols[i + 1];
+        const placeSymbol = placeSymbols[place];
         if (placeSymbol) {
             const size = 60 - i * 5;
             ctx.font = `${size}px Apple Emoji`;
@@ -73,7 +74,7 @@ async function drawTrackToplistCanvas(user: User, tracks: TrackStat[]): Promise<
         } else {
             ctx.font = "bold 30px Open Sans";
             ctx.textAlign = "left";
-            ctx.fillText(`${i + 1}`, 20, 55 + i * 100);
+            ctx.fillText(place.toString(), 20, 55 + i * 100);
         }
 
         ctx.font = "30px Open Sans";
@@ -101,7 +102,7 @@ function buildTrackToplistLinkButtons(
         const button = new ButtonBuilder()
             .setLabel(placeSymbols[place] ?? place.toString())
             .setStyle(ButtonStyle.Link)
-            .setURL(`https://open.spotify.com/track/${track.trackId}`);
+            .setURL(`https://open.spotify.com/track/${encodeURIComponent(track.trackId)}`);
         return button;
     });
 }
