@@ -61,15 +61,15 @@ export function randomEntryWeighted<T>(
     throw new Error("No valid entry found");
 }
 
-interface RandomSource {
+export interface RandomSource {
     getFloat(): number;
 }
 
-interface RandomDistribution {
+export interface RandomDistribution {
     get(source: RandomSource): number;
 }
 
-class RandomNumberGenerator {
+export class RandomNumberGenerator {
     #distribution: RandomDistribution;
     #source: RandomSource;
 
@@ -83,7 +83,7 @@ class RandomNumberGenerator {
     }
 }
 
-class UnsafePseudoRandomSource implements RandomSource {
+export class UnsafePseudoRandomSource implements RandomSource {
     getFloat(): number {
         return Math.random();
     }
@@ -97,7 +97,7 @@ export class SafeRandomSource implements RandomSource {
     }
 }
 
-class UniformDistribution implements RandomDistribution {
+export class UniformDistribution implements RandomDistribution {
     readonly min: number;
     readonly maxExclusive: number;
 
@@ -116,7 +116,7 @@ class UniformDistribution implements RandomDistribution {
 }
 
 /** A.k.a gaussian distribution */
-class NormalDistribution implements RandomDistribution {
+export class NormalDistribution implements RandomDistribution {
     readonly mean: number;
     readonly standardDeviation: number;
 
