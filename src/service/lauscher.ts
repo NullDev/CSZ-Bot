@@ -74,7 +74,11 @@ export async function handleSpotifyActivityUpdate(
     userUpdateTasks.set(
         user.id,
         setTimeout(async () => {
-            await handleSpotifyActivity(context, user, newSpotifyActivity);
+            try {
+                await handleSpotifyActivity(context, user, newSpotifyActivity);
+            } catch (e) {
+                log.error(`Error handling Spotify activity update: ${e}`);
+            }
         }, 1000 * 15),
     );
 }
