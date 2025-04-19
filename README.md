@@ -62,25 +62,16 @@ bun i
 cp config.template.json config.json
 $EDITOR config.json
 ```
-2. Die frisch kopierte Config-Datei ausfüllen:
+> [!TIP]
+>  Die Datei kann Kommentare und Trailing-Commas (JSONC). Wenn du nicht VSCode verwendest, musst du das ggf. noch einstellen.
+
+2. Das Template ist für die [Coding-Test-Zentrale](https://discord.gg/ekJA6GA3BJ) vorausgefüllt. Es fehlen noch:
     - Um einen Bot zum Testen anzulegen, einfach den Instruktionen im [Discord Developer Portal](https://discord.com/developers/applications) folgen.
         - Die Applikation muss als "Bot" gesetzt werden.
         - Es müssen beide [Gateway Intents](https://discordjs.guide/popular-topics/intents.html#gateway-intents) eingeschalten werden.
-        - Den Bot Token (**nicht** die Application-ID oder den Public-Key) [in die Config](https://github.com/NullDev/CSZ-Bot/blob/master/config.template.json#L3) unter `bot_token` kopieren.
-        - Okay, die Application-ID muss doch mit [in die Config beim Feld `client_id`](https://github.com/NullDev/CSZ-Bot/blob/master/config.template.json#L4) rein.
+        - Ersetze `<CLIENT_ID>` durch die Application-ID
+        - Ersetze `<BOT_TOKEN>` durch das Bot-Token
     - Um IDs kopieren zu können, den "Developer Mode" in den Discord Einstellungen aktivieren. Mit Rechtsklick kann man dann die IDs kopieren.
-    - Es müssen folgende Rollen am Server angelegt werden:
-        - Moderator-Rolle - CSZ-Default: Moderader
-        - Default Rolle - CSZ-Default: Nerd
-        - Banned-Rolle - CSZ-Default: B&
-        - Geburtstags-Rolle - CSZ-Default: Geburtstagskind
-        - Gründerväter-Rolle - CSZ-Default: Gründerväter
-        - Trusted-Rolle - CSZ-Default: Trusted
-        - Rejoiner / Shame-Rolle - CSZ-Default: Rejoiner
-        - Gründerväter-Gebannt-Rolle - CSZ-Default: B&-Gründerväter
-        - Trusted-Gebannt-Rolle - CSZ-Default: B&-Trusted
-        - Woisgang-Rolle - CSZ-Default: woisgang
-        - ...und vielleicht noch ein paar Weitere, die du der Config entnehmen kannst.
 3. Das Script starten.
 
 Mit Hot-Reload:
@@ -94,11 +85,14 @@ bun start
 ```
 
 ### Housekeeping
+Formatieren und Linten passiert durch lefthook automatisch beim Committen/Pushen. Manuell kannst du das machen:
 - Formatieren: `bun format`
 - Linten: `bun lint`
 - Fixbare Linter-Fehler automatisch fixen: `bun lint:fix`
+  - Fixbare, aber möglicherweise falsche Fixes anwenden: `bun lint:fix:unsafe`
 - CI-Checks lokal laufen lassen: `bun ci`
-- Unit-Tests ausführen:
+- Unit-Tests ausführen: `bun test`
+    - Nur Tests, die auf ein Pattern matchen: `bun test <pattern>` (z. B. `bun test smoke`)
 
 ## ❄ Nix
 Entweder via `nix-shell` oder `nix develop` letzteres benötigt Nix-Flake support.

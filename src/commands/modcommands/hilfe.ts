@@ -1,62 +1,51 @@
-import { promises as fs } from "node:fs";
-import * as path from "node:path";
+import type { MessageCommand } from "@/commands/command.js";
+import type { BotContext } from "@/context.js";
+import type { ProcessableMessage } from "@/service/command.js";
+import * as chunkingService from "@/service/chunking.js";
 
-import type { CommandFunction } from "../../types.js";
-import { replacePrefixPlaceholders } from "../hilfe.js";
+import { replacePrefixPlaceholders } from "@/commands/hilfe.js";
+import * as commandService from "@/service/command.js";
 
-/**
- * Enlists all mod-commands with descriptions
- */
-export const run: CommandFunction = async (
-    _client,
-    message,
-    _args,
-    context,
-) => {
-    const commandObj: Record<string, string> = {};
-    const commandDir = context.modCommandDir;
+export default class ModHilfeCommand implements MessageCommand {
+    modCommand = true;
+    name = "hilfe";
+    description = "Listet alle mod-commands auf";
 
-    const files = await fs.readdir(commandDir);
-    for (const file of files) {
-        if (!file.endsWith(".js")) {
-            continue; // Skip source maps etc
-        }
+    async handleMessage(message: ProcessableMessage, context: BotContext): Promise<void> {
+        const prefix = context.prefix.command;
 
-        const cmdPath = path.resolve(commandDir, file);
+        const lines = [];
+        const newCommands = await commandService.readAvailableCommands(context);
+        for (const command of newCommands) {
+            if (!command.modCommand) {
+                continue;
+            }
 
-        const stats = await fs.stat(cmdPath);
-
-        if (!stats.isDirectory()) {
-            // Prefix + Command name
-            const commandStr =
-                context.prefix.modCommand +
-                file.toLowerCase().replace(/\.js/gi, "");
-
-            // commandStr is the key and the description of the command is the value
-            const modulePath = path.join(commandDir, file);
-
-            const module = await import(modulePath);
-
-            commandObj[commandStr] = replacePrefixPlaceholders(
-                module.description,
-                context,
+            const commandStr = prefix + command.name;
+            lines.push(
+                `${commandStr}: ${replacePrefixPlaceholders(command.description, context)}\n`,
             );
         }
+
+        try {
+            await message.author.send(
+                `Hallo, ${message.author}!\n\nHier ist eine Liste mit mod-commands:`,
+            );
+        } catch {
+            await message.react("❌");
+            await message.reply("Ich kann dir keine Nachrichten schicken, wenn du sie blockierst.");
+            return;
+        }
+
+        const chunks = chunkingService.splitInChunks(lines, {
+            charLimitPerChunk: 2000,
+            chunkOpeningLine: "```css",
+            chunkClosingLine: "```",
+        });
+
+        await Promise.all(chunks.map(chunk => message.author.send(chunk)));
+
+        // Send this last, so we only display a confirmation when everything actually worked
+        await message.react("✉");
     }
-
-    let commandText = "";
-    for (const [commandName, description] of Object.entries(commandObj)) {
-        commandText += commandName;
-        commandText += ":\n";
-        commandText += replacePrefixPlaceholders(description, context);
-        commandText += "\n\n";
-    }
-
-    // Add :envelope: reaction to authors message
-    await message.author.send(
-        `Hallo, ${message.author}!\n\nHier ist eine Liste mit commands:\n\n\`\`\`CSS\n${commandText}\`\`\``,
-    );
-    await message.react("✉"); // Send this last, so we only display a confirmation when everything actually worked
-};
-
-export const description = "Listet alle mod commands auf";
+}

@@ -25,51 +25,144 @@ jobs:
         show-progress: false
         fetch-depth: 0
 
-    - uses: oven-sh/setup-bun@v1
+    - uses: oven-sh/setup-bun@v2
       with:
         bun-version: latest
 
     - run: bun install
     - run: bun ci
+    - run: bun run test
 
   build:
-    name: Build + Smoke Test
+    name: Build
     runs-on: ubuntu-latest
 
     needs: lint
+
+    permissions:
+      contents: read
+      packages: write
+
+    outputs:
+      image-tag: ${{ steps.tag.outputs.first }}
+      image-digest: ${{ steps.build.outputs.digest }}
 
     steps:
     - uses: actions/checkout@v4
       with:
         show-progress: false
+
     - uses: docker/setup-qemu-action@v3
     - uses: docker/setup-buildx-action@v3
+    - uses: docker/login-action@v3
+      with:
+        registry: "ghcr.io"
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Docker meta
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: |
+          ghcr.io/nulldev/csz-bot
+        tags: |
+          type=raw,value=latest,enable=${{ github.ref == 'refs/heads/master' }}
+          type=ref,event=branch
+          type=ref,event=pr
+          type=semver,pattern={{version}}
+          type=semver,pattern={{major}}.{{minor}}
+
+    - name: Extract tag
+      id: tag
+      env:
+        INPUT_TAGS: ${{ steps.meta.outputs.tags }}
+      run: |
+        first=$(echo "$INPUT_TAGS" | head -n 1)
+
+        echo "first=$first" >> "$GITHUB_OUTPUT"
+
 
     - name: Build and export
-      uses: docker/build-push-action@v5
+      uses: docker/build-push-action@v6
+      id: build
       with:
-        tags: csz-bot:latest
+        push: ${{ !github.event.repository.fork }}
+        pull: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        build-args: |
+          RELEASE_IDENTIFIER=${{ github.sha }}
+          BUILD_NUMBER=${{ github.run_number }}
         load: true
         cache-from: type=gha
         cache-to: type=gha,mode=max
 
+  deploy-e2e:
+    name: Deploy e2e
+    runs-on: ubuntu-latest
+
+    if: ${{ !github.event.repository.fork }}
+
+    needs: [ build ]
+
+    concurrency: e2e
+    environment:
+      name: e2e
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        show-progress: false
+
     - name: Update configuration
-      if: ${{ github.event_name == 'push' }}
+      env:
+        BOT_TOKEN: ${{ secrets.CI_BOT_TOKEN }}
+        CLIENT_ID: ${{ secrets.CI_CLIENT_ID }}
       run: |
-        cp .github/config.json config.json
-        sed -i 's/<BOT_TOKEN>/${{ secrets.CI_BOT_TOKEN }}/g' config.json
-        sed -i 's/<CLIENT_ID>/${{ secrets.CI_CLIENT_ID }}/g' config.json
+        envsubst < .github/config.json > config.json
 
-        cp .github/aoc.config.json aoc.config.json
+    - name: Read config.json
+      id: config
+      uses: juliangruber/read-file-action@v1
+      with:
+        path: ./config.json
 
-    - name: Check if bot starts correctly
-      if: ${{ github.event_name == 'push' }}
+    - name: Build args
+      id: args
+      env:
+        DRY_RUN: ${{ github.ref == 'refs/heads/master' }}
       run: |
-        docker run \
-          --rm \
-          -e NODE_ENV=development \
-          -e DATABASE_PATH=:memory: \
-          -v "$PWD/config.json:/app/config.json" \
-          -v "$PWD/aoc.config.json:/app/aoc.config.json" \
-          csz-bot:latest --dry-run
+        args=""
+
+        if [[ $DRY_RUN = true ]]; then
+          args="--dry-run"
+        fi
+
+        echo "args=$args" >> "$GITHUB_OUTPUT"
+
+    - name: Deploy CSZ Bot
+      uses: appleboy/ssh-action@2ead5e36573f08b82fbfce1504f1a4b05a647c6f
+      env:
+        BOT_HOME_PATH: /home/csc
+        EPHEMERAL_BOT_CONFIG: ${{ steps.config.outputs.content }}
+        BOT_ARGS: ${{ steps.args.outputs.args }}
+        BOT_IMAGE: ${{ needs.build.outputs.image-tag }}
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        key: ${{ secrets.SSH_KEY }}
+        port: ${{ secrets.SSH_PORT }}
+        envs: BOT_HOME_PATH,EPHEMERAL_BOT_CONFIG,BOT_ARGS,BOT_IMAGE
+        script: ${{ env.BOT_HOME_PATH }}/.infra/deploy-ephemeral.sh
+
+    - name: Comment PR
+      uses: thollander/actions-comment-pull-request@v3
+      if: ${{ github.event_name == 'pull_request' }}
+      with:
+        comment-tag: discord-invite
+        message: |
+          Hallo, hier kannst du jetzt deine tolle neue Funktion testen: https://discord.gg/pJjfF6n2ec
+
+
 

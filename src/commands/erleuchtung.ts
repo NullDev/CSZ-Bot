@@ -1,80 +1,41 @@
-// ================================ //
-// = Copyright (c) Ehrenvio der G = //
-// ================================ //
-
-import {
-    type Client,
-    EmbedBuilder,
-    type GuildMember,
-    SlashCommandBuilder,
-} from "discord.js";
+import { SlashCommandBuilder } from "discord.js";
 import type { CommandInteraction, CacheType } from "discord.js";
 
-import type { ApplicationCommand, MessageCommand } from "./command.js";
-import type { ProcessableMessage } from "../handler/cmdHandler.js";
+import type { ApplicationCommand, MessageCommand } from "@/commands/command.js";
+import type { ProcessableMessage } from "@/service/command.js";
 
-const INSPIRATION_GENERATE_API_URL = "https://inspirobot.me/api?generate=true";
+import * as erleuchtungService from "@/service/erleuchtung.js";
 
-async function getInspiration(): Promise<string> {
-    return (
-        await fetch(INSPIRATION_GENERATE_API_URL, {
-            method: "GET",
-        })
-    ).text();
-}
-
-async function buildInspirationMessage(
-    author: GuildMember,
-): Promise<EmbedBuilder> {
-    const inspiration = await getInspiration();
-
-    return new EmbedBuilder()
-        .setImage(inspiration)
-        .setColor(0x26c723)
-        .setTimestamp(new Date())
-        .setAuthor({
-            name: `${author.displayName} wurde erleuchtet`,
-            iconURL: author.displayAvatarURL(),
-        })
-        .setFooter({
-            text: "🙏 Glaub an dich 🙏",
-        });
-}
-
-export class ErleuchtungCommand implements MessageCommand, ApplicationCommand {
+export default class ErleuchtungCommand implements MessageCommand, ApplicationCommand {
     name = "erleuchtung";
     description = "Gönnt dir eine zufällige Erleuchtung.";
     applicationCommand = new SlashCommandBuilder()
         .setName(this.name)
         .setDescription(this.description);
 
-    async handleMessage(
-        message: ProcessableMessage,
-        _client: Client<boolean>,
-    ): Promise<void> {
+    async handleMessage(message: ProcessableMessage) {
         const author = message.guild.members.resolve(message.author);
         if (!author) {
             throw new Error("Couldn't resolve guild member");
         }
 
-        const embed = await buildInspirationMessage(author);
+        const embed = await erleuchtungService.getInspirationsEmbed(author);
         await message.channel.send({
             embeds: [embed],
         });
     }
 
-    async handleInteraction(
-        command: CommandInteraction<CacheType>,
-        _client: Client<boolean>,
-    ): Promise<void> {
-        if (!command.channel) {
+    async handleInteraction(command: CommandInteraction<CacheType>) {
+        if (!command.channel || !command.channel.isTextBased() || !command.guild) {
             throw new Error("Command was invoked without a channel in context");
         }
-        const author = command.guild?.members.resolve(command.user);
+
+        const author = command.guild.members.resolve(command.user);
         if (!author) {
             throw new Error("Couldn't resolve guild member");
         }
-        const embed = await buildInspirationMessage(author);
+
+        const embed = await erleuchtungService.getInspirationsEmbed(author);
         await command.reply({
             embeds: [embed],
         });

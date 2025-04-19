@@ -1,4 +1,4 @@
-import { mkdirSync } from "node:fs";
+import { mkdir, exists } from "node:fs/promises";
 
 import { pino, type LoggerOptions } from "pino";
 
@@ -7,7 +7,12 @@ const nodeEnv = process.env.NODE_ENV ?? "development";
 
 const logDir = "logs";
 
-mkdirSync(logDir, { recursive: true });
+const usesLogDir = nodeEnv === "production";
+if (usesLogDir) {
+    if (!(await exists(logDir))) {
+        await mkdir(logDir, { recursive: true });
+    }
+}
 
 const loggingConfigs = {
     development: {
@@ -20,13 +25,34 @@ const loggingConfigs = {
             },
         },
     },
+    test: {
+        level: logLevel,
+        transport: {
+            target: "pino-pretty",
+            options: {
+                colorize: false,
+                ignore: "pid,hostname",
+            },
+        },
+    },
     production: {
         level: logLevel,
         transport: {
-            target: "pino/file",
-            options: {
-                destination: `${logDir}/error.log`,
-            },
+            targets: [
+                {
+                    target: "pino-pretty",
+                    options: {
+                        colorize: true,
+                        ignore: "pid,hostname",
+                    },
+                },
+                {
+                    target: "pino/file",
+                    options: {
+                        destination: `${logDir}/error.log`,
+                    },
+                },
+            ],
         },
     },
 } as Record<string, LoggerOptions>;

@@ -1,16 +1,17 @@
-// @ts-ignore
-import type { Client, User } from "discord.js";
+import { time, TimestampStyles, type User } from "discord.js";
 
-import * as penis from "../storage/penis.js";
-import type { CommandResult, MessageCommand } from "./command.js";
-import log from "../utils/logger.js";
-import type { ProcessableMessage } from "../handler/cmdHandler.js";
-import { formatTime } from "../utils/dateUtils.js";
-import type { BotContext } from "../context.js";
+import type { BotContext } from "@/context.js";
+import type { MessageCommand } from "@/commands/command.js";
+import type { ProcessableMessage } from "@/service/command.js";
 
-export type Radius = 1 | 2 | 3;
+import * as penis from "@/storage/penis.js";
+import log from "@log";
+import { randomValue } from "@/service/random.js";
 
-const DIAMETER_CHARS: Record<Radius, string> = {
+export type Radius = 0 | 1 | 2 | 3;
+
+const RADIUS_CHARS: Record<Radius, string> = {
+    0: "",
     1: "‒",
     2: "=",
     3: "≡",
@@ -26,13 +27,12 @@ const sendPenis = async (
     radius: Radius,
     measurement: Date = new Date(),
 ): Promise<void> => {
-    const diameterChar = DIAMETER_CHARS[radius];
-    const penis = `8${diameterChar.repeat(size)}D`;
+    const radiusChar = RADIUS_CHARS[radius];
+    const penis = `8${radiusChar.repeat(size)}D`;
     const circumference = (Math.PI * radius * 2).toFixed(2);
-    const measuredAt = formatTime(measurement);
 
     await message.reply(
-        `Pimmel von <@${user.id}>:\n${penis}\n(Länge: ${size} cm, Umfang: ${circumference} cm, Gemessen um ${measuredAt})`,
+        `Pimmel von <@${user.id}>:\n${penis}\n(Länge: ${size} cm, Umfang: ${circumference} cm, Gemessen um ${time(measurement, TimestampStyles.LongDateTime)})`,
     );
 };
 
@@ -44,7 +44,7 @@ const isNewLongestDick = async (size: number): Promise<boolean> => {
 /**
  * Penis command. Displays the users penis length
  */
-export class PenisCommand implements MessageCommand {
+export default class PenisCommand implements MessageCommand {
     name = "penis";
     aliases = [
         "glied",
@@ -98,45 +98,36 @@ export class PenisCommand implements MessageCommand {
     /**
      * Replies to the message with a random penis length
      */
-    async handleMessage(
-        message: ProcessableMessage,
-        _client: Client,
-        context: BotContext,
-    ): Promise<CommandResult> {
+    async handleMessage(message: ProcessableMessage, context: BotContext) {
         const { author } = message;
         const mention = message.mentions.users.first();
         const userToMeasure = mention !== undefined ? mention : author;
 
-        log.debug(
-            `${author.id} wants to measure penis of user ${userToMeasure.id}`,
-        );
+        log.debug(`${author.id} wants to measure penis of user ${userToMeasure.id}`);
 
-        const recentMeasurement =
-            await penis.fetchRecentMeasurement(userToMeasure);
+        const recentMeasurement = await penis.fetchRecentMeasurement(userToMeasure);
 
         if (recentMeasurement === undefined) {
-            log.debug(
-                `No recent measuring of ${userToMeasure.id} found. Creating Measurement`,
-            );
+            log.debug(`No recent measuring of ${userToMeasure.id} found. Creating Measurement`);
 
             const size =
                 userToMeasure.id === context.client.user.id
                     ? PENIS_MAX
-                    : Math.floor(Math.random() * PENIS_MAX);
-            const diameter: Radius =
+                    : randomValue({ min: 1, maxInclusive: PENIS_MAX });
+            const radius: Radius =
                 userToMeasure.id === context.client.user.id
                     ? RADIUS_MAX
-                    : ((Math.floor(Math.random() * RADIUS_MAX) + 1) as Radius);
+                    : size === 0
+                      ? (0 as Radius)
+                      : (randomValue({ min: 1, maxInclusive: RADIUS_MAX }) as Radius);
 
             if (await isNewLongestDick(size)) {
-                log.debug(
-                    `${userToMeasure} has the new longest dick with size ${size}`,
-                );
+                log.debug(`${userToMeasure} has the new longest dick with size ${size}`);
             }
 
             await Promise.all([
-                penis.insertMeasurement(userToMeasure, size, diameter),
-                sendPenis(userToMeasure, message, size, diameter),
+                penis.insertMeasurement(userToMeasure, size, radius),
+                sendPenis(userToMeasure, message, size, radius),
             ]);
             return;
         }
@@ -145,7 +136,7 @@ export class PenisCommand implements MessageCommand {
             userToMeasure,
             message,
             recentMeasurement.size,
-            recentMeasurement.diameter,
+            recentMeasurement.radius,
             new Date(recentMeasurement.measuredAt),
         );
     }

@@ -1,61 +1,105 @@
 {
+    // This file supports comments and trailing commas
     "auth": {
-        "bot_token": "<BOT_TOKEN>",
-        "client_id": "<CLIENT_ID>"
+        "clientId": "${CLIENT_ID}",
+        "token": "${BOT_TOKEN}"
     },
-    "bot_settings": {
-        "status": "Hi!",
-        "prefix": {
-            "command_prefix": ".",
-            "mod_prefix": "~"
+    "sentry": {
+        "dsn": null,
+        "tracesSampleRate": null
+    },
+    "spotify": {
+        "clientId": "<SPOTIFY_CLIENT_ID>",
+        "clientSecret": "<SPOTIFY_CLIENT_SECRET>"
+    },
+    "activity": {
+        // https://discord.com/developers/docs/topics/gateway-events#activity-object-activity-types
+        "type": 0,
+        "name": "Die Jungs von der CSZ sind mir heilig."
+    },
+    "prefix": {
+        // You may want to choose a prefix that does not collide with others on the test server
+        "command": ".",
+        "modCommand": "~"
+    },
+    "moderatorRoleIds": ["893179190709477413"],
+
+    "command": {
+        "faulenzerPing": {
+            "allowedRoleIds": [],
+            "maxNumberOfPings": 10,
+            "minRequiredReactions": 5
         },
-        "moderator_roles": ["Moderader"],
-        "ban_reason_channel_id": "893179190881452117",
-        "woisping_limit": 7200,
-        "woisping_threshold": 2,
-        "quotes": {
-            "emoji_name": "zitat",
-            "emoji_id": "905042096724017212",
-            "allowed_group_ids": ["893179190709477407"],
-            "quote_threshold": 2,
-            "anonymous_channel_ids": [],
-            "blacklisted_channel_ids": [],
-            "default_target_channel_id": "893179191556706386",
-            "target_channel_overrides": []
+        "woisPing": {
+            "limit": 7200,
+            "threshold": 2
         },
-        "delete_thread_messages_in_channels": ["893179191556706384"],
         "ehre": {
-            "emoji_names": ["ähre", "aehre", "pr0aehre"]
+            "emojiNames": ["ähre", "aehre", "pr0aehre"]
         },
-        "faulenzerping_allowed_role_ids": [],
-        "faulenzerping_max_pings": 10,
-        "faulenzerping_min_required_reactions": 5,
-        "flame_trusted_user_on_bot_ping": false
+        "instagram": {
+            "rapidApiInstagramApiKey": ""
+        },
+        "loot": {
+            "enabled": true,
+            "scheduleCron": "*/15 * * * *",
+            "dropChance": 0.05,
+            "roles": {
+                "asseGuardShiftDuration": "PT8H"
+            }
+        },
+        "quotes": {
+            "emojiName": "zitat",
+            "allowedGroupIds": ["893179190709477407"],
+            "voteThreshold": 2,
+            "anonymousChannelIds": [],
+            "anonymousCategoryIds": [],
+            "blacklistedChannelIds": [],
+            "defaultTargetChannelId": "893179191556706386",
+            "targetChannelOverrides": []
+        },
+        "aoc": {
+            "enabled": false,
+            "targetChannelId": "",
+            "sessionToken": "",
+            "leaderBoardJsonUrl": "",
+            "userMap": {}
+        }
     },
-    "ids": {
-        "guild_id": "893179190235508819",
-        "hauptchat_id": "893179191292477441",
-        "default_role_id": "893179190709477407",
-        "banned_role_id": "893179190709477409",
-        "bday_role_id": "893179190709477416",
-        "woisgang_role_id": "893179190235508825",
-        "shame_role_id": "893179190235508822",
-        "winner_role_id": "1045422896740311070",
 
-        "bot_deny_role_id": "1025870480374247485",
-        "bot_spam_channel_id": "893179191556706387",
+    "deleteThreadMessagesInChannelIds": ["893179191556706384"],
+    "flameTrustedUserOnBotPing": false,
 
-        "haupt_woischat_id": "893179191825162372",
-        "woischat_text_id": "893179191825162371",
+    "guildGuildId": "893179190235508819",
 
-        "gruendervaeter_role_id": "893179190709477411",
-        "gruendervaeter_banned_role_id": "893179190571044916",
-        "trusted_role_id": "893179190571044915",
-        "trusted_banned_role_id": "893179190571044914",
-        "emotifizierer_role_id": "893179190709477410",
+    "textChannel": {
+        "banReasonChannelId": "893179190881452117",
+        "bannedChannelId": "893179193741942888",
+        "botLogChannelId": "893179191556706387",
+        "hauptchatChannelId": "893179191292477441",
+        "votesChannelId": "893179191556706384",
+        "botSpamChannelId": "893179191556706387",
+        "hauptwoisTextChannelId": "893179191825162371"
+    },
 
-        "banned_channel_id": "893179193741942888",
-        "votes_channel_id": "893179191556706384",
-        "bot_log_channel_id": "893179191556706387"
+    "voiceChannel": {
+        "hauptWoischatChannelId": "893179191825162372"
+    },
+
+    "role": {
+        "bannedRoleId": "893179190709477409",
+        "birthdayRoleId": "893179190709477416",
+        "botDenyRoleId": "1025870480374247485",
+        "defaultRoleId": "893179190709477407",
+        "gruendervaeterRoleId": "893179190709477411",
+        "gruendervaeterBannedRoleId": "893179190571044916",
+        "roleDenyRoleId": "893179190684307514",
+        "shameRoleId": "893179190235508822",
+        "trustedRoleId": "893179190571044915",
+        "trustedBannedRoleId": "893179190571044914",
+        "woisgangRoleId": "893179190235508825",
+        "winnerRoleId": "1045422896740311070",
+        "emotifiziererRoleId": "893179190709477410",
+        "lootRoleAsseGuardRoleId": "1268706685753622529"
     }
 }

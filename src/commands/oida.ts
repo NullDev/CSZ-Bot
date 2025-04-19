@@ -1,17 +1,11 @@
-import {
-    type Client,
-    type CommandInteraction,
-    SlashCommandBuilder,
-    SlashCommandStringOption,
-} from "discord.js";
+import { type CommandInteraction, SlashCommandBuilder, SlashCommandStringOption } from "discord.js";
 
-import * as austrianTranslation from "../storage/austrianTranslation.js";
-import type { ApplicationCommand } from "./command.js";
-import type { BotContext } from "../context.js";
-import { ensureChatInputCommand } from "../utils/interactionUtils.js";
+import * as austrianTranslation from "@/storage/austrianTranslation.js";
+import type { ApplicationCommand } from "@/commands/command.js";
+import type { BotContext } from "@/context.js";
+import { ensureChatInputCommand } from "@/utils/interactionUtils.js";
 
-export class OidaCommand implements ApplicationCommand {
-    modCommand = false;
+export default class OidaCommand implements ApplicationCommand {
     name = "oida";
     description = "Fügt a Übersetzung 🇦🇹 -> 🇩🇪 hinzu";
 
@@ -24,9 +18,7 @@ export class OidaCommand implements ApplicationCommand {
                 .setName("austrian")
                 .setDescriptionLocalization("en-US", "ösisch")
                 .setDescriptionLocalization("de", "ösisch")
-                .setDescription(
-                    "🇦🇹 Österreichische Bezeichnung. Darf Leerzeichen enthalten.",
-                ),
+                .setDescription("🇦🇹 Österreichische Bezeichnung. Darf Leerzeichen enthalten."),
         )
         .addStringOption(
             new SlashCommandStringOption()
@@ -34,9 +26,7 @@ export class OidaCommand implements ApplicationCommand {
                 .setName("german")
                 .setDescriptionLocalization("en-US", "piefkisch")
                 .setDescriptionLocalization("de", "piefkisch")
-                .setDescription(
-                    "🇩🇪 Deutsche Bezeichnung. Darf Leerzeichen enthalten.",
-                ),
+                .setDescription("🇩🇪 Deutsche Bezeichnung. Darf Leerzeichen enthalten."),
         )
         .addStringOption(
             new SlashCommandStringOption()
@@ -51,11 +41,7 @@ export class OidaCommand implements ApplicationCommand {
         return value.replaceAll(/\s+/g, " ").trim();
     }
 
-    async handleInteraction(
-        command: CommandInteraction,
-        _client: Client,
-        context: BotContext,
-    ) {
+    async handleInteraction(command: CommandInteraction, context: BotContext) {
         const cmd = ensureChatInputCommand(command);
 
         const addedBy = await context.guild.members.fetch(command.user);

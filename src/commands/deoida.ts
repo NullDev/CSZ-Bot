@@ -1,9 +1,7 @@
-import type { Client } from "discord.js";
-
-import type { BotContext } from "../context.js";
-import type { ProcessableMessage } from "../handler/cmdHandler.js";
-import type { MessageCommand } from "./command.js";
-import * as austrianTranslation from "../storage/austrianTranslation.js";
+import type { BotContext } from "@/context.js";
+import type { ProcessableMessage } from "@/service/command.js";
+import type { MessageCommand } from "@/commands/command.js";
+import * as austrianTranslation from "@/storage/austrianTranslation.js";
 
 async function deOidaLine(line: string): Promise<string> {
     // We cannot just split all words using \s*. That could tear apart words or translations like "fescher bub"
@@ -29,8 +27,7 @@ async function deOidaLine(line: string): Promise<string> {
     const aussieWordsToReplace = [];
 
     for (const translationCandidate of enumerateAdjacentTokens(tokens)) {
-        const germanTranslation =
-            await austrianTranslation.findTranslation(translationCandidate);
+        const germanTranslation = await austrianTranslation.findTranslation(translationCandidate);
         if (germanTranslation) {
             // This is a rather dumb way of doing this.
             // Consider the example from above: "oida der fesche bursch han recht"
@@ -46,14 +43,8 @@ async function deOidaLine(line: string): Promise<string> {
     let result = line;
 
     for (const dbTranslation of aussieWordsToReplace) {
-        const caseInsensitivePattern = new RegExp(
-            `\\b${dbTranslation.austrian}\\b`,
-            "ig",
-        );
-        result = result.replaceAll(
-            caseInsensitivePattern,
-            dbTranslation.german,
-        );
+        const caseInsensitivePattern = new RegExp(`\\b${dbTranslation.austrian}\\b`, "ig");
+        result = result.replaceAll(caseInsensitivePattern, dbTranslation.german);
     }
 
     return result;
@@ -92,16 +83,8 @@ function* enumerateAdjacentTokens(tokens: string[]) {
 
     // TODO: If a message is really large without sufficient line breaks, we should break it apart heuristically
 
-    for (
-        let adjacentTokenCount = tokens.length;
-        adjacentTokenCount > 0;
-        --adjacentTokenCount
-    ) {
-        for (
-            let startIndex = 0;
-            startIndex <= tokens.length - adjacentTokenCount;
-            ++startIndex
-        ) {
+    for (let adjacentTokenCount = tokens.length; adjacentTokenCount > 0; --adjacentTokenCount) {
+        for (let startIndex = 0; startIndex <= tokens.length - adjacentTokenCount; ++startIndex) {
             const adjacentTokensForStartIndex = tokens.slice(
                 startIndex,
                 startIndex + adjacentTokenCount,
@@ -122,18 +105,14 @@ async function deOida(value: string): Promise<string> {
     return translatedLines.join("\n");
 }
 
-export class DeOidaCommand implements MessageCommand {
+export default class DeOidaCommand implements MessageCommand {
     name = "deoida";
     description = `
     Wendet super komplexes De-Oidaring an.
     Usage: Mit dem Command auf eine veroidarte (🇦🇹) Nachricht antworten. Alternativ den zu de-oidarten Text übergeben.
     `.trim();
 
-    async handleMessage(
-        message: ProcessableMessage,
-        _client: Client<boolean>,
-        context: BotContext,
-    ): Promise<void> {
+    async handleMessage(message: ProcessableMessage, context: BotContext) {
         const messageToTranslate = message.reference?.messageId
             ? await message.channel.messages.fetch(message.reference.messageId)
             : message;

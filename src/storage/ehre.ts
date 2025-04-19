@@ -1,14 +1,11 @@
+import { sql } from "kysely";
 import type { Snowflake, User } from "discord.js";
 
-import type { EhrePoints } from "./model.js";
-import db from "./db.js";
-import log from "../utils/logger.js";
-import { sql } from "kysely";
+import type { EhrePoints } from "./db/model.js";
+import db from "@db";
+import log from "@log";
 
-export async function hasVoted(
-    userId: Snowflake,
-    ctx = db(),
-): Promise<boolean> {
+export async function hasVoted(userId: Snowflake, ctx = db()): Promise<boolean> {
     const { votes } = await ctx
         .selectFrom("ehreVotes")
         .where("userId", "=", userId)
@@ -18,18 +15,7 @@ export async function hasVoted(
     return votes !== 0;
 }
 
-export async function insertVote(userId: Snowflake, ctx = db()) {
-    const now = new Date().toISOString();
-    await ctx
-        .insertInto("ehreVotes")
-        .values({
-            userId,
-        })
-        .execute();
-}
-
 export async function addPoints(userId: Snowflake, points: number, ctx = db()) {
-    const now = new Date().toISOString();
     await ctx
         .insertInto("ehrePoints")
         .values({
@@ -46,15 +32,32 @@ export async function addPoints(userId: Snowflake, points: number, ctx = db()) {
         .executeTakeFirstOrThrow();
 }
 
-export function findPoints(
-    userId: Snowflake,
-    ctx = db(),
-): Promise<EhrePoints | undefined> {
-    return ctx
-        .selectFrom("ehrePoints")
-        .where("userId", "=", userId)
-        .selectAll()
-        .executeTakeFirst();
+export async function addVote(voter: Snowflake, userId: Snowflake, ctx = db()) {
+    await ctx.transaction().execute(async tx => {
+        const userInGroups = await getUserInGroups(tx);
+        const voteValue = getVoteValue(userInGroups, voter);
+        await tx
+            .insertInto("ehreVotes")
+            .values({
+                userId: voter,
+            })
+            .execute();
+        await addPoints(userId, voteValue, tx);
+    });
+}
+
+function getVoteValue(userInGroups: EhreGroups, voter: string): number {
+    if (userInGroups.best?.userId === voter) {
+        return 5;
+    }
+    if (userInGroups.middle.map(u => u.userId).includes(voter)) {
+        return 2;
+    }
+    return 1;
+}
+
+export function findPoints(userId: Snowflake, ctx = db()): Promise<EhrePoints | undefined> {
+    return ctx.selectFrom("ehrePoints").where("userId", "=", userId).selectAll().executeTakeFirst();
 }
 
 export async function runDeflation(ctx = db()) {
@@ -62,7 +65,7 @@ export async function runDeflation(ctx = db()) {
     await ctx
         .updateTable("ehrePoints")
         .set(eb => ({
-            points: eb("points", "*", 0.98),
+            points: eb("points", "*", 0.995),
         }))
         .execute();
 }
@@ -94,6 +97,6 @@ export async function getUserInGroups(ctx = db()): Promise<EhreGroups> {
     };
 }
 
-export async function removeEhrePoints(user: User, ctx = db()): Promise<void> {
+export async function removeEhrePoints(user: User, ctx = db()) {
     await ctx.deleteFrom("ehrePoints").where("userId", "=", user.id).execute();
 }

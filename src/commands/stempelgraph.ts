@@ -1,6 +1,5 @@
 import graphviz from "graphviz-wasm";
 import {
-    type Client,
     type CommandInteraction,
     type Guild,
     type GuildMember,
@@ -9,12 +8,12 @@ import {
     SlashCommandStringOption,
 } from "discord.js";
 import { Resvg } from "@resvg/resvg-js";
+import * as sentry from "@sentry/bun";
 
-import type { ApplicationCommand, CommandResult } from "./command.js";
-import type { BotContext } from "../context.js";
-import * as stempel from "../storage/stempel.js";
-import log from "../utils/logger.js";
-import { isMod, isTrusted } from "../utils/userUtils.js";
+import type { ApplicationCommand } from "@/commands/command.js";
+import type { BotContext } from "@/context.js";
+import * as stempelService from "@/service/stempel.js";
+import log from "@log";
 
 const supportedLayoutEngines = [
     "circo",
@@ -98,14 +97,12 @@ async function drawStempelgraph(
     stempels: StempelConnection[],
     engine: LayoutEngine,
     userInfo: Map<GuildMember, UserInfo>,
-): Promise<[Buffer, string]> {
+): Promise<Buffer> {
     for (const stempel of stempels) {
         log.debug(`${stempel.inviter} --> ${stempel.invitee}`);
     }
     for (const info of userInfo) {
-        log.debug(
-            `${info[0].id} : ${info[1].name} / ${info[1].member} / ${info[1].roles}`,
-        );
+        log.debug(`${info[0].id} : ${info[1].name} / ${info[1].member} / ${info[1].roles}`);
     }
     const inviterNodes = stempels
         .map(s => userInfo.get(s.inviter))
@@ -119,9 +116,7 @@ async function drawStempelgraph(
         .map(getMemberNode)
         .join(";");
 
-    const connections = stempels
-        .map(s => `"${s.inviter.id}" -> "${s.invitee.id}"`)
-        .join(";");
+    const connections = stempels.map(s => `"${s.inviter.id}" -> "${s.invitee.id}"`).join(";");
 
     const dotSrc = `digraph {
 	layout = ${engine};
@@ -145,7 +140,7 @@ async function drawStempelgraph(
     await graphviz.loadWASM();
     const svg = graphviz.layout(dotSrc, "svg", engine);
 
-    return [convertToImage(svg), dotSrc];
+    return convertToImage(svg);
 }
 
 async function fetchMemberInfo(
@@ -169,20 +164,20 @@ async function fetchMemberInfo(
 function getRoles(context: BotContext, member: GuildMember): RoleInGraph[] {
     const res: RoleInGraph[] = [];
 
-    // TODO: Das Zeug hier aufräumen am besten ins userUtils Modul. Soon:tm:
-    if (member.roles.cache.has(context.roles.woisgang.id)) {
+    // TODO: Mehr in die roleGuards
+    if (context.roleGuard.isWoisGang(member)) {
         res.push("woisgang");
     }
-    if (isTrusted(member)) {
+    if (context.roleGuard.isTrusted(member)) {
         res.push("trusted");
     }
-    if (member.roles.cache.has(context.roles.gruendervaeter.id)) {
+    if (context.roleGuard.isGruendervater(member)) {
         res.push("gruendervaeter");
     }
-    if (member.roles.cache.has("856269806969421844")) {
+    if (context.roleGuard.isRejoiner(member)) {
         res.push("rejoiner");
     }
-    if (isMod(member)) {
+    if (context.roleGuard.isMod(member)) {
         res.push("moderator");
     }
     if (member.roles.cache.has("620762567568130089")) {
@@ -197,8 +192,7 @@ function getRoles(context: BotContext, member: GuildMember): RoleInGraph[] {
     return res;
 }
 
-export class StempelgraphCommand implements ApplicationCommand {
-    modCommand = false;
+export default class StempelgraphCommand implements ApplicationCommand {
     name = "stempelgraph";
     description = "Zeigt einen Sozialgraphen der Stempel. 1984 ist real!";
 
@@ -218,11 +212,7 @@ export class StempelgraphCommand implements ApplicationCommand {
                 .setName("engine"),
         );
 
-    async handleInteraction(
-        command: CommandInteraction,
-        _client: Client<boolean>,
-        context: BotContext,
-    ): Promise<CommandResult> {
+    async handleInteraction(command: CommandInteraction, context: BotContext) {
         if (!command.isChatInputCommand()) {
             // TODO: Solve this on a type level
             return;
@@ -234,13 +224,11 @@ export class StempelgraphCommand implements ApplicationCommand {
             return;
         }
 
-        const stempels = await stempel.findAll();
+        const stempels = await stempelService.getAllStempels();
         log.debug(`Found ${stempels.length} Stempels`);
 
         const allUserIds = new Set<string>(
-            stempels
-                .map(s => s.inviterId)
-                .concat(stempels.map(s => s.invitedMemberId)),
+            stempels.map(s => s.inviterId).concat(stempels.map(s => s.invitedMemberId)),
         );
         log.debug(`All in all we have ${allUserIds.size} unique Stempler`);
 
@@ -253,8 +241,7 @@ export class StempelgraphCommand implements ApplicationCommand {
                 invitee: memberInfoMap.get(s.invitedMemberId),
             }))
             .filter(
-                (s): s is StempelConnection =>
-                    s.invitee !== undefined && s.inviter !== undefined,
+                (s): s is StempelConnection => s.invitee !== undefined && s.inviter !== undefined,
             );
 
         const graphUserInfo = new Map<GuildMember, UserInfo>();
@@ -266,24 +253,10 @@ export class StempelgraphCommand implements ApplicationCommand {
             });
         }
 
-        const engine = (command.options.getString("engine") ??
-            "dot") as LayoutEngine;
+        const engine = (command.options.getString("engine") ?? "dot") as LayoutEngine;
 
         try {
-            const [stempelGraph, dotSrc] = await drawStempelgraph(
-                namedStempels,
-                engine,
-                graphUserInfo,
-            );
-
-            /*
-            await command.reply({
-                content:
-                    "```\n" +
-                    JSON.stringify([...graphUserInfo.entries()], null, "  ") +
-                    "\n```",
-            });
-            */
+            const stempelGraph = await drawStempelgraph(namedStempels, engine, graphUserInfo);
 
             await command.reply({
                 files: [
@@ -294,6 +267,7 @@ export class StempelgraphCommand implements ApplicationCommand {
                 ],
             });
         } catch (err) {
+            sentry.captureException(err);
             log.error(err, "Could not draw stempelgraph");
         }
     }

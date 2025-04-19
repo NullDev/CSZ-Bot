@@ -2,7 +2,6 @@ import { once } from "node:events";
 
 import {
     type APIEmbed,
-    ActionRowBuilder,
     ButtonBuilder,
     type ButtonInteraction,
     ButtonStyle,
@@ -16,13 +15,9 @@ import {
     time,
 } from "discord.js";
 
-import type { ApplicationCommand, CommandResult } from "./command.js";
-import type { BotContext } from "../context.js";
+import type { ApplicationCommand } from "@/commands/command.js";
 
-import log from "../utils/logger.js";
-
-export class Vote2Command implements ApplicationCommand {
-    modCommand = false;
+export default class Vote2Command implements ApplicationCommand {
     name = "vote2";
     description = "Erstellt eine Umfrage (ja/nein).";
 
@@ -31,9 +26,7 @@ export class Vote2Command implements ApplicationCommand {
         .setDescription(this.description)
         .addStringOption(
             new SlashCommandStringOption()
-                .setDescription(
-                    "Die Frage oder worüber abgestimmt werden soll.",
-                )
+                .setDescription("Die Frage oder worüber abgestimmt werden soll.")
                 .setRequired(true)
                 .setName("question")
                 .setNameLocalizations({
@@ -86,9 +79,7 @@ export class Vote2Command implements ApplicationCommand {
                 ),
         );
 
-    async handleInteraction(
-        command: CommandInteraction,
-    ): Promise<CommandResult> {
+    async handleInteraction(command: CommandInteraction) {
         if (!command.isChatInputCommand()) {
             return;
         }
@@ -132,10 +123,10 @@ export class Vote2Command implements ApplicationCommand {
         const response = await command.reply({
             embeds: [embed],
             components: [
-                new ActionRowBuilder<ButtonBuilder>().addComponents(
-                    yesButton,
-                    noButton,
-                ),
+                {
+                    type: ComponentType.ActionRow,
+                    components: [yesButton, noButton],
+                },
             ],
         });
 
@@ -182,7 +173,7 @@ export class Vote2Command implements ApplicationCommand {
             });
         });
 
-        await once(collector, "end");
+        await once(collector as unknown as EventTarget, "end");
 
         const yesVotes = [...votes.values()].filter(v => v).length;
         const noVotes = votes.size - yesVotes;
@@ -198,10 +189,13 @@ export class Vote2Command implements ApplicationCommand {
                 },
             ],
             components: [
-                new ActionRowBuilder<ButtonBuilder>().addComponents(
-                    yesButton.setLabel(`${yesVotes} 👍`).setDisabled(true),
-                    noButton.setLabel(`${noVotes} 👎`).setDisabled(true),
-                ),
+                {
+                    type: ComponentType.ActionRow,
+                    components: [
+                        yesButton.setLabel(`${yesVotes} 👍`).setDisabled(true),
+                        noButton.setLabel(`${noVotes} 👎`).setDisabled(true),
+                    ],
+                },
             ],
         });
     }

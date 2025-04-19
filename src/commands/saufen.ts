@@ -4,7 +4,6 @@ import * as fs from "node:fs/promises";
 import {
     type CommandInteraction,
     type CacheType,
-    type Client,
     type PermissionsString,
     SlashCommandBuilder,
     SlashCommandStringOption,
@@ -12,20 +11,17 @@ import {
     type AutocompleteInteraction,
 } from "discord.js";
 
-import type { ApplicationCommand } from "./command.js";
-import type { BotContext } from "../context.js";
-import { connectAndPlaySaufen } from "../handler/voiceHandler.js";
-import { assertNever } from "../utils/typeUtils.js";
+import type { ApplicationCommand, AutocompleteCommand } from "@/commands/command.js";
+import type { BotContext } from "@/context.js";
+import { connectAndPlaySaufen } from "@/handler/voiceHandler.js";
+import assertNever from "@/utils/assertNever.js";
 
 type SubCommand = "los" | "add" | "list" | "select";
 
-export class Saufen implements ApplicationCommand {
+export default class Saufen implements ApplicationCommand, AutocompleteCommand {
     name = "saufen";
     description = "Macht Stimmung in Wois";
-    requiredPermissions: readonly PermissionsString[] = [
-        "BanMembers",
-        "ManageEvents",
-    ];
+    requiredPermissions: readonly PermissionsString[] = ["BanMembers", "ManageEvents"];
     applicationCommand = new SlashCommandBuilder()
         .setName(this.name)
         .setDescription(this.description)
@@ -59,17 +55,11 @@ export class Saufen implements ApplicationCommand {
                     new SlashCommandStringOption()
                         .setRequired(true)
                         .setName("sound")
-                        .setDescription(
-                            "Link zum File (Bitte nur audio files bro)",
-                        ),
+                        .setDescription("Link zum File (Bitte nur audio files bro)"),
                 ),
         );
 
-    async handleInteraction(
-        command: CommandInteraction<CacheType>,
-        _client: Client<boolean>,
-        context: BotContext,
-    ): Promise<void> {
+    async handleInteraction(command: CommandInteraction<CacheType>, context: BotContext) {
         if (!command.isChatInputCommand()) {
             // TODO: Solve this on a type level
             return;
@@ -101,18 +91,13 @@ export class Saufen implements ApplicationCommand {
             }
             case "select": {
                 const toPlay = command.options.getString("sound", true);
-                await Promise.all([
-                    connectAndPlaySaufen(context, toPlay),
-                    reply(),
-                ]);
+                await Promise.all([connectAndPlaySaufen(context, toPlay), reply()]);
                 return;
             }
             case "add": {
-                const soundUrl = new URL(
-                    command.options.getString("sound", true),
-                );
+                const soundUrl = new URL(command.options.getString("sound", true));
                 const targetPath = path.resolve(
-                    context.soundsDir,
+                    context.path.sounds,
                     path.basename(soundUrl.pathname),
                 );
 
@@ -127,13 +112,13 @@ export class Saufen implements ApplicationCommand {
                 }
 
                 const ab = await res.arrayBuffer();
-                await fs.writeFile(targetPath, Buffer.from(ab));
+                await fs.writeFile(targetPath, new Uint8Array(ab));
 
                 await command.reply("Jo, habs eingefügt");
                 return;
             }
             case "list": {
-                const files = await this.getSoundFiles(context.soundsDir);
+                const files = await this.#getSoundFiles(context.path.sounds);
                 await command.reply(files.map(f => `- ${f}`).join("\n"));
                 return;
             }
@@ -142,22 +127,19 @@ export class Saufen implements ApplicationCommand {
         }
     }
 
-    private async getSoundFiles(soundDir: string) {
+    async #getSoundFiles(soundDir: string) {
         return (await fs.readdir(soundDir, { withFileTypes: true }))
             .filter(f => f.isFile())
             .map(f => f.name);
     }
 
-    async autocomplete(
-        interaction: AutocompleteInteraction,
-        context: BotContext,
-    ) {
+    async autocomplete(interaction: AutocompleteInteraction, context: BotContext) {
         const subCommand = interaction.options.getSubcommand(true);
         if (subCommand !== "select") {
             return;
         }
 
-        const files = await this.getSoundFiles(context.soundsDir);
+        const files = await this.#getSoundFiles(context.path.sounds);
 
         const focusedValue = interaction.options.getFocused().toLowerCase();
         const completions = files

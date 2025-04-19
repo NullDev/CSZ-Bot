@@ -1,11 +1,11 @@
 import * as fs from "node:fs/promises";
 
 import { createCanvas, loadImage } from "@napi-rs/canvas";
-import type { Client, GuildMember } from "discord.js";
+import type { GuildMember } from "discord.js";
 
-import type { CommandResult, MessageCommand } from "./command.js";
-import type { ProcessableMessage } from "../handler/cmdHandler.js";
-import log from "../utils/logger.js";
+import type { MessageCommand } from "@/commands/command.js";
+import type { ProcessableMessage } from "@/service/command.js";
+import log from "@log";
 
 const createBonkMeme = async (author: GuildMember): Promise<Buffer> => {
     const bonk = await fs.readFile("assets/bonk.png");
@@ -23,18 +23,15 @@ const createBonkMeme = async (author: GuildMember): Promise<Buffer> => {
     return await canvas.encode("png");
 };
 
-export class BonkCommand implements MessageCommand {
+export default class BonkCommand implements MessageCommand {
     name = "bonk";
     aliases = ["bong"];
     description = `Bonkt einen Nutzer und ersetzt den rechten gelben Hund mit dem Avatar des Nutzers.
 Usage: $COMMAND_PREFIX$bonk
-       $COMMAND_PREFIX$bonk @ShadowByte#1337
+       $COMMAND_PREFIX$bonk @nullping
        Oder auf eine Nachricht mit $COMMAND_PREFIX$bonk antworten.`;
 
-    async handleMessage(
-        message: ProcessableMessage,
-        _client: Client<boolean>,
-    ): Promise<CommandResult> {
+    async handleMessage(message: ProcessableMessage) {
         const messageRef = message.reference?.messageId;
         const messagePing = message.mentions?.users.first();
         let toBeBonked = await message.guild.members.fetch(message.author);

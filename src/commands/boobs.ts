@@ -1,10 +1,10 @@
-import type { Client, User } from "discord.js";
+import { time, TimestampStyles, type User } from "discord.js";
 
-import type { ProcessableMessage } from "../handler/cmdHandler.js";
-import type { CommandResult, MessageCommand } from "./command.js";
-import * as boob from "../storage/boob.js";
-import log from "../utils/logger.js";
-import { formatTime } from "../utils/dateUtils.js";
+import type { ProcessableMessage } from "@/service/command.js";
+import type { MessageCommand } from "@/commands/command.js";
+import * as boob from "@/storage/boob.js";
+import log from "@log";
+import { randomEntry } from "@/service/random.js";
 
 interface Booba {
     description: string;
@@ -109,9 +109,8 @@ const sendBoob = async (
         throw new Error(`Booba with size ${size} not defined`);
     }
 
-    const measuredAt = formatTime(measurement);
     await message.reply(
-        `${booba.description} von ${user}, gemessen um ${measuredAt}:\n${booba.representation}`,
+        `${booba.description} von ${user}, gemessen um ${time(measurement, TimestampStyles.LongDateTime)}:\n${booba.representation}`,
     );
 };
 
@@ -120,7 +119,7 @@ const isNewBiggestBoobs = async (size: number): Promise<boolean> => {
     return oldLongest < size;
 };
 
-export class BoobCommand implements MessageCommand {
+export default class BoobCommand implements MessageCommand {
     name = "boob";
     aliases = [
         "booba",
@@ -142,32 +141,24 @@ export class BoobCommand implements MessageCommand {
     ];
     description = "Zeigt dir die deine Boobs mit Größe an";
 
-    async handleMessage(
-        message: ProcessableMessage,
-        _client: Client,
-    ): Promise<CommandResult> {
+    async handleMessage(message: ProcessableMessage) {
         const { author } = message;
         const mention = message.mentions.users.first();
         const userToMeasure = mention !== undefined ? mention : author;
 
-        log.debug(
-            `${author.id} wants to measure boob of user ${userToMeasure.id}`,
-        );
+        log.debug(`${author.id} wants to measure boob of user ${userToMeasure.id}`);
 
-        const recentMeasurement =
-            await boob.fetchRecentMeasurement(userToMeasure);
+        const recentMeasurement = await boob.fetchRecentMeasurement(userToMeasure);
 
         if (recentMeasurement === undefined) {
             log.debug(
                 `No recent boob measuring of ${userToMeasure.id} found. Creating Measurement`,
             );
 
-            const size = Math.floor(Math.random() * Object.keys(boobas).length);
+            const size = Number(randomEntry(Object.keys(boobas)));
 
             if (await isNewBiggestBoobs(size)) {
-                log.debug(
-                    `${userToMeasure} has the new biggest boobs with size ${size}`,
-                );
+                log.debug(`${userToMeasure} has the new biggest boobs with size ${size}`);
             }
 
             await Promise.all([

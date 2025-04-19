@@ -1,19 +1,22 @@
 import * as fs from "node:fs/promises";
+
 import { createCanvas, loadImage } from "@napi-rs/canvas";
 import {
     type ImageSize,
-    type Client,
     type CommandInteraction,
     type GuildMember,
     type Snowflake,
     SlashCommandBuilder,
     SlashCommandUserOption,
+    ChatInputCommandInteraction,
 } from "discord.js";
+import * as sentry from "@sentry/bun";
 
-import * as stempel from "../storage/stempel.js";
-import log from "../utils/logger.js";
-import type { ApplicationCommand, CommandResult } from "./command.js";
-import { chunkArray } from "../utils/arrayUtils.js";
+import type { ApplicationCommand } from "@/commands/command.js";
+
+import * as stempelService from "@/service/stempel.js";
+import { chunkArray } from "@/utils/arrayUtils.js";
+import log from "@log";
 
 const stempelLocations = [
     // 1-3
@@ -62,7 +65,7 @@ const drawStempelkarteBackside = async (
     const avatarUnavailable = await fs.readFile("assets/no-avatar.png");
     const avatarUnavailableImage = await loadImage(avatarUnavailable);
 
-    const background = await fs.readFile("assets/stempelkarte-back.png");
+    const background = await fs.readFile("assets/stempelkarte/back.png");
     const backgroundImage = await loadImage(background);
 
     const canvas = createCanvas(backgroundImage.width, backgroundImage.height);
@@ -72,9 +75,7 @@ const drawStempelkarteBackside = async (
         url ? loadImage(url) : Promise.reject(new Error("url is falsy")),
     );
 
-    const avatarResults = await Promise.allSettled(
-        avatarSourcesWithPlaceholders,
-    );
+    const avatarResults = await Promise.allSettled(avatarSourcesWithPlaceholders);
 
     ctx.drawImage(backgroundImage, 0, 0);
 
@@ -87,11 +88,7 @@ const drawStempelkarteBackside = async (
                 : avatarUnavailableImage;
 
         const centerPoint = stempelLocations[i];
-        ctx.drawImage(
-            avatar,
-            centerPoint.x - avatar.width / 2,
-            centerPoint.y - avatar.height / 2,
-        );
+        ctx.drawImage(avatar, centerPoint.x - avatar.width / 2, centerPoint.y - avatar.height / 2);
     }
 
     const subjectAvatar = subjectAvatarUrl
@@ -107,8 +104,7 @@ const drawStempelkarteBackside = async (
     return await canvas.encode("png");
 };
 
-export class StempelkarteCommand implements ApplicationCommand {
-    modCommand = false;
+export default class StempelkarteCommand implements ApplicationCommand {
     name = "stempelkarte";
     description = "Zeigt eine die Stempelkarte eines Users an.";
 
@@ -119,20 +115,18 @@ export class StempelkarteCommand implements ApplicationCommand {
             new SlashCommandUserOption()
                 .setRequired(false)
                 .setName("user")
-                .setDescription(
-                    "Derjeniche, von dem du die Stempelkarte sehen möchtest",
-                ),
+                .setDescription("Derjeniche, von dem du die Stempelkarte sehen möchtest"),
         );
 
-    async handleInteraction(
-        command: CommandInteraction,
-        _client: Client<boolean>,
-    ): Promise<CommandResult> {
+    async handleInteraction(command: CommandInteraction) {
+        if (!(command instanceof ChatInputCommandInteraction)) {
+            // TODO: handle this on a type level
+            return;
+        }
+
         const userOption = command.options.getUser("user") ?? command.user;
 
-        const ofMember = command.guild?.members.cache.find(
-            m => m.id === userOption.id,
-        );
+        const ofMember = command.guild?.members.cache.find(m => m.id === userOption.id);
         if (!ofMember) {
             return;
         }
@@ -140,12 +134,11 @@ export class StempelkarteCommand implements ApplicationCommand {
         const getUserById = (id: Snowflake) =>
             command.guild?.members.cache.find(member => member.id === id);
 
-        const allInvitees = await stempel.getStempelByInvitator(ofMember);
+        const allInvitees = await stempelService.getStempelByInviter(ofMember);
 
         if (allInvitees.length === 0) {
             await command.reply({
-                content:
-                    "Wie wäre es wenn du überhaupt mal Leute einlädst du Schmarotzer",
+                content: "Wie wäre es wenn du überhaupt mal Leute einlädst du Schmarotzer",
             });
             return;
         }
@@ -162,25 +155,21 @@ export class StempelkarteCommand implements ApplicationCommand {
                 .map(getUserById)
                 .map(member => getAvatarUrlForMember(member));
 
-            stempelkarten.push(
-                drawStempelkarteBackside(subjectAvatarUrl, avatarUrls),
-            );
+            stempelkarten.push(drawStempelkarteBackside(subjectAvatarUrl, avatarUrls));
         }
 
-        const results = (await Promise.allSettled(stempelkarten)).filter(
-            result => result.status === "fulfilled",
-        ) as PromiseFulfilledResult<Buffer>[];
-
-        const files = results.map((result, index) => ({
-            name: `stempelkarte-${ofMember.nickname}-${index}.png`,
-            attachment: result.value,
-        }));
-
         try {
+            const results = await Promise.all(stempelkarten);
+            const files = results.map((attachment, index) => ({
+                name: `stempelkarte/${ofMember.nickname}-${index}.png`,
+                attachment,
+            }));
+
             await command.reply({
                 files,
             });
         } catch (err) {
+            sentry.captureException(err);
             log.error(err, "Could not send stempelkarten");
         }
     }

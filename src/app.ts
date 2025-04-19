@@ -1,84 +1,79 @@
-import * as Discord from "discord.js";
-import {
-    type Message,
-    type VoiceState,
-    GatewayIntentBits,
-    Partials,
-    type Client,
-} from "discord.js";
-import cron from "croner";
+import { GatewayIntentBits, Partials, Client } from "discord.js";
+import * as sentry from "@sentry/bun";
 
-import * as conf from "./utils/configHandler.js";
-import log from "./utils/logger.js";
+import { readConfig, databasePath, args } from "@/service/config.js";
+import log from "@log";
 
-import messageHandler from "./handler/messageHandler.js";
-import messageDeleteHandler from "./handler/messageDeleteHandler.js";
-import { checkBirthdays } from "./handler/bdayHandler.js";
-import * as fadingMessageHandler from "./handler/fadingMessageHandler.js";
-import * as kysely from "./storage/db.js";
+import "@/polyfills.js";
 
-import * as ban from "./commands/modcommands/ban.js";
-import * as poll from "./commands/poll.js";
-import reactionHandler from "./handler/reactionHandler.js";
-import {
-    woisData,
-    checkVoiceUpdate,
-} from "./handler/voiceStateUpdateHandler.js";
+import * as kysely from "@/storage/db/db.js";
 
-import type { ReactionHandler } from "./types.js";
+import type { ReactionHandler } from "@/handler/ReactionHandler.js";
+import messageDeleteHandler from "@/handler/messageDeleteHandler.js";
+import roleAssignerHandler from "@/handler/roleAssignerHandler.js";
+import defaultReactionHandler from "@/handler/defaultReactionHandler.js";
+import logEmotesReactionHandler from "@/handler/logEmotesReactionHandler.js";
+import quoteReactionHandler from "@/handler/quoteHandler.js";
+import { woisVoteReactionHandler } from "@/commands/woisvote.js";
+import * as voiceStateService from "@/service/voiceState.js";
+
 import {
     handleInteractionEvent,
+    loadCommands,
     messageCommandHandler,
     registerAllApplicationCommandsAsGuildCommands,
-} from "./handler/commandHandler.js";
-import quoteReactionHandler from "./handler/quoteHandler.js";
-import { rerollNicknames } from "./handler/nicknameHandler.js";
-import { connectAndPlaySaufen } from "./handler/voiceHandler.js";
-import { reminderHandler } from "./commands/erinnerung.js";
-import { endAprilFools, startAprilFools } from "./handler/aprilFoolsHandler.js";
-import { createBotContext, type BotContext } from "./context.js";
-import { ehreReactionHandler } from "./commands/ehre.js";
-import {
-    woisVoteReactionHandler,
-    woisVoteScheduler,
-} from "./commands/woisvote.js";
-import { publishAocLeaderBoard } from "./commands/aoc.js";
-import { rotate } from "./helper/bannerCarusel.js";
-import deleteThreadMessagesHandler from "./handler/deleteThreadMessagesHandler.js";
-import * as terminal from "./terminal.js";
-import * as guildRageQuit from "./storage/guildRageQuit.js";
-import * as ehre from "./storage/ehre.js";
+} from "@/handler/commandHandler.js";
+import deleteThreadMessagesHandler from "@/handler/deleteThreadMessagesHandler.js";
+import { createBotContext, type BotContext } from "@/context.js";
+import { ehreReactionHandler } from "@/commands/ehre.js";
+import * as terminal from "@/utils/terminal.js";
+import * as guildRageQuit from "@/storage/guildRageQuit.js";
+import * as cronService from "@/service/cron.js";
+import { handlePresenceUpdate } from "./handler/presenceHandler.js";
 
-const args = process.argv.slice(2);
+const env = process.env;
 
-const prodMode =
-    process.env.NODE_ENV === "production"
-        ? ` ${terminal.highlightWarn(" production ")} mode`
-        : "";
+const release =
+    env.RELEASE_IDENTIFIER && env.BUILD_NUMBER
+        ? `csz-bot@0.0.0-build.${env.BUILD_NUMBER}+commit.${env.RELEASE_IDENTIFIER}`
+        : undefined;
 
-const cszBot = terminal.highlight(" CSZ Bot ");
+{
+    const prodMode = env.NODE_ENV === "production" ? terminal.highlightWarn(" prod mode ") : "";
 
-console.log(
-    // biome-ignore lint/style/useTemplate: Seems to be more readable this way
-    "\n" +
-        " ┌───────────┐\n" +
-        ` │ ${cszBot} │ Copyright (c) ${new Date().getFullYear()} Users of the CSZ\n` +
-        ` └───────────┘${prodMode}\n`,
-);
+    const cszBot = terminal.highlight(" CSZ Bot ");
+    const year = new Date().getFullYear();
 
-let botContext: BotContext;
+    console.log();
+    console.log(" ┌───────────┐");
+    console.log(` │ ${cszBot} │ Copyright (c) ${year} Users of the CSZ`);
+    console.log(" └───────────┘");
+    console.log(`  ${prodMode} ${release ? `(${release})` : ""}`);
+}
 
-log.info("Bot starting up...");
-const config = conf.getConfig();
+log.info(`Bot starting up...${release ? ` (release: ${release})` : ""}`);
 
-if (!config.auth.bot_token) {
+const config = await readConfig();
+
+if (config.sentry?.dsn) {
+    sentry.init({
+        dsn: config.sentry.dsn,
+        environment: env.NODE_ENV,
+        release,
+        tracesSampleRate: config.sentry?.tracesSampleRate ?? 1,
+    });
+}
+
+if (!config.auth.clientId || !config.auth.token) {
     log.error(
-        "No bot token found in config. Make sure to set `auth.bot_token` and `auth.client_id` in `config.json`",
+        "No bot token found in config. Make sure to set `auth.clientId` and `auth.token` in `config.json`",
     );
     process.exit(1);
 }
 
-const client = new Discord.Client({
+await kysely.connectToDb(databasePath);
+
+const client = new Client({
     partials: [Partials.Message, Partials.Reaction, Partials.User],
     allowedMentions: {
         parse: ["users"],
@@ -106,21 +101,21 @@ const client = new Discord.Client({
  * All of them will be executed in the given order, regardless of their result or if they throw an error.
  */
 const reactionHandlers: ReactionHandler[] = [
-    reactionHandler,
+    defaultReactionHandler,
+    logEmotesReactionHandler,
     quoteReactionHandler,
     ehreReactionHandler,
     woisVoteReactionHandler,
+    roleAssignerHandler,
 ];
 
-process.on("unhandledRejection", (err: unknown, promise) => {
-    log.error(err, `Unhandled rejection (promise: ${promise})`);
-});
-process.on("uncaughtException", (err, origin) => {
-    log.error(err, `Uncaught exception (origin: ${origin})`);
-});
+process.on("unhandledRejection", err => log.error(err, "Unhandled rejection"));
+process.on("uncaughtException", (err, origin) =>
+    log.error(err, `Uncaught exception (origin: ${origin})`),
+);
 
 process.once("SIGTERM", signal => {
-    log.error(`Received Sigterm: ${signal}`);
+    log.fatal(`Received SIGTERM: ${signal}`);
     process.exit(1);
 });
 process.once("exit", code => {
@@ -129,89 +124,14 @@ process.once("exit", code => {
     log.warn(`Process exited with code: ${code}`);
 });
 
-const clearWoisLogTask = () => {
-    woisData.latestEvents = woisData.latestEvents.filter(
-        event => event.createdAt.getTime() > Date.now() - 2 * 60 * 1000,
-    );
-};
-
-const leetTask = async () => {
-    const { hauptchat } = botContext.textChannels;
-    const csz = botContext.guild;
-
-    await hauptchat.send(
-        "Es ist `13:37` meine Kerle.\nBleibt hydriert! :grin: :sweat_drops:",
-    );
-
-    // Auto-kick members
-    const sadPinguEmote = csz.emojis.cache.find(e => e.name === "sadpingu");
-    const dabEmote = csz.emojis.cache.find(e => e.name === "Dab");
-
-    const membersToKick = (await csz.members.fetch())
-        .filter(
-            m =>
-                m.joinedTimestamp !== null &&
-                Date.now() - m.joinedTimestamp >= 48 * 3_600_000,
-        )
-        .filter(
-            m => m.roles.cache.filter(r => r.name !== "@everyone").size === 0,
-        );
-
-    log.info(
-        `Identified ${
-            membersToKick.size
-        } members that should be kicked, these are: ${membersToKick
-            .map(m => m.displayName)
-            .join(",")}.`,
-    );
-
-    if (membersToKick.size === 0) {
-        await hauptchat.send(
-            `Heute leider keine Jocklerinos gekickt ${sadPinguEmote}`,
-        );
-        return;
-    }
-
-    // We don't have trust in this code, so ensure that we don't kick any regular members :harold:
-    if (membersToKick.size > 5) {
-        // I think we don't need to kick more than 5 members at a time. If so, it is probably a bug and we don't want to to do that
-        throw new Error(
-            `You probably didn't want to kick ${membersToKick.size} members, or?`,
-        );
-    }
-
-    // I don't have trust in this code, so ensure that we don't kick any regular members :harold:
-    console.assert(
-        false,
-        membersToKick.some(m => m.roles.cache.some(r => r.name === "Nerd")),
-    );
-
-    const fetchedMembers = await Promise.all(membersToKick.map(m => m.fetch()));
-    if (fetchedMembers.some(m => m.roles.cache.some(r => r.name === "Nerd"))) {
-        throw new Error(
-            "There were members that had the nerd role assigned. You probably didn't want to kick them.",
-        );
-    }
-
-    await Promise.all([...membersToKick.map(member => member.kick())]);
-
-    await hauptchat.send(
-        `Hab grad ${membersToKick.size} Jocklerinos gekickt ${dabEmote}`,
-    );
-
-    log.info(`Auto-kick: ${membersToKick.size} members kicked.`);
-};
-
 login().then(
     client => {
         log.info(`Logged in as ${client.user.tag}`);
         log.info(
             `Got ${client.users.cache.size} users, in ${client.channels.cache.size} channels of ${client.guilds.cache.size} guilds`,
         );
-        log.info(
-            `Prefixes: "${config.bot_settings.prefix.command_prefix}" and "${config.bot_settings.prefix.mod_prefix}"`,
-        );
-        client.user.setActivity(config.bot_settings.status);
+        log.info(`Prefixes: "${config.prefix.command}" and "${config.prefix.modCommand}"`);
+        client.user.setActivity(config.activity);
     },
     err => {
         log.error(err, "Token login was not successful");
@@ -220,107 +140,38 @@ login().then(
     },
 );
 
-const scheduleCronjobs = async (context: BotContext) => {
-    const schedule = (
-        pattern: string,
-        callback: Parameters<typeof cron>[1],
-    ) => {
-        cron(
-            pattern,
-            {
-                timezone: "Europe/Berlin",
-            },
-            callback,
-        );
-    };
-
-    schedule("1 0 * * *", async () => await checkBirthdays(context));
-
-    schedule(
-        "0 20 1-25 12 *",
-        async () => await publishAocLeaderBoard(context),
-    );
-
-    schedule("0 0 * * 0", async () => await rerollNicknames(context));
-
-    schedule(
-        "36 0-23 * * FRI-SUN",
-        async () => await connectAndPlaySaufen(context),
-    );
-    schedule("* * * * *", async () => await reminderHandler(context));
-    schedule("* * * * *", async () => await woisVoteScheduler(context));
-    schedule("* * * * *", async () => await ban.processBans(context));
-    schedule("1 0 * * *", async () => await ehre.runDeflation());
-    schedule("1 0 * * *", async () => await ehre.resetVotes());
-    schedule("0 0 1 */2 *", async () => await rotate(context));
-    schedule("37 13 * * *", leetTask);
-    schedule("5 * * * *", clearWoisLogTask);
-
-    schedule("2022-04-01T00:00:00", async () => await startAprilFools(context));
-    schedule("2022-04-02T00:00:00", async () => await endAprilFools(context));
-
-    await poll.importPolls();
-    schedule("* * * * *", async () => await poll.processPolls(context));
-};
-
+let botContext: BotContext;
 client.once("ready", async initializedClient => {
     try {
         botContext = await createBotContext(initializedClient);
-        console.assert(!!botContext, "Bot context should be available"); // TODO: Remove once botContext is used
 
-        await kysely.connectToDb(botContext.databasePath);
+        await loadCommands(botContext);
 
-        await scheduleCronjobs(botContext);
+        await cronService.schedule(botContext);
 
         // When the application is ready, slash commands should be registered
         await registerAllApplicationCommandsAsGuildCommands(botContext);
 
-        // Not awaiting this promise because it's basically an infinite loop (that can be cancelled)
-        // Possible TODO: Refactor this to a cron job
-        void fadingMessageHandler.startLoop(client);
-
         log.info("Bot successfully started");
-        if (args.includes("--dry-run")) {
+        if (args.values["dry-run"]) {
             process.exit(0);
         }
     } catch (err) {
-        log.error(err, "Error in Ready handler");
+        log.error(err, "Error in `ready` handler");
         process.exit(1);
     }
 });
 
-/**
- * This is an additional Message handler, that we use as a replacement
- * for the "old commands". This way we can easily migrate commands to slash commands
- * and still have the option to use the textual commands. Win-Win :cooldoge:
- */
-client.on(
-    "messageCreate",
-    async message => await messageCommandHandler(message, client, botContext),
-);
-
-client.on(
-    "interactionCreate",
-    async interaction =>
-        await handleInteractionEvent(interaction, client, botContext),
-);
+client.on("interactionCreate", interaction => handleInteractionEvent(interaction, botContext));
 
 client.on("guildCreate", guild =>
-    log.info(
-        `New guild joined: ${guild.name} (id: ${guild.id}) with ${guild.memberCount} members`,
-    ),
+    log.info(`New guild joined: ${guild.name} (id: ${guild.id}) with ${guild.memberCount} members`),
 );
 
-client.on("guildDelete", guild =>
-    log.info(`Deleted from guild: ${guild.name} (id: ${guild.id}).`),
-);
+client.on("guildDelete", guild => log.info(`Deleted from guild: ${guild.name} (id: ${guild.id}).`));
 
 client.on("guildMemberAdd", async member => {
-    const numRageQuits = await guildRageQuit.getNumRageQuits(
-        member.guild,
-        member,
-    );
-
+    const numRageQuits = await guildRageQuit.getNumRageQuits(member.guild, member);
     if (numRageQuits === 0) {
         return;
     }
@@ -342,36 +193,21 @@ client.on("guildMemberAdd", async member => {
     });
 });
 
-client.on(
-    "guildMemberRemove",
-    async member => await guildRageQuit.incrementRageQuit(member.guild, member),
-);
+client.on("guildMemberRemove", member => guildRageQuit.incrementRageQuit(member.guild, member));
 
-client.on(
-    "messageCreate",
-    async message => await messageHandler(message, client, botContext),
-);
-client.on(
-    "messageCreate",
-    async message =>
-        await deleteThreadMessagesHandler(message, client, botContext),
-);
+client.on("messageCreate", message => messageCommandHandler(message, botContext));
+client.on("messageCreate", m => deleteThreadMessagesHandler(m, botContext));
 
 client.on("messageDelete", async message => {
-    try {
-        if (message.inGuild()) {
-            await messageDeleteHandler(message, client, botContext);
-        }
-    } catch (err) {
-        log.error(err, `[messageDelete] Error for ${message.id}`);
+    if (!message.inGuild()) {
+        return;
     }
-});
 
-client.on(
-    "messageUpdate",
-    async (_, newMessage) =>
-        await messageHandler(newMessage as Message, client, botContext),
-);
+    await messageDeleteHandler(message, botContext).catch(err => {
+        log.error(err, `[messageDelete] Error for ${message.id}`);
+        sentry.captureException(err);
+    });
+});
 
 client.on("error", e => log.error(e, "Discord Client Error"));
 client.on("warn", w => log.warn(w, "Discord Client Warning"));
@@ -379,62 +215,50 @@ client.on("debug", d => {
     if (d.includes("Heartbeat")) {
         return;
     }
-
-    log.debug(d, "Discord Client Debug d");
+    log.debug(d, "Discord Client Debug");
 });
-client.on("rateLimit", data =>
-    log.error(data, "Discord Client RateLimit Shit"),
-);
+client.on("rateLimit", d => log.error(d, "Discord client rate limit reached"));
 client.on("invalidated", () => log.debug("Client invalidated"));
 
 client.on("messageReactionAdd", async (event, user) => {
-    const [entireEvent, entireUser] = await Promise.all([
-        event.fetch(),
-        user.fetch(),
-    ]);
+    const [entireEvent, entireUser] = await Promise.all([event.fetch(), user.fetch()]);
 
     for (const handler of reactionHandlers) {
-        try {
-            await handler.execute(entireEvent, entireUser, botContext, false);
-        } catch (err) {
-            log.error(
-                err,
-                `Handler "${handler.displayName}" failed during "messageReactionAdd".`,
-            );
-        }
+        await handler.execute(entireEvent, entireUser, botContext, false).catch(err => {
+            log.error(err, `Handler "${handler.displayName}" failed during "messageReactionAdd".`);
+            sentry.captureException(err);
+        });
     }
 });
 client.on("messageReactionRemove", async (event, user) => {
-    const [entireEvent, entireUser] = await Promise.all([
-        event.fetch(),
-        user.fetch(),
-    ]);
+    const [entireEvent, entireUser] = await Promise.all([event.fetch(), user.fetch()]);
 
     for (const handler of reactionHandlers) {
-        try {
-            await handler.execute(entireEvent, entireUser, botContext, true);
-        } catch (err) {
+        await handler.execute(entireEvent, entireUser, botContext, true).catch(err => {
             log.error(
                 err,
                 `Handler "${handler.displayName}" failed during "messageReactionRemove".`,
             );
-        }
+            sentry.captureException(err);
+        });
     }
 });
 
-client.on(
-    "voiceStateUpdate",
-    async (oldState, newState) =>
-        await checkVoiceUpdate(
-            oldState as VoiceState,
-            newState as VoiceState,
-            botContext,
-        ),
+client.on("voiceStateUpdate", (old, next) =>
+    voiceStateService.checkVoiceUpdate(old, next, botContext),
 );
+
+client.on("presenceUpdate", async (oldPresence, newPresence) => {
+    try {
+        await handlePresenceUpdate(botContext, oldPresence, newPresence);
+    } catch (cause) {
+        log.warn(cause, "Exception during `presenceUpdate`.");
+    }
+});
 
 function login() {
     return new Promise<Client<true>>(resolve => {
         client.once("ready", resolve);
-        client.login(config.auth.bot_token);
+        client.login(config.auth.token);
     });
 }

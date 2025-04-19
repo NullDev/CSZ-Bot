@@ -1,14 +1,17 @@
-import type { CommandFunction } from "../../types.js";
+import type { MessageCommand } from "@/commands/command.js";
+import type { BotContext } from "@/context.js";
+import type { ProcessableMessage } from "@/service/command.js";
 
-/**
- * Lists all server roles
- */
-export const run: CommandFunction = async (_client, message, _args) => {
-    const roleNames = message.guild.roles.cache
-        .filter(element => String(element.name).toLowerCase() !== "@everyone")
-        .map(element => element.name);
+export default class ToggleCommand implements MessageCommand {
+    modCommand = true;
+    name = "listroles";
+    description = "Listet alle server rollen auf";
 
-    await message.channel.send(`Roles: \n\n${roleNames.join(", ")}`);
-};
+    async handleMessage(message: ProcessableMessage, context: BotContext): Promise<void> {
+        const roleNames = message.guild.roles.cache
+            .filter(element => String(element.name).toLowerCase() !== "@everyone")
+            .map(element => element.name);
 
-export const description = "Listet alle server rollen auf";
+        await message.channel.send(`Roles: \n\n${roleNames.join(", ")}`);
+    }
+}

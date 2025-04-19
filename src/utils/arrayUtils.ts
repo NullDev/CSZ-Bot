@@ -8,3 +8,10 @@ export function chunkArray<T>(array: readonly T[], chunkSize: number): T[][] {
 
     return result;
 }
+
+export function shuffleArray<T>(array: readonly T[], biasFn: (item: T) => number): T[] {
+    return array
+        .map((value, _idx) => ({ value, bias: biasFn(value) }))
+        .sort((a, b) => a.bias - b.bias)
+        .map(({ value }) => value);
+}

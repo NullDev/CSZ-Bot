@@ -1,8 +1,7 @@
 import type { Message, PartialMessage, Snowflake, User } from "discord.js";
-import { sql } from "kysely";
 
-import type { WoisAction } from "./model.js";
-import db from "./db.js";
+import type { WoisAction } from "./db/model.js";
+import db from "@db";
 
 export async function insertWoisAction(
     message: Message,
@@ -38,10 +37,7 @@ export function getWoisActionInRange(
         .executeTakeFirst();
 }
 
-export function getPendingWoisAction(
-    before: Date,
-    ctx = db(),
-): Promise<WoisAction | undefined> {
+export function getPendingWoisAction(before: Date, ctx = db()): Promise<WoisAction | undefined> {
     return ctx
         .selectFrom("woisActions")
         .where("date", "<=", before.toISOString())
@@ -72,14 +68,10 @@ export async function registerInterest(
             return false;
         }
 
-        const interestedUsers = JSON.parse(
-            action.interestedUsers,
-        ) as Snowflake[];
+        const interestedUsers = JSON.parse(action.interestedUsers) as Snowflake[];
 
         if (!interested) {
-            const newList = interestedUsers.filter(
-                u => interestedUser.id !== u,
-            );
+            const newList = interestedUsers.filter(u => interestedUser.id !== u);
             await setInterestedUsers(action.id, JSON.stringify(newList), tx);
             return true;
         }
@@ -99,7 +91,7 @@ async function setInterestedUsers(
     actionId: WoisAction["id"],
     interestedUsers: WoisAction["interestedUsers"],
     ctx = db(),
-): Promise<void> {
+) {
     await ctx
         .updateTable("woisActions")
         .set({
@@ -109,9 +101,6 @@ async function setInterestedUsers(
         .execute();
 }
 
-export async function destroy(
-    actionId: WoisAction["id"],
-    ctx = db(),
-): Promise<void> {
+export async function destroy(actionId: WoisAction["id"], ctx = db()) {
     await ctx.deleteFrom("woisActions").where("id", "=", actionId).execute();
 }

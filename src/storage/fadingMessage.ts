@@ -1,9 +1,6 @@
-import type { Snowflake, User } from "discord.js";
-import { sql } from "kysely";
-
-import type { ProcessableMessage } from "../handler/cmdHandler.js";
-import type { FadingMessage } from "./model.js";
-import db from "./db.js";
+import type { ProcessableMessage } from "@/service/command.js";
+import type { FadingMessage } from "./db/model.js";
+import db from "@db";
 
 export function startFadingMessage(
     message: ProcessableMessage,
@@ -25,10 +22,7 @@ export function startFadingMessage(
         .executeTakeFirstOrThrow();
 }
 
-export function findPendingForDeletion(
-    now: Date,
-    ctx = db(),
-): Promise<FadingMessage[]> {
+export function findPendingForDeletion(now: Date, ctx = db()): Promise<FadingMessage[]> {
     return ctx
         .selectFrom("fadingMessages")
         .where("endTime", "<=", now.toISOString())

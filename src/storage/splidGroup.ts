@@ -1,16 +1,14 @@
 import type { Guild, User } from "discord.js";
-import { sql } from "kysely";
 
-import type { SplidGroup } from "./model.js";
-import db from "./db.js";
+import type { SplidGroup } from "./db/model.js";
 
-import log from "../utils/logger.js";
+import db from "@db";
+import log from "@log";
 
 export function createSplidGroup(
     creator: User,
     guild: Guild,
     groupCode: string,
-    externalSplidGroupId: string,
     shortDescription: string,
     longDescription: string | null,
     ctx = db(),
@@ -19,7 +17,6 @@ export function createSplidGroup(
         `Saving splid group, initiated by ${creator} on guild ${guild} with group code ${groupCode}: "${shortDescription}"`,
     );
 
-    const now = new Date().toISOString();
     return ctx
         .insertInto("splidGroups")
         .values({
@@ -61,19 +58,9 @@ export function findOneByDescriptionForGuild(
 }
 
 export function findAllGroups(guild: Guild, ctx = db()): Promise<SplidGroup[]> {
-    return ctx
-        .selectFrom("splidGroups")
-        .where("guildId", "=", guild.id)
-        .selectAll()
-        .execute();
+    return ctx.selectFrom("splidGroups").where("guildId", "=", guild.id).selectAll().execute();
 }
 
-export async function deleteByInviteCode(
-    groupCode: string,
-    ctx = db(),
-): Promise<void> {
-    await ctx
-        .deleteFrom("splidGroups")
-        .where("groupCode", "=", groupCode)
-        .execute();
+export async function deleteByInviteCode(groupCode: string, ctx = db()) {
+    await ctx.deleteFrom("splidGroups").where("groupCode", "=", groupCode).execute();
 }

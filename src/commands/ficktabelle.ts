@@ -1,7 +1,6 @@
-import type { Client } from "discord.js";
-
-import type { MessageCommand } from "./command.js";
-import type { ProcessableMessage } from "../handler/cmdHandler.js";
+import type { MessageCommand } from "@/commands/command.js";
+import type { ProcessableMessage } from "@/service/command.js";
+import { randomEntry } from "@/service/random.js";
 
 const FICKTABELLE_URL =
     "https://cdn.discordapp.com/attachments/620721921767505942/636149543154614272/20160901-164533-Kovrtep-id1487186.png";
@@ -23,36 +22,22 @@ const warnings = [
     "Tu nichts, was Assi Toni nicht auch tun würde",
 ];
 
-export class FicktabelleCommand implements MessageCommand {
+export default class FicktabelleCommand implements MessageCommand {
     name = "ficktabelle";
     description = "Sendet die Ficktabelle.";
 
-    async handleMessage(
-        message: ProcessableMessage,
-        _client: Client<boolean>,
-    ): Promise<void> {
+    async handleMessage(message: ProcessableMessage) {
+        const title = randomEntry(titles);
         await message.channel.send({
             embeds: [
                 {
                     image: { url: FICKTABELLE_URL },
                     author: {
-                        name: `${message.author.username} ${
-                            titles[
-                                Math.max(
-                                    0,
-                                    Math.floor(Math.random() * titles.length),
-                                )
-                            ]
-                        }`,
+                        name: `${message.author.username} ${title}`,
                         icon_url: message.author.displayAvatarURL(),
                     },
                     footer: {
-                        text: warnings[
-                            Math.max(
-                                0,
-                                Math.floor(Math.random() * warnings.length),
-                            )
-                        ],
+                        text: randomEntry(warnings),
                     },
                 },
             ],

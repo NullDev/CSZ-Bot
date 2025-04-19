@@ -1,24 +1,25 @@
+import { Temporal } from "@js-temporal/polyfill"; // TODO: Remove once bun ships temporal
+
 import {
-    type Client,
     type CommandInteraction,
     type Message,
     type MessageReaction,
     type Role,
     SlashCommandBuilder,
     SlashCommandStringOption,
-    type TextBasedChannel,
     type User,
     type Snowflake,
+    time,
+    TimestampStyles,
+    type GuildTextBasedChannel,
 } from "discord.js";
-import moment from "moment";
 
-import type { ApplicationCommand, CommandResult } from "./command.js";
-import * as woisAction from "../storage/woisAction.js";
-import type { ReactionHandler } from "../types.js";
-import type { BotContext } from "../context.js";
-import log from "../utils/logger.js";
-import { isWoisGang } from "../utils/userUtils.js";
-import { chunkArray } from "../utils/arrayUtils.js";
+import type { ReactionHandler } from "@/handler/ReactionHandler.js";
+import type { ApplicationCommand } from "@/commands/command.js";
+import * as woisAction from "@/storage/woisAction.js";
+import type { BotContext } from "@/context.js";
+import { chunkArray } from "@/utils/arrayUtils.js";
+import log from "@log";
 
 const defaultWoisTime = "20:00";
 // Constant can be used to check whether a message is a woisvote without querying the database
@@ -28,12 +29,13 @@ const woisVoteConstant = "⚠️🍻 **WOISVOTE** 🍻⚠️";
 const createWoisMessage = async (
     reason: string,
     date: Date,
-    channel: TextBasedChannel,
+    channel: GuildTextBasedChannel,
 ): Promise<Message> => {
     const woisMessage = await channel.send(
-        `${woisVoteConstant}\nWois um ${moment(date).format(
-            "HH:mm",
-        )} Uhr. Grund: ${reason}. Bock?`,
+        `${woisVoteConstant}\nWois in ${time(
+            date,
+            TimestampStyles.ShortDateTime,
+        )}. Grund: ${reason}${/[\.!\?]$/.test(reason) ? "" : "."} Bock?`,
     );
     await woisMessage.react("👍");
     await woisMessage.react("👎");
@@ -48,7 +50,7 @@ const pingWoisgang = async (message: Message, role: Role): Promise<void> => {
     await message.reply({
         content: `${role} DA PASSIERT WAS!`,
         allowedMentions: {
-            // Not working for obious reasons.
+            // Not working for obvious reasons.
             // Okay, not obvious. I don't have any clue why...
             // roles: [ config.ids.woisgang_role_id ]
             parse: ["roles"],
@@ -56,7 +58,7 @@ const pingWoisgang = async (message: Message, role: Role): Promise<void> => {
     });
 };
 
-export class WoisCommand implements ApplicationCommand {
+export default class WoisCommand implements ApplicationCommand {
     name = "woisvote";
     description = "Erstellt einen Vote für Wois";
 
@@ -78,30 +80,25 @@ export class WoisCommand implements ApplicationCommand {
                 ),
         );
 
-    async handleInteraction(
-        command: CommandInteraction,
-        _client: Client<boolean>,
-        context: BotContext,
-    ): Promise<CommandResult> {
+    async handleInteraction(command: CommandInteraction, context: BotContext) {
         if (!command.isChatInputCommand()) {
             // TODO: Solve this on a type level
             return;
         }
-        if (command.channel === null) {
-            return;
-        }
-        if (command.channel.isTextBased() === false) {
+        const channel = command.channel;
+        if (!channel || !channel.isTextBased() || !("guild" in channel)) {
             return;
         }
 
         const reason = command.options.getString("grund", true);
-        const time =
-            command.options.getString("zeitpunkt", false) ?? defaultWoisTime;
-        const timeForWois = moment(time, "HH:mm");
-        const member = context.guild.members.cache.get(command.user.id);
-        const isWoisgangVote = member && isWoisGang(member);
+        const time = command.options.getString("zeitpunkt", false) ?? defaultWoisTime;
 
-        if (timeForWois.isBefore(moment())) {
+        const plainTime = Temporal.PlainTime.from(time);
+
+        const now = Temporal.Now.plainDateTimeISO();
+        const timeForWois = now.withPlainTime(plainTime);
+
+        if (now.until(timeForWois).sign === -1) {
             await command.reply({
                 content:
                     "Sorry, ich kann einen Woisping nur in der Zukunft ausführen. Zeitreisen müssen erst noch erfunden werden.",
@@ -110,16 +107,17 @@ export class WoisCommand implements ApplicationCommand {
             return;
         }
 
-        const start = moment(timeForWois).subtract(6, "hours");
+        const member = context.guild.members.cache.get(command.user.id);
+        const isWoisgangVote = member && context.roleGuard.isWoisGang(member);
+
         const existingWoisVote = await woisAction.getWoisActionInRange(
-            start.toDate(),
-            timeForWois.toDate(),
+            new Date(timeForWois.subtract({ hours: 6 }).toString()),
+            new Date(timeForWois.toString()),
         );
         if (existingWoisVote !== undefined) {
+            const nextDate = Temporal.PlainDateTime.from(existingWoisVote.date);
             await command.reply(
-                `Es gibt bereits einen Woisvote für ${moment(
-                    existingWoisVote.date,
-                ).format("HH:mm")} Uhr. Geh doch da hin: ${
+                `Es gibt bereits einen Woisvote für ${nextDate.toPlainTime().toString()} Uhr. Geh doch da hin: ${
                     existingWoisVote.messageId
                 }`,
             );
@@ -128,8 +126,8 @@ export class WoisCommand implements ApplicationCommand {
 
         const woisMessage = await createWoisMessage(
             reason,
-            timeForWois.toDate(),
-            command.channel,
+            new Date(timeForWois.toString()),
+            channel,
         );
 
         if (isWoisgangVote) {
@@ -139,11 +137,11 @@ export class WoisCommand implements ApplicationCommand {
         const result = await woisAction.insertWoisAction(
             woisMessage,
             reason,
-            timeForWois.toDate(),
+            new Date(timeForWois.toString()),
             isWoisgangVote,
         );
         if (!result) {
-            await command.channel.send(
+            await channel.send(
                 "Ich konnte den Woisvote nicht erstellen. Da hat wohl jemand kacke gebaut.",
             );
         }
@@ -161,7 +159,7 @@ export const woisVoteReactionHandler: ReactionHandler = {
         invoker: User,
         context: BotContext,
         reactionWasRemoved: boolean,
-    ): Promise<void> {
+    ) {
         const { message } = reactionEvent;
 
         const voteYes = reactionEvent.emoji.name === "👍";
@@ -191,22 +189,12 @@ export const woisVoteReactionHandler: ReactionHandler = {
         }
 
         // If the woisvote has not been created by a woisgang user, but we have two votes on it. PING DEM WOISGANG!
-        if (
-            !action.isWoisgangAction &&
-            action.interestedUsers.length === 1 &&
-            interest
-        ) {
-            const alertingMessage = await message.channel.messages.fetch(
-                message.id,
-            );
+        if (!action.isWoisgangAction && action.interestedUsers.length === 1 && interest) {
+            const alertingMessage = await message.channel.messages.fetch(message.id);
             await pingWoisgang(alertingMessage, context.roles.woisgang);
         }
 
-        const success = await woisAction.registerInterest(
-            message,
-            invoker,
-            interest,
-        );
+        const success = await woisAction.registerInterest(message, invoker, interest);
 
         if (!success) {
             log.error(
@@ -234,9 +222,7 @@ export const woisVoteScheduler = async (context: BotContext): Promise<void> => {
     // We remove woisvote from the database immediately before anything goes wrong and we spam pings.
     await woisAction.destroy(pendingAction.id);
 
-    const interestedUsers = JSON.parse(
-        pendingAction.interestedUsers,
-    ) as Snowflake[];
+    const interestedUsers = JSON.parse(pendingAction.interestedUsers) as Snowflake[];
 
     if (interestedUsers.length === 0) {
         // No one wants wois

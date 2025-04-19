@@ -1,5 +1,4 @@
 import {
-    type Client,
     type CommandInteraction,
     type Guild,
     GuildPremiumTier,
@@ -9,28 +8,29 @@ import {
     ComponentType,
 } from "discord.js";
 
-import type {
-    ApplicationCommand,
-    CommandResult,
-    MessageCommand,
-} from "./command.js";
-import type { GitHubContributor } from "../types.js";
-import type { ProcessableMessage } from "../handler/cmdHandler.js";
-import { assertNever } from "../utils/typeUtils.js";
+import type { ApplicationCommand, MessageCommand } from "@/commands/command.js";
+import type { ProcessableMessage } from "@/service/command.js";
+import type { BotContext } from "@/context.js";
+import assertNever from "@/utils/assertNever.js";
 
-const fetchContributions = async (): Promise<Array<GitHubContributor>> => {
+interface GitHubContributor {
+    login: string;
+    id: number;
+    html_url: string;
+    type: "User" | "Bot";
+    contributions: number;
+}
+
+const fetchContributions = async (): Promise<GitHubContributor[]> => {
     return fetch("https://api.github.com/repos/NullDev/CSZ-Bot/contributors", {
         headers: { Accept: "application/vnd.github.v3+json" },
-    }).then(res => res.json() as Promise<Array<GitHubContributor>>);
+    }).then(res => res.json() as Promise<GitHubContributor[]>);
 };
 
-const fetchLanguages = async (): Promise<Array<string>> => {
-    const res = await fetch(
-        "https://api.github.com/repos/NullDev/CSZ-Bot/languages",
-        {
-            headers: { Accept: "application/vnd.github.v3+json" },
-        },
-    );
+const fetchLanguages = async (): Promise<string[]> => {
+    const res = await fetch("https://api.github.com/repos/NullDev/CSZ-Bot/languages", {
+        headers: { Accept: "application/vnd.github.v3+json" },
+    });
     return Object.keys((await res.json()) as object);
 };
 
@@ -93,10 +93,7 @@ const getServerInfo = (guild: Guild): string => {
     );
 };
 
-const buildEmbed = async (
-    guild: Guild | null,
-    avatarUrl?: string,
-): Promise<APIEmbed> => {
+const buildEmbed = async (guild: Guild | null, avatarUrl?: string): Promise<APIEmbed> => {
     const now = new Date();
     const embed = {
         color: 0x1ea188,
@@ -143,8 +140,7 @@ const buildEmbed = async (
  *
  * This command is both - a slash command (application command) and a message command
  */
-export class InfoCommand implements ApplicationCommand, MessageCommand {
-    modCommand = false;
+export default class InfoCommand implements ApplicationCommand, MessageCommand {
     name = "info";
     description = "Listet Informationen über diesen Bot in einem Embed auf";
 
@@ -161,14 +157,8 @@ export class InfoCommand implements ApplicationCommand, MessageCommand {
      * @param client client
      * @returns info reply
      */
-    async handleInteraction(
-        command: CommandInteraction,
-        client: Client,
-    ): Promise<CommandResult> {
-        const embed = await buildEmbed(
-            command.guild,
-            client.user?.avatarURL() ?? undefined,
-        );
+    async handleInteraction(command: CommandInteraction, context: BotContext) {
+        const embed = await buildEmbed(command.guild, context.client.user.avatarURL() ?? undefined);
         await command.reply({
             embeds: [embed],
             ephemeral: true,
@@ -195,14 +185,8 @@ export class InfoCommand implements ApplicationCommand, MessageCommand {
      * @param client client
      * @returns reply and reaction
      */
-    async handleMessage(
-        message: ProcessableMessage,
-        client: Client,
-    ): Promise<CommandResult> {
-        const embed = await buildEmbed(
-            message.guild,
-            client.user?.avatarURL() ?? undefined,
-        );
+    async handleMessage(message: ProcessableMessage, context: BotContext) {
+        const embed = await buildEmbed(message.guild, context.client.user.avatarURL() ?? undefined);
 
         const reply = message.reply({
             embeds: [embed],

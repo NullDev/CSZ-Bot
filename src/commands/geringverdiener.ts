@@ -1,6 +1,5 @@
 import {
     type CacheType,
-    type Client,
     type CommandInteraction,
     type GuildMember,
     type Message,
@@ -10,9 +9,9 @@ import {
     type GuildEmojiManager,
 } from "discord.js";
 
-import type { BotContext } from "../context.js";
-import type { ApplicationCommand, MessageCommand } from "./command.js";
-import type { ProcessableMessage } from "../handler/cmdHandler.js";
+import type { BotContext } from "@/context.js";
+import type { ApplicationCommand, MessageCommand } from "@/commands/command.js";
+import type { ProcessableMessage } from "@/service/command.js";
 
 /**
  * Geringverdieners text
@@ -22,20 +21,14 @@ import type { ProcessableMessage } from "../handler/cmdHandler.js";
  *
  * Limitation: this does only work for emojis from this server.
  */
-const geringverdiener = (
-    emojiManager: GuildEmojiManager,
-    str: string,
-): string =>
-    str.replace(
-        /:([\w~]+):(?!\d+>)/gi,
-        (_match, emojiName, _offset, wholeString) => {
-            const emote = emojiManager.cache.find(e => e.name === emojiName);
-            if (emote) {
-                return `${emote}`;
-            }
-            return wholeString;
-        },
-    );
+const geringverdiener = (emojiManager: GuildEmojiManager, str: string): string =>
+    str.replace(/:([\w~]+):(?!\d+>)/gi, (_match, emojiName, _offset, wholeString) => {
+        const emote = emojiManager.cache.find(e => e.name === emojiName);
+        if (emote) {
+            return `${emote}`;
+        }
+        return wholeString;
+    });
 
 /**
  * build geringverdienered embed
@@ -59,9 +52,7 @@ const buildGeringverdiener = (
         });
 };
 
-export class GeringverdienerCommand
-    implements MessageCommand, ApplicationCommand
-{
+export default class GeringverdienerCommand implements MessageCommand, ApplicationCommand {
     name = "geringverdiener";
     description =
         "Erlaubt das nutzen von animierten Emojis dieses Servers für Geringverdiener ohne Discord Nitro.";
@@ -75,9 +66,7 @@ export class GeringverdienerCommand
                 .setRequired(true),
         );
 
-    async handleInteraction(
-        command: CommandInteraction<CacheType>,
-    ): Promise<void> {
+    async handleInteraction(command: CommandInteraction<CacheType>) {
         if (!command.isChatInputCommand()) {
             // TODO: Solve this on a type level
             return;
@@ -93,29 +82,19 @@ export class GeringverdienerCommand
             throw new Error("Couldn't resolve guild member");
         }
 
-        const geringverdieneredEmbed = buildGeringverdiener(
-            command.guild.emojis,
-            author,
-            text,
-        );
+        const geringverdieneredEmbed = buildGeringverdiener(command.guild.emojis, author, text);
         await command.reply({
             embeds: [geringverdieneredEmbed],
         });
     }
 
-    async handleMessage(
-        message: ProcessableMessage,
-        _client: Client<boolean>,
-        context: BotContext,
-    ): Promise<void> {
+    async handleMessage(message: ProcessableMessage, context: BotContext) {
         const author = message.guild.members.resolve(message.author);
         const { channel } = message;
 
         const refId = message.reference?.messageId;
         const isReply = refId !== undefined;
-        let content = message.content.slice(
-            `${context.prefix.command}${this.name} `.length,
-        );
+        let content = message.content.slice(`${context.prefix.command}${this.name} `.length);
         const hasContent = !!content && content.trim().length > 0;
 
         if (!author) {
@@ -123,9 +102,7 @@ export class GeringverdienerCommand
         }
 
         if (!isReply && !hasContent) {
-            await message.channel.send(
-                "Brudi da ist nix, was ich geringverdieneren kann",
-            );
+            await message.channel.send("Brudi da ist nix, was ich geringverdieneren kann");
             return;
         }
 

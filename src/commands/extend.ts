@@ -1,132 +1,139 @@
 import { type APIEmbedField, EmbedBuilder, type Message } from "discord.js";
+import * as sentry from "@sentry/bun";
 
-import log from "../utils/logger.js";
+import type { MessageCommand } from "@/commands/command.js";
+import type { BotContext } from "@/context.js";
+import type { ProcessableMessage } from "@/service/command.js";
+
+import { parseLegacyMessageParts } from "@/service/command.js";
+import { LETTERS, EMOJI } from "@/service/poll.js";
 import * as poll from "./poll.js";
-import type { CommandFunction } from "../types.js";
+import log from "@log";
 
 const isPollField = (field: APIEmbedField): boolean =>
-    !field.inline && poll.LETTERS.some(l => field.name.startsWith(l));
+    !field.inline && LETTERS.some(l => field.name.startsWith(l));
 
-/**
- * Extends an existing poll or strawpoll
- */
-export const run: CommandFunction = async (client, message, args, context) => {
-    if (!message.reference)
-        return "Bruder schon mal was von der Replyfunktion gehört?";
-    if (
-        message.reference.guildId !== context.guild.id ||
-        !message.reference.channelId
-    )
-        return "Bruder bleib mal hier auf'm Server.";
+export default class ExtendCommand implements MessageCommand {
+    name = "extend";
+    description = `Nutzbar als Reply auf eine mit --extendable erstellte Umfrage, um eine/mehrere Antwortmöglichkeit/en hinzuzufügen. Die Anzahl der bestehenden und neuen Antwortmöglichkeiten darf ${poll.OPTION_LIMIT} nicht übersteigen.\nUsage: $COMMAND_PREFIX$extend [Antwort 1] ; [...]`;
 
-    if (!message.reference.messageId)
-        return "Die Nachricht hat irgendwie keine reference-ID";
-    if (!args.length) return "Bruder da sind keine Antwortmöglichkeiten :c";
+    async handleMessage(message: ProcessableMessage, context: BotContext): Promise<void> {
+        const { args } = parseLegacyMessageParts(context, message);
+        const response = await this.legacyHandler(message, context, args);
+        if (response) {
+            await message.channel.send(response);
+        }
+    }
 
-    const channel = context.guild.channels.cache.get(
-        message.reference.channelId,
-    );
+    async legacyHandler(message: ProcessableMessage, context: BotContext, args: string[]) {
+        if (!message.reference) {
+            return "Bruder schon mal was von der Replyfunktion gehört?";
+        }
+        if (message.reference.guildId !== context.guild.id || !message.reference.channelId) {
+            return "Bruder bleib mal hier auf'm Server.";
+        }
 
-    if (!channel) return "Bruder der Channel existiert nicht? LOLWUT";
-    if (!channel.isTextBased()) return "Channel ist kein Text-Channel";
+        if (!message.reference.messageId) {
+            return "Die Nachricht hat irgendwie keine reference-ID";
+        }
+        if (!args.length) {
+            return "Bruder da sind keine Antwortmöglichkeiten :c";
+        }
 
-    let replyMessage: Message;
-    try {
-        replyMessage = await channel.messages.fetch(
-            message.reference.messageId,
+        const channel = context.guild.channels.cache.get(message.reference.channelId);
+
+        if (!channel) {
+            return "Bruder der Channel existiert nicht? LOLWUT";
+        }
+        if (!channel.isTextBased()) {
+            return "Channel ist kein Text-Channel";
+        }
+
+        let replyMessage: Message;
+        try {
+            replyMessage = await channel.messages.fetch(message.reference.messageId);
+        } catch (err) {
+            log.error(err, "Could not fetch replies");
+            sentry.captureException(err);
+            return "Bruder irgendwas stimmt nicht mit deinem Reply ¯\\_(ツ)_/¯";
+        }
+
+        const botUser = context.client.user;
+        const replyEmbed = replyMessage.embeds[0];
+
+        if (replyMessage.author.id !== botUser.id || replyMessage.embeds.length !== 1) {
+            return "Bruder das ist keine Umfrage ಠ╭╮ಠ";
+        }
+
+        if (
+            !replyEmbed.author?.name.startsWith("Umfrage") &&
+            !replyEmbed.author?.name.startsWith("Strawpoll")
+        ) {
+            return "Bruder das ist keine Umfrage ಠ╭╮ಠ";
+        }
+
+        if (!replyMessage.editable) {
+            return "Bruder aus irgrndeinem Grund hat der Bot verkackt und kann die Umfrage nicht bearbeiten :<";
+        }
+        if (replyMessage.embeds[0].color !== 0x2ecc71) {
+            return "Bruder die Umfrage ist nicht erweiterbar (ง'̀-'́)ง";
+        }
+
+        const oldPollOptionFields = replyMessage.embeds[0].fields.filter(field =>
+            isPollField(field),
         );
-    } catch (err) {
-        log.error(err, "Could not fetch replies");
-        return "Bruder irgendwas stimmt nicht mit deinem Reply ¯\\_(ツ)_/¯";
-    }
 
-    const botUser = client.user;
-    if (!botUser) return "Bruder der Bot existiert nicht? LOLWUT";
-    const replyEmbed = replyMessage.embeds[0];
+        if (oldPollOptionFields.length === poll.OPTION_LIMIT) {
+            return "Bruder die Umfrage ist leider schon voll (⚆ ͜ʖ⚆)";
+        }
 
-    if (
-        replyMessage.author.id !== botUser.id ||
-        replyMessage.embeds.length !== 1
-    )
-        return "Bruder das ist keine Umfrage ಠ╭╮ಠ";
-    if (
-        !replyEmbed.author?.name.startsWith("Umfrage") &&
-        !replyEmbed.author?.name.startsWith("Strawpoll")
-    )
-        return "Bruder das ist keine Umfrage ಠ╭╮ಠ";
-    if (!replyMessage.editable)
-        return "Bruder aus irgrndeinem Grund hat der Bot verkackt und kann die Umfrage nicht bearbeiten :<";
-    if (replyMessage.embeds[0].color !== 3066993)
-        return "Bruder die Umfrage ist nicht erweiterbar (ง'̀-'́)ง";
+        const additionalPollOptions = args
+            .join(" ")
+            .split(";")
+            .map(e => e.trim())
+            .filter(e => e.replace(/\s/g, "") !== "");
 
-    const oldPollOptionFields = replyMessage.embeds[0].fields.filter(field =>
-        isPollField(field),
-    );
-    if (oldPollOptionFields.length === poll.OPTION_LIMIT)
-        return "Bruder die Umfrage ist leider schon voll (⚆ ͜ʖ⚆)";
+        if (!additionalPollOptions.length) {
+            return "Bruder da sind keine Antwortmöglichkeiten :c";
+        }
 
-    const additionalPollOptions = args
-        .join(" ")
-        .split(";")
-        .map(e => e.trim())
-        .filter(e => e.replace(/\s/g, "") !== "");
+        if (additionalPollOptions.length + oldPollOptionFields.length > poll.OPTION_LIMIT) {
+            return `Bruder mit deinen Antwortmöglichkeiten wird das Limit von ${poll.OPTION_LIMIT} überschritten!`;
+        }
 
-    if (!additionalPollOptions.length) {
-        return "Bruder da sind keine Antwortmöglichkeiten :c";
-    }
+        if (additionalPollOptions.some(value => value.length > poll.FIELD_VALUE_LIMIT)) {
+            return `Bruder mindestens eine Antwortmöglichkeit ist länger als ${poll.FIELD_VALUE_LIMIT} Zeichen!`;
+        }
 
-    if (
-        additionalPollOptions.length + oldPollOptionFields.length >
-        poll.OPTION_LIMIT
-    ) {
-        return `Bruder mit deinen Antwortmöglichkeiten wird das Limit von ${poll.OPTION_LIMIT} überschritten!`;
-    }
+        const originalAuthor = replyEmbed.author?.name.split(" ").slice(2).join(" ");
+        const author = originalAuthor === message.author.username ? undefined : message.author;
 
-    if (
-        additionalPollOptions.some(
-            value => value.length > poll.FIELD_VALUE_LIMIT,
-        )
-    )
-        return `Bruder mindestens eine Antwortmöglichkeit ist länger als ${poll.FIELD_VALUE_LIMIT} Zeichen!`;
-
-    const originalAuthor = replyEmbed.author?.name
-        .split(" ")
-        .slice(2)
-        .join(" ");
-    const author =
-        originalAuthor === message.author.username ? undefined : message.author;
-
-    const newFields = additionalPollOptions.map((value, i) =>
-        poll.createOptionField(value, oldPollOptionFields.length + i, author),
-    );
-
-    let metaFields = replyMessage.embeds[0].fields.filter(
-        field => !isPollField(field),
-    );
-    const embed = EmbedBuilder.from(replyMessage.embeds[0]).data;
-
-    if (
-        oldPollOptionFields.length + additionalPollOptions.length ===
-        poll.OPTION_LIMIT
-    ) {
-        embed.color = 0xcd5c5c;
-        metaFields = metaFields.filter(
-            field => !field.name.endsWith("Erweiterbar"),
+        const newFields = additionalPollOptions.map((value, i) =>
+            poll.createOptionField(value, oldPollOptionFields.length + i, author),
         );
+
+        let metaFields = replyMessage.embeds[0].fields.filter(field => !isPollField(field));
+        const embed = EmbedBuilder.from(replyMessage.embeds[0]).data;
+
+        if (oldPollOptionFields.length + additionalPollOptions.length === poll.OPTION_LIMIT) {
+            embed.color = 0xcd5c5c;
+            metaFields = metaFields.filter(field => !field.name.endsWith("Erweiterbar"));
+        }
+
+        embed.fields = [...oldPollOptionFields, ...newFields, ...metaFields];
+
+        const msg = await replyMessage.edit({
+            embeds: [embed],
+            // Re-Applying embed thumbnails from attachments will post a picture,
+            // therefore we keep attachments empty.
+            attachments: [],
+        });
+
+        for (const i in additionalPollOptions) {
+            // Disabling rule because the order is important
+
+            await msg.react(EMOJI[oldPollOptionFields.length + Number(i)]);
+        }
+        await message.delete();
     }
-
-    embed.fields = [...oldPollOptionFields, ...newFields, ...metaFields];
-
-    const msg = await replyMessage.edit({
-        embeds: [embed],
-    });
-
-    for (const i in additionalPollOptions) {
-        // Disabling rule because the order is important
-
-        await msg.react(poll.EMOJI[oldPollOptionFields.length + Number(i)]);
-    }
-    await message.delete();
-};
-
-export const description = `Nutzbar als Reply auf eine mit --extendable erstellte Umfrage, um eine/mehrere Antwortmöglichkeit/en hinzuzüfgen. Die Anzahl der bestehenden und neuen Antwortmöglichkeiten darf ${poll.OPTION_LIMIT} nicht übersteigen.\nUsage: $COMMAND_PREFIX$extend [Antwort 1] ; [...]`;
+}

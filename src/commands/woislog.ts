@@ -1,9 +1,9 @@
 import { type CommandInteraction, SlashCommandBuilder } from "discord.js";
 
-import type { ApplicationCommand, CommandResult } from "./command.js";
-import { woisData } from "../handler/voiceStateUpdateHandler.js";
+import type { ApplicationCommand } from "@/commands/command.js";
+import * as voiceStateService from "@/service/voiceState.js";
 
-export class WoisLog implements ApplicationCommand {
+export default class WoisLog implements ApplicationCommand {
     name = "woislog";
     description = "Zeigt die letzen Aktivitäten im Woischat an";
 
@@ -11,12 +11,11 @@ export class WoisLog implements ApplicationCommand {
         .setName(this.name)
         .setDescription(this.description);
 
-    async handleInteraction(
-        command: CommandInteraction,
-    ): Promise<CommandResult> {
-        const latestEvents = woisData.latestEvents.filter(event => {
-            return event.createdAt.getTime() > Date.now() - 2 * 60 * 1000;
-        });
+    async handleInteraction(command: CommandInteraction) {
+        const events = voiceStateService.getLatestEvents();
+
+        const maxAge = Date.now() - 2 * 60 * 1000;
+        const latestEvents = events.filter(event => event.createdAt.getTime() > maxAge);
 
         if (latestEvents.length === 0) {
             await command.reply({

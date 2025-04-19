@@ -1,8 +1,6 @@
-import type { Client } from "discord.js";
-
-import type { BotContext } from "../context.js";
-import type { ProcessableMessage } from "../handler/cmdHandler.js";
-import type { MessageCommand } from "./command.js";
+import type { BotContext } from "@/context.js";
+import type { ProcessableMessage } from "@/service/command.js";
+import type { MessageCommand } from "@/commands/command.js";
 
 const prices = {
     kebab: 5.5,
@@ -11,20 +9,18 @@ const prices = {
     fridge: 10_000,
     inkPerMonth: 1,
     meal: 40,
+    ghettorade: 1.2955,
+    kaffeemuehle: 400,
 };
 
-export class DoenerCommand implements MessageCommand {
+export default class DoenerCommand implements MessageCommand {
     name = "doener";
     aliases = ["döner"];
     description = `
     Rechnet Euro in Döner um. Alternative Währungen können mit angegeben werden.
     `.trim();
 
-    async handleMessage(
-        message: ProcessableMessage,
-        _client: Client<boolean>,
-        context: BotContext,
-    ): Promise<void> {
+    async handleMessage(message: ProcessableMessage, _context: BotContext) {
         const targetMessage = message.reference?.messageId
             ? await message.channel.messages.fetch(message.reference.messageId)
             : message;
@@ -41,9 +37,7 @@ export class DoenerCommand implements MessageCommand {
 
         // extract float from message
         const number =
-            /(?:^|\s)-?(\d+(?:\.\d+)?)[€\$]?(?:\s|$)/g.exec(
-                messageContent,
-            )?.[0] ?? undefined;
+            /(?:^|\s)-?(\d+(?:\.\d+)?)[€\$]?(?:\s|$)/g.exec(messageContent)?.[0] ?? undefined;
         if (number === undefined) {
             await targetMessage.reply({
                 content: "Da is keine Zahl bruder.",
@@ -89,9 +83,7 @@ export class DoenerCommand implements MessageCommand {
 
         const fridgeStr =
             amount > prices.fridge * 0.75
-                ? `Falls du einen Kredit aufnehmen möchtest, wären das ${(
-                      amount / prices.fridge
-                  ).toFixed(1)} Kühlschränke.`
+                ? `Falls du einen Kredit aufnehmen möchtest, wären das ${(amount / prices.fridge).toFixed(1)} Kühlschränke.`
                 : "";
 
         const inkStr =
@@ -105,9 +97,17 @@ export class DoenerCommand implements MessageCommand {
 
         const mealStr =
             Math.random() > 0.7
-                ? `Alternativ kannst du davon maximal ${(
-                      amount / prices.meal
-                  ).toFixed(0)} mal essen gehen.`
+                ? `Alternativ kannst du davon maximal ${(amount / prices.meal).toFixed(0)} mal essen gehen.`
+                : "";
+
+        const ghettoradeStr =
+            Math.random() > 0.7
+                ? `Du könntest dir aber auch knapp ${(amount / prices.ghettorade).toFixed(0)} köstliche Ghettorade Mischen zubereiten.`
+                : "";
+
+        const kaffeemuehleStr =
+            Math.random() > 0.7
+                ? `Oder ${(amount / prices.ghettorade).toFixed(0)} absolut kranke Kaffeemühlen kaufen.`
                 : "";
 
         await targetMessage.reply({
@@ -120,6 +120,8 @@ export class DoenerCommand implements MessageCommand {
                           fridgeStr,
                           inkStr,
                           mealStr,
+                          ghettoradeStr,
+                          kaffeemuehleStr,
                       ]
                           .filter(s => !!s)
                           .join("\n")

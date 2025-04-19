@@ -1,6 +1,5 @@
 import * as crypto from "node:crypto";
 import {
-    type Client,
     type GuildMember,
     type CommandInteraction,
     type CacheType,
@@ -10,22 +9,16 @@ import {
     EmbedBuilder,
 } from "discord.js";
 
-import type {
-    ApplicationCommand,
-    CommandResult,
-    MessageCommand,
-} from "./command.js";
-import type { ProcessableMessage } from "../handler/cmdHandler.js";
-import { substringAfter } from "../utils/stringUtils.js";
+import type { ApplicationCommand, MessageCommand } from "@/commands/command.js";
+import type { ProcessableMessage } from "@/service/command.js";
+import { substringAfter } from "@/utils/stringUtils.js";
 
 const createSecureDecisionMessage = (
     question: string,
     author: GuildMember,
     options: string[] = [],
 ) => {
-    const formattedQuestion = question.endsWith("?")
-        ? question
-        : `${question}?`;
+    const formattedQuestion = question.endsWith("?") ? question : `${question}?`;
 
     const embed = new EmbedBuilder()
         .setTitle(formattedQuestion)
@@ -64,7 +57,7 @@ const createSecureDecisionMessage = (
     };
 };
 
-export class SdmCommand implements MessageCommand, ApplicationCommand {
+export default class SdmCommand implements MessageCommand, ApplicationCommand {
     name = "sdm";
     description =
         "Macht eine Secure Decision mithilfe eines komplexen, hochoptimierten, Blockchain-Algorithmus.";
@@ -125,10 +118,7 @@ export class SdmCommand implements MessageCommand, ApplicationCommand {
                 ),
         );
 
-    async handleMessage(
-        message: ProcessableMessage,
-        _client: Client<boolean>,
-    ): Promise<CommandResult> {
+    async handleMessage(message: ProcessableMessage) {
         const replyRef = message.reference?.messageId;
         const isReply = replyRef !== undefined;
         const args = substringAfter(message.cleanContent, this.name)
@@ -143,9 +133,7 @@ export class SdmCommand implements MessageCommand, ApplicationCommand {
 
         let question = args.join(" ").replace(/\s\s+/g, " ");
         if (isReply && !args.length) {
-            question = (
-                await message.channel.messages.fetch(replyRef)
-            ).content.trim();
+            question = (await message.channel.messages.fetch(replyRef)).content.trim();
         }
 
         const options = question
@@ -159,11 +147,7 @@ export class SdmCommand implements MessageCommand, ApplicationCommand {
                 type: "disjunction",
             });
             question = listFormatter.format(options);
-            const msg = createSecureDecisionMessage(
-                question,
-                message.member,
-                options,
-            );
+            const msg = createSecureDecisionMessage(question, message.member, options);
             await message.reply(msg);
             // Don't delete as it would trigger the messageDeleteHandler
             // await message.delete();
@@ -177,10 +161,7 @@ export class SdmCommand implements MessageCommand, ApplicationCommand {
         return;
     }
 
-    async handleInteraction(
-        command: CommandInteraction<CacheType>,
-        _client: Client<boolean>,
-    ): Promise<CommandResult> {
+    async handleInteraction(command: CommandInteraction<CacheType>) {
         if (!command.isChatInputCommand()) {
             // TODO: Solve this on a type level
             return;
@@ -203,9 +184,7 @@ export class SdmCommand implements MessageCommand, ApplicationCommand {
             const o4 = command.options.getString("o4", false);
             const o5 = command.options.getString("o5", false);
 
-            const options = [o1, o2, o3, o4, o5].filter(
-                o => o !== null,
-            ) as string[];
+            const options = [o1, o2, o3, o4, o5].filter(o => o !== null);
 
             const msg = createSecureDecisionMessage(question, member, options);
             await command.reply(msg);

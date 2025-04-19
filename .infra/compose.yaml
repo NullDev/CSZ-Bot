@@ -2,13 +2,16 @@ services:
   bot:
     container_name: csz-bot
     restart: unless-stopped
-    image: csz-bot
+    image: ghcr.io/nulldev/csz-bot:latest
+    environment:
+      - LOG_LEVEL=debug
+    env_file:
+      - ../.env
     volumes:
-      - ./config.json:/app/config.json:ro
-      - ./aoc.config.json:/app/aoc.config.json:ro
-      - ./sounds:/app/sounds:ro
-      - ./banners:/app/banners:ro
+      - ../config.json:/app/config.json:ro
+      - ../sounds:/app/sounds:ro
+      - ../banners:/app/banners:ro
+      - ../storage.db:/app/storage.db
+      - ../logs:/app/logs
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
-      - ./storage.db:/app/storage.db
-      - ./logs:/app/logs

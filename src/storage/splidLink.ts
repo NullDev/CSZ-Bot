@@ -1,9 +1,9 @@
 import type { Guild, Snowflake, User } from "discord.js";
 
-import type { SplidLink } from "./model.js";
-import db from "./db.js";
+import type { SplidLink } from "./db/model.js";
 
-import log from "../utils/logger.js";
+import db from "@db";
+import log from "@log";
 
 export function createLink(
     guild: Guild,
@@ -15,7 +15,6 @@ export function createLink(
         `Linking splid UUID "${externalSplidId}" with discord user ${user} on guild ${guild}`,
     );
 
-    const now = new Date().toISOString();
     return ctx
         .insertInto("splidLinks")
         .values({
@@ -35,11 +34,7 @@ export function remove(guild: Guild, user: User, ctx = db()) {
         .execute();
 }
 
-export async function matchUsers(
-    guild: Guild,
-    splidIds: Set<string>,
-    ctx = db(),
-) {
+export async function matchUsers(guild: Guild, splidIds: Set<string>, ctx = db()) {
     const availableLinks = await ctx
         .selectFrom("splidLinks")
         .where("guildId", "=", guild.id)

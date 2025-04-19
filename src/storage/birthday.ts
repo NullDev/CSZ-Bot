@@ -1,17 +1,10 @@
 import type { Snowflake } from "discord.js";
 
-import type { Birthday } from "./model.js";
-import db from "./db.js";
+import type { Birthday, OneBasedMonth } from "./db/model.js";
+import db from "@db";
 
-export function getBirthday(
-    userId: Snowflake,
-    ctx = db(),
-): Promise<Birthday | undefined> {
-    return ctx
-        .selectFrom("birthdays")
-        .where("userId", "=", userId)
-        .selectAll()
-        .executeTakeFirst();
+export function getBirthday(userId: Snowflake, ctx = db()): Promise<Birthday | undefined> {
+    return ctx.selectFrom("birthdays").where("userId", "=", userId).selectAll().executeTakeFirst();
 }
 
 export function getTodaysBirthdays(ctx = db()): Promise<Birthday[]> {
@@ -31,7 +24,6 @@ export function insertBirthday(
     month: OneBasedMonth,
     ctx = db(),
 ): Promise<Birthday> {
-    const now = new Date().toISOString();
     return ctx
         .insertInto("birthdays")
         .values({
@@ -57,7 +49,12 @@ function convertMonth(monthId: number): OneBasedMonth {
     return (monthId + 1) as OneBasedMonth;
 }
 
-export type OneBasedMonth = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
 export function isOneBasedMonth(v: unknown): v is OneBasedMonth {
     return typeof v === "number" && Number.isInteger(v) && v >= 1 && v <= 12;
+}
+
+export function formatDate(month: OneBasedMonth, day: number) {
+    const m = month.toString().padStart(2, "0");
+    const d = day.toString().padStart(2, "0");
+    return `${m}-${d}`;
 }

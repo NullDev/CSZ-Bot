@@ -1,5 +1,4 @@
 import {
-    type Client,
     type CommandInteraction,
     type GuildMember,
     SlashCommandBuilder,
@@ -7,16 +6,13 @@ import {
     SlashCommandUserOption,
 } from "discord.js";
 
-import type { ApplicationCommand, CommandResult } from "./command.js";
+import type { ApplicationCommand } from "@/commands/command.js";
+import { randomEntry } from "@/service/random.js";
 
 const replies = [
     "Da bitte, dein Suchergebnis, du Opfer: {0}",
     "Nichtmal googeln kannst du: {0}",
     "Googlen wär einfacher gewesen: {0}",
-];
-const repliesWithUser = [
-    "{1} is zu dumm zum googlen. Hier das was du  Google fragen wolltest:  {0}",
-    "Hätte {1} den browser aufgemacht und {0} eingegeben",
 ];
 
 const buildEmbed = (member: GuildMember, reply: string) => {
@@ -30,11 +26,9 @@ const buildEmbed = (member: GuildMember, reply: string) => {
     };
 };
 
-export class GoogleCommand implements ApplicationCommand {
-    modCommand = false;
+export default class GoogleCommand implements ApplicationCommand {
     name = "google";
-    description =
-        "Falls jemand zu blöd zum googlen ist und du es ihm unter die Nase reiben willst";
+    description = "Falls jemand zu blöd zum googlen ist und du es ihm unter die Nase reiben willst";
 
     applicationCommand = new SlashCommandBuilder()
         .setName(this.name)
@@ -52,18 +46,13 @@ export class GoogleCommand implements ApplicationCommand {
                 .setDescription("Der User, der nichtmal googln kann"),
         );
 
-    async handleInteraction(
-        command: CommandInteraction,
-        _client: Client<boolean>,
-    ): Promise<CommandResult> {
+    async handleInteraction(command: CommandInteraction) {
         if (!command.isChatInputCommand()) {
             // TODO: Solve this on a type level
             return;
         }
 
-        const user = command.guild?.members.cache.find(
-            m => m.id === command.user.id,
-        );
+        const user = command.guild?.members.cache.find(m => m.id === command.user.id);
         if (!user) {
             throw new Error("Couldn't resolve guild member");
         }
@@ -73,18 +62,12 @@ export class GoogleCommand implements ApplicationCommand {
             ) ?? null;
         const swd = command.options.getString("searchword", true);
 
-        const link = `[${swd}](https://www.google.com/search?q=${swd.replaceAll(
-            " ",
-            "+",
-        )})`;
+        const link = `[${swd}](https://www.google.com/search?q=${swd.replaceAll(" ", "+")})`;
 
-        const randomReply = replies[Math.floor(Math.random() * replies.length)];
+        const randomReply = randomEntry(replies);
         let reply = randomReply.replace("{0}", link);
         if (dau) {
-            reply = reply.replace(
-                "{1}",
-                `${dau?.nickname ?? dau?.displayName}`,
-            );
+            reply = reply.replace("{1}", `${dau?.nickname ?? dau?.displayName}`);
         }
 
         const embed = buildEmbed(user, reply);

@@ -1,18 +1,14 @@
 import { sql, type Kysely } from "kysely";
 
-export async function up(db: Kysely<any>): Promise<void> {
+export async function up(db: Kysely<any>) {
     //#region ehreVotes
     await db.schema.alterTable("ehreVotes").renameTo("old_ehreVotes").execute();
     await db.schema
         .createTable("ehreVotes")
         .addColumn("id", "integer", c => c.primaryKey().autoIncrement())
         .addColumn("userId", "text", c => c.notNull().unique())
-        .addColumn("createdAt", "timestamp", c =>
-            c.notNull().defaultTo(sql`current_timestamp`),
-        )
-        .addColumn("updatedAt", "timestamp", c =>
-            c.notNull().defaultTo(sql`current_timestamp`),
-        )
+        .addColumn("createdAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
+        .addColumn("updatedAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
         .execute();
 
     await createUpdatedAtTrigger(db, "ehreVotes");
@@ -21,31 +17,22 @@ export async function up(db: Kysely<any>): Promise<void> {
     //#endregion
     //#region ehrePoints
 
-    await db.schema
-        .alterTable("ehrePoints")
-        .renameTo("old_ehrePoints")
-        .execute();
+    await db.schema.alterTable("ehrePoints").renameTo("old_ehrePoints").execute();
 
     await db.schema
         .createTable("ehrePoints")
         .addColumn("id", "integer", c => c.primaryKey().autoIncrement())
         .addColumn("userId", "text", c => c.notNull().unique())
         .addColumn("points", "double precision", c => c.notNull().defaultTo(0))
-        .addColumn("createdAt", "timestamp", c =>
-            c.notNull().defaultTo(sql`current_timestamp`),
-        )
-        .addColumn("updatedAt", "timestamp", c =>
-            c.notNull().defaultTo(sql`current_timestamp`),
-        )
+        .addColumn("createdAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
+        .addColumn("updatedAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
         .execute();
 
     await db
         .insertInto("ehrePoints")
         .columns(["userId", "points", "createdAt", "updatedAt"])
         .expression(
-            db
-                .selectFrom("old_ehrePoints")
-                .select(["userId", "points", "createdAt", "updatedAt"]),
+            db.selectFrom("old_ehrePoints").select(["userId", "points", "createdAt", "updatedAt"]),
         )
         .execute();
 
@@ -67,12 +54,8 @@ export async function up(db: Kysely<any>): Promise<void> {
         .addColumn("austrian", "text", c => c.notNull().unique())
         .addColumn("german", "text", c => c.notNull())
         .addColumn("description", "text", c => c.defaultTo(null))
-        .addColumn("createdAt", "timestamp", c =>
-            c.notNull().defaultTo(sql`current_timestamp`),
-        )
-        .addColumn("updatedAt", "timestamp", c =>
-            c.notNull().defaultTo(sql`current_timestamp`),
-        )
+        .addColumn("createdAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
+        .addColumn("updatedAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
         .execute();
 
     await db.schema
@@ -83,14 +66,7 @@ export async function up(db: Kysely<any>): Promise<void> {
 
     await db
         .insertInto("austrianTranslations")
-        .columns([
-            "addedByUserId",
-            "austrian",
-            "german",
-            "description",
-            "createdAt",
-            "updatedAt",
-        ])
+        .columns(["addedByUserId", "austrian", "german", "description", "createdAt", "updatedAt"])
         .expression(
             db
                 .selectFrom("old_austrianTranslations")
@@ -117,27 +93,17 @@ export async function up(db: Kysely<any>): Promise<void> {
         .addColumn("id", "integer", c => c.primaryKey().autoIncrement())
         .addColumn("userId", "text", c => c.notNull())
         .addColumn("nickName", "text", c => c.notNull())
-        .addColumn("createdAt", "timestamp", c =>
-            c.notNull().defaultTo(sql`current_timestamp`),
-        )
-        .addColumn("updatedAt", "timestamp", c =>
-            c.notNull().defaultTo(sql`current_timestamp`),
-        )
+        .addColumn("createdAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
+        .addColumn("updatedAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
         .execute();
 
-    await db.schema
-        .createIndex("nickNames_userId")
-        .on("nickNames")
-        .column("userId")
-        .execute();
+    await db.schema.createIndex("nickNames_userId").on("nickNames").column("userId").execute();
 
     await db
         .insertInto("nickNames")
         .columns(["userId", "nickName", "createdAt", "updatedAt"])
         .expression(
-            db
-                .selectFrom("old_nickNames")
-                .select(["userId", "nickName", "createdAt", "updatedAt"]),
+            db.selectFrom("old_nickNames").select(["userId", "nickName", "createdAt", "updatedAt"]),
         )
         .execute();
 
@@ -161,6 +127,6 @@ function createUpdatedAtTrigger(db: Kysely<any>, tableName: string) {
         .execute(db);
 }
 
-export async function down(_db: Kysely<any>): Promise<void> {
+export async function down(_db: Kysely<any>) {
     throw new Error("Not supported lol");
 }

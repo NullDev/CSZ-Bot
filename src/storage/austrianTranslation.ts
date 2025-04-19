@@ -1,9 +1,8 @@
 import type { GuildMember } from "discord.js";
 
-import type { AustrianTranslation } from "./model.js";
-
-import db from "./db.js";
-import log from "../utils/logger.js";
+import type { AustrianTranslation } from "./db/model.js";
+import db from "@db";
+import log from "@log";
 
 export function persistOrUpdate(
     addedBy: GuildMember,
@@ -16,7 +15,6 @@ export function persistOrUpdate(
         `Saving austrian translation for user ${addedBy}. German: ${german}; Austrian: ${austrian}`,
     );
 
-    const now = new Date().toISOString();
     return ctx
         .insertInto("austrianTranslations")
         .values({

@@ -2,10 +2,10 @@ import {
     ActionRowBuilder,
     ApplicationCommandType,
     type CacheType,
-    type Client,
     type CommandInteraction,
     ComponentType,
     ContextMenuCommandBuilder,
+    type ContextMenuCommandType,
     type Message,
     type Role,
     RoleSelectMenuBuilder,
@@ -13,32 +13,27 @@ import {
     type Snowflake,
 } from "discord.js";
 
-import type { BotContext } from "../context.js";
-import type { ApplicationCommand } from "./command.js";
-import { isTrusted } from "../utils/userUtils.js";
-import { chunkArray } from "../utils/arrayUtils.js";
+import type { BotContext } from "@/context.js";
+import type { ApplicationCommand } from "@/commands/command.js";
+import { chunkArray } from "@/utils/arrayUtils.js";
+import * as time from "@/utils/time.js";
 
-export class FaulenzerPingCommand implements ApplicationCommand {
+export default class FaulenzerPingCommand implements ApplicationCommand {
     name = "Faulenzerping"; // Must be upper case, because this name will be matched against the application command name
     description =
         "Pingt alle Leute, die noch nicht auf die ausgewählte Nachricht reagiert haben, aber in der angegebenen Gruppe sind.";
     applicationCommand = new ContextMenuCommandBuilder()
         .setName("Faulenzerping")
-        .setType(ApplicationCommandType.Message);
+        .setType(ApplicationCommandType.Message as ContextMenuCommandType);
 
-    async handleInteraction(
-        command: CommandInteraction,
-        client: Client,
-        context: BotContext,
-    ) {
+    async handleInteraction(command: CommandInteraction, context: BotContext) {
         if (!command.isMessageContextMenuCommand()) {
             return;
         }
 
-        if (!command.member || !isTrusted(command.member)) {
+        if (!command.member || !context.roleGuard.isTrusted(command.member)) {
             await command.reply({
-                content:
-                    "Du bist nicht berechtigt, diesen Command zu benutzen.",
+                content: "Du bist nicht berechtigt, diesen Command zu benutzen.",
                 ephemeral: true,
             });
             return;
@@ -61,7 +56,7 @@ export class FaulenzerPingCommand implements ApplicationCommand {
             confirmation = await response.awaitMessageComponent({
                 filter: i => i.user.id === command.user.id,
                 componentType: ComponentType.RoleSelect,
-                time: 1000 * 60,
+                time: time.minutes(1),
             });
         } catch (e) {
             await response.edit({
@@ -81,9 +76,7 @@ export class FaulenzerPingCommand implements ApplicationCommand {
 
         const { allowedRoleIds, maxNumberOfPings, minRequiredReactions } =
             context.commandConfig.faulenzerPing;
-        const roleIds = [...confirmation.roles.keys()].filter(roleId =>
-            allowedRoleIds.has(roleId),
-        );
+        const roleIds = [...confirmation.roles.keys()].filter(roleId => allowedRoleIds.has(roleId));
         if (roleIds.length === 0) {
             await response.edit({
                 content: "Du hast keine erlaubten Rollen angegeben.",
@@ -110,9 +103,7 @@ export class FaulenzerPingCommand implements ApplicationCommand {
             }
         }
 
-        const usersNotToNotify = await this.getUsersThatReactedToMessage(
-            command.targetMessage,
-        );
+        const usersNotToNotify = await this.getUsersThatReactedToMessage(command.targetMessage);
         if (usersNotToNotify.size < minRequiredReactions) {
             await response.edit({
                 content: `Es gibt nur ${usersNotToNotify.size} Reaktionen, das ist zu wenig.`,
@@ -162,9 +153,7 @@ export class FaulenzerPingCommand implements ApplicationCommand {
     ) {
         const userChunks = chunkArray(usersToNotify, 10);
         for (const users of userChunks) {
-            const usersToNotifyMentions = users
-                .map(userId => `<@${userId}>`)
-                .join(" ");
+            const usersToNotifyMentions = users.map(userId => `<@${userId}>`).join(" ");
 
             await originalMessage.reply({
                 content: `${message} ${usersToNotifyMentions}`,

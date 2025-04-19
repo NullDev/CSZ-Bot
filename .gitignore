@@ -2,6 +2,7 @@ logs
 *.log
 
 config.json
+*.prod.json
 !.github/config.json
 
 # Dependency directories
@@ -20,7 +21,8 @@ node_modules/
 *.tgz
 
 .env
-.env.test
+.env.*
+!.env.*.example
 
 dist
 .cache/
@@ -28,4 +30,3 @@ dist
 *.db
 .idea/
 built/
-aoc.config.json

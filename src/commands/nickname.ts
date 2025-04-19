@@ -3,7 +3,6 @@ import {
     type GuildMember,
     type User,
     type CacheType,
-    type MessageComponentInteraction,
     ButtonStyle,
     SlashCommandBuilder,
     SlashCommandStringOption,
@@ -11,17 +10,16 @@ import {
     SlashCommandUserOption,
     ComponentType,
     type AutocompleteInteraction,
+    type Snowflake,
 } from "discord.js";
+import * as sentry from "@sentry/bun";
 
-import type {
-    ApplicationCommand,
-    CommandResult,
-    UserInteraction,
-} from "./command.js";
-import { isTrusted } from "../utils/userUtils.js";
-import log from "../utils/logger.js";
-import { ensureChatInputCommand } from "../utils/interactionUtils.js";
-import * as nickName from "../storage/nickName.js";
+import type { BotContext } from "@/context.js";
+import type { ApplicationCommand, AutocompleteCommand } from "@/commands/command.js";
+import log from "@log";
+import { ensureChatInputCommand } from "@/utils/interactionUtils.js";
+import * as nickName from "@/storage/nickName.js";
+import * as time from "@/utils/time.js";
 
 type Vote = "YES" | "NO";
 
@@ -30,27 +28,7 @@ interface UserVote {
     readonly trusted: boolean;
 }
 
-function getWeightOfUserVote(vote: UserVote): number {
-    return vote.trusted ? 2 : 1;
-}
-
-interface Suggestion {
-    readonly nickNameUserId: string;
-    readonly nickName: string;
-}
-
-const ongoingSuggestions: Record<string, Suggestion> = {};
-const idVoteMap: Record<string, Record<string, UserVote>> = {};
-
-const getUserVoteMap = (messageId: string): Record<string, UserVote> => {
-    if (idVoteMap[messageId] === undefined) {
-        idVoteMap[messageId] = {};
-    }
-    return idVoteMap[messageId];
-};
-
-export class Nickname implements ApplicationCommand {
-    modCommand = false;
+export default class NicknameCommand implements ApplicationCommand, AutocompleteCommand {
     name = "nickname";
     description = "Setzt Nicknames für einen User";
 
@@ -115,113 +93,121 @@ export class Nickname implements ApplicationCommand {
                 ),
         );
 
-    async handleInteraction(
-        command: CommandInteraction,
-    ): Promise<CommandResult> {
+    async handleInteraction(command: CommandInteraction, context: BotContext) {
         const cmd = ensureChatInputCommand(command);
-
-        try {
-            const option = cmd.options.getSubcommand();
-            const commandUser = cmd.guild?.members.cache.find(
-                m => m.id === cmd.user.id,
-            );
-            // We know that the user option is in every subcmd.
-            const user = cmd.options.getUser("user", true);
-            const trusted = commandUser && isTrusted(commandUser);
-            const sameuser = user.id === commandUser?.user.id;
-
-            if (option === "deleteall") {
-                // Yes, we could use a switch-statement here. No, that wouldn't make the code more readable as we're than
-                // struggling with the nickname parameter which is mandatory only in "add" and "delete" commands.
-                // Yes, we could rearrange the code parts into separate functions. Feel free to do so.
-                // Yes, "else" is uneccessary as we're returning in every block. However, I find the semantics more clear.
-                if (!trusted && !sameuser) {
-                    await cmd.reply("Hurensohn. Der Command ist nix für dich.");
-                    return;
-                }
-                const member = cmd.guild?.members.cache.get(user.id);
-                if (!member) {
-                    await cmd.reply(
-                        "Hurensohn. Der Brudi ist nicht auf dem Server.",
-                    );
-                    return;
-                }
-                await nickName.deleteAllNickNames(user);
-                await this.updateNickName(member, null);
-                await cmd.reply("Ok Brudi. Hab alles gelöscht");
-                return;
-            }
-
-            if (option === "list") {
-                const nicknames = await nickName.getNicknames(user.id);
-                if (nicknames.length === 0) {
-                    await cmd.reply("Ne Brudi für den hab ich keine Nicknames");
-                    return;
-                }
-                await cmd.reply(
-                    `Hab für den Brudi folgende Nicknames (${
-                        nicknames.length
-                    }):\n${nicknames.map(n => n.nickName).join(", ")}`,
-                );
-                return;
-            }
-
-            if (option === "add") {
-                if (!trusted) {
-                    await cmd.reply("Hurensohn. Der Command ist nix für dich.");
-                    return;
-                }
-                const nickname = cmd.options.getString("nickname", true);
-                if (await nickName.nickNameExist(user.id, nickname)) {
-                    await cmd.reply(
-                        `Würdest du Hurensohn aufpassen, wüsstest du, dass für ${user} '${nickname}' bereits existiert.`,
-                    );
-                    return;
-                }
-                return Nickname.createNickNameVote(
-                    command,
-                    user,
-                    nickname,
-                    trusted,
-                );
-                //    await this.addNickname(command, user);
-            }
-
-            if (option === "delete") {
-                if (!trusted && !sameuser) {
-                    await cmd.reply("Hurensohn. Der Command ist nix für dich.");
-                    return;
-                }
-
-                // We don't violate the DRY principle, since we're referring to another subcommand object as in the "add" subcmd.
-                // Code is equal but knowledge differs.
-                const nickname = cmd.options.getString("nickname", true);
-                await nickName.deleteNickName(user, nickname);
-                const member = cmd.guild?.members.cache.get(user.id);
-                if (!member) {
-                    await cmd.reply(
-                        "Hurensohn. Der Brudi ist nicht auf dem Server.",
-                    );
-                    return;
-                }
-
-                if (member.nickname === nickname) {
-                    await this.updateNickName(member, null);
-                }
-
-                await cmd.reply(
-                    `Ok Brudi. Hab für ${user} ${nickname} gelöscht`,
-                );
-                return;
-            }
-
-            await cmd.reply("Das hätte nie passieren dürfen");
-            return;
-        } catch (e) {
-            log.error(e);
-            await cmd.reply("Das hätte nie passieren dürfen");
+        const guild = cmd.guild;
+        if (guild === null) {
+            await cmd.reply("Hurensohn. Der Command ist nix für dich.");
             return;
         }
+
+        const member = guild.members.cache.get(cmd.user.id);
+        if (!member) {
+            await cmd.reply("Hurensohn. Der Command ist nix für dich.");
+            return;
+        }
+
+        const option = cmd.options.getSubcommand();
+
+        const user = cmd.options.getUser("user", true);
+        const isTrusted = context.roleGuard.isTrusted(member);
+        const isSameUser = user.id === member.user.id;
+
+        try {
+            switch (option) {
+                case "deleteall": {
+                    if (!isTrusted && !isSameUser) {
+                        await cmd.reply("Hurensohn. Der Command ist nix für dich.");
+                        return;
+                    }
+
+                    if (!member) {
+                        await cmd.reply("Hurensohn. Der Brudi ist nicht auf dem Server.");
+                        return;
+                    }
+
+                    await nickName.deleteAllNickNames(user);
+                    await this.updateNickName(member, null);
+
+                    await cmd.reply("Ok Brudi. Hab alles gelöscht");
+                    return;
+                }
+
+                case "list": {
+                    await this.#listNicknames(cmd, user);
+                    return;
+                }
+
+                case "add": {
+                    if (!isTrusted) {
+                        await cmd.reply("Hurensohn. Der Command ist nix für dich.");
+                        return;
+                    }
+
+                    const nickname = cmd.options.getString("nickname", true);
+                    if (await nickName.nickNameExist(user.id, nickname)) {
+                        await cmd.reply(
+                            `Würdest du Hurensohn aufpassen, wüsstest du, dass für ${user} '${nickname}' bereits existiert.`,
+                        );
+                        return;
+                    }
+
+                    return NicknameCommand.#createNickNameVote(
+                        command,
+                        user,
+                        nickname,
+                        isTrusted,
+                        context,
+                    );
+                }
+
+                case "delete": {
+                    if (!isTrusted && !isSameUser) {
+                        await cmd.reply("Hurensohn. Der Command ist nix für dich.");
+                        return;
+                    }
+
+                    // We don't violate the DRY principle, since we're referring to another subcommand object as in the "add" subcmd.
+                    // Code is equal but knowledge differs.
+                    const nickname = cmd.options.getString("nickname", true);
+                    await nickName.deleteNickName(user, nickname);
+
+                    const member = guild.members.cache.get(user.id);
+                    if (!member) {
+                        await cmd.reply("Hurensohn. Der Brudi ist nicht auf dem Server.");
+                        return;
+                    }
+
+                    if (member.nickname === nickname) {
+                        await this.updateNickName(member, null);
+                    }
+
+                    await cmd.reply(`Ok Brudi. Hab für ${user} ${nickname} gelöscht`);
+                    return;
+                }
+                default: {
+                    await cmd.reply("Das hätte nie passieren dürfen");
+                }
+            }
+        } catch (e) {
+            sentry.captureException(e);
+            log.error(e);
+            await cmd.reply("Das hätte nie passieren dürfen");
+        }
+    }
+
+    async #listNicknames(interaction: CommandInteraction, user: User) {
+        const nicknames = await nickName.getNicknames(user.id);
+        if (nicknames.length === 0) {
+            await interaction.reply("Ne Brudi für den hab ich keine Nicknames");
+            return;
+        }
+
+        const nickList = nicknames.map(n => n.nickName).join(", ");
+        await interaction.reply(
+            `Hab für den Brudi folgende Nicknames (${nicknames.length}):\n${nickList}`,
+        );
+        return;
     }
 
     async autocomplete(interaction: AutocompleteInteraction) {
@@ -248,13 +234,14 @@ export class Nickname implements ApplicationCommand {
         await interaction.respond(completions);
     }
 
-    private static async createNickNameVote(
+    static async #createNickNameVote(
         command: CommandInteraction<CacheType>,
         user: User,
         nickname: string,
         trusted: boolean,
+        context: BotContext,
     ) {
-        await command.reply({
+        const reply = await command.reply({
             content: `Eh Brudis, soll ich für ${user} ${nickname} hinzufügen?`,
             components: [
                 {
@@ -262,13 +249,13 @@ export class Nickname implements ApplicationCommand {
                     components: [
                         {
                             type: ComponentType.Button,
-                            customId: "nicknameVoteYes",
+                            customId: "nickname-vote-yes",
                             label: "Guter",
                             style: ButtonStyle.Success,
                         },
                         {
                             type: ComponentType.Button,
-                            customId: "nicknameVoteNo",
+                            customId: "nickname-vote-no",
                             label: "Lass ma",
                             style: ButtonStyle.Danger,
                         },
@@ -277,16 +264,85 @@ export class Nickname implements ApplicationCommand {
             ],
         });
 
-        const message = await command.fetchReply();
-        ongoingSuggestions[message.id] = {
-            nickNameUserId: user.id,
-            nickName: nickname,
+        const collector = reply.createMessageComponentCollector({
+            componentType: ComponentType.Button,
+            time: time.minutes(5),
+        });
+
+        const votes: Record<Snowflake, UserVote> = {
+            [command.user.id]: {
+                vote: "YES",
+                trusted,
+            },
         };
 
-        getUserVoteMap(message.id)[user.id] = {
-            vote: "YES",
-            trusted,
-        };
+        let voteResult: undefined | boolean = undefined;
+
+        collector.on("collect", async interaction => {
+            if (!interaction.member) {
+                await interaction.reply({
+                    content: "Ich find dich nicht auf dem Server. Du Huso",
+                    components: [],
+                    ephemeral: true,
+                });
+                return;
+            }
+
+            votes[interaction.user.id] = {
+                vote: interaction.customId === "nickname-vote-yes" ? "YES" : "NO",
+                trusted: context.roleGuard.isTrusted(interaction.member),
+            };
+
+            await interaction.reply({
+                content: "Hast abgestimmt",
+                ephemeral: true,
+            });
+
+            const allVotes = Object.values(votes);
+
+            if (hasEnoughVotes(allVotes, "NO", 7)) {
+                voteResult = false;
+                collector.stop();
+                return;
+            }
+
+            if (hasEnoughVotes(allVotes, "YES", 7)) {
+                voteResult = true;
+                collector.stop();
+            }
+        });
+
+        collector.once("end", async () => {
+            if (voteResult === undefined) {
+                await command.editReply({
+                    content: "Abstimmung beendet, war wohl nich so dolle",
+                    components: [],
+                });
+                return;
+            }
+
+            if (!voteResult) {
+                await command.editReply({
+                    content: `Der Vorschlag \`${nickname}\` für ${user} war echt nicht so geil`,
+                    components: [],
+                });
+                return;
+            }
+
+            try {
+                await nickName.insertNickname(user.id, nickname);
+            } catch (error) {
+                await command.editReply(
+                    `Würdet ihr Hurensöhne aufpassen, wüsstest ihr, dass für ${user} \`${nickname}\` bereits existiert.`,
+                );
+                return;
+            }
+
+            await command.editReply({
+                content: `Für ${user} ist jetzt \`${nickname}\` in der Rotation`,
+                components: [],
+            });
+        });
     }
 
     async updateNickName(user: GuildMember, nickname: string | null) {
@@ -294,90 +350,11 @@ export class Nickname implements ApplicationCommand {
     }
 }
 
-export class NicknameButtonHandler implements UserInteraction {
-    readonly ids = ["nicknameVoteYes", "nicknameVoteNo"];
-    readonly name = "NicknameButtonhandler";
-    readonly threshold = 7;
+function hasEnoughVotes(votes: UserVote[], voteType: Vote, threshold: number) {
+    const mappedVotes = votes.filter(vote => vote.vote === voteType).map(getWeightOfUserVote);
+    return Math.sumPrecise(mappedVotes) >= threshold;
+}
 
-    async handleInteraction(
-        interaction: MessageComponentInteraction,
-    ): Promise<void> {
-        const suggestion = ongoingSuggestions[interaction.message.id];
-
-        if (suggestion === undefined) {
-            await interaction.update({
-                content:
-                    "Ich find den Namensvorschlag nicht. Irgend ein Huso muss wohl den Bot neugestartet haben. Macht am besten ne Neue auf",
-                components: [],
-            });
-            return;
-        }
-        const userVoteMap = getUserVoteMap(interaction.message.id);
-        const member = interaction.guild?.members.cache.get(
-            interaction.user.id,
-        );
-        if (member === undefined) {
-            await interaction.update({
-                content: "Ich find dich nicht auf dem Server. Du Huso",
-                components: [],
-            });
-            return;
-        }
-
-        const istrusted = isTrusted(member);
-        if (interaction.customId === "nicknameVoteYes") {
-            userVoteMap[interaction.user.id] = {
-                vote: "YES",
-                trusted: istrusted,
-            };
-        } else if (interaction.customId === "nicknameVoteNo") {
-            userVoteMap[interaction.user.id] = {
-                vote: "NO",
-                trusted: istrusted,
-            };
-        }
-        // evaluate the Uservotes
-        const votes: UserVote[] = Object.values(userVoteMap);
-        if (this.hasEnoughVotes(votes, "NO")) {
-            await interaction.update({
-                content: `Der Vorschlag: \`${suggestion.nickName}\` für <@${suggestion.nickNameUserId}> war echt nicht so geil`,
-                components: [],
-            });
-            return;
-        }
-        if (this.hasEnoughVotes(votes, "YES")) {
-            try {
-                await nickName.insertNickname(
-                    suggestion.nickNameUserId,
-                    suggestion.nickName,
-                );
-            } catch (error) {
-                await interaction.update(
-                    `Würdet ihr Hurensöhne aufpassen, wüsstest ihr, dass für <@${suggestion.nickNameUserId}> \`${suggestion.nickName}\` bereits existiert.`,
-                );
-                return;
-            }
-
-            await interaction.update({
-                content: `Für <@${suggestion.nickNameUserId}> ist jetzt \`${suggestion.nickName}\` in der Rotation`,
-                components: [],
-            });
-            return;
-        }
-        await interaction.reply({
-            content: "Hast abgestimmt",
-            ephemeral: true,
-        });
-    }
-
-    private hasEnoughVotes(votes: UserVote[], voteType: Vote) {
-        return (
-            votes
-                .filter(vote => vote.vote === voteType)
-                .reduce(
-                    (sum, uservote) => sum + getWeightOfUserVote(uservote),
-                    0,
-                ) >= this.threshold
-        );
-    }
+function getWeightOfUserVote(vote: UserVote): number {
+    return vote.trusted ? 2 : 1;
 }

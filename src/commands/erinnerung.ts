@@ -1,23 +1,23 @@
 import {
     type CacheType,
-    type Client,
     type CommandInteraction,
+    type GuildTextBasedChannel,
     SlashCommandBuilder,
     SlashCommandStringOption,
-    type TextBasedChannel,
     TimestampStyles,
     time as formatTime,
 } from "discord.js";
 import * as chrono from "chrono-node";
+import * as sentry from "@sentry/bun";
 
-import type { MessageCommand, ApplicationCommand } from "./command.js";
-import type { ProcessableMessage } from "../handler/cmdHandler.js";
-import type { BotContext } from "../context.js";
-import log from "../utils/logger.js";
-import * as reminderService from "../storage/reminders.js";
-import type { Reminder } from "../storage/model.js";
+import type { MessageCommand, ApplicationCommand } from "@/commands/command.js";
+import type { ProcessableMessage } from "@/service/command.js";
+import type { BotContext } from "@/context.js";
+import log from "@log";
+import * as reminderService from "@/storage/reminders.js";
+import type { Reminder } from "@/storage/db/model.js";
 
-import { ensureChatInputCommand } from "../utils/interactionUtils.js";
+import { ensureChatInputCommand } from "@/utils/interactionUtils.js";
 
 const validateDate = (date: Date): true | string => {
     if (Number.isNaN(date.getTime()) || !Number.isFinite(date.getTime())) {
@@ -37,7 +37,7 @@ const validateDate = (date: Date): true | string => {
     return true;
 };
 
-export class ErinnerungCommand implements MessageCommand, ApplicationCommand {
+export default class ErinnerungCommand implements MessageCommand, ApplicationCommand {
     name = "erinnerung";
     description = "Setzt eine Erinnerung für dich";
     applicationCommand = new SlashCommandBuilder()
@@ -56,16 +56,12 @@ export class ErinnerungCommand implements MessageCommand, ApplicationCommand {
                 .setRequired(false),
         );
 
-    async handleInteraction(
-        command: CommandInteraction<CacheType>,
-    ): Promise<void> {
+    async handleInteraction(command: CommandInteraction<CacheType>) {
         const cmd = ensureChatInputCommand(command);
         const time = cmd.options.getString("time", true);
         const note = cmd.options.getString("note");
         if (cmd.guildId === null) {
-            await cmd.reply(
-                "Brudi ich muss schon wissen wo ich dich erinnern soll",
-            );
+            await cmd.reply("Brudi ich muss schon wissen wo ich dich erinnern soll");
             return;
         }
 
@@ -92,25 +88,15 @@ export class ErinnerungCommand implements MessageCommand, ApplicationCommand {
             );
         } catch (err) {
             log.error(err, `Couldn't parse date from message ${time} due to`);
-            await cmd.reply(
-                "Brudi was ist das denn für ne Datumsangabe? Gib was ordentliches an",
-            );
+            await cmd.reply("Brudi was ist das denn für ne Datumsangabe? Gib was ordentliches an");
         }
     }
 
-    async handleMessage(
-        message: ProcessableMessage,
-        _client: Client<boolean>,
-        context: BotContext,
-    ): Promise<void> {
+    async handleMessage(message: ProcessableMessage, context: BotContext) {
         // TODO: Create utility function that removes the command prefix for easier parsing
-        const param = message.content.split(
-            `${context.prefix.command}${this.name} `,
-        )[1];
+        const param = message.content.slice(`${context.prefix.command}${this.name}`.length).trim();
         if (!param) {
-            await message.reply(
-                "Brudi ich muss schon wissen wann ich dich erinnern soll",
-            );
+            await message.reply("Brudi ich muss schon wissen wann ich dich erinnern soll");
             return;
         }
 
@@ -143,10 +129,7 @@ export class ErinnerungCommand implements MessageCommand, ApplicationCommand {
                 )} dran erinnern. Außer ich kack ab lol, dann mach ich das später (vielleicht)`,
             );
         } catch (err) {
-            log.error(
-                err,
-                `Couldn't parse date from message ${message.content} due to`,
-            );
+            log.error(err, `Couldn't parse date from message ${message.content} due to`);
             await message.reply(
                 "Brudi was ist das denn für ne Datumsangabe? Gib was ordentliches an",
             );
@@ -167,14 +150,11 @@ const sendReminder = async (reminder: Reminder, context: BotContext) => {
             throw new Error(`Channel ${reminder.channelId} couldn't be found`);
         }
         if (!channel.isTextBased()) {
-            throw new Error(
-                `Channel ${reminder.channelId} is not a text channel`,
-            );
+            throw new Error(`Channel ${reminder.channelId} is not a text channel`);
         }
-        const textChannel = channel as TextBasedChannel;
+        const textChannel = channel as GuildTextBasedChannel;
         const user = await guild.members.fetch(reminder.userId);
-        const note =
-            reminder.reminderNote || "Lol du Vollidiot hast nichts angegeben";
+        const note = reminder.reminderNote || "Lol du Vollidiot hast nichts angegeben";
 
         if (!reminder.messageId) {
             await textChannel.send({
@@ -198,6 +178,7 @@ const sendReminder = async (reminder: Reminder, context: BotContext) => {
         });
     } catch (err) {
         log.error(err, "Couldn't send reminder. Removing it...");
+        sentry.captureException(err);
     }
     await reminderService.removeReminder(reminder.id);
 };

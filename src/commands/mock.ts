@@ -1,6 +1,5 @@
 import {
     type CacheType,
-    type Client,
     type CommandInteraction,
     type GuildMember,
     type Message,
@@ -9,10 +8,10 @@ import {
     SlashCommandStringOption,
 } from "discord.js";
 
-import type { BotContext } from "../context.js";
-import type { ApplicationCommand, MessageCommand } from "./command.js";
-import type { ProcessableMessage } from "../handler/cmdHandler.js";
-import { ensureChatInputCommand } from "../utils/interactionUtils.js";
+import type { BotContext } from "@/context.js";
+import type { ApplicationCommand, MessageCommand } from "@/commands/command.js";
+import type { ProcessableMessage } from "@/service/command.js";
+import { ensureChatInputCommand } from "@/utils/interactionUtils.js";
 
 /**
  * Randomly capitalize letters
@@ -40,7 +39,7 @@ const buildMock = (author: GuildMember, toMock: string) => {
         });
 };
 
-export class MockCommand implements MessageCommand, ApplicationCommand {
+export default class MockCommand implements MessageCommand, ApplicationCommand {
     name = "mock";
     description = "Mockt einen Text.";
     applicationCommand = new SlashCommandBuilder()
@@ -53,9 +52,7 @@ export class MockCommand implements MessageCommand, ApplicationCommand {
                 .setRequired(true),
         );
 
-    async handleInteraction(
-        command: CommandInteraction<CacheType>,
-    ): Promise<void> {
+    async handleInteraction(command: CommandInteraction<CacheType>) {
         const cmd = ensureChatInputCommand(command);
 
         const author = cmd.guild?.members.resolve(cmd.user);
@@ -70,19 +67,13 @@ export class MockCommand implements MessageCommand, ApplicationCommand {
         });
     }
 
-    async handleMessage(
-        message: ProcessableMessage,
-        _client: Client<boolean>,
-        context: BotContext,
-    ): Promise<void> {
+    async handleMessage(message: ProcessableMessage, context: BotContext) {
         const author = message.guild.members.resolve(message.author);
         const { channel } = message;
 
         const messageReference = message.reference?.messageId;
         const isReply = messageReference !== undefined;
-        let content = message.content.slice(
-            `${context.prefix.command}${this.name} `.length,
-        );
+        let content = message.content.slice(`${context.prefix.command}${this.name} `.length);
         const hasContent = !!content && content.trim().length > 0;
 
         if (!author) {
@@ -96,8 +87,7 @@ export class MockCommand implements MessageCommand, ApplicationCommand {
 
         let replyMessage: Message<boolean> | null = null;
         if (isReply) {
-            replyMessage =
-                await message.channel.messages.fetch(messageReference);
+            replyMessage = await message.channel.messages.fetch(messageReference);
             if (!hasContent) {
                 content = replyMessage.content;
             }

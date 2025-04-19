@@ -1,11 +1,62 @@
 import { type APIEmbedField, EmbedBuilder, type Message } from "discord.js";
 
-import type { CommandFunction } from "../types.js";
+import type { MessageCommand } from "@/commands/command.js";
+import type { BotContext } from "@/context.js";
+import type { ProcessableMessage } from "@/service/command.js";
+
+import { LETTERS } from "@/service/poll.js";
 import * as poll from "./poll.js";
-import { isMod } from "../utils/userUtils.js";
+
+export default class ToggleCommand implements MessageCommand {
+    name = "toggle";
+    description =
+        "Nutzbar als Reply auf eine Umfrage, um Sie erweiterbar zu machen. Nur für Admins nutzbar.";
+
+    async handleMessage(message: ProcessableMessage, context: BotContext): Promise<void> {
+        if (!context.roleGuard.isMod(message.member)) {
+            return;
+        }
+
+        const reference = message.reference;
+        const referenceMessageId = reference?.messageId;
+        if (!reference || !referenceMessageId) {
+            await message.channel.send("Bruder schon mal was von der Replyfunktion gehört?");
+            return;
+        }
+
+        const channel = context.guild.channels.cache.get(reference.channelId);
+        if (!channel || !channel.isTextBased()) {
+            return;
+        }
+
+        const replyMessage = await channel.messages.fetch(referenceMessageId);
+        const pollEmbed = replyMessage.embeds[0];
+        const pollAuthor = pollEmbed.author;
+        if (!pollAuthor) {
+            await message.channel.send("Irgendwie ist der Poll kaputt");
+            return;
+        }
+
+        const isPoll =
+            pollAuthor.name.startsWith("Umfrage") || pollAuthor.name.startsWith("Strawpoll");
+
+        const isSdm = pollAuthor.name.startsWith("Secure Decision");
+
+        if (isPoll) {
+            await Promise.all([togglePoll(replyMessage), message.delete()]);
+            return;
+        }
+        if (isSdm) {
+            await Promise.all([toggleSdm(replyMessage), message.delete()]);
+            return;
+        }
+
+        await message.channel.send("Bruder da ist nichts was ich manipulieren kann");
+    }
+}
 
 const isPollField = (field: APIEmbedField): boolean =>
-    !field.inline && poll.LETTERS.some(l => field.name.startsWith(l));
+    !field.inline && LETTERS.some(l => field.name.startsWith(l));
 
 const togglePoll = async (message: Message) => {
     const pollEmbed = message.embeds[0];
@@ -44,49 +95,3 @@ const toggleSdm = async (message: Message) => {
         }),
     ]);
 };
-
-/**
- * Extends an existing poll or strawpoll
- */
-export const run: CommandFunction = async (client, message, args, context) => {
-    if (!isMod(message.member)) return;
-    const reference = message.reference;
-    const referenceMessageId = reference?.messageId;
-    if (!reference || !referenceMessageId) {
-        return "Bruder schon mal was von der Replyfunktion gehört?";
-    }
-
-    const channel = context.guild.channels.cache.get(reference.channelId);
-
-    if (!channel) {
-        return;
-    }
-    if (!channel.isTextBased()) {
-        return;
-    }
-
-    const replyMessage = await channel.messages.fetch(referenceMessageId);
-    const pollEmbed = replyMessage.embeds[0];
-    const pollAuthor = pollEmbed.author;
-    if (!pollAuthor) return "Irgendwie ist der Poll kaputt";
-
-    const isPoll =
-        pollAuthor.name.startsWith("Umfrage") ||
-        pollAuthor.name.startsWith("Strawpoll");
-
-    const isSdm = pollAuthor.name.startsWith("Secure Decision");
-
-    if (isPoll) {
-        await Promise.all([togglePoll(replyMessage), message.delete()]);
-        return;
-    }
-    if (isSdm) {
-        await Promise.all([toggleSdm(replyMessage), message.delete()]);
-        return;
-    }
-
-    return "Bruder da ist nichts was ich manipulieren kann";
-};
-
-export const description =
-    "Nutzbar als Reply auf eine Umfrage, um Sie erweiterbar zu machen. Nur für Admins nutzbar.";

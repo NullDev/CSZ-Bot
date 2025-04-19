@@ -1,12 +1,13 @@
 import {
     type CommandInteraction,
-    type Client,
     SlashCommandBuilder,
     SlashCommandUserOption,
+    ChatInputCommandInteraction,
 } from "discord.js";
 
-import type { ApplicationCommand, CommandResult } from "./command.js";
-import * as stempel from "../storage/stempel.js";
+import type { ApplicationCommand } from "@/commands/command.js";
+import * as stempelService from "@/service/stempel.js";
+import { randomEntry } from "@/service/random.js";
 
 const replies = [
     "Der Bruder {0} hat den neuen Bruder {1} eingeladen und du hast dies so eben bestätigt!",
@@ -17,8 +18,7 @@ const replies = [
     "Rosen sind rot, Veilchen sind blau, {0} und {1} sind verliebt, das weiß ich genau",
 ];
 
-export class StempelCommand implements ApplicationCommand {
-    modCommand = false;
+export default class StempelCommand implements ApplicationCommand {
     name = "stempeln";
     description = "Gib deinem Inviter ein Stempel, zeig deinen Respekt";
 
@@ -32,42 +32,38 @@ export class StempelCommand implements ApplicationCommand {
                 .setDescription("Derjeniche, der dich invited hat"),
         );
 
-    async handleInteraction(
-        command: CommandInteraction,
-        _client: Client<boolean>,
-    ): Promise<CommandResult> {
-        const invitator = command.guild?.members.cache.find(
-            m => m.id === command.options.getUser("inviter", true).id,
-        );
-        const invitedUser = command.guild?.members.cache.find(
-            m => m.id === command.user.id,
-        );
-        if (!invitator || !invitedUser) {
-            await command.reply("Bruder gib doch bitte richtige User an");
-            return;
-        }
-        if (invitator.user.bot) {
-            await command.reply(
-                "Alter als ob dich der Bot invited hat. Laber nich!",
-            );
-            return;
-        }
-        if (invitator.id === invitedUser.id) {
-            await command.reply(
-                "Bruder wie solltest du dich bitte selbst inviten können?",
-            );
+    async handleInteraction(command: CommandInteraction) {
+        if (!(command instanceof ChatInputCommandInteraction)) {
+            // TODO: handle this on a type level
             return;
         }
 
-        const isNewInvite = await stempel.insertStempel(invitator, invitedUser);
+        const inviter = command.guild?.members.cache.find(
+            m => m.id === command.options.getUser("inviter", true).id,
+        );
+        const invitedUser = command.guild?.members.cache.find(m => m.id === command.user.id);
+        if (!inviter || !invitedUser) {
+            await command.reply("Bruder gib doch bitte richtige User an");
+            return;
+        }
+        if (inviter.user.bot) {
+            await command.reply("Alter als ob dich der Bot invited hat. Laber nich!");
+            return;
+        }
+        if (inviter.id === invitedUser.id) {
+            await command.reply("Bruder wie solltest du dich bitte selbst inviten können?");
+            return;
+        }
+
+        const isNewInvite = await stempelService.createStempel(inviter, invitedUser);
         if (isNewInvite) {
-            const reply = replies[Math.floor(Math.random() * replies.length)]
-                .replace("{0}", invitator.toString())
+            const reply = randomEntry(replies)
+                .replace("{0}", inviter.toString())
                 .replace("{1}", invitedUser.toString());
             await command.reply({
                 content: reply,
                 allowedMentions: {
-                    users: [invitator.id, invitedUser.id],
+                    users: [inviter.id, invitedUser.id],
                 },
             });
             return;

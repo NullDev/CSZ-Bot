@@ -1,40 +1,30 @@
-import type { Client } from "discord.js";
-
-import type { ProcessableMessage } from "../../handler/cmdHandler.js";
-import type { SpecialCommand, CommandResult } from "../command.js";
+import type { ProcessableMessage } from "@/service/command.js";
+import type { SpecialCommand } from "@/commands/command.js";
 
 // this is the former nixos.ts
 
-export class TriggerReactOnKeyword implements SpecialCommand {
+export default class TriggerReactOnKeyword implements SpecialCommand {
     name = "ReactTrigger";
     description = "Trigger a Bot reaction on keyword";
-    randomness: number;
     cooldownTime = 300000;
-    keyword: string;
-    emoteName: string;
 
-    constructor(keyword: string, emote: string, randomness = 0.2) {
-        this.keyword = keyword;
-        this.emoteName = emote;
-        this.randomness = randomness;
-    }
+    constructor(
+        public readonly keyword: string,
+        public readonly emoteName: string,
+        public readonly randomness = 0.2,
+    ) {}
 
     matches(message: ProcessableMessage): boolean {
         return message.content.toLowerCase().includes(this.keyword);
     }
 
-    async handleSpecialMessage(
-        message: ProcessableMessage,
-        _client: Client<boolean>,
-    ): Promise<CommandResult> {
-        if (this.isEmoji(this.emoteName)) {
+    async handleSpecialMessage(message: ProcessableMessage) {
+        if (this.#isEmoji(this.emoteName)) {
             await message.react(this.emoteName);
             return;
         }
 
-        const emote = message.guild.emojis.cache.find(
-            e => e.name === this.emoteName,
-        );
+        const emote = message.guild.emojis.cache.find(e => e.name === this.emoteName);
         if (emote) {
             await message.react(emote);
             return;
@@ -42,7 +32,7 @@ export class TriggerReactOnKeyword implements SpecialCommand {
         throw new Error(`${this.emoteName} emote not found`);
     }
 
-    private isEmoji(str: string): boolean {
+    #isEmoji(str: string): boolean {
         return /\p{Extended_Pictographic}/u.test(str);
     }
 }

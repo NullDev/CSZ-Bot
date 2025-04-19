@@ -1,16 +1,17 @@
-import moment from "moment";
+import { Temporal } from "@js-temporal/polyfill"; // TODO: Remove once bun ships temporal
 import type { Snowflake, User } from "discord.js";
 
-import type { Radius } from "../commands/penis.js";
-import type { Penis } from "./model.js";
+import type { Radius } from "@/commands/penis.js";
+import type { Penis } from "@/storage/db/model.js";
 
-import db from "./db.js";
-import log from "../utils/logger.js";
+import { getStartAndEndDay } from "@/utils/dateUtils.js";
+import db from "@db";
+import log from "@log";
 
 export function insertMeasurement(
     user: User,
     size: number,
-    diameter: Radius,
+    radius: Radius,
     ctx = db(),
 ): Promise<Penis> {
     log.debug(`Saving Penis Measurement for user ${user.id} with size ${size}`);
@@ -20,45 +21,39 @@ export function insertMeasurement(
         .values({
             userId: user.id,
             size,
-            diameter,
+            radius,
         })
         .returningAll()
         .executeTakeFirstOrThrow();
 }
 
-export function fetchRecentMeasurement(
-    user: User,
-    ctx = db(),
-): Promise<Penis | undefined> {
-    const startToday = moment().startOf("days").toISOString();
-    const startTomorrow = moment().add(1, "days").startOf("days").toISOString();
+export function fetchRecentMeasurement(user: User, ctx = db()): Promise<Penis | undefined> {
+    const now = Temporal.Now.instant();
+    const { startOfToday, startOfTomorrow } = getStartAndEndDay(now);
 
     return ctx
         .selectFrom("penis")
         .where("userId", "=", user.id)
-        .where("measuredAt", ">=", startToday)
-        .where("measuredAt", "<", startTomorrow)
+        .where("measuredAt", ">=", startOfToday.toString())
+        .where("measuredAt", "<", startOfTomorrow.toString())
         .selectAll()
         .executeTakeFirst();
 }
 
-export async function longestRecentMeasurement(
-    ctx = db(),
-): Promise<number | undefined> {
-    const startToday = moment().startOf("days").toISOString();
-    const startTomorrow = moment().add(1, "days").startOf("days").toISOString();
+export async function longestRecentMeasurement(ctx = db()): Promise<number | undefined> {
+    const now = Temporal.Now.instant();
+    const { startOfToday, startOfTomorrow } = getStartAndEndDay(now);
+
     const res = await ctx
         .selectFrom("penis")
-        .where("measuredAt", ">=", startToday)
-        .where("measuredAt", "<", startTomorrow)
+        .where("measuredAt", ">=", startOfToday.toString())
+        .where("measuredAt", "<", startOfTomorrow.toString())
         .select(({ eb }) => eb.fn.max<number>("size").as("maxSize"))
         .executeTakeFirst();
     return res?.maxSize ?? undefined;
 }
 
-export async function getAveragePenisSizes(
-    ctx = db(),
-): Promise<Record<Snowflake, number>> {
+export async function getAveragePenisSizes(ctx = db()): Promise<Record<Snowflake, number>> {
     const result = await ctx
         .selectFrom("penis")
         .select(({ eb }) => eb.fn.avg<number>("size").as("avgSize"))

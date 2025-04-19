@@ -1,6 +1,5 @@
 import {
     type CacheType,
-    type Client,
     type CommandInteraction,
     type GuildMember,
     type Message,
@@ -9,19 +8,12 @@ import {
     SlashCommandStringOption,
 } from "discord.js";
 
-import type { BotContext } from "../context.js";
-import type { ProcessableMessage } from "../handler/cmdHandler.js";
-import type { ApplicationCommand, MessageCommand } from "./command.js";
+import type { BotContext } from "@/context.js";
+import type { ProcessableMessage } from "@/service/command.js";
+import type { ApplicationCommand, MessageCommand } from "@/commands/command.js";
 
-/**
- * Clappifies text
- */
-const clapify = (str: string): string =>
-    `${str.split(/\s+/).join(" :clap: ")} :clap:`;
+const clapify = (str: string): string => `${str.split(/\s+/).join(" :clap: ")} :clap:`;
 
-/**
- * build clapped embed
- */
 const buildClap = (author: GuildMember, toClap: string) => {
     return new EmbedBuilder()
         .setDescription(`${clapify(toClap)}`)
@@ -32,7 +24,7 @@ const buildClap = (author: GuildMember, toClap: string) => {
         });
 };
 
-export class ClapCommand implements MessageCommand, ApplicationCommand {
+export default class ClapCommand implements MessageCommand, ApplicationCommand {
     name = "clap";
     description = clapify("Clapped deinen Text");
     applicationCommand = new SlashCommandBuilder()
@@ -45,9 +37,7 @@ export class ClapCommand implements MessageCommand, ApplicationCommand {
                 .setRequired(true),
         );
 
-    async handleInteraction(
-        command: CommandInteraction<CacheType>,
-    ): Promise<void> {
+    async handleInteraction(command: CommandInteraction<CacheType>) {
         if (!command.isChatInputCommand()) {
             // TODO: Solve this on a type level
             return;
@@ -65,24 +55,18 @@ export class ClapCommand implements MessageCommand, ApplicationCommand {
         });
     }
 
-    async handleMessage(
-        message: ProcessableMessage,
-        _client: Client<boolean>,
-        context: BotContext,
-    ): Promise<void> {
+    async handleMessage(message: ProcessableMessage, context: BotContext) {
         const author = message.guild.members.resolve(message.author);
+        if (!author) {
+            throw new Error("Couldn't resolve guild member");
+        }
+
         const { channel } = message;
 
         const replyRef = message.reference?.messageId;
         const isReply = replyRef !== undefined;
-        let content = message.content.slice(
-            `${context.prefix.command}${this.name} `.length,
-        );
+        let content = message.content.slice(`${context.prefix.command}${this.name} `.length);
         const hasContent = !!content && content.trim().length > 0;
-
-        if (!author) {
-            throw new Error("Couldn't resolve guild member");
-        }
 
         if (!isReply && !hasContent) {
             await message.channel.send(clapify("Wo ist deine Nachricht?"));

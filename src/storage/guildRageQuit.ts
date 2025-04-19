@@ -1,7 +1,7 @@
 import type { Guild, GuildMember, PartialGuildMember } from "discord.js";
 import { sql } from "kysely";
 
-import db from "./db.js";
+import db from "@db";
 
 export async function getNumRageQuits(
     guild: Guild,
@@ -21,7 +21,7 @@ export async function incrementRageQuit(
     guild: Guild,
     member: GuildMember | PartialGuildMember,
     ctx = db(),
-): Promise<void> {
+) {
     await ctx
         .insertInto("guildRageQuits")
         .values({

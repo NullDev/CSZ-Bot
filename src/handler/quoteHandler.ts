@@ -8,40 +8,43 @@ import {
     type ReactionEmoji,
     ChannelType,
     type Channel,
+    type Snowflake,
+    type GuildTextBasedChannel,
+    type ApplicationEmoji,
 } from "discord.js";
 
-import type { BotContext } from "../context.js";
-import { getConfig } from "../utils/configHandler.js";
-import log from "../utils/logger.js";
-import { isNerd, isTrusted } from "../utils/userUtils.js";
+import type { BotContext, QuoteConfig } from "@/context.js";
+import type { ReactionHandler } from "./ReactionHandler.js";
+import log from "@log";
 
-const quoteConfig = getConfig().bot_settings.quotes;
-const quoteThreshold = quoteConfig.quote_threshold;
-const isSourceChannelAllowed = (channelId: string) =>
-    !quoteConfig.blacklisted_channel_ids.includes(channelId);
+const quoteMessage = "Ihr quoted echt jeden Scheiß, oder?";
+
 const isChannelAnonymous = async (context: BotContext, channel: Channel) => {
-    const anonChannels = quoteConfig.anonymous_channel_ids;
+    const anonChannels = context.commandConfig.quote.anonymousChannelIds;
 
     let currentChannel: Channel | null = channel;
     do {
         currentChannel = await currentChannel.fetch();
-        if (anonChannels.includes(currentChannel.id)) {
+        if (anonChannels.has(currentChannel.id)) {
             return true;
         }
 
         currentChannel =
-            "parent" in currentChannel && !!currentChannel.parent
-                ? currentChannel.parent
-                : null;
+            "parent" in currentChannel && !!currentChannel.parent ? currentChannel.parent : null;
     } while (currentChannel !== null);
 
     return false;
 };
-const isQuoteEmoji = (emoji: GuildEmoji | ReactionEmoji) =>
-    emoji.name === quoteConfig.emoji_name;
-const isMemberAllowedToQuote = (member: GuildMember) => isNerd(member);
+
+const isQuoteEmoji = (
+    quoteConfig: QuoteConfig,
+    emoji: GuildEmoji | ReactionEmoji | ApplicationEmoji,
+) => {
+    return emoji.name === quoteConfig.emojiName;
+};
 
 const getMessageQuoter = async (
+    quoteConfig: QuoteConfig,
     message: Message,
 ): Promise<readonly GuildMember[]> => {
     const guild = message.guild;
@@ -50,13 +53,13 @@ const getMessageQuoter = async (
     }
     const fetchedMessage = await message.fetch(true);
     const messageReaction = fetchedMessage.reactions.cache.find(r =>
-        isQuoteEmoji(r.emoji),
+        isQuoteEmoji(quoteConfig, r.emoji),
     );
+
     if (messageReaction === undefined) {
-        throw new Error(
-            "A message has been quoted but the reaction could not be found",
-        );
+        throw new Error("A message has been quoted but the reaction could not be found");
     }
+
     const fetchedUsersOfReaction = await messageReaction.users.fetch();
     return fetchedUsersOfReaction
         .map(user => guild.members.resolve(user.id))
@@ -71,29 +74,36 @@ const isMessageAlreadyQuoted = (
 };
 
 const hasMessageEnoughQuotes = (
+    context: BotContext,
     messageQuoter: readonly GuildMember[],
 ): boolean => {
-    return (
-        messageQuoter.reduce(
-            (prev, curr) => (isTrusted(curr) ? prev + 2 : prev + 1),
-            0,
-        ) >= quoteThreshold
-    );
+    const weightedVotes = messageQuoter.map(q => (context.roleGuard.isTrusted(q) ? 2 : 1));
+    return Math.sumPrecise(weightedVotes) >= context.commandConfig.quote.voteThreshold;
 };
-const isQuoterQuotingHimself = (
-    quoter: GuildMember,
-    messageAuthor: GuildMember,
-) => quoter.id === messageAuthor.id;
-const generateRandomColor = () => Math.floor(Math.random() * 16777215);
 
-const getTargetChannel = (sourceChannelId: string, context: BotContext) => {
-    const targetChannelId =
-        quoteConfig.target_channel_overrides[sourceChannelId] ??
-        quoteConfig.default_target_channel_id;
+const isQuoterQuotingHimself = (quoter: GuildMember, messageAuthor: GuildMember) =>
+    quoter.id === messageAuthor.id;
+
+const isQuoterQuotingQuoteMessage = (message: Message) => message.content === quoteMessage;
+
+const generateRandomColor = () => Math.floor(Math.random() * 0xffffff);
+
+const getTargetChannel = (
+    sourceChannelId: Snowflake,
+    context: BotContext,
+): { id: Snowflake; channel: GuildTextBasedChannel | undefined } => {
+    const { targetChannelOverrides, defaultTargetChannelId } = context.commandConfig.quote;
+
+    const targetChannelId = targetChannelOverrides[sourceChannelId] ?? defaultTargetChannelId;
+
+    const channel = context.client.channels.cache.get(targetChannelId);
+    if ((channel && !("guild" in channel)) || !channel?.isTextBased()) {
+        throw new Error(`Channel ${targetChannelId} is not a guild channel`);
+    }
 
     return {
         id: targetChannelId,
-        channel: context.client.channels.cache.get(targetChannelId),
+        channel,
     };
 };
 
@@ -114,8 +124,7 @@ const createQuote = async (
     referencedMessage: Message | undefined,
 ) => {
     const getAuthor = async (user: GuildMember | null | undefined) => {
-        return !user ||
-            (await isChannelAnonymous(context, quotedMessage.channel))
+        return !user || (await isChannelAnonymous(context, quotedMessage.channel))
             ? { name: "Anon" }
             : {
                   name: user.displayName,
@@ -133,9 +142,7 @@ const createQuote = async (
                     color: randomizedColor,
                     description: quotedMessage.content,
                     author: await getAuthor(quotedUser),
-                    timestamp: new Date(
-                        quotedMessage.createdTimestamp,
-                    ).toISOString(),
+                    timestamp: new Date(quotedMessage.createdTimestamp).toISOString(),
                     fields: [
                         {
                             name: "Link zur Nachricht",
@@ -143,16 +150,12 @@ const createQuote = async (
                         },
                         {
                             name: "zitiert von",
-                            value: quoter
-                                .map(u => getQuoteeUsername(quotedUser, u))
-                                .join(", "),
+                            value: quoter.map(u => getQuoteeUsername(quotedUser, u)).join(", "),
                         },
                     ],
                 },
             ],
-            files: quotedMessage.attachments.map(
-                (attachment, _key) => attachment,
-            ),
+            files: quotedMessage.attachments.map((attachment, _key) => attachment),
         },
         reference:
             referencedMessage !== undefined
@@ -163,14 +166,10 @@ const createQuote = async (
                               color: randomizedColor,
                               description: referencedMessage.content,
                               author: await getAuthor(referencedUser),
-                              timestamp: new Date(
-                                  referencedMessage.createdTimestamp,
-                              ).toISOString(),
+                              timestamp: new Date(referencedMessage.createdTimestamp).toISOString(),
                           },
                       ],
-                      files: referencedMessage.attachments.map(
-                          (attachment, _key) => attachment,
-                      ),
+                      files: referencedMessage.attachments.map((attachment, _key) => attachment),
                   }
                 : undefined,
     };
@@ -184,14 +183,16 @@ export default {
         invoker: User,
         context: BotContext,
         reactionWasRemoved: boolean,
-    ): Promise<void> {
+    ) {
         if (reactionWasRemoved) {
             // We don't support removing quotes, but the API of the reaction handlers will also call this on reaction removal
             return;
         }
 
+        const quoteConfig = context.commandConfig.quote;
+
         if (
-            !isQuoteEmoji(event.emoji) ||
+            !isQuoteEmoji(quoteConfig, event.emoji) ||
             event.message.guildId === null ||
             invoker.id === context.client.user.id
         ) {
@@ -201,24 +202,22 @@ export default {
         const quoter = context.guild.members.cache.get(invoker.id);
 
         const sourceChannel = event.message.channel as TextBasedChannel;
-        const quotedMessage = await sourceChannel.messages.fetch(
-            event.message.id,
-        );
+        const quotedMessage = await sourceChannel.messages.fetch(event.message.id);
         const messageReference = quotedMessage.reference;
         const messageReferenceId = messageReference?.messageId;
         const referencedMessage = messageReferenceId
             ? await sourceChannel.messages.fetch(messageReferenceId)
             : undefined;
+
         const quotedUser = quotedMessage.member;
         const referencedUser = referencedMessage?.member;
-        const quotingMembers = await getMessageQuoter(quotedMessage);
-        const quotingMembersAllowed = quotingMembers.filter(member =>
-            isMemberAllowedToQuote(member),
-        );
+        const quotingMembers = await getMessageQuoter(quoteConfig, quotedMessage);
+
+        const quotingMembersAllowed = quotingMembers.filter(context.roleGuard.isNerd);
 
         if (!quotedUser || !quoter) {
             log.error(
-                "Something bad happend, there is something missing that shouldn't be missing",
+                "Something bad happened, there is something missing that shouldn't be missing",
             );
             return;
         }
@@ -228,12 +227,19 @@ export default {
         );
 
         if (
-            !isMemberAllowedToQuote(quoter) ||
-            !isSourceChannelAllowed(quotedMessage.channelId) ||
+            !context.roleGuard.isNerd(quoter) ||
+            quoteConfig.blacklistedChannelIds.has(quotedMessage.channelId) ||
             isMessageAlreadyQuoted(quotingMembers, context)
         ) {
             await event.users.remove(quoter);
+            return;
+        }
 
+        if (
+            quotedMessage.author.id === context.client.user.id &&
+            isQuoterQuotingQuoteMessage(quotedMessage)
+        ) {
+            await event.users.remove(quoter);
             return;
         }
 
@@ -244,9 +250,7 @@ export default {
                         color: 0xe83e41,
                         author: {
                             name: quoter.displayName,
-                            icon_url:
-                                quoter.avatarURL({ forceStatic: true }) ??
-                                undefined,
+                            icon_url: quoter.avatarURL({ forceStatic: true }) ?? undefined,
                         },
                         title: `${quoter.displayName} der Lellek hat gerade versucht sich, selbst zu quoten. Was für ein Opfer!`,
                         description: `${quotedMessage.cleanContent}\n\n([link](${quotedMessage.url}))`,
@@ -261,7 +265,7 @@ export default {
             return;
         }
 
-        if (!hasMessageEnoughQuotes(quotingMembersAllowed)) {
+        if (!hasMessageEnoughQuotes(context, quotingMembersAllowed)) {
             return;
         }
 
@@ -273,8 +277,10 @@ export default {
             quotedMessage,
             referencedMessage,
         );
-        const { id: targetChannelId, channel: targetChannel } =
-            getTargetChannel(quotedMessage.channelId, context);
+        const { id: targetChannelId, channel: targetChannel } = getTargetChannel(
+            quotedMessage.channelId,
+            context,
+        );
 
         if (targetChannel === undefined) {
             log.error(
@@ -314,7 +320,7 @@ export default {
             quotedMessage.channel.isTextBased() &&
             quotedMessage.channel.type === ChannelType.GuildText
         ) {
-            await quotedMessage.reply("Ihr quoted echt jeden Scheiß, oder?");
+            await quotedMessage.reply(quoteMessage);
         }
     },
-};
+} satisfies ReactionHandler;

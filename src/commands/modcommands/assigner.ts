@@ -1,29 +1,37 @@
-import type { CommandFunction } from "../../types.js";
-import log from "../../utils/logger.js";
+import type { MessageCommand } from "@/commands/command.js";
+import type { BotContext } from "@/context.js";
+import { parseLegacyMessageParts, type ProcessableMessage } from "@/service/command.js";
+import log from "@log";
 
-/**
- * Creates an assigner message
- */
-export const run: CommandFunction = async (_client, message, args) => {
-    if (!args.length) return "Keine Rollen angegeben.";
-    if (!message.guild) return "Keine Guild-Message, lel"; // TODO: Remove as soon as we have ProcessableMessage as base
+export default class AssignerCommand implements MessageCommand {
+    modCommand = true;
+    name = "assigner";
+    description =
+        "Startet den assigner mit gegebenen Rollen \nBenutzung: $MOD_COMMAND_PREFIX$assigner [rolle 1] [rolle 2] [...]";
 
-    const roleNames = message.guild.roles.cache
-        .filter(element => String(element.name).toLowerCase() !== "@everyone")
-        .map(element => element.name);
+    async handleMessage(message: ProcessableMessage, context: BotContext): Promise<void> {
+        const { args } = parseLegacyMessageParts(context, message);
+        if (!args.length) {
+            await message.channel.send("Keine Rollen angegeben.");
+            return;
+        }
 
-    if (!args.some(e => roleNames.includes(e)))
-        return "Keine dieser Rollen existiert!";
+        const roleNames = message.guild.roles.cache
+            .filter(element => String(element.name).toLowerCase() !== "@everyone")
+            .map(element => element.name);
 
-    await message.delete().catch(log.error);
+        if (!args.some(e => roleNames.includes(e))) {
+            await message.channel.send("Keine dieser Rollen existiert!");
+            return;
+        }
 
-    const validRoles = args.filter(value => roleNames.includes(value));
-    const drawRole = async (role: string) => {
-        const roleMessage = await message.channel.send(role);
-        await roleMessage.react("✅");
-    };
-    await Promise.all(validRoles.map(drawRole));
-};
+        await message.delete().catch(log.error);
 
-export const description =
-    "Startet den assigner mit gegebenen Rollen \nBenutzung: $MOD_COMMAND_PREFIX$assigner [rolle 1] [rolle 2] [...]";
+        const validRoles = args.filter(value => roleNames.includes(value));
+        const drawRole = async (role: string) => {
+            const roleMessage = await message.channel.send(role);
+            await roleMessage.react("✅");
+        };
+        await Promise.all(validRoles.map(drawRole));
+    }
+}

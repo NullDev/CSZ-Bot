@@ -10,17 +10,16 @@ import {
     SlashCommandUserOption,
     userMention,
 } from "discord.js";
+import * as sentry from "@sentry/bun";
 
-// @ts-ignore Types are somehow broken :shrug:
-import { SplidClient } from "splid-js";
+import type { BotContext } from "@/context.js";
+import type { ApplicationCommand, AutocompleteCommand } from "@/commands/command.js";
+import type { SplidMember } from "@/service/splid.js";
 
-import type { ApplicationCommand } from "./command.js";
-import type { SplidGroup } from "../storage/model.js";
-import { isTrusted } from "../utils/userUtils.js";
-import { ensureChatInputCommand } from "../utils/interactionUtils.js";
-import logger from "../utils/logger.js";
-import * as splidLink from "../storage/splidLink.js";
-import * as splidGroup from "../storage/splidGroup.js";
+import { ensureChatInputCommand } from "@/utils/interactionUtils.js";
+import * as splidLink from "@/storage/splidLink.js";
+import * as splidService from "@/service/splid.js";
+import log from "@log";
 
 const createNumberFormatter = (currency: string) =>
     new Intl.NumberFormat("de-DE", {
@@ -29,8 +28,7 @@ const createNumberFormatter = (currency: string) =>
         currency,
     });
 
-export class SplidGroupCommand implements ApplicationCommand {
-    modCommand = false;
+export default class SplidGroupCommand implements ApplicationCommand, AutocompleteCommand {
     name = "splid";
     description = "Managed ein bisschen Splid";
 
@@ -78,9 +76,7 @@ export class SplidGroupCommand implements ApplicationCommand {
         .addSubcommand(
             new SlashCommandSubcommandBuilder()
                 .setName("show-group")
-                .setDescription(
-                    "Listet die aktuellen Mitglieder und Kontostände auf",
-                )
+                .setDescription("Listet die aktuellen Mitglieder und Kontostände auf")
                 .addStringOption(
                     new SlashCommandStringOption()
                         .setRequired(true)
@@ -101,9 +97,7 @@ export class SplidGroupCommand implements ApplicationCommand {
         .addSubcommand(
             new SlashCommandSubcommandBuilder()
                 .setName("link")
-                .setDescription(
-                    "Verknüpft eine Splid-Person mit deinem Discord-Account",
-                )
+                .setDescription("Verknüpft eine Splid-Person mit deinem Discord-Account")
                 .addStringOption(
                     new SlashCommandStringOption()
                         .setRequired(true)
@@ -160,7 +154,7 @@ export class SplidGroupCommand implements ApplicationCommand {
                 ),
         );
 
-    async handleInteraction(interaction: CommandInteraction) {
+    async handleInteraction(interaction: CommandInteraction, context: BotContext) {
         const command = ensureChatInputCommand(interaction);
         if (!command.guildId) {
             await command.reply({
@@ -170,7 +164,7 @@ export class SplidGroupCommand implements ApplicationCommand {
             return;
         }
 
-        if (!command.member || !isTrusted(command.member)) {
+        if (!command.member || !context.roleGuard.isTrusted(command.member)) {
             await command.reply({
                 content: "Hurensohn. Der Command ist nix für dich.",
                 ephemeral: true,
@@ -194,7 +188,7 @@ export class SplidGroupCommand implements ApplicationCommand {
             case "delete-group":
                 return this.handleDeleteGroup(command);
             default:
-                throw new Error(`Unknown subcommand ${subCommand}`);
+                throw new Error(`Unknown subcommand "${subCommand}"`);
         }
     }
 
@@ -204,10 +198,7 @@ export class SplidGroupCommand implements ApplicationCommand {
         }
 
         const inviteCode = command.options.getString("invite-code", true);
-        const normalizedCode = inviteCode
-            .replace(/\s/g, "")
-            .toUpperCase()
-            .trim();
+        const normalizedCode = inviteCode.replace(/\s/g, "").toUpperCase().trim();
 
         if (normalizedCode.length === 0) {
             await command.reply({
@@ -220,7 +211,7 @@ export class SplidGroupCommand implements ApplicationCommand {
         await command.deferReply();
 
         try {
-            const externalInfo = await getExternalGroupInfo(normalizedCode);
+            const externalInfo = await splidService.getExternalGroupInfo(normalizedCode);
             if (!externalInfo) {
                 await command.editReply({
                     content: `Eine Splid-Gruppe mit dem Code \`${normalizedCode}\`konnte nicht gefunden werden. Hurensohn.`,
@@ -228,9 +219,7 @@ export class SplidGroupCommand implements ApplicationCommand {
                 return;
             }
 
-            const name =
-                command.options.getString("description-short", false) ??
-                externalInfo.name;
+            const name = command.options.getString("description-short", false) ?? externalInfo.name;
 
             if (!name) {
                 await command.reply({
@@ -239,14 +228,12 @@ export class SplidGroupCommand implements ApplicationCommand {
                 return;
             }
 
-            const longDescription =
-                command.options.getString("description-long", false) ?? null;
+            const longDescription = command.options.getString("description-long", false) ?? null;
 
-            const result = await splidGroup.createSplidGroup(
+            const result = await splidService.createGroup(
                 command.user,
                 command.guild,
                 normalizedCode,
-                externalInfo.objectId,
                 name,
                 longDescription,
             );
@@ -256,10 +243,10 @@ export class SplidGroupCommand implements ApplicationCommand {
             });
         } catch (err) {
             await command.editReply({
-                content:
-                    "Hurensohn. Irgendwas ging schief. Schau mal in den Logs.",
+                content: "Hurensohn. Irgendwas ging schief. Schau mal in den Logs.",
             });
-            logger.error(err, "Error while adding Splid group");
+            log.error(err, "Error while adding Splid group");
+            sentry.captureException(err);
             return;
         }
     }
@@ -269,7 +256,7 @@ export class SplidGroupCommand implements ApplicationCommand {
             return;
         }
 
-        const groups = await splidGroup.findAllGroups(command.guild);
+        const groups = await splidService.getAllGroups(command.guild);
 
         if (groups.length === 0) {
             await command.reply({
@@ -281,7 +268,7 @@ export class SplidGroupCommand implements ApplicationCommand {
         }
 
         const groupsStr = groups.map(g => {
-            const formatted = formatGroupCode(g.groupCode);
+            const formatted = splidService.formatGroupCode(g.groupCode);
             const link = `http://splid.net/j/${g.groupCode}`;
             const desc = g.longDescription ?? "";
 
@@ -305,10 +292,7 @@ export class SplidGroupCommand implements ApplicationCommand {
             return;
         }
         const code = command.options.getString("invite-code", true);
-        const group = await splidGroup.findOneByCodeForGuild(
-            command.guild,
-            code,
-        );
+        const group = await splidService.getGroupByCode(command.guild, code);
 
         if (!group) {
             await command.reply({
@@ -320,14 +304,14 @@ export class SplidGroupCommand implements ApplicationCommand {
 
         await command.deferReply();
 
-        const memberData = await fetchExternalMemberData(group);
+        const memberData = await splidService.fetchExternalMemberData(group);
 
         const linkedAccounts = await splidLink.matchUsers(
             command.guild,
             new Set(memberData.map(n => n.globalId)),
         );
 
-        const accountBalances = await this.getMemberBalances(group, memberData);
+        const accountBalances = await splidService.getMemberBalances(group, memberData);
         if (!accountBalances) {
             await command.editReply({
                 content: "Irgendwas ging schief. Schau mal in den Logs.",
@@ -344,9 +328,7 @@ export class SplidGroupCommand implements ApplicationCommand {
             return accountBalances[splidAccount.globalId] ?? 0;
         };
 
-        const descriptionPrefix = group.longDescription
-            ? `${group.longDescription}\n\n`
-            : "";
+        const descriptionPrefix = group.longDescription ? `${group.longDescription}\n\n` : "";
 
         const formatter = createNumberFormatter("EUR");
         const format = formatter.format.bind(formatter);
@@ -374,29 +356,13 @@ export class SplidGroupCommand implements ApplicationCommand {
         });
     }
 
-    async getMemberBalances(
-        group: SplidGroup,
-        members: readonly SplidMember[],
-    ) {
-        const entries = await fetchGroupEntries(group);
-        if (!entries) {
-            return undefined;
-        }
-
-        const paymentMatrix = buildPaymentMatrix(members, entries);
-        return computeAccountBalances(members, paymentMatrix);
-    }
-
     async handleLink(command: ChatInputCommandInteraction) {
         if (!command.guild || !command.member) {
             return;
         }
 
         const groupCode = command.options.getString("invite-code", true);
-        const group = await splidGroup.findOneByCodeForGuild(
-            command.guild,
-            groupCode,
-        );
+        const group = await splidService.getGroupByCode(command.guild, groupCode);
 
         if (!group) {
             await command.reply({
@@ -412,11 +378,9 @@ export class SplidGroupCommand implements ApplicationCommand {
         await command.deferReply();
 
         try {
-            const memberData = await fetchExternalMemberData(group);
+            const memberData = await splidService.fetchExternalMemberData(group);
 
-            const splidMember = memberData.find(
-                n => n.globalId === splitPerson,
-            );
+            const splidMember = memberData.find(n => n.globalId === splitPerson);
 
             if (!splidMember) {
                 await command.editReply({
@@ -440,10 +404,7 @@ export class SplidGroupCommand implements ApplicationCommand {
                 content: "Irgendwas ging schief. Schau mal in den Logs.",
             });
 
-            logger.error(
-                err,
-                "Error while linking Splid person with discord account on guild",
-            );
+            log.error(err, "Error while linking Splid person with discord account on guild");
             return;
         }
     }
@@ -451,7 +412,7 @@ export class SplidGroupCommand implements ApplicationCommand {
     async handleDeleteGroup(command: ChatInputCommandInteraction) {
         const code = command.options.getString("invite-code", true);
 
-        await splidGroup.deleteByInviteCode(code);
+        await splidService.deleteByInviteCode(code);
 
         await command.reply({
             content: `Ok Bruder, habe Splid-Gruppe mit Invite-Code \`${code}\` gelöscht.`,
@@ -480,21 +441,17 @@ export class SplidGroupCommand implements ApplicationCommand {
 
                 switch (focused.name) {
                     case "invite-code": {
-                        const completions =
-                            await this.#getSplidGroupCompletions(
-                                focused.value,
-                                interaction.guild,
-                            );
+                        const completions = await this.#getSplidGroupCompletions(
+                            focused.value,
+                            interaction.guild,
+                        );
                         await interaction.respond(completions);
                         return;
                     }
                     case "split-person": {
-                        const groupCode = interaction.options.getString(
-                            "invite-code",
-                            true,
-                        );
+                        const groupCode = interaction.options.getString("invite-code", true);
 
-                        const group = await splidGroup.findOneByCodeForGuild(
+                        const group = await splidService.getGroupByCode(
                             interaction.guild,
                             groupCode,
                         );
@@ -502,14 +459,10 @@ export class SplidGroupCommand implements ApplicationCommand {
                             return;
                         }
 
-                        const memberData = await fetchExternalMemberData(group);
+                        const memberData = await splidService.fetchExternalMemberData(group);
 
                         const completions = memberData
-                            .filter(n =>
-                                n.name
-                                    .toLowerCase()
-                                    .includes(focused.value.toLowerCase()),
-                            )
+                            .filter(n => n.name.toLowerCase().includes(focused.value.toLowerCase()))
                             .map(n => ({
                                 name: n.name,
                                 value: n.globalId,
@@ -520,270 +473,25 @@ export class SplidGroupCommand implements ApplicationCommand {
                     }
                     // discord-user will be autocompleted by the client automatically
                     default:
-                        logger.warn(
-                            `Cannot autocomplete "${focused.name}" for sub command "link"`,
-                        );
+                        log.warn(`Cannot autocomplete "${focused.name}" for sub command "link"`);
                         return;
                 }
             }
             default:
-                logger.warn(`Cannot autocomplete sub command "${subCommand}" `);
+                log.warn(`Cannot autocomplete sub command "${subCommand}" `);
                 return;
         }
     }
 
     async #getSplidGroupCompletions(focusedValue: string, guild: Guild) {
-        const groups = await splidGroup.findAllGroups(guild);
+        const groups = await splidService.getAllGroups(guild);
 
         const focusedValueNormalized = focusedValue.toLowerCase();
         return groups
-            .filter(n =>
-                n.shortDescription
-                    .toLowerCase()
-                    .includes(focusedValueNormalized),
-            )
+            .filter(n => n.shortDescription.toLowerCase().includes(focusedValueNormalized))
             .map(n => ({
                 name: n.shortDescription,
                 value: n.groupCode,
             }));
     }
-}
-
-type ExternalInfo = { name: string; objectId: string };
-
-async function getExternalGroupInfo(
-    inviteCode: string,
-): Promise<ExternalInfo | undefined> {
-    const client = new SplidClient({
-        installationId: "b65aa4f8-b6d5-4b51-9df6-406ce2026b32", // TODO: Move to config
-    });
-
-    const groupRes = await client.group.getByInviteCode(inviteCode);
-    const groupId = groupRes.result.objectId;
-
-    const groupInfoRes = await client.groupInfo.getByGroup(groupId);
-
-    const info = groupInfoRes?.result?.results?.[0] ?? undefined;
-    if (!info) {
-        return undefined;
-    }
-
-    const name = (info.name as string | undefined) ?? undefined;
-    if (!name) {
-        return undefined;
-    }
-
-    const objectId = (info.objectId as string | undefined) ?? undefined;
-    if (!objectId) {
-        return undefined;
-    }
-
-    return {
-        name,
-        objectId,
-    };
-}
-
-type CacheEntry = {
-    created: number;
-    data: ReturnType<typeof fetchExternalMemberDataLive>;
-};
-const memberCache = new Map<string, CacheEntry>();
-const memberCacheRetentionMs = 1000 * 60;
-
-type SplidMember = {
-    name: string;
-    initials: string;
-    objectId: string;
-    globalId: string;
-};
-
-async function fetchExternalMemberDataLive(
-    group: SplidGroup,
-): Promise<SplidMember[]> {
-    const client = new SplidClient({
-        installationId: "b65aa4f8-b6d5-4b51-9df6-406ce2026b32", // TODO: Move to config
-    });
-
-    const groupRes = await client.group.getByInviteCode(group.groupCode);
-    const groupId = groupRes.result.objectId;
-
-    const membersRes = await client.person.getByGroup(groupId);
-
-    // biome-ignore lint/suspicious/noExplicitAny: splid-js's types are broken here
-    const members: any[] = membersRes?.result?.results ?? [];
-    return members.map(m => ({
-        name: m.name as string,
-        initials: m.initials as string,
-        objectId: m.objectId as string, // this somehow doesn't cut it. We need to use the globalId
-        globalId: m.GlobalId as string,
-    }));
-}
-
-//#region over-engineered caching
-
-// TODO: maybe make this a factory etc
-async function fetchExternalMemberData(
-    group: SplidGroup,
-): ReturnType<typeof fetchExternalMemberDataLive> {
-    const now = Date.now();
-    const cached = memberCache.get(group.groupCode);
-
-    if (cached) {
-        if (now - cached.created < memberCacheRetentionMs) {
-            return cached.data;
-        }
-        memberCache.delete(group.groupCode);
-    }
-
-    // Not awaiting, because we want cache the promise,
-    // so every client will get the result instantly and we don't block here plus we won't fetch the result twice
-    const data = fetchExternalMemberDataLive(group);
-
-    memberCache.set(group.groupCode, {
-        created: now,
-        data,
-    });
-
-    return data;
-}
-
-//#region
-
-async function fetchGroupEntries(group: SplidGroup) {
-    const client = new SplidClient({
-        installationId: "b65aa4f8-b6d5-4b51-9df6-406ce2026b32", // TODO: Move to config
-    });
-
-    const groupRes = await client.group.getByInviteCode(group.groupCode);
-    const groupId = groupRes.result.objectId;
-    if (!groupId) {
-        return undefined;
-    }
-
-    const entriesRes = await client.entry.getByGroup(groupId);
-    const entries = entriesRes?.result?.results;
-    if (!entries) {
-        return undefined;
-    }
-    return entries as SplidEntry[];
-}
-
-type SplidEntry = {
-    title: string;
-    currencyCode: string;
-    primaryPayer: string;
-    items: {
-        P?: {
-            P?: Record<string /* global-id of user */, number /* fraction */>;
-        };
-        /** amount */
-        AM?: number;
-    }[];
-};
-
-function buildPaymentMatrix(
-    members: readonly SplidMember[],
-    entries: SplidEntry[],
-) {
-    const paymentMatrix = new Map(
-        members.map(m => [
-            m.globalId,
-            new Map(members.map(m => [m.globalId, 0])),
-        ]),
-    );
-    const membersMap = new Map(members.map(m => [m.globalId, m]));
-
-    for (const entry of entries) {
-        const primaryPayer = membersMap.get(entry.primaryPayer);
-        if (!primaryPayer) {
-            logger.warn(
-                `Could not find primary payer for entry "${entry.title}" (${entry.currencyCode}))`,
-            );
-            continue;
-        }
-
-        for (const item of entry.items) {
-            const partsMembers = item.P?.P;
-            if (!partsMembers) {
-                logger.warn(item, "No partsMembers");
-                continue;
-            }
-
-            const amount = item.AM;
-            if (!amount) {
-                logger.warn(item, "No amount");
-                continue;
-            }
-
-            logger.debug(
-                `${primaryPayer.name} paid for "${entry.title}" ${amount} ${entry.currencyCode}`,
-            );
-
-            for (const [memberId, parts] of Object.entries(partsMembers)) {
-                const member = membersMap.get(memberId);
-                if (!member) {
-                    logger.warn(`Could not find member for id ${memberId}`);
-                    continue;
-                }
-
-                logger.debug(
-                    `${primaryPayer.name} paid for ${member.name} ${
-                        amount * parts
-                    } ${entry.currencyCode}`,
-                );
-
-                const balanceRow = paymentMatrix.get(primaryPayer.globalId);
-                if (!balanceRow) {
-                    logger.warn(
-                        `Could not find balance row for ${primaryPayer.name}`,
-                    );
-                    continue;
-                }
-
-                const memberBalanceForPayer =
-                    balanceRow.get(member.globalId) ?? 0;
-                balanceRow.set(
-                    member.globalId,
-                    memberBalanceForPayer + amount * parts,
-                );
-            }
-        }
-    }
-    return paymentMatrix;
-}
-
-function computeAccountBalances(
-    members: readonly SplidMember[],
-    balanceMatrix: Map<string, Map<string, number>>,
-): Record<string, number> {
-    const balances: Record<string, number> = {};
-    for (const member of members) {
-        const payedForOthers = balanceMatrix.get(member.globalId);
-        let balance = 0;
-        for (const [otherId, payed] of balanceMatrix.entries()) {
-            const payedForMe = payed.get(member.globalId);
-            if (payedForMe !== undefined) {
-                balance -= payedForMe; // other payed for me
-            }
-
-            const payedForHim = payedForOthers?.get(otherId);
-            if (payedForHim !== undefined) {
-                balance += payedForHim; // me payed for him
-            }
-        }
-
-        balances[member.globalId] = balance;
-    }
-    return balances;
-}
-
-function formatGroupCode(code: string) {
-    const normalized = code.replace(/\s/g, "").toUpperCase().trim();
-
-    const parts = [];
-    for (let i = 0; i < normalized.length; i += 3) {
-        parts.push(normalized.substring(i, i + 3));
-    }
-    return parts.join(" ");
 }

@@ -1,6 +1,6 @@
 import { sql, type Kysely } from "kysely";
 
-export async function up(db: Kysely<any>): Promise<void> {
+export async function up(db: Kysely<any>) {
     // Initial schema that originated from sequelize
     // obtained from production database using ".schema" command
     // Just copied the raw SQL instead of using kysely's syntax.
@@ -178,18 +178,10 @@ export async function up(db: Kysely<any>): Promise<void> {
     await sql`CREATE UNIQUE INDEX IF NOT EXISTS guild_ragequits_guild_id_user_id ON GuildRagequits (guildId, userId);`.execute(
         db,
     );
-    await sql`CREATE UNIQUE INDEX IF NOT EXISTS bans_user_id ON Bans (userId);`.execute(
-        db,
-    );
-    await sql`CREATE INDEX IF NOT EXISTS bans_banned_until ON Bans (bannedUntil ASC);`.execute(
-        db,
-    );
-    await sql`CREATE INDEX IF NOT EXISTS penis_measured_at ON Penis (measuredAt ASC);`.execute(
-        db,
-    );
-    await sql`CREATE INDEX IF NOT EXISTS boobs_measured_at ON Boobs (measuredAt ASC);`.execute(
-        db,
-    );
+    await sql`CREATE UNIQUE INDEX IF NOT EXISTS bans_user_id ON Bans (userId);`.execute(db);
+    await sql`CREATE INDEX IF NOT EXISTS bans_banned_until ON Bans (bannedUntil ASC);`.execute(db);
+    await sql`CREATE INDEX IF NOT EXISTS penis_measured_at ON Penis (measuredAt ASC);`.execute(db);
+    await sql`CREATE INDEX IF NOT EXISTS boobs_measured_at ON Boobs (measuredAt ASC);`.execute(db);
     await sql`CREATE UNIQUE INDEX IF NOT EXISTS austrian_translations_austrian ON AustrianTranslations (austrian);`.execute(
         db,
     );
@@ -216,6 +208,6 @@ export async function up(db: Kysely<any>): Promise<void> {
     );
 }
 
-export async function down(_db: Kysely<any>): Promise<void> {
+export async function down(_db: Kysely<any>) {
     throw new Error("Not supported lol");
 }

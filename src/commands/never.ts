@@ -1,7 +1,6 @@
 import {
     type CacheType,
     type CommandInteraction,
-    type Client,
     type Message,
     EmbedBuilder,
     type GuildMember,
@@ -9,9 +8,9 @@ import {
     SlashCommandStringOption,
 } from "discord.js";
 
-import type { ApplicationCommand, MessageCommand } from "./command.js";
-import type { ProcessableMessage } from "../handler/cmdHandler.js";
-import type { BotContext } from "../context.js";
+import type { ApplicationCommand, MessageCommand } from "@/commands/command.js";
+import type { ProcessableMessage } from "@/service/command.js";
+import type { BotContext } from "@/context.js";
 
 type Prompt = string;
 
@@ -46,10 +45,7 @@ async function getPrompt(userPrompt: Prompt | null): Promise<NeverPrompt> {
 }
 
 function buildEmbed(prompt: NeverPrompt, author: GuildMember) {
-    const emoji =
-        prompt.level !== undefined
-            ? QUESTION_LEVEL_EMOJI_MAP[prompt.level]
-            : "👀";
+    const emoji = prompt.level !== undefined ? QUESTION_LEVEL_EMOJI_MAP[prompt.level] : "👀";
     return new EmbedBuilder()
         .setTitle(prompt.prompt)
         .setColor(0x2ecc71)
@@ -62,7 +58,7 @@ function buildEmbed(prompt: NeverPrompt, author: GuildMember) {
         });
 }
 
-export class NeverCommand implements ApplicationCommand, MessageCommand {
+export default class NeverCommand implements ApplicationCommand, MessageCommand {
     name = "never";
     description = 'Stellt eine "ich hab noch nie" Frage';
     applicationCommand = new SlashCommandBuilder()
@@ -75,9 +71,7 @@ export class NeverCommand implements ApplicationCommand, MessageCommand {
                 .setRequired(false),
         );
 
-    async handleInteraction(
-        command: CommandInteraction<CacheType>,
-    ): Promise<void> {
+    async handleInteraction(command: CommandInteraction<CacheType>) {
         if (!command.isChatInputCommand()) {
             // TODO: Solve this on a type level
             return;
@@ -100,16 +94,10 @@ export class NeverCommand implements ApplicationCommand, MessageCommand {
         await Promise.all([sentMessage.react("🍻"), sentMessage.react("🚱")]);
     }
 
-    async handleMessage(
-        message: ProcessableMessage,
-        _client: Client<boolean>,
-        context: BotContext,
-    ): Promise<void> {
+    async handleMessage(message: ProcessableMessage, context: BotContext) {
         const { channel } = message;
         const author = message.guild?.members.resolve(message.author);
-        const customInput = message.content.slice(
-            `${context.prefix.command}mock `.length,
-        );
+        const customInput = message.content.slice(`${context.prefix.command}mock `.length);
 
         if (!author) {
             throw new Error("Couldn't resolve guild member");
