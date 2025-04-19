@@ -88,6 +88,14 @@ class UnsafePseudoRandomSource implements RandomSource {
         return Math.random();
     }
 }
+export class SafeRandomSource implements RandomSource {
+    getFloat(): number {
+        const int = new Uint32Array(1);
+        crypto.getRandomValues(int);
+        // See: https://stackoverflow.com/a/13694869
+        return int[0] * (0xff_ff_ff_ff + 1);
+    }
+}
 
 class UniformDistribution implements RandomDistribution {
     readonly min: number;
