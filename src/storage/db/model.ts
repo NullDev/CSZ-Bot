@@ -3,6 +3,10 @@ import type { ColumnType, Generated, GeneratedAlways, Insertable, Selectable } f
 
 export type Date = ColumnType<string, string, string>; // TODO: Date is not supported by DB Driver
 
+// !! IMPORTANT !!
+// When handling dates, use `At` suffix to make sure the sqlite converter can convert it to a Date object
+// !! / IMPORTANT !!
+
 export interface Database {
     birthdays: BirthdayTable;
     stempels: StempelTable;

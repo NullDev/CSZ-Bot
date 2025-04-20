@@ -3,38 +3,18 @@ import { fileURLToPath } from "node:url";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
 
-import {
-    type KyselyPlugin,
-    FileMigrationProvider,
-    Kysely,
-    Migrator,
-    type PluginTransformResultArgs,
-    type QueryResult,
-    type UnknownRow,
-    type PluginTransformQueryArgs,
-    type RootOperationNode,
-} from "kysely";
+import { FileMigrationProvider, Kysely, Migrator } from "kysely";
 import { captureException, startInactiveSpan } from "@sentry/bun";
 import { BunSqliteDialect } from "kysely-bun-sqlite";
 
 import type { Database } from "./model.js";
+import datePlugin from "./date-plugin.js";
 import assertNever from "@/utils/assertNever.js";
 import log from "@log";
 
 let kysely: Kysely<Database>;
 
 export default () => kysely;
-
-const plugin = {
-    transformQuery(args: PluginTransformQueryArgs): RootOperationNode {
-        return args.node;
-    },
-    async transformResult(args: PluginTransformResultArgs): Promise<QueryResult<UnknownRow>> {
-        const r = args.result.rows;
-        log.info(r[0], "Row");
-        return args.result;
-    },
-} satisfies KyselyPlugin;
 
 export async function connectToDb(databasePath: string) {
     if (kysely) {
@@ -43,7 +23,7 @@ export async function connectToDb(databasePath: string) {
 
     const nativeDb = new SqliteDatabase(databasePath);
     const db = new Kysely<Database>({
-        plugins: [plugin],
+        plugins: [datePlugin],
         dialect: new BunSqliteDialect({
             database: nativeDb,
         }),
