@@ -1,7 +1,6 @@
 import { Temporal } from "@js-temporal/polyfill"; // TODO: Remove once bun ships temporal
 import type { Snowflake, User } from "discord.js";
 
-import type { Radius } from "@/commands/penis.js";
 import type { Penis } from "@/storage/db/model.js";
 
 import { getStartAndEndDay } from "@/utils/dateUtils.js";
@@ -11,7 +10,7 @@ import log from "@log";
 export function insertMeasurement(
     user: User,
     size: number,
-    radius: Radius,
+    radius: number,
     ctx = db(),
 ): Promise<Penis> {
     log.debug(`Saving Penis Measurement for user ${user.id} with size ${size}`);

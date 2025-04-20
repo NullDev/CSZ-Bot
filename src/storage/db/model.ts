@@ -1,8 +1,6 @@
 import type { Snowflake } from "discord.js";
 import type { ColumnType, Generated, GeneratedAlways, Insertable, Selectable } from "kysely";
 
-import type { Radius } from "@/commands/penis.js";
-
 export type Date = ColumnType<string, string, string>; // TODO: Date is not supported by DB Driver
 
 export interface Database {
@@ -114,7 +112,7 @@ export interface PenisTable extends AuditedTable {
 
     userId: Snowflake;
     size: number;
-    radius: Radius;
+    radius: number;
     measuredAt: Generated<string>; // TODO: Date is not supported by the DB driver
 }
 

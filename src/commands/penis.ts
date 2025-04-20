@@ -6,42 +6,8 @@ import type { ProcessableMessage } from "@/service/command.js";
 import type { Penis } from "@/storage/db/model.js";
 import { NormalDistribution, RandomNumberGenerator, SecureRandomSource } from "@/service/random.js";
 import * as penis from "@/storage/penis.js";
-import { clamp } from "@/utils/math.js";
 
 import log from "@log";
-
-export type Radius = 0 | 1 | 2 | 3;
-
-const RADIUS_CHARS: Record<Radius, string> = {
-    0: "",
-    1: "‒",
-    2: "=",
-    3: "≡",
-};
-
-const PENIS_LENGTH_MAX = 30;
-const PENIS_RADIUS_MAX = 3;
-
-const sendPenis = async (
-    user: User,
-    message: ProcessableMessage,
-    size: number,
-    radius: Radius,
-    measurement: Date = new Date(),
-): Promise<void> => {
-    const radiusChar = RADIUS_CHARS[radius];
-    const penis = `8${radiusChar.repeat(size | 0)}D`;
-    const circumference = (Math.PI * radius * 2).toFixed(2);
-
-    await message.reply(
-        `Pimmel von ${user}:\n${penis}\n(Länge: ${size.toFixed(2)} cm, Umfang: ${circumference} cm, Gemessen um ${time(measurement, TimestampStyles.LongDateTime)})`,
-    );
-};
-
-const isNewLongestDick = async (size: number): Promise<boolean> => {
-    const oldLongest = (await penis.longestRecentMeasurement()) ?? -1;
-    return oldLongest < size;
-};
 
 const randomSource = new SecureRandomSource();
 
@@ -64,6 +30,33 @@ const radiusDistribution = new NormalDistribution(11.85 / (Math.PI * 2), 1 / (Ma
 
 const sizeGenerator = new RandomNumberGenerator(lengthDistribution, randomSource);
 const radiusGenerator = new RandomNumberGenerator(radiusDistribution, randomSource);
+
+const RADIUS_CHARS = ["‒", "=", "≡"];
+
+const sendPenis = async (
+    user: User,
+    message: ProcessableMessage,
+    size: number,
+    radius: number,
+    measurement: Date,
+): Promise<void> => {
+    const radiusChar =
+        radius < radiusDistribution.mean
+            ? RADIUS_CHARS[0]
+            : radius < radiusDistribution.mean + radiusDistribution.standardDeviation
+              ? RADIUS_CHARS[1]
+              : RADIUS_CHARS[2];
+
+    const length = size | 0;
+
+    const penis = `8${radiusChar.repeat(length)}D`;
+    const circumference = (Math.PI * radius * 2).toFixed(2);
+
+    await message.reply(
+        `Pimmel von ${user}:\n${penis}\n(Länge: ${size.toFixed(2)} cm, Umfang: ${circumference} cm, Gemessen um ${time(measurement, TimestampStyles.LongDateTime)})`,
+    );
+};
+
 /**
  * Penis command. Displays the users penis length
  */
@@ -152,10 +145,8 @@ export default class PenisCommand implements MessageCommand {
 
         log.debug(`No recent measuring of ${userToMeasure.id} found. Creating Measurement.`);
 
-        const size = clamp(sizeGenerator.get(), 1, PENIS_LENGTH_MAX); // TODO: Do we really want to clamp here? Maybe just clamp(v, 1, Infinity)?
-
-        // TODO: Maye we want the radius to be integer only for display (and keep the float internally)
-        const radius = clamp(Math.round(radiusGenerator.get()), 1, PENIS_RADIUS_MAX) as Radius; // TODO: Do we really want to clamp here? Maybe just clamp(v, 1, Infinity)?
+        const size = Math.max(sizeGenerator.get(), 1);
+        const radius = Math.max(radiusGenerator.get(), 1);
 
         if (await isNewLongestDick(size)) {
             log.debug(`${userToMeasure} has the new longest dick with size ${size}`);
@@ -163,4 +154,9 @@ export default class PenisCommand implements MessageCommand {
 
         return await penis.insertMeasurement(userToMeasure, size, radius);
     }
+}
+
+async function isNewLongestDick(size: number) {
+    const oldLongest = (await penis.longestRecentMeasurement()) ?? -1;
+    return oldLongest < size;
 }
