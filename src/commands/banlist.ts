@@ -54,7 +54,7 @@ export default class BanListCommand implements ApplicationCommand {
         const untilString = `Bis ${
             ban.bannedUntil === null
                 ? "auf weiteres"
-                : time(new Date(ban.bannedUntil), TimestampStyles.RelativeTime)
+                : time(ban.bannedUntil, TimestampStyles.RelativeTime)
         }`;
         const reasonString = ban.reason === null ? "" : `(Grund: ${ban.reason})`;
         return `${user}: ${untilString} ${reasonString}`;

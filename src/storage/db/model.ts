@@ -117,7 +117,7 @@ export interface PenisTable extends AuditedTable {
     userId: Snowflake;
     size: number;
     radius: number;
-    measuredAt: Generated<string>; // TODO: Date is not supported by the DB driver
+    measuredAt: Generated<Date>;
 }
 
 export type Boob = Selectable<BoobTable>;
@@ -127,7 +127,7 @@ export interface BoobTable extends AuditedTable {
 
     userId: Snowflake;
     size: number;
-    measuredAt: Generated<string>; // TODO: Date is not supported by the DB driver
+    measuredAt: Generated<Date>;
 }
 
 export type AustrianTranslation = Selectable<AustrianTranslationTable>;
@@ -209,7 +209,7 @@ export interface BanTable extends AuditedTable {
     userId: Snowflake;
     reason: string | null;
 
-    bannedUntil: ColumnType<string | null, string | null, string | null>; // TODO: Date is not supported by the DB driver
+    bannedUntil: ColumnType<Date | null, string | null, string | null>; // TODO: Date is not supported by the DB driver
     isSelfBan: boolean;
 }
 
@@ -224,7 +224,7 @@ export interface ReminderTable extends AuditedTable {
 
     userId: Snowflake;
 
-    remindAt: ColumnType<string, string, string>; // TODO: Date is not supported by the DB driver
+    remindAt: ColumnType<Date, string, string>;
     reminderNote: string | null;
 }
 
@@ -242,13 +242,13 @@ export interface LootTable extends AuditedTable {
     lootKindId: number;
     winnerId: string;
     /** Different from createdAt. If the item is replaced, this may be copied form the previous loot item */
-    claimedAt: ColumnType<string, string, string>; // TODO: Date is not supported by the DB driver
+    claimedAt: ColumnType<Date, string, string>;
     guildId: Snowflake;
     channelId: Snowflake;
     messageId: Snowflake;
     usedImage: string | null;
 
-    deletedAt: ColumnType<string | null, string | null, string | null>; // TODO: Date is not supported by the DB driver
+    deletedAt: ColumnType<Date | null, string | null, string | null>;
 
     predecessor: LootId | null;
     origin: LootOrigin;
@@ -270,7 +270,7 @@ export interface LootAttributeTable extends AuditedTable {
     shortDisplay: string;
     color: number | null;
 
-    deletedAt: ColumnType<string | null, string | null, string | null>; // TODO: Date is not supported by the DB driver
+    deletedAt: ColumnType<Date | null, string | null, string | null>;
 }
 
 export type Emote = Selectable<EmoteTable>;
@@ -284,7 +284,7 @@ export interface EmoteTable extends AuditedTable {
     url: string;
     data: Uint8Array;
 
-    deletedAt: ColumnType<string | null, null, string | null>; // TODO: Date is not supported by the DB driver
+    deletedAt: ColumnType<Date | null, null, string | null>;
 }
 
 export type EmoteUse = Selectable<EmoteUseTable>;
