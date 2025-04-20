@@ -172,7 +172,7 @@ export default class BoobCommand implements MessageCommand {
             userToMeasure,
             message,
             recentMeasurement.size,
-            new Date(recentMeasurement.measuredAt),
+            new Date(`${recentMeasurement.measuredAt}Z`),
         );
     }
 }

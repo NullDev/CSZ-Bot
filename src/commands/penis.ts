@@ -140,7 +140,7 @@ export default class PenisCommand implements MessageCommand {
             message,
             measurement.size,
             measurement.radius,
-            new Date(measurement.measuredAt),
+            new Date(`${measurement.measuredAt}Z`),
         );
     }
 
