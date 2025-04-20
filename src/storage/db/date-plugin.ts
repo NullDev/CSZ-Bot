@@ -33,10 +33,17 @@ function transformRow(row: UnknownRow): UnknownRow {
             continue;
         }
 
-        if (
-            (k.endsWith("At") || k.endsWith("Until")) &&
-            (sqlitePattern.test(v) || iso8601Pattern.test(v))
-        ) {
+        if (!k.endsWith("At") && !k.endsWith("Until")) {
+            continue;
+        }
+
+        if (sqlitePattern.test(v)) {
+            log.info(`Would do: "${v}" -> ${new Date(`${v}Z`)}`);
+            // res[k] = new Date(v);
+            continue;
+        }
+
+        if (iso8601Pattern.test(v)) {
             log.info(`Would do: "${v}" -> ${new Date(v)}`);
             // res[k] = new Date(v);
         }
