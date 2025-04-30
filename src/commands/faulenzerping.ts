@@ -11,6 +11,7 @@ import {
     RoleSelectMenuBuilder,
     type RoleSelectMenuInteraction,
     type Snowflake,
+    userMention,
 } from "discord.js";
 
 import type { BotContext } from "@/context.js";
@@ -153,7 +154,7 @@ export default class FaulenzerPingCommand implements ApplicationCommand {
     ) {
         const userChunks = chunkArray(usersToNotify, 10);
         for (const users of userChunks) {
-            const usersToNotifyMentions = users.map(userId => `<@${userId}>`).join(" ");
+            const usersToNotifyMentions = users.map(userMention).join(" ");
 
             await originalMessage.reply({
                 content: `${message} ${usersToNotifyMentions}`,

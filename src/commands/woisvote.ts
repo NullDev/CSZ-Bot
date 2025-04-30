@@ -12,6 +12,7 @@ import {
     time,
     TimestampStyles,
     type GuildTextBasedChannel,
+    userMention,
 } from "discord.js";
 
 import type { ReactionHandler } from "@/handler/ReactionHandler.js";
@@ -231,11 +232,8 @@ export const woisVoteScheduler = async (context: BotContext): Promise<void> => {
 
     const chunks = chunkArray(interestedUsers, 10);
     for (const users of chunks) {
-        const mentions = users.map(userId => `<@${userId}>`);
-        // It's okay for readability
-
         await woisMessage.reply({
-            content: mentions.join(" "),
+            content: users.map(userMention).join(" "),
             allowedMentions: {
                 users,
             },
