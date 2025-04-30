@@ -47,6 +47,7 @@ export enum LootKindId {
     KAFFEEMUEHLE = 34,
     AWS_RECHNUNG = 35,
     BIBER = 36,
+    BLEI = 37,
 }
 
 export enum LootAttributeClassId {
@@ -483,6 +484,16 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         emote: ":beaver:",
         asset: "assets/loot/36-biber.jpg",
         initialAttributes: [LootAttributeKindId.SWEET],
+    },
+    [LootKindId.BLEI]: {
+        id: LootKindId.BLEI,
+        weight: ACHTUNG_NICHT_DROPBAR_WEIGHT_KG,
+        displayName: "Blei",
+        titleText: "Einen Block Blei",
+        dropDescription: "Ganz schön schwer.",
+        emote: ":rock:",
+        asset: "assets/loot/37-blei.png",
+        initialAttributes: [],
     },
 } as const;
 
