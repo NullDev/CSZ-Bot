@@ -1,3 +1,4 @@
+import { type Snowflake, userMention } from "discord.js";
 import type { BotContext } from "@/context.js";
 
 import * as time from "@/utils/time.js";
@@ -5,7 +6,6 @@ import * as lootService from "@/service/loot.js";
 import { LootAttributeKindId, LootKindId, resolveLootTemplate } from "@/service/lootData.js";
 import log from "@log";
 import { randomEntry } from "@/service/random.js";
-import { type Snowflake, userMention } from "discord.js";
 
 export async function degradeItems(_context: BotContext) {
     log.info("Degrading loot items");
@@ -74,7 +74,7 @@ export async function exposeWithRadiation(context: BotContext) {
     await context.textChannels.hauptchat.send({
         embeds: [
             {
-                description: `:radioactive: ${targetLoot.displayName} von <@${targetLoot.winnerId}> wurde verstrahlt. :radioactive:`,
+                description: `:radioactive: ${targetLoot.displayName} von ${userMention(targetLoot.winnerId)} wurde verstrahlt. :radioactive:`,
                 footer: {
                     text: "Du solltest deinen Müll besser entsorgen",
                 },
@@ -139,7 +139,7 @@ export async function runHalfLife(context: BotContext) {
     const decayStats = replacedStats
         .entries()
         .toArray()
-        .map(([user, count]) => `${count}x von <@${user}>`);
+        .map(([user, count]) => `${count}x von ${userMention(user)}`);
 
     await context.textChannels.hauptchat.send({
         embeds: [
