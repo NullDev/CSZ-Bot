@@ -63,14 +63,14 @@ cp config.template.json config.json
 $EDITOR config.json
 ```
 > [!TIP]
->  Die Datei kann Kommentare und Trailing-Commas (JSONC). Wenn du nicht VSCode verwendest, musst du das ggf. noch einstellen.
+> Die Datei kann Kommentare und Trailing-Commas (JSONC). Wenn du nicht VSCode verwendest, musst du das ggf. noch einstellen.
 
 2. Das Template ist für die [Coding-Test-Zentrale](https://discord.gg/ekJA6GA3BJ) vorausgefüllt. Es fehlen noch:
     - Um einen Bot zum Testen anzulegen, einfach den Instruktionen im [Discord Developer Portal](https://discord.com/developers/applications) folgen.
         - Die Applikation muss als "Bot" gesetzt werden.
         - Es müssen beide [Gateway Intents](https://discordjs.guide/popular-topics/intents.html#gateway-intents) eingeschalten werden.
-        - Ersetze `<CLIENT_ID>` durch die Application-ID
-        - Ersetze `<BOT_TOKEN>` durch das Bot-Token
+        - Ersetze `<DISCORD_CLIENT_ID>` durch die Application-ID
+        - Ersetze `<DISCORD_TOKEN>` durch das Bot-Token
     - Um IDs kopieren zu können, den "Developer Mode" in den Discord Einstellungen aktivieren. Mit Rechtsklick kann man dann die IDs kopieren.
 3. Das Script starten.
 

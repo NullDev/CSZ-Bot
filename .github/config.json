@@ -1,8 +1,8 @@
 {
     // This file supports comments and trailing commas
     "auth": {
-        "clientId": "${CLIENT_ID}",
-        "token": "${BOT_TOKEN}"
+        "clientId": "${DISCORD_CLIENT_ID}",
+        "token": "${DISCORD_TOKEN}"
     },
     "sentry": {
         "dsn": null,

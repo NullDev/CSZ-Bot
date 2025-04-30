@@ -1,3 +1,7 @@
+## Setup
+
+See [docs/SETUP.md](./docs/SETUP.md) for a guide on setting up your local bot.
+
 ## Commands
 
 We differentiate between the following types of commands:
