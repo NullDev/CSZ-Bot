@@ -47,7 +47,7 @@ export async function schedule(context: BotContext) {
     cron("0 20 * * FRI", () => getTrichterUnserEmbed(context));
     cron("0 * * * *", () => degradeItems(context));
     cron("26 18,19 * * *", () => exposeWithRadiation(context));
-    cron("15 18,19 * * *", () => runHalfLife(context));
+    cron("15 18 * * *", () => runHalfLife(context));
 
     const loot = context.commandConfig.loot;
     if (loot.enabled) {
