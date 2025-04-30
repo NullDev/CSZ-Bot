@@ -25,6 +25,9 @@
     "moderatorRoleIds": ["893179190709477413"],
 
     "command": {
+        "aoc": {
+            "enabled": false,
+        },
         "faulenzerPing": {
             "allowedRoleIds": [],
             "maxNumberOfPings": 10,
