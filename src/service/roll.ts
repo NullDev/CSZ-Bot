@@ -11,7 +11,7 @@ export async function rollInChannel(
         title: cleanContent(`${diceName}:`, targetChannel),
         timestamp: new Date().toISOString(),
         author: {
-            name: `Würfel Resultat für ${author.username}`,
+            name: `Würfelergebnis für ${author.username}`,
             icon_url: author.displayAvatarURL(),
         },
         color: randomNumberBetween(0, 0xfffffe),
