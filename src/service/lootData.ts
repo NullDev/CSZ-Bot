@@ -413,7 +413,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
     },
     [LootKindId.DRECK]: {
         id: LootKindId.DRECK,
-        weight: 4,
+        weight: 2,
         displayName: "Ein Glas Dreck",
         titleText: "Ein Glas Dreck",
         dropDescription: "Ich hab ein Glas voll Dreck",
