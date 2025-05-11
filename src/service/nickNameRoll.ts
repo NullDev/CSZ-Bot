@@ -13,7 +13,7 @@ export async function rerollNicknames(context: BotContext) {
     const updateTasks = allUsersAndNames.map(([userId, nicknames]) =>
         updateNickname(context, userId, nicknames),
     );
-    await Promise.all(updateTasks);
+    await Promise.allSettled(updateTasks);
 }
 
 async function updateNickname(context: BotContext, userId: string, storedNicknames: string[]) {
