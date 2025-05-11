@@ -47,6 +47,9 @@ export interface BotContext {
         ehre: {
             emojiNames: Set<string>;
         };
+        nickName: {
+            skippedUserIds: Set<Snowflake>;
+        };
         quote: QuoteConfig;
         loot: {
             enabled: boolean;
@@ -241,6 +244,9 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
                 voteThreshold: config.command.quotes.voteThreshold ?? 2,
                 defaultTargetChannelId: config.command.quotes.defaultTargetChannelId,
                 targetChannelOverrides: config.command.quotes.targetChannelOverrides,
+            },
+            nickName: {
+                skippedUserIds: new Set(config.command.nickName?.skippedUserIds ?? []),
             },
             loot: {
                 enabled: config.command.loot?.enabled ?? false,

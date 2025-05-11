@@ -83,6 +83,9 @@ export interface Config {
             maxNumberOfPings: number;
             minRequiredReactions: number;
         };
+        nickName?: {
+            skippedUserIds: readonly Snowflake[];
+        };
         woisPing: {
             limit: number;
             threshold: number;

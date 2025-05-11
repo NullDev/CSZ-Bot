@@ -30,6 +30,11 @@
             "maxNumberOfPings": 10,
             "minRequiredReactions": 5
         },
+        "nickName": {
+            "skippedUserIds": [
+                "371724846205239326" // shadow
+            ]
+        },
         "woisPing": {
             "limit": 7200,
             "threshold": 2
