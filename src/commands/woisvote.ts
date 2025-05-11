@@ -36,7 +36,7 @@ const createWoisMessage = async (
         `${woisVoteConstant}\nWois in ${time(
             date,
             TimestampStyles.ShortDateTime,
-        )}. Grund: ${reason}${/[\.!\?]$/.test(reason) ? "" : "."} Bock?`,
+        )}. Grund: ${reason}${/[.!?]$/.test(reason) ? "" : "."} Bock?`,
     );
     await woisMessage.react("👍");
     await woisMessage.react("👎");

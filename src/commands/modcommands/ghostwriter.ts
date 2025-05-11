@@ -32,7 +32,7 @@ export default class GhostwriterCommand implements ApplicationCommand {
             );
     }
 
-    async handleInteraction(command: CommandInteraction, context: BotContext): Promise<void> {
+    async handleInteraction(command: CommandInteraction, _context: BotContext): Promise<void> {
         if (!command.isChatInputCommand()) {
             // TODO: Solve this on a type level
             return;

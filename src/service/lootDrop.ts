@@ -113,7 +113,7 @@ export async function postLootDrop(
         components: [{ type: ComponentType.ActionRow, components: [takeLootButton] }],
     });
 
-    let interaction: Interaction | undefined = undefined;
+    let interaction: Interaction | undefined;
 
     try {
         interaction = await message.awaitMessageComponent({
@@ -121,7 +121,7 @@ export async function postLootDrop(
             componentType: ComponentType.Button,
             time: lootTimeoutMs,
         });
-    } catch (err) {
+    } catch {
         log.info(`Loot drop ${message.id} timed out; loot was not claimed, cleaning up`);
         const original = message.embeds[0];
         await message.edit({

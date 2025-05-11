@@ -4,7 +4,6 @@ import type { LootId, LootInsertable, LootOrigin } from "@/storage/db/model.js";
 import type { LootAttributeKindId, LootKindId } from "./lootData.js";
 import * as loot from "@/storage/loot.js";
 import * as lootDataService from "@/service/lootData.js";
-import db from "@/storage/db/db.js";
 
 export async function getInventoryContents(user: User) {
     const contents = await loot.findOfUserWithAttributes(user);

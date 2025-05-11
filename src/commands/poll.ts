@@ -176,7 +176,7 @@ Optionen:
             },
         });
 
-        let thumbnailFile = undefined;
+        let thumbnailFile: string;
         if (extendable) {
             if (options.straw) {
                 thumbnailFile = "extendable-straw.png";
@@ -204,8 +204,8 @@ Optionen:
             });
             embed.setColor(0x2ecc71);
         }
-        let finishTime = undefined;
 
+        let finishTime: Date | undefined;
         if (options.delayed) {
             const delayTime = Number(options.delayed);
             finishTime = new Date(Date.now() + delayTime * 60 * 1000);

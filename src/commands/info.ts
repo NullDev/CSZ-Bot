@@ -84,7 +84,6 @@ const getServerInfo = (guild: Guild): string => {
     const level = getServerLevel(guild);
 
     return (
-        // biome-ignore lint/style/useTemplate: Better readability
         `**Mitglieder\n** ${guild.memberCount} / ${guild.maximumMembers} \n` +
         `**Oberbabo\n** <@!${guild.ownerId}> \n` +
         `**Geburtstag\n** ${birthday} \n` +

@@ -1,11 +1,10 @@
 import type { BotContext } from "@/context.js";
 import { handleSpotifyActivityUpdate, type SpotifyActivity } from "@/service/lauscher.js";
-import { isActivatedForScrobbling } from "@/storage/lauscher.js";
 import type { Activity, Presence } from "discord.js";
 
 export async function handlePresenceUpdate(
     context: BotContext,
-    oldPresence: Presence | null,
+    _oldPresence: Presence | null,
     newPresence: Presence,
 ) {
     const newSpotifyActivity = newPresence.activities.find(isSpotifyActivity);

@@ -59,7 +59,7 @@ export default class FaulenzerPingCommand implements ApplicationCommand {
                 componentType: ComponentType.RoleSelect,
                 time: time.minutes(1),
             });
-        } catch (e) {
+        } catch {
             await response.edit({
                 content: "Keine Reaktion bekommen, breche ab lol.",
                 components: [],

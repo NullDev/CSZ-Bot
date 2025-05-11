@@ -11,7 +11,7 @@ import {
     ActionRowBuilder,
 } from "discord.js";
 
-import type { ApplicationCommand, AutocompleteCommand } from "@/commands/command.js";
+import type { ApplicationCommand } from "@/commands/command.js";
 import type { BotContext } from "@/context.js";
 import assertNever from "@/utils/assertNever.js";
 import { getPlaybackStats, setUserRegistration, type TrackStat } from "@/service/lauscher.js";
@@ -31,11 +31,6 @@ const intervals = {
     all_time: Temporal.Duration.from({ years: 100 }),
 };
 
-type ToplistEntry = {
-    name: string;
-    count: number;
-};
-
 GlobalFonts.registerFromPath("assets/fonts/OpenSans-VariableFont_wdth,wght.ttf", "Open Sans");
 GlobalFonts.registerFromPath("assets/fonts/AppleColorEmoji@2x.ttf", "Apple Emoji");
 
@@ -45,7 +40,7 @@ const placeSymbols: Record<number, string> = {
     3: "🥉",
 };
 
-async function drawTrackToplistCanvas(user: User, tracks: TrackStat[]): Promise<Canvas> {
+async function drawTrackToplistCanvas(_user: User, tracks: TrackStat[]): Promise<Canvas> {
     const canvas = createCanvas(1024, 1024);
     const ctx = canvas.getContext("2d");
 
@@ -170,7 +165,7 @@ export default class Lauscher implements ApplicationCommand {
                 ),
         );
 
-    async handleInteraction(command: CommandInteraction<CacheType>, context: BotContext) {
+    async handleInteraction(command: CommandInteraction<CacheType>, _context: BotContext) {
         if (!command.isChatInputCommand()) {
             // TODO: Solve this on a type level
             return;

@@ -101,7 +101,7 @@ const createColorfulRoles = async (context: BotContext): Promise<Role[]> => {
         createdRolesPromises,
     );
     await context.guild.roles.setPositions(
-        createdRoles.map((role, idx, arr) => ({ role: role.id, position: moderatorRole.position })),
+        createdRoles.map(role => ({ role: role.id, position: moderatorRole.position })),
     );
 
     return createdRoles;

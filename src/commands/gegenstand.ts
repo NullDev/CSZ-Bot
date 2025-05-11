@@ -21,7 +21,7 @@ import { ensureChatInputCommand } from "@/utils/interactionUtils.js";
 import * as imageService from "@/service/image.js";
 
 import * as lootDataService from "@/service/lootData.js";
-import { LootAttributeClassId, LootAttributeKindId, LootKindId } from "@/service/lootData.js";
+import { LootAttributeKindId, LootKindId } from "@/service/lootData.js";
 
 import log from "@log";
 

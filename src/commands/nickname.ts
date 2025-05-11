@@ -276,7 +276,7 @@ export default class NicknameCommand implements ApplicationCommand, Autocomplete
             },
         };
 
-        let voteResult: undefined | boolean = undefined;
+        let voteResult: undefined | boolean;
 
         collector.on("collect", async interaction => {
             if (!interaction.member) {
@@ -331,7 +331,7 @@ export default class NicknameCommand implements ApplicationCommand, Autocomplete
 
             try {
                 await nickName.insertNickname(user.id, nickname);
-            } catch (error) {
+            } catch {
                 await command.editReply(
                     `Würdet ihr Hurensöhne aufpassen, wüsstest ihr, dass für ${user} \`${nickname}\` bereits existiert.`,
                 );

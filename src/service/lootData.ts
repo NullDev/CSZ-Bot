@@ -136,7 +136,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
             "Mit der Krankschreibung kannst du deine Wärterschicht abbrechen und dich ausruhen.",
         emote: "🩺",
         asset: "assets/loot/06-krankschreibung.jpg",
-        onUse: async (interaction, context, loot) => {
+        onUse: async (interaction, context, _loot) => {
             const lootRoles = await import("./lootRoles.js");
             const member = interaction.member;
             if (!member || !(member instanceof GuildMember)) {

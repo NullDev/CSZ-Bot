@@ -7,7 +7,7 @@ export default class ToggleCommand implements MessageCommand {
     name = "listroles";
     description = "Listet alle server rollen auf";
 
-    async handleMessage(message: ProcessableMessage, context: BotContext): Promise<void> {
+    async handleMessage(message: ProcessableMessage, _context: BotContext): Promise<void> {
         const roleNames = message.guild.roles.cache
             .filter(element => String(element.name).toLowerCase() !== "@everyone")
             .map(element => element.name);

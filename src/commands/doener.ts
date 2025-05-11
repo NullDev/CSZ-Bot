@@ -37,7 +37,7 @@ export default class DoenerCommand implements MessageCommand {
 
         // extract float from message
         const number =
-            /(?:^|\s)-?(\d+(?:\.\d+)?)[€\$]?(?:\s|$)/g.exec(messageContent)?.[0] ?? undefined;
+            /(?:^|\s)-?(\d+(?:\.\d+)?)[€$]?(?:\s|$)/g.exec(messageContent)?.[0] ?? undefined;
         if (number === undefined) {
             await targetMessage.reply({
                 content: "Da is keine Zahl bruder.",
@@ -56,8 +56,8 @@ export default class DoenerCommand implements MessageCommand {
 
         const kebabs = (amount / prices.kebab).toFixed(2);
 
-        let knives = undefined;
-        let boards = undefined;
+        let knives: string | undefined;
+        let boards: string | undefined;
         if (amount >= prices.board * 0.75) {
             if (amount % prices.knife === 0) {
                 knives = (amount / prices.knife).toFixed(2);

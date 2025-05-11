@@ -97,7 +97,7 @@ export async function runHalfLife(context: BotContext) {
         return;
     }
 
-    const wasteToRemove = allWaste.sort((a, b) => Math.random()).slice(targetWasteCount);
+    const wasteToRemove = allWaste.sort(() => Math.random()).slice(targetWasteCount);
     if (wasteToRemove.length === 0) {
         return;
     }

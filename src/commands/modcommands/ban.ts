@@ -128,7 +128,7 @@ export default class BanCommand implements ApplicationCommand, MessageCommand {
             }
         } else {
             // Otherwise we would extract everything that is written AFTER the first mention
-            const match = /\<@!?[0-9]+\> (.+)/.exec(messageAfterCommand);
+            const match = /<@!?[0-9]+> (.+)/.exec(messageAfterCommand);
             if (match?.[1]) {
                 reason = match[1];
             }

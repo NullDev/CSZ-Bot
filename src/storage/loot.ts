@@ -255,7 +255,6 @@ export async function transferLootToUser(
 
         if ("id" in replacement) {
             // @ts-ignore
-            // biome-ignore lint/performance/noDelete: Setting it to undefined would keep the key
             delete replacement.id;
         }
 

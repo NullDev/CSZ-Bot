@@ -1,7 +1,5 @@
 import type { User } from "discord.js";
 
-import db from "@db";
-
 import * as ehre from "@/storage/ehre.js";
 
 export async function addEhre(thankingUser: User, ehrenbruder: User): Promise<string> {
