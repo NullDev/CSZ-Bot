@@ -74,8 +74,7 @@ export async function insertTrackMetadata(track: Track, artists: Artist[], ctx =
                     imageUrl: track.album.images[0]?.url ?? null,
                 }),
             )
-            .returningAll()
-            .executeTakeFirstOrThrow();
+            .execute();
 
         await ctx
             .insertInto("spotifyArtists")
@@ -87,8 +86,7 @@ export async function insertTrackMetadata(track: Track, artists: Artist[], ctx =
                 })),
             )
             .onConflict(oc => oc.column("artistId").doNothing())
-            .returningAll()
-            .executeTakeFirstOrThrow();
+            .execute();
 
         await ctx
             .insertInto("spotifyTrackToArtists")
@@ -99,8 +97,7 @@ export async function insertTrackMetadata(track: Track, artists: Artist[], ctx =
                 })),
             )
             .onConflict(oc => oc.columns(["artistId", "trackId"]).doNothing())
-            .returningAll()
-            .executeTakeFirstOrThrow();
+            .execute();
 
         return getTrackMetadata(track, ctx);
     });
