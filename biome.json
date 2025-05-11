@@ -1,7 +1,11 @@
 {
-    "$schema": "https://biomejs.dev/schemas/1.9.0/schema.json",
-    "organizeImports": {
-        "enabled": false
+    "$schema": "https://biomejs.dev/schemas/2.0.0-beta.3/schema.json",
+    "assist": {
+        "actions": {
+            "source": {
+                "organizeImports": "off"
+            }
+        }
     },
     "formatter": {
         "enabled": true,
@@ -16,7 +20,20 @@
     "linter": {
         "enabled": true,
         "rules": {
-            "recommended": true
+            "recommended": true,
+            "style": {
+                "noParameterAssign": "error",
+                "useAsConstAssertion": "error",
+                "useDefaultParameterLast": "error",
+                "useEnumInitializers": "error",
+                "useSelfClosingElements": "error",
+                "useConst": "error",
+                "useSingleVarDeclarator": "error",
+                "noUnusedTemplateLiteral": "error",
+                "useNumberNamespace": "error",
+                "noInferrableTypes": "error",
+                "noUselessElse": "error"
+            }
         }
     },
     "javascript": {
@@ -31,7 +48,9 @@
     },
     "overrides": [
         {
-            "include": ["src/storage/migrations/**"],
+            "includes": [
+                "**/src/storage/migrations/**"
+            ],
             "linter": {
                 "rules": {
                     "suspicious": {
