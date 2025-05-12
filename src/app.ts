@@ -1,35 +1,35 @@
 import { GatewayIntentBits, Partials, Client } from "discord.js";
 import * as sentry from "@sentry/bun";
 
-import { readConfig, databasePath, args } from "@/service/config.js";
+import { readConfig, databasePath, args } from "@/service/config.ts";
 import log from "@log";
 
-import "@/polyfills.js";
+import "@/polyfills.ts";
 
-import * as kysely from "@/storage/db/db.js";
+import * as kysely from "@/storage/db/db.ts";
 
-import type { ReactionHandler } from "@/handler/ReactionHandler.js";
-import messageDeleteHandler from "@/handler/messageDeleteHandler.js";
-import roleAssignerHandler from "@/handler/roleAssignerHandler.js";
-import defaultReactionHandler from "@/handler/defaultReactionHandler.js";
-import logEmotesReactionHandler from "@/handler/logEmotesReactionHandler.js";
-import quoteReactionHandler from "@/handler/quoteHandler.js";
-import { woisVoteReactionHandler } from "@/commands/woisvote.js";
-import * as voiceStateService from "@/service/voiceState.js";
+import type { ReactionHandler } from "@/handler/ReactionHandler.ts";
+import messageDeleteHandler from "@/handler/messageDeleteHandler.ts";
+import roleAssignerHandler from "@/handler/roleAssignerHandler.ts";
+import defaultReactionHandler from "@/handler/defaultReactionHandler.ts";
+import logEmotesReactionHandler from "@/handler/logEmotesReactionHandler.ts";
+import quoteReactionHandler from "@/handler/quoteHandler.ts";
+import { woisVoteReactionHandler } from "@/commands/woisvote.ts";
+import * as voiceStateService from "@/service/voiceState.ts";
 
 import {
     handleInteractionEvent,
     loadCommands,
     messageCommandHandler,
     registerAllApplicationCommandsAsGuildCommands,
-} from "@/handler/commandHandler.js";
-import deleteThreadMessagesHandler from "@/handler/deleteThreadMessagesHandler.js";
-import { createBotContext, type BotContext } from "@/context.js";
-import { ehreReactionHandler } from "@/commands/ehre.js";
-import * as terminal from "@/utils/terminal.js";
-import * as guildRageQuit from "@/storage/guildRageQuit.js";
-import * as cronService from "@/service/cron.js";
-import { handlePresenceUpdate } from "./handler/presenceHandler.js";
+} from "@/handler/commandHandler.ts";
+import deleteThreadMessagesHandler from "@/handler/deleteThreadMessagesHandler.ts";
+import { createBotContext, type BotContext } from "@/context.ts";
+import { ehreReactionHandler } from "@/commands/ehre.ts";
+import * as terminal from "@/utils/terminal.ts";
+import * as guildRageQuit from "@/storage/guildRageQuit.ts";
+import * as cronService from "@/service/cron.ts";
+import { handlePresenceUpdate } from "./handler/presenceHandler.ts";
 
 const env = process.env;
 
