@@ -38,13 +38,13 @@ function transformRow(row: UnknownRow): UnknownRow {
         }
 
         if (sqlitePattern.test(v)) {
-            log.info(`Would do: "${v}" -> ${new Date(`${v}Z`)}`);
+            log.trace(`Would do: "${v}" -> ${new Date(`${v}Z`)}`);
             // res[k] = new Date(v);
             continue;
         }
 
         if (iso8601Pattern.test(v)) {
-            log.info(`Would do: "${v}" -> ${new Date(v)}`);
+            log.trace(`Would do: "${v}" -> ${new Date(v)}`);
             // res[k] = new Date(v);
         }
     }
