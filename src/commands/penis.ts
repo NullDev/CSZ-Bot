@@ -153,15 +153,6 @@ export default class PenisCommand implements MessageCommand {
         const size = Math.max(sizeGenerator.get(), 1);
         const radius = Math.max(radiusGenerator.get(), 1);
 
-        if (await isNewLongestDick(size)) {
-            log.debug(`${userToMeasure} has the new longest dick with size ${size}`);
-        }
-
         return await penis.insertMeasurement(userToMeasure, size, radius);
     }
-}
-
-async function isNewLongestDick(size: number) {
-    const oldLongest = (await penis.longestRecentMeasurement()) ?? -1;
-    return oldLongest < size;
 }

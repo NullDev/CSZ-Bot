@@ -36,19 +36,6 @@ export function fetchLastMeasurement(user: User, ctx = db()): Promise<Penis | un
         .executeTakeFirst();
 }
 
-export async function longestRecentMeasurement(ctx = db()): Promise<number | undefined> {
-    const now = Temporal.Now.instant();
-    const { startOfToday, startOfTomorrow } = getStartAndEndDay(now);
-
-    const res = await ctx
-        .selectFrom("penis")
-        .where("measuredAt", ">=", startOfToday.toString())
-        .where("measuredAt", "<", startOfTomorrow.toString())
-        .select(({ eb }) => eb.fn.max<number>("size").as("maxSize"))
-        .executeTakeFirst();
-    return res?.maxSize ?? undefined;
-}
-
 export async function getAveragePenisSizes(ctx = db()): Promise<Record<Snowflake, number>> {
     const result = await ctx
         .selectFrom("penis")
