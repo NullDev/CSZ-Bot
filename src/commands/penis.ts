@@ -138,9 +138,14 @@ export default class PenisCommand implements MessageCommand {
     }
 
     async #getOrCreateMeasurement(userToMeasure: User): Promise<Penis> {
-        const recentMeasurement = await penis.fetchRecentMeasurement(userToMeasure);
-        if (recentMeasurement !== undefined) {
-            return recentMeasurement;
+        const lastMeasurement = await penis.fetchLastMeasurement(userToMeasure);
+        if (lastMeasurement !== undefined) {
+            const now = new Date();
+            const measurement = new Date(`${lastMeasurement.measuredAt}Z`);
+            // TODO: Make use of temporal lol
+            if (measurement.toISOString().split("T")[0] === now.toISOString().split("T")[0]) {
+                return lastMeasurement;
+            }
         }
 
         log.debug(`No recent measuring of ${userToMeasure.id} found. Creating Measurement.`);

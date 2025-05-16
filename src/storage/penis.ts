@@ -26,15 +26,12 @@ export function insertMeasurement(
         .executeTakeFirstOrThrow();
 }
 
-export function fetchRecentMeasurement(user: User, ctx = db()): Promise<Penis | undefined> {
-    const now = Temporal.Now.instant();
-    const { startOfToday, startOfTomorrow } = getStartAndEndDay(now);
-
+export function fetchLastMeasurement(user: User, ctx = db()): Promise<Penis | undefined> {
     return ctx
         .selectFrom("penis")
         .where("userId", "=", user.id)
-        .where("measuredAt", ">=", startOfToday.toString())
-        .where("measuredAt", "<", startOfTomorrow.toString())
+        .orderBy("id", "desc")
+        .limit(1)
         .selectAll()
         .executeTakeFirst();
 }
