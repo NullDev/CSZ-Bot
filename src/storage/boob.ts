@@ -38,18 +38,6 @@ export function fetchRecentMeasurement(user: User, ctx = db()): Promise<Boob | u
         .executeTakeFirst();
 }
 
-export async function longestRecentMeasurement(ctx = db()): Promise<number | undefined> {
-    const now = Temporal.Now.instant();
-    const { startOfToday, startOfTomorrow } = getStartAndEndDay(now);
-    const res = await ctx
-        .selectFrom("boobs")
-        .where("measuredAt", ">=", startOfToday.toString())
-        .where("measuredAt", "<", startOfTomorrow.toString())
-        .select(({ eb }) => eb.fn.max<number>("size").as("maxSize"))
-        .executeTakeFirst();
-    return res?.maxSize ?? undefined;
-}
-
 export async function getAverageBoobSizes(ctx = db()) {
     const result = await ctx
         .selectFrom("boobs")

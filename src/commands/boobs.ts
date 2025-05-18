@@ -114,11 +114,6 @@ const sendBoob = async (
     );
 };
 
-const isNewBiggestBoobs = async (size: number): Promise<boolean> => {
-    const oldLongest = (await boob.longestRecentMeasurement()) ?? -1;
-    return oldLongest < size;
-};
-
 export default class BoobCommand implements MessageCommand {
     name = "boob";
     aliases = [
@@ -156,10 +151,6 @@ export default class BoobCommand implements MessageCommand {
             );
 
             const size = Number(randomEntry(Object.keys(boobas)));
-
-            if (await isNewBiggestBoobs(size)) {
-                log.debug(`${userToMeasure} has the new biggest boobs with size ${size}`);
-            }
 
             await Promise.all([
                 boob.insertMeasurement(userToMeasure, size),
