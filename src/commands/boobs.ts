@@ -2,6 +2,7 @@ import { time, TimestampStyles, type User } from "discord.js";
 
 import type { ProcessableMessage } from "@/service/command.js";
 import type { MessageCommand } from "@/commands/command.js";
+import type { Boob } from "@/storage/db/model.js";
 import * as boob from "@/storage/boob.js";
 import log from "@log";
 import { randomEntry } from "@/service/random.js";
@@ -141,29 +142,33 @@ export default class BoobCommand implements MessageCommand {
         const mention = message.mentions.users.first();
         const userToMeasure = mention !== undefined ? mention : author;
 
-        log.debug(`${author.id} wants to measure boob of user ${userToMeasure.id}`);
-
-        const recentMeasurement = await boob.fetchRecentMeasurement(userToMeasure);
-
-        if (recentMeasurement === undefined) {
-            log.debug(
-                `No recent boob measuring of ${userToMeasure.id} found. Creating Measurement`,
-            );
-
-            const size = Number(randomEntry(Object.keys(boobas)));
-
-            await Promise.all([
-                boob.insertMeasurement(userToMeasure, size),
-                sendBoob(userToMeasure, message, size),
-            ]);
-            return;
-        }
+        log.debug(`${author.id} wants to measure boobs of user ${userToMeasure.id}`);
+        const measurement = await this.#getOrCreateMeasurement(userToMeasure);
 
         await sendBoob(
             userToMeasure,
             message,
-            recentMeasurement.size,
-            new Date(`${recentMeasurement.measuredAt}Z`),
+            measurement.size,
+            new Date(`${measurement.measuredAt}Z`),
         );
+    }
+
+    async #getOrCreateMeasurement(userToMeasure: User): Promise<Boob> {
+        const lastMeasurement = await boob.fetchLastMeasurement(userToMeasure);
+
+        if (lastMeasurement !== undefined) {
+            const now = new Date();
+            const measurement = new Date(`${lastMeasurement.measuredAt}Z`);
+            // TODO: Make use of temporal lol
+            if (measurement.toISOString().split("T")[0] === now.toISOString().split("T")[0]) {
+                return lastMeasurement;
+            }
+        }
+
+        log.debug(`No recent boob measuring of ${userToMeasure.id} found. Creating Measurement`);
+
+        const size = Number(randomEntry(Object.keys(boobas)));
+
+        return await boob.insertMeasurement(userToMeasure, size);
     }
 }

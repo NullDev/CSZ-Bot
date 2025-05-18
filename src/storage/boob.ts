@@ -25,7 +25,7 @@ export function insertMeasurement(
         .executeTakeFirstOrThrow();
 }
 
-export function fetchRecentMeasurement(user: User, ctx = db()): Promise<Boob | undefined> {
+export function fetchLastMeasurement(user: User, ctx = db()): Promise<Boob | undefined> {
     const now = Temporal.Now.instant();
     const { startOfToday, startOfTomorrow } = getStartAndEndDay(now);
 
