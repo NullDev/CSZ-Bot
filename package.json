@@ -30,7 +30,7 @@
         "@js-temporal/polyfill": "^0.5.1",
         "@napi-rs/canvas": "0.1.70",
         "@resvg/resvg-js": "^2.6.2",
-        "@sentry/bun": "^9.19.0",
+        "@sentry/bun": "^9.21.0",
         "@spotify/web-api-ts-sdk": "^1.2.0",
         "@std/jsonc": "npm:@jsr/std__jsonc@^1.0.2",
         "chrono-node": "^2.8.0",
@@ -42,12 +42,12 @@
         "kysely": "^0.28.2",
         "kysely-bun-sqlite": "^0.4.0",
         "libsodium-wrappers": "^0.7.15",
-        "pino": "^9.6.0",
+        "pino": "^9.7.0",
         "splid-js": "^1.5.2",
         "urlpattern-polyfill": "^10.1.0"
     },
     "devDependencies": {
-        "@biomejs/biome": "^2.0.0-beta.4",
+        "@biomejs/biome": "^2.0.0-beta.5",
         "@types/bun": "^1.2.13",
         "@types/jsdom": "^21.1.7",
         "@types/node-cron": "^3.0.11",
