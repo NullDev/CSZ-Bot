@@ -71,7 +71,9 @@ async function drawTrackToplistCanvas(_user: User, tracks: TrackWithCover[]): Pr
     const imagePadding = new Vec2(16, 16);
     const entryOrigin = new Vec2(imagePadding.x, imagePadding.y);
     const entrySize = new Vec2(imageSize.x - imagePadding.x * 2, 64);
-    const entryOffset = entrySize.withX(0);
+
+    const entryListPadding = 16;
+    const entryOffset = new Vec2(0, entrySize.y + entryListPadding);
     for (let i = 0; i < tracks.length; ++i) {
         const entryPos = entryOrigin.add(entryOffset.scale(i));
         drawTrackEntry(entryPos, entrySize, tracks[i]);
