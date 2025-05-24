@@ -73,9 +73,7 @@ async function drawTrackToplistCanvas(_user: User, tracks: TrackWithCover[]): Pr
 
     for (let i = 0; i < 10; i++) {
         const track = tracks[i];
-        const place = i + 1;
         if (!track) {
-            ctx.fillText(`${place}. nicht vorhanden`, 20, i * 50);
             continue;
         }
 
@@ -83,7 +81,7 @@ async function drawTrackToplistCanvas(_user: User, tracks: TrackWithCover[]): Pr
         const artistStr = truncateToLength(artists, 50);
         const trackStr = truncateToLength(track.name, 50);
 
-        const placeSymbol = placeSymbols[place];
+        const placeSymbol = placeSymbols[track.place];
         if (placeSymbol) {
             const size = 60 - i * 5;
             ctx.font = `${size}px Apple Emoji`;
@@ -92,7 +90,7 @@ async function drawTrackToplistCanvas(_user: User, tracks: TrackWithCover[]): Pr
         } else {
             ctx.font = "bold 30px Open Sans";
             ctx.textAlign = "left";
-            ctx.fillText(place.toString(), 20, 55 + i * entrySize.height);
+            ctx.fillText(track.place.toString(), 20, 55 + i * entrySize.height);
         }
 
         ctx.font = "16px Open Sans";
