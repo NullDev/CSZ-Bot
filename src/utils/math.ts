@@ -36,6 +36,12 @@ export class Vec2 {
     normalize(): Vec2 {
         return this.divide(this.length());
     }
+    withX(x: number): Vec2 {
+        return new Vec2(x, this.y);
+    }
+    withY(y: number): Vec2 {
+        return new Vec2(this.x, y);
+    }
 }
 
 export class Vec3 {
@@ -96,6 +102,15 @@ export class Vec3 {
             Math.min(Math.max(this.z, min), max),
         );
     }
+    withX(x: number): Vec3 {
+        return new Vec3(x, this.y, this.z);
+    }
+    withY(y: number): Vec3 {
+        return new Vec3(this.x, y, this.z);
+    }
+    withZ(z: number): Vec3 {
+        return new Vec3(this.x, this.y, z);
+    }
 }
 
 export class Vec4 {
@@ -142,6 +157,18 @@ export class Vec4 {
     }
     normalize(): Vec4 {
         return this.divide(this.length());
+    }
+    withX(x: number): Vec4 {
+        return new Vec4(x, this.y, this.z, this.w);
+    }
+    withY(y: number): Vec4 {
+        return new Vec4(this.x, y, this.z, this.w);
+    }
+    withZ(z: number): Vec4 {
+        return new Vec4(this.x, this.y, z, this.w);
+    }
+    withW(w: number): Vec4 {
+        return new Vec4(this.x, this.y, this.z, w);
     }
 }
 
