@@ -4,7 +4,6 @@ import {
     SlashCommandBuilder,
     SlashCommandSubcommandBuilder,
     SlashCommandBooleanOption,
-    EmbedBuilder,
     type User,
     ButtonBuilder,
     ButtonStyle,
@@ -17,8 +16,17 @@ import assertNever from "@/utils/assertNever.js";
 import { getPlaybackStats, setUserRegistration, type TrackStat } from "@/service/lauscher.js";
 import { Temporal } from "@js-temporal/polyfill";
 import { truncateToLength } from "@/utils/stringUtils.js";
-import { type Canvas, createCanvas, GlobalFonts, loadImage } from "@napi-rs/canvas";
+import {
+    type Canvas,
+    createCanvas,
+    GlobalFonts,
+    loadImage,
+    type CanvasTextBaseline,
+    type CanvasTextAlign,
+    type Image,
+} from "@napi-rs/canvas";
 import { chunkArray } from "@/utils/arrayUtils.js";
+import { Vec2 } from "@/utils/math.js";
 
 type SubCommand = "aktivierung" | "stats";
 
@@ -104,6 +112,32 @@ async function drawTrackToplistCanvas(_user: User, tracks: TrackStat[]): Promise
             coverSize.width,
             coverSize.height,
         );
+
+        function drawImage(pos: Vec2, size: Vec2, image: Image) {
+            ctx.drawImage(image, pos.x, pos.y, size.x, size.y);
+        }
+        function drawEmojiCentered(sizePx: number, centerPos: Vec2, symbol: string) {
+            drawText(centerPos, "center", "middle", "#fff", `${sizePx}px Apple Emoji`, symbol);
+        }
+        function drawTextCentered(sizePx: number, centerPos: Vec2, text: string) {
+            drawText(centerPos, "center", "middle", "#fff", `bold ${sizePx}px Open Sans`, text);
+        }
+        function drawText(
+            pos: Vec2,
+            textAlign: CanvasTextAlign,
+            baseLine: CanvasTextBaseline,
+            color: string,
+            font: string,
+            text: string,
+        ) {
+            ctx.save();
+            ctx.font = font;
+            ctx.fillStyle = color;
+            ctx.textAlign = textAlign;
+            ctx.textBaseline = baseLine;
+            ctx.fillText(text, pos.x, pos.y);
+            ctx.restore();
+        }
     }
 
     return canvas;
