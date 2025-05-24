@@ -110,18 +110,20 @@ async function drawTrackToplistCanvas(_user: User, tracks: TrackWithCover[]): Pr
 
         drawImage(coverPos, coverSize, entry.cover);
 
-        const textMiddleLineStart = restPos.withY(restPos.y + restSize.y / 2);
+        const textAlignmentLine = restPos.withY(restPos.y + restSize.y * 0.3);
         drawText(
-            textMiddleLineStart,
+            textAlignmentLine,
             "left",
             "bottom",
             "#7f7f7f",
             "16px Open Sans",
             entry.formattedArtists,
         );
-        drawText(textMiddleLineStart, "left", "top", "#ffffff", "30px Open Sans", entry.name);
+        drawText(textAlignmentLine, "left", "top", "#ffffff", "30px Open Sans", entry.name);
+
+        const restMiddleLineStart = restPos.withY(restPos.y + restSize.y / 2);
         drawText(
-            textMiddleLineStart.add(restSize.withY(0)),
+            restMiddleLineStart.add(restSize.withY(0)),
             "right",
             "middle",
             "#ffffff",
