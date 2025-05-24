@@ -57,21 +57,106 @@ interface TrackWithCover extends TrackStat {
 const fallbackCoverImage = await loadImage("assets/images/fallback.png");
 
 async function drawTrackToplistCanvas(_user: User, tracks: TrackWithCover[]): Promise<Canvas> {
-    const canvas = createCanvas(1024, 1024);
+    const imageSize = new Vec2(1024, 1024);
+
+    const canvas = createCanvas(imageSize.x, imageSize.y);
     const ctx = canvas.getContext("2d");
 
     ctx.fillStyle = "#000000";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = "#ffffff";
 
-    const entrySize = {
-        height: 100,
-    };
-    const coverSize = {
-        width: 64,
-        height: 64,
-    };
+    ctx.save();
 
+    const imagePadding = new Vec2(16, 16);
+    const entryOrigin = new Vec2(imagePadding.x, imagePadding.y);
+    const entrySize = new Vec2(imageSize.x - imagePadding.x * 2, 64);
+    const entryOffset = entrySize.withX(0);
+    for (let i = 0; i < tracks.length; ++i) {
+        const entryPos = entryOrigin.add(entryOffset.scale(i));
+        drawTrackEntry(entryPos, entrySize, tracks[i]);
+    }
+
+    ctx.restore();
+
+    return canvas;
+
+    function drawTrackEntry(pos: Vec2, size: Vec2, entry: TrackWithCover) {
+        ctx.save();
+
+        // make the positions of the track entry the origin of this entry,
+        // so we don't have to compute global offsets
+        ctx.translate(pos.x, pos.y);
+
+        // |64px place | 64px cover | 16px padding | rest |
+        // |------------1000x64---------------------------|
+        const placeSize = new Vec2(64, 64);
+        const coverSize = new Vec2(64, 64);
+        const restLeftPadding = 16;
+
+        const placePos = new Vec2(0, 0);
+        const coverPos = placePos.add(placeSize.withY(0));
+        const restPos = coverPos.add(coverSize.withY(0)).add(new Vec2(restLeftPadding, 0));
+        const restSize = size.minus(restPos);
+
+        if (entry.place <= 3) {
+            const emoji = placeSymbols[entry.place];
+            drawEmojiCentered(30, placePos.add(placeSize.divide(2)), emoji);
+        } else {
+            drawTextCentered(30, placePos.add(placeSize.divide(2)), entry.place.toString());
+        }
+
+        drawImage(coverPos, coverSize, entry.cover);
+
+        const textMiddleLineStart = restPos.withY(restPos.y + restSize.y / 2);
+        drawText(
+            textMiddleLineStart,
+            "left",
+            "bottom",
+            "#7f7f7f",
+            "16px Open Sans",
+            entry.formattedArtists,
+        );
+        drawText(textMiddleLineStart, "left", "top", "#ffffff", "30px Open Sans", entry.name);
+        drawText(
+            textMiddleLineStart.add(restSize.withY(0)),
+            "right",
+            "middle",
+            "#ffffff",
+            "30px Open Sans",
+            "10x",
+        );
+
+        ctx.restore();
+    }
+
+    function drawImage(pos: Vec2, size: Vec2, image: Image) {
+        ctx.drawImage(image, pos.x, pos.y, size.x, size.y);
+    }
+    function drawEmojiCentered(sizePx: number, centerPos: Vec2, symbol: string) {
+        drawText(centerPos, "center", "middle", "#fff", `${sizePx}px Apple Emoji`, symbol);
+    }
+    function drawTextCentered(sizePx: number, centerPos: Vec2, text: string) {
+        drawText(centerPos, "center", "middle", "#fff", `bold ${sizePx}px Open Sans`, text);
+    }
+    function drawText(
+        pos: Vec2,
+        textAlign: CanvasTextAlign,
+        baseLine: CanvasTextBaseline,
+        color: string,
+        font: string,
+        text: string,
+    ) {
+        ctx.save();
+        ctx.font = font;
+        ctx.fillStyle = color;
+        ctx.textAlign = textAlign;
+        ctx.textBaseline = baseLine;
+        ctx.fillText(text, pos.x, pos.y);
+        ctx.restore();
+    }
+
+    /*
     for (let i = 0; i < 10; i++) {
         const track = tracks[i];
         if (!track) {
@@ -113,35 +198,9 @@ async function drawTrackToplistCanvas(_user: User, tracks: TrackWithCover[]): Pr
             coverSize.width,
             coverSize.height,
         );
-
-        function drawImage(pos: Vec2, size: Vec2, image: Image) {
-            ctx.drawImage(image, pos.x, pos.y, size.x, size.y);
-        }
-        function drawEmojiCentered(sizePx: number, centerPos: Vec2, symbol: string) {
-            drawText(centerPos, "center", "middle", "#fff", `${sizePx}px Apple Emoji`, symbol);
-        }
-        function drawTextCentered(sizePx: number, centerPos: Vec2, text: string) {
-            drawText(centerPos, "center", "middle", "#fff", `bold ${sizePx}px Open Sans`, text);
-        }
-        function drawText(
-            pos: Vec2,
-            textAlign: CanvasTextAlign,
-            baseLine: CanvasTextBaseline,
-            color: string,
-            font: string,
-            text: string,
-        ) {
-            ctx.save();
-            ctx.font = font;
-            ctx.fillStyle = color;
-            ctx.textAlign = textAlign;
-            ctx.textBaseline = baseLine;
-            ctx.fillText(text, pos.x, pos.y);
-            ctx.restore();
-        }
     }
-
     return canvas;
+    */
 }
 
 function buildTrackToplistLinkButtons(
