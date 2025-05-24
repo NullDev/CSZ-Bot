@@ -107,13 +107,8 @@ async function drawTrackToplistCanvas(_user: User, tracks: TrackWithCover[]): Pr
         ctx.textAlign = "right";
         ctx.fillText(`${track.count}x`, 1000, 55 + i * entrySize.height);
 
-        const imageUrl =
-            track.imageUrl && track.imageUrl.trim() !== ""
-                ? track.imageUrl
-                : "assets/images/fallback.png";
-
         ctx.drawImage(
-            await loadImage(imageUrl),
+            track.cover,
             80,
             15 + i * entrySize.height,
             coverSize.width,
