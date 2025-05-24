@@ -54,7 +54,7 @@ interface TrackWithCover extends TrackStat {
     formattedArtists: string;
 }
 
-const fallbackCoverImage = await loadImage("file://assets/images/fallback.png");
+const fallbackCoverImage = await loadImage("assets/lauscher/fallback.png");
 
 async function drawTrackToplistCanvas(_user: User, tracks: TrackWithCover[]): Promise<Canvas> {
     const imageSize = new Vec2(1024, 1024);
