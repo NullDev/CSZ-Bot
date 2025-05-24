@@ -48,7 +48,13 @@ const placeSymbols: Record<number, string> = {
     3: "🥉",
 };
 
-async function drawTrackToplistCanvas(_user: User, tracks: TrackStat[]): Promise<Canvas> {
+interface TrackWithCover extends TrackStat {
+    cover: Image;
+}
+
+const fallbackCoverImage = await loadImage("assets/images/fallback.png");
+
+async function drawTrackToplistCanvas(_user: User, tracks: TrackWithCover[]): Promise<Canvas> {
     const canvas = createCanvas(1024, 1024);
     const ctx = canvas.getContext("2d");
 
@@ -241,7 +247,17 @@ export default class Lauscher implements ApplicationCommand {
 
                 const topTenTracks = stats.tracks.sort((a, b) => b.count - a.count).slice(0, 10);
 
-                const canvas = await drawTrackToplistCanvas(user, topTenTracks);
+                const tracksWithCover = await Promise.all(
+                    topTenTracks.map(async track => {
+                        const imageUrl = track.imageUrl?.trim();
+                        return {
+                            ...track,
+                            cover: imageUrl ? await loadImage(imageUrl) : fallbackCoverImage,
+                        };
+                    }),
+                );
+
+                const canvas = await drawTrackToplistCanvas(user, tracksWithCover);
                 const attachment = canvas.toBuffer("image/png");
 
                 const buttons = chunkArray(
