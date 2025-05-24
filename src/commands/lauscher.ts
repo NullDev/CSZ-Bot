@@ -51,6 +51,7 @@ const placeSymbols: Record<number, string> = {
 interface TrackWithCover extends TrackStat {
     cover: Image;
     place: number;
+    formattedArtists: string;
 }
 
 const fallbackCoverImage = await loadImage("assets/images/fallback.png");
@@ -77,7 +78,7 @@ async function drawTrackToplistCanvas(_user: User, tracks: TrackWithCover[]): Pr
             continue;
         }
 
-        const artists = track.artists.map(a => a.name).join(", ");
+        const artists = track.formattedArtists;
         const artistStr = truncateToLength(artists, 50);
         const trackStr = truncateToLength(track.name, 50);
 
@@ -246,6 +247,7 @@ export default class Lauscher implements ApplicationCommand {
                         const imageUrl = track.imageUrl?.trim();
                         return {
                             ...track,
+                            formattedArtists: track.artists.map(a => a.name).join(", "),
                             place: index + 1,
                             cover: imageUrl ? await loadImage(imageUrl) : fallbackCoverImage,
                         };
