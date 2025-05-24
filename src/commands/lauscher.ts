@@ -135,7 +135,7 @@ async function drawTrackToplistCanvas(_user: User, tracks: TrackWithCover[]): Pr
             "middle",
             "#ffffff",
             "30px Open Sans",
-            "10x",
+            `${entry.count}x`,
         );
 
         ctx.restore();
