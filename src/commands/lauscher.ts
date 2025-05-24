@@ -103,7 +103,7 @@ async function drawTrackToplistCanvas(_user: User, tracks: TrackWithCover[]): Pr
 
         if (entry.place <= 3) {
             const emoji = placeSymbols[entry.place];
-            drawEmojiCentered(30, placePos.add(placeSize.divide(2)), emoji);
+            drawEmojiCentered(60 - entry.place * 5, placePos.add(placeSize.divide(2)), emoji);
         } else {
             drawTextCentered(30, placePos.add(placeSize.divide(2)), entry.place.toString());
         }
