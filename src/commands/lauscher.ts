@@ -57,7 +57,7 @@ interface TrackWithCover extends TrackStat {
 const fallbackCoverImage = await loadImage("assets/lauscher/fallback.png");
 
 async function drawTrackToplistCanvas(_user: User, tracks: TrackWithCover[]): Promise<Canvas> {
-    const imageSize = new Vec2(1024, 1024);
+    const imageSize = new Vec2(1024, 818);
 
     const canvas = createCanvas(imageSize.x, imageSize.y);
     const ctx = canvas.getContext("2d");
