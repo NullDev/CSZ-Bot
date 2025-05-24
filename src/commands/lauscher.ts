@@ -209,10 +209,6 @@ export default class Lauscher implements ApplicationCommand {
 
                 const canvas = await drawTrackToplistCanvas(user, topTenTracks);
                 const attachment = canvas.toBuffer("image/png");
-                const image = new EmbedBuilder()
-                    .setTitle("Top Spuren")
-                    .setImage("attachment://top_tracks.png")
-                    .setColor(0x00b0f4);
 
                 const buttons = chunkArray(
                     buildTrackToplistLinkButtons(placeSymbols, topTenTracks),
@@ -220,7 +216,6 @@ export default class Lauscher implements ApplicationCommand {
                 ).map(buttons => new ActionRowBuilder<ButtonBuilder>().addComponents(buttons));
 
                 await command.reply({
-                    embeds: [image],
                     components: [...buttons],
                     files: [
                         {
