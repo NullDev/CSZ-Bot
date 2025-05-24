@@ -50,6 +50,7 @@ const placeSymbols: Record<number, string> = {
 
 interface TrackWithCover extends TrackStat {
     cover: Image;
+    place: number;
 }
 
 const fallbackCoverImage = await loadImage("assets/images/fallback.png");
@@ -248,10 +249,11 @@ export default class Lauscher implements ApplicationCommand {
                 const topTenTracks = stats.tracks.sort((a, b) => b.count - a.count).slice(0, 10);
 
                 const tracksWithCover = await Promise.all(
-                    topTenTracks.map(async track => {
+                    topTenTracks.map(async (track, index) => {
                         const imageUrl = track.imageUrl?.trim();
                         return {
                             ...track,
+                            place: index + 1,
                             cover: imageUrl ? await loadImage(imageUrl) : fallbackCoverImage,
                         };
                     }),
