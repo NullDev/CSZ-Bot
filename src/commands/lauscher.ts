@@ -117,9 +117,16 @@ async function drawTrackToplistCanvas(_user: User, tracks: TrackWithCover[]): Pr
             "bottom",
             "#7f7f7f",
             "16px Open Sans",
-            entry.formattedArtists,
+            truncateToLength(entry.formattedArtists, 50),
         );
-        drawText(textAlignmentLine, "left", "top", "#ffffff", "30px Open Sans", entry.name);
+        drawText(
+            textAlignmentLine,
+            "left",
+            "top",
+            "#ffffff",
+            "30px Open Sans",
+            truncateToLength(entry.name, 50),
+        );
 
         const restMiddleLineStart = restPos.withY(restPos.y + restSize.y / 2);
         drawText(
@@ -159,52 +166,6 @@ async function drawTrackToplistCanvas(_user: User, tracks: TrackWithCover[]): Pr
         ctx.fillText(text, pos.x, pos.y);
         ctx.restore();
     }
-
-    /*
-    for (let i = 0; i < 10; i++) {
-        const track = tracks[i];
-        if (!track) {
-            continue;
-        }
-
-        const artists = track.formattedArtists;
-        const artistStr = truncateToLength(artists, 50);
-        const trackStr = truncateToLength(track.name, 50);
-
-        const placeSymbol = placeSymbols[track.place];
-        if (placeSymbol) {
-            const size = 60 - i * 5;
-            ctx.font = `${size}px Apple Emoji`;
-            ctx.textAlign = "left";
-            ctx.fillText(placeSymbol, 5, 80 + i * 98);
-        } else {
-            ctx.font = "bold 30px Open Sans";
-            ctx.textAlign = "left";
-            ctx.fillText(track.place.toString(), 20, 55 + i * entrySize.height);
-        }
-
-        ctx.font = "16px Open Sans";
-        ctx.textAlign = "left";
-        ctx.fillStyle = "#7f7f7f";
-        ctx.fillText(artistStr, 160, 35 + i * entrySize.height);
-
-        ctx.font = "30px Open Sans";
-        ctx.fillStyle = "#ffffff";
-        ctx.fillText(trackStr, 160, 70 + i * entrySize.height);
-
-        ctx.textAlign = "right";
-        ctx.fillText(`${track.count}x`, 1000, 55 + i * entrySize.height);
-
-        ctx.drawImage(
-            track.cover,
-            80,
-            15 + i * entrySize.height,
-            coverSize.width,
-            coverSize.height,
-        );
-    }
-    return canvas;
-    */
 }
 
 function buildTrackToplistLinkButtons(
