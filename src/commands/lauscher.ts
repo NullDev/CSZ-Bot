@@ -110,7 +110,7 @@ async function drawTrackToplistCanvas(_user: User, tracks: TrackWithCover[]): Pr
 
         drawImage(coverPos, coverSize, entry.cover);
 
-        const textAlignmentLine = restPos.withY(restPos.y + restSize.y * 0.333);
+        const textAlignmentLine = restPos.withY(restPos.y + restSize.y * 0.4);
         drawText(
             textAlignmentLine,
             "left",
