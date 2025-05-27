@@ -11,7 +11,7 @@
         "@sentry/bun": "^9.22.0",
         "@spotify/web-api-ts-sdk": "^1.2.0",
         "@std/jsonc": "npm:@jsr/std__jsonc@^1.0.2",
-        "chrono-node": "^2.8.1",
+        "chrono-node": "^2.8.0",
         "croner": "^9.0.0",
         "discord.js": "^14.19.3",
         "get-audio-duration": "^4.0.1",
@@ -62,13 +62,13 @@
 
     "@csstools/color-helpers": ["@csstools/color-helpers@5.0.2", "", {}, "sha512-JqWH1vsgdGcw2RR6VliXXdA0/59LttzlU8UlRT/iUUsEeWfYq8I+K0yhihEUTTHLRm1EXvpsCx3083EU15ecsA=="],
 
-    "@csstools/css-calc": ["@csstools/css-calc@2.1.4", "", { "peerDependencies": { "@csstools/css-parser-algorithms": "^3.0.5", "@csstools/css-tokenizer": "^3.0.4" } }, "sha512-3N8oaj+0juUw/1H3YwmDDJXCgTB1gKU6Hc/bB502u9zR0q2vd786XJH9QfrKIEgFlZmhZiq6epXl4rHqhzsIgQ=="],
+    "@csstools/css-calc": ["@csstools/css-calc@2.1.3", "", { "peerDependencies": { "@csstools/css-parser-algorithms": "^3.0.4", "@csstools/css-tokenizer": "^3.0.3" } }, "sha512-XBG3talrhid44BY1x3MHzUx/aTG8+x/Zi57M4aTKK9RFB4aLlF3TTSzfzn8nWVHWL3FgAXAxmupmDd6VWww+pw=="],
 
-    "@csstools/css-color-parser": ["@csstools/css-color-parser@3.0.10", "", { "dependencies": { "@csstools/color-helpers": "^5.0.2", "@csstools/css-calc": "^2.1.4" }, "peerDependencies": { "@csstools/css-parser-algorithms": "^3.0.5", "@csstools/css-tokenizer": "^3.0.4" } }, "sha512-TiJ5Ajr6WRd1r8HSiwJvZBiJOqtH86aHpUjq5aEKWHiII2Qfjqd/HCWKPOW8EP4vcspXbHnXrwIDlu5savQipg=="],
+    "@csstools/css-color-parser": ["@csstools/css-color-parser@3.0.9", "", { "dependencies": { "@csstools/color-helpers": "^5.0.2", "@csstools/css-calc": "^2.1.3" }, "peerDependencies": { "@csstools/css-parser-algorithms": "^3.0.4", "@csstools/css-tokenizer": "^3.0.3" } }, "sha512-wILs5Zk7BU86UArYBJTPy/FMPPKVKHMj1ycCEyf3VUptol0JNRLFU/BZsJ4aiIHJEbSLiizzRrw8Pc1uAEDrXw=="],
 
-    "@csstools/css-parser-algorithms": ["@csstools/css-parser-algorithms@3.0.5", "", { "peerDependencies": { "@csstools/css-tokenizer": "^3.0.4" } }, "sha512-DaDeUkXZKjdGhgYaHNJTV9pV7Y9B3b644jCLs9Upc3VeNGg6LWARAT6O+Q+/COo+2gg/bM5rhpMAtf70WqfBdQ=="],
+    "@csstools/css-parser-algorithms": ["@csstools/css-parser-algorithms@3.0.4", "", { "peerDependencies": { "@csstools/css-tokenizer": "^3.0.3" } }, "sha512-Up7rBoV77rv29d3uKHUIVubz1BTcgyUK72IvCQAbfbMv584xHcGKCKbWh7i8hPrRJ7qU4Y8IO3IY9m+iTB7P3A=="],
 
-    "@csstools/css-tokenizer": ["@csstools/css-tokenizer@3.0.4", "", {}, "sha512-Vd/9EVDiu6PPJt9yAh6roZP6El1xHrdvIVGjyBsHR0RYwNHgL7FJPyIIW4fANJNG6FtyZfvlRPpFI4ZM/lubvw=="],
+    "@csstools/css-tokenizer": ["@csstools/css-tokenizer@3.0.3", "", {}, "sha512-UJnjoFsmxfKUdNYdWgOB0mWUypuLvAfQPH1+pyvRJs6euowbFkFC6P13w1l8mJyi3vxYMxc9kld5jZEGRQs6bw=="],
 
     "@discordjs/builders": ["@discordjs/builders@1.11.2", "", { "dependencies": { "@discordjs/formatters": "^0.6.1", "@discordjs/util": "^1.1.1", "@sapphire/shapeshift": "^4.0.0", "discord-api-types": "^0.38.1", "fast-deep-equal": "^3.1.3", "ts-mixer": "^6.0.4", "tslib": "^2.6.3" } }, "sha512-F1WTABdd8/R9D1icJzajC4IuLyyS8f3rTOz66JsSI3pKvpCAtsMBweu8cyNYsIyvcrKAVn9EPK+Psoymq+XC0A=="],
 
@@ -282,7 +282,7 @@
 
     "bun-types": ["bun-types@1.2.14", "", { "dependencies": { "@types/node": "*" } }, "sha512-Kuh4Ub28ucMRWeiUUWMHsT9Wcbr4H3kLIO72RZZElSDxSu7vpetRvxIUDUaW6QtaIeixIpm7OXtNnZPf82EzwA=="],
 
-    "chrono-node": ["chrono-node@2.8.1", "", { "dependencies": { "dayjs": "^1.10.0" } }, "sha512-GrqzXzYH+MFmOJErGyWkgjnfOwcOKOdDFCKxhx7pXzdRRwfQehrhbOsO+ZpaKdF1VoXEvsuSHv49aflUfj7N8w=="],
+    "chrono-node": ["chrono-node@2.8.0", "", { "dependencies": { "dayjs": "^1.10.0" } }, "sha512-//a/HhnCQ4zFHxRfi1m+jQwr8o0Gxsg0GUjZ39O6ud9lkhrnuLGX1oOKjGsivm9AVMS79cn0PmTa6JCRlzgfWA=="],
 
     "cjs-module-lexer": ["cjs-module-lexer@1.4.3", "", {}, "sha512-9z8TZaGM1pfswYeXrUpzPrkx8UnWYdhJclsiYMm6x/w5+nN+8Tf/LnAgfLGQCm59qAOxU8WwHEq2vNwF6i4j+Q=="],
 
@@ -350,7 +350,7 @@
 
     "iconv-lite": ["iconv-lite@0.6.3", "", { "dependencies": { "safer-buffer": ">= 2.1.2 < 3.0.0" } }, "sha512-4fCk79wshMdzMp2rH06qWrJE4iolqLhCUH+OiuIgU++RB0+94NlDL81atO7GX55uUKueo0txHNtvEyI6D7WdMw=="],
 
-    "import-in-the-middle": ["import-in-the-middle@1.14.0", "", { "dependencies": { "acorn": "^8.14.0", "acorn-import-attributes": "^1.9.5", "cjs-module-lexer": "^1.2.2", "module-details-from-path": "^1.0.3" } }, "sha512-g5zLT0HaztRJWysayWYiUq/7E5H825QIiecMD2pI5QO7Wzr847l6GDvPvmZaDIdrDtS2w7qRczywxiK6SL5vRw=="],
+    "import-in-the-middle": ["import-in-the-middle@1.13.2", "", { "dependencies": { "acorn": "^8.14.0", "acorn-import-attributes": "^1.9.5", "cjs-module-lexer": "^1.2.2", "module-details-from-path": "^1.0.3" } }, "sha512-Yjp9X7s2eHSXvZYQ0aye6UvwYPrVB5C2k47fuXjFKnYinAByaDZjh4t9MT2wEga9775n6WaIqyHnQhBxYtX2mg=="],
 
     "is-core-module": ["is-core-module@2.16.1", "", { "dependencies": { "hasown": "^2.0.2" } }, "sha512-UfoeMA6fIJ8wTYFEUjelnaGI67v6+N7qXJEvQuIGa99l4xsCruSYOVSQ0uPANn4dAzm8lkYPaKLrrijLq7x23w=="],
 
