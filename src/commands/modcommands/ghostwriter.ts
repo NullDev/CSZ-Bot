@@ -1,5 +1,6 @@
 import {
     type CommandInteraction,
+    MessageFlags,
     type PermissionsString,
     SlashCommandBuilder,
     SlashCommandStringOption,
@@ -39,7 +40,7 @@ export default class GhostwriterCommand implements ApplicationCommand {
         }
 
         /*if (isMarcel(command.user)) {
-            await command.reply({ content: "Ne alter, du machst wieder nur Scheiße", ephemeral: true });
+            await command.reply({ content: "Ne alter, du machst wieder nur Scheiße", flags: MessageFlags.Ephemeral });
             const now = new Date();
             if (this.lastBlame !== null  && (now.getTime() - this.lastBlame.getTime()) < 1 * 1000 * 60 * 60) {
                 return;
@@ -68,6 +69,6 @@ export default class GhostwriterCommand implements ApplicationCommand {
         } else {
             await channel.send(content);
         }
-        await command.reply({ content: "Okay mein Ghoete", ephemeral: true });
+        await command.reply({ content: "Okay mein Ghoete", flags: MessageFlags.Ephemeral });
     }
 }

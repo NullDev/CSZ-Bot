@@ -8,6 +8,7 @@ import {
     ButtonBuilder,
     ButtonStyle,
     ActionRowBuilder,
+    MessageFlags,
 } from "discord.js";
 
 import type { ApplicationCommand } from "@/commands/command.js";
@@ -242,7 +243,7 @@ export default class Lauscher implements ApplicationCommand {
                 await setUserRegistration(command.user, activated);
                 await command.reply({
                     content: "Hab ik gemacht, dicker",
-                    ephemeral: true,
+                    flags: MessageFlags.Ephemeral,
                 });
                 return;
             }
@@ -253,7 +254,7 @@ export default class Lauscher implements ApplicationCommand {
                 if (!interval) {
                     await command.reply({
                         content: "Das ist kein gültiger Zeitraum, bruder",
-                        ephemeral: true,
+                        flags: MessageFlags.Ephemeral,
                     });
                     return;
                 }
@@ -263,7 +264,7 @@ export default class Lauscher implements ApplicationCommand {
                 if (!stats?.tracks || stats.tracks.length === 0) {
                     await command.reply({
                         content: "Konnte keine Stats finden, bruder",
-                        ephemeral: true,
+                        flags: MessageFlags.Ephemeral,
                     });
                     return;
                 }

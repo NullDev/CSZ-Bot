@@ -4,6 +4,7 @@ import {
     type CommandInteraction,
     EmbedBuilder,
     type Guild,
+    MessageFlags,
     SlashCommandBuilder,
     SlashCommandStringOption,
     SlashCommandSubcommandBuilder,
@@ -159,7 +160,7 @@ export default class SplidGroupCommand implements ApplicationCommand, Autocomple
         if (!command.guildId) {
             await command.reply({
                 content: "Dieser Command kann nur in Servern benutzt werden.",
-                ephemeral: true,
+                flags: MessageFlags.Ephemeral,
             });
             return;
         }
@@ -167,7 +168,7 @@ export default class SplidGroupCommand implements ApplicationCommand, Autocomple
         if (!command.member || !context.roleGuard.isTrusted(command.member)) {
             await command.reply({
                 content: "Hurensohn. Der Command ist nix für dich.",
-                ephemeral: true,
+                flags: MessageFlags.Ephemeral,
             });
             return;
         }
@@ -203,7 +204,7 @@ export default class SplidGroupCommand implements ApplicationCommand, Autocomple
         if (normalizedCode.length === 0) {
             await command.reply({
                 content: "Invite-Code darf nicht leer sein.",
-                ephemeral: true,
+                flags: MessageFlags.Ephemeral,
             });
             return;
         }
@@ -262,7 +263,7 @@ export default class SplidGroupCommand implements ApplicationCommand, Autocomple
             await command.reply({
                 content:
                     "Es gibt noch keine Splid-Gruppen auf diesem Server. Füge eine mit `/splid add` hinzu.",
-                ephemeral: true,
+                flags: MessageFlags.Ephemeral,
             });
             return;
         }
@@ -283,7 +284,7 @@ export default class SplidGroupCommand implements ApplicationCommand, Autocomple
                     footer: { text: "Füge eine neue mit /splid add hinzu." },
                 }),
             ],
-            ephemeral: true,
+            flags: MessageFlags.Ephemeral,
         });
     }
 
@@ -297,7 +298,7 @@ export default class SplidGroupCommand implements ApplicationCommand, Autocomple
         if (!group) {
             await command.reply({
                 content: `Es gibt keine Splid-Gruppe mit dem Code \`${code}\`. Hurensohn.`,
-                ephemeral: true,
+                flags: MessageFlags.Ephemeral,
             });
             return;
         }
@@ -367,7 +368,7 @@ export default class SplidGroupCommand implements ApplicationCommand, Autocomple
         if (!group) {
             await command.reply({
                 content: `Es gibt keine Splid-Gruppe mit dem Code \`${groupCode}\`. Hurensohn.`,
-                ephemeral: true,
+                flags: MessageFlags.Ephemeral,
             });
             return;
         }

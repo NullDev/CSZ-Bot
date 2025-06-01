@@ -7,6 +7,7 @@ import {
     ContextMenuCommandBuilder,
     type ContextMenuCommandType,
     type Message,
+    MessageFlags,
     type Role,
     RoleSelectMenuBuilder,
     type RoleSelectMenuInteraction,
@@ -35,7 +36,7 @@ export default class FaulenzerPingCommand implements ApplicationCommand {
         if (!command.member || !context.roleGuard.isTrusted(command.member)) {
             await command.reply({
                 content: "Du bist nicht berechtigt, diesen Command zu benutzen.",
-                ephemeral: true,
+                flags: MessageFlags.Ephemeral,
             });
             return;
         }
@@ -49,7 +50,7 @@ export default class FaulenzerPingCommand implements ApplicationCommand {
                         .setPlaceholder("Rolle mit Faulenzern"),
                 ),
             ],
-            ephemeral: true,
+            flags: MessageFlags.Ephemeral,
         });
 
         let confirmation: RoleSelectMenuInteraction<CacheType>;

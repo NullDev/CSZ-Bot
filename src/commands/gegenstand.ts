@@ -5,6 +5,7 @@ import {
     type AutocompleteInteraction,
     type ChatInputCommandInteraction,
     type CommandInteraction,
+    MessageFlags,
     SlashCommandBuilder,
     SlashCommandStringOption,
     SlashCommandSubcommandBuilder,
@@ -252,7 +253,7 @@ export default class GegenstandCommand implements ApplicationCommand {
         if (template.onUse === undefined) {
             await interaction.reply({
                 content: "Dieser Gegenstand kann nicht benutzt werden.",
-                ephemeral: true,
+                flags: MessageFlags.Ephemeral,
             });
             return;
         }
@@ -269,7 +270,7 @@ export default class GegenstandCommand implements ApplicationCommand {
             sentry.captureException(error);
             await interaction.reply({
                 content: "Beim Benutzen dieses Gegenstands ist ein Fehler aufgetreten.",
-                ephemeral: true,
+                flags: MessageFlags.Ephemeral,
             });
         }
 
@@ -279,7 +280,7 @@ export default class GegenstandCommand implements ApplicationCommand {
 
         await interaction.reply({
             content: "Ok.",
-            ephemeral: true,
+            flags: MessageFlags.Ephemeral,
         });
     }
 
@@ -293,7 +294,7 @@ export default class GegenstandCommand implements ApplicationCommand {
         if (!item) {
             await interaction.reply({
                 content: "Diesen Gegensand hast du nicht.",
-                ephemeral: true,
+                flags: MessageFlags.Ephemeral,
             });
             return;
         }
@@ -302,7 +303,7 @@ export default class GegenstandCommand implements ApplicationCommand {
         if (!template) {
             await interaction.reply({
                 content: "Dieser Gegenstand ist unbekannt.",
-                ephemeral: true,
+                flags: MessageFlags.Ephemeral,
             });
             return;
         }

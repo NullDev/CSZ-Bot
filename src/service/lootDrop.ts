@@ -10,6 +10,7 @@ import {
     type Interaction,
     type GuildBasedChannel,
     type TextBasedChannel,
+    MessageFlags,
 } from "discord.js";
 import { Temporal } from "@js-temporal/polyfill";
 import * as sentry from "@sentry/bun";
@@ -163,7 +164,7 @@ export async function postLootDrop(
         initialAttribute,
     );
 
-    const reply = await interaction.deferReply({ ephemeral: true });
+    const reply = await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
     if (!claimedLoot) {
         await reply.edit({

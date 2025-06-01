@@ -11,6 +11,7 @@ import {
     ComponentType,
     type AutocompleteInteraction,
     type Snowflake,
+    MessageFlags,
 } from "discord.js";
 import * as sentry from "@sentry/bun";
 
@@ -283,7 +284,7 @@ export default class NicknameCommand implements ApplicationCommand, Autocomplete
                 await interaction.reply({
                     content: "Ich find dich nicht auf dem Server. Du Huso",
                     components: [],
-                    ephemeral: true,
+                    flags: MessageFlags.Ephemeral,
                 });
                 return;
             }
@@ -295,7 +296,7 @@ export default class NicknameCommand implements ApplicationCommand, Autocomplete
 
             await interaction.reply({
                 content: "Hast abgestimmt",
-                ephemeral: true,
+                flags: MessageFlags.Ephemeral,
             });
 
             const allVotes = Object.values(votes);

@@ -13,6 +13,7 @@ import {
     TimestampStyles,
     type GuildTextBasedChannel,
     userMention,
+    MessageFlags,
 } from "discord.js";
 
 import type { ReactionHandler } from "@/handler/ReactionHandler.js";
@@ -103,7 +104,7 @@ export default class WoisCommand implements ApplicationCommand {
             await command.reply({
                 content:
                     "Sorry, ich kann einen Woisping nur in der Zukunft ausführen. Zeitreisen müssen erst noch erfunden werden.",
-                ephemeral: true,
+                flags: MessageFlags.Ephemeral,
             });
             return;
         }
@@ -148,7 +149,7 @@ export default class WoisCommand implements ApplicationCommand {
         }
         await command.reply({
             content: `Woisvote erstellt: ${woisMessage.url}`,
-            ephemeral: true,
+            flags: MessageFlags.Ephemeral,
         });
     }
 }

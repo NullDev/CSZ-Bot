@@ -6,6 +6,7 @@ import {
     ButtonStyle,
     SlashCommandBuilder,
     ComponentType,
+    MessageFlags,
 } from "discord.js";
 
 import type { ApplicationCommand, MessageCommand } from "@/commands/command.js";
@@ -160,7 +161,7 @@ export default class InfoCommand implements ApplicationCommand, MessageCommand {
         const embed = await buildEmbed(command.guild, context.client.user.avatarURL() ?? undefined);
         await command.reply({
             embeds: [embed],
-            ephemeral: true,
+            flags: MessageFlags.Ephemeral,
             components: [
                 {
                     type: ComponentType.ActionRow,

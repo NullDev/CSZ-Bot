@@ -1,6 +1,7 @@
 import {
     type CacheType,
     type CommandInteraction,
+    MessageFlags,
     SlashCommandBuilder,
     SlashCommandStringOption,
 } from "discord.js";
@@ -174,7 +175,7 @@ export default class AoCCommand implements ApplicationCommand {
         if (!command.channel?.isTextBased()) {
             await command.reply({
                 content: "Mach mal nicht hier",
-                ephemeral: true,
+                flags: MessageFlags.Ephemeral,
             });
             return;
         }
@@ -182,7 +183,7 @@ export default class AoCCommand implements ApplicationCommand {
         if (!aocConfig.enabled) {
             await command.reply({
                 content: "AoC ist gerade nicht",
-                ephemeral: true,
+                flags: MessageFlags.Ephemeral,
             });
             return;
         }

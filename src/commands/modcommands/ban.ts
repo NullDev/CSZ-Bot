@@ -1,5 +1,6 @@
 import {
     type CommandInteraction,
+    MessageFlags,
     type PermissionsString,
     SlashCommandBuilder,
     SlashCommandIntegerOption,
@@ -65,7 +66,7 @@ export default class BanCommand implements ApplicationCommand, MessageCommand {
         if (!userAsGuildMember) {
             await command.reply({
                 content: "Yo, der ist nicht auf dem Server",
-                ephemeral: true,
+                flags: MessageFlags.Ephemeral,
             });
             return;
         }
@@ -82,7 +83,7 @@ export default class BanCommand implements ApplicationCommand, MessageCommand {
         if (err) {
             await command.reply({
                 content: err,
-                ephemeral: true,
+                flags: MessageFlags.Ephemeral,
             });
             return;
         }

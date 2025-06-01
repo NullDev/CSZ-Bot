@@ -1,6 +1,7 @@
 import {
     type CommandInteraction,
     type InteractionReplyOptions,
+    MessageFlags,
     type MessagePayload,
     type MessageReaction,
     SlashCommandBuilder,
@@ -69,7 +70,7 @@ async function createEhreTable(
                 ],
             },
         ],
-        ephemeral: false,
+        flags: MessageFlags.Ephemeral,
     };
 }
 
