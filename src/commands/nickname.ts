@@ -29,6 +29,8 @@ interface UserVote {
     readonly trusted: boolean;
 }
 
+const nickNameMaxLength = 32;
+
 export default class NicknameCommand implements ApplicationCommand, AutocompleteCommand {
     name = "nickname";
     description = "Setzt Nicknames für einen User";
@@ -50,7 +52,8 @@ export default class NicknameCommand implements ApplicationCommand, Autocomplete
                     new SlashCommandStringOption()
                         .setRequired(true)
                         .setName("nickname")
-                        .setDescription("Was du tun willst"),
+                        .setDescription("Was du tun willst")
+                        .setMaxLength(nickNameMaxLength),
                 ),
         )
         .addSubcommand(
@@ -146,6 +149,13 @@ export default class NicknameCommand implements ApplicationCommand, Autocomplete
                     }
 
                     const nickname = cmd.options.getString("nickname", true);
+                    if (nickname.length > nickNameMaxLength) {
+                        await cmd.reply(
+                            `'${nickname}' ist zu lang. Maximal ${nickNameMaxLength} Zeichen.`,
+                        );
+                        return;
+                    }
+
                     if (await nickName.nickNameExist(user.id, nickname)) {
                         await cmd.reply(
                             `Würdest du Hurensohn aufpassen, wüsstest du, dass für ${user} '${nickname}' bereits existiert.`,
