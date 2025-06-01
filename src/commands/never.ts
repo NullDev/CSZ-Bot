@@ -86,12 +86,17 @@ export default class NeverCommand implements ApplicationCommand, MessageCommand 
 
         const prompt = await getPrompt(customInput);
         const embed = buildEmbed(prompt, author);
-        const sentReply = await command.reply({
-            fetchReply: true,
+        const callbackResponse = await command.reply({
+            withResponse: true,
             embeds: [embed],
         });
-        const sentMessage = sentReply as Message<boolean>;
-        await Promise.all([sentMessage.react("🍻"), sentMessage.react("🚱")]);
+
+        const sentReply = callbackResponse.resource?.message;
+        if (sentReply === null || sentReply === undefined) {
+            throw new Error("Expected message to be present.");
+        }
+
+        await Promise.all([sentReply.react("🍻"), sentReply.react("🚱")]);
     }
 
     async handleMessage(message: ProcessableMessage, context: BotContext) {

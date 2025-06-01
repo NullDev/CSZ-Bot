@@ -113,11 +113,16 @@ export default class InventarCommand implements ApplicationCommand {
 
         let pageIndex = 0;
 
-        const message = await interaction.reply({
+        const callbackResponse = await interaction.reply({
             ...buildMessageData(pageIndex),
-            fetchReply: true,
+            withResponse: true,
             tts: false,
         });
+
+        const message = callbackResponse.resource?.message;
+        if (message === null || message === undefined) {
+            throw new Error("Expected message to be present.");
+        }
 
         const collector = message.createMessageComponentCollector({
             componentType: ComponentType.Button,
