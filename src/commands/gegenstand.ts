@@ -329,8 +329,8 @@ export default class GegenstandCommand implements ApplicationCommand {
 
         const matchedItems =
             itemName.length === 0
-                ? contents.slice(0, 20)
-                : contents.filter(i => i.displayName.toLowerCase().includes(itemName)).slice(0, 20);
+                ? contents
+                : contents.filter(i => i.displayName.toLowerCase().includes(itemName));
 
         const completions = [];
         for (const item of matchedItems) {
@@ -355,6 +355,6 @@ export default class GegenstandCommand implements ApplicationCommand {
             });
         }
 
-        await interaction.respond(completions);
+        await interaction.respond(completions.slice(0, 20));
     }
 }
