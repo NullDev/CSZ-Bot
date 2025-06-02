@@ -1,8 +1,9 @@
-import { describe, test, beforeEach } from "node:test";
+import { describe, test } from "node:test";
 
 import { expect } from "expect";
 
-import createDatabase from "@/storage/db/database-test-init.js";
+import { createDatabase, closeDatabase } from "@/storage/db/database-test-init.js";
+import defer from "@/utils/defer.js";
 
 import db from "@db";
 
@@ -13,9 +14,11 @@ describe("smoke", () => {
 });
 
 describe("database smoke", () => {
-    beforeEach(createDatabase);
-
     test("does database work?", async () => {
+        // TODO: Check if there is a builtin way of handling DB lifecycle
+        await createDatabase();
+        await using _ = defer(closeDatabase);
+
         const res = await db()
             .insertInto("birthdays")
             .values({
