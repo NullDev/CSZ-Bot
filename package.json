@@ -6,14 +6,14 @@
     "module": "src/app.ts",
     "type": "module",
     "scripts": {
-        "start": "tsx src/app.ts",
-        "test": "tsx --test && tsc",
+        "start": "tsx --require ./src/polyfills.ts src/app.ts",
+        "test": "tsx --require ./src/polyfills.ts --test && tsc",
         "ci": "biome ci ./src",
         "format": "biome format --write ./src",
         "lint": "biome lint ./src",
         "lint:fix": "biome lint --write ./src && biome check --write ./src",
         "lint:fix:unsafe": "biome lint --write --unsafe ./src && biome check --write --unsafe ./src",
-        "watch": "tsx --watch src/app.ts"
+        "watch": "tsx --require ./src/polyfills.ts --watch src/app.ts"
     },
     "repository": {
         "type": "git",
