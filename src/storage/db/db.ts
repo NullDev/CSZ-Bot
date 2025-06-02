@@ -8,6 +8,7 @@ import { captureException, startInactiveSpan } from "@sentry/node";
 
 import type { Database } from "./model.js";
 import datePlugin from "./date-plugin.js";
+import { SqliteBooleanPlugin } from "./boolean-plugin.js";
 import assertNever from "@/utils/assertNever.js";
 import log from "@log";
 
@@ -22,7 +23,7 @@ export async function connectToDb(databasePath: string) {
 
     const nativeDb = new SQLite(databasePath);
     const db = new Kysely<Database>({
-        plugins: [datePlugin],
+        plugins: [datePlugin, new SqliteBooleanPlugin()],
         dialect: new SqliteDialect({
             database: nativeDb,
         }),

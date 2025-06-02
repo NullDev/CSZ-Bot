@@ -43,12 +43,13 @@ describe("database smoke", () => {
         // TODO: Check if there is a builtin way of handling DB lifecycle
         await createDatabase();
         await using _ = defer(closeDatabase);
+
         await db()
             .insertInto("emoteUse")
             .values({
-                channelId: "0",
-                emoteId: 0,
-                messageGuildId: "0",
+                channelId: "13",
+                emoteId: 37,
+                messageGuildId: "42",
                 isReaction: false,
             })
             .execute();
