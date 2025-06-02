@@ -58,8 +58,5 @@
     "trustedDependencies": [
         "@biomejs/biome",
         "lefthook"
-    ],
-    "engines": {
-        "bun": ">=1.1.0"
-    }
+    ]
 }
