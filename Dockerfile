@@ -2,7 +2,9 @@
 # check=error=true
 
 FROM node:alpine AS runtime-dependencies
+
     WORKDIR /app
+    RUN apk add --no-cache python3
 
     # TODO: Use --mount=type=bind or secret for this?
     RUN echo "@jsr:registry=https://npm.jsr.io" >> .npmrc
