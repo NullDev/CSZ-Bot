@@ -31,7 +31,7 @@ Du hast 2 Optionen: [Lokale installation](#lokale-installation) und [GitHub Code
 
 ### Lokale Installation
 
-<sub>bun Version: >=1.irgendwas</sub>
+<sub>node Version: >=24</sub>
 
 1. Terminal aufmachen und dorthin navigieren, wo man es downloaden möchte
 2. Sichergehen, dass [bun](https://bun.sh) installiert ist. Teste mit: `bun --version`. Wenn es eine Versionsnummer zurückgibt, ist bun installiert.
