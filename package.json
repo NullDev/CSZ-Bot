@@ -6,14 +6,14 @@
     "module": "src/app.ts",
     "type": "module",
     "scripts": {
-        "start": "bun src/app.ts",
-        "test": "bun test && tsc",
+        "start": "tsx src/app.ts",
+        "test": "tsx --test && tsc",
         "ci": "biome ci ./src",
         "format": "biome format --write ./src",
         "lint": "biome lint ./src",
         "lint:fix": "biome lint --write ./src && biome check --write ./src",
         "lint:fix:unsafe": "biome lint --write --unsafe ./src && biome check --write --unsafe ./src",
-        "watch": "bun --watch src/app.ts"
+        "watch": "tsx --watch src/app.ts"
     },
     "repository": {
         "type": "git",
