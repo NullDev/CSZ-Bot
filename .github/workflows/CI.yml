@@ -25,9 +25,10 @@ jobs:
         show-progress: false
         fetch-depth: 0
 
-    - uses: oven-sh/setup-bun@v2
+    - uses: actions/setup-node@v4
       with:
-        bun-version: latest
+        node-version: 24.x
+        cache: npm
 
     - run: npm ci
     - run: npm run ci

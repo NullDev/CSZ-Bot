@@ -76,23 +76,22 @@ $EDITOR config.json
 
 Mit Hot-Reload:
 ```sh
-bun watch
+npm run watch
 ```
 
 Ohne Hot-Reload:
 ```sh
-bun start
+npm start
 ```
 
 ### Housekeeping
 Formatieren und Linten passiert durch lefthook automatisch beim Committen/Pushen. Manuell kannst du das machen:
-- Formatieren: `bun format`
-- Linten: `bun lint`
-- Fixbare Linter-Fehler automatisch fixen: `bun lint:fix`
-  - Fixbare, aber möglicherweise falsche Fixes anwenden: `bun lint:fix:unsafe`
-- CI-Checks lokal laufen lassen: `bun ci`
-- Unit-Tests ausführen: `bun test`
-    - Nur Tests, die auf ein Pattern matchen: `bun test <pattern>` (z. B. `bun test smoke`)
+- Formatieren: `npm run format`
+- Linten: `npm run lint`
+- Fixbare Linter-Fehler automatisch fixen: `npm run lint:fix`
+  - Fixbare, aber möglicherweise falsche Fixes anwenden: `npm run lint:fix:unsafe`
+- CI-Checks lokal laufen lassen: `npm run ci`
+- Unit-Tests ausführen: `npm test`
 
 ## ❄ Nix
 Entweder via `nix-shell` oder `nix develop` letzteres benötigt Nix-Flake support.

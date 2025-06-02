@@ -15,14 +15,13 @@
       {
         devShell = pkgs.mkShell {
           buildInputs = with pkgs; [
-            bun
             nixpkgs-fmt
             pixman
             pkg-config
             cairo
             pango
             biome
-            nodejs_22
+            nodejs_24
             typescript
           ] ++ lib.optionals stdenv.isDarwin (with darwin.apple_sdk.frameworks; [
             CoreText
