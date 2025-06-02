@@ -3,7 +3,7 @@ import {
     OperationNodeTransformer,
     type PluginTransformQueryArgs,
     type PluginTransformResultArgs,
-    PrimitiveValueListNode,
+    type PrimitiveValueListNode,
     type QueryResult,
     type RootOperationNode,
     type UnknownRow,

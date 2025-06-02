@@ -1,7 +1,6 @@
 import {
     type CommandInteraction,
     type GuildMember,
-    MessageFlags,
     SlashCommandBuilder,
     SlashCommandStringOption,
     SlashCommandUserOption,
