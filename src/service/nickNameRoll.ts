@@ -1,4 +1,4 @@
-import * as sentry from "@sentry/bun";
+import * as sentry from "@sentry/node";
 
 import * as nickName from "@/storage/nickName.js";
 import { randomEntry } from "@/service/random.js";

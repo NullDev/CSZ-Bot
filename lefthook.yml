@@ -2,16 +2,16 @@
 pre-push:
   commands:
     lint:
-      run: bun run lint
+      run: npm run lint
     test:
-      run: bun run test
+      run: npm run test
 
 pre-commit:
   parallel: true
   commands:
     format:
       glob: "*.{js,ts}"
-      run: bun run format --staged
+      run: npm run format -- --staged
       stage_fixed: true
 
 skip_output:

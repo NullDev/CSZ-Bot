@@ -1,4 +1,4 @@
-import { Temporal } from "@js-temporal/polyfill"; // TODO: Remove once bun ships temporal
+import { Temporal } from "@js-temporal/polyfill"; // TODO: Remove once Node.js ships temporal
 import type { User } from "discord.js";
 
 import type { LauscherRegistration, LauscherSpotifyLogEntry } from "@/storage/db/model.js";

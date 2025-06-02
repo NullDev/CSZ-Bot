@@ -1,9 +1,8 @@
 import { connectToDb, disconnectFromDb } from "./db.js";
 
-export default async function createDatabase() {
+export async function createDatabase() {
     await connectToDb(":memory:");
-
-    return async () => {
-        await disconnectFromDb();
-    };
+}
+export async function closeDatabase() {
+    await disconnectFromDb();
 }

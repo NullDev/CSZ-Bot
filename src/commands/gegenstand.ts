@@ -10,7 +10,7 @@ import {
     SlashCommandStringOption,
     SlashCommandSubcommandBuilder,
 } from "discord.js";
-import * as sentry from "@sentry/bun";
+import * as sentry from "@sentry/node";
 
 import type { BotContext } from "@/context.js";
 import type { ApplicationCommand } from "@/commands/command.js";

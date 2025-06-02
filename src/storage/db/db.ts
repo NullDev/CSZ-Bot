@@ -1,11 +1,10 @@
-import { Database as SqliteDatabase } from "bun:sqlite";
 import { fileURLToPath } from "node:url";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
 
-import { FileMigrationProvider, Kysely, Migrator } from "kysely";
-import { captureException, startInactiveSpan } from "@sentry/bun";
-import { BunSqliteDialect } from "kysely-bun-sqlite";
+import { FileMigrationProvider, SqliteDialect, Kysely, Migrator } from "kysely";
+import SQLite from "better-sqlite3";
+import { captureException, startInactiveSpan } from "@sentry/node";
 
 import type { Database } from "./model.js";
 import datePlugin from "./date-plugin.js";
@@ -21,10 +20,10 @@ export async function connectToDb(databasePath: string) {
         return;
     }
 
-    const nativeDb = new SqliteDatabase(databasePath);
+    const nativeDb = new SQLite(databasePath);
     const db = new Kysely<Database>({
         plugins: [datePlugin],
-        dialect: new BunSqliteDialect({
+        dialect: new SqliteDialect({
             database: nativeDb,
         }),
         log: e => {
@@ -66,7 +65,7 @@ export async function connectToDb(databasePath: string) {
 
     log.info("Connected to database.");
 
-    nativeDb.query("PRAGMA foreign_keys = ON");
+    nativeDb.pragma("foreign_keys = ON");
 
     await runMigrationsIfNeeded(db);
 

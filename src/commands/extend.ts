@@ -1,5 +1,5 @@
 import { type APIEmbedField, EmbedBuilder, type Message } from "discord.js";
-import * as sentry from "@sentry/bun";
+import * as sentry from "@sentry/node";
 
 import type { MessageCommand } from "@/commands/command.js";
 import type { BotContext } from "@/context.js";

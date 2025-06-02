@@ -6,14 +6,14 @@
     "module": "src/app.ts",
     "type": "module",
     "scripts": {
-        "start": "bun src/app.ts",
-        "test": "bun test && tsc",
+        "start": "tsx --require ./src/polyfills.ts src/app.ts",
+        "test": "tsx --require ./src/polyfills.ts --test && tsc",
         "ci": "biome ci ./src",
         "format": "biome format --write ./src",
         "lint": "biome lint ./src",
         "lint:fix": "biome lint --write ./src && biome check --write ./src",
         "lint:fix:unsafe": "biome lint --write --unsafe ./src && biome check --write --unsafe ./src",
-        "watch": "bun --watch src/app.ts"
+        "watch": "tsx --require ./src/polyfills.ts --watch src/app.ts"
     },
     "repository": {
         "type": "git",
@@ -30,9 +30,10 @@
         "@js-temporal/polyfill": "^0.5.1",
         "@napi-rs/canvas": "0.1.70",
         "@resvg/resvg-js": "^2.6.2",
-        "@sentry/bun": "^9.24.0",
+        "@sentry/node": "^9.24.0",
         "@spotify/web-api-ts-sdk": "^1.2.0",
         "@std/jsonc": "npm:@jsr/std__jsonc@^1.0.2",
+        "better-sqlite3": "^11.10.0",
         "chrono-node": "^2.8.2",
         "croner": "^9.0.0",
         "discord.js": "^14.19.3",
@@ -40,19 +41,20 @@
         "graphviz-wasm": "^3.0.2",
         "jsdom": "^26.1.0",
         "kysely": "^0.28.2",
-        "kysely-bun-sqlite": "^0.4.0",
         "libsodium-wrappers": "^0.7.15",
         "pino": "^9.7.0",
+        "pino-pretty": "^13.0.0",
         "splid-js": "^1.5.2",
-        "urlpattern-polyfill": "^10.1.0"
+        "tsx": "^4.19.4"
     },
     "devDependencies": {
         "@biomejs/biome": "^2.0.0-beta.5",
-        "@types/bun": "^1.2.15",
+        "@types/better-sqlite3": "^7.6.13",
         "@types/jsdom": "^21.1.7",
+        "@types/node": "^22.15.29",
         "@types/node-cron": "^3.0.11",
+        "expect": "^30.0.0-beta.3",
         "lefthook": "^1.11.13",
-        "pino-pretty": "^13.0.0",
         "typescript": "^5.8.3"
     },
     "trustedDependencies": [
@@ -60,6 +62,6 @@
         "lefthook"
     ],
     "engines": {
-        "bun": ">=1.1.0"
+      "node": ">=24.1.0"
     }
 }

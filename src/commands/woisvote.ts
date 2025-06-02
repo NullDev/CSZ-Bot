@@ -1,4 +1,4 @@
-import { Temporal } from "@js-temporal/polyfill"; // TODO: Remove once bun ships temporal
+import { Temporal } from "@js-temporal/polyfill"; // TODO: Remove once Node.js ships temporal
 
 import {
     type CommandInteraction,

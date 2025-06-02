@@ -11,7 +11,7 @@ import {
     REST,
     Routes,
 } from "discord.js";
-import * as sentry from "@sentry/bun";
+import * as sentry from "@sentry/node";
 
 /**
  * Completely new bullish command handler it unifies slash commands and
