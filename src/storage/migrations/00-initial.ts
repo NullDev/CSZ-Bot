@@ -99,10 +99,15 @@ export async function up(db: Kysely<any>) {
         updatedAt DATETIME NOT NULL
     );
     `.execute(db);
+
+    // addedByUserId and description did not actually exist, but later migrations assumed it
+    // and other SQLite engines throw errors
     await sql`
     CREATE TABLE IF NOT EXISTS AustrianTranslations (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         german VARCHAR(255) NOT NULL,
+        addedByUserId VARCHAR(255) NULL,
+        description VARCHAR(255) NULL,
         austrian VARCHAR(255) NOT NULL UNIQUE,
         createdAt DATETIME NOT NULL,
         updatedAt DATETIME NOT NULL
