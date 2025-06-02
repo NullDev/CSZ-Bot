@@ -38,4 +38,19 @@ describe("database smoke", () => {
         const res2 = await db().selectFrom("birthdays").selectAll().executeTakeFirstOrThrow();
         expect(res).toStrictEqual(res2);
     });
+
+    test("booleans supported?", async () => {
+        // TODO: Check if there is a builtin way of handling DB lifecycle
+        await createDatabase();
+        await using _ = defer(closeDatabase);
+        await db()
+            .insertInto("emoteUse")
+            .values({
+                channelId: "0",
+                emoteId: 0,
+                messageGuildId: "0",
+                isReaction: false,
+            })
+            .execute();
+    });
 });
