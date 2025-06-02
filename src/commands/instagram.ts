@@ -34,7 +34,7 @@ export default class InstagramLink implements SpecialCommand {
     }
 
     static extractLinks(message: string): string[] {
-        // TODO: Refactor this to URLPattern once Node.js ships with it:
+        // Maybe this API works better:
         // https://developer.mozilla.org/en-US/docs/Web/API/URL_Pattern_API
         const res = message.matchAll(instagramOptions.uriPattern);
         return [...res].map(match => match[0]);

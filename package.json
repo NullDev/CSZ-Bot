@@ -44,8 +44,7 @@
         "libsodium-wrappers": "^0.7.15",
         "pino": "^9.7.0",
         "splid-js": "^1.5.2",
-        "tsx": "^4.19.4",
-        "urlpattern-polyfill": "^10.1.0"
+        "tsx": "^4.19.4"
     },
     "devDependencies": {
         "@biomejs/biome": "^2.0.0-beta.5",
