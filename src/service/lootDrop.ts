@@ -13,7 +13,7 @@ import {
     MessageFlags,
 } from "discord.js";
 import { Temporal } from "@js-temporal/polyfill";
-import * as sentry from "@sentry/bun";
+import * as sentry from "@sentry/node";
 
 import type { BotContext } from "@/context.js";
 import type { Loot, LootId } from "@/storage/db/model.js";

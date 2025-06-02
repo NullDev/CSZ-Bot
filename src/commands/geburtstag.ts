@@ -1,5 +1,5 @@
 import { type CommandInteraction, type CacheType, SlashCommandBuilder } from "discord.js";
-import * as sentry from "@sentry/bun";
+import * as sentry from "@sentry/node";
 
 import type { ApplicationCommand } from "@/commands/command.js";
 import log from "@log";

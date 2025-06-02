@@ -2,7 +2,7 @@
 // https://rapidapi.com/ugoBoy/api/social-media-video-downloader
 // We're using the free tier, which has 150 videos per month
 
-import * as sentry from "@sentry/bun";
+import * as sentry from "@sentry/node";
 
 import type { BotContext } from "@/context.js";
 

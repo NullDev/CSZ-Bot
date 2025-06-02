@@ -11,7 +11,7 @@ import {
     SlashCommandUserOption,
     userMention,
 } from "discord.js";
-import * as sentry from "@sentry/bun";
+import * as sentry from "@sentry/node";
 
 import type { BotContext } from "@/context.js";
 import type { ApplicationCommand, AutocompleteCommand } from "@/commands/command.js";

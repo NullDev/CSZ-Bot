@@ -11,7 +11,9 @@ import log from "@log";
 const configPath = path.resolve("config.json");
 
 export async function readConfig() {
-    if (!(await fs.exists(configPath))) {
+    try {
+        await fs.stat(configPath);
+    } catch {
         log.error(
             "Config does not exist. Copy the config template and configure it according to the README:",
         );
