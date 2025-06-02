@@ -34,8 +34,8 @@ Du hast 2 Optionen: [Lokale installation](#lokale-installation) und [GitHub Code
 <sub>node Version: >=24</sub>
 
 1. Terminal aufmachen und dorthin navigieren, wo man es downloaden möchte
-2. Sichergehen, dass [bun](https://bun.sh) installiert ist. Teste mit: `bun --version`. Wenn es eine Versionsnummer zurückgibt, ist bun installiert.
- **Wenn nicht**, bun [hier](https://bun.sh) runterladen.
+2. Sichergehen, dass [Node.js](https://nodejs.org) installiert ist. Teste mit: `node --version`. Wenn es eine Versionsnummer zurückgibt, ist Node.js installiert.
+ **Wenn nicht**, Node.js [hier](https://nodejs.org) runterladen.
 3. Repository klonen und hinein navigieren. Wenn Git installiert ist:
 ```sh
 git clone https://github.com/NullDev/CSZ-Bot.git && cd $_
@@ -44,7 +44,7 @@ Wenn nicht, [hier](https://github.com/NullDev/CSZ-Bot/archive/master.zip) herunt
 
 4. Dependencies installieren: <br>
 ```sh
-bun i
+npm ci
 ```
 
 5. Weiter machen mit den [gemeinsamen Schritten](#gemeinsame-schritte) (siehe unten)
