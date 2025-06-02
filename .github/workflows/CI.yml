@@ -29,9 +29,9 @@ jobs:
       with:
         bun-version: latest
 
-    - run: bun install
-    - run: bun ci
-    - run: bun run test
+    - run: npm ci
+    - run: npm run ci
+    - run: npm test
 
   build:
     name: Build

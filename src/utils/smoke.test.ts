@@ -1,4 +1,6 @@
-import { describe, expect, test, beforeEach } from "bun:test";
+import { describe, test, beforeEach } from "node:test";
+
+import { expect } from "expect";
 
 import createDatabase from "@/storage/db/database-test-init.js";
 
