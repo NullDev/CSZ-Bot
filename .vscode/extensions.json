@@ -3,7 +3,7 @@
         "editorconfig.editorconfig",
         "streetsidesoftware.code-spell-checker",
         "streetsidesoftware.code-spell-checker-german",
-        "nicolo-ribaudo.vscode-mf2",
+        "TypeScriptTeam.native-preview",
         "biomejs.biome"
     ]
 }

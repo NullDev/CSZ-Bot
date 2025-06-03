@@ -7,7 +7,7 @@
     "type": "module",
     "scripts": {
         "start": "tsx --require ./src/polyfills.ts src/app.ts",
-        "test": "tsx --require ./src/polyfills.ts --test && tsc",
+        "test": "tsx --require ./src/polyfills.ts --test && tsgo",
         "ci": "biome ci ./src",
         "format": "biome format --write ./src",
         "lint": "biome lint ./src",
@@ -30,7 +30,7 @@
         "@js-temporal/polyfill": "^0.5.1",
         "@napi-rs/canvas": "0.1.70",
         "@resvg/resvg-js": "^2.6.2",
-        "@sentry/node": "^9.24.0",
+        "@sentry/node": "^9.25.0",
         "@spotify/web-api-ts-sdk": "^1.2.0",
         "@std/jsonc": "npm:@jsr/std__jsonc@^1.0.2",
         "better-sqlite3": "^11.10.0",
@@ -53,15 +53,15 @@
         "@types/jsdom": "^21.1.7",
         "@types/node": "^22.15.29",
         "@types/node-cron": "^3.0.11",
+        "@typescript/native-preview": "^7.0.0-dev.20250603.1",
         "expect": "^30.0.0-beta.3",
-        "lefthook": "^1.11.13",
-        "typescript": "^5.8.3"
+        "lefthook": "^1.11.13"
     },
     "trustedDependencies": [
         "@biomejs/biome",
         "lefthook"
     ],
     "engines": {
-      "node": ">=24.1.0"
+        "node": ">=24.1.0"
     }
 }
