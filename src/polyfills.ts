@@ -35,3 +35,5 @@ if (typeof Map.prototype.getOrInsertComputed === "undefined") {
         return this.get(key);
     };
 }
+
+export {};
