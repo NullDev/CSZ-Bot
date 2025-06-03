@@ -7,7 +7,7 @@
     "type": "module",
     "scripts": {
         "start": "tsx --require ./src/polyfills.ts src/app.ts",
-        "test": "tsx --require ./src/polyfills.ts --test && tsc",
+        "test": "tsx --require ./src/polyfills.ts --test && tsgo",
         "ci": "biome ci ./src",
         "format": "biome format --write ./src",
         "lint": "biome lint ./src",
