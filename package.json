@@ -33,6 +33,7 @@
         "@sentry/node": "^9.24.0",
         "@spotify/web-api-ts-sdk": "^1.2.0",
         "@std/jsonc": "npm:@jsr/std__jsonc@^1.0.2",
+        "@typescript/native-preview": "^7.0.0-dev.20250603.1",
         "better-sqlite3": "^11.10.0",
         "chrono-node": "^2.8.2",
         "croner": "^9.0.0",
@@ -62,6 +63,6 @@
         "lefthook"
     ],
     "engines": {
-      "node": ">=24.1.0"
+        "node": ">=24.1.0"
     }
 }
