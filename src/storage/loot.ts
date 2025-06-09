@@ -340,6 +340,7 @@ export async function addLootAttributeIfNotPresent(
 ) {
     return await ctx
         .insertInto("lootAttribute")
+        .orIgnore()
         .values({
             lootId,
             attributeKindId: attributeTemplate.id,
@@ -349,7 +350,6 @@ export async function addLootAttributeIfNotPresent(
             color: attributeTemplate.color,
             deletedAt: null,
         })
-        .onConflict(oc => oc.doNothing())
         .returningAll()
         .executeTakeFirstOrThrow();
 }
