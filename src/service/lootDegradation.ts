@@ -84,7 +84,9 @@ export async function exposeWithRadiation(context: BotContext) {
 }
 
 export async function runHalfLife(context: BotContext) {
-    log.info("Running half life");
+    const logger = log.child({}, { msgPrefix: "runHalfLife" });
+
+    logger.info("Running half life");
 
     const allWaste = await lootService.getLootsByKindId(LootKindId.RADIOACTIVE_WASTE);
 
@@ -92,25 +94,29 @@ export async function runHalfLife(context: BotContext) {
     // We don't do /2 straigt away, so we can roll this out more slowly initially. We can increase this to 2 once we got this number down in general
     // Also, consider aligning this with the drop rate of radioactive waste, so we have that balanced
     const targetWasteCount = Math.ceil(allWaste.length / 1.1);
+    logger.info({ targetWasteCount }, "targetWasteCount");
 
     if (targetWasteCount >= allWaste.length) {
+        logger.info("targetWasteCount >= allWaste.length, nothing to do");
         return;
     }
 
     const wasteToRemove = allWaste.sort(() => Math.random()).slice(targetWasteCount);
     if (wasteToRemove.length === 0) {
+        logger.info("No waste to remove, nothing to do");
         return;
     }
 
     const leadTemplate = resolveLootTemplate(LootKindId.BLEI);
     if (!leadTemplate) {
-        log.error("Could not resolve loot template for lead.");
+        logger.error("Could not resolve loot template for lead.");
         return;
     }
 
     const replacedStats = new Map<Snowflake, number>();
 
     for (const l of wasteToRemove) {
+        logger.info({ lootId: l.id, winnerId: l.winnerId }, "Replacing loot");
         const replaced = await lootService.replaceLoot(
             l.id,
             {
