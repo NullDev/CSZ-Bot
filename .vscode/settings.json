@@ -7,7 +7,7 @@
         "*.ts": "$(capture).test.ts,$(capture).d.ts"
     },
     "files.eol": "\n",
-    "typescript.experimental.useTsgo": true,
+    "typescript.experimental.useTsgo": false,
     "cSpell.language": "de,en",
     "editor.formatOnSaveMode": "modificationsIfAvailable",
     "files.associations": {
