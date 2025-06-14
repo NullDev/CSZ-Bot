@@ -1,4 +1,4 @@
-import { type Snowflake, userMention } from "discord.js";
+import { type BaseMessageOptions, type Snowflake, userMention } from "discord.js";
 import type { BotContext } from "@/context.js";
 
 import * as time from "@/utils/time.js";
@@ -137,24 +137,19 @@ export async function runHalfLife(context: BotContext) {
         replacedStats.set(replaced.winnerId, replacedStats.getOrInsert(replaced.winnerId, 0) + 1);
     }
 
-    const listFormatter = new Intl.ListFormat("de", {
-        style: "short",
-        type: "conjunction",
-    });
+    logger.info({ replacedStats }, "replacedStats");
 
-    const decayStats = replacedStats
-        .entries()
-        .toArray()
-        .map(([user, count]) => `${count}x von ${userMention(user)}`);
+    type Embed = NonNullable<BaseMessageOptions["embeds"]>[number];
 
-    logger.info({ decayStats }, "decayStats");
+    const embeds: Embed[] = [];
+    for (const [user, count] of replacedStats.entries()) {
+        embeds.push({
+            description: `:radioactive: ${count}x Müll von ${userMention(user)} ist zu einem Stück Blei zerfallen. :radioactive:`,
+        });
+    }
 
     await context.textChannels.hauptchat.send({
-        embeds: [
-            {
-                description: `:radioactive: Der Müll ${decayStats.length === 1 ? "eines Users" : "einiger User"} ist zu einem Stück Blei zerfallen: ${listFormatter.format(decayStats)}. :radioactive:`,
-            },
-        ],
+        embeds,
         allowedMentions: {
             users: replacedStats.keys().toArray(),
         },
