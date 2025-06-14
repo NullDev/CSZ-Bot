@@ -155,5 +155,8 @@ export async function runHalfLife(context: BotContext) {
                 description: `:radioactive: Der Müll ${decayStats.length === 1 ? "eines Users" : "einiger User"} ist zu einem Stück Blei zerfallen: ${listFormatter.format(decayStats)}. :radioactive:`,
             },
         ],
+        allowedMentions: {
+            users: replacedStats.keys().toArray(),
+        },
     });
 }
