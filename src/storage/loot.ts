@@ -333,12 +333,15 @@ export async function getLootAttributes(lootId: LootId, ctx = db()) {
         .execute();
 }
 
+/**
+ * Returns `true` if the attribute was added.
+ */
 export async function addLootAttributeIfNotPresent(
     lootId: LootId,
     attributeTemplate: LootAttributeTemplate,
     ctx = db(),
 ) {
-    return await ctx
+    const r = await ctx
         .insertInto("lootAttribute")
         .orIgnore()
         .values({
@@ -350,6 +353,6 @@ export async function addLootAttributeIfNotPresent(
             color: attributeTemplate.color,
             deletedAt: null,
         })
-        .returningAll()
-        .executeTakeFirstOrThrow();
+        .execute();
+    return r.length > 0;
 }

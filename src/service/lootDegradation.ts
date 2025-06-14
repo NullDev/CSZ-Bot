@@ -63,11 +63,11 @@ export async function exposeWithRadiation(context: BotContext) {
         return;
     }
 
-    const attribute = await lootService.addLootAttributeIfNotPresent(
+    const attributeAdded = await lootService.addLootAttributeIfNotPresent(
         targetLoot.id,
         LootAttributeKindId.RADIOACTIVE,
     );
-    if (!attribute) {
+    if (!attributeAdded) {
         return;
     }
 
