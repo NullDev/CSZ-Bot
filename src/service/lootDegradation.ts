@@ -84,7 +84,7 @@ export async function exposeWithRadiation(context: BotContext) {
 }
 
 export async function runHalfLife(context: BotContext) {
-    const logger = log.child({}, { msgPrefix: "runHalfLife" });
+    const logger = log.child({}, { msgPrefix: "[runHalfLife] " });
 
     logger.info("Running half life");
 
