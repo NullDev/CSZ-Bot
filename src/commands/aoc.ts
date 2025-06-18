@@ -134,7 +134,7 @@ export async function publishAocLeaderBoard(context: BotContext) {
     const channel = targetChannel as discord.ThreadChannel;
     const leaderBoard = await getLeaderBoard(aocConfig.leaderBoardJsonUrl, aocConfig.sessionToken);
     const embed = createEmbedFromLeaderBoard(aocConfig.userMap, leaderBoard, "local_score");
-    return channel.send({ embeds: [embed] });
+    await channel.send({ embeds: [embed] });
 }
 
 export default class AoCCommand implements ApplicationCommand {
