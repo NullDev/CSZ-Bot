@@ -1,7 +1,8 @@
-import type { Snowflake } from "discord.js";
-import type { ColumnType, Generated, GeneratedAlways, Insertable, Selectable } from "kysely";
+import type {Snowflake} from "discord.js";
+import type {ColumnType, Generated, GeneratedAlways, Insertable, Selectable} from "kysely";
 
-import type { Radius } from "@/commands/penis.js";
+import type {Radius} from "@/commands/penis.js";
+
 
 export interface Database {
     birthdays: BirthdayTable;
@@ -26,6 +27,7 @@ export interface Database {
     emoteUse: EmoteUseTable;
     fighthistory: FightHistoryTable;
     fightinventory: FightInventoryTable;
+    position: MapPositonTable;
 }
 
 export type OneBasedMonth = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
@@ -303,4 +305,11 @@ interface FightInventoryTable {
     userid: Snowflake;
     lootId: LootId;
     equippedSlot: string;
+}
+
+export interface MapPositonTable {
+    id: GeneratedAlways<number>;
+    userid: Snowflake;
+    x: number,
+    y: number,
 }
