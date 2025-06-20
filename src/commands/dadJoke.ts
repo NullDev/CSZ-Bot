@@ -4,7 +4,7 @@ import type { ProcessableMessage } from "@/service/command.js";
 import type { SpecialCommand } from "@/commands/command.js";
 import type { BotContext } from "@/context.js";
 import { substringAfter } from "@/utils/stringUtils.js";
-import { randomEntry } from "@/utils/arrayUtils.js";
+import { randomEntry } from "@/service/random.js";
 
 type Lang = "german" | "austrian";
 

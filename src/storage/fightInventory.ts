@@ -9,8 +9,8 @@ import { deleteLoot } from "@/storage/loot.js";
 
 export async function getFightInventoryUnsorted(userId: User["id"], ctx = db()) {
     return await ctx
-        .selectFrom("fightinventory")
-        .where("userid", "=", userId)
+        .selectFrom("fightInventory")
+        .where("userId", "=", userId)
         .selectAll()
         .execute();
 }
@@ -40,8 +40,8 @@ export async function getGameTemplate(
 
 export async function getItemsByType(userId: User["id"], fightItemType: string, ctx = db()) {
     return await ctx
-        .selectFrom("fightinventory")
-        .where("userid", "=", userId)
+        .selectFrom("fightInventory")
+        .where("userId", "=", userId)
         .where("equippedSlot", "=", fightItemType)
         .selectAll()
         .execute();
@@ -54,8 +54,8 @@ export async function removeItemsAfterFight(userId: User["id"], ctx = db()) {
             await deleteLoot(item.lootId, ctx);
         }
         await ctx
-            .deleteFrom("fightinventory")
-            .where("userid", "=", userId)
+            .deleteFrom("fightInventory")
+            .where("userId", "=", userId)
             .where("equippedSlot", "=", "item")
             .execute();
     });
@@ -83,13 +83,13 @@ export async function equipItembyLoot(
                 ctx,
             );
             unequippeditems.push(unequipitem?.displayName ?? String(equippedStuff[i].lootId));
-            await ctx.deleteFrom("fightinventory").where("id", "=", equippedStuff[i].id).execute();
+            await ctx.deleteFrom("fightInventory").where("id", "=", equippedStuff[i].id).execute();
         }
 
         await ctx
-            .insertInto("fightinventory")
+            .insertInto("fightInventory")
             .values({
-                userid: userId,
+                userId: userId,
                 lootId: loot.id,
                 equippedSlot: itemType,
             })

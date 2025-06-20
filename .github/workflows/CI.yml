@@ -87,7 +87,7 @@ jobs:
       uses: docker/build-push-action@v6
       id: build
       with:
-        push: true
+        push: ${{ !github.event.repository.fork }}
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
         build-args: |
@@ -100,6 +100,8 @@ jobs:
   deploy-e2e:
     name: Deploy e2e
     runs-on: ubuntu-latest
+
+    if: ${{ !github.event.repository.fork }}
 
     needs: [ build ]
 
@@ -139,7 +141,7 @@ jobs:
         echo "args=$args" >> "$GITHUB_OUTPUT"
 
     - name: Deploy CSZ Bot
-      uses: appleboy/ssh-action@029f5b4aeeeb58fdfe1410a5d17f967dacf36262
+      uses: appleboy/ssh-action@7eaf76671a0d7eec5d98ee897acda4f968735a17
       env:
         BOT_HOME_PATH: /home/csc
         EPHEMERAL_BOT_CONFIG: ${{ steps.config.outputs.content }}
@@ -154,10 +156,10 @@ jobs:
         script: ${{ env.BOT_HOME_PATH }}/.infra/deploy-ephemeral.sh
 
     - name: Comment PR
-      uses: thollander/actions-comment-pull-request@v2
+      uses: thollander/actions-comment-pull-request@v3
       if: ${{ github.event_name == 'pull_request' }}
       with:
-        comment_tag: discord-invite
+        comment-tag: discord-invite
         message: |
           Hallo, hier kannst du jetzt deine tolle neue Funktion testen: https://discord.gg/pJjfF6n2ec
 

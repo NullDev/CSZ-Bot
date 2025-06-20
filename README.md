@@ -89,6 +89,7 @@ Formatieren und Linten passiert durch lefthook automatisch beim Committen/Pushen
 - Formatieren: `bun format`
 - Linten: `bun lint`
 - Fixbare Linter-Fehler automatisch fixen: `bun lint:fix`
+  - Fixbare, aber möglicherweise falsche Fixes anwenden: `bun lint:fix:unsafe`
 - CI-Checks lokal laufen lassen: `bun ci`
 - Unit-Tests ausführen: `bun test`
     - Nur Tests, die auf ein Pattern matchen: `bun test <pattern>` (z. B. `bun test smoke`)

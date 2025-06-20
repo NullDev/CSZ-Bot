@@ -20,7 +20,8 @@ import type {
 } from "./db/model.js";
 
 import db from "@db";
-import type { LootAttributeKindId } from "@/service/lootData.js";
+
+import { resolveLootAttributeTemplate, type LootAttributeKindId } from "@/service/lootData.js";
 import type { Equipable } from "@/service/fightData.js";
 
 export type LootUseCommandInteraction = ChatInputCommandInteraction & {
@@ -34,10 +35,11 @@ export interface LootTemplate {
     titleText: string;
     dropDescription: string;
     infoDescription?: string;
-    emote?: string;
+    emote: string;
     excludeFromInventory?: boolean;
     effects?: string[];
     gameEquip?: Equipable;
+    initialAttributes?: LootAttributeKindId[];
     onDrop?: (
         context: BotContext,
         winner: GuildMember,
@@ -110,6 +112,13 @@ export async function createLoot(
             })
             .returningAll()
             .executeTakeFirstOrThrow();
+
+        for (const attributeId of template.initialAttributes ?? []) {
+            const attribute = resolveLootAttributeTemplate(attributeId);
+            if (!attribute) continue;
+
+            await addLootAttributeIfNotPresent(res.id, attribute, ctx);
+        }
 
         if (rarityAttribute) {
             await addLootAttributeIfNotPresent(res.id, rarityAttribute, ctx);
@@ -211,6 +220,20 @@ export async function getLootsWithAttribute(attributeKindId: number, ctx = db())
         .execute();
 }
 
+export async function transferMultipleLootToUser(
+    lootIds: readonly LootId[],
+    userId: User["id"],
+    trackPredecessor: boolean,
+    ctx = db(),
+) {
+    // SQLite does not support nested transactions, so we just don't do it xd
+    const res = [];
+    for (const id of lootIds) {
+        res.push(await transferLootToUser(id, userId, trackPredecessor, ctx));
+    }
+    return res;
+}
+
 export async function transferLootToUser(
     lootId: LootId,
     userId: User["id"],
@@ -239,11 +262,37 @@ export async function transferLootToUser(
             delete replacement.id;
         }
 
-        return await ctx
+        const newLoot = await ctx
             .insertInto("loot")
             .values(replacement)
             .returningAll()
             .executeTakeFirstOrThrow();
+
+        const oldLootAttributes = await ctx
+            .selectFrom("lootAttribute")
+            .where("lootId", "=", oldLoot.id)
+            .selectAll()
+            .execute();
+
+        if (oldLootAttributes.length > 0) {
+            const newLootAttributes = oldLootAttributes.map(attr => ({
+                ...attr,
+                id: undefined,
+                lootId: newLoot.id,
+            }));
+
+            const inserted = await ctx
+                .insertInto("lootAttribute")
+                .values(newLootAttributes)
+                .returningAll()
+                .execute();
+
+            if (inserted.length !== newLootAttributes.length) {
+                throw new Error("Not all attributes were inserted");
+            }
+        }
+
+        return newLoot;
     });
 }
 

@@ -46,7 +46,7 @@ export async function up(db: Kysely<any>) {
             .returningAll()
             .executeTakeFirstOrThrow();
 
-        if (lootKindId === 1 /* LootKindId.KADSE */) {
+        if (lootKindId === 1 /* LootKindId.KADSE */ || lootKindId === 36 /* LootKindId.BIBER */) {
             await db
                 .insertInto("lootAttribute")
                 .values({
@@ -64,7 +64,7 @@ export async function up(db: Kysely<any>) {
     }
 }
 
-export function createUpdatedAtTrigger(db: Kysely<any>, tableName: string) {
+function createUpdatedAtTrigger(db: Kysely<any>, tableName: string) {
     return sql
         .raw(`
     create trigger ${tableName}_updatedAt

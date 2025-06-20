@@ -1,34 +1,36 @@
+import { randomValue, type Range } from "@/service/random.js";
+
 export const fightTemplates: { [name: string]: Equipable } = {
     ayran: {
         type: "item",
-        attackModifier: { min: 2, max: 3 },
+        attackModifier: { min: 2, maxExclusive: 3 },
     },
     oettinger: {
         type: "item",
-        attackModifier: { min: 1, max: 5 },
-        defenceModifier: { min: -3, max: 0 },
+        attackModifier: { min: 1, maxExclusive: 5 },
+        defenseModifier: { min: -3, maxExclusive: 0 },
     },
     thunfischshake: {
         type: "item",
-        attackModifier: { min: 3, max: 5 },
+        attackModifier: { min: 3, maxExclusive: 5 },
     },
     nachthemd: {
         type: "armor",
         health: 50,
-        defence: { min: 2, max: 5 },
+        defense: { min: 2, maxExclusive: 5 },
     },
     eierwaermer: {
         type: "armor",
         health: 30,
-        defence: { min: 3, max: 5 },
+        defense: { min: 3, maxExclusive: 5 },
     },
     dildo: {
         type: "weapon",
-        attack: { min: 3, max: 9 },
+        attack: { min: 3, maxExclusive: 9 },
     },
     messerblock: {
         type: "weapon",
-        attack: { min: 1, max: 9 },
+        attack: { min: 1, maxExclusive: 9 },
     },
 };
 export const bossMap: { [name: string]: Enemy } = {
@@ -37,7 +39,7 @@ export const bossMap: { [name: string]: Enemy } = {
         description: "",
         health: 150,
         baseDamage: 2,
-        baseDefence: 0,
+        baseDefense: 0,
         enabled: true,
         armor: {
             name: "Nachthemd",
@@ -57,7 +59,7 @@ export const bossMap: { [name: string]: Enemy } = {
         description: "",
         health: 120,
         baseDamage: 1,
-        baseDefence: 1,
+        baseDefense: 1,
         enabled: false,
         lossDescription: "",
         winDescription: "",
@@ -69,7 +71,7 @@ export const bossMap: { [name: string]: Enemy } = {
         health: 120,
         enabled: false,
         baseDamage: 1,
-        baseDefence: 1,
+        baseDefense: 1,
         lossDescription: "",
         winDescription: "",
         items: [],
@@ -81,7 +83,7 @@ export const bossMap: { [name: string]: Enemy } = {
         winDescription: "",
         health: 200,
         baseDamage: 3,
-        baseDefence: 5,
+        baseDefense: 5,
         enabled: false,
         items: [],
     },
@@ -95,7 +97,7 @@ export const bossMap: { [name: string]: Enemy } = {
         health: 350,
         enabled: false,
         baseDamage: 5,
-        baseDefence: 5,
+        baseDefense: 5,
         items: [],
     },
 };
@@ -104,7 +106,7 @@ export const baseStats = {
     description: "",
     health: 80,
     baseDamage: 1,
-    baseDefence: 0,
+    baseDefense: 0,
 };
 
 export type FightItemType = "weapon" | "armor" | "item";
@@ -118,7 +120,7 @@ export interface EquipableWeapon {
 
 export interface EquipableArmor {
     type: "armor";
-    defence: Range;
+    defense: Range;
     health: number;
 }
 
@@ -132,7 +134,7 @@ export interface BaseEntity {
     name: string;
     description: string;
     baseDamage: number;
-    baseDefence: number;
+    baseDefense: number;
 
     items: (EquipableItem & { name: string })[];
     weapon?: EquipableWeapon & { name: string };
@@ -149,17 +151,17 @@ export interface Enemy extends BaseEntity {
 
 export class Entity {
     stats: BaseEntity;
-    maxhealth: number;
-    lastattack?: number;
-    lastdefence?: number;
-    itemtext: string[] = [];
+    maxHealth: number;
+    lastAttack?: number;
+    lastDefense?: number;
+    itemText: string[] = [];
 
     constructor(entity: BaseEntity) {
         this.stats = entity;
         if (this.stats.armor?.health) {
             this.stats.health += this.stats.armor?.health;
         }
-        this.maxhealth = this.stats.health;
+        this.maxHealth = this.stats.health;
     }
 
     attack(enemy: Entity) {
@@ -173,51 +175,42 @@ export class Entity {
                 rawDamage += randomValue(value1.attackModifier);
             }
         }
-        const defence = enemy.defend();
-        const result = calcDamage(rawDamage, defence);
+        const defense = enemy.defend();
+        const result = calcDamage(rawDamage, defense);
         console.log(
             `${this.stats.name} (${this.stats.health}) hits ${enemy.stats.name} (${enemy.stats.health}) for ${result.damage} mitigated ${result.mitigated}`,
         );
         enemy.stats.health -= result.damage;
-        this.lastattack = result.rawDamage;
+        this.lastAttack = result.rawDamage;
         return result;
     }
 
     defend() {
-        let defence = this.stats.baseDefence;
-        if (this.stats.armor?.defence) {
-            defence += randomValue(this.stats.armor.defence);
+        let defense = this.stats.baseDefense;
+        if (this.stats.armor?.defense) {
+            defense += randomValue(this.stats.armor.defense);
         }
         for (const item of this.stats.items) {
-            if (item.defenceModifier) {
-                defence += randomValue(item.defenceModifier);
+            if (item.defenseModifier) {
+                defense += randomValue(item.defenseModifier);
             }
         }
-        this.lastdefence = defence;
-        return defence;
+        this.lastDefense = defense;
+        return defense;
     }
-}
-
-export interface Range {
-    min: number;
-    max: number;
 }
 
 export interface EquipableItem {
     type: "item";
     attackModifier?: Range;
-    defenceModifier?: Range;
+    defenseModifier?: Range;
     afterFight?: (scene: FightScene) => void;
     modifyAttack?: (scene: FightScene) => void;
 }
 
-function randomValue(range: Range) {
-    return Math.round(range.min + Math.random() * (range.max - range.min));
-}
-
-function calcDamage(rawDamage: number, defence: number) {
-    if (defence >= rawDamage) {
+function calcDamage(rawDamage: number, defense: number) {
+    if (defense >= rawDamage) {
         return { rawDamage: rawDamage, damage: 0, mitigated: rawDamage };
     }
-    return { rawDamage: rawDamage, damage: rawDamage - defence, mitigated: defence };
+    return { rawDamage: rawDamage, damage: rawDamage - defense, mitigated: defense };
 }

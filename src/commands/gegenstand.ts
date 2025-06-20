@@ -16,7 +16,7 @@ import type { ApplicationCommand } from "@/commands/command.js";
 import type { LootUseCommandInteraction } from "@/storage/loot.js";
 import * as lootService from "@/service/loot.js";
 import * as lootRoleService from "@/service/lootRoles.js";
-import { randomEntry } from "@/utils/arrayUtils.js";
+import { randomEntry } from "@/service/random.js";
 import { ensureChatInputCommand } from "@/utils/interactionUtils.js";
 import * as imageService from "@/service/image.js";
 
@@ -24,7 +24,7 @@ import * as lootDataService from "@/service/lootData.js";
 import { LootAttributeClassId, LootAttributeKindId, LootKindId } from "@/service/lootData.js";
 
 import log from "@log";
-import { equipItembyLoot, getFightInventoryUnsorted } from "@/storage/fightinventory.js";
+import { equipItembyLoot, getFightInventoryUnsorted } from "@/storage/fightInventory.js";
 
 export default class GegenstandCommand implements ApplicationCommand {
     name = "gegenstand";
@@ -135,14 +135,16 @@ export default class GegenstandCommand implements ApplicationCommand {
             return;
         }
 
-        // await lootService.deleteLoot(sweetContent[0].id);
-        await lootService.transferLootToUser(sweetContent[0].id, currentGuard.user, true);
-        await lootService.transferLootToUser(wasteContents[0].id, currentGuard.user, true);
+        await lootService.transferMultipleLootToUser(
+            [sweetContent[0].id, wasteContents[0].id],
+            currentGuard.user,
+            true,
+        );
 
         const messages = [
             `Du hast dem Wärter ${currentGuard} etwas Atommüll und etwas Süßes zum Naschen gegeben.`,
             `${currentGuard} hat sich über deinen Atommüll und die süßen Sachen gefreut.`,
-            `${currentGuard} hat sich gerade die hübschen Vögel angeschaut. Du konntest unbemerkt ein Fass Atommüll an im vorbei rollen und hast ihm als Geschenk etwas süßes hinterlassen.`,
+            `${currentGuard} hat sich gerade die hübschen Vögel angeschaut. Du konntest unbemerkt ein Fass Atommüll an ihm vorbei rollen und hast ihm als Geschenk etwas süßes hinterlassen.`,
         ];
 
         await interaction.reply({

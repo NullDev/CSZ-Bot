@@ -1,7 +1,6 @@
 import * as fs from "node:fs/promises";
 
 import {
-    ActionRowBuilder,
     ButtonBuilder,
     ButtonStyle,
     ChannelType,
@@ -17,11 +16,11 @@ import * as sentry from "@sentry/bun";
 
 import type { BotContext } from "@/context.js";
 import type { Loot, LootId } from "@/storage/db/model.js";
-import { randomEntry, randomEntryWeighted } from "@/utils/arrayUtils.js";
+import { randomEntry, randomEntryWeighted } from "@/service/random.js";
 
 import * as lootService from "@/service/loot.js";
 import {
-    LootAttributeKindId,
+    LootAttributeClassId,
     lootAttributeTemplates,
     LootKindId,
     lootTemplates,
@@ -130,7 +129,8 @@ export async function postLootDrop(
                 {
                     ...original,
                     description: donor
-                        ? `Das Geschenk von ${donor} verpuffte im nichts :(`
+                        ? // TODO: `Keiner wollte das Geschenk von ${donor} haben. ${donor} hat es wieder mitgenommen.`
+                          `Das Geschenk von ${donor} verpuffte im nichts :(`
                         : `Oki aber nächstes mal bitti aufmachi, sonst muss ichs wieder mitnehmi ${hamster}`,
                     footer: {
                         text: "❌ Niemand war schnell genug",
@@ -143,22 +143,17 @@ export async function postLootDrop(
         return;
     }
 
-    if (donor !== undefined && interaction.user.id === donor.id) {
-        await message.edit({
-            content: `${interaction.user} hat versucht, das Geschenki selbst zu öffnen. Das geht aber nichti ${hamster}\nDas Geschenk macht plopp und ist weg! 🎈`,
-            embeds: [],
-            components: [],
-        });
-        return;
-    }
-
     const defaultWeights = lootTemplates.map(t => t.weight);
     const { messages, weights } = await getDropWeightAdjustments(interaction.user, defaultWeights);
 
-    const rarityWeights = lootAttributeTemplates.map(a => a.initialDropWeight ?? 0);
-    const initialAttribute = randomEntryWeighted(lootAttributeTemplates, rarityWeights);
-
     const template = randomEntryWeighted(lootTemplates, weights);
+
+    const rarities = lootAttributeTemplates.filter(a => a.classId === LootAttributeClassId.RARITY);
+    const rarityWeights = rarities.map(a => a.initialDropWeight ?? 0);
+
+    const initialAttribute =
+        template.id === LootKindId.NICHTS ? null : randomEntryWeighted(rarities, rarityWeights);
+
     const claimedLoot = await lootService.createLoot(
         template,
         interaction.user,
@@ -176,8 +171,6 @@ export async function postLootDrop(
         });
         return;
     }
-
-    await awardPostDropLootAttributes(claimedLoot);
 
     await reply.delete();
 
@@ -199,8 +192,24 @@ export async function postLootDrop(
                           url: "attachment://opened.gif",
                       }
                     : undefined,
+                fields: [
+                    {
+                        name: "🎉 Ehrenwerter Empfänger",
+                        value: winner.toString(),
+                        inline: true,
+                    },
+                    ...(initialAttribute
+                        ? [
+                              {
+                                  name: "✨ Rarität",
+                                  value: `${initialAttribute.shortDisplay} ${initialAttribute.displayName}`.trim(),
+                                  inline: true,
+                              },
+                          ]
+                        : []),
+                ],
                 footer: {
-                    text: `🎉 ${winner.displayName} hat das Geschenk geöffnet\n${messages.join("\n")}`.trim(),
+                    text: messages.join("\n").trim(),
                 },
             },
         ],
@@ -262,14 +271,4 @@ async function getDropWeightAdjustments(
         messages,
         weights: newWeights,
     };
-}
-
-async function awardPostDropLootAttributes(loot: Loot) {
-    switch (loot.lootKindId) {
-        case LootKindId.KADSE:
-            await lootService.addLootAttributeIfNotPresent(loot.id, LootAttributeKindId.SWEET);
-            break;
-        default:
-            break;
-    }
 }

@@ -1,27 +1,29 @@
-import {sql, type Kysely} from "kysely";
-import {createUpdatedAtTrigger} from "@/storage/migrations/10-loot-attributes.js";
+import { sql, type Kysely } from "kysely";
 
 export async function up(db: Kysely<any>) {
     await db.schema
-        .createTable("fightinventory")
+        .createTable("fightInventory")
         .ifNotExists()
         .addColumn("id", "integer", c => c.primaryKey().autoIncrement())
-        .addColumn("userid", "text")
+        .addColumn("userId", "text")
         .addColumn("lootId", "integer", c => c.references("loot.id"))
         .addColumn("equippedSlot", "text")
         .execute();
+
     await db.schema
-        .createTable("fighthistory")
+        .createTable("fightHistory")
         .ifNotExists()
         .addColumn("id", "integer", c => c.primaryKey().autoIncrement())
-        .addColumn("userid", "text", c => c.notNull())
+        .addColumn("userId", "text", c => c.notNull())
         .addColumn("bossName", "text", c => c.notNull())
         .addColumn("result", "boolean", c => c.notNull())
-        .addColumn("firsttime", "boolean", c => c.notNull())
+        .addColumn("firstTime", "boolean", c => c.notNull())
         .addColumn("createdAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
         .addColumn("updatedAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
         .execute();
-    await createUpdatedAtTrigger(db, "fighthistory");
+
+    await createUpdatedAtTrigger(db, "fightHistory");
+
     await db.schema
         .createTable("position")
         .ifNotExists()
@@ -30,6 +32,20 @@ export async function up(db: Kysely<any>) {
         .addColumn("x", "integer", c => c.notNull())
         .addColumn("y", "integer", c => c.notNull())
         .execute();
+}
+
+function createUpdatedAtTrigger(db: Kysely<any>, tableName: string) {
+    return sql
+        .raw(`
+    create trigger ${tableName}_updatedAt
+    after update on ${tableName} for each row
+    begin
+        update ${tableName}
+        set updatedAt = current_timestamp
+        where id = old.id;
+    end;
+    `)
+        .execute(db);
 }
 
 export async function down(_db: Kysely<any>) {

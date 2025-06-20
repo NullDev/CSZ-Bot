@@ -11,16 +11,20 @@ export async function insertStempel(
     invitedMember: GuildMember,
     ctx = db(),
 ): Promise<boolean> {
-    const res = await ctx
-        .insertInto("stempels")
-        .values({
-            inviterId: inviter.id,
-            invitedMemberId: invitedMember.id,
-        })
-        .returning("id")
-        .executeTakeFirst();
+    try {
+        const res = await ctx
+            .insertInto("stempels")
+            .values({
+                inviterId: inviter.id,
+                invitedMemberId: invitedMember.id,
+            })
+            .returning("id")
+            .executeTakeFirst();
 
-    return typeof res?.id === "string";
+        return typeof res?.id !== "undefined";
+    } catch {
+        return false; // probably a unique constraint violation (haha)
+    }
 }
 
 export function getStempelByInviter(inviter: GuildMember, ctx = db()): Promise<Stempel[]> {

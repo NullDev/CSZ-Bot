@@ -1,8 +1,7 @@
-import type {Snowflake} from "discord.js";
-import type {ColumnType, Generated, GeneratedAlways, Insertable, Selectable} from "kysely";
+import type { Snowflake } from "discord.js";
+import type { ColumnType, Generated, GeneratedAlways, Insertable, Selectable } from "kysely";
 
-import type {Radius} from "@/commands/penis.js";
-
+import type { Radius } from "@/commands/penis.js";
 
 export interface Database {
     birthdays: BirthdayTable;
@@ -25,8 +24,8 @@ export interface Database {
     lootAttribute: LootAttributeTable;
     emote: EmoteTable;
     emoteUse: EmoteUseTable;
-    fighthistory: FightHistoryTable;
-    fightinventory: FightInventoryTable;
+    fightHistory: FightHistoryTable;
+    fightInventory: FightInventoryTable;
     position: MapPositonTable;
 }
 
@@ -223,7 +222,7 @@ export interface ReminderTable extends AuditedTable {
 }
 
 export type LootId = number;
-export type LootOrigin = "drop" | "owner-transfer" | "replacement";
+export type LootOrigin = "drop" | "owner-transfer" | "replacement" | "birthday";
 
 export type Loot = Selectable<LootTable>;
 export type LootInsertable = Insertable<LootTable>;
@@ -294,15 +293,15 @@ export interface EmoteUseTable extends AuditedTable {
 
 interface FightHistoryTable extends AuditedTable {
     id: GeneratedAlways<number>;
-    userid: Snowflake;
+    userId: Snowflake;
     result: boolean;
     bossName: string;
-    firsttime: boolean;
+    firstTime: boolean;
 }
 
 interface FightInventoryTable {
     id: GeneratedAlways<number>;
-    userid: Snowflake;
+    userId: Snowflake;
     lootId: LootId;
     equippedSlot: string;
 }
@@ -310,6 +309,6 @@ interface FightInventoryTable {
 export interface MapPositonTable {
     id: GeneratedAlways<number>;
     userid: Snowflake;
-    x: number,
-    y: number,
+    x: number;
+    y: number;
 }

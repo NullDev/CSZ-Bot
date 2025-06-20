@@ -199,7 +199,7 @@ Optionen:
 
             embed.addFields({
                 name: "✏️ Erweiterbar",
-                value: "Erweiterbar mit .extend als Reply",
+                value: "mit .extend als Reply",
                 inline: true,
             });
             embed.setColor(0x2ecc71);
@@ -227,8 +227,8 @@ Optionen:
         }
 
         embed.addFields({
-            name: "📝 Antwortmöglichkeit",
-            value: options.straw ? "Einzelauswahl" : "Mehrfachauswahl",
+            name: `📝 ${options.straw ? "Einzelauswahl" : "Mehrfachauswahl"}`,
+            value: "",
             inline: true,
         });
 
