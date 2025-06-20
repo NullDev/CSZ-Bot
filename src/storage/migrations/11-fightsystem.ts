@@ -1,5 +1,5 @@
-import { sql, type Kysely } from "kysely";
-import { createUpdatedAtTrigger } from "@/storage/migrations/10-loot-attributes.js";
+import {sql, type Kysely} from "kysely";
+import {createUpdatedAtTrigger} from "@/storage/migrations/10-loot-attributes.js";
 
 export async function up(db: Kysely<any>) {
     await db.schema
@@ -22,6 +22,14 @@ export async function up(db: Kysely<any>) {
         .addColumn("updatedAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
         .execute();
     await createUpdatedAtTrigger(db, "fighthistory");
+    await db.schema
+        .createTable("position")
+        .ifNotExists()
+        .addColumn("id", "integer", c => c.primaryKey().autoIncrement())
+        .addColumn("userid", "text", c => c.notNull())
+        .addColumn("x", "integer", c => c.notNull())
+        .addColumn("y", "integer", c => c.notNull())
+        .execute();
 }
 
 export async function down(_db: Kysely<any>) {
