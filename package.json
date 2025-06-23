@@ -48,7 +48,7 @@
         "tsx": "^4.20.3"
     },
     "devDependencies": {
-        "@biomejs/biome": "^2.0.4",
+        "@biomejs/biome": "^2.0.5",
         "@types/better-sqlite3": "^7.6.13",
         "@types/jsdom": "^21.1.7",
         "@types/node": "^24.0.3",
