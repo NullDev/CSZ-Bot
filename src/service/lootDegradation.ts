@@ -91,9 +91,7 @@ export async function runHalfLife(context: BotContext) {
     const allWaste = await lootService.getLootsByKindId(LootKindId.RADIOACTIVE_WASTE);
 
     // See: https://github.com/NullDev/CSZ-Bot/issues/470
-    // We don't do /2 straigt away, so we can roll this out more slowly initially. We can increase this to 2 once we got this number down in general
-    // Also, consider aligning this with the drop rate of radioactive waste, so we have that balanced
-    const targetWasteCount = Math.ceil(allWaste.length / 1.8);
+    const targetWasteCount = Math.ceil(allWaste.length / 2);
     logger.info({ targetWasteCount }, "targetWasteCount");
 
     if (targetWasteCount >= allWaste.length) {
