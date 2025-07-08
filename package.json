@@ -48,14 +48,14 @@
         "tsx": "^4.20.3"
     },
     "devDependencies": {
-        "@biomejs/biome": "^2.0.6",
+        "@biomejs/biome": "^2.1.1",
         "@types/better-sqlite3": "^7.6.13",
         "@types/jsdom": "^21.1.7",
-        "@types/node": "^24.0.10",
+        "@types/node": "^24.0.11",
         "@types/node-cron": "^3.0.11",
-        "@typescript/native-preview": "^7.0.0-dev.20250705.1",
+        "@typescript/native-preview": "^7.0.0-dev.20250708.1",
         "expect": "^30.0.4",
-        "lefthook": "^1.11.16"
+        "lefthook": "^1.12.0"
     },
     "trustedDependencies": [
         "@biomejs/biome",
