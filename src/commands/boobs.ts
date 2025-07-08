@@ -121,6 +121,7 @@ export default class BoobCommand implements MessageCommand {
         "booba",
         "boobas",
         "boobs",
+        "bobs",
         "boobie",
         "titte",
         "titten",
