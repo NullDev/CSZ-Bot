@@ -36,6 +36,7 @@ export default class Poll2Command implements ApplicationCommand {
         .addBooleanOption(
             new SlashCommandBooleanOption()
                 // .setRequired(true)
+                .setRequired(false)
                 .setName("multi-select")
                 .setNameLocalizations({
                     de: "mehrfachauswahl",
@@ -49,6 +50,7 @@ export default class Poll2Command implements ApplicationCommand {
         .addBooleanOption(
             new SlashCommandBooleanOption()
                 // .setRequired(true)
+                .setRequired(false)
                 .setName("extendable")
                 .setNameLocalizations({
                     de: "erweiterbar",
