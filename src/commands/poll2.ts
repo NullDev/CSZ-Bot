@@ -124,8 +124,20 @@ export default class Poll2Command implements ApplicationCommand {
             return;
         }
 
-        await reply.edit("okäse");
-        log.info(modalSubmission, "modalSubmission");
+        const questionsStr = modalSubmission.fields.getTextInputValue("poll2-content");
+
+        const questions = questionsStr
+            .split("\n")
+            .map(s => s.trim())
+            .map(s => (s.startsWith("-") ? s.substring(s.indexOf("-")) : s))
+            .map(s => s.trim())
+            .filter(s => s.length > 0);
+
+        await reply.edit(
+            "okäse. würde diese Fragen nehmen:" + questions.map(s => `- ${s}`).join("\n"),
+        );
+
+        log.info({ modalSubmission, questions }, "modalSubmission");
 
         throw new Error("Method not implemented.");
     }
