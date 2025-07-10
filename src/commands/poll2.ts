@@ -57,7 +57,7 @@ export default class Poll2Command implements ApplicationCommand {
                 .setDescription("Ob andere Leute noch Antwortmöglichkeiten hinzufügen können.")
                 .setNameLocalizations({
                     de: "erweiterbar",
-                    "en-US": "extendable-select",
+                    "en-US": "extendable",
                 })
                 .setDescriptionLocalizations({
                     de: "Ob andere Leute noch Antwortmöglichkeiten hinzufügen können.",
