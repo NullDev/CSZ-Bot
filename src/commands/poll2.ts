@@ -73,11 +73,6 @@ export default class Poll2Command implements ApplicationCommand {
             return;
         }
 
-        const reply = await command.reply({
-            content: "Umfrage wird erstellt...",
-            flags: MessageFlags.Ephemeral,
-        });
-
         const question = command.options.getString("question", true);
         if (question.length > 4096) {
             await command.reply({
@@ -132,6 +127,11 @@ export default class Poll2Command implements ApplicationCommand {
             .map(s => (s.startsWith("-") ? s.substring(s.indexOf("-")) : s))
             .map(s => s.trim())
             .filter(s => s.length > 0);
+
+        const reply = await command.reply({
+            content: "Umfrage wird erstellt...",
+            flags: MessageFlags.Ephemeral,
+        });
 
         await reply.edit(
             "okäse. würde diese Fragen nehmen:" + questions.map(s => `- ${s}`).join("\n"),

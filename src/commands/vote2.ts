@@ -91,7 +91,7 @@ export default class Vote2Command implements ApplicationCommand {
         const question = command.options.getString("question", true);
         if (question.length > 4096) {
             await command.reply({
-                content: "Bruder die Frage ist ja länger als mein Schwanz :c",
+                content: "Bruder die Frage ist ja länger als mein Schwands :c",
                 flags: MessageFlags.Ephemeral,
             });
             return;
