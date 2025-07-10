@@ -4,6 +4,7 @@ import {
     MessageFlags,
     type ModalActionRowComponentBuilder,
     ModalBuilder,
+    ModalSubmitInteraction,
     SlashCommandBooleanOption,
     SlashCommandBuilder,
     SlashCommandStringOption,
@@ -12,6 +13,8 @@ import {
 } from "discord.js";
 import type { ApplicationCommand } from "@/commands/command.js";
 import type { BotContext } from "@/context.js";
+
+import log from "@log";
 
 export default class Poll2Command implements ApplicationCommand {
     name = "poll2";
@@ -110,17 +113,19 @@ export default class Poll2Command implements ApplicationCommand {
                 ),
         );
 
+        let modalSubmission: ModalSubmitInteraction;
         try {
-            await command.awaitModalSubmit({
+            modalSubmission = await command.awaitModalSubmit({
                 time: 60_000 * 5,
                 filter: e => e.customId === "poll2-modal",
             });
         } catch {
-            console.log("No modal submit interaction was collected");
+            log.info("No modal submit interaction was collected");
             return;
         }
 
         await reply.edit("okäse");
+        log.info(modalSubmission, "modalSubmission");
 
         throw new Error("Method not implemented.");
     }
