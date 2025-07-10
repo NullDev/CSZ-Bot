@@ -70,6 +70,11 @@ export default class Poll2Command implements ApplicationCommand {
             return;
         }
 
+        const reply = await command.reply({
+            content: "Umfrage wird erstellt...",
+            flags: MessageFlags.Ephemeral,
+        });
+
         const question = command.options.getString("question", true);
         if (question.length > 4096) {
             await command.reply({
@@ -115,7 +120,7 @@ export default class Poll2Command implements ApplicationCommand {
             return;
         }
 
-        await command.editReply("okäse");
+        await reply.edit("okäse");
 
         throw new Error("Method not implemented.");
     }
