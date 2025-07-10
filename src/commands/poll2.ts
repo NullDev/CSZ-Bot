@@ -21,9 +21,9 @@ export default class Poll2Command implements ApplicationCommand {
         .setDescription(this.description)
         .addStringOption(
             new SlashCommandStringOption()
+                .setRequired(true)
                 .setName("question")
                 .setDescription("Die Frage oder worüber abgestimmt werden soll.")
-                .setRequired(true)
                 .setNameLocalizations({
                     de: "frage",
                     "en-US": "question",
@@ -35,7 +35,7 @@ export default class Poll2Command implements ApplicationCommand {
         )
         .addBooleanOption(
             new SlashCommandBooleanOption()
-                .setRequired(false)
+                .setRequired(true)
                 .setName("multi-select")
                 .setDescription("Ob man mehrere Antworten auswählen darf.")
                 .setNameLocalizations({
@@ -49,7 +49,7 @@ export default class Poll2Command implements ApplicationCommand {
         )
         .addBooleanOption(
             new SlashCommandBooleanOption()
-                .setRequired(false)
+                .setRequired(true)
                 .setName("extendable")
                 .setDescription("Ob andere Leute noch Antwortmöglichkeiten hinzufügen können.")
                 .setNameLocalizations({
