@@ -1,10 +1,12 @@
 import {
     ActionRowBuilder,
     type CommandInteraction,
+    MessageFlags,
     type ModalActionRowComponentBuilder,
     ModalBuilder,
     SlashCommandBooleanOption,
     SlashCommandBuilder,
+    SlashCommandStringOption,
     TextInputBuilder,
     TextInputStyle,
 } from "discord.js";
@@ -17,9 +19,23 @@ export default class Poll2Command implements ApplicationCommand {
     applicationCommand = new SlashCommandBuilder()
         .setName(this.name)
         .setDescription(this.description)
+        .addStringOption(
+            new SlashCommandStringOption()
+                .setDescription("Die Frage oder worüber abgestimmt werden soll.")
+                .setRequired(true)
+                .setName("question")
+                .setNameLocalizations({
+                    de: "frage",
+                    "en-US": "question",
+                })
+                .setDescriptionLocalizations({
+                    de: "Die Frage oder worüber abgestimmt werden soll.",
+                    "en-US": "The question or what is to be voted on.",
+                }),
+        )
         .addBooleanOption(
             new SlashCommandBooleanOption()
-                .setRequired(true)
+                // .setRequired(true)
                 .setName("multi-select")
                 .setNameLocalizations({
                     de: "mehrfachauswahl",
@@ -32,8 +48,8 @@ export default class Poll2Command implements ApplicationCommand {
         )
         .addBooleanOption(
             new SlashCommandBooleanOption()
+                // .setRequired(true)
                 .setName("extendable")
-                .setRequired(true)
                 .setNameLocalizations({
                     de: "erweiterbar",
                     "en-US": "extendable-select",
@@ -52,10 +68,21 @@ export default class Poll2Command implements ApplicationCommand {
             return;
         }
 
-        const modal = new ModalBuilder()
-            .setCustomId("poll2-modal")
-            .setTitle("Umfrage Erstellen")
-            .addComponents(
+        const question = command.options.getString("question", true);
+        if (question.length > 4096) {
+            await command.reply({
+                content: "Bruder die Frage ist ja länger als mein Schwands :c",
+                flags: MessageFlags.Ephemeral,
+            });
+            return;
+        }
+
+        await command.showModal(
+            new ModalBuilder()
+                .setCustomId("poll2-modal")
+                .setTitle("Umfrage Erstellen")
+                .addComponents(
+                    /*
                 new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
                     new TextInputBuilder()
                         .setCustomId("poll2-title")
@@ -64,15 +91,29 @@ export default class Poll2Command implements ApplicationCommand {
                         .setRequired(true)
                         .setStyle(TextInputStyle.Short),
                 ),
-                new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
-                    new TextInputBuilder()
-                        .setCustomId("poll2-content")
-                        .setLabel("Antworten (jede Zeile eine)")
-                        .setPlaceholder("blau\ngrün\ngelb")
-                        .setRequired(true)
-                        .setStyle(TextInputStyle.Paragraph),
+                */
+                    new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
+                        new TextInputBuilder()
+                            .setCustomId("poll2-content")
+                            .setLabel("Antworten (jede Zeile eine)")
+                            .setPlaceholder("blau\ngrün\ngelb")
+                            .setRequired(true)
+                            .setStyle(TextInputStyle.Paragraph),
+                    ),
                 ),
-            );
+        );
+
+        try {
+            await command.awaitModalSubmit({
+                time: 60_000 * 5,
+                filter: e => e.customId === "poll2-modal",
+            });
+        } catch {
+            console.log("No modal submit interaction was collected");
+            return;
+        }
+
+        await command.editReply("okäse");
 
         throw new Error("Method not implemented.");
     }
