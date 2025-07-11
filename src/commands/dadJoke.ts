@@ -60,7 +60,7 @@ export default class DadJokeCommand implements SpecialCommand {
         const phrase = Object.keys(this.matchPhrases).find(p => msg.startsWith(p));
         if (!phrase) return;
         const attributes = this.matchPhrases[phrase];
-        const idx = msg.lastIndexOf(phrase);
+        const idx = msg.indexOf(phrase);
 
         if (idx < message.content.length - 1) {
             // Get index of the first terminator character after trigger
