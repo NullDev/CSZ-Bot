@@ -41,7 +41,9 @@ export async function downloadYoutubeVideo(
     );
 
     const entries = await fs.readdir(targetDir, { recursive: false });
-    const entry = entries.filter(e => e.startsWith(`${now}-download.`))[0];
+    const entry = entries
+        .filter(e => e.startsWith(`${now}-download.`))
+        .filter(e => !e.endsWith(".part"))[0];
     if (!entry) {
         throw new Error("Could not find downloaded file.");
     }
