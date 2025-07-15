@@ -52,7 +52,7 @@ export default class PollYoutubeDownloadCommand implements ApplicationCommand {
         await command.deferReply();
 
         await using tempDir = await TempDir.create("yt-dl");
-        const signal = AbortSignal.timeout(20_000);
+        const signal = AbortSignal.timeout(60_000);
 
         signal.addEventListener(
             "abort",
