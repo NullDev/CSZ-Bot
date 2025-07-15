@@ -12,7 +12,9 @@ FROM node:alpine AS runtime-dependencies
     RUN --mount=type=bind,source=package.json,target=package.json \
         --mount=type=bind,source=package-lock.json,target=package-lock.json \
         --mount=type=cache,target=/root/.npm \
-        NODE_ENV=production npm ci
+        NODE_ENV=production \
+        YOUTUBE_DL_SKIP_DOWNLOAD=true \
+        npm ci
 
 FROM node:alpine
     WORKDIR /app
