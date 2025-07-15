@@ -22,7 +22,10 @@ FROM node:alpine
         fontconfig \
         ffmpeg \
         font-liberation \
-        && fc-cache -f -v
+        python3 \
+        py-pip \
+        && fc-cache -f -v \
+        && pip install yt-dlp --break-system-packages
 
     ENV NODE_ENV=production
     ENV TZ=Europe/Berlin
