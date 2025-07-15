@@ -32,7 +32,7 @@ export default class PollYoutubeDownloadCommand implements ApplicationCommand {
                 }),
         );
 
-    async handleInteraction(command: CommandInteraction, context: BotContext) {
+    async handleInteraction(command: CommandInteraction, _context: BotContext) {
         if (!command.isChatInputCommand()) {
             return;
         }

@@ -4,7 +4,7 @@ import {
     MessageFlags,
     type ModalActionRowComponentBuilder,
     ModalBuilder,
-    ModalSubmitInteraction,
+    type ModalSubmitInteraction,
     SlashCommandBooleanOption,
     SlashCommandBuilder,
     SlashCommandStringOption,
@@ -65,7 +65,7 @@ export default class Poll2Command implements ApplicationCommand {
                 }),
         );
 
-    async handleInteraction(command: CommandInteraction, context: BotContext) {
+    async handleInteraction(command: CommandInteraction, _context: BotContext) {
         if (!command.isChatInputCommand()) {
             return;
         }
@@ -134,7 +134,7 @@ export default class Poll2Command implements ApplicationCommand {
         });
 
         await reply.edit(
-            "okäse. würde diese Fragen nehmen:" + questions.map(s => `- ${s}`).join("\n"),
+            `okäse. würde diese Fragen nehmen:${questions.map(s => `- ${s}`).join("\n")}`,
         );
 
         log.info({ modalSubmission, questions }, "modalSubmission");
