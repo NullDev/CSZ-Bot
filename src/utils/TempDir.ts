@@ -11,6 +11,7 @@ export default class TempDir {
         return new TempDir(prefix);
     }
 
+    /** Removes created directory if created with `await using`. */
     async [Symbol.asyncDispose]() {
         await fs.rmdir(this.path, { recursive: true });
     }

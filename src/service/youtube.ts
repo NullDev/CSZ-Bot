@@ -5,6 +5,7 @@ import { create as createYoutubeDl, type Payload } from "youtube-dl-exec";
 
 const ytdl = createYoutubeDl("yt-dlp");
 const commonOptions = {
+    dumpSingleJson: true,
     noCheckCertificates: true,
     noWarnings: true,
     preferFreeFormats: true,
@@ -15,7 +16,6 @@ const commonOptions = {
 export async function fetchVideoInfo(url: string): Promise<Payload> {
     return await ytdl(url, {
         ...commonOptions,
-        dumpSingleJson: true,
     });
 }
 
@@ -23,10 +23,10 @@ export async function downloadYoutubeVideo(
     url: string,
     targetDir: string,
     signal: AbortSignal,
-): Promise<string> {
+): Promise<DownloadResult> {
     const now = Date.now();
 
-    await ytdl(
+    const payload = await ytdl(
         url,
         {
             ...commonOptions,
@@ -44,5 +44,14 @@ export async function downloadYoutubeVideo(
     if (!entry) {
         throw new Error("Could not find downloaded file.");
     }
-    return path.join(targetDir, entry);
+
+    return {
+        title: payload.title ?? null,
+        fileName: path.join(targetDir, entry),
+    };
 }
+
+export type DownloadResult = {
+    title: string | null;
+    fileName: string;
+};
