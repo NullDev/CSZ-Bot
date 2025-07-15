@@ -12,7 +12,7 @@ const commonOptions = {
     addHeader: ["referer:youtube.com", "user-agent:googlebot"],
 };
 
-export async function fetchVideoInfo(url: string): Promise<Payload> {
+async function fetchVideoInfo(url: string): Promise<Payload> {
     return await ytdl(url, {
         ...commonOptions,
         dumpSingleJson: true,
@@ -26,7 +26,8 @@ export async function downloadYoutubeVideo(
 ): Promise<DownloadResult> {
     const now = Date.now();
 
-    const payload = await ytdl(
+    const videoInfo = await fetchVideoInfo(url);
+    await ytdl(
         url,
         {
             ...commonOptions,
@@ -46,7 +47,7 @@ export async function downloadYoutubeVideo(
     }
 
     return {
-        title: payload.title ?? null,
+        title: videoInfo.title ?? null,
         fileName: path.join(targetDir, entry),
     };
 }
