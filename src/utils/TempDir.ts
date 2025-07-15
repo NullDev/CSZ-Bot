@@ -13,6 +13,6 @@ export default class TempDir {
 
     /** Removes created directory if created with `await using`. */
     async [Symbol.asyncDispose]() {
-        await fs.rmdir(this.path, { recursive: true });
+        await fs.rm(this.path, { recursive: true });
     }
 }
