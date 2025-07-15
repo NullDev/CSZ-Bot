@@ -6,7 +6,7 @@ export default class TempDir {
         this.path = path;
     }
 
-    static async create(prefix: string) {
+    static async create(prefix: string): Promise<TempDir> {
         await fs.mkdtemp(prefix);
         return new TempDir(prefix);
     }
