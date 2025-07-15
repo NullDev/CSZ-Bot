@@ -54,7 +54,21 @@ export default class PollYoutubeDownloadCommand implements ApplicationCommand {
         await using tempDir = await TempDir.create("yt-dl");
         const signal = AbortSignal.timeout(20_000);
 
+        signal.addEventListener(
+            "abort",
+            () => {
+                command.editReply({
+                    content:
+                        "Der Download wurde abgebrochen, da er zu lange gedauert hat. Such dir einfach ein kleineres Video aus.\n\nhurensohn",
+                });
+            },
+            { once: true },
+        );
+
         const result = await youtubeService.downloadYoutubeVideo(link, tempDir.path, signal);
+        if (signal.aborted) {
+            return;
+        }
 
         await command.editReply({
             files: [
