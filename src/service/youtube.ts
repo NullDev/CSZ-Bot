@@ -8,7 +8,6 @@ const commonOptions = {
     noCheckCertificates: true,
     noWarnings: true,
     preferFreeFormats: true,
-    forceIpv4: true,
     addHeader: ["referer:youtube.com", "user-agent:googlebot"],
 };
 
