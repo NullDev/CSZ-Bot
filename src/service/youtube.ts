@@ -5,7 +5,6 @@ import { create as createYoutubeDl, type Payload } from "youtube-dl-exec";
 
 const ytdl = createYoutubeDl("yt-dlp");
 const commonOptions = {
-    dumpSingleJson: true,
     noCheckCertificates: true,
     noWarnings: true,
     preferFreeFormats: true,
@@ -16,6 +15,7 @@ const commonOptions = {
 export async function fetchVideoInfo(url: string): Promise<Payload> {
     return await ytdl(url, {
         ...commonOptions,
+        dumpSingleJson: true,
     });
 }
 
