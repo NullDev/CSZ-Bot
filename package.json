@@ -51,9 +51,9 @@
         "@biomejs/biome": "^2.1.1",
         "@types/better-sqlite3": "^7.6.13",
         "@types/jsdom": "^21.1.7",
-        "@types/node": "^24.0.13",
+        "@types/node": "^24.0.14",
         "@types/node-cron": "^3.0.11",
-        "@typescript/native-preview": "^7.0.0-dev.20250711.1",
+        "@typescript/native-preview": "^7.0.0-dev.20250715.1",
         "expect": "^30.0.4",
         "lefthook": "^1.12.2"
     },
