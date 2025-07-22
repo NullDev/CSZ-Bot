@@ -67,6 +67,7 @@ export default class PollYoutubeDownloadCommand implements ApplicationCommand {
                 return;
             case "success":
                 await command.editReply({
+                    content: result.title ? `**${result.title}**` : null,
                     files: [
                         {
                             attachment: result.fileName,
