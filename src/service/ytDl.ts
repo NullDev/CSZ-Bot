@@ -4,7 +4,6 @@ import * as fs from "node:fs/promises";
 import { create as createYoutubeDl, type Payload } from "youtube-dl-exec";
 
 import type { BotContext } from "src/context.js";
-import log from "@log";
 
 const ytdl = createYoutubeDl("yt-dlp");
 
@@ -42,8 +41,6 @@ class YoutubeDownloader {
             output: path.join(targetDir, `${now}-download.%(ext)s`),
             abortOnError: true,
         } as const;
-
-        log.info(options, "Using options for downloading video");
 
         await ytdl(url, options, {
             signal,
