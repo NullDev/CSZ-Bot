@@ -66,8 +66,9 @@ export default class PollYoutubeDownloadCommand implements ApplicationCommand {
                 });
                 return;
             case "success":
+                const title = result.title ? `[${result.title}](<${link}>)` : `<${link}>`;
                 await command.editReply({
-                    content: result.title ? `**${result.title}**` : null,
+                    content: `Hier ist dein Video:\n**${title}**`,
                     files: [
                         {
                             attachment: result.fileName,
