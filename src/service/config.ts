@@ -65,6 +65,10 @@ export interface Config {
         clientSecret?: string;
     };
 
+    youtube?: {
+        cookieFilePath?: string | null;
+    };
+
     activity: {
         type: ActivityType;
         name: string;

@@ -38,6 +38,10 @@ export interface BotContext {
 
     spotifyClient: SpotifyApi | null;
 
+    youtube: {
+        cookieFilePath?: string | null;
+    };
+
     commandConfig: {
         faulenzerPing: {
             allowedRoleIds: Set<Snowflake>;
@@ -223,6 +227,9 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
                       [],
                   )
                 : null,
+        youtube: {
+            cookieFilePath: config.youtube?.cookieFilePath ?? null,
+        },
         moderatorRoles: config.moderatorRoleIds.map(id => ensureRole(guild, id)),
         commandConfig: {
             faulenzerPing: {
