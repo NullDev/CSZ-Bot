@@ -3,6 +3,8 @@ import * as fs from "node:fs/promises";
 
 import { create as createYoutubeDl, type Payload } from "youtube-dl-exec";
 
+import log from "@log";
+
 const ytdl = createYoutubeDl("yt-dlp");
 const commonOptions = {
     noCheckCertificates: true,
@@ -33,19 +35,19 @@ export class YoutubeDownloader {
         const now = Date.now();
 
         const videoInfo = await this.#fetchVideoInfo(url);
-        await ytdl(
-            url,
-            {
-                ...commonOptions,
-                cookies: this.#cookieFilePath,
-                maxFilesize: String(100 * 1024 * 1024), // 100 MB
-                output: path.join(targetDir, `${now}-download.%(ext)s`),
-                abortOnError: true,
-            },
-            {
-                signal,
-            },
-        );
+        const options = {
+            ...commonOptions,
+            cookies: this.#cookieFilePath,
+            maxFilesize: String(100 * 1024 * 1024), // 100 MB
+            output: path.join(targetDir, `${now}-download.%(ext)s`),
+            abortOnError: true,
+        } as const;
+
+        log.info(options, "Using options for downloading video");
+
+        await ytdl(url, options, {
+            signal,
+        });
 
         const entries = await fs.readdir(targetDir, { recursive: false });
         const entry = entries
