@@ -15,9 +15,5 @@ services:
       - ../logs:/app/logs
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
-    secrets:
-      - youtube_cookie
-
-secrets:
-  youtube_cookie:
-    file: ../cookies-youtube.txt
+      # cannot use docker secrets because the file will be updated by yt-dlp
+      - ../cookies-youtube.txt:/cookies-youtube.txt
