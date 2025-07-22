@@ -10,8 +10,8 @@ export default class TempDir {
     }
 
     static async create(prefix: string): Promise<TempDir> {
-        await fs.mkdtemp(prefix);
-        return new TempDir(prefix);
+        const tempDir = await fs.mkdtemp(prefix);
+        return new TempDir(tempDir);
     }
 
     /** Removes created directory if created with `await using`. */
