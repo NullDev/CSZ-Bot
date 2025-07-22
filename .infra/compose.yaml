@@ -15,3 +15,5 @@ services:
       - ../logs:/app/logs
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
+      - ../cookies-youtube.txt:/app/cookies-youtube.txt:ro
+

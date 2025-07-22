@@ -12,6 +12,12 @@
         "clientId": "<SPOTIFY_CLIENT_ID>",
         "clientSecret": "<SPOTIFY_CLIENT_SECRET>"
     },
+    "youtube": {
+         // Path to the cookie file for YouTube authentication
+         // You can obtain it by doing this:
+         // https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp
+        "cookieFilePath": null
+    },
     "activity": {
         // https://discord.com/developers/docs/topics/gateway-events#activity-object-activity-types
         "type": 0,
