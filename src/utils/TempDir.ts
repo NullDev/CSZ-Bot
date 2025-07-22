@@ -1,4 +1,7 @@
 import * as fs from "node:fs/promises";
+import * as sentry from "@sentry/node";
+
+import log from "@log";
 
 export default class TempDir {
     readonly path: string;
@@ -13,6 +16,11 @@ export default class TempDir {
 
     /** Removes created directory if created with `await using`. */
     async [Symbol.asyncDispose]() {
-        await fs.rm(this.path, { recursive: true });
+        try {
+            await fs.rm(this.path, { recursive: true });
+        } catch (err) {
+            log.error(err, "Couldn't remove directory");
+            sentry.captureException(err);
+        }
     }
 }
