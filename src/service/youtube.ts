@@ -6,23 +6,23 @@ import { create as createYoutubeDl, type Payload } from "youtube-dl-exec";
 import log from "@log";
 
 const ytdl = createYoutubeDl("yt-dlp");
-const commonOptions = {
-    noCheckCertificates: true,
-    noWarnings: true,
-    preferFreeFormats: true,
-    addHeader: ["referer:youtube.com", "user-agent:googlebot"],
-};
 
 export class YoutubeDownloader {
-    #cookieFilePath: string | undefined;
+    #commonOptions;
 
     constructor(cookieFilePath: string | null) {
-        this.#cookieFilePath = cookieFilePath ?? undefined;
+        this.#commonOptions = {
+            cookies: cookieFilePath ?? undefined,
+            noCheckCertificates: true,
+            noWarnings: true,
+            preferFreeFormats: true,
+            addHeader: ["referer:youtube.com", "user-agent:googlebot"],
+        };
     }
 
     async #fetchVideoInfo(url: string): Promise<Payload> {
         return await ytdl(url, {
-            ...commonOptions,
+            ...this.#commonOptions,
             dumpSingleJson: true,
         });
     }
@@ -36,8 +36,7 @@ export class YoutubeDownloader {
 
         const videoInfo = await this.#fetchVideoInfo(url);
         const options = {
-            ...commonOptions,
-            cookies: this.#cookieFilePath,
+            ...this.#commonOptions,
             maxFilesize: String(100 * 1024 * 1024), // 100 MB
             output: path.join(targetDir, `${now}-download.%(ext)s`),
             abortOnError: true,
