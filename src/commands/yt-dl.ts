@@ -65,7 +65,7 @@ export default class PollYoutubeDownloadCommand implements ApplicationCommand {
                     content: "Es ist irgendein Fehler aufgetreten.\n\nhurensohn",
                 });
                 return;
-            case "success":
+            case "success": {
                 const title = result.title ? `[${result.title}](<${link}>)` : `<${link}>`;
                 await command.editReply({
                     content: `Hier ist dein Video:\n**${title}**`,
@@ -76,6 +76,7 @@ export default class PollYoutubeDownloadCommand implements ApplicationCommand {
                     ],
                 });
                 return;
+            }
             default:
                 assertNever(result);
         }
