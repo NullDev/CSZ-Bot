@@ -84,13 +84,16 @@ export type SuccessDownloadResult = {
     fileName: string;
 };
 
-export async function downloadVideo(context: BotContext, url: string): Promise<DownloadResult> {
-    await using tempDir = await TempDir.create("yt-dl");
+export async function downloadVideo(
+    context: BotContext,
+    targetDir: string,
+    url: string,
+): Promise<DownloadResult> {
     const signal = AbortSignal.timeout(60_000);
 
     const downloader = new YoutubeDownloader(context.youtube.cookieFilePath ?? null);
 
-    const result = await downloader.downloadVideo(url, tempDir.path, signal);
+    const result = await downloader.downloadVideo(url, targetDir, signal);
     if (signal.aborted) {
         return {
             result: "aborted",

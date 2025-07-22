@@ -9,6 +9,7 @@ import type { BotContext } from "@/context.js";
 
 import * as ytDlService from "@/service/ytDl.js";
 import assertNever from "src/utils/assertNever.js";
+import TempDir from "src/utils/TempDir.js";
 
 export default class PollYoutubeDownloadCommand implements ApplicationCommand {
     name = "yt-dl";
@@ -50,7 +51,8 @@ export default class PollYoutubeDownloadCommand implements ApplicationCommand {
 
         await command.deferReply();
 
-        const result = await ytDlService.downloadVideo(context, link);
+        await using tempDir = await TempDir.create("yt-dl");
+        const result = await ytDlService.downloadVideo(context, tempDir.path, link);
         switch (result.result) {
             case "aborted":
                 await command.editReply({

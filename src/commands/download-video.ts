@@ -10,6 +10,7 @@ import type { BotContext } from "@/context.js";
 import type { ApplicationCommand } from "@/commands/command.js";
 import * as ytDlService from "@/service/ytDl.js";
 import assertNever from "src/utils/assertNever.js";
+import TempDir from "src/utils/TempDir.js";
 
 export default class DownloadVideoCommand implements ApplicationCommand {
     name = "Download Video"; // Must be upper case, because this name will be matched against the application command name
@@ -61,7 +62,8 @@ export default class DownloadVideoCommand implements ApplicationCommand {
 
         const link = links[0];
 
-        const result = await ytDlService.downloadVideo(context, link);
+        await using tempDir = await TempDir.create("yt-dl");
+        const result = await ytDlService.downloadVideo(context, tempDir.path, link);
         switch (result.result) {
             case "aborted":
                 await command.editReply({
