@@ -11,46 +11,56 @@ const commonOptions = {
     addHeader: ["referer:youtube.com", "user-agent:googlebot"],
 };
 
-async function fetchVideoInfo(url: string): Promise<Payload> {
-    return await ytdl(url, {
-        ...commonOptions,
-        dumpSingleJson: true,
-    });
-}
+export class YoutubeDownloader {
+    #cookieFilePath: string | undefined;
 
-export async function downloadYoutubeVideo(
-    url: string,
-    targetDir: string,
-    signal: AbortSignal,
-): Promise<DownloadResult> {
-    const now = Date.now();
-
-    const videoInfo = await fetchVideoInfo(url);
-    await ytdl(
-        url,
-        {
-            ...commonOptions,
-            maxFilesize: String(100 * 1024 * 1024), // 100 MB
-            output: path.join(targetDir, `${now}-download.%(ext)s`),
-            abortOnError: true,
-        },
-        {
-            signal,
-        },
-    );
-
-    const entries = await fs.readdir(targetDir, { recursive: false });
-    const entry = entries
-        .filter(e => e.startsWith(`${now}-download.`))
-        .filter(e => !e.endsWith(".part"))[0];
-    if (!entry) {
-        throw new Error("Could not find downloaded file.");
+    constructor(cookieFilePath: string | null) {
+        this.#cookieFilePath = cookieFilePath ?? undefined;
     }
 
-    return {
-        title: videoInfo.title ?? null,
-        fileName: path.join(targetDir, entry),
-    };
+    async #fetchVideoInfo(url: string): Promise<Payload> {
+        return await ytdl(url, {
+            ...commonOptions,
+            dumpSingleJson: true,
+        });
+    }
+
+    async downloadVideo(
+        url: string,
+        targetDir: string,
+        signal: AbortSignal,
+    ): Promise<DownloadResult> {
+        const now = Date.now();
+
+        const videoInfo = await this.#fetchVideoInfo(url);
+        await ytdl(
+            url,
+            {
+                ...commonOptions,
+                cookies: this.#cookieFilePath,
+                maxFilesize: String(100 * 1024 * 1024), // 100 MB
+                output: path.join(targetDir, `${now}-download.%(ext)s`),
+                abortOnError: true,
+            },
+            {
+                signal,
+            },
+        );
+
+        const entries = await fs.readdir(targetDir, { recursive: false });
+        const entry = entries
+            .filter(e => e.startsWith(`${now}-download.`))
+            .filter(e => !e.endsWith(".part"))[0];
+
+        if (!entry) {
+            throw new Error("Could not find downloaded file.");
+        }
+
+        return {
+            title: videoInfo.title ?? null,
+            fileName: path.join(targetDir, entry),
+        };
+    }
 }
 
 export type DownloadResult = {

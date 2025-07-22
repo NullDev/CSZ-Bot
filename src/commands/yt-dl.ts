@@ -7,9 +7,8 @@ import {
 import type { ApplicationCommand } from "@/commands/command.js";
 import type { BotContext } from "@/context.js";
 
-import * as youtubeService from "@/service/youtube.js";
-
 import TempDir from "@/utils/TempDir.js";
+import { YoutubeDownloader } from "@/service/youtube.js";
 
 export default class PollYoutubeDownloadCommand implements ApplicationCommand {
     name = "yt-dl";
@@ -32,7 +31,7 @@ export default class PollYoutubeDownloadCommand implements ApplicationCommand {
                 }),
         );
 
-    async handleInteraction(command: CommandInteraction, _context: BotContext) {
+    async handleInteraction(command: CommandInteraction, context: BotContext) {
         if (!command.isChatInputCommand()) {
             return;
         }
@@ -65,7 +64,9 @@ export default class PollYoutubeDownloadCommand implements ApplicationCommand {
             { once: true },
         );
 
-        const result = await youtubeService.downloadYoutubeVideo(link, tempDir.path, signal);
+        const downloader = new YoutubeDownloader(context.youtube.cookieFilePath ?? null);
+
+        const result = await downloader.downloadVideo(link, tempDir.path, signal);
         if (signal.aborted) {
             return;
         }
