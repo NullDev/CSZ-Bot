@@ -5,7 +5,6 @@ import { create as createYoutubeDl, type Payload } from "youtube-dl-exec";
 
 import type { BotContext } from "src/context.js";
 import log from "@log";
-import TempDir from "src/utils/TempDir.js";
 
 const ytdl = createYoutubeDl("yt-dlp");
 
