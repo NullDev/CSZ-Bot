@@ -3,11 +3,13 @@ import * as fs from "node:fs/promises";
 
 import { create as createYoutubeDl, type Payload } from "youtube-dl-exec";
 
+import type { BotContext } from "src/context.js";
 import log from "@log";
+import TempDir from "src/utils/TempDir.js";
 
 const ytdl = createYoutubeDl("yt-dlp");
 
-export class YoutubeDownloader {
+class YoutubeDownloader {
     #commonOptions;
 
     constructor(cookieFilePath: string | null) {
@@ -54,17 +56,45 @@ export class YoutubeDownloader {
             .filter(e => !e.endsWith(".part"))[0];
 
         if (!entry) {
-            throw new Error("Could not find downloaded file.");
+            return {
+                result: "error",
+                message: "Could not find downloaded file on disk. No file was downloaded.",
+            };
         }
 
         return {
+            result: "success",
             title: videoInfo.title ?? null,
             fileName: path.join(targetDir, entry),
         };
     }
 }
 
-export type DownloadResult = {
+export type DownloadResult = AbortedDownloadResult | ErrorDownloadResult | SuccessDownloadResult;
+export type AbortedDownloadResult = {
+    result: "aborted";
+};
+export type ErrorDownloadResult = {
+    result: "error";
+    message: string;
+};
+export type SuccessDownloadResult = {
+    result: "success";
     title: string | null;
     fileName: string;
 };
+
+export async function downloadVideo(context: BotContext, url: string): Promise<DownloadResult> {
+    await using tempDir = await TempDir.create("yt-dl");
+    const signal = AbortSignal.timeout(60_000);
+
+    const downloader = new YoutubeDownloader(context.youtube.cookieFilePath ?? null);
+
+    const result = await downloader.downloadVideo(url, tempDir.path, signal);
+    if (signal.aborted) {
+        return {
+            result: "aborted",
+        };
+    }
+    return result;
+}

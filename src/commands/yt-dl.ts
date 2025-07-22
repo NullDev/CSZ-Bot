@@ -7,8 +7,8 @@ import {
 import type { ApplicationCommand } from "@/commands/command.js";
 import type { BotContext } from "@/context.js";
 
-import TempDir from "@/utils/TempDir.js";
-import { YoutubeDownloader } from "@/service/youtube.js";
+import * as ytDlService from "@/service/ytDl.js";
+import assertNever from "src/utils/assertNever.js";
 
 export default class PollYoutubeDownloadCommand implements ApplicationCommand {
     name = "yt-dl";
@@ -50,33 +50,30 @@ export default class PollYoutubeDownloadCommand implements ApplicationCommand {
 
         await command.deferReply();
 
-        await using tempDir = await TempDir.create("yt-dl");
-        const signal = AbortSignal.timeout(60_000);
-
-        signal.addEventListener(
-            "abort",
-            () => {
-                command.editReply({
+        const result = await ytDlService.downloadVideo(context, link);
+        switch (result.result) {
+            case "aborted":
+                await command.editReply({
                     content:
                         "Der Download wurde abgebrochen, da er zu lange gedauert hat. Such dir einfach ein kleineres Video aus.\n\nhurensohn",
                 });
-            },
-            { once: true },
-        );
-
-        const downloader = new YoutubeDownloader(context.youtube.cookieFilePath ?? null);
-
-        const result = await downloader.downloadVideo(link, tempDir.path, signal);
-        if (signal.aborted) {
-            return;
+                return;
+            case "error":
+                await command.editReply({
+                    content: "Es ist irgendein Fehler aufgetreten.\n\nhurensohn",
+                });
+                return;
+            case "success":
+                await command.editReply({
+                    files: [
+                        {
+                            attachment: result.fileName,
+                        },
+                    ],
+                });
+                return;
+            default:
+                assertNever(result);
         }
-
-        await command.editReply({
-            files: [
-                {
-                    attachment: result.fileName,
-                },
-            ],
-        });
     }
 }
