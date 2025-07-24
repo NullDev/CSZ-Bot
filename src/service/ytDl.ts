@@ -38,6 +38,7 @@ class YoutubeDownloader {
             ...this.#commonOptions,
             maxFilesize: String(100 * 1024 * 1024), // 100 MB
             mergeOutputFormat: "mp4",
+            format: "bestvideo[height<=720]+bestaudio",
             output: path.join(targetDir, `${now}-download.%(ext)s`),
             abortOnError: true,
         } satisfies Flags;
