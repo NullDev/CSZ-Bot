@@ -31,7 +31,7 @@ class YoutubeDownloader {
         targetDir: string,
         signal: AbortSignal,
     ): Promise<DownloadResult> {
-        const now = Date.now();
+        const fullOutFile = path.join(targetDir, "video.mp4");
 
         const videoInfo = await this.#fetchVideoInfo(url);
         const options = {
@@ -39,7 +39,7 @@ class YoutubeDownloader {
             maxFilesize: String(100 * 1024 * 1024), // 100 MB
             mergeOutputFormat: "mp4",
             format: "bestvideo[height<=720]+bestaudio",
-            output: path.join(targetDir, `${now}-download.%(ext)s`),
+            output: fullOutFile,
             abortOnError: true,
         } satisfies Flags;
 
@@ -47,12 +47,21 @@ class YoutubeDownloader {
             signal,
         });
 
-        const entries = await fs.readdir(targetDir, { recursive: false });
-        const entry = entries
-            .filter(e => e.startsWith(`${now}-download.`))
-            .filter(e => !e.endsWith(".part"))[0];
+        if (signal.aborted) {
+            return {
+                result: "aborted",
+            };
+        }
 
-        if (!entry) {
+        try {
+            const s = await fs.stat(fullOutFile);
+            if (s.size <= 0) {
+                return {
+                    result: "error",
+                    message: "Downloaded file is empty.",
+                };
+            }
+        } catch {
             return {
                 result: "error",
                 message: "Could not find downloaded file on disk. No file was downloaded.",
@@ -62,7 +71,7 @@ class YoutubeDownloader {
         return {
             result: "success",
             title: videoInfo.title ?? null,
-            fileName: path.join(targetDir, entry),
+            fileName: fullOutFile,
         };
     }
 }
