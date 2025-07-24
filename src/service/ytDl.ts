@@ -1,7 +1,7 @@
 import * as path from "node:path";
 import * as fs from "node:fs/promises";
 
-import { create as createYoutubeDl, Flags, type Payload } from "youtube-dl-exec";
+import { create as createYoutubeDl, type Flags, type Payload } from "youtube-dl-exec";
 
 import type { BotContext } from "src/context.js";
 
