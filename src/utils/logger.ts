@@ -1,6 +1,6 @@
 import { mkdir } from "node:fs/promises";
 
-import { pino, type LoggerOptions } from "pino";
+import pino, { type LoggerOptions } from "pino";
 
 const logLevel = process.env.LOG_LEVEL ?? "info";
 const nodeEnv = process.env.NODE_ENV ?? "development";

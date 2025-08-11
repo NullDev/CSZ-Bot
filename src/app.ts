@@ -210,13 +210,7 @@ client.on("messageDelete", async message => {
 });
 
 client.on("error", e => log.error(e, "Discord Client Error"));
-client.on("warn", w => log.warn(w, "Discord Client Warning"));
-client.on("debug", d => {
-    if (d.includes("Heartbeat")) {
-        return;
-    }
-    log.debug(d, "Discord Client Debug");
-});
+client.on("warn", w => log.warn(`Discord Client Warning: "${w}"`));
 client.on("rateLimit", d => log.error(d, "Discord client rate limit reached"));
 client.on("invalidated", () => log.debug("Client invalidated"));
 
