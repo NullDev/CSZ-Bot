@@ -146,7 +146,7 @@ export default class YoinkCommand implements MessageCommand, ApplicationCommand 
                 attachment: emoteService.getEmoteUrl(emoji as emoteService.ParsedEmoji),
                 name: effectiveName,
             });
-            return `Hab \<:${guildEmoji.name}:${guildEmoji.id}\> als \`${guildEmoji.name}\` hinzugefügt`;
+            return `Hab <:${guildEmoji.name}:${guildEmoji.id}> als \`${guildEmoji.name}\` hinzugefügt`;
         } catch (err) {
             log.error(err, "Could not add emote");
             return "Konnte Emote nicht hinzufügen. Vielleicht hat der Server keine Slots mehr frei. Oder Discord wollte einfach nicht. Oder du bist doof.";

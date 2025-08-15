@@ -254,7 +254,7 @@ export async function transferLootToUser(
         } as const;
 
         if ("id" in replacement) {
-            // @ts-ignore
+            // @ts-expect-error
             delete replacement.id;
         }
 
