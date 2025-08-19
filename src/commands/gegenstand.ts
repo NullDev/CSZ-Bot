@@ -199,12 +199,17 @@ export default class GegenstandCommand implements ApplicationCommand {
             })),
         ];
 
+        const nutriScoreColor = lootDataService.getAttributesByClass(
+            otherAttributes,
+            lootDataService.LootAttributeClassId.NUTRI_SCORE,
+        )[0]?.color;
+
         await interaction.reply({
             embeds: [
                 {
                     title: emote ? `${emote} ${item.displayName}` : item.displayName,
                     description: template.infoDescription ?? item.description,
-                    color: 0x00ff00,
+                    color: nutriScoreColor ?? 0xaaaaaa,
                     image: attachment
                         ? {
                               url: "attachment://hero.gif",
