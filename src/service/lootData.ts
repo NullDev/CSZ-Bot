@@ -439,7 +439,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         dropDescription:
             "Jetzt wär geklärt, was zu erst da war, Ei oder ... (Ja was schlüpft daraus eigentlich?)",
         emote: ":egg:",
-        asset: "assets/loot/30-egg.jpg",
+        asset: "assets/loot/30-ei.png",
     },
     [LootKindId.BRAVO]: {
         id: LootKindId.BRAVO,
