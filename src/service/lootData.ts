@@ -173,7 +173,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         titleText: "Einen Wurf mit einem Würfel",
         dropDescription: "🎲",
         emote: "🎲",
-        asset: "assets/loot/07-wuerfelwurf.jpg",
+        asset: "assets/loot/07-wuerfelwurf.png",
         excludeFromInventory: true,
         onDrop: async (_content, winner, channel, _loot) => {
             const rollService = await import("./roll.js");
