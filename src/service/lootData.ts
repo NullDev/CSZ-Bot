@@ -225,7 +225,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         titleText: "Einen Trichter",
         dropDescription: "Für die ganz großen Schlücke",
         emote: ":trichter:",
-        asset: "assets/loot/11-trichter.jpg",
+        asset: "assets/loot/11-trichter.png",
     },
     [LootKindId.GRAFIKKARTE]: {
         id: LootKindId.GRAFIKKARTE,
