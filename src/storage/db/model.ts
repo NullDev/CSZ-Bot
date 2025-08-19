@@ -246,7 +246,6 @@ export interface LootTable extends AuditedTable {
     guildId: Snowflake;
     channelId: Snowflake;
     messageId: Snowflake;
-    usedImage: string | null;
 
     deletedAt: ColumnType<string | null, string | null, string | null>; // TODO: Date is not supported by the DB driver
 

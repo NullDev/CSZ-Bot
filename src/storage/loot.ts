@@ -99,7 +99,6 @@ export async function createLoot(
                 displayName: template.displayName,
                 description: template.dropDescription,
                 lootKindId: template.id,
-                usedImage: template.asset,
                 winnerId: winner.id,
                 claimedAt: now.toISOString(),
                 guildId: message?.guildId ?? "",
