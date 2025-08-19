@@ -612,17 +612,18 @@ export function getEmote(guild: Guild, item: Loot) {
     return emoteService.resolveEmote(guild, e);
 }
 
+export function getAttributesByClass(
+    attributes: readonly Readonly<LootAttribute>[],
+    c: LootAttributeClassId,
+): readonly Readonly<LootAttribute>[] {
+    return attributes.filter(a => a.attributeClassId === c);
+}
+
 export function extractRarityAttribute(
     attributes: readonly Readonly<LootAttribute>[],
 ): Readonly<LootAttribute> | undefined {
-    const attribute = attributes.filter(a => a.attributeClassId === LootAttributeClassId.RARITY);
-    if (attribute.length === 0) {
-        return undefined;
-    }
-    if (attribute.length > 1) {
-        log.warn("Found multiple rarity attributes for loot item");
-    }
-    return attribute[0];
+    const rarities = getAttributesByClass(attributes, LootAttributeClassId.RARITY);
+    return rarities[0] ?? undefined;
 }
 
 export function extractNonRarityAttributes(
