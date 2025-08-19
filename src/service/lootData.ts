@@ -477,7 +477,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         titleText: "Eine Kaffeemühle für 400€",
         dropDescription: "Kann Kaffee mühlen. Und das gut. Mit Gold.",
         emote: ":coffee:",
-        asset: "assets/loot/34-kaffeemuehle.jpg",
+        asset: "assets/loot/34-kaffeemuehle.png",
     },
     [LootKindId.AWS_RECHNUNG]: {
         id: LootKindId.AWS_RECHNUNG,
