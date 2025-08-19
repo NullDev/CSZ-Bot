@@ -205,7 +205,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         titleText: "Einen Ayran",
         dropDescription: "Der gute von Müller",
         emote: "🥛",
-        asset: "assets/loot/09-ayran.jpg",
+        asset: "assets/loot/09-ayran.png",
         initialAttributes: [LootAttributeKindId.NUTRI_SCORE_D], // Ref: https://de.openfoodfacts.org/produkt/4388860730685/ayran-ja
     },
     [LootKindId.PKV]: {
