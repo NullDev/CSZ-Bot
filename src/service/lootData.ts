@@ -429,7 +429,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         titleText: "Ein Glas Dreck",
         dropDescription: "Ich hab ein Glas voll Dreck",
         emote: ":jar:",
-        asset: "assets/loot/29-dirt.jpg",
+        asset: "assets/loot/29-dreck.jpg",
     },
     [LootKindId.EI]: {
         id: LootKindId.EI,
