@@ -99,7 +99,7 @@ export interface Config {
         ehre: {
             emojiNames: readonly string[];
         };
-        instagram: {
+        instagram?: {
             rapidApiInstagramApiKey?: string | null;
         };
         loot: {
