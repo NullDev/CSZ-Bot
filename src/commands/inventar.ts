@@ -4,7 +4,6 @@ import {
     type CommandInteraction,
     ComponentType,
     SlashCommandBuilder,
-    SlashCommandUserOption,
     type User,
 } from "discord.js";
 
@@ -23,20 +22,11 @@ export default class InventarCommand implements ApplicationCommand {
 
     applicationCommand = new SlashCommandBuilder()
         .setName(this.name)
-        .setDescription(this.description)
-        .addUserOption(
-            new SlashCommandUserOption()
-                .setRequired(false)
-                .setName("user")
-                .setDescription("Wem du tun willst"),
-        );
+        .setDescription(this.description);
 
     async handleInteraction(interaction: CommandInteraction, context: BotContext) {
         const cmd = ensureChatInputCommand(interaction);
-
-        const user = cmd.options.getUser("user") ?? cmd.user;
-
-        const contents = await lootService.getInventoryContents(user);
+        const contents = await lootService.getInventoryContents(cmd.user);
         if (contents.length === 0) {
             await interaction.reply({
                 content: "Dein Inventar ist ✨leer✨",
@@ -44,7 +34,7 @@ export default class InventarCommand implements ApplicationCommand {
             return;
         }
 
-        await this.#createLongEmbed(context, interaction, user);
+        await this.#createLongEmbed(context, interaction, cmd.user);
     }
 
     async #createLongEmbed(context: BotContext, interaction: CommandInteraction, user: User) {
