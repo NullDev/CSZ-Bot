@@ -53,6 +53,7 @@ export enum LootKindId {
 export enum LootAttributeClassId {
     OTHER = 0,
     RARITY = 1,
+    NUTRI_SCORE = 2,
 }
 
 export enum LootAttributeKindId {
@@ -61,6 +62,11 @@ export enum LootAttributeKindId {
     RARITY_VERY_RARE = 2,
     RADIOACTIVE = 3,
     SWEET = 4,
+    NUTRI_SCORE_A = 5,
+    NUTRI_SCORE_B = 6,
+    NUTRI_SCORE_C = 7,
+    NUTRI_SCORE_D = 8,
+    NUTRI_SCORE_E = 9,
 }
 
 export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
@@ -116,6 +122,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         dropDescription: "Bewahre ihn gut als Geldanlage auf!",
         emote: "🥙",
         asset: "assets/loot/04-doener.jpg",
+        initialAttributes: [LootAttributeKindId.NUTRI_SCORE_C],
     },
     [LootKindId.KINN]: {
         id: LootKindId.KINN,
@@ -199,6 +206,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         dropDescription: "Der gute von Müller",
         emote: "🥛",
         asset: "assets/loot/09-ayran.jpg",
+        initialAttributes: [LootAttributeKindId.NUTRI_SCORE_D], // Ref: https://de.openfoodfacts.org/produkt/4388860730685/ayran-ja
     },
     [LootKindId.PKV]: {
         id: LootKindId.PKV,
@@ -288,6 +296,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         dropDescription: "Ja dann Prost ne!",
         emote: "🍺",
         asset: "assets/loot/16-oettinger.jpg",
+        initialAttributes: [LootAttributeKindId.NUTRI_SCORE_B], // Ref: https://archive.is/aonnZ
     },
     [LootKindId.ACHIEVEMENT]: {
         id: LootKindId.ACHIEVEMENT,
@@ -344,6 +353,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         dropDescription: "Fürs Frühstück oder so",
         emote: ":sahne:",
         asset: "assets/loot/22-sahne.jpg",
+        initialAttributes: [LootAttributeKindId.NUTRI_SCORE_D], // Ref: https://de.openfoodfacts.org/produkt/4311501745663/spr%C3%BChsahne-gut-g%C3%BCnstig
     },
     [LootKindId.AEHRE]: {
         id: LootKindId.AEHRE,
@@ -377,6 +387,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         dropDescription: "Erfrischend erquickend. Besonders mit Vodka. Oder Korn.",
         asset: "assets/loot/25-powerade-blau.jpg",
         emote: ":powerade:",
+        initialAttributes: [LootAttributeKindId.NUTRI_SCORE_D], // Ref: https://de.openfoodfacts.org/produkt/90357350/powerrade-mountain-blast-blue-coca-cola
     },
     [LootKindId.GAULOISES_BLAU]: {
         id: LootKindId.GAULOISES_BLAU,
@@ -447,6 +458,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         dropDescription: "Du hättest ihn früher essen sollen",
         emote: "🥙",
         asset: null,
+        initialAttributes: [LootAttributeKindId.NUTRI_SCORE_E],
     },
     [LootKindId.THUNFISCHSHAKE]: {
         id: LootKindId.THUNFISCHSHAKE,
@@ -456,6 +468,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         dropDescription: "Nach Rezept zubereitet, bestehend aus Thunfisch und Reiswaffeln",
         emote: ":baby_bottle:",
         asset: "assets/loot/33-thunfischshake.jpg",
+        initialAttributes: [LootAttributeKindId.NUTRI_SCORE_A],
     },
     [LootKindId.KAFFEEMUEHLE]: {
         id: LootKindId.KAFFEEMUEHLE,
@@ -548,6 +561,41 @@ export const lootAttributeTemplates: LootAttributeTemplate[] = [
         classId: LootAttributeClassId.OTHER,
         displayName: "Süß",
         shortDisplay: "🍬",
+    },
+    {
+        id: LootAttributeKindId.NUTRI_SCORE_A,
+        classId: LootAttributeClassId.NUTRI_SCORE,
+        displayName: "Nutri-Score A",
+        shortDisplay: "A",
+        color: 0x00_ff_00,
+    },
+    {
+        id: LootAttributeKindId.NUTRI_SCORE_B,
+        classId: LootAttributeClassId.NUTRI_SCORE,
+        displayName: "Nutri-Score B",
+        shortDisplay: "B",
+        color: 0x99_ff_00,
+    },
+    {
+        id: LootAttributeKindId.NUTRI_SCORE_C,
+        classId: LootAttributeClassId.NUTRI_SCORE,
+        displayName: "Nutri-Score C",
+        shortDisplay: "C",
+        color: 0xff_ff_00,
+    },
+    {
+        id: LootAttributeKindId.NUTRI_SCORE_D,
+        classId: LootAttributeClassId.NUTRI_SCORE,
+        displayName: "Nutri-Score D",
+        shortDisplay: "D",
+        color: 0xff_99_00,
+    },
+    {
+        id: LootAttributeKindId.NUTRI_SCORE_E,
+        classId: LootAttributeClassId.NUTRI_SCORE,
+        displayName: "Nutri-Score E",
+        shortDisplay: "E",
+        color: 0xff_00_00,
     },
 ];
 
