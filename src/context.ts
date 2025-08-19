@@ -272,7 +272,7 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
             },
             instagram: {
                 rapidApiInstagramApiKey:
-                    config.command.instagram.rapidApiInstagramApiKey?.trim() ?? undefined,
+                    config.command.instagram?.rapidApiInstagramApiKey?.trim() ?? undefined,
             },
             aoc: {
                 enabled: config.command.aoc.enabled,

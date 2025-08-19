@@ -111,11 +111,15 @@ export async function createLoot(
             .returningAll()
             .executeTakeFirstOrThrow();
 
-        for (const attributeId of template.initialAttributes ?? []) {
-            const attribute = resolveLootAttributeTemplate(attributeId);
-            if (!attribute) continue;
+        if (template.initialAttributes) {
+            for (const attributeId of template.initialAttributes) {
+                const attribute = resolveLootAttributeTemplate(attributeId);
+                if (!attribute) {
+                    continue;
+                }
 
-            await addLootAttributeIfNotPresent(res.id, attribute, ctx);
+                await addLootAttributeIfNotPresent(res.id, attribute, ctx);
+            }
         }
 
         if (rarityAttribute) {

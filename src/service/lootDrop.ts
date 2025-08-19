@@ -152,7 +152,7 @@ export async function postLootDrop(
     const rarities = lootAttributeTemplates.filter(a => a.classId === LootAttributeClassId.RARITY);
     const rarityWeights = rarities.map(a => a.initialDropWeight ?? 0);
 
-    const initialAttribute =
+    const rarityAttribute =
         template.id === LootKindId.NICHTS ? null : randomEntryWeighted(rarities, rarityWeights);
 
     const claimedLoot = await lootService.createLoot(
@@ -161,7 +161,7 @@ export async function postLootDrop(
         message,
         "drop",
         predecessorLootId ?? null,
-        initialAttribute,
+        rarityAttribute,
     );
 
     const reply = await interaction.deferReply({ flags: MessageFlags.Ephemeral });
@@ -199,11 +199,11 @@ export async function postLootDrop(
                         value: winner.toString(),
                         inline: true,
                     },
-                    ...(initialAttribute
+                    ...(rarityAttribute
                         ? [
                               {
                                   name: "✨ Rarität",
-                                  value: `${initialAttribute.shortDisplay} ${initialAttribute.displayName}`.trim(),
+                                  value: `${rarityAttribute.shortDisplay} ${rarityAttribute.displayName}`.trim(),
                                   inline: true,
                               },
                           ]
