@@ -295,7 +295,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         titleText: "Ein warmes Oettinger",
         dropDescription: "Ja dann Prost ne!",
         emote: "🍺",
-        asset: "assets/loot/16-oettinger.jpg",
+        asset: "assets/loot/16-oettinger.png",
         initialAttributes: [LootAttributeKindId.NUTRI_SCORE_B], // Ref: https://archive.is/aonnZ
     },
     [LootKindId.ACHIEVEMENT]: {
