@@ -48,6 +48,7 @@ export enum LootKindId {
     AWS_RECHNUNG = 35,
     BIBER = 36,
     BLEI = 37,
+    USV = 38,
 }
 
 export enum LootAttributeClassId {
@@ -506,6 +507,16 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         dropDescription: "Ganz schön schwer.",
         emote: ":rock:",
         asset: "assets/loot/37-blei.png",
+        initialAttributes: [],
+    },
+    [LootKindId.USV]: {
+        id: LootKindId.USV,
+        weight: 2,
+        displayName: "USV",
+        titleText: "Eine kaputte USV",
+        dropDescription: "Damit dir nie wieder der Strom ausgeht.",
+        emote: ":battery:",
+        asset: "assets/loot/38-usv.png",
         initialAttributes: [],
     },
 } as const;
