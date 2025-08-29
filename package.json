@@ -31,6 +31,7 @@
         "@napi-rs/canvas": "0.1.78",
         "@resvg/resvg-js": "^2.6.2",
         "@sentry/node": "^10.8.0",
+        "@snazzah/davey": "^0.1.6",
         "@spotify/web-api-ts-sdk": "^1.2.0",
         "@std/jsonc": "npm:@jsr/std__jsonc@^1.0.2",
         "better-sqlite3": "^12.2.0",
