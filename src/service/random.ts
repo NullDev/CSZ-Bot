@@ -33,7 +33,7 @@ export function randomEntry<T>(array: readonly T[]): T {
 }
 
 export function randomEntryWeighted<T>(
-    array: readonly Readonly<T>[],
+    array: readonly T[],
     weights: readonly number[],
 ): Readonly<T> {
     if (array.length === 0) {
