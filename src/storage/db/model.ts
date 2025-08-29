@@ -238,7 +238,6 @@ export interface LootTable extends AuditedTable {
     id: GeneratedAlways<LootId>;
 
     displayName: string;
-    description: string;
     lootKindId: number;
     winnerId: string;
     /** Different from createdAt. If the item is replaced, this may be copied form the previous loot item */

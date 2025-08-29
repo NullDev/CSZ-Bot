@@ -57,7 +57,6 @@ async function hatchEgg(context: BotContext, egg: Loot) {
         egg.id,
         {
             displayName: animal.displayName,
-            description: animal.infoDescription ?? animal.dropDescription,
             lootKindId: animal.id,
             winnerId: egg.winnerId,
             claimedAt: egg.claimedAt,

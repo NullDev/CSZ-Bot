@@ -31,7 +31,6 @@ export async function degradeItems(_context: BotContext) {
             k.id,
             {
                 displayName: "Verschimmelter Döner",
-                description: "Du hättest ihn früher essen sollen",
                 lootKindId: LootKindId.VERSCHIMMELTER_DOENER,
                 winnerId: k.winnerId,
                 claimedAt: k.claimedAt,
@@ -118,7 +117,6 @@ export async function runHalfLife(context: BotContext) {
             l.id,
             {
                 displayName: leadTemplate.displayName,
-                description: leadTemplate.infoDescription ?? leadTemplate.dropDescription,
                 lootKindId: leadTemplate.id,
                 winnerId: l.winnerId,
                 claimedAt: l.claimedAt,
