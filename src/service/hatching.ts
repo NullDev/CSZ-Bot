@@ -24,7 +24,7 @@ export async function hatchEggs(context: BotContext) {
             continue;
         }
 
-        if (!randomService.randomBoolean(0.05)) {
+        if (!randomService.randomBoolean(0.1)) {
             log.debug(`Egg ${e.id} not hatching this time`);
             continue;
         }
