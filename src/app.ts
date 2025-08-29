@@ -141,7 +141,7 @@ login().then(
 );
 
 let botContext: BotContext;
-client.once("ready", async initializedClient => {
+client.once("clientReady", async initializedClient => {
     try {
         botContext = await createBotContext(initializedClient);
 
@@ -252,7 +252,7 @@ client.on("presenceUpdate", async (oldPresence, newPresence) => {
 
 function login() {
     return new Promise<Client<true>>(resolve => {
-        client.once("ready", resolve);
+        client.once("clientReady", resolve);
         client.login(config.auth.token);
     });
 }
