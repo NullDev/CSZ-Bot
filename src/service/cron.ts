@@ -47,7 +47,7 @@ export async function schedule(context: BotContext) {
     cron("*/15 * * * *", () => checkExpiredShifts(context));
     cron("0 20 * * FRI", () => getTrichterUnserEmbed(context));
     cron("0 * * * *", () => degradeItems(context));
-    cron("15 * * * *", () => hatchEggs(context));
+    cron("21 * * * *", () => hatchEggs(context));
     cron("26 18,19 * * *", () => exposeWithRadiation(context));
     cron("15 18 * * *", () => runHalfLife(context));
 

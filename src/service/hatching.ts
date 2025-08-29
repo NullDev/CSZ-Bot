@@ -20,10 +20,12 @@ export async function hatchEggs(context: BotContext) {
     for (const e of eggs) {
         const itemAge = now - new Date(e.claimedAt).getTime();
         if (itemAge <= maxEggAge) {
+            log.debug(`Egg ${e.id} is not old enough to hatch yet (${itemAge} < ${maxEggAge})`);
             continue;
         }
 
-        if (!randomService.randomBoolean(0.01)) {
+        if (!randomService.randomBoolean(0.05)) {
+            log.debug(`Egg ${e.id} not hatching this time`);
             continue;
         }
 
