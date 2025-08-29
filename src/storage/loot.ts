@@ -97,7 +97,6 @@ export async function createLoot(
             .insertInto("loot")
             .values({
                 displayName: template.displayName,
-                description: template.dropDescription,
                 lootKindId: template.id,
                 winnerId: winner.id,
                 claimedAt: now.toISOString(),
