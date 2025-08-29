@@ -24,6 +24,10 @@ export function randomValue(range: Range): number {
     return Math.round(range.min + Math.random() * (upperLimit - range.min));
 }
 
+export function randomBoolean(trueProbability = 0.5): boolean {
+    return Math.random() < trueProbability;
+}
+
 export function randomEntry<T>(array: readonly T[]): T {
     return array[(array.length * Math.random()) | 0];
 }
