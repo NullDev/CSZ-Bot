@@ -5,7 +5,8 @@ import { createCanvas, loadImage } from "@napi-rs/canvas";
 
 import type { BotContext } from "@/context.js";
 import type { Loot } from "@/storage/db/model.js";
-import type { LootTemplate } from "src/storage/loot.js";
+import type { LootTemplate } from "@/storage/loot.js";
+import * as fontService from "@/service/font.js";
 
 const namePos = { x: 38, y: 567 };
 const avatarPos = { x: 775, y: 221 };
@@ -44,6 +45,11 @@ export async function drawBahncardImage(
               };
 
     ctx.drawImage(avatar, avatarPos.x, avatarPos.y, avatarSize.width, avatarSize.height);
+
+    ctx.font = `38px ${fontService.names.dbNeoBlack}`;
+    ctx.fillStyle = "#ffffff";
+    ctx.textBaseline = "top";
+    ctx.fillText(owner.displayName, namePos.x, namePos.y, 600);
 
     return await canvas.encode("png");
 }
