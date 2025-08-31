@@ -10,6 +10,14 @@ import {
     ActionRowBuilder,
     MessageFlags,
 } from "discord.js";
+import {
+    type Canvas,
+    createCanvas,
+    loadImage,
+    type CanvasTextBaseline,
+    type CanvasTextAlign,
+    type Image,
+} from "@napi-rs/canvas";
 
 import type { ApplicationCommand } from "@/commands/command.js";
 import type { BotContext } from "@/context.js";
@@ -17,17 +25,9 @@ import assertNever from "@/utils/assertNever.js";
 import { getPlaybackStats, setUserRegistration, type TrackStat } from "@/service/lauscher.js";
 import { Temporal } from "@js-temporal/polyfill";
 import { truncateToLength } from "@/utils/stringUtils.js";
-import {
-    type Canvas,
-    createCanvas,
-    GlobalFonts,
-    loadImage,
-    type CanvasTextBaseline,
-    type CanvasTextAlign,
-    type Image,
-} from "@napi-rs/canvas";
 import { chunkArray } from "@/utils/arrayUtils.js";
 import { Vec2 } from "@/utils/math.js";
+import * as fontService from "@/service/font.js";
 
 type SubCommand = "aktivierung" | "stats";
 
@@ -39,9 +39,6 @@ const intervals = {
     last_year: Temporal.Duration.from({ years: 1 }),
     all_time: Temporal.Duration.from({ years: 100 }),
 };
-
-GlobalFonts.registerFromPath("assets/fonts/OpenSans-VariableFont_wdth,wght.ttf", "Open Sans");
-GlobalFonts.registerFromPath("assets/fonts/AppleColorEmoji@2x.ttf", "Apple Emoji");
 
 const placeSymbols: Record<number, string> = {
     1: "🥇",
@@ -121,7 +118,7 @@ async function drawTrackToplistCanvas(_user: User, tracks: TrackWithCover[]): Pr
             "left",
             "bottom",
             "#7f7f7f",
-            "16px Open Sans",
+            `16px ${fontService.names.openSans}`,
             truncateToLength(entry.formattedArtists, 50),
         );
         drawText(
@@ -129,7 +126,7 @@ async function drawTrackToplistCanvas(_user: User, tracks: TrackWithCover[]): Pr
             "left",
             "top",
             "#ffffff",
-            "30px Open Sans",
+            `30px ${fontService.names.openSans}`,
             truncateToLength(entry.name, 50),
         );
 
@@ -139,7 +136,7 @@ async function drawTrackToplistCanvas(_user: User, tracks: TrackWithCover[]): Pr
             "right",
             "middle",
             "#ffffff",
-            "30px Open Sans",
+            `30px ${fontService.names.openSans}`,
             `${entry.count}x`,
         );
 
@@ -150,10 +147,24 @@ async function drawTrackToplistCanvas(_user: User, tracks: TrackWithCover[]): Pr
         ctx.drawImage(image, pos.x, pos.y, size.x, size.y);
     }
     function drawEmojiCentered(sizePx: number, centerPos: Vec2, symbol: string) {
-        drawText(centerPos, "center", "middle", "#fff", `${sizePx}px Apple Emoji`, symbol);
+        drawText(
+            centerPos,
+            "center",
+            "middle",
+            "#fff",
+            `${sizePx}px ${fontService.names.appleEmoji}`,
+            symbol,
+        );
     }
     function drawTextCentered(sizePx: number, centerPos: Vec2, text: string) {
-        drawText(centerPos, "center", "middle", "#fff", `bold ${sizePx}px Open Sans`, text);
+        drawText(
+            centerPos,
+            "center",
+            "middle",
+            "#fff",
+            `bold ${sizePx}px ${fontService.names.openSans}`,
+            text,
+        );
     }
     function drawText(
         pos: Vec2,
