@@ -58,6 +58,14 @@ export interface LootTemplate {
      * Image that should be used for the item on its info card. Order matters, the first one that is there will be used.
      */
     attributeAsset?: Partial<Record<LootAttributeKindId, string>>;
+
+    /** Can be used to create a customized image for display. */
+    drawCustomAsset?: (
+        context: BotContext,
+        owner: User,
+        loot: Loot,
+        // TODO: attributes: readonly LootAttributeKindId[],
+    ) => Promise<Buffer>;
 }
 
 export interface LootAttributeTemplate {

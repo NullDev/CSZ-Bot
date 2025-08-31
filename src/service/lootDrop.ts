@@ -181,7 +181,11 @@ export async function postLootDrop(
 
     const winner = await context.guild.members.fetch(claimedLoot.winnerId);
 
-    const attachment = template.asset ? await fs.readFile(template.asset) : null;
+    const attachment = template.drawCustomAsset
+        ? await template.drawCustomAsset(context, winner.user, claimedLoot)
+        : template.asset
+          ? await fs.readFile(template.asset)
+          : null;
 
     await message.edit({
         embeds: [

@@ -171,20 +171,29 @@ export default class GegenstandCommand implements ApplicationCommand {
 
         const otherAttributes = lootDataService.extractNonRarityAttributes(attributes);
 
-        let assetPath = template.asset;
-        if (template.attributeAsset) {
-            for (const attribute of otherAttributes) {
-                const asset =
-                    template.attributeAsset[attribute.attributeKindId as LootAttributeKindId];
-                if (asset) {
-                    assetPath = asset;
-                    break;
+        let assetBuffer = null;
+        if (template.drawCustomAsset) {
+            assetBuffer = await template.drawCustomAsset(_context, interaction.user, item);
+        } else {
+            let assetPath = template.asset;
+            if (template.attributeAsset) {
+                for (const attribute of otherAttributes) {
+                    const asset =
+                        template.attributeAsset[attribute.attributeKindId as LootAttributeKindId];
+                    if (asset) {
+                        assetPath = asset;
+                        break;
+                    }
                 }
+            }
+
+            if (assetPath) {
+                assetBuffer = await fs.readFile(assetPath);
             }
         }
 
-        const attachment = assetPath
-            ? await imageService.clampImageSizeByWidth(await fs.readFile(assetPath), 200)
+        const attachment = assetBuffer
+            ? await imageService.clampImageSizeByWidth(assetBuffer, 200)
             : null;
 
         const extraFields: (APIEmbedField | undefined)[] = [
