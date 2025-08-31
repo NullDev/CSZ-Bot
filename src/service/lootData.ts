@@ -49,6 +49,7 @@ export enum LootKindId {
     BIBER = 36,
     BLEI = 37,
     USV = 38,
+    BAHNCARD = 39,
 }
 
 export enum LootAttributeClassId {
@@ -517,6 +518,16 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         dropDescription: "Damit dir nie wieder der Strom ausgeht.",
         emote: ":battery:",
         asset: "assets/loot/38-usv.png",
+        initialAttributes: [],
+    },
+    [LootKindId.BAHNCARD]: {
+        id: LootKindId.BAHNCARD,
+        weight: 3,
+        displayName: "BahnCard 100",
+        titleText: "Eine BahnCard 100",
+        dropDescription: "Fahr damit überall hin, sogar in die Arbeit!",
+        emote: ":train:",
+        asset: "assets/loot/39-bahncard.png",
         initialAttributes: [],
     },
 } as const;
