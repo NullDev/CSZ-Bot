@@ -2,11 +2,11 @@ import type { LootAttributeTemplate, LootTemplate } from "@/storage/loot.js";
 
 import * as lootDropService from "@/service/lootDrop.js";
 import * as emoteService from "@/service/emote.js";
-import { GuildMember, User, type Guild } from "discord.js";
+import * as bahnCardService from "@/service/bahncard.js";
+import { GuildMember, type Guild } from "discord.js";
 import type { Loot, LootAttribute } from "@/storage/db/model.js";
 
 import log from "@log";
-import { BotContext } from "src/context.js";
 
 const ACHTUNG_NICHT_DROPBAR_WEIGHT_KG = 0;
 
@@ -530,9 +530,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         emote: ":train:",
         asset: "assets/loot/39-bahncard.png",
         initialAttributes: [],
-        drawCustomAsset: async (context: BotContext, owner: User, loot: Loot) => {
-            throw new Error("Not implemented");
-        },
+        drawCustomAsset: bahnCardService.drawBahncardImage,
     },
 } as const;
 

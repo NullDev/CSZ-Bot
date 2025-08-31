@@ -146,7 +146,7 @@ export default class GegenstandCommand implements ApplicationCommand {
         });
     }
 
-    async #showItemInfo(interaction: CommandInteraction, _context: BotContext) {
+    async #showItemInfo(interaction: CommandInteraction, context: BotContext) {
         if (!interaction.isChatInputCommand()) {
             throw new Error("Interaction is not a chat input command");
         }
@@ -173,7 +173,7 @@ export default class GegenstandCommand implements ApplicationCommand {
 
         let assetBuffer = null;
         if (template.drawCustomAsset) {
-            assetBuffer = await template.drawCustomAsset(_context, interaction.user, item);
+            assetBuffer = await template.drawCustomAsset(context, interaction.user, template, item);
         } else {
             let assetPath = template.asset;
             if (template.attributeAsset) {

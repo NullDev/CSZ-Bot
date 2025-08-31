@@ -63,6 +63,7 @@ export interface LootTemplate {
     drawCustomAsset?: (
         context: BotContext,
         owner: User,
+        template: LootTemplate,
         loot: Loot,
         // TODO: attributes: readonly LootAttributeKindId[],
     ) => Promise<Buffer>;
