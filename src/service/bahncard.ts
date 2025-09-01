@@ -20,7 +20,7 @@ const dateFormat = new Intl.DateTimeFormat("de", {
     dateStyle: "medium",
 });
 
-export async function drawBahncardImage(
+export async function drawBahncard100Image(
     _context: BotContext,
     owner: User,
     template: LootTemplate,

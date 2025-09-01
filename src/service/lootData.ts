@@ -528,9 +528,9 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         titleText: "Eine BahnCard 25",
         dropDescription: "Fahr damit überall hin, sogar in die Arbeit!",
         emote: ":train:",
-        asset: "assets/loot/39-bahncard.png",
+        asset: "assets/loot/39-bahncard-25.png",
         initialAttributes: [],
-        drawCustomAsset: bahnCardService.drawBahncardImage,
+        drawCustomAsset: bahnCardService.drawBahncard100Image,
     },
     [LootKindId.BAHNCARD_50]: {
         id: LootKindId.BAHNCARD_50,
@@ -539,9 +539,9 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         titleText: "Eine BahnCard 50",
         dropDescription: "Fahr damit überall hin, sogar in die Arbeit!",
         emote: ":train:",
-        asset: "assets/loot/39-bahncard.png",
+        asset: "assets/loot/40-bahncard-50.png",
         initialAttributes: [],
-        drawCustomAsset: bahnCardService.drawBahncardImage,
+        drawCustomAsset: bahnCardService.drawBahncard100Image,
     },
     [LootKindId.BAHNCARD_100]: {
         id: LootKindId.BAHNCARD_100,
@@ -550,9 +550,9 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         titleText: "Eine BahnCard 100",
         dropDescription: "Fahr damit überall hin, sogar in die Arbeit!",
         emote: ":train:",
-        asset: "assets/loot/39-bahncard.png",
+        asset: "assets/loot/41-bahncard-100.png",
         initialAttributes: [],
-        drawCustomAsset: bahnCardService.drawBahncardImage,
+        drawCustomAsset: bahnCardService.drawBahncard100Image,
     },
 } as const;
 
