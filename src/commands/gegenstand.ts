@@ -291,11 +291,6 @@ export default class GegenstandCommand implements ApplicationCommand {
         if (!keepInInventory) {
             await lootService.deleteLoot(item.id);
         }
-
-        await interaction.reply({
-            content: "Ok.",
-            flags: MessageFlags.Ephemeral,
-        });
     }
 
     async #fetchItem(interaction: ChatInputCommandInteraction) {
