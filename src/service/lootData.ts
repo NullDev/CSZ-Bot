@@ -48,7 +48,9 @@ export enum LootKindId {
     BIBER = 36,
     BLEI = 37,
     USV = 38,
-    BAHNCARD = 39,
+    BAHNCARD_25 = 39,
+    BAHNCARD_50 = 40,
+    BAHNCARD_100 = 41,
 }
 
 export enum LootAttributeClassId {
@@ -519,9 +521,31 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         asset: "assets/loot/38-usv.png",
         initialAttributes: [],
     },
-    [LootKindId.BAHNCARD]: {
-        id: LootKindId.BAHNCARD,
+    [LootKindId.BAHNCARD_25]: {
+        id: LootKindId.BAHNCARD_25,
+        weight: 5,
+        displayName: "BahnCard 25",
+        titleText: "Eine BahnCard 25",
+        dropDescription: "Fahr damit überall hin, sogar in die Arbeit!",
+        emote: ":train:",
+        asset: "assets/loot/39-bahncard.png",
+        initialAttributes: [],
+        drawCustomAsset: bahnCardService.drawBahncardImage,
+    },
+    [LootKindId.BAHNCARD_50]: {
+        id: LootKindId.BAHNCARD_50,
         weight: 3,
+        displayName: "BahnCard 50",
+        titleText: "Eine BahnCard 50",
+        dropDescription: "Fahr damit überall hin, sogar in die Arbeit!",
+        emote: ":train:",
+        asset: "assets/loot/39-bahncard.png",
+        initialAttributes: [],
+        drawCustomAsset: bahnCardService.drawBahncardImage,
+    },
+    [LootKindId.BAHNCARD_100]: {
+        id: LootKindId.BAHNCARD_100,
+        weight: ACHTUNG_NICHT_DROPBAR_WEIGHT_KG,
         displayName: "BahnCard 100",
         titleText: "Eine BahnCard 100",
         dropDescription: "Fahr damit überall hin, sogar in die Arbeit!",
