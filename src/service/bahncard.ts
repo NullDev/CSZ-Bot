@@ -10,10 +10,11 @@ import * as fontService from "@/service/font.js";
 import { Vec2 } from "@/utils/math.js";
 
 const namePos = new Vec2(38, 567);
-const avatarPos = new Vec2(775, 221);
-const createdAtPos = new Vec2(798, 501);
-const validUntilPos = new Vec2(736, 553);
-const avatarMaxSize = { width: 160, height: 160 };
+const avatarPos = new Vec2(790, 230);
+const createdAtPos = new Vec2(798, 532);
+const validUntilPos = new Vec2(965, 553);
+const numberPos = new Vec2(38, 537);
+const avatarMaxSize = { width: 180, height: 180 };
 
 const dateFormat = new Intl.DateTimeFormat("de", {
     dateStyle: "medium",
@@ -63,17 +64,26 @@ export async function drawBahncardImage(
     );
 
     drawText(
+        numberPos,
+        "left",
+        "bottom",
+        "#ffffff",
+        `38px ${fontService.names.dbNeoBlack}`,
+        groupDigits(owner.id.toString()),
+    );
+
+    drawText(
         createdAtPos,
         "left",
-        "top",
+        "bottom",
         "#ffffff",
-        `30px ${fontService.names.dbNeoBlack}`,
+        `23px ${fontService.names.dbNeoBlack}`,
         dateFormat.format(new Date(loot.claimedAt)),
     );
 
     drawText(
         validUntilPos,
-        "left",
+        "right",
         "top",
         "#ffffff",
         `54px ${fontService.names.dbNeoBlack}`,
@@ -98,4 +108,15 @@ export async function drawBahncardImage(
         ctx.fillText(text, pos.x, pos.y);
         ctx.restore();
     }
+}
+
+function groupDigits(input: string): string {
+    let res = "";
+    for (let i = 0; i < input.length; i++) {
+        res += input[i];
+        if (i !== 0 && i % 4 === 3) {
+            res += " ";
+        }
+    }
+    return res;
 }
