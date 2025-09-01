@@ -6,8 +6,6 @@ import * as bahnCardService from "@/service/bahncard.js";
 import { GuildMember, type Guild } from "discord.js";
 import type { Loot, LootAttribute } from "@/storage/db/model.js";
 
-import log from "@log";
-
 const ACHTUNG_NICHT_DROPBAR_WEIGHT_KG = 0;
 
 export enum LootKindId {
