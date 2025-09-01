@@ -20,11 +20,13 @@ const dateFormat = new Intl.DateTimeFormat("de", {
     dateStyle: "medium",
 });
 
-export async function drawBahncard100Image(
+export async function drawBahncardImage(
     _context: BotContext,
     owner: User,
     template: LootTemplate,
     loot: Loot,
+    drawAvatar: boolean,
+    serialNumber: string,
 ): Promise<Buffer> {
     // biome-ignore lint/style/noNonNullAssertion: We check for assetPath below
     const assetPath = template.asset!;
@@ -36,23 +38,25 @@ export async function drawBahncard100Image(
 
     ctx.drawImage(backgroundImage, 0, 0);
 
-    const avatar = await loadImage(
-        owner.displayAvatarURL({ forceStatic: true, extension: "png", size: 256 }),
-    );
+    if (drawAvatar) {
+        const avatar = await loadImage(
+            owner.displayAvatarURL({ forceStatic: true, extension: "png", size: 256 }),
+        );
 
-    const aspectRatio = avatar.width / avatar.height;
-    const avatarSize =
-        aspectRatio > 1
-            ? {
-                  width: avatarMaxSize.width,
-                  height: avatarMaxSize.width / aspectRatio,
-              }
-            : {
-                  width: avatarMaxSize.height * aspectRatio,
-                  height: avatarMaxSize.height,
-              };
+        const aspectRatio = avatar.width / avatar.height;
+        const avatarSize =
+            aspectRatio > 1
+                ? {
+                      width: avatarMaxSize.width,
+                      height: avatarMaxSize.width / aspectRatio,
+                  }
+                : {
+                      width: avatarMaxSize.height * aspectRatio,
+                      height: avatarMaxSize.height,
+                  };
 
-    ctx.drawImage(avatar, avatarPos.x, avatarPos.y, avatarSize.width, avatarSize.height);
+        ctx.drawImage(avatar, avatarPos.x, avatarPos.y, avatarSize.width, avatarSize.height);
+    }
 
     drawText(
         namePos,
@@ -69,7 +73,7 @@ export async function drawBahncard100Image(
         "bottom",
         "#ffffff",
         `38px ${fontService.names.dbNeoBlack}`,
-        groupDigits(owner.id.toString()),
+        groupDigits(serialNumber),
     );
 
     drawText(

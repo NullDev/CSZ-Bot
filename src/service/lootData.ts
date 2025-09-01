@@ -530,7 +530,15 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         emote: ":train:",
         asset: "assets/loot/39-bahncard-25.png",
         initialAttributes: [],
-        drawCustomAsset: bahnCardService.drawBahncard100Image,
+        drawCustomAsset: (context, owner, template, loot) =>
+            bahnCardService.drawBahncardImage(
+                context,
+                owner,
+                template,
+                loot,
+                false,
+                [...owner.id].map(n => (Number(n) * 7) % 10).join(""),
+            ),
     },
     [LootKindId.BAHNCARD_50]: {
         id: LootKindId.BAHNCARD_50,
@@ -541,7 +549,15 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         emote: ":train:",
         asset: "assets/loot/40-bahncard-50.png",
         initialAttributes: [],
-        drawCustomAsset: bahnCardService.drawBahncard100Image,
+        drawCustomAsset: (context, owner, template, loot) =>
+            bahnCardService.drawBahncardImage(
+                context,
+                owner,
+                template,
+                loot,
+                false,
+                [...owner.id].map(n => (Number(n) * 13) % 10).join(""),
+            ),
     },
     [LootKindId.BAHNCARD_100]: {
         id: LootKindId.BAHNCARD_100,
@@ -552,7 +568,8 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         emote: ":train:",
         asset: "assets/loot/41-bahncard-100.png",
         initialAttributes: [],
-        drawCustomAsset: bahnCardService.drawBahncard100Image,
+        drawCustomAsset: (context, owner, template, loot) =>
+            bahnCardService.drawBahncardImage(context, owner, template, loot, true, owner.id),
     },
 } as const;
 
