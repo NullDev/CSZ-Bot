@@ -14,7 +14,7 @@ const avatarPos = new Vec2(790, 230);
 const createdAtPos = new Vec2(798, 532);
 const validUntilPos = new Vec2(965, 553);
 const numberPos = new Vec2(38, 537);
-const avatarMaxSize = { width: 180, height: 180 };
+const avatarMaxSize = new Vec2(180, 180);
 
 const dateFormat = new Intl.DateTimeFormat("de", {
     dateStyle: "medium",
@@ -43,19 +43,11 @@ export async function drawBahncardImage(
             owner.displayAvatarURL({ forceStatic: true, extension: "png", size: 256 }),
         );
 
-        const aspectRatio = avatar.width / avatar.height;
-        const avatarSize =
-            aspectRatio > 1
-                ? {
-                      width: avatarMaxSize.width,
-                      height: avatarMaxSize.width / aspectRatio,
-                  }
-                : {
-                      width: avatarMaxSize.height * aspectRatio,
-                      height: avatarMaxSize.height,
-                  };
+        const scale = Math.min(avatarMaxSize.x / avatar.width, avatarMaxSize.y / avatar.height);
 
-        ctx.drawImage(avatar, avatarPos.x, avatarPos.y, avatarSize.width, avatarSize.height);
+        const avatarSize = new Vec2(avatar.width, avatar.height).scale(scale);
+
+        ctx.drawImage(avatar, avatarPos.x, avatarPos.y, avatarSize.x, avatarSize.y);
     }
 
     drawText(
