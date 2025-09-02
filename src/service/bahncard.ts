@@ -63,7 +63,8 @@ export async function drawBahncardImage(
         "left",
         "top",
         "#ffffff",
-        `38px ${fontService.names.dbNeoBlack}`,
+        "38px",
+        fontService.names.dbNeoBlack,
         owner.displayName,
     );
 
@@ -72,7 +73,8 @@ export async function drawBahncardImage(
         "left",
         "bottom",
         "#ffffff",
-        `38px ${fontService.names.dbNeoBlack}`,
+        "38px",
+        fontService.names.dbNeoBlack,
         groupDigits(serialNumber),
     );
 
@@ -81,7 +83,8 @@ export async function drawBahncardImage(
         "left",
         "bottom",
         "#ffffff",
-        `23px ${fontService.names.dbNeoBlack}`,
+        "23px",
+        fontService.names.dbNeoBlack,
         dateFormat.format(new Date(loot.claimedAt)),
     );
 
@@ -90,7 +93,8 @@ export async function drawBahncardImage(
         "right",
         "top",
         "#ffffff",
-        `54px ${fontService.names.dbNeoBlack}`,
+        "54px",
+        fontService.names.dbNeoBlack,
         dateFormat.format(new Date("2038-01-19")),
     );
 
@@ -101,11 +105,12 @@ export async function drawBahncardImage(
         textAlign: CanvasTextAlign,
         baseLine: CanvasTextBaseline,
         color: string,
-        font: string,
+        fontSize: string,
+        fontName: string,
         text: string,
     ) {
         ctx.save();
-        ctx.font = font;
+        ctx.font = `${fontSize} ${fontName}`;
         ctx.fillStyle = color;
         ctx.textAlign = textAlign;
         ctx.textBaseline = baseLine;
