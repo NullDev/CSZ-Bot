@@ -171,7 +171,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
     },
     [LootKindId.WUERFELWURF]: {
         id: LootKindId.WUERFELWURF,
-        weight: 5,
+        weight: 4,
         displayName: "Würfelwurf",
         titleText: "Einen Wurf mit einem Würfel",
         dropDescription: "🎲",
@@ -330,7 +330,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
     },
     [LootKindId.HOMEPOD]: {
         id: LootKindId.HOMEPOD,
-        weight: 5,
+        weight: 3,
         displayName: "HomePod",
         titleText: "Einen Apple:registered: HomePod:copyright:",
         dropDescription: 'Damit dein "Smart Home" nicht mehr ganz so smart ist',
@@ -475,7 +475,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
     },
     [LootKindId.KAFFEEMUEHLE]: {
         id: LootKindId.KAFFEEMUEHLE,
-        weight: 2,
+        weight: 1,
         displayName: "Kaffeemühle",
         titleText: "Eine Kaffeemühle für 400€",
         dropDescription: "Kann Kaffee mühlen. Und das gut. Mit Gold.",
@@ -484,7 +484,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
     },
     [LootKindId.AWS_RECHNUNG]: {
         id: LootKindId.AWS_RECHNUNG,
-        weight: 2,
+        weight: 1,
         displayName: "AWS-Rechnung",
         titleText: "Ne dicke AWS-Rechnung",
         dropDescription: "Hast du schon versucht, in die Cloud zu gehen?",
@@ -523,7 +523,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
     },
     [LootKindId.BAHNCARD_25]: {
         id: LootKindId.BAHNCARD_25,
-        weight: 5,
+        weight: 6,
         displayName: "BahnCard 25",
         titleText: "Eine BahnCard 25",
         dropDescription: "Fahr damit überall hin, sogar in die Arbeit!",
