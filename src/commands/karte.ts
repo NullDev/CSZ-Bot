@@ -1,4 +1,4 @@
-import {ApplicationCommand} from "@/commands/command.js";
+import { ApplicationCommand } from "@/commands/command.js";
 import {
     ActionRowBuilder,
     ButtonBuilder,
@@ -7,12 +7,12 @@ import {
     type CommandInteraction,
     ComponentType,
     SlashCommandBuilder,
-    User
+    User,
 } from "discord.js";
 import fs from "node:fs/promises";
-import {createCanvas, loadImage, SKRSContext2D} from "@napi-rs/canvas";
-import {getAllPostions, getPositionForUser, MapPosition, move} from "@/storage/mapPosition.js";
-import {BotContext} from "@/context.js";
+import { createCanvas, loadImage, SKRSContext2D } from "@napi-rs/canvas";
+import { getAllPostions, getPositionForUser, MapPosition, move } from "@/storage/mapPosition.js";
+import { BotContext } from "@/context.js";
 
 export default class KarteCommand implements ApplicationCommand {
     name = "karte";
@@ -20,7 +20,6 @@ export default class KarteCommand implements ApplicationCommand {
     applicationCommand = new SlashCommandBuilder()
         .setName(this.name)
         .setDescription(this.description);
-
 
     async handleInteraction(command: CommandInteraction<CacheType>, context: BotContext) {
         if (!command.isChatInputCommand()) {
@@ -34,7 +33,11 @@ export default class KarteCommand implements ApplicationCommand {
             throw new Error("Couldn't resolve guild member");
         }
 
-        const directions = [["NW", "N", "NE"], ["W", "X", "E"], ["SW", "S", "SE"]];
+        const directions = [
+            ["NW", "N", "NE"],
+            ["W", "X", "E"],
+            ["SW", "S", "SE"],
+        ];
 
         const rows = [];
         for (const directionrow of directions) {
@@ -45,8 +48,7 @@ export default class KarteCommand implements ApplicationCommand {
                     .setLabel(direction);
                 if (direction === "X") {
                     button.setStyle(ButtonStyle.Danger);
-                }
-                else {
+                } else {
                     button.setStyle(ButtonStyle.Secondary);
                 }
                 row.addComponents(button);
@@ -54,7 +56,6 @@ export default class KarteCommand implements ApplicationCommand {
             rows.push(row);
         }
         const map = await this.buildMap(await getPositionForUser(author.id), command.user, context);
-
 
         const sentReply = await command.reply({
             fetchReply: true,
@@ -65,42 +66,47 @@ export default class KarteCommand implements ApplicationCommand {
                     color: 0x00ff00,
 
                     image: {
-                        url: `attachment://Karte.png`
-                    }
-                }
+                        url: `attachment://Karte.png`,
+                    },
+                },
             ],
             files: [
                 {
                     name: "Karte.png",
-                    attachment: map
-                }
+                    attachment: map,
+                },
             ],
-            components: rows
+            components: rows,
         });
         const collector = sentReply.createMessageComponentCollector({
             componentType: ComponentType.Button,
-            time: 45_000
+            time: 45_000,
         });
         collector.on("collect", async i => {
-            const playerpos = await move(i.user.id, i.customId.valueOf().replace("map_", "") as Direction);
+            const playerpos = await move(
+                i.user.id,
+                i.customId.valueOf().replace("map_", "") as Direction,
+            );
             await i.message.edit({
                 files: [
                     {
                         name: "Karte.png",
-                        attachment: await this.buildMap(playerpos, i.user, context)
-                    }
-                ]
+                        attachment: await this.buildMap(playerpos, i.user, context),
+                    },
+                ],
             });
             await i.deferUpdate();
         });
         collector.on("dispose", async i => {
             await i.deleteReply("@original");
         });
-
     }
 
-    private async buildMap(position: MapPosition, user: User, context: BotContext): Promise<Buffer> {
-
+    private async buildMap(
+        position: MapPosition,
+        user: User,
+        context: BotContext,
+    ): Promise<Buffer> {
         const background = await fs.readFile("assets/maps/CSZ Karte V1.png");
         const backgroundImage = await loadImage(background);
         const canvas = createCanvas(backgroundImage.width, backgroundImage.height);
@@ -118,29 +124,47 @@ export default class KarteCommand implements ApplicationCommand {
         return canvas.toBuffer("image/png");
     }
 
-    private async drawPlayer(ctx: SKRSContext2D, position: MapPosition, user: User, size: "small" | "large") {
-
-
+    private async drawPlayer(
+        ctx: SKRSContext2D,
+        position: MapPosition,
+        user: User,
+        size: "small" | "large",
+    ) {
         ctx.beginPath();
         ctx.strokeStyle = size == "large" ? "blue" : "grey";
         ctx.lineWidth = size == "large" ? 3 : 1;
         const radius = size == "large" ? 32 : 16;
-        ctx.arc(position.x * stepfactor + radius, position.y * stepfactor + radius, radius, 0, 2 * Math.PI);
+        ctx.arc(
+            position.x * stepfactor + radius,
+            position.y * stepfactor + radius,
+            radius,
+            0,
+            2 * Math.PI,
+        );
         ctx.stroke();
         let textMetrics = ctx.measureText(position.userid);
         //Todo here funny pixelcounting to center the text
         ctx.strokeStyle = "blue";
         ctx.lineWidth = 1;
 
-        ctx.strokeText(user.displayName, position.x * stepfactor, position.y * stepfactor +(  size == "large" ? 75 : 40));
+        ctx.strokeText(
+            user.displayName,
+            position.x * stepfactor,
+            position.y * stepfactor + (size == "large" ? 75 : 40),
+        );
         const avatarURL = user.avatarURL({
-            size: size == "large" ? 64 : 32
-
+            size: size == "large" ? 64 : 32,
         });
         let avatar = await loadImage(avatarURL!);
         ctx.save();
         ctx.beginPath();
-        ctx.arc(position.x * stepfactor + radius, position.y * stepfactor + radius, radius, 0, 2 * Math.PI);
+        ctx.arc(
+            position.x * stepfactor + radius,
+            position.y * stepfactor + radius,
+            radius,
+            0,
+            2 * Math.PI,
+        );
         ctx.closePath();
         ctx.clip();
 
@@ -152,4 +176,3 @@ export default class KarteCommand implements ApplicationCommand {
 export type Direction = "NW" | "N" | "NE" | "W" | "X" | "E" | "SW" | "S" | "SE";
 
 const stepfactor = 32;
-

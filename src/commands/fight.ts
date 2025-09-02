@@ -73,6 +73,10 @@ export default class FightCommand implements ApplicationCommand {
         );
 
     async handleInteraction(command: CommandInteraction, context: BotContext) {
+        if (!command.isChatInputCommand()) {
+            throw new Error("Invalid command type");
+        }
+
         const boss = command.options.get("boss", true).value as string;
 
         const lastFight = await getLastFight(command.user.id);

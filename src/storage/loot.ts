@@ -60,6 +60,15 @@ export interface LootTemplate {
      * Image that should be used for the item on its info card. Order matters, the first one that is there will be used.
      */
     attributeAsset?: Partial<Record<LootAttributeKindId, string>>;
+
+    /** Can be used to create a customized image for display. */
+    drawCustomAsset?: (
+        context: BotContext,
+        owner: User,
+        template: LootTemplate,
+        loot: Loot,
+        // TODO: attributes: readonly LootAttributeKindId[],
+    ) => Promise<Buffer>;
 }
 
 export interface LootAttributeTemplate {
@@ -99,9 +108,7 @@ export async function createLoot(
             .insertInto("loot")
             .values({
                 displayName: template.displayName,
-                description: template.dropDescription,
                 lootKindId: template.id,
-                usedImage: template.asset,
                 winnerId: winner.id,
                 claimedAt: now.toISOString(),
                 guildId: message?.guildId ?? "",
@@ -113,11 +120,15 @@ export async function createLoot(
             .returningAll()
             .executeTakeFirstOrThrow();
 
-        for (const attributeId of template.initialAttributes ?? []) {
-            const attribute = resolveLootAttributeTemplate(attributeId);
-            if (!attribute) continue;
+        if (template.initialAttributes) {
+            for (const attributeId of template.initialAttributes) {
+                const attribute = resolveLootAttributeTemplate(attributeId);
+                if (!attribute) {
+                    continue;
+                }
 
-            await addLootAttributeIfNotPresent(res.id, attribute, ctx);
+                await addLootAttributeIfNotPresent(res.id, attribute, ctx);
+            }
         }
 
         if (rarityAttribute) {
@@ -257,8 +268,7 @@ export async function transferLootToUser(
         } as const;
 
         if ("id" in replacement) {
-            // @ts-ignore
-            // biome-ignore lint/performance/noDelete: Setting it to undefined would keep the key
+            // @ts-expect-error
             delete replacement.id;
         }
 
@@ -332,18 +342,22 @@ export async function getLootAttributes(lootId: LootId, ctx = db()) {
         .selectFrom("lootAttribute")
         .where("lootId", "=", lootId)
         .where(notDeleted)
-        .orderBy("lootAttribute.attributeKindId asc")
+        .orderBy("lootAttribute.attributeKindId", "asc")
         .selectAll()
         .execute();
 }
 
+/**
+ * Returns `true` if the attribute was added.
+ */
 export async function addLootAttributeIfNotPresent(
     lootId: LootId,
     attributeTemplate: LootAttributeTemplate,
     ctx = db(),
 ) {
-    return await ctx
+    const r = await ctx
         .insertInto("lootAttribute")
+        .orIgnore()
         .values({
             lootId,
             attributeKindId: attributeTemplate.id,
@@ -353,7 +367,6 @@ export async function addLootAttributeIfNotPresent(
             color: attributeTemplate.color,
             deletedAt: null,
         })
-        .onConflict(oc => oc.doNothing())
-        .returningAll()
-        .executeTakeFirstOrThrow();
+        .execute();
+    return r.length > 0;
 }

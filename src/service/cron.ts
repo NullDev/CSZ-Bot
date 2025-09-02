@@ -16,7 +16,8 @@ import { checkBirthdays } from "@/service/birthday.js";
 import { handleFadingMessages } from "@/service/fadingMessage.js";
 import { checkExpiredShifts } from "@/service/lootRoles.js";
 import { getTrichterUnserEmbed } from "@/service/trichterUnser.js";
-import { degradeItems, exposeWithRadiation } from "@/service/lootDegradation.js";
+import { degradeItems, exposeWithRadiation, runHalfLife } from "@/service/lootDegradation.js";
+import { hatchEggs } from "@/service/hatching.js";
 
 import * as poll from "@/commands/poll.js";
 import * as ehre from "@/storage/ehre.js";
@@ -46,15 +47,17 @@ export async function schedule(context: BotContext) {
     cron("*/15 * * * *", () => checkExpiredShifts(context));
     cron("0 20 * * FRI", () => getTrichterUnserEmbed(context));
     cron("0 * * * *", () => degradeItems(context));
+    cron("26 * * * *", () => hatchEggs(context));
     cron("26 18,19 * * *", () => exposeWithRadiation(context));
+    cron("15 18 * * *", () => runHalfLife(context));
 
     const loot = context.commandConfig.loot;
     if (loot.enabled) {
         cron(loot.scheduleCron, () => runDropAttempt(context));
     }
 
-    cron("2022-04-01T00:00:00", () => startAprilFools(context));
-    cron("2022-04-02T00:00:00", () => endAprilFools(context));
+    cron("2025-04-01T00:00:00", () => startAprilFools(context));
+    cron("2025-04-02T00:00:00", () => endAprilFools(context));
 
     await poll.importPolls();
     cron("* * * * *", () => poll.processPolls(context));

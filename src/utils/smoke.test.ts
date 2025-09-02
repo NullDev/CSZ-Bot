@@ -1,6 +1,9 @@
-import { describe, expect, test, beforeEach } from "bun:test";
+import { describe, test } from "node:test";
 
-import createDatabase from "@/storage/db/database-test-init.js";
+import { expect } from "expect";
+
+import { createDatabase, closeDatabase } from "@/storage/db/database-test-init.js";
+import defer from "@/utils/defer.js";
 
 import db from "@db";
 
@@ -11,9 +14,11 @@ describe("smoke", () => {
 });
 
 describe("database smoke", () => {
-    beforeEach(createDatabase);
-
     test("does database work?", async () => {
+        // TODO: Check if there is a builtin way of handling DB lifecycle
+        await createDatabase();
+        await using _ = defer(closeDatabase);
+
         const res = await db()
             .insertInto("birthdays")
             .values({
@@ -32,5 +37,21 @@ describe("database smoke", () => {
 
         const res2 = await db().selectFrom("birthdays").selectAll().executeTakeFirstOrThrow();
         expect(res).toStrictEqual(res2);
+    });
+
+    test("booleans supported?", async () => {
+        // TODO: Check if there is a builtin way of handling DB lifecycle
+        await createDatabase();
+        await using _ = defer(closeDatabase);
+
+        await db()
+            .insertInto("emoteUse")
+            .values({
+                channelId: "13",
+                emoteId: 37,
+                messageGuildId: "42",
+                isReaction: false,
+            })
+            .execute();
     });
 });

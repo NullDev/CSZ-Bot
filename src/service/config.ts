@@ -11,7 +11,9 @@ import log from "@log";
 const configPath = path.resolve("config.json");
 
 export async function readConfig() {
-    if (!(await fs.exists(configPath))) {
+    try {
+        await fs.stat(configPath);
+    } catch {
         log.error(
             "Config does not exist. Copy the config template and configure it according to the README:",
         );
@@ -58,6 +60,15 @@ export interface Config {
         tracesSampleRate?: number;
     };
 
+    spotify?: {
+        clientId?: string;
+        clientSecret?: string;
+    };
+
+    youtube?: {
+        cookieFilePath?: string | null;
+    };
+
     activity: {
         type: ActivityType;
         name: string;
@@ -78,6 +89,9 @@ export interface Config {
             maxNumberOfPings: number;
             minRequiredReactions: number;
         };
+        nickName?: {
+            skippedUserIds: readonly Snowflake[];
+        };
         woisPing: {
             limit: number;
             threshold: number;
@@ -85,7 +99,7 @@ export interface Config {
         ehre: {
             emojiNames: readonly string[];
         };
-        instagram: {
+        instagram?: {
             rapidApiInstagramApiKey?: string | null;
         };
         loot: {

@@ -1,5 +1,6 @@
 import {
     type CommandInteraction,
+    MessageFlags,
     type PermissionsString,
     SlashCommandBuilder,
     SlashCommandIntegerOption,
@@ -59,14 +60,13 @@ export default class BanCommand implements ApplicationCommand, MessageCommand {
         const reason = command.options.getString("reason", true);
         const durationHours = command.options.getInteger("hours", false);
         const durationMinutes = command.options.getInteger("minutes", false);
-        const duration =
-            (durationHours ? durationHours : 0) + (durationMinutes ? durationMinutes / 60 : 0);
+        const duration = (durationHours ?? 0) + (durationMinutes ? durationMinutes / 60 : 0);
 
         const userAsGuildMember = command.guild?.members.resolve(user);
         if (!userAsGuildMember) {
             await command.reply({
                 content: "Yo, der ist nicht auf dem Server",
-                ephemeral: true,
+                flags: MessageFlags.Ephemeral,
             });
             return;
         }
@@ -83,7 +83,7 @@ export default class BanCommand implements ApplicationCommand, MessageCommand {
         if (err) {
             await command.reply({
                 content: err,
-                ephemeral: true,
+                flags: MessageFlags.Ephemeral,
             });
             return;
         }
@@ -129,7 +129,7 @@ export default class BanCommand implements ApplicationCommand, MessageCommand {
             }
         } else {
             // Otherwise we would extract everything that is written AFTER the first mention
-            const match = /\<@!?[0-9]+\> (.+)/.exec(messageAfterCommand);
+            const match = /<@!?[0-9]+> (.+)/.exec(messageAfterCommand);
             if (match?.[1]) {
                 reason = match[1];
             }

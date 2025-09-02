@@ -2,6 +2,7 @@ import {
     SlashCommandBuilder,
     SlashCommandUserOption,
     ChatInputCommandInteraction,
+    MessageFlags,
 } from "discord.js";
 import type { Message, CommandInteraction, PermissionsString } from "discord.js";
 
@@ -38,7 +39,7 @@ export default class UnbanCommand implements ApplicationCommand, MessageCommand 
         if (!userAsGuildMember) {
             await command.reply({
                 content: "Yo, der ist nicht auf dem Server",
-                ephemeral: true,
+                flags: MessageFlags.Ephemeral,
             });
             return;
         }
@@ -48,7 +49,7 @@ export default class UnbanCommand implements ApplicationCommand, MessageCommand 
         if (err) {
             await command.reply({
                 content: err,
-                ephemeral: true,
+                flags: MessageFlags.Ephemeral,
             });
             return;
         }

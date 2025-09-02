@@ -1,6 +1,7 @@
 import {
     type CacheType,
     type CommandInteraction,
+    MessageFlags,
     SlashCommandBuilder,
     SlashCommandStringOption,
 } from "discord.js";
@@ -133,7 +134,7 @@ export async function publishAocLeaderBoard(context: BotContext) {
     const channel = targetChannel as discord.ThreadChannel;
     const leaderBoard = await getLeaderBoard(aocConfig.leaderBoardJsonUrl, aocConfig.sessionToken);
     const embed = createEmbedFromLeaderBoard(aocConfig.userMap, leaderBoard, "local_score");
-    return channel.send({ embeds: [embed] });
+    await channel.send({ embeds: [embed] });
 }
 
 export default class AoCCommand implements ApplicationCommand {
@@ -174,7 +175,7 @@ export default class AoCCommand implements ApplicationCommand {
         if (!command.channel?.isTextBased()) {
             await command.reply({
                 content: "Mach mal nicht hier",
-                ephemeral: true,
+                flags: MessageFlags.Ephemeral,
             });
             return;
         }
@@ -182,7 +183,7 @@ export default class AoCCommand implements ApplicationCommand {
         if (!aocConfig.enabled) {
             await command.reply({
                 content: "AoC ist gerade nicht",
-                ephemeral: true,
+                flags: MessageFlags.Ephemeral,
             });
             return;
         }

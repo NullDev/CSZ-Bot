@@ -1,5 +1,4 @@
 import type { Guild, User } from "discord.js";
-// @ts-ignore Types are somehow broken :shrug:
 import { SplidClient } from "splid-js";
 
 import type { SplidGroup } from "@/storage/db/model.js";

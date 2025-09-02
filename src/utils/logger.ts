@@ -1,6 +1,6 @@
-import { mkdir, exists } from "node:fs/promises";
+import { mkdir } from "node:fs/promises";
 
-import { pino, type LoggerOptions } from "pino";
+import pino, { type LoggerOptions } from "pino";
 
 const logLevel = process.env.LOG_LEVEL ?? "info";
 const nodeEnv = process.env.NODE_ENV ?? "development";
@@ -9,9 +9,7 @@ const logDir = "logs";
 
 const usesLogDir = nodeEnv === "production";
 if (usesLogDir) {
-    if (!(await exists(logDir))) {
-        await mkdir(logDir, { recursive: true });
-    }
+    await mkdir(logDir, { recursive: true });
 }
 
 const loggingConfigs = {

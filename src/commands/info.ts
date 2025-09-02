@@ -6,6 +6,7 @@ import {
     ButtonStyle,
     SlashCommandBuilder,
     ComponentType,
+    MessageFlags,
 } from "discord.js";
 
 import type { ApplicationCommand, MessageCommand } from "@/commands/command.js";
@@ -84,7 +85,6 @@ const getServerInfo = (guild: Guild): string => {
     const level = getServerLevel(guild);
 
     return (
-        // biome-ignore lint/style/useTemplate: Better readability
         `**Mitglieder\n** ${guild.memberCount} / ${guild.maximumMembers} \n` +
         `**Oberbabo\n** <@!${guild.ownerId}> \n` +
         `**Geburtstag\n** ${birthday} \n` +
@@ -161,7 +161,7 @@ export default class InfoCommand implements ApplicationCommand, MessageCommand {
         const embed = await buildEmbed(command.guild, context.client.user.avatarURL() ?? undefined);
         await command.reply({
             embeds: [embed],
-            ephemeral: true,
+            flags: MessageFlags.Ephemeral,
             components: [
                 {
                     type: ComponentType.ActionRow,

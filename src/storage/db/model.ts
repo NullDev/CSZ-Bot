@@ -1,7 +1,11 @@
 import type { Snowflake } from "discord.js";
 import type { ColumnType, Generated, GeneratedAlways, Insertable, Selectable } from "kysely";
 
-import type { Radius } from "@/commands/penis.js";
+export type Date = ColumnType<string, string, string>; // TODO: Date is not supported by DB Driver
+
+// !! IMPORTANT !!
+// When handling dates, use `At` suffix to make sure the sqlite converter can convert it to a Date object
+// !! / IMPORTANT !!
 
 export interface Database {
     birthdays: BirthdayTable;
@@ -24,9 +28,17 @@ export interface Database {
     lootAttribute: LootAttributeTable;
     emote: EmoteTable;
     emoteUse: EmoteUseTable;
+
     fightHistory: FightHistoryTable;
     fightInventory: FightInventoryTable;
     position: MapPositonTable;
+
+    lauscherRegistration: LauscherRegistrationTable;
+    lauscherSpotifyLog: LauscherSpotifyLogTable;
+    lauscherSpotifyLogView: LauscherSpotifyLogView;
+    spotifyArtists: SpotifyArtistTable;
+    spotifyTracks: SpotifyTrackTable;
+    spotifyTrackToArtists: SpotifyTrackToArtistTable;
 }
 
 export type OneBasedMonth = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
@@ -109,7 +121,7 @@ export interface PenisTable extends AuditedTable {
 
     userId: Snowflake;
     size: number;
-    diameter: Radius;
+    radius: number;
     measuredAt: Generated<string>; // TODO: Date is not supported by the DB driver
 }
 
@@ -231,7 +243,6 @@ export interface LootTable extends AuditedTable {
     id: GeneratedAlways<LootId>;
 
     displayName: string;
-    description: string;
     lootKindId: number;
     winnerId: string;
     /** Different from createdAt. If the item is replaced, this may be copied form the previous loot item */
@@ -239,7 +250,6 @@ export interface LootTable extends AuditedTable {
     guildId: Snowflake;
     channelId: Snowflake;
     messageId: Snowflake;
-    usedImage: string | null;
 
     deletedAt: ColumnType<string | null, string | null, string | null>; // TODO: Date is not supported by the DB driver
 
@@ -311,4 +321,71 @@ export interface MapPositonTable {
     userid: Snowflake;
     x: number;
     y: number;
+}
+
+export type LauscherRegistration = Selectable<LauscherRegistrationTable>;
+
+export interface LauscherRegistrationTable extends AuditedTable {
+    id: GeneratedAlways<number>;
+    userId: Snowflake;
+    activated: boolean;
+}
+
+export type LauscherSpotifyLog = Selectable<LauscherSpotifyLogTable>;
+
+export interface LauscherSpotifyLogTable extends AuditedTable {
+    id: GeneratedAlways<number>;
+    userId: Snowflake;
+    spotifyId: string;
+    startedActivity: Date;
+}
+
+export type SpotifyTrack = Selectable<SpotifyTrackTable>;
+
+export interface SpotifyTrackTable {
+    trackId: string;
+    name: string;
+    imageUrl: string;
+    durationInMs: number;
+}
+
+export type SpotifyArtist = Selectable<SpotifyArtistTable>;
+
+export interface SpotifyArtistTable {
+    artistId: string;
+    name: string;
+    imageUrl: string;
+}
+
+export type SpotifyTrackToArtists = Selectable<SpotifyTrackToArtistTable>;
+
+export interface SpotifyTrackToArtistTable {
+    trackId: string;
+    artistId: string;
+}
+
+export type LauscherSpotifyLogEntry = {
+    userId: string;
+    startedActivity: string;
+    track: {
+        trackId: string;
+        name: string;
+        imageUrl: string | null;
+    };
+    artists: {
+        artistId: string;
+        name: string;
+        imageUrl: string | null;
+    }[];
+};
+
+export interface LauscherSpotifyLogView {
+    userId: string;
+    trackId: string;
+    trackName: string;
+    trackImageUrl: string | null;
+    artistId: string;
+    artistName: string;
+    artistImageUrl: string | null;
+    startedActivity: string;
 }

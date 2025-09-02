@@ -1,9 +1,9 @@
 {
     "compilerOptions": {
-        "target": "es2022",
+        "target": "esnext",
         "module": "NodeNext",
         "strict": true,
-        "lib": ["ES2021"],
+        "lib": ["esnext"],
 
         // Additional Checks
         // "noUnusedLocals": true,
@@ -17,8 +17,8 @@
         "skipDefaultLibCheck": true,
         "forceConsistentCasingInFileNames": true,
 
-        "baseUrl": "./",
         "paths": {
+            "*": ["./*"],
             "@/*": ["./src/*"],
             "@log": ["./src/utils/logger.ts"],
             "@db": ["./src/storage/db/db.ts"]

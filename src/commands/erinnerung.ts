@@ -8,7 +8,7 @@ import {
     time as formatTime,
 } from "discord.js";
 import * as chrono from "chrono-node";
-import * as sentry from "@sentry/bun";
+import * as sentry from "@sentry/node";
 
 import type { MessageCommand, ApplicationCommand } from "@/commands/command.js";
 import type { ProcessableMessage } from "@/service/command.js";

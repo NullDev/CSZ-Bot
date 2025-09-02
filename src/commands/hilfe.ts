@@ -1,3 +1,4 @@
+import { channelMention } from "discord.js";
 import type { BotContext } from "@/context.js";
 import type { MessageCommand } from "@/commands/command.js";
 import * as commandService from "@/service/command.js";
@@ -44,7 +45,7 @@ export default class HilfeCommand implements MessageCommand {
         await Promise.all(chunks.map(chunk => message.author.send(chunk)));
 
         await message.author.send(
-            "Bei Fragen kannst du dich über den Kanal #czs-Bot (<#902960751222853702>) an uns wenden!",
+            `Bei Fragen kannst du dich über den Kanal #csz-bot (${channelMention("902960751222853702")}) an uns wenden!`,
         );
 
         await message.react("✉"); // Send this last, so we only display a confirmation when everything actually worked

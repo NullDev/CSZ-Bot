@@ -5,11 +5,12 @@ import {
     type AutocompleteInteraction,
     type ChatInputCommandInteraction,
     type CommandInteraction,
+    MessageFlags,
     SlashCommandBuilder,
     SlashCommandStringOption,
     SlashCommandSubcommandBuilder,
 } from "discord.js";
-import * as sentry from "@sentry/bun";
+import * as sentry from "@sentry/node";
 
 import type { BotContext } from "@/context.js";
 import type { ApplicationCommand } from "@/commands/command.js";
@@ -21,7 +22,7 @@ import { ensureChatInputCommand } from "@/utils/interactionUtils.js";
 import * as imageService from "@/service/image.js";
 
 import * as lootDataService from "@/service/lootData.js";
-import { LootAttributeClassId, LootAttributeKindId, LootKindId } from "@/service/lootData.js";
+import { LootAttributeKindId, LootKindId } from "@/service/lootData.js";
 
 import log from "@log";
 import { equipItembyLoot, getFightInventoryUnsorted } from "@/storage/fightInventory.js";
@@ -161,7 +162,7 @@ export default class GegenstandCommand implements ApplicationCommand {
         });
     }
 
-    async #showItemInfo(interaction: CommandInteraction, _context: BotContext) {
+    async #showItemInfo(interaction: CommandInteraction, context: BotContext) {
         if (!interaction.isChatInputCommand()) {
             throw new Error("Interaction is not a chat input command");
         }
@@ -186,20 +187,29 @@ export default class GegenstandCommand implements ApplicationCommand {
 
         const otherAttributes = lootDataService.extractNonRarityAttributes(attributes);
 
-        let assetPath = template.asset;
-        if (template.attributeAsset) {
-            for (const attribute of otherAttributes) {
-                const asset =
-                    template.attributeAsset[attribute.attributeKindId as LootAttributeKindId];
-                if (asset) {
-                    assetPath = asset;
-                    break;
+        let assetBuffer = null;
+        if (template.drawCustomAsset) {
+            assetBuffer = await template.drawCustomAsset(context, interaction.user, template, item);
+        } else {
+            let assetPath = template.asset;
+            if (template.attributeAsset) {
+                for (const attribute of otherAttributes) {
+                    const asset =
+                        template.attributeAsset[attribute.attributeKindId as LootAttributeKindId];
+                    if (asset) {
+                        assetPath = asset;
+                        break;
+                    }
                 }
+            }
+
+            if (assetPath) {
+                assetBuffer = await fs.readFile(assetPath);
             }
         }
 
-        const attachment = assetPath
-            ? await imageService.clampImageSizeByWidth(await fs.readFile(assetPath), 200)
+        const attachment = assetBuffer
+            ? await imageService.clampImageSizeByWidth(assetBuffer, 200)
             : null;
 
         const extraFields: (APIEmbedField | undefined)[] = [
@@ -214,12 +224,17 @@ export default class GegenstandCommand implements ApplicationCommand {
             })),
         ];
 
+        const nutriScoreColor = lootDataService.getAttributesByClass(
+            otherAttributes,
+            lootDataService.LootAttributeClassId.NUTRI_SCORE,
+        )[0]?.color;
+
         await interaction.reply({
             embeds: [
                 {
                     title: emote ? `${emote} ${item.displayName}` : item.displayName,
-                    description: template.infoDescription ?? item.description,
-                    color: 0x00ff00,
+                    description: template.infoDescription,
+                    color: nutriScoreColor ?? 0xaaaaaa,
                     image: attachment
                         ? {
                               url: "attachment://hero.gif",
@@ -268,7 +283,7 @@ export default class GegenstandCommand implements ApplicationCommand {
         if (template.onUse === undefined) {
             await interaction.reply({
                 content: "Dieser Gegenstand kann nicht benutzt werden.",
-                ephemeral: true,
+                flags: MessageFlags.Ephemeral,
             });
             return;
         }
@@ -285,7 +300,7 @@ export default class GegenstandCommand implements ApplicationCommand {
             sentry.captureException(error);
             await interaction.reply({
                 content: "Beim Benutzen dieses Gegenstands ist ein Fehler aufgetreten.",
-                ephemeral: true,
+                flags: MessageFlags.Ephemeral,
             });
         }
 
@@ -304,7 +319,7 @@ export default class GegenstandCommand implements ApplicationCommand {
         if (!item) {
             await interaction.reply({
                 content: "Diesen Gegensand hast du nicht.",
-                ephemeral: true,
+                flags: MessageFlags.Ephemeral,
             });
             return;
         }
@@ -313,7 +328,7 @@ export default class GegenstandCommand implements ApplicationCommand {
         if (!template) {
             await interaction.reply({
                 content: "Dieser Gegenstand ist unbekannt.",
-                ephemeral: true,
+                flags: MessageFlags.Ephemeral,
             });
             return;
         }
@@ -339,8 +354,8 @@ export default class GegenstandCommand implements ApplicationCommand {
 
         const matchedItems =
             itemName.length === 0
-                ? contents.slice(0, 20)
-                : contents.filter(i => i.displayName.toLowerCase().includes(itemName)).slice(0, 20);
+                ? contents
+                : contents.filter(i => i.displayName.toLowerCase().includes(itemName));
 
         const completions = [];
         for (const item of matchedItems) {
@@ -368,7 +383,7 @@ export default class GegenstandCommand implements ApplicationCommand {
             });
         }
 
-        await interaction.respond(completions);
+        await interaction.respond(completions.slice(0, 20));
     }
 
     async #equipItem(interaction: CommandInteraction, context: BotContext) {

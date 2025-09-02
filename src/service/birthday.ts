@@ -1,5 +1,5 @@
 import type { GuildMember, Role } from "discord.js";
-import * as sentry from "@sentry/bun";
+import * as sentry from "@sentry/node";
 
 import log from "@log";
 import * as birthday from "@/storage/birthday.js";

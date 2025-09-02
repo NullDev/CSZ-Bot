@@ -14,13 +14,6 @@ export async function up(db: Kysely<any>) {
         .addColumn("updatedAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
         .execute();
 
-    await db.schema
-        .createIndex("emoteUse_emoteId_isReaction_deletedAt")
-        .on("emoteUse")
-        .columns(["emoteId", "isReaction", "deletedAt"])
-        .unique()
-        .execute();
-
     await createUpdatedAtTrigger(db, "emoteUse");
 }
 

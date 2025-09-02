@@ -2,10 +2,9 @@ import type { LootAttributeTemplate, LootTemplate } from "@/storage/loot.js";
 
 import * as lootDropService from "@/service/lootDrop.js";
 import * as emoteService from "@/service/emote.js";
+import * as bahnCardService from "@/service/bahncard.js";
 import { GuildMember, type Guild } from "discord.js";
 import type { Loot, LootAttribute } from "@/storage/db/model.js";
-
-import log from "@log";
 import { fightTemplates } from "@/service/fightData.js";
 
 const ACHTUNG_NICHT_DROPBAR_WEIGHT_KG = 0;
@@ -48,11 +47,17 @@ export enum LootKindId {
     KAFFEEMUEHLE = 34,
     AWS_RECHNUNG = 35,
     BIBER = 36,
+    BLEI = 37,
+    USV = 38,
+    BAHNCARD_25 = 39,
+    BAHNCARD_50 = 40,
+    BAHNCARD_100 = 41,
 }
 
 export enum LootAttributeClassId {
     OTHER = 0,
     RARITY = 1,
+    NUTRI_SCORE = 2,
 }
 
 export enum LootAttributeKindId {
@@ -61,6 +66,11 @@ export enum LootAttributeKindId {
     RARITY_VERY_RARE = 2,
     RADIOACTIVE = 3,
     SWEET = 4,
+    NUTRI_SCORE_A = 5,
+    NUTRI_SCORE_B = 6,
+    NUTRI_SCORE_C = 7,
+    NUTRI_SCORE_D = 8,
+    NUTRI_SCORE_E = 9,
 }
 
 export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
@@ -117,6 +127,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         dropDescription: "Bewahre ihn gut als Geldanlage auf!",
         emote: "🥙",
         asset: "assets/loot/04-doener.jpg",
+        initialAttributes: [LootAttributeKindId.NUTRI_SCORE_C],
     },
     [LootKindId.KINN]: {
         id: LootKindId.KINN,
@@ -137,7 +148,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
             "Mit der Krankschreibung kannst du deine Wärterschicht abbrechen und dich ausruhen.",
         emote: "🩺",
         asset: "assets/loot/06-krankschreibung.jpg",
-        onUse: async (interaction, context, loot) => {
+        onUse: async (interaction, context, _loot) => {
             const lootRoles = await import("./lootRoles.js");
             const member = interaction.member;
             if (!member || !(member instanceof GuildMember)) {
@@ -162,12 +173,12 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
     },
     [LootKindId.WUERFELWURF]: {
         id: LootKindId.WUERFELWURF,
-        weight: 5,
+        weight: 4,
         displayName: "Würfelwurf",
         titleText: "Einen Wurf mit einem Würfel",
         dropDescription: "🎲",
         emote: "🎲",
-        asset: "assets/loot/07-wuerfelwurf.jpg",
+        asset: "assets/loot/07-wuerfelwurf.png",
         excludeFromInventory: true,
         onDrop: async (_content, winner, channel, _loot) => {
             const rollService = await import("./roll.js");
@@ -199,7 +210,8 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         titleText: "Einen Ayran",
         dropDescription: "Der gute von Müller",
         emote: "🥛",
-        asset: "assets/loot/09-ayran.jpg",
+        asset: "assets/loot/09-ayran.png",
+        initialAttributes: [LootAttributeKindId.NUTRI_SCORE_D], // Ref: https://de.openfoodfacts.org/produkt/4388860730685/ayran-ja
         gameEquip: fightTemplates.ayran,
     },
     [LootKindId.PKV]: {
@@ -219,7 +231,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         titleText: "Einen Trichter",
         dropDescription: "Für die ganz großen Schlücke",
         emote: ":trichter:",
-        asset: "assets/loot/11-trichter.jpg",
+        asset: "assets/loot/11-trichter.png",
     },
     [LootKindId.GRAFIKKARTE]: {
         id: LootKindId.GRAFIKKARTE,
@@ -289,7 +301,8 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         titleText: "Ein warmes Oettinger",
         dropDescription: "Ja dann Prost ne!",
         emote: "🍺",
-        asset: "assets/loot/16-oettinger.jpg",
+        asset: "assets/loot/16-oettinger.png",
+        initialAttributes: [LootAttributeKindId.NUTRI_SCORE_B], // Ref: https://archive.is/aonnZ
         gameEquip: fightTemplates.oettinger,
     },
     [LootKindId.ACHIEVEMENT]: {
@@ -321,7 +334,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
     },
     [LootKindId.HOMEPOD]: {
         id: LootKindId.HOMEPOD,
-        weight: 5,
+        weight: 3,
         displayName: "HomePod",
         titleText: "Einen Apple:registered: HomePod:copyright:",
         dropDescription: 'Damit dein "Smart Home" nicht mehr ganz so smart ist',
@@ -346,7 +359,8 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         titleText: "Sprühsahne",
         dropDescription: "Fürs Frühstück oder so",
         emote: ":sahne:",
-        asset: "assets/loot/22-sahne.jpg",
+        asset: "assets/loot/22-sahne.png",
+        initialAttributes: [LootAttributeKindId.NUTRI_SCORE_D], // Ref: https://de.openfoodfacts.org/produkt/4311501745663/spr%C3%BChsahne-gut-g%C3%BCnstig
     },
     [LootKindId.AEHRE]: {
         id: LootKindId.AEHRE,
@@ -380,6 +394,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         dropDescription: "Erfrischend erquickend. Besonders mit Vodka. Oder Korn.",
         asset: "assets/loot/25-powerade-blau.jpg",
         emote: ":powerade:",
+        initialAttributes: [LootAttributeKindId.NUTRI_SCORE_D], // Ref: https://de.openfoodfacts.org/produkt/90357350/powerrade-mountain-blast-blue-coca-cola
     },
     [LootKindId.GAULOISES_BLAU]: {
         id: LootKindId.GAULOISES_BLAU,
@@ -416,12 +431,12 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
     },
     [LootKindId.DRECK]: {
         id: LootKindId.DRECK,
-        weight: 7,
+        weight: 2,
         displayName: "Ein Glas Dreck",
         titleText: "Ein Glas Dreck",
         dropDescription: "Ich hab ein Glas voll Dreck",
         emote: ":jar:",
-        asset: "assets/loot/29-dirt.jpg",
+        asset: "assets/loot/29-dreck.jpg",
     },
     [LootKindId.EI]: {
         id: LootKindId.EI,
@@ -431,7 +446,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         dropDescription:
             "Jetzt wär geklärt, was zu erst da war, Ei oder ... (Ja was schlüpft daraus eigentlich?)",
         emote: ":egg:",
-        asset: "assets/loot/30-egg.jpg",
+        asset: "assets/loot/30-ei.png",
     },
     [LootKindId.BRAVO]: {
         id: LootKindId.BRAVO,
@@ -450,6 +465,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         dropDescription: "Du hättest ihn früher essen sollen",
         emote: "🥙",
         asset: null,
+        initialAttributes: [LootAttributeKindId.NUTRI_SCORE_E],
     },
     [LootKindId.THUNFISCHSHAKE]: {
         id: LootKindId.THUNFISCHSHAKE,
@@ -459,20 +475,21 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         dropDescription: "Nach Rezept zubereitet, bestehend aus Thunfisch und Reiswaffeln",
         emote: ":baby_bottle:",
         asset: "assets/loot/33-thunfischshake.jpg",
+        initialAttributes: [LootAttributeKindId.NUTRI_SCORE_A],
         gameEquip: fightTemplates.thunfischshake,
     },
     [LootKindId.KAFFEEMUEHLE]: {
         id: LootKindId.KAFFEEMUEHLE,
-        weight: 2,
+        weight: 1,
         displayName: "Kaffeemühle",
         titleText: "Eine Kaffeemühle für 400€",
         dropDescription: "Kann Kaffee mühlen. Und das gut. Mit Gold.",
         emote: ":coffee:",
-        asset: "assets/loot/34-kaffeemuehle.jpg",
+        asset: "assets/loot/34-kaffeemuehle.png",
     },
     [LootKindId.AWS_RECHNUNG]: {
         id: LootKindId.AWS_RECHNUNG,
-        weight: 2,
+        weight: 1,
         displayName: "AWS-Rechnung",
         titleText: "Ne dicke AWS-Rechnung",
         dropDescription: "Hast du schon versucht, in die Cloud zu gehen?",
@@ -488,6 +505,76 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         emote: ":beaver:",
         asset: "assets/loot/36-biber.jpg",
         initialAttributes: [LootAttributeKindId.SWEET],
+    },
+    [LootKindId.BLEI]: {
+        id: LootKindId.BLEI,
+        weight: ACHTUNG_NICHT_DROPBAR_WEIGHT_KG,
+        displayName: "Blei",
+        titleText: "Einen Block Blei",
+        dropDescription: "Ganz schön schwer.",
+        emote: ":rock:",
+        asset: "assets/loot/37-blei.png",
+        initialAttributes: [],
+    },
+    [LootKindId.USV]: {
+        id: LootKindId.USV,
+        weight: 2,
+        displayName: "USV",
+        titleText: "Eine kaputte USV",
+        dropDescription: "Damit dir nie wieder der Strom ausgeht.",
+        emote: ":battery:",
+        asset: "assets/loot/38-usv.png",
+        initialAttributes: [],
+    },
+    [LootKindId.BAHNCARD_25]: {
+        id: LootKindId.BAHNCARD_25,
+        weight: 6,
+        displayName: "BahnCard 25",
+        titleText: "Eine BahnCard 25",
+        dropDescription: "Fahr damit überall hin, sogar in die Arbeit!",
+        emote: ":train:",
+        asset: "assets/loot/39-bahncard-25.png",
+        initialAttributes: [],
+        drawCustomAsset: (context, owner, template, loot) =>
+            bahnCardService.drawBahncardImage(
+                context,
+                owner,
+                template,
+                loot,
+                false,
+                [...owner.id].map(n => (Number(n) * 7) % 10).join(""),
+            ),
+    },
+    [LootKindId.BAHNCARD_50]: {
+        id: LootKindId.BAHNCARD_50,
+        weight: 3,
+        displayName: "BahnCard 50",
+        titleText: "Eine BahnCard 50",
+        dropDescription: "Fahr damit überall hin, sogar in die Arbeit!",
+        emote: ":train:",
+        asset: "assets/loot/40-bahncard-50.png",
+        initialAttributes: [],
+        drawCustomAsset: (context, owner, template, loot) =>
+            bahnCardService.drawBahncardImage(
+                context,
+                owner,
+                template,
+                loot,
+                false,
+                [...owner.id].map(n => (Number(n) * 13) % 10).join(""),
+            ),
+    },
+    [LootKindId.BAHNCARD_100]: {
+        id: LootKindId.BAHNCARD_100,
+        weight: ACHTUNG_NICHT_DROPBAR_WEIGHT_KG,
+        displayName: "BahnCard 100",
+        titleText: "Eine BahnCard 100",
+        dropDescription: "Fahr damit überall hin, sogar in die Arbeit!",
+        emote: ":train:",
+        asset: "assets/loot/41-bahncard-100.png",
+        initialAttributes: [],
+        drawCustomAsset: (context, owner, template, loot) =>
+            bahnCardService.drawBahncardImage(context, owner, template, loot, true, owner.id),
     },
 } as const;
 
@@ -543,6 +630,41 @@ export const lootAttributeTemplates: LootAttributeTemplate[] = [
         displayName: "Süß",
         shortDisplay: "🍬",
     },
+    {
+        id: LootAttributeKindId.NUTRI_SCORE_A,
+        classId: LootAttributeClassId.NUTRI_SCORE,
+        displayName: "Nutri-Score A",
+        shortDisplay: "🟩",
+        color: 0x00_ff_00,
+    },
+    {
+        id: LootAttributeKindId.NUTRI_SCORE_B,
+        classId: LootAttributeClassId.NUTRI_SCORE,
+        displayName: "Nutri-Score B",
+        shortDisplay: "🟨",
+        color: 0x99_ff_00,
+    },
+    {
+        id: LootAttributeKindId.NUTRI_SCORE_C,
+        classId: LootAttributeClassId.NUTRI_SCORE,
+        displayName: "Nutri-Score C",
+        shortDisplay: "🟧",
+        color: 0xff_ff_00,
+    },
+    {
+        id: LootAttributeKindId.NUTRI_SCORE_D,
+        classId: LootAttributeClassId.NUTRI_SCORE,
+        displayName: "Nutri-Score D",
+        shortDisplay: "🟥",
+        color: 0xff_99_00,
+    },
+    {
+        id: LootAttributeKindId.NUTRI_SCORE_E,
+        classId: LootAttributeClassId.NUTRI_SCORE,
+        displayName: "Nutri-Score E",
+        shortDisplay: "🟥",
+        color: 0xff_00_00,
+    },
 ];
 
 export function resolveLootTemplate(lootKindId: number) {
@@ -558,17 +680,18 @@ export function getEmote(guild: Guild, item: Loot) {
     return emoteService.resolveEmote(guild, e);
 }
 
+export function getAttributesByClass(
+    attributes: readonly Readonly<LootAttribute>[],
+    c: LootAttributeClassId,
+): readonly Readonly<LootAttribute>[] {
+    return attributes.filter(a => a.attributeClassId === c);
+}
+
 export function extractRarityAttribute(
     attributes: readonly Readonly<LootAttribute>[],
 ): Readonly<LootAttribute> | undefined {
-    const attribute = attributes.filter(a => a.attributeClassId === LootAttributeClassId.RARITY);
-    if (attribute.length === 0) {
-        return undefined;
-    }
-    if (attribute.length > 1) {
-        log.warn("Found multiple rarity attributes for loot item");
-    }
-    return attribute[0];
+    const rarities = getAttributesByClass(attributes, LootAttributeClassId.RARITY);
+    return rarities[0] ?? undefined;
 }
 
 export function extractNonRarityAttributes(

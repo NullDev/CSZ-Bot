@@ -1,4 +1,4 @@
-import { Temporal } from "@js-temporal/polyfill"; // TODO: Remove once bun ships temporal
+import { Temporal } from "@js-temporal/polyfill"; // TODO: Remove once Node.js ships temporal
 
 const timeFormatter = new Intl.DateTimeFormat("de-DE", {
     hour: "2-digit",
@@ -100,9 +100,7 @@ export function getStartAndEndDay(instant: Temporal.Instant, timeZone = "Europe/
     const today = Temporal.PlainDate.from(instant.toZonedDateTimeISO(timeZone));
     const tomorrow = today.add({ days: 1 });
 
-    const startOfToday = today.toZonedDateTime({ timeZone: "Europe/Berlin" });
-    const startOfTomorrow = tomorrow.toZonedDateTime({
-        timeZone: "Europe/Berlin",
-    });
+    const startOfToday = today.toZonedDateTime({ timeZone }).toPlainDate();
+    const startOfTomorrow = tomorrow.toZonedDateTime({ timeZone }).toPlainDate();
     return { startOfToday, startOfTomorrow };
 }

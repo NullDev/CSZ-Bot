@@ -1,17 +1,16 @@
 {
-    "name": "Bun",
-    "image": "ghcr.io/nhaef/devcontainer-bun:latest",
+    "name": "Node.js",
+    "image": "mcr.microsoft.com/devcontainers/javascript-node",
     "customizations": {
         "vscode": {
             "extensions": [
                 "editorconfig.editorconfig",
                 "streetsidesoftware.code-spell-checker",
                 "streetsidesoftware.code-spell-checker-german",
-                "nicolo-ribaudo.vscode-mf2",
                 "biomejs.biome"
             ]
         }
     },
-    "postCreateCommand": "bun i",
-    "remoteUser": "bun"
+    "postCreateCommand": "npm ci",
+    "remoteUser": "node"
 }

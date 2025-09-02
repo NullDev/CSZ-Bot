@@ -6,7 +6,6 @@ import {
     type InteractionReplyOptions,
     SlashCommandBuilder,
     SlashCommandStringOption,
-    SlashCommandUserOption,
     type User,
 } from "discord.js";
 
@@ -27,12 +26,6 @@ export default class InventarCommand implements ApplicationCommand {
     applicationCommand = new SlashCommandBuilder()
         .setName(this.name)
         .setDescription(this.description)
-        .addUserOption(
-            new SlashCommandUserOption()
-                .setRequired(false)
-                .setName("user")
-                .setDescription("Wem du tun willst"),
-        )
         .addStringOption(
             new SlashCommandStringOption()
                 .setName("typ")
@@ -46,11 +39,9 @@ export default class InventarCommand implements ApplicationCommand {
 
     async handleInteraction(interaction: CommandInteraction, context: BotContext) {
         const cmd = ensureChatInputCommand(interaction);
-
-        const user = cmd.options.getUser("user") ?? cmd.user;
         const type = cmd.options.getString("typ") ?? "all";
+        const contents = await lootService.getInventoryContents(interaction.user);
 
-        const contents = await lootService.getInventoryContents(user);
         if (contents.length === 0) {
             await interaction.reply({
                 content: "Dein Inventar ist ✨leer✨",
@@ -60,9 +51,9 @@ export default class InventarCommand implements ApplicationCommand {
 
         switch (type) {
             case "fightInventory":
-                return await this.#createFightEmbed(context, interaction, user);
+                return await this.#createFightEmbed(context, interaction, interaction.user);
             case "all":
-                return await this.#createLongEmbed(context, interaction, user);
+                return await this.#createLongEmbed(context, interaction, interaction.user);
             default:
                 throw new Error(`Unhandled type: "${type}"`);
         }
@@ -134,11 +125,16 @@ export default class InventarCommand implements ApplicationCommand {
 
         let pageIndex = 0;
 
-        const message = await interaction.reply({
+        const callbackResponse = await interaction.reply({
             ...buildMessageData(pageIndex),
-            fetchReply: true,
+            withResponse: true,
             tts: false,
         });
+
+        const message = callbackResponse.resource?.message;
+        if (message === null || message === undefined) {
+            throw new Error("Expected message to be present.");
+        }
 
         const collector = message.createMessageComponentCollector({
             componentType: ComponentType.Button,

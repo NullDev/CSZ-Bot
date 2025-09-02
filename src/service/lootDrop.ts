@@ -10,9 +10,10 @@ import {
     type Interaction,
     type GuildBasedChannel,
     type TextBasedChannel,
+    MessageFlags,
 } from "discord.js";
 import { Temporal } from "@js-temporal/polyfill";
-import * as sentry from "@sentry/bun";
+import * as sentry from "@sentry/node";
 
 import type { BotContext } from "@/context.js";
 import type { Loot, LootId } from "@/storage/db/model.js";
@@ -113,7 +114,7 @@ export async function postLootDrop(
         components: [{ type: ComponentType.ActionRow, components: [takeLootButton] }],
     });
 
-    let interaction: Interaction | undefined = undefined;
+    let interaction: Interaction | undefined;
 
     try {
         interaction = await message.awaitMessageComponent({
@@ -121,7 +122,7 @@ export async function postLootDrop(
             componentType: ComponentType.Button,
             time: lootTimeoutMs,
         });
-    } catch (err) {
+    } catch {
         log.info(`Loot drop ${message.id} timed out; loot was not claimed, cleaning up`);
         const original = message.embeds[0];
         await message.edit({
@@ -151,7 +152,7 @@ export async function postLootDrop(
     const rarities = lootAttributeTemplates.filter(a => a.classId === LootAttributeClassId.RARITY);
     const rarityWeights = rarities.map(a => a.initialDropWeight ?? 0);
 
-    const initialAttribute =
+    const rarityAttribute =
         template.id === LootKindId.NICHTS ? null : randomEntryWeighted(rarities, rarityWeights);
 
     const claimedLoot = await lootService.createLoot(
@@ -160,10 +161,10 @@ export async function postLootDrop(
         message,
         "drop",
         predecessorLootId ?? null,
-        initialAttribute,
+        rarityAttribute,
     );
 
-    const reply = await interaction.deferReply({ ephemeral: true });
+    const reply = await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
     if (!claimedLoot) {
         await reply.edit({
@@ -180,7 +181,11 @@ export async function postLootDrop(
 
     const winner = await context.guild.members.fetch(claimedLoot.winnerId);
 
-    const attachment = template.asset ? await fs.readFile(template.asset) : null;
+    const attachment = template.drawCustomAsset
+        ? await template.drawCustomAsset(context, winner.user, template, claimedLoot)
+        : template.asset
+          ? await fs.readFile(template.asset)
+          : null;
 
     await message.edit({
         embeds: [
@@ -198,11 +203,11 @@ export async function postLootDrop(
                         value: winner.toString(),
                         inline: true,
                     },
-                    ...(initialAttribute
+                    ...(rarityAttribute
                         ? [
                               {
                                   name: "✨ Rarität",
-                                  value: `${initialAttribute.shortDisplay} ${initialAttribute.displayName}`.trim(),
+                                  value: `${rarityAttribute.shortDisplay} ${rarityAttribute.displayName}`.trim(),
                                   inline: true,
                               },
                           ]

@@ -11,8 +11,9 @@ import {
     ComponentType,
     type AutocompleteInteraction,
     type Snowflake,
+    MessageFlags,
 } from "discord.js";
-import * as sentry from "@sentry/bun";
+import * as sentry from "@sentry/node";
 
 import type { BotContext } from "@/context.js";
 import type { ApplicationCommand, AutocompleteCommand } from "@/commands/command.js";
@@ -27,6 +28,8 @@ interface UserVote {
     readonly vote: Vote;
     readonly trusted: boolean;
 }
+
+const nickNameMaxLength = 32;
 
 export default class NicknameCommand implements ApplicationCommand, AutocompleteCommand {
     name = "nickname";
@@ -49,7 +52,8 @@ export default class NicknameCommand implements ApplicationCommand, Autocomplete
                     new SlashCommandStringOption()
                         .setRequired(true)
                         .setName("nickname")
-                        .setDescription("Was du tun willst"),
+                        .setDescription("Was du tun willst")
+                        .setMaxLength(nickNameMaxLength),
                 ),
         )
         .addSubcommand(
@@ -145,6 +149,13 @@ export default class NicknameCommand implements ApplicationCommand, Autocomplete
                     }
 
                     const nickname = cmd.options.getString("nickname", true);
+                    if (nickname.length > nickNameMaxLength) {
+                        await cmd.reply(
+                            `'${nickname}' ist zu lang. Maximal ${nickNameMaxLength} Zeichen.`,
+                        );
+                        return;
+                    }
+
                     if (await nickName.nickNameExist(user.id, nickname)) {
                         await cmd.reply(
                             `Würdest du Hurensohn aufpassen, wüsstest du, dass für ${user} '${nickname}' bereits existiert.`,
@@ -276,14 +287,14 @@ export default class NicknameCommand implements ApplicationCommand, Autocomplete
             },
         };
 
-        let voteResult: undefined | boolean = undefined;
+        let voteResult: undefined | boolean;
 
         collector.on("collect", async interaction => {
             if (!interaction.member) {
                 await interaction.reply({
                     content: "Ich find dich nicht auf dem Server. Du Huso",
                     components: [],
-                    ephemeral: true,
+                    flags: MessageFlags.Ephemeral,
                 });
                 return;
             }
@@ -295,7 +306,7 @@ export default class NicknameCommand implements ApplicationCommand, Autocomplete
 
             await interaction.reply({
                 content: "Hast abgestimmt",
-                ephemeral: true,
+                flags: MessageFlags.Ephemeral,
             });
 
             const allVotes = Object.values(votes);
@@ -331,7 +342,7 @@ export default class NicknameCommand implements ApplicationCommand, Autocomplete
 
             try {
                 await nickName.insertNickname(user.id, nickname);
-            } catch (error) {
+            } catch {
                 await command.editReply(
                     `Würdet ihr Hurensöhne aufpassen, wüsstest ihr, dass für ${user} \`${nickname}\` bereits existiert.`,
                 );

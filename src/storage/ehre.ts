@@ -85,7 +85,7 @@ export async function getUserInGroups(ctx = db()): Promise<EhreGroups> {
     const pointHolders = await ctx
         .selectFrom("ehrePoints")
         .where("points", ">=", 0.1)
-        .orderBy("points desc")
+        .orderBy("points", "desc")
         .selectAll()
         .execute();
 

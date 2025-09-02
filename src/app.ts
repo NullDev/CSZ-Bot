@@ -1,5 +1,5 @@
 import { GatewayIntentBits, Partials, Client } from "discord.js";
-import * as sentry from "@sentry/bun";
+import * as sentry from "@sentry/node";
 
 import { readConfig, databasePath, args } from "@/service/config.js";
 import log from "@log";
@@ -29,6 +29,7 @@ import { ehreReactionHandler } from "@/commands/ehre.js";
 import * as terminal from "@/utils/terminal.js";
 import * as guildRageQuit from "@/storage/guildRageQuit.js";
 import * as cronService from "@/service/cron.js";
+import { handlePresenceUpdate } from "./handler/presenceHandler.js";
 
 const env = process.env;
 
@@ -82,7 +83,7 @@ const client = new Client({
         GatewayIntentBits.DirectMessages,
         GatewayIntentBits.Guilds,
         GatewayIntentBits.GuildModeration,
-        GatewayIntentBits.GuildEmojisAndStickers,
+        GatewayIntentBits.GuildExpressions,
         GatewayIntentBits.GuildIntegrations,
         GatewayIntentBits.GuildInvites,
         GatewayIntentBits.GuildMembers,
@@ -140,7 +141,7 @@ login().then(
 );
 
 let botContext: BotContext;
-client.once("ready", async initializedClient => {
+client.once("clientReady", async initializedClient => {
     try {
         botContext = await createBotContext(initializedClient);
 
@@ -209,13 +210,7 @@ client.on("messageDelete", async message => {
 });
 
 client.on("error", e => log.error(e, "Discord Client Error"));
-client.on("warn", w => log.warn(w, "Discord Client Warning"));
-client.on("debug", d => {
-    if (d.includes("Heartbeat")) {
-        return;
-    }
-    log.debug(d, "Discord Client Debug");
-});
+client.on("warn", w => log.warn(`Discord Client Warning: "${w}"`));
 client.on("rateLimit", d => log.error(d, "Discord client rate limit reached"));
 client.on("invalidated", () => log.debug("Client invalidated"));
 
@@ -247,9 +242,17 @@ client.on("voiceStateUpdate", (old, next) =>
     voiceStateService.checkVoiceUpdate(old, next, botContext),
 );
 
+client.on("presenceUpdate", async (oldPresence, newPresence) => {
+    try {
+        await handlePresenceUpdate(botContext, oldPresence, newPresence);
+    } catch (cause) {
+        log.warn(cause, "Exception during `presenceUpdate`.");
+    }
+});
+
 function login() {
     return new Promise<Client<true>>(resolve => {
-        client.once("ready", resolve);
+        client.once("clientReady", resolve);
         client.login(config.auth.token);
     });
 }

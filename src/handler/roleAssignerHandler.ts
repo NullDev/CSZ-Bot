@@ -41,9 +41,7 @@ export default {
         // Some roles, especially "C" are prefixed with a invisible whitespace to ensure they are not mentioned
         // by accident.
         const role = guild.roles.cache.find(
-            r =>
-                // biome-ignore lint/suspicious/noMisleadingCharacterClass: somebody wrote this and it seems right
-                r.name.replace(/[\u200B-\u200D\uFEFF]/g, "") === message.content,
+            r => r.name.replace(/[\u200B-\u200D\uFEFF]/g, "") === message.content,
         );
 
         if (role === undefined) {

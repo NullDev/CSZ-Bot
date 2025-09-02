@@ -2,11 +2,9 @@
 // https://rapidapi.com/ugoBoy/api/social-media-video-downloader
 // We're using the free tier, which has 150 videos per month
 
-import * as sentry from "@sentry/bun";
+import * as sentry from "@sentry/node";
 
 import type { BotContext } from "@/context.js";
-
-import log from "@log";
 
 interface LinkEntry {
     quality: string;
@@ -106,7 +104,7 @@ function extractImageUrls(response: ApiResponse) {
         !response.images ||
         !Array.isArray(response.images) ||
         response.images.length === 0 ||
-        typeof response.images !== "string"
+        typeof response.images[0] !== "string"
     ) {
         return null;
     }

@@ -1,4 +1,4 @@
-import { type CommandInteraction, SlashCommandBuilder } from "discord.js";
+import { type CommandInteraction, MessageFlags, SlashCommandBuilder } from "discord.js";
 
 import type { ApplicationCommand } from "@/commands/command.js";
 import * as voiceStateService from "@/service/voiceState.js";
@@ -20,7 +20,7 @@ export default class WoisLog implements ApplicationCommand {
         if (latestEvents.length === 0) {
             await command.reply({
                 content: "Es gab keine Aktivitäten in den letzten 2 Minuten",
-                ephemeral: true,
+                flags: MessageFlags.Ephemeral,
             });
             return;
         }
@@ -40,7 +40,7 @@ export default class WoisLog implements ApplicationCommand {
         const latestEventsStringJoined = latestEventsString.join("\n");
         await command.reply({
             content: latestEventsStringJoined,
-            ephemeral: true,
+            flags: MessageFlags.Ephemeral,
         });
     }
 }

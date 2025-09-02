@@ -25,13 +25,16 @@ jobs:
         show-progress: false
         fetch-depth: 0
 
-    - uses: oven-sh/setup-bun@v2
+    - uses: actions/setup-node@v4
       with:
-        bun-version: latest
+        node-version: 24.x
+        cache: npm
 
-    - run: bun install
-    - run: bun ci
-    - run: bun run test
+    - run: npm ci
+      env:
+        YOUTUBE_DL_SKIP_DOWNLOAD: true
+    - run: npm run ci
+    - run: npm test
 
   build:
     name: Build
@@ -88,6 +91,7 @@ jobs:
       id: build
       with:
         push: ${{ !github.event.repository.fork }}
+        pull: true
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
         build-args: |
@@ -116,8 +120,8 @@ jobs:
 
     - name: Update configuration
       env:
-        BOT_TOKEN: ${{ secrets.CI_BOT_TOKEN }}
-        CLIENT_ID: ${{ secrets.CI_CLIENT_ID }}
+        DISCORD_TOKEN: ${{ secrets.CI_BOT_TOKEN }}
+        DISCORD_CLIENT_ID: ${{ secrets.CI_CLIENT_ID }}
       run: |
         envsubst < .github/config.json > config.json
 
@@ -141,7 +145,7 @@ jobs:
         echo "args=$args" >> "$GITHUB_OUTPUT"
 
     - name: Deploy CSZ Bot
-      uses: appleboy/ssh-action@7eaf76671a0d7eec5d98ee897acda4f968735a17
+      uses: appleboy/ssh-action@2ead5e36573f08b82fbfce1504f1a4b05a647c6f
       env:
         BOT_HOME_PATH: /home/csc
         EPHEMERAL_BOT_CONFIG: ${{ steps.config.outputs.content }}

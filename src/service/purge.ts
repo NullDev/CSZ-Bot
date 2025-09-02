@@ -28,9 +28,9 @@ export async function leetTask(context: BotContext) {
     }
 
     // We don't have trust in this code, so ensure that we don't kick any regular members :harold:
-    if (membersToKick.size > 5) {
-        // I think we don't need to kick more than 5 members at a time. If so, it is probably a bug and we don't want to to do that
-        throw new Error(`You probably didn't want to kick ${membersToKick.size} members, or?`);
+    if (membersToKick.size > 9) {
+        // I think we don't need to kick more than 9 members at a time. If so, it is probably a bug and we don't want to to do that
+        throw new Error(`You probably didn't want to kick ${membersToKick.size} members, no?`);
     }
 
     // I don't have trust in this code, so ensure that we don't kick any regular members :harold:

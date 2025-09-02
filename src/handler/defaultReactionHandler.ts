@@ -6,7 +6,6 @@ import * as additionalMessageData from "@/storage/additionalMessageData.js";
 import * as fadingMessage from "@/storage/fadingMessage.js";
 import type { ReactionHandler } from "./ReactionHandler.js";
 
-import log from "@log";
 import * as poll from "@/commands/poll.js";
 import { EMOJI } from "@/service/poll.js";
 

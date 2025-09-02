@@ -1,3 +1,7 @@
+## Setup
+
+See [docs/SETUP.md](./docs/SETUP.md) for a guide on setting up your local bot.
+
 ## Commands
 
 We differentiate between the following types of commands:
@@ -17,11 +21,11 @@ Now everything is set up for you to implement your own command. Simple as that.
 
 If you require a Database or State for your command, please refrain from creating a json file or saving your state into a object unless it is not required to be a persistent state.
 
-If you require to persist some state, you are strongley encouraged to use our Database (It is SQLite). We use an [Active Record Pattern](https://de.wikipedia.org/wiki/Active_Record) to persist objects into the Database using [Sequelize](https://sequelize.org/).
+If you need to persist some state, you are strongley encouraged to use our Database (it is SQLite). Have a look at `src/storage/db/model.ts` to see our Kysely model.
 
-Models are defined in the [models directory](./src/storage/model) and **should always** use a uuid as surrogate key. However please make sure that you define also natural keys and unique constraints.
+When defining a new table, you **should always** use a `INTEGER PRIMARY KEY AUTOINCREMENT` as surrogate key.
 
-We don't enforce any rules or model definitions further. The only thing that matters is: Keep your business logic separated from the model. The Model is not an entity and shouldn't be.
+We don't enforce any rules or model definitions further. The only thing that matters is: Keep your business logic separated from the model. The model is not an entity and shouldn't be.
 
 ## Review Notes
 

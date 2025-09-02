@@ -16,6 +16,7 @@ import { Temporal } from "@js-temporal/polyfill";
 
 import type { UserMapEntry } from "@/commands/aoc.js";
 import { readConfig } from "@/service/config.js";
+import { SpotifyApi } from "@spotify/web-api-ts-sdk";
 
 /**
  * Object that's passed to every executed command to make it easier to access common channels without repeatedly retrieving stuff via IDs.
@@ -35,6 +36,12 @@ export interface BotContext {
         modCommand: string;
     };
 
+    spotifyClient: SpotifyApi | null;
+
+    youtube: {
+        cookieFilePath?: string | null;
+    };
+
     commandConfig: {
         faulenzerPing: {
             allowedRoleIds: Set<Snowflake>;
@@ -43,6 +50,9 @@ export interface BotContext {
         };
         ehre: {
             emojiNames: Set<string>;
+        };
+        nickName: {
+            skippedUserIds: Set<Snowflake>;
         };
         quote: QuoteConfig;
         loot: {
@@ -209,6 +219,17 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
             command: config.prefix.command,
             modCommand: config.prefix.modCommand,
         },
+        spotifyClient:
+            config.spotify?.clientId && config.spotify?.clientSecret
+                ? SpotifyApi.withClientCredentials(
+                      config.spotify.clientId,
+                      config.spotify.clientSecret,
+                      [],
+                  )
+                : null,
+        youtube: {
+            cookieFilePath: config.youtube?.cookieFilePath ?? null,
+        },
         moderatorRoles: config.moderatorRoleIds.map(id => ensureRole(guild, id)),
         commandConfig: {
             faulenzerPing: {
@@ -231,6 +252,9 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
                 defaultTargetChannelId: config.command.quotes.defaultTargetChannelId,
                 targetChannelOverrides: config.command.quotes.targetChannelOverrides,
             },
+            nickName: {
+                skippedUserIds: new Set(config.command.nickName?.skippedUserIds ?? []),
+            },
             loot: {
                 enabled: config.command.loot?.enabled ?? false,
                 scheduleCron: config.command.loot?.scheduleCron ?? "*/15 * * * *",
@@ -248,7 +272,7 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
             },
             instagram: {
                 rapidApiInstagramApiKey:
-                    config.command.instagram.rapidApiInstagramApiKey?.trim() ?? undefined,
+                    config.command.instagram?.rapidApiInstagramApiKey?.trim() ?? undefined,
             },
             aoc: {
                 enabled: config.command.aoc.enabled,

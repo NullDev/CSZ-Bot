@@ -31,11 +31,11 @@ Du hast 2 Optionen: [Lokale installation](#lokale-installation) und [GitHub Code
 
 ### Lokale Installation
 
-<sub>bun Version: >=1.irgendwas</sub>
+<sub>node Version: >=24</sub>
 
 1. Terminal aufmachen und dorthin navigieren, wo man es downloaden möchte
-2. Sichergehen, dass [bun](https://bun.sh) installiert ist. Teste mit: `bun --version`. Wenn es eine Versionsnummer zurückgibt, ist bun installiert.
- **Wenn nicht**, bun [hier](https://bun.sh) runterladen.
+2. Sichergehen, dass [Node.js](https://nodejs.org) installiert ist. Teste mit: `node --version`. Wenn es eine Versionsnummer zurückgibt, ist Node.js installiert.
+ **Wenn nicht**, Node.js [hier](https://nodejs.org) runterladen.
 3. Repository klonen und hinein navigieren. Wenn Git installiert ist:
 ```sh
 git clone https://github.com/NullDev/CSZ-Bot.git && cd $_
@@ -44,7 +44,7 @@ Wenn nicht, [hier](https://github.com/NullDev/CSZ-Bot/archive/master.zip) herunt
 
 4. Dependencies installieren: <br>
 ```sh
-bun i
+npm ci
 ```
 
 5. Weiter machen mit den [gemeinsamen Schritten](#gemeinsame-schritte) (siehe unten)
@@ -63,36 +63,35 @@ cp config.template.json config.json
 $EDITOR config.json
 ```
 > [!TIP]
->  Die Datei kann Kommentare und Trailing-Commas (JSONC). Wenn du nicht VSCode verwendest, musst du das ggf. noch einstellen.
+> Die Datei kann Kommentare und Trailing-Commas (JSONC). Wenn du nicht VSCode verwendest, musst du das ggf. noch einstellen.
 
 2. Das Template ist für die [Coding-Test-Zentrale](https://discord.gg/ekJA6GA3BJ) vorausgefüllt. Es fehlen noch:
     - Um einen Bot zum Testen anzulegen, einfach den Instruktionen im [Discord Developer Portal](https://discord.com/developers/applications) folgen.
         - Die Applikation muss als "Bot" gesetzt werden.
         - Es müssen beide [Gateway Intents](https://discordjs.guide/popular-topics/intents.html#gateway-intents) eingeschalten werden.
-        - Ersetze `<CLIENT_ID>` durch die Application-ID
-        - Ersetze `<BOT_TOKEN>` durch das Bot-Token
+        - Ersetze `<DISCORD_CLIENT_ID>` durch die Application-ID
+        - Ersetze `<DISCORD_TOKEN>` durch das Bot-Token
     - Um IDs kopieren zu können, den "Developer Mode" in den Discord Einstellungen aktivieren. Mit Rechtsklick kann man dann die IDs kopieren.
 3. Das Script starten.
 
 Mit Hot-Reload:
 ```sh
-bun watch
+npm run watch
 ```
 
 Ohne Hot-Reload:
 ```sh
-bun start
+npm start
 ```
 
 ### Housekeeping
 Formatieren und Linten passiert durch lefthook automatisch beim Committen/Pushen. Manuell kannst du das machen:
-- Formatieren: `bun format`
-- Linten: `bun lint`
-- Fixbare Linter-Fehler automatisch fixen: `bun lint:fix`
-  - Fixbare, aber möglicherweise falsche Fixes anwenden: `bun lint:fix:unsafe`
-- CI-Checks lokal laufen lassen: `bun ci`
-- Unit-Tests ausführen: `bun test`
-    - Nur Tests, die auf ein Pattern matchen: `bun test <pattern>` (z. B. `bun test smoke`)
+- Formatieren: `npm run format`
+- Linten: `npm run lint`
+- Fixbare Linter-Fehler automatisch fixen: `npm run lint:fix`
+  - Fixbare, aber möglicherweise falsche Fixes anwenden: `npm run lint:fix:unsafe`
+- CI-Checks lokal laufen lassen: `npm run ci`
+- Unit-Tests ausführen: `npm test`
 
 ## ❄ Nix
 Entweder via `nix-shell` oder `nix develop` letzteres benötigt Nix-Flake support.

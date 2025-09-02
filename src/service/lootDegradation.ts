@@ -1,8 +1,9 @@
+import { type BaseMessageOptions, type Snowflake, userMention } from "discord.js";
 import type { BotContext } from "@/context.js";
 
 import * as time from "@/utils/time.js";
 import * as lootService from "@/service/loot.js";
-import { LootAttributeKindId, LootKindId } from "@/service/lootData.js";
+import { LootAttributeKindId, LootKindId, resolveLootTemplate } from "@/service/lootData.js";
 import log from "@log";
 import { randomEntry } from "@/service/random.js";
 
@@ -30,9 +31,7 @@ export async function degradeItems(_context: BotContext) {
             k.id,
             {
                 displayName: "Verschimmelter Döner",
-                description: "Du hättest ihn früher essen sollen",
                 lootKindId: LootKindId.VERSCHIMMELTER_DOENER,
-                usedImage: null,
                 winnerId: k.winnerId,
                 claimedAt: k.claimedAt,
                 guildId: k.guildId,
@@ -62,22 +61,91 @@ export async function exposeWithRadiation(context: BotContext) {
         return;
     }
 
-    const attribute = await lootService.addLootAttributeIfNotPresent(
+    const attributeAdded = await lootService.addLootAttributeIfNotPresent(
         targetLoot.id,
         LootAttributeKindId.RADIOACTIVE,
     );
-    if (!attribute) {
+    if (!attributeAdded) {
         return;
     }
 
     await context.textChannels.hauptchat.send({
         embeds: [
             {
-                description: `:radioactive: ${targetLoot.displayName} von <@${targetLoot.winnerId}> wurde verstrahlt. :radioactive:`,
+                description: `:radioactive: ${targetLoot.displayName} von ${userMention(targetLoot.winnerId)} wurde verstrahlt. :radioactive:`,
                 footer: {
                     text: "Du solltest deinen Müll besser entsorgen",
                 },
             },
         ],
+    });
+}
+
+export async function runHalfLife(context: BotContext) {
+    const logger = log.child({}, { msgPrefix: "[runHalfLife] " });
+
+    logger.info("Running half life");
+
+    const allWaste = await lootService.getLootsByKindId(LootKindId.RADIOACTIVE_WASTE);
+
+    // See: https://github.com/NullDev/CSZ-Bot/issues/470
+    const targetWasteCount = Math.ceil(allWaste.length / 2);
+    logger.info({ targetWasteCount }, "targetWasteCount");
+
+    if (targetWasteCount >= allWaste.length) {
+        logger.info("targetWasteCount >= allWaste.length, nothing to do");
+        return;
+    }
+
+    const wasteToRemove = allWaste.sort(() => Math.random()).slice(targetWasteCount);
+    if (wasteToRemove.length === 0) {
+        logger.info("No waste to remove, nothing to do");
+        return;
+    }
+
+    const leadTemplate = resolveLootTemplate(LootKindId.BLEI);
+    if (!leadTemplate) {
+        logger.error("Could not resolve loot template for lead.");
+        return;
+    }
+
+    const replacedStats = new Map<Snowflake, number>();
+
+    for (const l of wasteToRemove) {
+        logger.info({ lootId: l.id, winnerId: l.winnerId }, "Replacing loot");
+        const replaced = await lootService.replaceLoot(
+            l.id,
+            {
+                displayName: leadTemplate.displayName,
+                lootKindId: leadTemplate.id,
+                winnerId: l.winnerId,
+                claimedAt: l.claimedAt,
+                guildId: l.guildId,
+                channelId: l.channelId,
+                messageId: l.messageId,
+                origin: "replacement",
+            },
+            true,
+        );
+
+        replacedStats.set(replaced.winnerId, replacedStats.getOrInsert(replaced.winnerId, 0) + 1);
+    }
+
+    logger.info({ replacedStats }, "replacedStats");
+
+    type Embed = NonNullable<BaseMessageOptions["embeds"]>[number];
+
+    const embeds: Embed[] = [];
+    for (const [user, count] of replacedStats.entries()) {
+        embeds.push({
+            description: `:radioactive: ${count}x Müll von ${userMention(user)} ist zu einem Stück Blei zerfallen. :radioactive:`,
+        });
+    }
+
+    await context.textChannels.hauptchat.send({
+        embeds,
+        allowedMentions: {
+            users: replacedStats.keys().toArray(),
+        },
     });
 }

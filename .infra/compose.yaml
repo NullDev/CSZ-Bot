@@ -8,6 +8,8 @@ services:
     env_file:
       - ../.env
     volumes:
+      # cannot use docker secrets because the file will be updated by yt-dlp
+      - ../cookies-youtube.txt:/cookies-youtube.txt
       - ../config.json:/app/config.json:ro
       - ../sounds:/app/sounds:ro
       - ../banners:/app/banners:ro

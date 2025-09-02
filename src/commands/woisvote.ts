@@ -1,4 +1,4 @@
-import { Temporal } from "@js-temporal/polyfill"; // TODO: Remove once bun ships temporal
+import { Temporal } from "@js-temporal/polyfill"; // TODO: Remove once Node.js ships temporal
 
 import {
     type CommandInteraction,
@@ -12,6 +12,8 @@ import {
     time,
     TimestampStyles,
     type GuildTextBasedChannel,
+    userMention,
+    MessageFlags,
 } from "discord.js";
 
 import type { ReactionHandler } from "@/handler/ReactionHandler.js";
@@ -35,7 +37,7 @@ const createWoisMessage = async (
         `${woisVoteConstant}\nWois in ${time(
             date,
             TimestampStyles.ShortDateTime,
-        )}. Grund: ${reason}${/[\.!\?]$/.test(reason) ? "" : "."} Bock?`,
+        )}. Grund: ${reason}${/[.!?]$/.test(reason) ? "" : "."} Bock?`,
     );
     await woisMessage.react("👍");
     await woisMessage.react("👎");
@@ -102,7 +104,7 @@ export default class WoisCommand implements ApplicationCommand {
             await command.reply({
                 content:
                     "Sorry, ich kann einen Woisping nur in der Zukunft ausführen. Zeitreisen müssen erst noch erfunden werden.",
-                ephemeral: true,
+                flags: MessageFlags.Ephemeral,
             });
             return;
         }
@@ -147,7 +149,7 @@ export default class WoisCommand implements ApplicationCommand {
         }
         await command.reply({
             content: `Woisvote erstellt: ${woisMessage.url}`,
-            ephemeral: true,
+            flags: MessageFlags.Ephemeral,
         });
     }
 }
@@ -231,11 +233,8 @@ export const woisVoteScheduler = async (context: BotContext): Promise<void> => {
 
     const chunks = chunkArray(interestedUsers, 10);
     for (const users of chunks) {
-        const mentions = users.map(userId => `<@${userId}>`);
-        // It's okay for readability
-
         await woisMessage.reply({
-            content: mentions.join(" "),
+            content: users.map(userMention).join(" "),
             allowedMentions: {
                 users,
             },

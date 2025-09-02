@@ -7,10 +7,12 @@ import {
     ContextMenuCommandBuilder,
     type ContextMenuCommandType,
     type Message,
+    MessageFlags,
     type Role,
     RoleSelectMenuBuilder,
     type RoleSelectMenuInteraction,
     type Snowflake,
+    userMention,
 } from "discord.js";
 
 import type { BotContext } from "@/context.js";
@@ -34,7 +36,7 @@ export default class FaulenzerPingCommand implements ApplicationCommand {
         if (!command.member || !context.roleGuard.isTrusted(command.member)) {
             await command.reply({
                 content: "Du bist nicht berechtigt, diesen Command zu benutzen.",
-                ephemeral: true,
+                flags: MessageFlags.Ephemeral,
             });
             return;
         }
@@ -48,7 +50,7 @@ export default class FaulenzerPingCommand implements ApplicationCommand {
                         .setPlaceholder("Rolle mit Faulenzern"),
                 ),
             ],
-            ephemeral: true,
+            flags: MessageFlags.Ephemeral,
         });
 
         let confirmation: RoleSelectMenuInteraction<CacheType>;
@@ -58,7 +60,7 @@ export default class FaulenzerPingCommand implements ApplicationCommand {
                 componentType: ComponentType.RoleSelect,
                 time: time.minutes(1),
             });
-        } catch (e) {
+        } catch {
             await response.edit({
                 content: "Keine Reaktion bekommen, breche ab lol.",
                 components: [],
@@ -153,7 +155,7 @@ export default class FaulenzerPingCommand implements ApplicationCommand {
     ) {
         const userChunks = chunkArray(usersToNotify, 10);
         for (const users of userChunks) {
-            const usersToNotifyMentions = users.map(userId => `<@${userId}>`).join(" ");
+            const usersToNotifyMentions = users.map(userMention).join(" ");
 
             await originalMessage.reply({
                 content: `${message} ${usersToNotifyMentions}`,

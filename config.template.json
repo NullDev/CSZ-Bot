@@ -1,12 +1,22 @@
 {
     // This file supports comments and trailing commas
     "auth": {
-        "clientId": "<CLIENT_ID>",
-        "token": "<BOT_TOKEN>"
+        "clientId": "<DISCORD_CLIENT_ID>",
+        "token": "<DISCORD_TOKEN>"
     },
     "sentry": {
         "dsn": null,
         "tracesSampleRate": null
+    },
+    "spotify": {
+        "clientId": "<SPOTIFY_CLIENT_ID>",
+        "clientSecret": "<SPOTIFY_CLIENT_SECRET>"
+    },
+    "youtube": {
+        // Path to the cookie file for YouTube authentication
+        // You can obtain it by doing this:
+        // https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp
+        "cookieFilePath": null
     },
     "activity": {
         // https://discord.com/developers/docs/topics/gateway-events#activity-object-activity-types
@@ -18,15 +28,18 @@
         "command": "xd",
         "modCommand": "yd"
     },
-    "moderatorRoleIds": [
-        "893179190709477413"
-    ],
+    "moderatorRoleIds": ["893179190709477413"],
 
     "command": {
         "faulenzerPing": {
             "allowedRoleIds": [],
             "maxNumberOfPings": 10,
             "minRequiredReactions": 5
+        },
+        "nickName": {
+            "skippedUserIds": [
+                "371724846205239326" // shadow
+            ]
         },
         "woisPing": {
             "limit": 7200,
@@ -43,8 +56,8 @@
             "scheduleCron": "*/15 * * * *",
             "dropChance": 0.05,
             "roles": {
-                "asseGuardShiftDuration": "PT8H",
-            },
+                "asseGuardShiftDuration": "PT8H"
+            }
         },
         "quotes": {
             "emojiName": "zitat",
@@ -55,6 +68,13 @@
             "blacklistedChannelIds": [],
             "defaultTargetChannelId": "893179191556706386",
             "targetChannelOverrides": []
+        },
+        "aoc": {
+            "enabled": false,
+            "targetChannelId": "",
+            "sessionToken": "",
+            "leaderBoardJsonUrl": "",
+            "userMap": {}
         }
     },
 

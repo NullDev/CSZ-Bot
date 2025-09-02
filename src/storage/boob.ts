@@ -1,10 +1,7 @@
-import { Temporal } from "@js-temporal/polyfill"; // TODO: Remove once bun ships temporal
-
 import type { Snowflake, User } from "discord.js";
 
 import type { Boob } from "./db/model.js";
 
-import { getStartAndEndDay } from "@/utils/dateUtils.js";
 import db from "@db";
 import log from "@log";
 
@@ -15,6 +12,7 @@ export function insertMeasurement(
     ctx = db(),
 ): Promise<Boob> {
     log.debug(`Saving Boob Measurement for user ${user.id} with size ${size} from ${measuredAt}`);
+
     return ctx
         .insertInto("boobs")
         .values({
@@ -25,29 +23,14 @@ export function insertMeasurement(
         .executeTakeFirstOrThrow();
 }
 
-export function fetchRecentMeasurement(user: User, ctx = db()): Promise<Boob | undefined> {
-    const now = Temporal.Now.instant();
-    const { startOfToday, startOfTomorrow } = getStartAndEndDay(now);
-
+export function fetchLastMeasurement(user: User, ctx = db()): Promise<Boob | undefined> {
     return ctx
         .selectFrom("boobs")
         .where("userId", "=", user.id)
-        .where("measuredAt", ">=", startOfToday.toString())
-        .where("measuredAt", "<", startOfTomorrow.toString())
+        .orderBy("id", "desc")
+        .limit(1)
         .selectAll()
         .executeTakeFirst();
-}
-
-export async function longestRecentMeasurement(ctx = db()): Promise<number | undefined> {
-    const now = Temporal.Now.instant();
-    const { startOfToday, startOfTomorrow } = getStartAndEndDay(now);
-    const res = await ctx
-        .selectFrom("boobs")
-        .where("measuredAt", ">=", startOfToday.toString())
-        .where("measuredAt", "<", startOfTomorrow.toString())
-        .select(({ eb }) => eb.fn.max<number>("size").as("maxSize"))
-        .executeTakeFirst();
-    return res?.maxSize ?? undefined;
 }
 
 export async function getAverageBoobSizes(ctx = db()) {

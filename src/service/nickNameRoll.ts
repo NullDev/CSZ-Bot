@@ -1,4 +1,4 @@
-import * as sentry from "@sentry/bun";
+import * as sentry from "@sentry/node";
 
 import * as nickName from "@/storage/nickName.js";
 import { randomEntry } from "@/service/random.js";
@@ -10,16 +10,20 @@ export async function rerollNicknames(context: BotContext) {
 
     const allUsersAndNames = Object.entries(await nickName.allUsersAndNames());
 
-    const updateTasks = allUsersAndNames.map(([userId, nicknames]) =>
-        updateNickname(context, userId, nicknames),
-    );
-    await Promise.all(updateTasks);
+    const updateTasks = allUsersAndNames
+        .filter(([userId]) => !context.commandConfig.nickName.skippedUserIds.has(userId))
+        .map(([userId, nicknames]) => updateNickname(context, userId, nicknames));
+
+    await Promise.allSettled(updateTasks);
 }
 
 async function updateNickname(context: BotContext, userId: string, storedNicknames: string[]) {
     try {
         const member = context.guild.members.cache.find(m => m.id === userId);
-        if (!member) return;
+        if (!member) {
+            return;
+        }
+
         const nicknames = [member.user.username, ...storedNicknames];
         const pickableNicknames = nicknames.filter(n => n !== member.nickname);
         const randomNickname = randomEntry(pickableNicknames);

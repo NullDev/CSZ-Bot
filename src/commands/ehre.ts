@@ -1,6 +1,7 @@
 import {
     type CommandInteraction,
     type InteractionReplyOptions,
+    MessageFlags,
     type MessagePayload,
     type MessageReaction,
     SlashCommandBuilder,
@@ -8,6 +9,7 @@ import {
     SlashCommandUserOption,
     type TextChannel,
     type User,
+    userMention,
 } from "discord.js";
 
 import type { ApplicationCommand } from "@/commands/command.js";
@@ -18,7 +20,7 @@ import type { ReactionHandler } from "@/handler/ReactionHandler.js";
 import * as ehreService from "@/service/ehre.js";
 
 function createUserPointString(e: EhrePoints) {
-    return `<@${e.userId}> : ${ehreService.formatPoints(e.points)}`;
+    return `${userMention(e.userId)}: ${ehreService.formatPoints(e.points)}`;
 }
 
 async function createEhreTable(
@@ -68,7 +70,7 @@ async function createEhreTable(
                 ],
             },
         ],
-        ephemeral: false,
+        flags: MessageFlags.Ephemeral,
     };
 }
 

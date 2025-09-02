@@ -73,7 +73,7 @@ export default class GoogleCommand implements ApplicationCommand {
         const embed = buildEmbed(user, reply);
         await command.reply({
             embeds: [embed],
-            ephemeral: false,
+            flags: undefined,
         });
     }
 }

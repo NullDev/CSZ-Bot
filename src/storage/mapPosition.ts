@@ -1,6 +1,6 @@
-import type {User} from "discord.js";
+import type { User } from "discord.js";
 import db from "@db";
-import {Direction} from "@/commands/karte.js";
+import { Direction } from "@/commands/karte.js";
 
 export async function getPositionForUser(userId: User["id"], ctx = db()): Promise<MapPosition> {
     const pos = await ctx
@@ -16,7 +16,7 @@ export async function getPositionForUser(userId: User["id"], ctx = db()): Promis
         .values({
             userid: userId,
             x: startx,
-            y: starty
+            y: starty,
         })
         .execute();
     return await ctx
@@ -26,7 +26,8 @@ export async function getPositionForUser(userId: User["id"], ctx = db()): Promis
         .executeTakeFirstOrThrow();
 }
 
-const startx = 0, starty = 0;
+const startx = 0,
+    starty = 0;
 
 export interface MapPosition {
     id: number;
@@ -36,17 +37,16 @@ export interface MapPosition {
 }
 
 export async function getAllPostions(ctx = db()): Promise<MapPosition[]> {
-    return await ctx
-        .selectFrom("position")
-        .selectAll()
-        .execute();
+    return await ctx.selectFrom("position").selectAll().execute();
 }
 
 async function savePos(pos: MapPosition, ctx = db()) {
-    await ctx.updateTable("position").where("userid", "=", pos.userid)
+    await ctx
+        .updateTable("position")
+        .where("userid", "=", pos.userid)
         .set({
             x: pos.x,
-            y: pos.y
+            y: pos.y,
         })
         .execute();
 }
