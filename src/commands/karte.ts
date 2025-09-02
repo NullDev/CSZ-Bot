@@ -112,7 +112,7 @@ export default class KarteCommand implements ApplicationCommand {
         user: User,
         context: BotContext,
     ): Promise<Buffer> {
-        const background = await fs.readFile("assets/maps/CSZ Karte V1.png");
+        const background = await fs.readFile("assets/maps/csz-karte-v1.png");
         const backgroundImage = await loadImage(background);
         const canvas = createCanvas(backgroundImage.width, backgroundImage.height);
         const ctx = canvas.getContext("2d");
