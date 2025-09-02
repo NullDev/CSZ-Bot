@@ -386,7 +386,7 @@ export default class GegenstandCommand implements ApplicationCommand {
         await interaction.respond(completions.slice(0, 20));
     }
 
-    async #equipItem(interaction: CommandInteraction, context: BotContext) {
+    async #equipItem(interaction: CommandInteraction, _context: BotContext) {
         if (!interaction.isChatInputCommand()) {
             throw new Error("Interaction is not a chat input command");
         }

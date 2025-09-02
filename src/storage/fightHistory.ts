@@ -1,6 +1,5 @@
 import type { User } from "discord.js";
 import db from "@db";
-import { FightScene } from "@/service/fightData.js";
 
 export async function insertResult(userId: User["id"], boss: string, win: boolean, ctx = db()) {
     const lastWins = await getWinsForBoss(userId, boss);

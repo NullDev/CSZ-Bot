@@ -1,4 +1,4 @@
-import { ApplicationCommand } from "@/commands/command.js";
+import type { ApplicationCommand } from "@/commands/command.js";
 import {
     ActionRowBuilder,
     ButtonBuilder,
@@ -7,12 +7,17 @@ import {
     type CommandInteraction,
     ComponentType,
     SlashCommandBuilder,
-    User,
+    type User,
 } from "discord.js";
 import fs from "node:fs/promises";
-import { createCanvas, loadImage, SKRSContext2D } from "@napi-rs/canvas";
-import { getAllPostions, getPositionForUser, MapPosition, move } from "@/storage/mapPosition.js";
-import { BotContext } from "@/context.js";
+import { createCanvas, loadImage, type SKRSContext2D } from "@napi-rs/canvas";
+import {
+    getAllPostions,
+    getPositionForUser,
+    type MapPosition,
+    move,
+} from "@/storage/mapPosition.js";
+import type { BotContext } from "@/context.js";
 
 export default class KarteCommand implements ApplicationCommand {
     name = "karte";
@@ -44,7 +49,7 @@ export default class KarteCommand implements ApplicationCommand {
             const row = new ActionRowBuilder<ButtonBuilder>();
             for (const direction of directionrow) {
                 const button = new ButtonBuilder()
-                    .setCustomId("map_" + direction)
+                    .setCustomId(`map_${direction}`)
                     .setLabel(direction);
                 if (direction === "X") {
                     button.setStyle(ButtonStyle.Danger);
@@ -61,12 +66,12 @@ export default class KarteCommand implements ApplicationCommand {
             fetchReply: true,
             embeds: [
                 {
-                    title: `Karte des heiligen CSZ Landes`,
-                    description: ``,
+                    title: "Karte des heiligen CSZ Landes",
+                    description: "",
                     color: 0x00ff00,
 
                     image: {
-                        url: `attachment://Karte.png`,
+                        url: "attachment://Karte.png",
                     },
                 },
             ],
@@ -113,10 +118,10 @@ export default class KarteCommand implements ApplicationCommand {
         const ctx = canvas.getContext("2d");
         ctx.drawImage(backgroundImage, 0, 0);
 
-        let allPostions = await getAllPostions();
+        const allPostions = await getAllPostions();
         for (const pos of allPostions) {
-            let member = context.guild.members.cache.find(m => m.id === pos.userid);
-            if (member && pos.userid != user.id) {
+            const member = context.guild.members.cache.find(m => m.id === pos.userid);
+            if (member && pos.userid !== user.id) {
                 await this.drawPlayer(ctx, pos, member.user, "small");
             }
         }
@@ -131,9 +136,9 @@ export default class KarteCommand implements ApplicationCommand {
         size: "small" | "large",
     ) {
         ctx.beginPath();
-        ctx.strokeStyle = size == "large" ? "blue" : "grey";
-        ctx.lineWidth = size == "large" ? 3 : 1;
-        const radius = size == "large" ? 32 : 16;
+        ctx.strokeStyle = size === "large" ? "blue" : "grey";
+        ctx.lineWidth = size === "large" ? 3 : 1;
+        const radius = size === "large" ? 32 : 16;
         ctx.arc(
             position.x * stepfactor + radius,
             position.y * stepfactor + radius,
@@ -142,7 +147,7 @@ export default class KarteCommand implements ApplicationCommand {
             2 * Math.PI,
         );
         ctx.stroke();
-        let textMetrics = ctx.measureText(position.userid);
+        const _textMetrics = ctx.measureText(position.userid);
         //Todo here funny pixelcounting to center the text
         ctx.strokeStyle = "blue";
         ctx.lineWidth = 1;
@@ -150,12 +155,13 @@ export default class KarteCommand implements ApplicationCommand {
         ctx.strokeText(
             user.displayName,
             position.x * stepfactor,
-            position.y * stepfactor + (size == "large" ? 75 : 40),
+            position.y * stepfactor + (size === "large" ? 75 : 40),
         );
         const avatarURL = user.avatarURL({
-            size: size == "large" ? 64 : 32,
+            size: size === "large" ? 64 : 32,
         });
-        let avatar = await loadImage(avatarURL!);
+        // biome-ignore lint/style/noNonNullAssertion: :shrug:
+        const avatar = await loadImage(avatarURL!);
         ctx.save();
         ctx.beginPath();
         ctx.arc(

@@ -1,7 +1,6 @@
 import type { ApplicationCommand } from "@/commands/command.js";
 import {
     type APIEmbed,
-    APIEmbedField,
     type BooleanCache,
     type CacheType,
     type CommandInteraction,
@@ -72,14 +71,14 @@ export default class FightCommand implements ApplicationCommand {
                 ),
         );
 
-    async handleInteraction(command: CommandInteraction, context: BotContext) {
+    async handleInteraction(command: CommandInteraction, _context: BotContext) {
         if (!command.isChatInputCommand()) {
             throw new Error("Invalid command type");
         }
 
         const boss = command.options.get("boss", true).value as string;
 
-        const lastFight = await getLastFight(command.user.id);
+        const _lastFight = await getLastFight(command.user.id);
 
         //   if (lastFight !== undefined && (new Date(lastFight?.createdAt).getTime() > new Date().getTime() - 1000 * 60 * 60 * 24 * 5)) {
         //       await command.reply({

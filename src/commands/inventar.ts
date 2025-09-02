@@ -167,7 +167,7 @@ export default class InventarCommand implements ApplicationCommand {
         });
     }
 
-    async #createFightEmbed(context: BotContext, interaction: CommandInteraction, user: User) {
+    async #createFightEmbed(_context: BotContext, interaction: CommandInteraction, user: User) {
         const fightInventory = await getFightInventoryEnriched(user.id);
         const avatarURL = user.avatarURL();
         const display = {
@@ -199,6 +199,6 @@ export default class InventarCommand implements ApplicationCommand {
             tts: false,
         } as const satisfies InteractionReplyOptions;
 
-        const message = await interaction.reply(embed);
+        await interaction.reply(embed);
     }
 }

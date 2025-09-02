@@ -1,6 +1,6 @@
 import type { User } from "discord.js";
 import db from "@db";
-import { Direction } from "@/commands/karte.js";
+import type { Direction } from "@/commands/karte.js";
 
 export async function getPositionForUser(userId: User["id"], ctx = db()): Promise<MapPosition> {
     const pos = await ctx
@@ -26,8 +26,8 @@ export async function getPositionForUser(userId: User["id"], ctx = db()): Promis
         .executeTakeFirstOrThrow();
 }
 
-const startx = 0,
-    starty = 0;
+const startx = 0;
+const starty = 0;
 
 export interface MapPosition {
     id: number;
@@ -52,7 +52,7 @@ async function savePos(pos: MapPosition, ctx = db()) {
 }
 
 export async function move(userId: User["id"], direction: Direction) {
-    let pos = await getPositionForUser(userId);
+    const pos = await getPositionForUser(userId);
     switch (direction) {
         case "NW":
             pos.x = pos.x - 1;
