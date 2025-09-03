@@ -214,8 +214,7 @@ export default class StempelgraphCommand implements ApplicationCommand {
 
     async handleInteraction(command: CommandInteraction, context: BotContext) {
         if (!command.isChatInputCommand()) {
-            // TODO: Solve this on a type level
-            return;
+            return; // TODO: Solve this on a type level
         }
 
         const members = command.guild?.members.cache;

@@ -242,8 +242,7 @@ export default class Lauscher implements ApplicationCommand {
 
     async handleInteraction(command: CommandInteraction<CacheType>, _context: BotContext) {
         if (!command.isChatInputCommand()) {
-            // TODO: Solve this on a type level
-            return;
+            return; // TODO: Solve this on a type level
         }
 
         const subCommand = command.options.getSubcommand() as SubCommand;
