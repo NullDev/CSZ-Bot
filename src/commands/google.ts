@@ -48,8 +48,7 @@ export default class GoogleCommand implements ApplicationCommand {
 
     async handleInteraction(command: CommandInteraction) {
         if (!command.isChatInputCommand()) {
-            // TODO: Solve this on a type level
-            return;
+            return; // TODO: Solve this on a type level
         }
 
         const user = command.guild?.members.cache.find(m => m.id === command.user.id);

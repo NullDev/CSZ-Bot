@@ -72,8 +72,7 @@ export default class NeverCommand implements ApplicationCommand, MessageCommand 
 
     async handleInteraction(command: CommandInteraction<CacheType>) {
         if (!command.isChatInputCommand()) {
-            // TODO: Solve this on a type level
-            return;
+            return; // TODO: Solve this on a type level
         }
 
         const author = command.guild?.members.resolve(command.user);

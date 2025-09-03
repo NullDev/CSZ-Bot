@@ -163,8 +163,7 @@ export default class SdmCommand implements MessageCommand, ApplicationCommand {
 
     async handleInteraction(command: CommandInteraction<CacheType>) {
         if (!command.isChatInputCommand()) {
-            // TODO: Solve this on a type level
-            return;
+            return; // TODO: Solve this on a type level
         }
 
         const subcommand = command.options.getSubcommand(true);

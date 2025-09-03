@@ -8,13 +8,12 @@ export async function up(db: Kysely<any>) {
         .addColumn("x", "integer", c => c.notNull())
         .addColumn("y", "integer", c => c.notNull())
         .addColumn("successor", "integer", c =>
-            c.references("locationHistory.successor").defaultTo(null).onDelete("set null"),
+            c.references("locationHistory.id").defaultTo(null).onDelete("set null"),
         )
         .addColumn("createdAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
         .addColumn("updatedAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
         .execute();
 
-    // TODO: Check if we need this
     await db.schema
         .createIndex("locationHistory_userId_successor")
         .on("locationHistory")

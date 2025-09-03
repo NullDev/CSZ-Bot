@@ -84,8 +84,7 @@ export default class WoisCommand implements ApplicationCommand {
 
     async handleInteraction(command: CommandInteraction, context: BotContext) {
         if (!command.isChatInputCommand()) {
-            // TODO: Solve this on a type level
-            return;
+            return; // TODO: Solve this on a type level
         }
         const channel = command.channel;
         if (!channel || !channel.isTextBased() || !("guild" in channel)) {

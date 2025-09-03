@@ -1,4 +1,4 @@
-import fs from "node:fs/promises";
+import * as fs from "node:fs/promises";
 
 import { createCanvas, loadImage, type SKRSContext2D } from "@napi-rs/canvas";
 import {
@@ -22,6 +22,18 @@ const allDirections = [
     ["SW", "S", "SE"],
 ] as const satisfies locationService.Direction[][];
 
+const buttonLabels: Record<locationService.Direction, string> = {
+    NW: "↖️",
+    N: "⬆️",
+    NE: "↗️",
+    W: "⬅️",
+    X: "_", // must not be empty
+    E: "➡️",
+    SW: "↙️",
+    S: "⬇️",
+    SE: "↘️",
+};
+
 export default class KarteCommand implements ApplicationCommand {
     name = "karte";
     description = "Karte, damit du nicht verloren gehst";
@@ -29,10 +41,29 @@ export default class KarteCommand implements ApplicationCommand {
         .setName(this.name)
         .setDescription(this.description);
 
+    #createNavigationButtonRow(
+        currentPosition: locationService.Position,
+        mapSize: locationService.Position,
+    ) {
+        return allDirections.map(directionRow => {
+            const row = new ActionRowBuilder<ButtonBuilder>();
+            for (const direction of directionRow) {
+                const canPress = locationService.canMove(currentPosition, mapSize, direction);
+                row.addComponents(
+                    new ButtonBuilder()
+                        .setCustomId(`karte-direction-${direction}`)
+                        .setLabel(buttonLabels[direction])
+                        .setStyle(ButtonStyle.Secondary)
+                        .setDisabled(!canPress),
+                );
+            }
+            return row;
+        });
+    }
+
     async handleInteraction(command: CommandInteraction<CacheType>, context: BotContext) {
         if (!command.isChatInputCommand()) {
-            // TODO: Solve this on a type level
-            return;
+            return; // TODO: Solve this on a type level
         }
 
         const author = command.member;
@@ -40,30 +71,19 @@ export default class KarteCommand implements ApplicationCommand {
             throw new Error("Couldn't resolve guild member");
         }
 
-        const rows: ActionRowBuilder<ButtonBuilder>[] = [];
-        for (const directionRow of allDirections) {
-            const row = new ActionRowBuilder<ButtonBuilder>();
-            for (const direction of directionRow) {
-                const button = new ButtonBuilder()
-                    .setCustomId(`karte-direction-${direction}`)
-                    .setLabel(direction) // TODO: Maybe use an emoji for that?
-                    .setStyle(ButtonStyle.Secondary)
-                    .setDisabled(direction === "X");
-
-                row.addComponents(button);
-            }
-            rows.push(row);
-        }
-
-        const map = await this.drawMap(
+        const currentPosition =
             (await locationService.getPositionForUser(author.user as User)) ??
-                locationService.startPosition,
-            command.user,
-            context,
-        );
+            locationService.startPosition;
 
-        const sentReply = await command.reply({
-            fetchReply: true,
+        const map = await this.drawMap(currentPosition, command.user, context);
+
+        const navigationButtons = this.#createNavigationButtonRow(currentPosition, {
+            x: 1521,
+            y: 782,
+        });
+
+        const replyData = await command.reply({
+            withResponse: true,
             embeds: [
                 {
                     title: "Karte des heiligen CSZ-Landes",
@@ -73,7 +93,7 @@ export default class KarteCommand implements ApplicationCommand {
                     },
                 },
             ],
-            components: rows,
+            components: navigationButtons,
             files: [
                 {
                     name: "map.png",
@@ -82,22 +102,34 @@ export default class KarteCommand implements ApplicationCommand {
             ],
         });
 
+        const sentReply = replyData.resource?.message;
+        if (sentReply === null || sentReply === undefined) {
+            throw new Error("Expected message to be present.");
+        }
+
         const collector = sentReply.createMessageComponentCollector({
             componentType: ComponentType.Button,
             time: 45_000,
-            filter: i => i.customId.startsWith("karte-direction-"),
+            filter: i => i.customId.startsWith("karte-direction-") && i.user.id === command.user.id,
         });
 
         collector.on("collect", async i => {
-            const playerpos = await locationService.move(
+            const playerPosition = await locationService.move(
                 i.user,
                 i.customId.replace("karte-direction-", "") as locationService.Direction,
             );
+
+            const newButtons = this.#createNavigationButtonRow(playerPosition, {
+                x: 1521,
+                y: 782,
+            });
+
             await i.message.edit({
+                components: newButtons,
                 files: [
                     {
                         name: "map.png",
-                        attachment: await this.drawMap(playerpos, i.user, context),
+                        attachment: await this.drawMap(playerPosition, i.user, context),
                     },
                 ],
             });
@@ -105,7 +137,9 @@ export default class KarteCommand implements ApplicationCommand {
         });
 
         collector.on("dispose", async i => {
-            await i.deleteReply("@original");
+            await i.message.edit({
+                components: [],
+            });
         });
     }
 
@@ -153,8 +187,8 @@ export default class KarteCommand implements ApplicationCommand {
 
         const radius = size === "large" ? 32 : 16;
         ctx.arc(
-            position.x * stepFactor + radius,
-            position.y * stepFactor + radius,
+            position.x * stepSize + radius,
+            position.y * stepSize + radius,
             radius,
             0,
             2 * Math.PI,
@@ -168,8 +202,8 @@ export default class KarteCommand implements ApplicationCommand {
 
         ctx.strokeText(
             user.displayName,
-            position.x * stepFactor,
-            position.y * stepFactor + (size === "large" ? 75 : 40),
+            position.x * stepSize,
+            position.y * stepSize + (size === "large" ? 75 : 40),
         );
 
         const avatarURL = user.avatarURL({
@@ -185,8 +219,8 @@ export default class KarteCommand implements ApplicationCommand {
         ctx.save();
         ctx.beginPath();
         ctx.arc(
-            position.x * stepFactor + radius,
-            position.y * stepFactor + radius,
+            position.x * stepSize + radius,
+            position.y * stepSize + radius,
             radius,
             0,
             2 * Math.PI,
@@ -194,9 +228,9 @@ export default class KarteCommand implements ApplicationCommand {
         ctx.closePath();
         ctx.clip();
 
-        ctx.drawImage(avatar, position.x * stepFactor, position.y * stepFactor);
+        ctx.drawImage(avatar, position.x * stepSize, position.y * stepSize);
         ctx.restore();
     }
 }
 
-const stepFactor = 32;
+const stepSize = 32;
