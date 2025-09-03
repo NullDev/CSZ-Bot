@@ -47,14 +47,15 @@ export default class KarteCommand implements ApplicationCommand {
                 const button = new ButtonBuilder()
                     .setCustomId(`karte-direction-${direction}`)
                     .setLabel(direction) // TODO: Maybe use an emoji for that?
-                    .setStyle(direction === "X" ? ButtonStyle.Danger : ButtonStyle.Secondary);
+                    .setStyle(ButtonStyle.Secondary)
+                    .setDisabled(direction === "X");
 
                 row.addComponents(button);
             }
             rows.push(row);
         }
 
-        const map = await this.buildMap(
+        const map = await this.drawMap(
             (await locationService.getPositionForUser(author.user as User)) ??
                 locationService.startPosition,
             command.user,
@@ -90,13 +91,13 @@ export default class KarteCommand implements ApplicationCommand {
         collector.on("collect", async i => {
             const playerpos = await locationService.move(
                 i.user,
-                i.customId.valueOf().replace("karte-direction-", "") as locationService.Direction,
+                i.customId.replace("karte-direction-", "") as locationService.Direction,
             );
             await i.message.edit({
                 files: [
                     {
-                        name: "Karte.png",
-                        attachment: await this.buildMap(playerpos, i.user, context),
+                        name: "map.png",
+                        attachment: await this.drawMap(playerpos, i.user, context),
                     },
                 ],
             });
@@ -108,24 +109,34 @@ export default class KarteCommand implements ApplicationCommand {
         });
     }
 
-    private async buildMap(
+    private async drawMap(
         position: locationService.Position,
         user: User,
         context: BotContext,
     ): Promise<Buffer> {
         const background = await fs.readFile("assets/maps/csz-karte-v1.png");
         const backgroundImage = await loadImage(background);
+
         const canvas = createCanvas(backgroundImage.width, backgroundImage.height);
         const ctx = canvas.getContext("2d");
+
         ctx.drawImage(backgroundImage, 0, 0);
 
-        const allPostions = await locationService.getAllCurrentPostions();
-        for (const pos of allPostions) {
-            const member = context.guild.members.cache.find(m => m.id === pos.userId);
-            if (member && pos.userId !== user.id) {
-                await this.drawPlayer(ctx, pos, member.user, "small");
+        const allPlayerLocations = await locationService.getAllCurrentPostions();
+        for (const pos of allPlayerLocations) {
+            if (pos.userId === user.id) {
+                // Make sure we draw us last
+                continue;
             }
+
+            const member = context.guild.members.cache.find(m => m.id === pos.userId);
+            if (!member) {
+                continue;
+            }
+
+            await this.drawPlayer(ctx, pos, member.user, "small");
         }
+
         await this.drawPlayer(ctx, position, user, "large");
         return canvas.toBuffer("image/png");
     }
@@ -139,10 +150,11 @@ export default class KarteCommand implements ApplicationCommand {
         ctx.beginPath();
         ctx.strokeStyle = size === "large" ? "blue" : "grey";
         ctx.lineWidth = size === "large" ? 3 : 1;
+
         const radius = size === "large" ? 32 : 16;
         ctx.arc(
-            position.x * stepfactor + radius,
-            position.y * stepfactor + radius,
+            position.x * stepFactor + radius,
+            position.y * stepFactor + radius,
             radius,
             0,
             2 * Math.PI,
@@ -150,25 +162,31 @@ export default class KarteCommand implements ApplicationCommand {
         ctx.stroke();
 
         const _textMetrics = ctx.measureText(user.id);
-        //Todo here funny pixelcounting to center the text
+        // TODO here funny pixelcounting to center the text
         ctx.strokeStyle = "blue";
         ctx.lineWidth = 1;
 
         ctx.strokeText(
             user.displayName,
-            position.x * stepfactor,
-            position.y * stepfactor + (size === "large" ? 75 : 40),
+            position.x * stepFactor,
+            position.y * stepFactor + (size === "large" ? 75 : 40),
         );
+
         const avatarURL = user.avatarURL({
             size: size === "large" ? 64 : 32,
         });
-        // biome-ignore lint/style/noNonNullAssertion: :shrug:
-        const avatar = await loadImage(avatarURL!);
+
+        if (!avatarURL) {
+            return;
+        }
+
+        const avatar = await loadImage(avatarURL);
+
         ctx.save();
         ctx.beginPath();
         ctx.arc(
-            position.x * stepfactor + radius,
-            position.y * stepfactor + radius,
+            position.x * stepFactor + radius,
+            position.y * stepFactor + radius,
             radius,
             0,
             2 * Math.PI,
@@ -176,9 +194,9 @@ export default class KarteCommand implements ApplicationCommand {
         ctx.closePath();
         ctx.clip();
 
-        ctx.drawImage(avatar, position.x * stepfactor, position.y * stepfactor);
+        ctx.drawImage(avatar, position.x * stepFactor, position.y * stepFactor);
         ctx.restore();
     }
 }
 
-const stepfactor = 32;
+const stepFactor = 32;
