@@ -32,8 +32,7 @@ export default class KarteCommand implements ApplicationCommand {
             return;
         }
 
-        const author = command.guild?.members.resolve(command.user);
-
+        const author = command.member;
         if (!author) {
             throw new Error("Couldn't resolve guild member");
         }
@@ -60,7 +59,11 @@ export default class KarteCommand implements ApplicationCommand {
             }
             rows.push(row);
         }
-        const map = await this.buildMap(await getPositionForUser(author.id), command.user, context);
+        const map = await this.buildMap(
+            await getPositionForUser(author.user.id),
+            command.user,
+            context,
+        );
 
         const sentReply = await command.reply({
             fetchReply: true,
