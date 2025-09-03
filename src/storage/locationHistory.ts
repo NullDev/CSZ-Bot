@@ -1,9 +1,7 @@
-import type { Snowflake, User } from "discord.js";
+import type { Snowflake } from "discord.js";
 
 import db from "@db";
-import type { Direction } from "@/commands/karte.js";
 import type { MapLocation } from "@/storage/db/model.js";
-import assertNever from "@/utils/assertNever.js";
 
 export async function getPositionForUser(
     userId: Snowflake,
@@ -25,16 +23,10 @@ export async function getAllCurrentPostions(ctx = db()): Promise<MapLocation[]> 
         .execute();
 }
 
-export interface Position {
-    x: MapLocation["x"];
-    y: MapLocation["y"];
-}
-
-const startPosition = { x: 0, y: 0 };
-
-async function savePos(
+export async function savePosition(
     userId: MapLocation["userId"],
-    pos: Position,
+    x: MapLocation["x"],
+    y: MapLocation["y"],
     ctx = db(),
 ): Promise<MapLocation> {
     return await ctx.transaction().execute(async tx => {
@@ -50,8 +42,8 @@ async function savePos(
             .insertInto("locationHistory")
             .values({
                 userId,
-                x: pos.x,
-                y: pos.y,
+                x,
+                y,
                 successor: null,
             })
             .returningAll()
@@ -69,35 +61,4 @@ async function savePos(
 
         return newPosition;
     });
-}
-
-export async function move(userId: User["id"], direction: Direction) {
-    const currentPosition = (await getPositionForUser(userId)) ?? startPosition;
-    const newPosition = deriveNewPosition(currentPosition, direction);
-    return await savePos(userId, newPosition);
-}
-
-function deriveNewPosition(position: Position, direction: Direction) {
-    switch (direction) {
-        case "NW":
-            return { x: position.x - 1, y: position.y - 1 };
-        case "N":
-            return { x: position.x, y: position.y - 1 };
-        case "NE":
-            return { x: position.x + 1, y: position.y - 1 };
-        case "W":
-            return { x: position.x - 1, y: position.y };
-        case "X":
-            return { x: position.x, y: position.y };
-        case "E":
-            return { x: position.x + 1, y: position.y };
-        case "SW":
-            return { x: position.x - 1, y: position.y + 1 };
-        case "S":
-            return { x: position.x, y: position.y + 1 };
-        case "SE":
-            return { x: position.x + 1, y: position.y + 1 };
-        default:
-            assertNever(direction);
-    }
 }

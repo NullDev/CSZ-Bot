@@ -371,7 +371,10 @@ export type MapLocation = Selectable<LocationHistoryTable>;
 export interface LocationHistoryTable extends AuditedTable {
     id: GeneratedAlways<LocationHistoryId>;
     userId: Snowflake;
-    x: number;
-    y: number;
-    successor: LocationHistoryId | null;
+
+    // x and y are not allowed to change. Insert a location update instead
+    x: ColumnType<number, number, never>;
+    y: ColumnType<number, number, never>;
+
+    successor: ColumnType<LocationHistoryId | null, null, LocationHistoryId>; // select can be location | null, insertion has to be null and update has to be a number
 }

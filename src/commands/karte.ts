@@ -179,6 +179,4 @@ export default class KarteCommand implements ApplicationCommand {
     }
 }
 
-export type Direction = "NW" | "N" | "NE" | "W" | "X" | "E" | "SW" | "S" | "SE";
-
 const stepfactor = 32;
