@@ -1,4 +1,4 @@
-import fs from "node:fs/promises";
+import * as fs from "node:fs/promises";
 
 import { createCanvas, loadImage, type SKRSContext2D } from "@napi-rs/canvas";
 import {
@@ -66,9 +66,10 @@ export default class KarteCommand implements ApplicationCommand {
             rows.push(row);
         }
 
+        const currentPosition = await locationService.getPositionForUser(author.user as User);
+
         const map = await this.drawMap(
-            (await locationService.getPositionForUser(author.user as User)) ??
-                locationService.startPosition,
+            currentPosition ?? locationService.startPosition,
             command.user,
             context,
         );
