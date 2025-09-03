@@ -14,6 +14,14 @@ export interface Position {
     y: MapLocation["y"];
 }
 
+export async function getPositionForUser(user: User): Promise<MapLocation | undefined> {
+    return await locationHistory.getPositionForUser(user.id);
+}
+
+export async function getAllCurrentPostions(): Promise<MapLocation[]> {
+    return await locationHistory.getAllCurrentPostions();
+}
+
 export async function move(user: User, direction: Direction) {
     const currentPosition = (await locationHistory.getPositionForUser(user.id)) ?? startPosition;
     const newPosition = deriveNewPosition(currentPosition, direction);

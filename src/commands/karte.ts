@@ -13,8 +13,14 @@ import {
 } from "discord.js";
 
 import type { ApplicationCommand } from "@/commands/command.js";
-import { getAllPostions, getPositionForUser, move } from "@/storage/mapPosition.js";
+import * as locationService from "@/service/location.js";
 import type { BotContext } from "@/context.js";
+
+const allDirections = [
+    ["NW", "N", "NE"],
+    ["W", "X", "E"],
+    ["SW", "S", "SE"],
+] as const satisfies locationService.Direction[][];
 
 export default class KarteCommand implements ApplicationCommand {
     name = "karte";
@@ -34,14 +40,8 @@ export default class KarteCommand implements ApplicationCommand {
             throw new Error("Couldn't resolve guild member");
         }
 
-        const directions = [
-            ["NW", "N", "NE"],
-            ["W", "X", "E"],
-            ["SW", "S", "SE"],
-        ];
-
         const rows = [];
-        for (const directionrow of directions) {
+        for (const directionrow of allDirections) {
             const row = new ActionRowBuilder<ButtonBuilder>();
             for (const direction of directionrow) {
                 const button = new ButtonBuilder()
@@ -57,7 +57,7 @@ export default class KarteCommand implements ApplicationCommand {
             rows.push(row);
         }
         const map = await this.buildMap(
-            await getPositionForUser(author.user.id),
+            await locationService.getPositionForUser(author.user as User),
             command.user,
             context,
         );
@@ -88,9 +88,9 @@ export default class KarteCommand implements ApplicationCommand {
             time: 45_000,
         });
         collector.on("collect", async i => {
-            const playerpos = await move(
-                i.user.id,
-                i.customId.valueOf().replace("map_", "") as Direction,
+            const playerpos = await locationService.move(
+                i.user,
+                i.customId.valueOf().replace("map_", "") as locationService.Direction,
             );
             await i.message.edit({
                 files: [
@@ -118,7 +118,7 @@ export default class KarteCommand implements ApplicationCommand {
         const ctx = canvas.getContext("2d");
         ctx.drawImage(backgroundImage, 0, 0);
 
-        const allPostions = await getAllPostions();
+        const allPostions = await locationService.getAllCurrentPostions();
         for (const pos of allPostions) {
             const member = context.guild.members.cache.find(m => m.id === pos.userId);
             if (member && pos.userId !== user.id) {
