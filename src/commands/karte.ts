@@ -31,7 +31,7 @@ const buttonLabels: Record<locationService.Direction, string> = {
     E: "➡️",
     SW: "↙️",
     S: "⬇️",
-    SE: "↗️",
+    SE: "↘️",
 };
 
 export default class KarteCommand implements ApplicationCommand {
