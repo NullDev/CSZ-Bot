@@ -6,6 +6,7 @@ export const names = {
     dbNeoRegular: "DBNeoScreenSans Regular",
     openSans: "Open Sans",
     appleEmoji: "Apple Emoji",
+    impact: "Impact",
 };
 
 GlobalFonts.registerFromPath("assets/fonts/DBNeoScreenSans-Black.woff2", names.dbNeoBlack);
@@ -13,3 +14,4 @@ GlobalFonts.registerFromPath("assets/fonts/DBNeoScreenSans-Bold.woff2", names.db
 GlobalFonts.registerFromPath("assets/fonts/DBNeoScreenSans-Regular.woff2", names.dbNeoRegular);
 GlobalFonts.registerFromPath("assets/fonts/OpenSans-VariableFont_wdth,wght.ttf", names.openSans);
 GlobalFonts.registerFromPath("assets/fonts/AppleColorEmoji@2x.ttf", names.appleEmoji);
+GlobalFonts.registerFromPath("assets/fonts/impact.ttf", names.impact);
