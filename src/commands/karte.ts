@@ -41,16 +41,7 @@ export default class KarteCommand implements ApplicationCommand {
         .setName(this.name)
         .setDescription(this.description);
 
-    async handleInteraction(command: CommandInteraction<CacheType>, context: BotContext) {
-        if (!command.isChatInputCommand()) {
-            return; // TODO: Solve this on a type level
-        }
-
-        const author = command.member;
-        if (!author) {
-            throw new Error("Couldn't resolve guild member");
-        }
-
+    #createNavigationButtonRow() {
         const rows: ActionRowBuilder<ButtonBuilder>[] = [];
         for (const directionRow of allDirections) {
             const row = new ActionRowBuilder<ButtonBuilder>();
@@ -65,6 +56,17 @@ export default class KarteCommand implements ApplicationCommand {
             }
             rows.push(row);
         }
+    }
+
+    async handleInteraction(command: CommandInteraction<CacheType>, context: BotContext) {
+        if (!command.isChatInputCommand()) {
+            return; // TODO: Solve this on a type level
+        }
+
+        const author = command.member;
+        if (!author) {
+            throw new Error("Couldn't resolve guild member");
+        }
 
         const currentPosition = await locationService.getPositionForUser(author.user as User);
 
@@ -73,6 +75,8 @@ export default class KarteCommand implements ApplicationCommand {
             command.user,
             context,
         );
+
+        const navigationButtons = this.#createNavigationButtonRow();
 
         const replyData = await command.reply({
             withResponse: true,
@@ -85,7 +89,7 @@ export default class KarteCommand implements ApplicationCommand {
                     },
                 },
             ],
-            components: rows,
+            components: navigationButtons,
             files: [
                 {
                     name: "map.png",
