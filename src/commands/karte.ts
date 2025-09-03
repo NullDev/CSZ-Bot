@@ -40,22 +40,20 @@ export default class KarteCommand implements ApplicationCommand {
             throw new Error("Couldn't resolve guild member");
         }
 
-        const rows = [];
-        for (const directionrow of allDirections) {
+        const rows: ActionRowBuilder<ButtonBuilder>[] = [];
+        for (const directionRow of allDirections) {
             const row = new ActionRowBuilder<ButtonBuilder>();
-            for (const direction of directionrow) {
+            for (const direction of directionRow) {
                 const button = new ButtonBuilder()
-                    .setCustomId(`map_${direction}`)
-                    .setLabel(direction);
-                if (direction === "X") {
-                    button.setStyle(ButtonStyle.Danger);
-                } else {
-                    button.setStyle(ButtonStyle.Secondary);
-                }
+                    .setCustomId(`direction-${direction}`)
+                    .setLabel(direction) // TODO: Maybe use an emoji for that?
+                    .setStyle(direction === "X" ? ButtonStyle.Danger : ButtonStyle.Secondary);
+
                 row.addComponents(button);
             }
             rows.push(row);
         }
+
         const map = await this.buildMap(
             await locationService.getPositionForUser(author.user as User),
             command.user,
