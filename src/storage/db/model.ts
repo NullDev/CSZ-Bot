@@ -31,7 +31,6 @@ export interface Database {
 
     fightHistory: FightHistoryTable;
     fightInventory: FightInventoryTable;
-    position: MapPositonTable;
 
     lauscherRegistration: LauscherRegistrationTable;
     lauscherSpotifyLog: LauscherSpotifyLogTable;
@@ -39,6 +38,7 @@ export interface Database {
     spotifyArtists: SpotifyArtistTable;
     spotifyTracks: SpotifyTrackTable;
     spotifyTrackToArtists: SpotifyTrackToArtistTable;
+    position: MapPositonTable;
 }
 
 export type OneBasedMonth = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
@@ -388,4 +388,11 @@ export interface LauscherSpotifyLogView {
     artistName: string;
     artistImageUrl: string | null;
     startedActivity: string;
+}
+
+export interface MapPositonTable extends AuditedTable {
+    id: GeneratedAlways<number>;
+    userId: Snowflake;
+    x: number;
+    y: number;
 }

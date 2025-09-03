@@ -23,15 +23,6 @@ export async function up(db: Kysely<any>) {
         .execute();
 
     await createUpdatedAtTrigger(db, "fightHistory");
-
-    await db.schema
-        .createTable("position")
-        .ifNotExists()
-        .addColumn("id", "integer", c => c.primaryKey().autoIncrement())
-        .addColumn("userid", "text", c => c.notNull())
-        .addColumn("x", "integer", c => c.notNull())
-        .addColumn("y", "integer", c => c.notNull())
-        .execute();
 }
 
 function createUpdatedAtTrigger(db: Kysely<any>, tableName: string) {
