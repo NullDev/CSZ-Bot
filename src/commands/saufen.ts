@@ -61,8 +61,7 @@ export default class Saufen implements ApplicationCommand, AutocompleteCommand {
 
     async handleInteraction(command: CommandInteraction<CacheType>, context: BotContext) {
         if (!command.isChatInputCommand()) {
-            // TODO: Solve this on a type level
-            return;
+            return; // TODO: Solve this on a type level
         }
 
         const subCommand = command.options.getSubcommand() as SubCommand;

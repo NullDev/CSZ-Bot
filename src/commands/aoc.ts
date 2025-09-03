@@ -166,8 +166,7 @@ export default class AoCCommand implements ApplicationCommand {
 
     async handleInteraction(command: CommandInteraction<CacheType>, context: BotContext) {
         if (!command.isChatInputCommand()) {
-            // TODO: Solve this on a type level
-            return;
+            return; // TODO: Solve this on a type level
         }
 
         const aocConfig = context.commandConfig.aoc;
