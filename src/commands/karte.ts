@@ -102,7 +102,7 @@ export default class KarteCommand implements ApplicationCommand {
         const collector = sentReply.createMessageComponentCollector({
             componentType: ComponentType.Button,
             time: 45_000,
-            filter: i => i.customId.startsWith("karte-direction-"),
+            filter: i => i.customId.startsWith("karte-direction-") && i.user.id === command.user.id,
         });
 
         collector.on("collect", async i => {
