@@ -1,6 +1,6 @@
 import * as fs from "node:fs/promises";
 
-import { createCanvas, loadImage, type SKRSContext2D } from "@napi-rs/canvas";
+import { createCanvas, loadImage, type SKRSContext2D, type Image } from "@napi-rs/canvas";
 import {
     ActionRowBuilder,
     AttachmentBuilder,
@@ -21,12 +21,17 @@ import {
 import type { ApplicationCommand } from "@/commands/command.js";
 import * as locationService from "@/service/location.js";
 import type { BotContext } from "@/context.js";
+import { Vec2 } from "@/utils/math.js";
+import * as fontService from "@/service/font.js";
 
 const allDirections = [
     ["NW", "N", "NE"],
     ["W", "X", "E"],
     ["SW", "S", "SE"],
 ] as const satisfies locationService.Direction[][];
+
+type VerticalAlign = "top" | "middle" | "bottom";
+type HorizontalAlign = "left" | "center" | "right";
 
 const buttonLabels: Record<locationService.Direction, string> = {
     NW: "↖️",
@@ -181,68 +186,133 @@ export default class KarteCommand implements ApplicationCommand {
                 continue;
             }
 
-            await this.drawPlayer(ctx, pos, member.user, "small");
+            await this.#drawPlayer(ctx, pos, member.user, "small", "grey");
         }
 
-        await this.drawPlayer(ctx, position, user, "large");
+        await this.#drawPlayer(ctx, position, user, "large", "blue");
         return canvas.toBuffer("image/png");
     }
 
-    private async drawPlayer(
+    #drawAvatar(
+        ctx: SKRSContext2D,
+        position: locationService.Position,
+        avatar: Image,
+        radius: number,
+        strokeWidth: number,
+        strokeColor: string,
+    ) {
+        ctx.beginPath();
+        this.circlePath(ctx, position.x * stepSize, position.y * stepSize, radius, "center", "top");
+
+        ctx.strokeStyle = strokeColor;
+        ctx.lineWidth = strokeWidth;
+
+        ctx.stroke();
+
+        ctx.save();
+        ctx.beginPath();
+
+        this.circlePath(ctx, position.x * stepSize, position.y * stepSize, radius, "center", "top");
+
+        ctx.closePath();
+        ctx.clip();
+
+        ctx.drawImage(avatar, position.x * stepSize - radius, position.y * stepSize);
+
+        ctx.restore();
+    }
+
+    circlePath(
+        ctx: SKRSContext2D,
+        x: number,
+        y: number,
+        radius: number,
+        horizontalAlign: HorizontalAlign,
+        verticalAlign: VerticalAlign,
+    ) {
+        ctx.save();
+
+        let offsetX = 0;
+        let offsetY = 0;
+
+        switch (horizontalAlign) {
+            case "left":
+                offsetX = radius;
+                break;
+            case "center":
+                offsetX = 0;
+                break;
+            case "right":
+                offsetX = -radius;
+                break;
+        }
+
+        switch (verticalAlign) {
+            case "top":
+                offsetY = radius;
+                break;
+            case "middle":
+                offsetY = 0;
+                break;
+            case "bottom":
+                offsetY = -radius;
+                break;
+        }
+
+        ctx.translate(x + offsetX, y + offsetY);
+
+        ctx.beginPath();
+        ctx.arc(0, 0, radius, 0, 2 * Math.PI);
+
+        ctx.restore();
+    }
+
+    fillText(
+        ctx: SKRSContext2D,
+        pos: Vec2,
+        textAlign: CanvasTextAlign,
+        baseLine: CanvasTextBaseline,
+        color: string,
+        fontSize: string,
+        fontName: string,
+        text: string,
+    ) {
+        ctx.save();
+        ctx.font = `${fontSize} ${fontName}`;
+        ctx.fillStyle = color;
+        ctx.textAlign = textAlign;
+        ctx.textBaseline = baseLine;
+        ctx.fillText(text, pos.x, pos.y);
+        ctx.restore();
+    }
+
+    async #drawPlayer(
         ctx: SKRSContext2D,
         position: locationService.Position,
         user: User,
         size: "small" | "large",
+        playerColor: "blue" | "grey",
     ) {
-        ctx.beginPath();
-        ctx.strokeStyle = size === "large" ? "blue" : "grey";
-        ctx.lineWidth = size === "large" ? 3 : 1;
-
         const radius = size === "large" ? 32 : 16;
-        ctx.arc(
-            position.x * stepSize + radius,
-            position.y * stepSize + radius,
-            radius,
-            0,
-            2 * Math.PI,
-        );
-        ctx.stroke();
 
-        const _textMetrics = ctx.measureText(user.id);
-        // TODO here funny pixelcounting to center the text
-        ctx.strokeStyle = "blue";
-        ctx.lineWidth = 1;
-
-        ctx.strokeText(
+        this.fillText(
+            ctx,
+            new Vec2(position.x * stepSize, position.y * stepSize + radius * 2),
+            "center",
+            "top",
+            playerColor,
+            "20px",
+            fontService.names.openSans,
             user.displayName,
-            position.x * stepSize,
-            position.y * stepSize + (size === "large" ? 75 : 40),
         );
 
-        const avatarURL = user.avatarURL({
-            size: size === "large" ? 64 : 32,
-        });
-
-        if (!avatarURL) {
+        const avatarUrl = user.avatarURL({ size: size === "large" ? 64 : 32 });
+        if (!avatarUrl) {
             return;
         }
 
-        const avatar = await loadImage(avatarURL);
-
-        ctx.save();
-        ctx.beginPath();
-        ctx.arc(
-            position.x * stepSize + radius,
-            position.y * stepSize + radius,
-            radius,
-            0,
-            2 * Math.PI,
-        );
-        ctx.closePath();
-        ctx.clip();
-
-        ctx.drawImage(avatar, position.x * stepSize, position.y * stepSize);
-        ctx.restore();
+        const avatar = await loadImage(avatarUrl);
+        this.#drawAvatar(ctx, position, avatar, radius, size === "large" ? 3 : 1, playerColor);
     }
 }
 
