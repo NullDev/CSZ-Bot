@@ -8,6 +8,7 @@ import type { Loot } from "@/storage/db/model.js";
 import type { LootTemplate } from "@/storage/loot.js";
 import * as fontService from "@/service/font.js";
 import { Vec2 } from "@/utils/math.js";
+import { extendContext } from "@/utils/ExtendedCanvasContext.js";
 
 const namePos = new Vec2(38, 567);
 const avatarPos = new Vec2(790, 230);
@@ -34,7 +35,7 @@ export async function drawBahncardImage(
 
     const backgroundImage = await loadImage(await fs.readFile(assetPath));
     const canvas = createCanvas(backgroundImage.width, backgroundImage.height);
-    const ctx = canvas.getContext("2d");
+    const ctx = extendContext(canvas.getContext("2d"));
 
     ctx.drawImage(backgroundImage, 0, 0);
 
@@ -50,7 +51,7 @@ export async function drawBahncardImage(
         ctx.drawImage(avatar, avatarPos.x, avatarPos.y, avatarSize.x, avatarSize.y);
     }
 
-    drawText(
+    ctx.fillTextExtended(
         namePos,
         "left",
         "top",
@@ -60,7 +61,7 @@ export async function drawBahncardImage(
         owner.displayName,
     );
 
-    drawText(
+    ctx.fillTextExtended(
         numberPos,
         "left",
         "bottom",
@@ -70,7 +71,7 @@ export async function drawBahncardImage(
         groupDigits(serialNumber),
     );
 
-    drawText(
+    ctx.fillTextExtended(
         createdAtPos,
         "left",
         "bottom",
@@ -80,7 +81,7 @@ export async function drawBahncardImage(
         dateFormat.format(new Date(loot.claimedAt)),
     );
 
-    drawText(
+    ctx.fillTextExtended(
         validUntilPos,
         "right",
         "top",
@@ -91,24 +92,6 @@ export async function drawBahncardImage(
     );
 
     return await canvas.encode("png");
-
-    function drawText(
-        pos: Vec2,
-        textAlign: CanvasTextAlign,
-        baseLine: CanvasTextBaseline,
-        color: string,
-        fontSize: string,
-        fontName: string,
-        text: string,
-    ) {
-        ctx.save();
-        ctx.font = `${fontSize} ${fontName}`;
-        ctx.fillStyle = color;
-        ctx.textAlign = textAlign;
-        ctx.textBaseline = baseLine;
-        ctx.fillText(text, pos.x, pos.y);
-        ctx.restore();
-    }
 }
 
 function groupDigits(input: string): string {
