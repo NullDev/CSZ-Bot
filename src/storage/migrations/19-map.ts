@@ -2,15 +2,27 @@ import { sql, type Kysely } from "kysely";
 
 export async function up(db: Kysely<any>) {
     await db.schema
-        .createTable("position")
-        .ifNotExists()
+        .createTable("locationHistory")
         .addColumn("id", "integer", c => c.primaryKey().autoIncrement())
         .addColumn("userId", "text", c => c.notNull())
         .addColumn("x", "integer", c => c.notNull())
         .addColumn("y", "integer", c => c.notNull())
+        .addColumn("successor", "integer", c =>
+            c.references("locationHistory.successor").defaultTo(null).onDelete("set null"),
+        )
+        .addColumn("createdAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
+        .addColumn("updatedAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
         .execute();
 
-    await createUpdatedAtTrigger(db, "position");
+    // TODO: Check if we need this
+    await db.schema
+        .createIndex("locationHistory_userId_successor")
+        .on("locationHistory")
+        .columns(["userId", "successor"])
+        .unique()
+        .execute();
+
+    await createUpdatedAtTrigger(db, "locationHistory");
 }
 
 function createUpdatedAtTrigger(db: Kysely<any>, tableName: string) {

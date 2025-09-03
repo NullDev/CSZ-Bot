@@ -1,4 +1,6 @@
-import type { ApplicationCommand } from "@/commands/command.js";
+import fs from "node:fs/promises";
+
+import { createCanvas, loadImage, type SKRSContext2D } from "@napi-rs/canvas";
 import {
     ActionRowBuilder,
     ButtonBuilder,
@@ -9,15 +11,16 @@ import {
     SlashCommandBuilder,
     type User,
 } from "discord.js";
-import fs from "node:fs/promises";
-import { createCanvas, loadImage, type SKRSContext2D } from "@napi-rs/canvas";
-import {
-    getAllPostions,
-    getPositionForUser,
-    type MapPosition,
-    move,
-} from "@/storage/mapPosition.js";
+
+import type { ApplicationCommand } from "@/commands/command.js";
+import * as locationService from "@/service/location.js";
 import type { BotContext } from "@/context.js";
+
+const allDirections = [
+    ["NW", "N", "NE"],
+    ["W", "X", "E"],
+    ["SW", "S", "SE"],
+] as const satisfies locationService.Direction[][];
 
 export default class KarteCommand implements ApplicationCommand {
     name = "karte";
@@ -37,30 +40,23 @@ export default class KarteCommand implements ApplicationCommand {
             throw new Error("Couldn't resolve guild member");
         }
 
-        const directions = [
-            ["NW", "N", "NE"],
-            ["W", "X", "E"],
-            ["SW", "S", "SE"],
-        ];
-
-        const rows = [];
-        for (const directionrow of directions) {
+        const rows: ActionRowBuilder<ButtonBuilder>[] = [];
+        for (const directionRow of allDirections) {
             const row = new ActionRowBuilder<ButtonBuilder>();
-            for (const direction of directionrow) {
+            for (const direction of directionRow) {
                 const button = new ButtonBuilder()
-                    .setCustomId(`map_${direction}`)
-                    .setLabel(direction);
-                if (direction === "X") {
-                    button.setStyle(ButtonStyle.Danger);
-                } else {
-                    button.setStyle(ButtonStyle.Secondary);
-                }
+                    .setCustomId(`karte-direction-${direction}`)
+                    .setLabel(direction) // TODO: Maybe use an emoji for that?
+                    .setStyle(direction === "X" ? ButtonStyle.Danger : ButtonStyle.Secondary);
+
                 row.addComponents(button);
             }
             rows.push(row);
         }
+
         const map = await this.buildMap(
-            await getPositionForUser(author.user.id),
+            (await locationService.getPositionForUser(author.user as User)) ??
+                locationService.startPosition,
             command.user,
             context,
         );
@@ -69,31 +65,32 @@ export default class KarteCommand implements ApplicationCommand {
             fetchReply: true,
             embeds: [
                 {
-                    title: "Karte des heiligen CSZ Landes",
-                    description: "",
+                    title: "Karte des heiligen CSZ-Landes",
                     color: 0x00ff00,
-
                     image: {
-                        url: "attachment://Karte.png",
+                        url: "attachment://map.png",
                     },
                 },
             ],
+            components: rows,
             files: [
                 {
-                    name: "Karte.png",
+                    name: "map.png",
                     attachment: map,
                 },
             ],
-            components: rows,
         });
+
         const collector = sentReply.createMessageComponentCollector({
             componentType: ComponentType.Button,
             time: 45_000,
+            filter: i => i.customId.startsWith("karte-direction-"),
         });
+
         collector.on("collect", async i => {
-            const playerpos = await move(
-                i.user.id,
-                i.customId.valueOf().replace("map_", "") as Direction,
+            const playerpos = await locationService.move(
+                i.user,
+                i.customId.valueOf().replace("karte-direction-", "") as locationService.Direction,
             );
             await i.message.edit({
                 files: [
@@ -105,13 +102,14 @@ export default class KarteCommand implements ApplicationCommand {
             });
             await i.deferUpdate();
         });
+
         collector.on("dispose", async i => {
             await i.deleteReply("@original");
         });
     }
 
     private async buildMap(
-        position: MapPosition,
+        position: locationService.Position,
         user: User,
         context: BotContext,
     ): Promise<Buffer> {
@@ -121,7 +119,7 @@ export default class KarteCommand implements ApplicationCommand {
         const ctx = canvas.getContext("2d");
         ctx.drawImage(backgroundImage, 0, 0);
 
-        const allPostions = await getAllPostions();
+        const allPostions = await locationService.getAllCurrentPostions();
         for (const pos of allPostions) {
             const member = context.guild.members.cache.find(m => m.id === pos.userId);
             if (member && pos.userId !== user.id) {
@@ -134,7 +132,7 @@ export default class KarteCommand implements ApplicationCommand {
 
     private async drawPlayer(
         ctx: SKRSContext2D,
-        position: MapPosition,
+        position: locationService.Position,
         user: User,
         size: "small" | "large",
     ) {
@@ -150,7 +148,8 @@ export default class KarteCommand implements ApplicationCommand {
             2 * Math.PI,
         );
         ctx.stroke();
-        const _textMetrics = ctx.measureText(position.userId);
+
+        const _textMetrics = ctx.measureText(user.id);
         //Todo here funny pixelcounting to center the text
         ctx.strokeStyle = "blue";
         ctx.lineWidth = 1;
@@ -181,7 +180,5 @@ export default class KarteCommand implements ApplicationCommand {
         ctx.restore();
     }
 }
-
-export type Direction = "NW" | "N" | "NE" | "W" | "X" | "E" | "SW" | "S" | "SE";
 
 const stepfactor = 32;
