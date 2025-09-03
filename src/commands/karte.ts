@@ -119,7 +119,13 @@ export default class KarteCommand implements ApplicationCommand {
                 i.customId.replace("karte-direction-", "") as locationService.Direction,
             );
 
+            const newButtons = this.#createNavigationButtonRow(playerPosition, {
+                x: 1521,
+                y: 782,
+            });
+
             await i.message.edit({
+                components: newButtons,
                 files: [
                     {
                         name: "map.png",
