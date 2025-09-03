@@ -27,7 +27,7 @@ const buttonLabels: Record<locationService.Direction, string> = {
     N: "⬆️",
     NE: "↗️",
     W: "⬅️",
-    X: "",
+    X: "_", // must not be empty
     E: "➡️",
     SW: "↙️",
     S: "⬇️",

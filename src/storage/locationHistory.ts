@@ -32,7 +32,7 @@ export async function savePosition(
     return await ctx.transaction().execute(async tx => {
         const currentPosition = await tx
             .selectFrom("locationHistory")
-            .forUpdate()
+            // .forUpdate() // FOR UPDATE not supported by SQLite
             .where("userId", "=", userId)
             .where("successor", "is", null)
             .select("id")
