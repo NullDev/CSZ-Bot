@@ -55,13 +55,13 @@ export default class KarteCommand implements ApplicationCommand {
         for (const directionRow of allDirections) {
             const row = new ActionRowBuilder<ButtonBuilder>();
             for (const direction of directionRow) {
-                const button = new ButtonBuilder()
-                    .setCustomId(`karte-direction-${direction}`)
-                    .setEmoji(buttonLabels[direction])
-                    .setStyle(ButtonStyle.Secondary)
-                    .setDisabled(direction === "X");
-
-                row.addComponents(button);
+                row.addComponents(
+                    new ButtonBuilder()
+                        .setCustomId(`karte-direction-${direction}`)
+                        .setLabel(buttonLabels[direction])
+                        .setStyle(ButtonStyle.Secondary)
+                        .setDisabled(direction === "X"),
+                );
             }
             rows.push(row);
         }
