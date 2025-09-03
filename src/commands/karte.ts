@@ -22,6 +22,18 @@ const allDirections = [
     ["SW", "S", "SE"],
 ] as const satisfies locationService.Direction[][];
 
+const buttonLabels: Record<locationService.Direction, string> = {
+    NW: "↖️",
+    N: "⬆️",
+    NE: "↗️",
+    W: "⬅️",
+    X: "",
+    E: "➡️",
+    SW: "↙️",
+    S: "⬇️",
+    SE: "↗️",
+};
+
 export default class KarteCommand implements ApplicationCommand {
     name = "karte";
     description = "Karte, damit du nicht verloren gehst";
@@ -31,8 +43,7 @@ export default class KarteCommand implements ApplicationCommand {
 
     async handleInteraction(command: CommandInteraction<CacheType>, context: BotContext) {
         if (!command.isChatInputCommand()) {
-            // TODO: Solve this on a type level
-            return;
+            return; // TODO: Solve this on a type level
         }
 
         const author = command.member;
@@ -46,7 +57,7 @@ export default class KarteCommand implements ApplicationCommand {
             for (const direction of directionRow) {
                 const button = new ButtonBuilder()
                     .setCustomId(`karte-direction-${direction}`)
-                    .setLabel(direction) // TODO: Maybe use an emoji for that?
+                    .setEmoji(buttonLabels[direction])
                     .setStyle(ButtonStyle.Secondary)
                     .setDisabled(direction === "X");
 
