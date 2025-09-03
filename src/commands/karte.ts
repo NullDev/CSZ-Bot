@@ -54,7 +54,7 @@ export default class KarteCommand implements ApplicationCommand {
             rows.push(row);
         }
 
-        const map = await this.buildMap(
+        const map = await this.drawMap(
             (await locationService.getPositionForUser(author.user as User)) ??
                 locationService.startPosition,
             command.user,
@@ -96,7 +96,7 @@ export default class KarteCommand implements ApplicationCommand {
                 files: [
                     {
                         name: "map.png",
-                        attachment: await this.buildMap(playerpos, i.user, context),
+                        attachment: await this.drawMap(playerpos, i.user, context),
                     },
                 ],
             });
@@ -108,7 +108,7 @@ export default class KarteCommand implements ApplicationCommand {
         });
     }
 
-    private async buildMap(
+    private async drawMap(
         position: locationService.Position,
         user: User,
         context: BotContext,
@@ -124,7 +124,7 @@ export default class KarteCommand implements ApplicationCommand {
         const allPlayerLocations = await locationService.getAllCurrentPostions();
         for (const pos of allPlayerLocations) {
             if (pos.userId === user.id) {
-                // Make sure we don't overlap with others
+                // Make sure we draw us last
                 continue;
             }
 
