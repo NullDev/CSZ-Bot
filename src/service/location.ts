@@ -52,3 +52,23 @@ function deriveNewPosition(position: Position, direction: Direction) {
             assertNever(direction);
     }
 }
+
+export function canMove(position: Position, maxSize: Position, direction: Direction): boolean {
+    const allDirections = direction.split("");
+    return allDirections.every(direction => {
+        switch (direction) {
+            case "N":
+                return position.y > 0;
+            case "W":
+                return position.x > 0;
+            case "X":
+                return false;
+            case "E":
+                return position.x < maxSize.x;
+            case "S":
+                return position.y < maxSize.y;
+            default:
+                return false;
+        }
+    });
+}
