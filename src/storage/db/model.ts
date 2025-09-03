@@ -34,7 +34,7 @@ export interface Database {
     spotifyArtists: SpotifyArtistTable;
     spotifyTracks: SpotifyTrackTable;
     spotifyTrackToArtists: SpotifyTrackToArtistTable;
-    position: MapPositonTable;
+    locationHistory: LocationHistoryTable;
 }
 
 export type OneBasedMonth = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
@@ -364,9 +364,14 @@ export interface LauscherSpotifyLogView {
     startedActivity: string;
 }
 
-export interface MapPositonTable extends AuditedTable {
-    id: GeneratedAlways<number>;
+export type LocationHistoryId = number;
+
+export type MapLocation = Selectable<LocationHistoryTable>;
+
+export interface LocationHistoryTable extends AuditedTable {
+    id: GeneratedAlways<LocationHistoryId>;
     userId: Snowflake;
     x: number;
     y: number;
+    successor: LocationHistoryId | null;
 }

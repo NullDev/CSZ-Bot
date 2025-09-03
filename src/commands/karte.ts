@@ -1,4 +1,6 @@
-import type { ApplicationCommand } from "@/commands/command.js";
+import fs from "node:fs/promises";
+
+import { createCanvas, loadImage, type SKRSContext2D } from "@napi-rs/canvas";
 import {
     ActionRowBuilder,
     ButtonBuilder,
@@ -9,14 +11,9 @@ import {
     SlashCommandBuilder,
     type User,
 } from "discord.js";
-import fs from "node:fs/promises";
-import { createCanvas, loadImage, type SKRSContext2D } from "@napi-rs/canvas";
-import {
-    getAllPostions,
-    getPositionForUser,
-    type MapPosition,
-    move,
-} from "@/storage/mapPosition.js";
+
+import type { ApplicationCommand } from "@/commands/command.js";
+import { getAllPostions, getPositionForUser, move } from "@/storage/mapPosition.js";
 import type { BotContext } from "@/context.js";
 
 export default class KarteCommand implements ApplicationCommand {
@@ -111,7 +108,7 @@ export default class KarteCommand implements ApplicationCommand {
     }
 
     private async buildMap(
-        position: MapPosition,
+        position: MapLocation,
         user: User,
         context: BotContext,
     ): Promise<Buffer> {
@@ -134,7 +131,7 @@ export default class KarteCommand implements ApplicationCommand {
 
     private async drawPlayer(
         ctx: SKRSContext2D,
-        position: MapPosition,
+        position: MapLocation,
         user: User,
         size: "small" | "large",
     ) {

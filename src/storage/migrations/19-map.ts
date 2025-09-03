@@ -7,8 +7,8 @@ export async function up(db: Kysely<any>) {
         .addColumn("userId", "text", c => c.notNull())
         .addColumn("x", "integer", c => c.notNull())
         .addColumn("y", "integer", c => c.notNull())
-        .addColumn("predecessor", "integer", c =>
-            c.references("locationHistory.predecessor").defaultTo(null).onDelete("set null"),
+        .addColumn("successor", "integer", c =>
+            c.references("locationHistory.successor").defaultTo(null).onDelete("set null"),
         )
         .addColumn("createdAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
         .addColumn("updatedAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
@@ -16,9 +16,9 @@ export async function up(db: Kysely<any>) {
 
     // TODO: Check if we need this
     await db.schema
-        .createIndex("locationHistory_userId_predecessor")
-        .on("predecessor")
-        .columns(["userId", "predecessor"])
+        .createIndex("locationHistory_userId_successor")
+        .on("successor")
+        .columns(["userId", "successor"])
         .unique()
         .execute();
 
