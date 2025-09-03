@@ -17,7 +17,7 @@ export async function up(db: Kysely<any>) {
     // TODO: Check if we need this
     await db.schema
         .createIndex("locationHistory_userId_successor")
-        .on("successor")
+        .on("locationHistory")
         .columns(["userId", "successor"])
         .unique()
         .execute();
