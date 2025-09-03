@@ -1,6 +1,6 @@
 import * as fs from "node:fs/promises";
 
-import { createCanvas, loadImage, type SKRSContext2D, type Image } from "@napi-rs/canvas";
+import { createCanvas, loadImage, type Image } from "@napi-rs/canvas";
 import {
     ActionRowBuilder,
     AttachmentBuilder,
@@ -23,15 +23,13 @@ import * as locationService from "@/service/location.js";
 import type { BotContext } from "@/context.js";
 import { Vec2 } from "@/utils/math.js";
 import * as fontService from "@/service/font.js";
+import { extendContext, type ExtendedCanvasContext } from "@/utils/ExtendedCanvasContext.js";
 
 const allDirections = [
     ["NW", "N", "NE"],
     ["W", "X", "E"],
     ["SW", "S", "SE"],
 ] as const satisfies locationService.Direction[][];
-
-type VerticalAlign = "top" | "middle" | "bottom";
-type HorizontalAlign = "left" | "center" | "right";
 
 const buttonLabels: Record<locationService.Direction, string> = {
     NW: "↖️",
@@ -170,7 +168,7 @@ export default class KarteCommand implements ApplicationCommand {
         const backgroundImage = await loadImage(background);
 
         const canvas = createCanvas(backgroundImage.width, backgroundImage.height);
-        const ctx = canvas.getContext("2d");
+        const ctx = extendContext(canvas.getContext("2d"));
 
         ctx.drawImage(backgroundImage, 0, 0);
 
@@ -194,15 +192,17 @@ export default class KarteCommand implements ApplicationCommand {
     }
 
     #drawAvatar(
-        ctx: SKRSContext2D,
+        ctx: ExtendedCanvasContext,
         position: locationService.Position,
         avatar: Image,
         radius: number,
         strokeWidth: number,
         strokeColor: string,
     ) {
+        const pos = new Vec2(position.x, position.y);
+
         ctx.beginPath();
-        this.circlePath(ctx, position.x * stepSize, position.y * stepSize, radius, "center", "top");
+        ctx.circlePath(pos.scale(stepSize), radius, "center", "top");
 
         ctx.strokeStyle = strokeColor;
         ctx.lineWidth = strokeWidth;
@@ -212,7 +212,7 @@ export default class KarteCommand implements ApplicationCommand {
         ctx.save();
         ctx.beginPath();
 
-        this.circlePath(ctx, position.x * stepSize, position.y * stepSize, radius, "center", "top");
+        ctx.circlePath(pos.scale(stepSize), radius, "center", "top");
 
         ctx.closePath();
         ctx.clip();
@@ -222,72 +222,8 @@ export default class KarteCommand implements ApplicationCommand {
         ctx.restore();
     }
 
-    circlePath(
-        ctx: SKRSContext2D,
-        x: number,
-        y: number,
-        radius: number,
-        horizontalAlign: HorizontalAlign,
-        verticalAlign: VerticalAlign,
-    ) {
-        ctx.save();
-
-        let offsetX = 0;
-        let offsetY = 0;
-
-        switch (horizontalAlign) {
-            case "left":
-                offsetX = radius;
-                break;
-            case "center":
-                offsetX = 0;
-                break;
-            case "right":
-                offsetX = -radius;
-                break;
-        }
-
-        switch (verticalAlign) {
-            case "top":
-                offsetY = radius;
-                break;
-            case "middle":
-                offsetY = 0;
-                break;
-            case "bottom":
-                offsetY = -radius;
-                break;
-        }
-
-        ctx.translate(x + offsetX, y + offsetY);
-
-        ctx.beginPath();
-        ctx.arc(0, 0, radius, 0, 2 * Math.PI);
-
-        ctx.restore();
-    }
-
-    fillText(
-        ctx: SKRSContext2D,
-        pos: Vec2,
-        textAlign: CanvasTextAlign,
-        baseLine: CanvasTextBaseline,
-        color: string,
-        fontSize: string,
-        fontName: string,
-        text: string,
-    ) {
-        ctx.save();
-        ctx.font = `${fontSize} ${fontName}`;
-        ctx.fillStyle = color;
-        ctx.textAlign = textAlign;
-        ctx.textBaseline = baseLine;
-        ctx.fillText(text, pos.x, pos.y);
-        ctx.restore();
-    }
-
     async #drawPlayer(
-        ctx: SKRSContext2D,
+        ctx: ExtendedCanvasContext,
         position: locationService.Position,
         user: User,
         size: "small" | "large",
@@ -295,8 +231,7 @@ export default class KarteCommand implements ApplicationCommand {
     ) {
         const radius = size === "large" ? 32 : 16;
 
-        this.fillText(
-            ctx,
+        ctx.fillTextExtended(
             new Vec2(position.x * stepSize, position.y * stepSize + radius * 2),
             "center",
             "top",
