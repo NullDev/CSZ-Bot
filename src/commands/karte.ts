@@ -106,15 +106,16 @@ export default class KarteCommand implements ApplicationCommand {
         });
 
         collector.on("collect", async i => {
-            const playerpos = await locationService.move(
+            const playerPosition = await locationService.move(
                 i.user,
                 i.customId.replace("karte-direction-", "") as locationService.Direction,
             );
+
             await i.message.edit({
                 files: [
                     {
                         name: "map.png",
-                        attachment: await this.drawMap(playerpos, i.user, context),
+                        attachment: await this.drawMap(playerPosition, i.user, context),
                     },
                 ],
             });
@@ -122,7 +123,9 @@ export default class KarteCommand implements ApplicationCommand {
         });
 
         collector.on("dispose", async i => {
-            await i.deleteReply("@original");
+            await i.message.edit({
+                components: [],
+            });
         });
     }
 
