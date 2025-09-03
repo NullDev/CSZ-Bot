@@ -120,8 +120,8 @@ export default class KarteCommand implements ApplicationCommand {
 
         const allPostions = await getAllPostions();
         for (const pos of allPostions) {
-            const member = context.guild.members.cache.find(m => m.id === pos.userid);
-            if (member && pos.userid !== user.id) {
+            const member = context.guild.members.cache.find(m => m.id === pos.userId);
+            if (member && pos.userId !== user.id) {
                 await this.drawPlayer(ctx, pos, member.user, "small");
             }
         }
@@ -147,7 +147,7 @@ export default class KarteCommand implements ApplicationCommand {
             2 * Math.PI,
         );
         ctx.stroke();
-        const _textMetrics = ctx.measureText(position.userid);
+        const _textMetrics = ctx.measureText(position.userId);
         //Todo here funny pixelcounting to center the text
         ctx.strokeStyle = "blue";
         ctx.lineWidth = 1;

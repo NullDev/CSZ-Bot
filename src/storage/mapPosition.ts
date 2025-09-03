@@ -1,27 +1,29 @@
-import type { User } from "discord.js";
+import type { Snowflake, User } from "discord.js";
 import db from "@db";
 import type { Direction } from "@/commands/karte.js";
 
 export async function getPositionForUser(userId: User["id"], ctx = db()): Promise<MapPosition> {
     const pos = await ctx
         .selectFrom("position")
-        .where("userid", "=", userId)
+        .where("userId", "=", userId)
         .selectAll()
         .executeTakeFirst();
+
     if (pos != null) {
         return pos;
     }
+
     await ctx
         .insertInto("position")
         .values({
-            userid: userId,
+            userId,
             x: startx,
             y: starty,
         })
         .execute();
     return await ctx
         .selectFrom("position")
-        .where("userid", "=", userId)
+        .where("userId", "=", userId)
         .selectAll()
         .executeTakeFirstOrThrow();
 }
@@ -31,7 +33,7 @@ const starty = 0;
 
 export interface MapPosition {
     id: number;
-    userid: User["id"];
+    userId: Snowflake;
     x: number;
     y: number;
 }
@@ -43,7 +45,7 @@ export async function getAllPostions(ctx = db()): Promise<MapPosition[]> {
 async function savePos(pos: MapPosition, ctx = db()) {
     await ctx
         .updateTable("position")
-        .where("userid", "=", pos.userid)
+        .where("userId", "=", pos.userId)
         .set({
             x: pos.x,
             y: pos.y,

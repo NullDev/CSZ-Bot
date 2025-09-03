@@ -318,7 +318,7 @@ interface FightInventoryTable {
 
 export interface MapPositonTable {
     id: GeneratedAlways<number>;
-    userid: Snowflake;
+    userId: Snowflake;
     x: number;
     y: number;
 }
