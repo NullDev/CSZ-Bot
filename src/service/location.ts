@@ -5,7 +5,7 @@ import assertNever from "@/utils/assertNever.js";
 import * as locationHistory from "@/storage/locationHistory.js";
 import type { MapLocation } from "@/storage/db/model.js";
 
-const startPosition = { x: 0, y: 0 };
+export const startPosition = { x: 0, y: 0 };
 
 export type Direction = "NW" | "N" | "NE" | "W" | "X" | "E" | "SW" | "S" | "SE";
 

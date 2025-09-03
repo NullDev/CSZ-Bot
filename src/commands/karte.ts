@@ -55,7 +55,8 @@ export default class KarteCommand implements ApplicationCommand {
         }
 
         const map = await this.buildMap(
-            await locationService.getPositionForUser(author.user as User),
+            (await locationService.getPositionForUser(author.user as User)) ??
+                locationService.startPosition,
             command.user,
             context,
         );
@@ -64,22 +65,20 @@ export default class KarteCommand implements ApplicationCommand {
             fetchReply: true,
             embeds: [
                 {
-                    title: "Karte des heiligen CSZ Landes",
-                    description: "",
+                    title: "Karte des heiligen CSZ-Landes",
                     color: 0x00ff00,
-
                     image: {
-                        url: "attachment://Karte.png",
+                        url: "attachment://map.png",
                     },
                 },
             ],
+            components: rows,
             files: [
                 {
-                    name: "Karte.png",
+                    name: "map.png",
                     attachment: map,
                 },
             ],
-            components: rows,
         });
 
         const collector = sentReply.createMessageComponentCollector({
@@ -110,7 +109,7 @@ export default class KarteCommand implements ApplicationCommand {
     }
 
     private async buildMap(
-        position: MapLocation,
+        position: locationService.Position,
         user: User,
         context: BotContext,
     ): Promise<Buffer> {
@@ -133,7 +132,7 @@ export default class KarteCommand implements ApplicationCommand {
 
     private async drawPlayer(
         ctx: SKRSContext2D,
-        position: MapLocation,
+        position: locationService.Position,
         user: User,
         size: "small" | "large",
     ) {
@@ -149,7 +148,8 @@ export default class KarteCommand implements ApplicationCommand {
             2 * Math.PI,
         );
         ctx.stroke();
-        const _textMetrics = ctx.measureText(position.userId);
+
+        const _textMetrics = ctx.measureText(user.id);
         //Todo here funny pixelcounting to center the text
         ctx.strokeStyle = "blue";
         ctx.lineWidth = 1;
