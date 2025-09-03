@@ -90,12 +90,12 @@ export default class KarteCommand implements ApplicationCommand {
         collector.on("collect", async i => {
             const playerpos = await locationService.move(
                 i.user,
-                i.customId.valueOf().replace("karte-direction-", "") as locationService.Direction,
+                i.customId.replace("karte-direction-", "") as locationService.Direction,
             );
             await i.message.edit({
                 files: [
                     {
-                        name: "Karte.png",
+                        name: "map.png",
                         attachment: await this.buildMap(playerpos, i.user, context),
                     },
                 ],
