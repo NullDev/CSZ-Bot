@@ -74,8 +74,8 @@ export default class KarteCommand implements ApplicationCommand {
             context,
         );
 
-        const sentReply = await command.reply({
-            fetchReply: true,
+        const replyData = await command.reply({
+            withResponse: true,
             embeds: [
                 {
                     title: "Karte des heiligen CSZ-Landes",
@@ -93,6 +93,11 @@ export default class KarteCommand implements ApplicationCommand {
                 },
             ],
         });
+
+        const sentReply = replyData.resource?.message;
+        if (sentReply === null || sentReply === undefined) {
+            throw new Error("Expected message to be present.");
+        }
 
         const collector = sentReply.createMessageComponentCollector({
             componentType: ComponentType.Button,
