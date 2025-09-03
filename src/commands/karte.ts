@@ -3,12 +3,18 @@ import * as fs from "node:fs/promises";
 import { createCanvas, loadImage, type SKRSContext2D } from "@napi-rs/canvas";
 import {
     ActionRowBuilder,
+    AttachmentBuilder,
     ButtonBuilder,
     ButtonStyle,
     type CacheType,
     type CommandInteraction,
     ComponentType,
+    ContainerBuilder,
+    MediaGalleryBuilder,
+    MediaGalleryItemBuilder,
+    MessageFlags,
     SlashCommandBuilder,
+    TextDisplayBuilder,
     type User,
 } from "discord.js";
 
@@ -61,6 +67,34 @@ export default class KarteCommand implements ApplicationCommand {
         });
     }
 
+    async createMessageData(
+        map: Buffer,
+        currentPosition: locationService.Position,
+        mapSize: locationService.Position,
+    ) {
+        const mapFile = new AttachmentBuilder(map, { name: "map.png" });
+
+        const navigationButtons = this.#createNavigationButtonRow(currentPosition, mapSize);
+
+        const container = new ContainerBuilder()
+            .addTextDisplayComponents(
+                new TextDisplayBuilder().setContent("## Karte des heiligen CSZ-Landes"),
+            )
+            .addMediaGalleryComponents(
+                new MediaGalleryBuilder().addItems(
+                    new MediaGalleryItemBuilder()
+                        .setURL("attachment://map.png")
+                        .setDescription("Karte"),
+                ),
+            )
+            .addActionRowComponents(navigationButtons);
+
+        return {
+            components: [container],
+            files: [mapFile],
+        };
+    }
+
     async handleInteraction(command: CommandInteraction<CacheType>, context: BotContext) {
         if (!command.isChatInputCommand()) {
             return; // TODO: Solve this on a type level
@@ -77,29 +111,17 @@ export default class KarteCommand implements ApplicationCommand {
 
         const map = await this.drawMap(currentPosition, command.user, context);
 
-        const navigationButtons = this.#createNavigationButtonRow(currentPosition, {
+        const mapSize = {
             x: 1521,
             y: 782,
-        });
+        };
+
+        const messageData = await this.createMessageData(map, currentPosition, mapSize);
 
         const replyData = await command.reply({
             withResponse: true,
-            embeds: [
-                {
-                    title: "Karte des heiligen CSZ-Landes",
-                    color: 0x00ff00,
-                    image: {
-                        url: "attachment://map.png",
-                    },
-                },
-            ],
-            components: navigationButtons,
-            files: [
-                {
-                    name: "map.png",
-                    attachment: map,
-                },
-            ],
+            flags: MessageFlags.IsComponentsV2,
+            ...messageData,
         });
 
         const sentReply = replyData.resource?.message;
@@ -114,25 +136,16 @@ export default class KarteCommand implements ApplicationCommand {
         });
 
         collector.on("collect", async i => {
-            const playerPosition = await locationService.move(
+            const currentPosition = await locationService.move(
                 i.user,
                 i.customId.replace("karte-direction-", "") as locationService.Direction,
             );
 
-            const newButtons = this.#createNavigationButtonRow(playerPosition, {
-                x: 1521,
-                y: 782,
-            });
+            const map = await this.drawMap(currentPosition, i.user, context);
 
-            await i.message.edit({
-                components: newButtons,
-                files: [
-                    {
-                        name: "map.png",
-                        attachment: await this.drawMap(playerPosition, i.user, context),
-                    },
-                ],
-            });
+            const newMessageData = await this.createMessageData(map, currentPosition, mapSize);
+
+            await i.message.edit({ ...newMessageData });
             await i.deferUpdate();
         });
 
