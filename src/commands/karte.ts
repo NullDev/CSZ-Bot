@@ -45,7 +45,7 @@ export default class KarteCommand implements ApplicationCommand {
             const row = new ActionRowBuilder<ButtonBuilder>();
             for (const direction of directionRow) {
                 const button = new ButtonBuilder()
-                    .setCustomId(`direction-${direction}`)
+                    .setCustomId(`karte-direction-${direction}`)
                     .setLabel(direction) // TODO: Maybe use an emoji for that?
                     .setStyle(direction === "X" ? ButtonStyle.Danger : ButtonStyle.Secondary);
 
@@ -81,14 +81,17 @@ export default class KarteCommand implements ApplicationCommand {
             ],
             components: rows,
         });
+
         const collector = sentReply.createMessageComponentCollector({
             componentType: ComponentType.Button,
             time: 45_000,
+            filter: i => i.customId.startsWith("karte-direction-"),
         });
+
         collector.on("collect", async i => {
             const playerpos = await locationService.move(
                 i.user,
-                i.customId.valueOf().replace("map_", "") as locationService.Direction,
+                i.customId.valueOf().replace("karte-direction-", "") as locationService.Direction,
             );
             await i.message.edit({
                 files: [
@@ -100,6 +103,7 @@ export default class KarteCommand implements ApplicationCommand {
             });
             await i.deferUpdate();
         });
+
         collector.on("dispose", async i => {
             await i.deleteReply("@original");
         });
