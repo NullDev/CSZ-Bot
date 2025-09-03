@@ -41,21 +41,24 @@ export default class KarteCommand implements ApplicationCommand {
         .setName(this.name)
         .setDescription(this.description);
 
-    #createNavigationButtonRow() {
-        const rows: ActionRowBuilder<ButtonBuilder>[] = [];
-        for (const directionRow of allDirections) {
+    #createNavigationButtonRow(
+        currentPosition: locationService.Position,
+        mapSize: locationService.Position,
+    ) {
+        return allDirections.map(directionRow => {
             const row = new ActionRowBuilder<ButtonBuilder>();
             for (const direction of directionRow) {
+                const canPress = locationService.canMove(currentPosition, mapSize, direction);
                 row.addComponents(
                     new ButtonBuilder()
                         .setCustomId(`karte-direction-${direction}`)
                         .setLabel(buttonLabels[direction])
                         .setStyle(ButtonStyle.Secondary)
-                        .setDisabled(direction === "X"),
+                        .setDisabled(!canPress),
                 );
             }
-            rows.push(row);
-        }
+            return row;
+        });
     }
 
     async handleInteraction(command: CommandInteraction<CacheType>, context: BotContext) {
@@ -68,15 +71,16 @@ export default class KarteCommand implements ApplicationCommand {
             throw new Error("Couldn't resolve guild member");
         }
 
-        const currentPosition = await locationService.getPositionForUser(author.user as User);
+        const currentPosition =
+            (await locationService.getPositionForUser(author.user as User)) ??
+            locationService.startPosition;
 
-        const map = await this.drawMap(
-            currentPosition ?? locationService.startPosition,
-            command.user,
-            context,
-        );
+        const map = await this.drawMap(currentPosition, command.user, context);
 
-        const navigationButtons = this.#createNavigationButtonRow();
+        const navigationButtons = this.#createNavigationButtonRow(currentPosition, {
+            x: 1521,
+            y: 782,
+        });
 
         const replyData = await command.reply({
             withResponse: true,
@@ -177,8 +181,8 @@ export default class KarteCommand implements ApplicationCommand {
 
         const radius = size === "large" ? 32 : 16;
         ctx.arc(
-            position.x * stepFactor + radius,
-            position.y * stepFactor + radius,
+            position.x * stepSize + radius,
+            position.y * stepSize + radius,
             radius,
             0,
             2 * Math.PI,
@@ -192,8 +196,8 @@ export default class KarteCommand implements ApplicationCommand {
 
         ctx.strokeText(
             user.displayName,
-            position.x * stepFactor,
-            position.y * stepFactor + (size === "large" ? 75 : 40),
+            position.x * stepSize,
+            position.y * stepSize + (size === "large" ? 75 : 40),
         );
 
         const avatarURL = user.avatarURL({
@@ -209,8 +213,8 @@ export default class KarteCommand implements ApplicationCommand {
         ctx.save();
         ctx.beginPath();
         ctx.arc(
-            position.x * stepFactor + radius,
-            position.y * stepFactor + radius,
+            position.x * stepSize + radius,
+            position.y * stepSize + radius,
             radius,
             0,
             2 * Math.PI,
@@ -218,9 +222,9 @@ export default class KarteCommand implements ApplicationCommand {
         ctx.closePath();
         ctx.clip();
 
-        ctx.drawImage(avatar, position.x * stepFactor, position.y * stepFactor);
+        ctx.drawImage(avatar, position.x * stepSize, position.y * stepSize);
         ctx.restore();
     }
 }
 
-const stepFactor = 32;
+const stepSize = 32;
