@@ -47,7 +47,8 @@ export default class KarteCommand implements ApplicationCommand {
                 const button = new ButtonBuilder()
                     .setCustomId(`karte-direction-${direction}`)
                     .setLabel(direction) // TODO: Maybe use an emoji for that?
-                    .setStyle(direction === "X" ? ButtonStyle.Danger : ButtonStyle.Secondary);
+                    .setStyle(ButtonStyle.Secondary)
+                    .setDisabled(direction === "X");
 
                 row.addComponents(button);
             }
