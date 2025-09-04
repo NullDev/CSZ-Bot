@@ -211,7 +211,7 @@ export default class KarteCommand implements ApplicationCommand {
         }
 
         await this.#drawPlayer(ctx, position, user, "large", "blue");
-        return canvas.toBuffer("image/png");
+        return await canvas.encode("png");
     }
 
     #drawAvatar(
