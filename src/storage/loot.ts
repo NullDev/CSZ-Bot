@@ -20,7 +20,9 @@ import type {
 } from "./db/model.js";
 
 import db from "@db";
+
 import { resolveLootAttributeTemplate, type LootAttributeKindId } from "@/service/lootData.js";
+import type { Equipable } from "@/service/fightData.js";
 
 export type LootUseCommandInteraction = ChatInputCommandInteraction & {
     channel: GuildTextBasedChannel;
@@ -36,8 +38,8 @@ export interface LootTemplate {
     emote: string;
     excludeFromInventory?: boolean;
     effects?: string[];
+    gameEquip?: Equipable;
     initialAttributes?: LootAttributeKindId[];
-
     onDrop?: (
         context: BotContext,
         winner: GuildMember,
@@ -147,6 +149,7 @@ export async function findOfUser(user: User, ctx = db()) {
 }
 
 export type LootWithAttributes = Loot & { attributes: Readonly<LootAttribute>[] };
+
 export async function findOfUserWithAttributes(
     user: User,
     ctx = db(),
