@@ -207,10 +207,23 @@ export default class KarteCommand implements ApplicationCommand {
                 continue;
             }
 
-            await this.#drawPlayer(ctx, pos, member.user, "small", "grey");
+            const avatarUrl = member.user.avatarURL({ size: 64, forceStatic: true });
+            if (!avatarUrl) {
+                continue;
+            }
+
+            const avatar = await loadImage(avatarUrl);
+            this.#drawPlayer(ctx, pos, member.user.displayName, avatar, "small", "grey");
         }
 
-        await this.#drawPlayer(ctx, position, user, "large", "blue");
+        const avatarUrl = user.avatarURL({ size: 64, forceStatic: true });
+        if (!avatarUrl) {
+            throw new Error("Could not fetch avatar of user.");
+        }
+
+        const avatar = await loadImage(avatarUrl);
+        this.#drawPlayer(ctx, position, user.displayName, avatar, "large", "blue");
+
         return await canvas.encode("png");
     }
 
@@ -245,10 +258,11 @@ export default class KarteCommand implements ApplicationCommand {
         ctx.restore();
     }
 
-    async #drawPlayer(
+    #drawPlayer(
         ctx: ExtendedCanvasContext,
         position: locationService.Position,
-        user: User,
+        name: string,
+        avatar: Image,
         size: "small" | "large",
         playerColor: "blue" | "grey",
     ) {
@@ -261,15 +275,9 @@ export default class KarteCommand implements ApplicationCommand {
             playerColor,
             "bold 20px",
             fontService.names.openSans,
-            user.displayName,
+            name,
         );
 
-        const avatarUrl = user.avatarURL({ size: size === "large" ? 64 : 32 });
-        if (!avatarUrl) {
-            return;
-        }
-
-        const avatar = await loadImage(avatarUrl);
         this.#drawAvatar(ctx, position, avatar, radius, size === "large" ? 4 : 1, playerColor);
     }
 }
