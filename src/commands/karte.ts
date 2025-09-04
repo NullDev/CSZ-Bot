@@ -286,37 +286,45 @@ export default class KarteCommand implements ApplicationCommand {
     #drawRaster(ctx: ExtendedCanvasContext) {
         const size = new Vec2(1400, 700);
 
-        ctx.save();
+        // ctx.save();
 
         ctx.lineWidth = 1;
         ctx.strokeStyle = "#a0a0a0";
 
         for (let x = 0; x < size.x; x += stepSize) {
-            ctx.save();
+            // ctx.save();
 
             if (x % 100 === 0) {
                 ctx.lineWidth = 2;
+            } else {
+                ctx.lineWidth = 1;
             }
 
+            ctx.beginPath();
             ctx.moveTo(x, 0);
             ctx.lineTo(x, size.y);
+            ctx.stroke();
 
-            ctx.restore();
+            // ctx.restore();
         }
         for (let y = 0; y < size.y; y += stepSize) {
-            ctx.save();
+            // ctx.save();
 
             if (y % 100 === 0) {
                 ctx.lineWidth = 2;
+            } else {
+                ctx.lineWidth = 1;
             }
 
+            ctx.beginPath();
             ctx.moveTo(0, y);
             ctx.lineTo(size.x, y);
+            ctx.stroke();
 
-            ctx.restore();
+            // ctx.restore();
         }
 
-        ctx.restore();
+        // ctx.restore();
     }
 }
 
