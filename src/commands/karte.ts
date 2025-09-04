@@ -115,7 +115,7 @@ export default class KarteCommand implements ApplicationCommand {
             (await locationService.getPositionForUser(author.user as User)) ??
             locationService.startPosition;
 
-        const map = await this.drawMap(currentPosition, command.user, context);
+        const map = await this.#drawMap(currentPosition, command.user, context);
 
         const mapSize = {
             x: 1521,
@@ -154,7 +154,7 @@ export default class KarteCommand implements ApplicationCommand {
                 i.customId.replace("karte-direction-", "") as locationService.Direction,
             );
 
-            const map = await this.drawMap(currentPosition, i.user, context);
+            const map = await this.#drawMap(currentPosition, i.user, context);
 
             const newMessageData = await this.createMessageData(
                 map,
@@ -171,7 +171,7 @@ export default class KarteCommand implements ApplicationCommand {
                 (await locationService.getPositionForUser(author.user as User)) ??
                 locationService.startPosition;
 
-            const map = await this.drawMap(currentPosition, command.user, context);
+            const map = await this.#drawMap(currentPosition, command.user, context);
 
             const newMessageData = await this.createMessageData(
                 map,
@@ -183,7 +183,7 @@ export default class KarteCommand implements ApplicationCommand {
         });
     }
 
-    private async drawMap(
+    async #drawMap(
         position: locationService.Position,
         user: User,
         context: BotContext,
