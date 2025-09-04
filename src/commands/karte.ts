@@ -292,12 +292,28 @@ export default class KarteCommand implements ApplicationCommand {
         ctx.strokeStyle = "#a0a0a0";
 
         for (let x = 0; x < size.x; x += stepSize) {
+            ctx.save();
+
+            if (x % 100 === 0) {
+                ctx.lineWidth = 2;
+            }
+
             ctx.moveTo(x, 0);
             ctx.lineTo(x, size.y);
+
+            ctx.restore();
         }
         for (let y = 0; y < size.y; y += stepSize) {
+            ctx.save();
+
+            if (y % 100 === 0) {
+                ctx.lineWidth = 2;
+            }
+
             ctx.moveTo(0, y);
             ctx.lineTo(size.x, y);
+
+            ctx.restore();
         }
 
         ctx.restore();
