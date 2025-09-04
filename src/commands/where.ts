@@ -1,16 +1,9 @@
-import { readFile } from "node:fs/promises";
-
 import { type Message, cleanContent } from "discord.js";
-import { createCanvas, loadImage, GlobalFonts } from "@napi-rs/canvas";
+import { createCanvas, loadImage } from "@napi-rs/canvas";
 
 import type { SpecialCommand } from "@/commands/command.js";
+import * as fonts from "@/service/font.js";
 import { countWords, substringAfter } from "@/utils/stringUtils.js";
-
-if (process.env.NODE_ENV === "production") {
-    // This is a simple detection if we're running inside docker
-    // We assume that every developer that wants to use this feature has impact installed
-    GlobalFonts.register(await readFile("assets/impact.ttf"), "Impact");
-}
 
 export default class WhereCommand implements SpecialCommand {
     name = "Where";
@@ -51,7 +44,7 @@ export default class WhereCommand implements SpecialCommand {
             y: 40,
         };
 
-        ctx.font = "42px Impact";
+        ctx.font = `42px ${fonts.names.impact}`;
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
 

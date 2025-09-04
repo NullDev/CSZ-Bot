@@ -1,20 +1,29 @@
 import * as fs from "node:fs/promises";
 
-import { createCanvas, loadImage, type SKRSContext2D } from "@napi-rs/canvas";
+import { createCanvas, loadImage, type Image } from "@napi-rs/canvas";
 import {
     ActionRowBuilder,
+    AttachmentBuilder,
     ButtonBuilder,
     ButtonStyle,
     type CacheType,
     type CommandInteraction,
     ComponentType,
+    ContainerBuilder,
+    MediaGalleryBuilder,
+    MediaGalleryItemBuilder,
+    MessageFlags,
     SlashCommandBuilder,
+    TextDisplayBuilder,
     type User,
 } from "discord.js";
 
 import type { ApplicationCommand } from "@/commands/command.js";
 import * as locationService from "@/service/location.js";
 import type { BotContext } from "@/context.js";
+import { Vec2 } from "@/utils/math.js";
+import * as fontService from "@/service/font.js";
+import { extendContext, type ExtendedCanvasContext } from "@/utils/ExtendedCanvasContext.js";
 
 const allDirections = [
     ["NW", "N", "NE"],
@@ -61,6 +70,34 @@ export default class KarteCommand implements ApplicationCommand {
         });
     }
 
+    async createMessageData(
+        map: Buffer,
+        currentPosition: locationService.Position,
+        mapSize: locationService.Position,
+    ) {
+        const mapFile = new AttachmentBuilder(map, { name: "map.png" });
+
+        const navigationButtons = this.#createNavigationButtonRow(currentPosition, mapSize);
+
+        const container = new ContainerBuilder()
+            .addTextDisplayComponents(
+                new TextDisplayBuilder().setContent("## Karte des heiligen CSZ-Landes"),
+            )
+            .addMediaGalleryComponents(
+                new MediaGalleryBuilder().addItems(
+                    new MediaGalleryItemBuilder()
+                        .setURL("attachment://map.png")
+                        .setDescription("Karte"),
+                ),
+            )
+            .addActionRowComponents(navigationButtons);
+
+        return {
+            components: [container],
+            files: [mapFile],
+        };
+    }
+
     async handleInteraction(command: CommandInteraction<CacheType>, context: BotContext) {
         if (!command.isChatInputCommand()) {
             return; // TODO: Solve this on a type level
@@ -77,29 +114,17 @@ export default class KarteCommand implements ApplicationCommand {
 
         const map = await this.drawMap(currentPosition, command.user, context);
 
-        const navigationButtons = this.#createNavigationButtonRow(currentPosition, {
+        const mapSize = {
             x: 1521,
             y: 782,
-        });
+        };
+
+        const messageData = await this.createMessageData(map, currentPosition, mapSize);
 
         const replyData = await command.reply({
             withResponse: true,
-            embeds: [
-                {
-                    title: "Karte des heiligen CSZ-Landes",
-                    color: 0x00ff00,
-                    image: {
-                        url: "attachment://map.png",
-                    },
-                },
-            ],
-            components: navigationButtons,
-            files: [
-                {
-                    name: "map.png",
-                    attachment: map,
-                },
-            ],
+            flags: MessageFlags.IsComponentsV2,
+            ...messageData,
         });
 
         const sentReply = replyData.resource?.message;
@@ -114,32 +139,21 @@ export default class KarteCommand implements ApplicationCommand {
         });
 
         collector.on("collect", async i => {
-            const playerPosition = await locationService.move(
+            const currentPosition = await locationService.move(
                 i.user,
                 i.customId.replace("karte-direction-", "") as locationService.Direction,
             );
 
-            const newButtons = this.#createNavigationButtonRow(playerPosition, {
-                x: 1521,
-                y: 782,
-            });
+            const map = await this.drawMap(currentPosition, i.user, context);
 
-            await i.message.edit({
-                components: newButtons,
-                files: [
-                    {
-                        name: "map.png",
-                        attachment: await this.drawMap(playerPosition, i.user, context),
-                    },
-                ],
-            });
+            const newMessageData = await this.createMessageData(map, currentPosition, mapSize);
+
+            await i.message.edit({ ...newMessageData });
             await i.deferUpdate();
         });
 
         collector.on("dispose", async i => {
-            await i.message.edit({
-                components: [],
-            });
+            await i.message.edit({ components: [] });
         });
     }
 
@@ -152,15 +166,14 @@ export default class KarteCommand implements ApplicationCommand {
         const backgroundImage = await loadImage(background);
 
         const canvas = createCanvas(backgroundImage.width, backgroundImage.height);
-        const ctx = canvas.getContext("2d");
+        const ctx = extendContext(canvas.getContext("2d"));
 
         ctx.drawImage(backgroundImage, 0, 0);
 
         const allPlayerLocations = await locationService.getAllCurrentPostions();
         for (const pos of allPlayerLocations) {
             if (pos.userId === user.id) {
-                // Make sure we draw us last
-                continue;
+                continue; // Make sure we draw us last
             }
 
             const member = context.guild.members.cache.find(m => m.id === pos.userId);
@@ -168,68 +181,70 @@ export default class KarteCommand implements ApplicationCommand {
                 continue;
             }
 
-            await this.drawPlayer(ctx, pos, member.user, "small");
+            await this.#drawPlayer(ctx, pos, member.user, "small", "grey");
         }
 
-        await this.drawPlayer(ctx, position, user, "large");
+        await this.#drawPlayer(ctx, position, user, "large", "blue");
         return canvas.toBuffer("image/png");
     }
 
-    private async drawPlayer(
-        ctx: SKRSContext2D,
+    #drawAvatar(
+        ctx: ExtendedCanvasContext,
         position: locationService.Position,
-        user: User,
-        size: "small" | "large",
+        avatar: Image,
+        radius: number,
+        strokeWidth: number,
+        strokeColor: string,
     ) {
+        const pos = new Vec2(position.x, position.y);
+
         ctx.beginPath();
-        ctx.strokeStyle = size === "large" ? "blue" : "grey";
-        ctx.lineWidth = size === "large" ? 3 : 1;
+        ctx.circlePath(pos.scale(stepSize), radius, "center", "top");
 
-        const radius = size === "large" ? 32 : 16;
-        ctx.arc(
-            position.x * stepSize + radius,
-            position.y * stepSize + radius,
-            radius,
-            0,
-            2 * Math.PI,
-        );
+        ctx.strokeStyle = strokeColor;
+        ctx.lineWidth = strokeWidth;
+
         ctx.stroke();
-
-        const _textMetrics = ctx.measureText(user.id);
-        // TODO here funny pixelcounting to center the text
-        ctx.strokeStyle = "blue";
-        ctx.lineWidth = 1;
-
-        ctx.strokeText(
-            user.displayName,
-            position.x * stepSize,
-            position.y * stepSize + (size === "large" ? 75 : 40),
-        );
-
-        const avatarURL = user.avatarURL({
-            size: size === "large" ? 64 : 32,
-        });
-
-        if (!avatarURL) {
-            return;
-        }
-
-        const avatar = await loadImage(avatarURL);
 
         ctx.save();
         ctx.beginPath();
-        ctx.arc(
-            position.x * stepSize + radius,
-            position.y * stepSize + radius,
-            radius,
-            0,
-            2 * Math.PI,
-        );
+
+        ctx.circlePath(pos.scale(stepSize), radius, "center", "top");
+
         ctx.closePath();
         ctx.clip();
 
-        ctx.drawImage(avatar, position.x * stepSize, position.y * stepSize);
+        ctx.drawImage(avatar, position.x * stepSize - radius, position.y * stepSize);
+
         ctx.restore();
+    }
+
+    async #drawPlayer(
+        ctx: ExtendedCanvasContext,
+        position: locationService.Position,
+        user: User,
+        size: "small" | "large",
+        playerColor: "blue" | "grey",
+    ) {
+        const radius = size === "large" ? 32 : 16;
+
+        ctx.fillTextExtended(
+            new Vec2(position.x * stepSize, position.y * stepSize + radius * 2),
+            "center",
+            "top",
+            playerColor,
+            "20px",
+            fontService.names.openSans,
+            user.displayName,
+        );
+
+        const avatarUrl = user.avatarURL({ size: size === "large" ? 64 : 32 });
+        if (!avatarUrl) {
+            return;
+        }
+
+        const avatar = await loadImage(avatarUrl);
+        this.#drawAvatar(ctx, position, avatar, radius, size === "large" ? 3 : 1, playerColor);
     }
 }
 

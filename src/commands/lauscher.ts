@@ -10,14 +10,7 @@ import {
     ActionRowBuilder,
     MessageFlags,
 } from "discord.js";
-import {
-    type Canvas,
-    createCanvas,
-    loadImage,
-    type CanvasTextBaseline,
-    type CanvasTextAlign,
-    type Image,
-} from "@napi-rs/canvas";
+import { type Canvas, createCanvas, loadImage, type Image } from "@napi-rs/canvas";
 
 import type { ApplicationCommand } from "@/commands/command.js";
 import type { BotContext } from "@/context.js";
@@ -28,6 +21,7 @@ import { truncateToLength } from "@/utils/stringUtils.js";
 import { chunkArray } from "@/utils/arrayUtils.js";
 import { Vec2 } from "@/utils/math.js";
 import * as fontService from "@/service/font.js";
+import { extendContext } from "@/utils/ExtendedCanvasContext.js";
 
 type SubCommand = "aktivierung" | "stats";
 
@@ -58,7 +52,7 @@ async function drawTrackToplistCanvas(_user: User, tracks: TrackWithCover[]): Pr
     const imageSize = new Vec2(1024, 818);
 
     const canvas = createCanvas(imageSize.x, imageSize.y);
-    const ctx = canvas.getContext("2d");
+    const ctx = extendContext(canvas.getContext("2d"));
 
     ctx.fillStyle = "#000000";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -101,7 +95,7 @@ async function drawTrackToplistCanvas(_user: User, tracks: TrackWithCover[]): Pr
 
         if (entry.place <= 3) {
             const emoji = placeSymbols[entry.place];
-            drawEmojiCentered(
+            ctx.drawEmojiCentered(
                 60 - entry.place * 5,
                 placePos.add(placeSize.divide(2)).add(Vec2.zero.withY(10)),
                 emoji,
@@ -110,77 +104,54 @@ async function drawTrackToplistCanvas(_user: User, tracks: TrackWithCover[]): Pr
             drawTextCentered(30, placePos.add(placeSize.divide(2)), entry.place.toString());
         }
 
-        drawImage(coverPos, coverSize, entry.cover);
+        ctx.drawImageEx(coverPos, coverSize, entry.cover);
 
         const textAlignmentLine = restPos.withY(restPos.y + restSize.y * 0.4);
-        drawText(
+        ctx.fillTextExtended(
             textAlignmentLine,
             "left",
             "bottom",
             "#7f7f7f",
-            `16px ${fontService.names.openSans}`,
+            "16px",
+            fontService.names.openSans,
             truncateToLength(entry.formattedArtists, 50),
         );
-        drawText(
+
+        ctx.fillTextExtended(
             textAlignmentLine,
             "left",
             "top",
             "#ffffff",
-            `30px ${fontService.names.openSans}`,
+            "30px",
+            fontService.names.openSans,
             truncateToLength(entry.name, 50),
         );
 
         const restMiddleLineStart = restPos.withY(restPos.y + restSize.y / 2);
-        drawText(
+
+        ctx.fillTextExtended(
             restMiddleLineStart.add(restSize.withY(0)),
             "right",
             "middle",
             "#ffffff",
-            `30px ${fontService.names.openSans}`,
+            "30px",
+            fontService.names.openSans,
             `${entry.count}x`,
         );
 
         ctx.restore();
     }
 
-    function drawImage(pos: Vec2, size: Vec2, image: Image) {
-        ctx.drawImage(image, pos.x, pos.y, size.x, size.y);
-    }
-    function drawEmojiCentered(sizePx: number, centerPos: Vec2, symbol: string) {
-        drawText(
-            centerPos,
-            "center",
-            "middle",
-            "#fff",
-            `${sizePx}px ${fontService.names.appleEmoji}`,
-            symbol,
-        );
-    }
     function drawTextCentered(sizePx: number, centerPos: Vec2, text: string) {
-        drawText(
+        ctx.fillTextExtended(
             centerPos,
             "center",
             "middle",
             "#fff",
-            `bold ${sizePx}px ${fontService.names.openSans}`,
+            `bold ${sizePx}px`,
+            fontService.names.openSans,
             text,
         );
-    }
-    function drawText(
-        pos: Vec2,
-        textAlign: CanvasTextAlign,
-        baseLine: CanvasTextBaseline,
-        color: string,
-        font: string,
-        text: string,
-    ) {
-        ctx.save();
-        ctx.font = font;
-        ctx.fillStyle = color;
-        ctx.textAlign = textAlign;
-        ctx.textBaseline = baseLine;
-        ctx.fillText(text, pos.x, pos.y);
-        ctx.restore();
     }
 }
 
