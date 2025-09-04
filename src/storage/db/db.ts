@@ -1,4 +1,4 @@
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
 
@@ -85,7 +85,15 @@ async function runMigrationsIfNeeded(db: Kysely<Database>) {
 
     const migrator = new Migrator({
         db,
-        provider: new FileMigrationProvider({ fs, path, migrationFolder }),
+        provider: new FileMigrationProvider({
+            fs,
+            path: {
+                ...path,
+                // Hack for https://github.com/kysely-org/kysely/issues/254
+                join: (...args) => pathToFileURL(path.join(...args)).toString(),
+            },
+            migrationFolder,
+        }),
     });
 
     const allMigrations = await migrator.getMigrations();
