@@ -74,10 +74,9 @@ export default class KarteCommand implements ApplicationCommand {
         map: Buffer,
         currentPosition: locationService.Position,
         mapSize: locationService.Position,
+        withNavigation: boolean,
     ) {
         const mapFile = new AttachmentBuilder(map, { name: "map.png" });
-
-        const navigationButtons = this.#createNavigationButtonRow(currentPosition, mapSize);
 
         const container = new ContainerBuilder()
             .addTextDisplayComponents(
@@ -89,8 +88,12 @@ export default class KarteCommand implements ApplicationCommand {
                         .setURL("attachment://map.png")
                         .setDescription("Karte"),
                 ),
-            )
-            .addActionRowComponents(navigationButtons);
+            );
+
+        if (withNavigation) {
+            const navigationButtons = this.#createNavigationButtonRow(currentPosition, mapSize);
+            container.addActionRowComponents(navigationButtons);
+        }
 
         return {
             components: [container],
@@ -119,7 +122,7 @@ export default class KarteCommand implements ApplicationCommand {
             y: 782,
         };
 
-        const messageData = await this.createMessageData(map, currentPosition, mapSize);
+        const messageData = await this.createMessageData(map, currentPosition, mapSize, true);
 
         const replyData = await command.reply({
             withResponse: true,
@@ -153,13 +156,30 @@ export default class KarteCommand implements ApplicationCommand {
 
             const map = await this.drawMap(currentPosition, i.user, context);
 
-            const newMessageData = await this.createMessageData(map, currentPosition, mapSize);
+            const newMessageData = await this.createMessageData(
+                map,
+                currentPosition,
+                mapSize,
+                true,
+            );
 
             await i.message.edit({ ...newMessageData });
         });
 
         collector.on("end", async () => {
-            await sentReply.edit({ components: [] });
+            const currentPosition =
+                (await locationService.getPositionForUser(author.user as User)) ??
+                locationService.startPosition;
+
+            const map = await this.drawMap(currentPosition, command.user, context);
+
+            const newMessageData = await this.createMessageData(
+                map,
+                currentPosition,
+                mapSize,
+                false,
+            );
+            await sentReply.edit({ ...newMessageData });
         });
     }
 
