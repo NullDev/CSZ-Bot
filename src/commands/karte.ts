@@ -196,6 +196,8 @@ export default class KarteCommand implements ApplicationCommand {
 
         ctx.drawImage(backgroundImage, 0, 0);
 
+        this.#drawRaster(ctx);
+
         const allPlayerLocations = await locationService.getAllCurrentPostions();
         for (const pos of allPlayerLocations) {
             if (pos.userId === user.id) {
@@ -280,6 +282,26 @@ export default class KarteCommand implements ApplicationCommand {
 
         this.#drawAvatar(ctx, position, avatar, radius, size === "large" ? 4 : 1, playerColor);
     }
+
+    #drawRaster(ctx: ExtendedCanvasContext) {
+        const size = new Vec2(1400, 700);
+
+        ctx.save();
+
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = "#a0a0a0";
+
+        for (let x = 0; x < size.x; x += stepSize) {
+            ctx.moveTo(x, 0);
+            ctx.lineTo(x, size.y);
+        }
+        for (let y = 0; y < size.y; y += stepSize) {
+            ctx.moveTo(0, y);
+            ctx.lineTo(size.x, y);
+        }
+
+        ctx.restore();
+    }
 }
 
-const stepSize = 32;
+const stepSize = 10;
