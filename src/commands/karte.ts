@@ -153,9 +153,7 @@ export default class KarteCommand implements ApplicationCommand {
         });
 
         collector.on("dispose", async i => {
-            await i.message.edit({
-                components: [],
-            });
+            await i.message.edit({ components: [] });
         });
     }
 
@@ -175,8 +173,7 @@ export default class KarteCommand implements ApplicationCommand {
         const allPlayerLocations = await locationService.getAllCurrentPostions();
         for (const pos of allPlayerLocations) {
             if (pos.userId === user.id) {
-                // Make sure we draw us last
-                continue;
+                continue; // Make sure we draw us last
             }
 
             const member = context.guild.members.cache.find(m => m.id === pos.userId);
