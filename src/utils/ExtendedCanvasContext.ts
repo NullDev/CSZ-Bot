@@ -1,5 +1,6 @@
-import type { SKRSContext2D } from "@napi-rs/canvas";
+import type { SKRSContext2D, Image } from "@napi-rs/canvas";
 
+import * as fontService from "@/service/font.js";
 import type { Vec2 } from "./math.js";
 
 export interface ExtendedCanvasContext extends SKRSContext2D {
@@ -19,13 +20,19 @@ export interface ExtendedCanvasContext extends SKRSContext2D {
         fontName: string,
         text: string,
     ): void;
+
+    drawEmojiCentered(sizePx: number, centerPos: Vec2, symbol: string): void;
+
+    drawImageEx(pos: Vec2, size: Vec2, image: Image): void;
 }
 
 export type VerticalAlign = "top" | "middle" | "bottom";
 export type HorizontalAlign = "left" | "center" | "right";
 
 export function extendContext(ctx: SKRSContext2D): ExtendedCanvasContext {
-    (ctx as ExtendedCanvasContext).circlePath = function circlePath(
+    const ectx = ctx as ExtendedCanvasContext;
+
+    ectx.circlePath = function circlePath(
         position: Vec2,
         radius: number,
         horizontalAlign: HorizontalAlign,
@@ -68,7 +75,7 @@ export function extendContext(ctx: SKRSContext2D): ExtendedCanvasContext {
         ctx.restore();
     };
 
-    (ctx as ExtendedCanvasContext).fillTextExtended = function fillTextExtended(
+    ectx.fillTextExtended = function fillTextExtended(
         position: Vec2,
         textAlign: CanvasTextAlign,
         baseLine: CanvasTextBaseline,
@@ -86,5 +93,25 @@ export function extendContext(ctx: SKRSContext2D): ExtendedCanvasContext {
         ctx.restore();
     };
 
-    return ctx as ExtendedCanvasContext;
+    ectx.drawEmojiCentered = function drawEmojiCentered(
+        sizePx: number,
+        centerPos: Vec2,
+        symbol: string,
+    ) {
+        ectx.fillTextExtended(
+            centerPos,
+            "center",
+            "middle",
+            "#fff",
+            `${sizePx}px`,
+            fontService.names.appleEmoji,
+            symbol,
+        );
+    };
+
+    ectx.drawImageEx = function drawImageEx(pos: Vec2, size: Vec2, image: Image) {
+        ctx.drawImage(image, pos.x, pos.y, size.x, size.y);
+    };
+
+    return ectx;
 }
