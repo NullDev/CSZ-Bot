@@ -259,7 +259,7 @@ export default class KarteCommand implements ApplicationCommand {
             "center",
             "top",
             playerColor,
-            "20px",
+            "bold 20px",
             fontService.names.openSans,
             user.displayName,
         );
@@ -270,7 +270,7 @@ export default class KarteCommand implements ApplicationCommand {
         }
 
         const avatar = await loadImage(avatarUrl);
-        this.#drawAvatar(ctx, position, avatar, radius, size === "large" ? 3 : 1, playerColor);
+        this.#drawAvatar(ctx, position, avatar, radius, size === "large" ? 4 : 1, playerColor);
     }
 }
 
