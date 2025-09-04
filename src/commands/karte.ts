@@ -135,7 +135,14 @@ export default class KarteCommand implements ApplicationCommand {
         const collector = sentReply.createMessageComponentCollector({
             componentType: ComponentType.Button,
             time: 45_000,
-            filter: i => i.customId.startsWith("karte-direction-") && i.user.id === command.user.id,
+            filter: async i => {
+                // Docs:
+                // One important difference to note with interaction collectors is that Discord expects a response to all
+                // interactions within 3 seconds - even ones that you don't want to collect.
+                // For this reason, you may wish to .deferUpdate() all interactions in your filter,
+                await i.deferUpdate();
+                return i.customId.startsWith("karte-direction-") && i.user.id === command.user.id;
+            },
         });
 
         collector.on("collect", async i => {
@@ -149,11 +156,10 @@ export default class KarteCommand implements ApplicationCommand {
             const newMessageData = await this.createMessageData(map, currentPosition, mapSize);
 
             await i.message.edit({ ...newMessageData });
-            await i.deferUpdate();
         });
 
-        collector.on("dispose", async i => {
-            await i.message.edit({ components: [] });
+        collector.on("end", async () => {
+            await sentReply.edit({ components: [] });
         });
     }
 
