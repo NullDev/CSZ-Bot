@@ -22,10 +22,11 @@ import {
 import type { ApplicationCommand } from "@/commands/command.js";
 import * as locationService from "@/service/location.js";
 import type { BotContext } from "@/context.js";
-import { Vec2, Vec4 } from "@/utils/math.js";
+import { Vec2 } from "@/utils/math.js";
 import * as fontService from "@/service/font.js";
 import { extendContext, type ExtendedCanvasContext } from "@/utils/ExtendedCanvasContext.js";
 import path from "node:path";
+import assertNever from "src/utils/assertNever.js";
 
 const allDirections = [
     ["NW", "N", "NE"],
@@ -132,7 +133,10 @@ export default class KarteCommand implements ApplicationCommand {
         const currentPosition =
             (await locationService.getPositionForUser(author.user as User)) ??
             locationService.startPosition;
-        const debugchoice = command.options.getString("debugchoice", false);
+        const debugchoice = command.options.getString("debugchoice", false) as
+            | "GRID"
+            | "LOCATIONS"
+            | null;
         const map = await this.#drawMap(debugchoice, currentPosition, command.user, context);
 
         const mapSize = {
@@ -202,7 +206,7 @@ export default class KarteCommand implements ApplicationCommand {
     }
 
     async #drawMap(
-        debugchoice: string | null,
+        debugOverlay: "GRID" | "LOCATIONS" | null,
         position: locationService.Position,
         user: User,
         context: BotContext,
@@ -214,11 +218,17 @@ export default class KarteCommand implements ApplicationCommand {
         const ctx = extendContext(canvas.getContext("2d"));
 
         ctx.drawImage(backgroundImage, 0, 0);
-        if (debugchoice === "GRID") {
-            this.#drawRaster(ctx);
-        }
-        if (debugchoice === "LOCATIONS") {
-            this.#drawLocations(ctx);
+        switch (debugOverlay) {
+            case "GRID":
+                this.#drawRaster(ctx);
+                break;
+            case "LOCATIONS":
+                await this.#drawLocations(ctx);
+                break;
+            case null:
+                break;
+            default:
+                assertNever(debugOverlay);
         }
 
         const allPlayerLocations = await locationService.getAllCurrentPostions();
