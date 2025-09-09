@@ -303,8 +303,8 @@ export default class KarteCommand implements ApplicationCommand {
             avatar,
             position.x * stepSize - radius,
             position.y * stepSize - radius,
-            radius,
-            radius,
+            radius * 2,
+            radius * 2,
         );
         ctx.restore();
     }
