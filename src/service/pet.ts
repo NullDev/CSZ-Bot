@@ -20,3 +20,7 @@ export async function getPetCandidates(user: User) {
 export async function setPet(user: User, lootId: number, petName: string) {
     await pet.setPet(user.id, lootId, petName);
 }
+
+export async function getPet(owner: User) {
+    return pet.getPet(owner.id);
+}
