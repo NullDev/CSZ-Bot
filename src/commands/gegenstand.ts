@@ -93,6 +93,20 @@ export default class GegenstandCommand implements ApplicationCommand {
                         })
                         .setDescription("Dein niedliches Haustier :3")
                         .setAutocomplete(true),
+                )
+                .addStringOption(
+                    new SlashCommandStringOption()
+                        .setRequired(true)
+                        .setName("name")
+                        .setNameLocalizations({
+                            de: "name",
+                            "en-US": "name",
+                        })
+                        .setDescription("Der Name für dein nieliches Haustier :3")
+                        .setDescriptionLocalizations({
+                            de: "Der Name für dein nieliches Haustier :3",
+                            "en-US": "Der Name für dein nieliches Haustier :3",
+                        }),
                 ),
         );
 
@@ -406,7 +420,21 @@ export default class GegenstandCommand implements ApplicationCommand {
         await interaction.respond(completions.slice(0, 20));
     }
 
-    async #setPet(_interaction: CommandInteraction, _context: BotContext) {
+    async #setPet(interaction: ChatInputCommandInteraction, _context: BotContext) {
+        const itemId = Number(interaction.options.getString("animal", true));
+        if (!Number.isSafeInteger(itemId)) {
+            throw new Error("Invalid item ID");
+        }
+
+        const petName = interaction.options.getString("name", true);
+        if (petName.trim().length === 0) {
+            await interaction.reply({
+                content: "Ungültiger Haustiername.",
+                flags: MessageFlags.Ephemeral,
+            });
+            return;
+        }
+
         throw new Error("Not implemented");
     }
 }
