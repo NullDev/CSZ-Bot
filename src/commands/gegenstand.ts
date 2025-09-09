@@ -73,6 +73,26 @@ export default class GegenstandCommand implements ApplicationCommand {
                         .setDescription("Die Sau, die du benutzen möchtest")
                         .setAutocomplete(true),
                 ),
+        )
+        .addSubcommand(
+            new SlashCommandSubcommandBuilder()
+                .setName("set-pet")
+                .setNameLocalizations({
+                    de: "als-haustier-nehmen",
+                    "en-US": "set-pet",
+                })
+                .setDescription("Setze dein Haustier :3")
+                .addStringOption(
+                    new SlashCommandStringOption()
+                        .setRequired(true)
+                        .setName("animal")
+                        .setNameLocalizations({
+                            de: "haustier",
+                            "en-US": "pet",
+                        })
+                        .setDescription("Dein niedliches Haustier :3")
+                        .setAutocomplete(true),
+                ),
         );
 
     async handleInteraction(interaction: CommandInteraction, context: BotContext) {
@@ -87,6 +107,9 @@ export default class GegenstandCommand implements ApplicationCommand {
                 break;
             case "use":
                 await this.#useItem(interaction, context);
+                break;
+            case "set-pet":
+                await this.#setPet(interaction, context);
                 break;
             default:
                 throw new Error(`Unknown subcommand: "${subCommand}"`);
@@ -336,7 +359,7 @@ export default class GegenstandCommand implements ApplicationCommand {
 
     async autocomplete(interaction: AutocompleteInteraction) {
         const subCommand = interaction.options.getSubcommand(true);
-        if (subCommand !== "info" && subCommand !== "benutzen") {
+        if (subCommand !== "info" && subCommand !== "use") {
             return;
         }
 
@@ -361,7 +384,7 @@ export default class GegenstandCommand implements ApplicationCommand {
                 continue;
             }
 
-            if (subCommand === "benutzen" && template.onUse === undefined) {
+            if (subCommand === "use" && template.onUse === undefined) {
                 continue;
             }
 
@@ -377,5 +400,9 @@ export default class GegenstandCommand implements ApplicationCommand {
         }
 
         await interaction.respond(completions.slice(0, 20));
+    }
+
+    async #setPet(_interaction: CommandInteraction, _context: BotContext) {
+        throw new Error("Not implemented");
     }
 }
