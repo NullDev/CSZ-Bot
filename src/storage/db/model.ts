@@ -35,6 +35,7 @@ export interface Database {
     spotifyTracks: SpotifyTrackTable;
     spotifyTrackToArtists: SpotifyTrackToArtistTable;
     locationHistory: LocationHistoryTable;
+    pets: PetsTable;
 }
 
 export type OneBasedMonth = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
@@ -377,4 +378,13 @@ export interface LocationHistoryTable extends AuditedTable {
     y: ColumnType<number, number, never>;
 
     successor: ColumnType<LocationHistoryId | null, null, LocationHistoryId>; // select can be location | null, insertion has to be null and update has to be a number
+}
+
+export type Pet = Selectable<PetsTable>;
+
+export interface PetsTable extends AuditedTable {
+    id: GeneratedAlways<LocationHistoryId>;
+    ownerId: Snowflake;
+    lootId: LootId;
+    name: string;
 }

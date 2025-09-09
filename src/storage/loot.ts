@@ -146,6 +146,15 @@ export async function findOfUser(user: User, ctx = db()) {
         .execute();
 }
 
+export async function findById(id: LootId, ctx = db()) {
+    return await ctx
+        .selectFrom("loot")
+        .where("id", "=", id)
+        .where(notDeleted)
+        .selectAll()
+        .executeTakeFirst();
+}
+
 export type LootWithAttributes = Loot & { attributes: Readonly<LootAttribute>[] };
 export async function findOfUserWithAttributes(
     user: User,
