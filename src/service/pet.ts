@@ -4,7 +4,6 @@ import * as lootService from "@/service/loot.js";
 import { LootKindId } from "./lootData.js";
 import * as pet from "@/storage/pet.js";
 import * as lootData from "@/service/lootData.js";
-import type { LootId } from "@/storage/db/model.js";
 
 const petCandidates = new Set([
     LootKindId.KADSE,
