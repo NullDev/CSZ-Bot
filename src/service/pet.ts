@@ -18,5 +18,5 @@ export async function getPetCandidates(user: User) {
 }
 
 export async function setPet(user: User, lootId: number, petName: string) {
-    pet.setPet(user.id, lootId, petName);
+    await pet.setPet(user.id, lootId, petName);
 }
