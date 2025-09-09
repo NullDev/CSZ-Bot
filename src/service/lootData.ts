@@ -5,6 +5,7 @@ import * as emoteService from "@/service/emote.js";
 import * as bahnCardService from "@/service/bahncard.js";
 import { GuildMember, type Guild } from "discord.js";
 import type { Loot, LootAttribute } from "@/storage/db/model.js";
+import { fightTemplates } from "@/service/fightData.js";
 
 const ACHTUNG_NICHT_DROPBAR_WEIGHT_KG = 0;
 
@@ -105,6 +106,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         dropDescription: "🔪",
         emote: "🔪",
         asset: "assets/loot/02-messerblock.jpg",
+        gameEquip: fightTemplates.messerblock,
     },
     [LootKindId.KUEHLSCHRANK]: {
         id: LootKindId.KUEHLSCHRANK,
@@ -210,6 +212,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         emote: "🥛",
         asset: "assets/loot/09-ayran.png",
         initialAttributes: [LootAttributeKindId.NUTRI_SCORE_D], // Ref: https://de.openfoodfacts.org/produkt/4388860730685/ayran-ja
+        gameEquip: fightTemplates.ayran,
     },
     [LootKindId.PKV]: {
         id: LootKindId.PKV,
@@ -300,6 +303,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         emote: "🍺",
         asset: "assets/loot/16-oettinger.png",
         initialAttributes: [LootAttributeKindId.NUTRI_SCORE_B], // Ref: https://archive.is/aonnZ
+        gameEquip: fightTemplates.oettinger,
     },
     [LootKindId.ACHIEVEMENT]: {
         id: LootKindId.ACHIEVEMENT,
@@ -472,6 +476,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         emote: "🍼",
         asset: "assets/loot/33-thunfischshake.jpg",
         initialAttributes: [LootAttributeKindId.NUTRI_SCORE_A],
+        gameEquip: fightTemplates.thunfischshake,
     },
     [LootKindId.KAFFEEMUEHLE]: {
         id: LootKindId.KAFFEEMUEHLE,
