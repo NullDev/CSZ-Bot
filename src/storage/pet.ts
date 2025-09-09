@@ -19,7 +19,7 @@ export async function setPet(ownerId: Snowflake, lootId: number, petName: string
                 .selectAll()
                 .executeTakeFirst();
 
-            const existingLoot = await loot.findById(lootId);
+            const existingLoot = await loot.findById(lootId, ctx);
 
             if (!existingLoot) {
                 throw new Error("Loot does not exist.");
