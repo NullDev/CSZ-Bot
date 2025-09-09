@@ -26,7 +26,8 @@ import type { BotContext } from "@/context.js";
 import { Vec2 } from "@/utils/math.js";
 import * as fontService from "@/service/font.js";
 import { extendContext, type ExtendedCanvasContext } from "@/utils/ExtendedCanvasContext.js";
-import assertNever from "src/utils/assertNever.js";
+import assertNever from "@/utils/assertNever.js";
+import * as petService from "@/service/pet.js";
 
 const allDirections = [
     ["NW", "N", "NE"],
