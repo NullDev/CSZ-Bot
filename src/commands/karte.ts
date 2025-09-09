@@ -1,4 +1,5 @@
 import * as fs from "node:fs/promises";
+import * as path from "node:path";
 
 import { createCanvas, loadImage, type Image } from "@napi-rs/canvas";
 import {
@@ -25,7 +26,6 @@ import type { BotContext } from "@/context.js";
 import { Vec2 } from "@/utils/math.js";
 import * as fontService from "@/service/font.js";
 import { extendContext, type ExtendedCanvasContext } from "@/utils/ExtendedCanvasContext.js";
-import path from "node:path";
 import assertNever from "src/utils/assertNever.js";
 
 const allDirections = [
