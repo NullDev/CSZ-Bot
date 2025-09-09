@@ -1,4 +1,5 @@
 import * as fs from "node:fs/promises";
+import * as path from "node:path";
 
 import { createCanvas, loadImage, type Image } from "@napi-rs/canvas";
 import {
@@ -14,6 +15,7 @@ import {
     MediaGalleryItemBuilder,
     MessageFlags,
     SlashCommandBuilder,
+    SlashCommandStringOption,
     TextDisplayBuilder,
     type User,
 } from "discord.js";
@@ -24,6 +26,8 @@ import type { BotContext } from "@/context.js";
 import { Vec2 } from "@/utils/math.js";
 import * as fontService from "@/service/font.js";
 import { extendContext, type ExtendedCanvasContext } from "@/utils/ExtendedCanvasContext.js";
+import assertNever from "@/utils/assertNever.js";
+import * as petService from "@/service/pet.js";
 
 const allDirections = [
     ["NW", "N", "NE"],
@@ -48,6 +52,22 @@ export default class KarteCommand implements ApplicationCommand {
     description = "Karte, damit du nicht verloren gehst";
     applicationCommand = new SlashCommandBuilder()
         .setName(this.name)
+        .addStringOption(
+            new SlashCommandStringOption()
+                .setDescription("Debug")
+                .setRequired(false)
+                .setName("debugchoice")
+                .addChoices(
+                    {
+                        name: "Gridoverlay",
+                        value: "GRID",
+                    },
+                    {
+                        name: "LocationOverlay",
+                        value: "LOCATIONS",
+                    },
+                ),
+        )
         .setDescription(this.description);
 
     #createNavigationButtonRow(
@@ -74,10 +94,9 @@ export default class KarteCommand implements ApplicationCommand {
         map: Buffer,
         currentPosition: locationService.Position,
         mapSize: locationService.Position,
+        withNavigation: boolean,
     ) {
         const mapFile = new AttachmentBuilder(map, { name: "map.png" });
-
-        const navigationButtons = this.#createNavigationButtonRow(currentPosition, mapSize);
 
         const container = new ContainerBuilder()
             .addTextDisplayComponents(
@@ -89,8 +108,12 @@ export default class KarteCommand implements ApplicationCommand {
                         .setURL("attachment://map.png")
                         .setDescription("Karte"),
                 ),
-            )
-            .addActionRowComponents(navigationButtons);
+            );
+
+        if (withNavigation) {
+            const navigationButtons = this.#createNavigationButtonRow(currentPosition, mapSize);
+            container.addActionRowComponents(navigationButtons);
+        }
 
         return {
             components: [container],
@@ -111,15 +134,18 @@ export default class KarteCommand implements ApplicationCommand {
         const currentPosition =
             (await locationService.getPositionForUser(author.user as User)) ??
             locationService.startPosition;
-
-        const map = await this.drawMap(currentPosition, command.user, context);
+        const debugchoice = command.options.getString("debugchoice", false) as
+            | "GRID"
+            | "LOCATIONS"
+            | null;
+        const map = await this.#drawMap(debugchoice, currentPosition, command.user, context);
 
         const mapSize = {
-            x: 1521,
-            y: 782,
+            x: 1600,
+            y: 800,
         };
 
-        const messageData = await this.createMessageData(map, currentPosition, mapSize);
+        const messageData = await this.createMessageData(map, currentPosition, mapSize, true);
 
         const replyData = await command.reply({
             withResponse: true,
@@ -135,7 +161,14 @@ export default class KarteCommand implements ApplicationCommand {
         const collector = sentReply.createMessageComponentCollector({
             componentType: ComponentType.Button,
             time: 45_000,
-            filter: i => i.customId.startsWith("karte-direction-") && i.user.id === command.user.id,
+            filter: async i => {
+                // Docs:
+                // One important difference to note with interaction collectors is that Discord expects a response to all
+                // interactions within 3 seconds - even ones that you don't want to collect.
+                // For this reason, you may wish to .deferUpdate() all interactions in your filter,
+                await i.deferUpdate();
+                return i.customId.startsWith("karte-direction-") && i.user.id === command.user.id;
+            },
         });
 
         collector.on("collect", async i => {
@@ -144,20 +177,37 @@ export default class KarteCommand implements ApplicationCommand {
                 i.customId.replace("karte-direction-", "") as locationService.Direction,
             );
 
-            const map = await this.drawMap(currentPosition, i.user, context);
+            const map = await this.#drawMap(debugchoice, currentPosition, i.user, context);
 
-            const newMessageData = await this.createMessageData(map, currentPosition, mapSize);
+            const newMessageData = await this.createMessageData(
+                map,
+                currentPosition,
+                mapSize,
+                true,
+            );
 
             await i.message.edit({ ...newMessageData });
-            await i.deferUpdate();
         });
 
-        collector.on("dispose", async i => {
-            await i.message.edit({ components: [] });
+        collector.on("end", async () => {
+            const currentPosition =
+                (await locationService.getPositionForUser(author.user as User)) ??
+                locationService.startPosition;
+
+            const map = await this.#drawMap(debugchoice, currentPosition, command.user, context);
+
+            const newMessageData = await this.createMessageData(
+                map,
+                currentPosition,
+                mapSize,
+                false,
+            );
+            await sentReply.edit({ ...newMessageData });
         });
     }
 
-    private async drawMap(
+    async #drawMap(
+        debugOverlay: "GRID" | "LOCATIONS" | null,
         position: locationService.Position,
         user: User,
         context: BotContext,
@@ -169,6 +219,18 @@ export default class KarteCommand implements ApplicationCommand {
         const ctx = extendContext(canvas.getContext("2d"));
 
         ctx.drawImage(backgroundImage, 0, 0);
+        switch (debugOverlay) {
+            case "GRID":
+                this.#drawRaster(ctx);
+                break;
+            case "LOCATIONS":
+                await this.#drawLocations(ctx);
+                break;
+            case null:
+                break;
+            default:
+                assertNever(debugOverlay);
+        }
 
         const allPlayerLocations = await locationService.getAllCurrentPostions();
         for (const pos of allPlayerLocations) {
@@ -181,11 +243,35 @@ export default class KarteCommand implements ApplicationCommand {
                 continue;
             }
 
-            await this.#drawPlayer(ctx, pos, member.user, "small", "grey");
+            const avatarUrl = member.user.avatarURL({ size: 64, forceStatic: true });
+            if (!avatarUrl) {
+                continue;
+            }
+
+            const avatar = await loadImage(avatarUrl);
+            this.#drawPlayer(ctx, pos, member.user.displayName, avatar, "small", "grey", undefined);
         }
 
-        await this.#drawPlayer(ctx, position, user, "large", "blue");
-        return canvas.toBuffer("image/png");
+        const avatarUrl = user.avatarURL({ size: 64, forceStatic: true });
+        if (!avatarUrl) {
+            throw new Error("Could not fetch avatar of user.");
+        }
+
+        const avatar = await loadImage(avatarUrl);
+
+        const pet = await petService.getPet(user);
+
+        this.#drawPlayer(
+            ctx,
+            position,
+            user.displayName,
+            avatar,
+            "large",
+            "blue",
+            pet?.lootTemplate.emote ?? undefined,
+        );
+
+        return await canvas.encode("png");
     }
 
     #drawAvatar(
@@ -199,7 +285,7 @@ export default class KarteCommand implements ApplicationCommand {
         const pos = new Vec2(position.x, position.y);
 
         ctx.beginPath();
-        ctx.circlePath(pos.scale(stepSize), radius, "center", "top");
+        ctx.circlePath(pos.scale(stepSize).minus(new Vec2(0, radius)), radius, "center", "top");
 
         ctx.strokeStyle = strokeColor;
         ctx.lineWidth = strokeWidth;
@@ -209,43 +295,153 @@ export default class KarteCommand implements ApplicationCommand {
         ctx.save();
         ctx.beginPath();
 
-        ctx.circlePath(pos.scale(stepSize), radius, "center", "top");
+        ctx.circlePath(pos.scale(stepSize).minus(new Vec2(0, radius)), radius, "center", "top");
 
         ctx.closePath();
         ctx.clip();
-
-        ctx.drawImage(avatar, position.x * stepSize - radius, position.y * stepSize);
-
+        ctx.drawImage(avatar, position.x * stepSize - radius, position.y * stepSize - radius);
         ctx.restore();
     }
 
-    async #drawPlayer(
+    #drawLocation(
+        ctx: ExtendedCanvasContext,
+        position: { name: string; x: number; y: number; width: number; height: number },
+        strokeWidth: number,
+        strokeColor: string,
+    ) {
+        ctx.beginPath();
+        ctx.strokeStyle = strokeColor;
+        ctx.lineWidth = strokeWidth;
+        ctx.rect(
+            position.x * stepSize,
+            position.y * stepSize,
+            position.width * stepSize,
+            position.height * stepSize,
+        );
+        ctx.fillTextExtended(
+            new Vec2(position.x * stepSize, position.y * stepSize + 10),
+            "center",
+            "top",
+            strokeColor,
+            "bold 20px",
+            fontService.names.openSans,
+            position.name,
+        );
+
+        ctx.stroke();
+        ctx.save();
+        ctx.restore();
+    }
+
+    #drawPlayer(
         ctx: ExtendedCanvasContext,
         position: locationService.Position,
-        user: User,
+        name: string,
+        avatar: Image,
         size: "small" | "large",
         playerColor: "blue" | "grey",
+        petEmoji: string | undefined,
     ) {
         const radius = size === "large" ? 32 : 16;
 
+        const namePosition = new Vec2(position.x * stepSize, position.y * stepSize + radius);
+
         ctx.fillTextExtended(
-            new Vec2(position.x * stepSize, position.y * stepSize + radius * 2),
+            namePosition,
             "center",
             "top",
             playerColor,
-            "20px",
+            "bold 20px",
             fontService.names.openSans,
-            user.displayName,
+            name,
         );
 
-        const avatarUrl = user.avatarURL({ size: size === "large" ? 64 : 32 });
-        if (!avatarUrl) {
-            return;
+        this.#drawAvatar(ctx, position, avatar, radius, size === "large" ? 4 : 1, playerColor);
+
+        if (petEmoji) {
+            ctx.fillTextExtended(
+                namePosition,
+                "right",
+                "bottom",
+                "#fff",
+                "18px",
+                fontService.names.appleEmoji,
+                petEmoji,
+            );
+        }
+    }
+
+    #drawRaster(ctx: ExtendedCanvasContext) {
+        const size = new Vec2(1600, 800);
+
+        // ctx.save();
+
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = "#a0a0a0";
+
+        for (let x = 0; x < size.x; x += stepSize) {
+            // ctx.save();
+
+            if (x % 100 === 0) {
+                ctx.lineWidth = 2;
+            } else {
+                ctx.lineWidth = 1;
+            }
+
+            ctx.beginPath();
+            ctx.moveTo(x, 0);
+            ctx.lineTo(x, size.y);
+            ctx.stroke();
+
+            // ctx.restore();
+        }
+        for (let y = 0; y < size.y; y += stepSize) {
+            // ctx.save();
+
+            if (y % 100 === 0) {
+                ctx.lineWidth = 2;
+            } else {
+                ctx.lineWidth = 1;
+            }
+
+            ctx.beginPath();
+            ctx.moveTo(0, y);
+            ctx.lineTo(size.x, y);
+            ctx.stroke();
+
+            // ctx.restore();
         }
 
-        const avatar = await loadImage(avatarUrl);
-        this.#drawAvatar(ctx, position, avatar, radius, size === "large" ? 3 : 1, playerColor);
+        // ctx.restore();
+    }
+
+    async #drawLocations(ctx: ExtendedCanvasContext) {
+        const locations: [
+            {
+                name: string;
+                description: string;
+                x: number;
+                y: number;
+                width: number;
+                height: number;
+                color: string;
+            },
+        ] = JSON.parse(await fs.readFile(path.resolve("assets/maps/locations.json"), "utf-8"));
+        for (const location of locations) {
+            this.#drawLocation(
+                ctx,
+                {
+                    name: location.name,
+                    x: location.x,
+                    y: location.y,
+                    height: location.height,
+                    width: location.width,
+                },
+                2,
+                location.color,
+            );
+        }
     }
 }
 
-const stepSize = 32;
+const stepSize = 10;

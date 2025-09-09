@@ -16,6 +16,7 @@ import type { BotContext } from "@/context.js";
 import type { ApplicationCommand } from "@/commands/command.js";
 import type { LootUseCommandInteraction } from "@/storage/loot.js";
 import * as lootService from "@/service/loot.js";
+import * as petService from "@/service/pet.js";
 import * as lootRoleService from "@/service/lootRoles.js";
 import { randomEntry } from "@/service/random.js";
 import { ensureChatInputCommand } from "@/utils/interactionUtils.js";
@@ -36,12 +37,20 @@ export default class GegenstandCommand implements ApplicationCommand {
         .setDescription(this.description)
         .addSubcommand(
             new SlashCommandSubcommandBuilder()
-                .setName("entsorgen")
+                .setName("dump")
+                .setNameLocalizations({
+                    de: "entsorgen",
+                    "en-US": "dump",
+                })
                 .setDescription("Gebe dem Wärter etwas Atommüll und etwas süßes"),
         )
         .addSubcommand(
             new SlashCommandSubcommandBuilder()
                 .setName("info")
+                .setNameLocalizations({
+                    de: "info",
+                    "en-US": "info",
+                })
                 .setDescription("Zeigt Informationen über einen Gegenstand an")
                 .addStringOption(
                     new SlashCommandStringOption()
@@ -53,7 +62,11 @@ export default class GegenstandCommand implements ApplicationCommand {
         )
         .addSubcommand(
             new SlashCommandSubcommandBuilder()
-                .setName("benutzen")
+                .setName("use")
+                .setNameLocalizations({
+                    de: "benutzen",
+                    "en-US": "use",
+                })
                 .setDescription("Benutze einen benutzbaren Gegenstand")
                 .addStringOption(
                     new SlashCommandStringOption()
@@ -74,20 +87,65 @@ export default class GegenstandCommand implements ApplicationCommand {
                         .setDescription("Rüste dich für deinen nächsten Kampf")
                         .setAutocomplete(true),
                 ),
+        )
+        .addSubcommand(
+            new SlashCommandSubcommandBuilder()
+                .setName("set-pet")
+                .setNameLocalizations({
+                    de: "als-haustier-nehmen",
+                    "en-US": "set-pet",
+                })
+                .setDescription("Setze dein Haustier :3")
+                .addStringOption(
+                    new SlashCommandStringOption()
+                        .setRequired(true)
+                        .setName("animal")
+                        .setNameLocalizations({
+                            de: "haustier",
+                            "en-US": "pet",
+                        })
+                        .setDescription("Dein niedliches Haustier :3")
+                        .setAutocomplete(true),
+                )
+                .addStringOption(
+                    new SlashCommandStringOption()
+                        .setRequired(true)
+                        .setName("name")
+                        .setNameLocalizations({
+                            de: "name",
+                            "en-US": "name",
+                        })
+                        .setDescription("Der Name für dein nieliches Haustier :3")
+                        .setDescriptionLocalizations({
+                            de: "Der Name für dein nieliches Haustier :3",
+                            "en-US": "Der Name für dein nieliches Haustier :3",
+                        }),
+                ),
         );
 
     async handleInteraction(interaction: CommandInteraction, context: BotContext) {
         const command = ensureChatInputCommand(interaction);
         const subCommand = command.options.getSubcommand();
+
+        if (command.guild === null) {
+            throw new Error("Interaction not in guild");
+        }
+        if (command.channel === null) {
+            throw new Error("Interaction not in channel");
+        }
+
         switch (subCommand) {
-            case "entsorgen":
-                await this.#disposeRadioactiveWaste(interaction, context);
+            case "dump":
+                await this.#disposeRadioactiveWaste(command, context);
                 break;
             case "info":
-                await this.#showItemInfo(interaction, context);
+                await this.#showItemInfo(command, context);
                 break;
-            case "benutzen":
-                await this.#useItem(interaction, context);
+            case "use":
+                await this.#useItem(command, context);
+                break;
+            case "set-pet":
+                await this.#setPet(command, context);
                 break;
             case "ausrüsten":
                 await this.#equipItem(interaction, context);
@@ -97,7 +155,7 @@ export default class GegenstandCommand implements ApplicationCommand {
         }
     }
 
-    async #disposeRadioactiveWaste(interaction: CommandInteraction, context: BotContext) {
+    async #disposeRadioactiveWaste(interaction: ChatInputCommandInteraction, context: BotContext) {
         const currentGuard = await lootRoleService.getCurrentAsseGuardOnDuty(context);
         if (!currentGuard) {
             await interaction.reply({
@@ -162,12 +220,9 @@ export default class GegenstandCommand implements ApplicationCommand {
         });
     }
 
-    async #showItemInfo(interaction: CommandInteraction, context: BotContext) {
-        if (!interaction.isChatInputCommand()) {
-            throw new Error("Interaction is not a chat input command");
-        }
-        if (!interaction.guild || !interaction.channel) {
-            return;
+    async #showItemInfo(interaction: ChatInputCommandInteraction, context: BotContext) {
+        if (interaction.guild === null) {
+            throw new Error("Interaction not in guild");
         }
 
         const info = await this.#fetchItem(interaction);
@@ -265,10 +320,7 @@ export default class GegenstandCommand implements ApplicationCommand {
         });
     }
 
-    async #useItem(interaction: CommandInteraction, context: BotContext) {
-        if (!interaction.isChatInputCommand()) {
-            throw new Error("Interaction is not a chat input command");
-        }
+    async #useItem(interaction: ChatInputCommandInteraction, context: BotContext) {
         if (!interaction.guild || !interaction.channel) {
             return;
         }
@@ -310,7 +362,7 @@ export default class GegenstandCommand implements ApplicationCommand {
     }
 
     async #fetchItem(interaction: ChatInputCommandInteraction) {
-        const itemId = Number(interaction.options.getString("item"));
+        const itemId = Number(interaction.options.getString("item", true));
         if (!Number.isSafeInteger(itemId)) {
             throw new Error("Invalid item ID");
         }
@@ -340,17 +392,25 @@ export default class GegenstandCommand implements ApplicationCommand {
 
     async autocomplete(interaction: AutocompleteInteraction) {
         const subCommand = interaction.options.getSubcommand(true);
-        if (subCommand !== "info" && subCommand !== "benutzen" && subCommand !== "ausrüsten") {
+        if (!interaction.guild) {
             return;
         }
 
-        if (!interaction.guild) {
+        if (
+            subCommand !== "info" &&
+            subCommand !== "use" &&
+            subCommand !== "set-pet" &&
+            subCommand !== "ausrüsten"
+        ) {
             return;
         }
 
         const itemName = interaction.options.getFocused().toLowerCase();
 
-        const contents = await lootService.getInventoryContents(interaction.user);
+        const contents =
+            subCommand === "set-pet"
+                ? await petService.getPetCandidates(interaction.user)
+                : await lootService.getInventoryContents(interaction.user);
 
         const matchedItems =
             itemName.length === 0
@@ -365,7 +425,7 @@ export default class GegenstandCommand implements ApplicationCommand {
                 continue;
             }
 
-            if (subCommand === "benutzen" && template.onUse === undefined) {
+            if (subCommand === "use" && template.onUse === undefined) {
                 continue;
             }
             if (subCommand === "ausrüsten" && template.gameEquip === undefined) {
@@ -421,5 +481,36 @@ export default class GegenstandCommand implements ApplicationCommand {
                 ? `Du hast ${result.equipped?.displayName} ausgerüstet`
                 : `Du hast ${result.unequipped.join(", ")} abgelegt und dafür ${result.equipped?.displayName} ausgerüstet`;
         await interaction.reply(message);
+    }
+
+    async #setPet(interaction: ChatInputCommandInteraction, _context: BotContext) {
+        const itemId = Number(interaction.options.getString("animal", true));
+        if (!Number.isSafeInteger(itemId)) {
+            throw new Error("Invalid item ID");
+        }
+
+        const petName = interaction.options.getString("name", true);
+        if (petName.trim().length === 0) {
+            await interaction.reply({
+                content: "Ungültiger Haustiername.",
+                flags: MessageFlags.Ephemeral,
+            });
+            return;
+        }
+
+        try {
+            await petService.setPet(interaction.user, itemId, petName);
+        } catch (err) {
+            await interaction.reply({
+                content: "Konnte dein Haustier nicht setzen.",
+                flags: MessageFlags.Ephemeral,
+            });
+            sentry.captureException(err);
+            return;
+        }
+
+        await interaction.reply({
+            content: `${interaction.user} hat jetzt ein neues Haustier: ${petName}`,
+        });
     }
 }

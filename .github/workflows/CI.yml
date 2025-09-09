@@ -12,8 +12,14 @@ env:
 jobs:
 
   lint:
+
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [ "ubuntu-latest", "windows-latest", "macos-latest" ]
+
     name: Lint
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.platform }}
 
     permissions:
       contents: read

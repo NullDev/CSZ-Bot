@@ -91,7 +91,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         displayName: "Niedliche Kadse",
         titleText: "Eine niedliche Kadse",
         dropDescription: "Awww",
-        emote: ":catsmile:",
+        emote: "🐈",
         asset: "assets/loot/01-kadse.jpg",
         initialAttributes: [LootAttributeKindId.SWEET],
         attributeAsset: {
@@ -383,7 +383,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         displayName: "Crowdstrike Falcon",
         titleText: "Crowdstrike Falcon Installation",
         dropDescription: "Bitti nicht rebooti und Bitlocki nutzi",
-        emote: ":eagle:",
+        emote: "🦅",
         asset: "assets/loot/24-crowdstrike.jpg",
     },
     [LootKindId.POWERADE_BLAU]: {
@@ -435,7 +435,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         displayName: "Ein Glas Dreck",
         titleText: "Ein Glas Dreck",
         dropDescription: "Ich hab ein Glas voll Dreck",
-        emote: ":jar:",
+        emote: "🫙",
         asset: "assets/loot/29-dreck.jpg",
     },
     [LootKindId.EI]: {
@@ -445,7 +445,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         titleText: "Ein Ei",
         dropDescription:
             "Jetzt wär geklärt, was zu erst da war, Ei oder ... (Ja was schlüpft daraus eigentlich?)",
-        emote: ":egg:",
+        emote: "🥚",
         asset: "assets/loot/30-ei.png",
     },
     [LootKindId.BRAVO]: {
@@ -454,7 +454,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         displayName: "Bravo",
         titleText: "Eine Bravo vom Dachboden",
         dropDescription: "Die Seiten kleben noch ein bisschen",
-        emote: ":newspaper2:",
+        emote: "🗞️",
         asset: "assets/loot/31-bravo.jpg",
     },
     [LootKindId.VERSCHIMMELTER_DOENER]: {
@@ -473,7 +473,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         displayName: "Thunfischshake",
         titleText: "Ein Thunfischshake, serviert von Markus Rühl persönlich",
         dropDescription: "Nach Rezept zubereitet, bestehend aus Thunfisch und Reiswaffeln",
-        emote: ":baby_bottle:",
+        emote: "🍼",
         asset: "assets/loot/33-thunfischshake.jpg",
         initialAttributes: [LootAttributeKindId.NUTRI_SCORE_A],
         gameEquip: fightTemplates.thunfischshake,
@@ -484,7 +484,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         displayName: "Kaffeemühle",
         titleText: "Eine Kaffeemühle für 400€",
         dropDescription: "Kann Kaffee mühlen. Und das gut. Mit Gold.",
-        emote: ":coffee:",
+        emote: "☕",
         asset: "assets/loot/34-kaffeemuehle.png",
     },
     [LootKindId.AWS_RECHNUNG]: {
@@ -493,7 +493,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         displayName: "AWS-Rechnung",
         titleText: "Ne dicke AWS-Rechnung",
         dropDescription: "Hast du schon versucht, in die Cloud zu gehen?",
-        emote: ":package:",
+        emote: "📦",
         asset: "assets/loot/35-aws-rechnung.png",
     },
     [LootKindId.BIBER]: {
@@ -502,7 +502,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         displayName: "Süßer Biber",
         titleText: "Bóbr",
         dropDescription: "Bóbr kurwa! Ja pierdolę! Jakie bydlę!",
-        emote: ":beaver:",
+        emote: "🦫",
         asset: "assets/loot/36-biber.jpg",
         initialAttributes: [LootAttributeKindId.SWEET],
     },
@@ -512,7 +512,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         displayName: "Blei",
         titleText: "Einen Block Blei",
         dropDescription: "Ganz schön schwer.",
-        emote: ":rock:",
+        emote: "🪨",
         asset: "assets/loot/37-blei.png",
         initialAttributes: [],
     },
@@ -522,7 +522,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         displayName: "USV",
         titleText: "Eine kaputte USV",
         dropDescription: "Damit dir nie wieder der Strom ausgeht.",
-        emote: ":battery:",
+        emote: "🔋",
         asset: "assets/loot/38-usv.png",
         initialAttributes: [],
     },
@@ -532,7 +532,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         displayName: "BahnCard 25",
         titleText: "Eine BahnCard 25",
         dropDescription: "Fahr damit überall hin, sogar in die Arbeit!",
-        emote: ":train:",
+        emote: "🚆",
         asset: "assets/loot/39-bahncard-25.png",
         initialAttributes: [],
         drawCustomAsset: (context, owner, template, loot) =>
@@ -551,7 +551,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         displayName: "BahnCard 50",
         titleText: "Eine BahnCard 50",
         dropDescription: "Fahr damit überall hin, sogar in die Arbeit!",
-        emote: ":train:",
+        emote: "🚆",
         asset: "assets/loot/40-bahncard-50.png",
         initialAttributes: [],
         drawCustomAsset: (context, owner, template, loot) =>
@@ -570,7 +570,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         displayName: "BahnCard 100",
         titleText: "Eine BahnCard 100",
         dropDescription: "Fahr damit überall hin, sogar in die Arbeit!",
-        emote: ":train:",
+        emote: "🚆",
         asset: "assets/loot/41-bahncard-100.png",
         initialAttributes: [],
         drawCustomAsset: (context, owner, template, loot) =>
