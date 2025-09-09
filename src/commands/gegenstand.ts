@@ -437,6 +437,19 @@ export default class GegenstandCommand implements ApplicationCommand {
             return;
         }
 
-        throw new Error("Not implemented");
+        try {
+            await petService.setPet(interaction.user, itemId, petName);
+        } catch (err) {
+            await interaction.reply({
+                content: "Konnte dein Haustier nicht setzen.",
+                flags: MessageFlags.Ephemeral,
+            });
+            sentry.captureException(err);
+            return;
+        }
+
+        await interaction.reply({
+            content: `${interaction.user} hat jetzt ein neues Haustier: ${petName}`,
+        });
     }
 }
