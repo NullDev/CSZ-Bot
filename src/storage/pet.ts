@@ -10,7 +10,7 @@ export async function setPet(ownerId: Snowflake, lootId: number, petName: string
         throw new Error("Invalid pet name");
     }
 
-    return db()
+    return await db()
         .transaction()
         .execute(async ctx => {
             const currentPet = await ctx
