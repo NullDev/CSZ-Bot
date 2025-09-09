@@ -299,7 +299,13 @@ export default class KarteCommand implements ApplicationCommand {
 
         ctx.closePath();
         ctx.clip();
-        ctx.drawImage(avatar, position.x * stepSize - radius, position.y * stepSize - radius);
+        ctx.drawImage(
+            avatar,
+            position.x * stepSize - radius,
+            position.y * stepSize - radius,
+            radius,
+            radius,
+        );
         ctx.restore();
     }
 
