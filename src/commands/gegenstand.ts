@@ -330,7 +330,7 @@ export default class GegenstandCommand implements ApplicationCommand {
     }
 
     async #fetchItem(interaction: ChatInputCommandInteraction) {
-        const itemId = Number(interaction.options.getString("item"));
+        const itemId = Number(interaction.options.getString("item", true));
         if (!Number.isSafeInteger(itemId)) {
             throw new Error("Invalid item ID");
         }
