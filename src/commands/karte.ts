@@ -360,8 +360,8 @@ export default class KarteCommand implements ApplicationCommand {
 
         if (petEmoji) {
             ctx.fillTextExtended(
-                namePosition,
-                "right",
+                namePosition.add(new Vec2(radius, 0)),
+                "left",
                 "bottom",
                 "#fff",
                 "18px",
