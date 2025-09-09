@@ -16,7 +16,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [ "ubuntu-latest", "windows-latest" ]
+        platform: [ "ubuntu-latest", "windows-latest", "macos-latest" ]
 
     name: Lint
     runs-on: ${{ matrix.platform }}
