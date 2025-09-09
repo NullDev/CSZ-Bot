@@ -16,6 +16,7 @@ import type { BotContext } from "@/context.js";
 import type { ApplicationCommand } from "@/commands/command.js";
 import type { LootUseCommandInteraction } from "@/storage/loot.js";
 import * as lootService from "@/service/loot.js";
+import * as petService from "@/service/pet.js";
 import * as lootRoleService from "@/service/lootRoles.js";
 import { randomEntry } from "@/service/random.js";
 import { ensureChatInputCommand } from "@/utils/interactionUtils.js";
@@ -359,17 +360,20 @@ export default class GegenstandCommand implements ApplicationCommand {
 
     async autocomplete(interaction: AutocompleteInteraction) {
         const subCommand = interaction.options.getSubcommand(true);
-        if (subCommand !== "info" && subCommand !== "use") {
+        if (!interaction.guild) {
             return;
         }
 
-        if (!interaction.guild) {
+        if (subCommand !== "info" && subCommand !== "use" && subCommand !== "set-pet") {
             return;
         }
 
         const itemName = interaction.options.getFocused().toLowerCase();
 
-        const contents = await lootService.getInventoryContents(interaction.user);
+        const contents =
+            subCommand === "set-pet"
+                ? await petService.getPetCandidates(interaction.user)
+                : await lootService.getInventoryContents(interaction.user);
 
         const matchedItems =
             itemName.length === 0
