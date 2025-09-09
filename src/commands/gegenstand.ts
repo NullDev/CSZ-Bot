@@ -35,12 +35,20 @@ export default class GegenstandCommand implements ApplicationCommand {
         .setDescription(this.description)
         .addSubcommand(
             new SlashCommandSubcommandBuilder()
-                .setName("entsorgen")
+                .setName("dump")
+                .setNameLocalizations({
+                    de: "entsorgen",
+                    "en-US": "dump",
+                })
                 .setDescription("Gebe dem Wärter etwas Atommüll und etwas süßes"),
         )
         .addSubcommand(
             new SlashCommandSubcommandBuilder()
                 .setName("info")
+                .setNameLocalizations({
+                    de: "info",
+                    "en-US": "info",
+                })
                 .setDescription("Zeigt Informationen über einen Gegenstand an")
                 .addStringOption(
                     new SlashCommandStringOption()
@@ -52,7 +60,11 @@ export default class GegenstandCommand implements ApplicationCommand {
         )
         .addSubcommand(
             new SlashCommandSubcommandBuilder()
-                .setName("benutzen")
+                .setName("use")
+                .setNameLocalizations({
+                    de: "benutzen",
+                    "en-US": "use",
+                })
                 .setDescription("Benutze einen benutzbaren Gegenstand")
                 .addStringOption(
                     new SlashCommandStringOption()
@@ -67,13 +79,13 @@ export default class GegenstandCommand implements ApplicationCommand {
         const command = ensureChatInputCommand(interaction);
         const subCommand = command.options.getSubcommand();
         switch (subCommand) {
-            case "entsorgen":
+            case "dump":
                 await this.#disposeRadioactiveWaste(interaction, context);
                 break;
             case "info":
                 await this.#showItemInfo(interaction, context);
                 break;
-            case "benutzen":
+            case "use":
                 await this.#useItem(interaction, context);
                 break;
             default:
