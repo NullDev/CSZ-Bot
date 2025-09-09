@@ -249,7 +249,7 @@ export default class KarteCommand implements ApplicationCommand {
             }
 
             const avatar = await loadImage(avatarUrl);
-            this.#drawPlayer(ctx, pos, member.user.displayName, avatar, "small", "grey");
+            this.#drawPlayer(ctx, pos, member.user.displayName, avatar, "small", "grey", undefined);
         }
 
         const avatarUrl = user.avatarURL({ size: 64, forceStatic: true });
@@ -258,7 +258,18 @@ export default class KarteCommand implements ApplicationCommand {
         }
 
         const avatar = await loadImage(avatarUrl);
-        this.#drawPlayer(ctx, position, user.displayName, avatar, "large", "blue");
+
+        const pet = await petService.getPet(user);
+
+        this.#drawPlayer(
+            ctx,
+            position,
+            user.displayName,
+            avatar,
+            "large",
+            "blue",
+            pet?.lootTemplate.emote ?? undefined,
+        );
 
         return await canvas.encode("png");
     }
@@ -329,11 +340,14 @@ export default class KarteCommand implements ApplicationCommand {
         avatar: Image,
         size: "small" | "large",
         playerColor: "blue" | "grey",
+        petEmoji: string | undefined,
     ) {
         const radius = size === "large" ? 32 : 16;
 
+        const namePosition = new Vec2(position.x * stepSize, position.y * stepSize + radius);
+
         ctx.fillTextExtended(
-            new Vec2(position.x * stepSize, position.y * stepSize + radius),
+            namePosition,
             "center",
             "top",
             playerColor,
@@ -343,6 +357,18 @@ export default class KarteCommand implements ApplicationCommand {
         );
 
         this.#drawAvatar(ctx, position, avatar, radius, size === "large" ? 4 : 1, playerColor);
+
+        if (petEmoji) {
+            ctx.fillTextExtended(
+                namePosition,
+                "right",
+                "bottom",
+                "#fff",
+                "18px",
+                fontService.names.appleEmoji,
+                petEmoji,
+            );
+        }
     }
 
     #drawRaster(ctx: ExtendedCanvasContext) {
