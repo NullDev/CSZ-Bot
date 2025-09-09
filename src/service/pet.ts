@@ -3,6 +3,8 @@ import type { User } from "discord.js";
 import * as lootService from "@/service/loot.js";
 import { LootKindId } from "./lootData.js";
 import * as pet from "@/storage/pet.js";
+import * as lootData from "@/service/lootData.js";
+import type { LootId } from "@/storage/db/model.js";
 
 const petCandidates = new Set([
     LootKindId.KADSE,
@@ -22,5 +24,24 @@ export async function setPet(user: User, lootId: number, petName: string) {
 }
 
 export async function getPet(owner: User) {
-    return pet.getPet(owner.id);
+    const p = await pet.getPet(owner.id);
+    if (!p) {
+        return undefined;
+    }
+
+    const loot = await lootService.getUserLootById(owner.id, p.lootId);
+    if (!loot) {
+        throw new Error("Found pet without corresponding loot");
+    }
+
+    const lootTemplate = lootData.resolveLootTemplate(loot.lootKindId);
+    if (!lootTemplate) {
+        throw new Error("Found loot without corresponding tempalte");
+    }
+
+    return {
+        ...p,
+        loot,
+        lootTemplate,
+    };
 }
