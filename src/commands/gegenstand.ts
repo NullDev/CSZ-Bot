@@ -113,25 +113,33 @@ export default class GegenstandCommand implements ApplicationCommand {
     async handleInteraction(interaction: CommandInteraction, context: BotContext) {
         const command = ensureChatInputCommand(interaction);
         const subCommand = command.options.getSubcommand();
+
+        if (command.guild === null) {
+            throw new Error("Interaction not in guild");
+        }
+        if (command.channel === null) {
+            throw new Error("Interaction not in channel");
+        }
+
         switch (subCommand) {
             case "dump":
-                await this.#disposeRadioactiveWaste(interaction, context);
+                await this.#disposeRadioactiveWaste(command, context);
                 break;
             case "info":
-                await this.#showItemInfo(interaction, context);
+                await this.#showItemInfo(command, context);
                 break;
             case "use":
-                await this.#useItem(interaction, context);
+                await this.#useItem(command, context);
                 break;
             case "set-pet":
-                await this.#setPet(interaction, context);
+                await this.#setPet(command, context);
                 break;
             default:
                 throw new Error(`Unknown subcommand: "${subCommand}"`);
         }
     }
 
-    async #disposeRadioactiveWaste(interaction: CommandInteraction, context: BotContext) {
+    async #disposeRadioactiveWaste(interaction: ChatInputCommandInteraction, context: BotContext) {
         const currentGuard = await lootRoleService.getCurrentAsseGuardOnDuty(context);
         if (!currentGuard) {
             await interaction.reply({
@@ -196,12 +204,9 @@ export default class GegenstandCommand implements ApplicationCommand {
         });
     }
 
-    async #showItemInfo(interaction: CommandInteraction, context: BotContext) {
-        if (!interaction.isChatInputCommand()) {
-            throw new Error("Interaction is not a chat input command");
-        }
-        if (!interaction.guild || !interaction.channel) {
-            return;
+    async #showItemInfo(interaction: ChatInputCommandInteraction, context: BotContext) {
+        if (interaction.guild === null) {
+            throw new Error("Interaction not in guild");
         }
 
         const info = await this.#fetchItem(interaction);
@@ -299,10 +304,7 @@ export default class GegenstandCommand implements ApplicationCommand {
         });
     }
 
-    async #useItem(interaction: CommandInteraction, context: BotContext) {
-        if (!interaction.isChatInputCommand()) {
-            throw new Error("Interaction is not a chat input command");
-        }
+    async #useItem(interaction: ChatInputCommandInteraction, context: BotContext) {
         if (!interaction.guild || !interaction.channel) {
             return;
         }
