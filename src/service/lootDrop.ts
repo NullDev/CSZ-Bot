@@ -11,6 +11,11 @@ import {
     type GuildBasedChannel,
     type TextBasedChannel,
     MessageFlags,
+    ContainerBuilder,
+    TextDisplayBuilder,
+    ActionRowBuilder,
+    MediaGalleryBuilder,
+    MediaGalleryItemBuilder,
 } from "discord.js";
 import { Temporal } from "@js-temporal/polyfill";
 import * as sentry from "@sentry/node";
@@ -105,13 +110,13 @@ export async function postLootDrop(
                 },
             },
         ],
+        components: [new ActionRowBuilder<ButtonBuilder>().addComponents(takeLootButton)],
         files: [
             {
                 name: "00-unopened.gif",
                 attachment: await fs.readFile("assets/loot/00-unopened.gif"),
             },
         ],
-        components: [{ type: ComponentType.ActionRow, components: [takeLootButton] }],
     });
 
     let interaction: Interaction | undefined;
@@ -187,37 +192,42 @@ export async function postLootDrop(
           ? await fs.readFile(template.asset)
           : null;
 
+    const container = new ContainerBuilder().addTextDisplayComponents(
+        new TextDisplayBuilder().setContent("-# Das Geschenk enthielt"),
+        new TextDisplayBuilder().setContent(`# ${template.titleText}`),
+        new TextDisplayBuilder().setContent(template.dropDescription),
+        new TextDisplayBuilder().setContent("**🎉 Ehrenwerter Empfänger**"),
+        new TextDisplayBuilder().setContent(winner.toString()),
+    );
+
+    if (rarityAttribute) {
+        container.addTextDisplayComponents(
+            new TextDisplayBuilder().setContent("**✨ Rarität**"),
+            new TextDisplayBuilder().setContent(
+                `${rarityAttribute.shortDisplay} ${rarityAttribute.displayName}`.trim(),
+            ),
+        );
+    }
+
+    if (attachment) {
+        container.addMediaGalleryComponents(
+            new MediaGalleryBuilder().addItems(
+                new MediaGalleryItemBuilder().setURL("attachment://opened.gif"),
+            ),
+        );
+    }
+
+    const allMessages = messages.join("\n").trim();
+    if (allMessages.length > 0) {
+        container.addTextDisplayComponents(
+            new TextDisplayBuilder().setContent(`-# ${allMessages}`),
+        );
+    }
+
     await message.edit({
-        embeds: [
-            {
-                title: `Das Geschenk enthielt: ${template.titleText}`,
-                description: template.dropDescription,
-                image: attachment
-                    ? {
-                          url: "attachment://opened.gif",
-                      }
-                    : undefined,
-                fields: [
-                    {
-                        name: "🎉 Ehrenwerter Empfänger",
-                        value: winner.toString(),
-                        inline: true,
-                    },
-                    ...(rarityAttribute
-                        ? [
-                              {
-                                  name: "✨ Rarität",
-                                  value: `${rarityAttribute.shortDisplay} ${rarityAttribute.displayName}`.trim(),
-                                  inline: true,
-                              },
-                          ]
-                        : []),
-                ],
-                footer: {
-                    text: messages.join("\n").trim(),
-                },
-            },
-        ],
+        flags: MessageFlags.IsComponentsV2,
+        components: [container],
+        embeds: [],
         files: attachment
             ? [
                   {
@@ -226,7 +236,6 @@ export async function postLootDrop(
                   },
               ]
             : [],
-        components: [],
     });
 
     if (template.onDrop) {
