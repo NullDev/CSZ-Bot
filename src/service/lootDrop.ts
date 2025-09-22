@@ -99,18 +99,25 @@ export async function postLootDrop(
 
     const timeoutSeconds = (lootTimeoutMs / 1000) | 0;
     const message = await channel.send({
-        embeds: [
-            {
-                title: "Geschenk",
-                description: donor
-                    ? `${donor} hat ein Geschenk fallen lassen! Öffne es schnell, in ${timeoutSeconds} Sekunden ist es weg!`
-                    : `Ein Geschenk ist aufgetaucht! Öffne es schnell, in ${timeoutSeconds} Sekunden ist es weg!`,
-                image: {
-                    url: "attachment://00-unopened.gif",
-                },
-            },
+        flags: MessageFlags.IsComponentsV2,
+        embeds: [],
+        components: [
+            new ContainerBuilder()
+                .addTextDisplayComponents(
+                    new TextDisplayBuilder().setContent("# Geschenk"),
+                    new TextDisplayBuilder().setContent(
+                        donor
+                            ? `${donor} hat ein Geschenk fallen lassen! Öffne es schnell, in ${timeoutSeconds} Sekunden ist es weg!`
+                            : `Ein Geschenk ist aufgetaucht! Öffne es schnell, in ${timeoutSeconds} Sekunden ist es weg!`,
+                    ),
+                )
+                .addMediaGalleryComponents(
+                    new MediaGalleryBuilder().addItems(
+                        new MediaGalleryItemBuilder().setURL("attachment://00-unopened.gif"),
+                    ),
+                ),
+            new ActionRowBuilder<ButtonBuilder>().addComponents(takeLootButton),
         ],
-        components: [new ActionRowBuilder<ButtonBuilder>().addComponents(takeLootButton)],
         files: [
             {
                 name: "00-unopened.gif",
