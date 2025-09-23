@@ -104,17 +104,16 @@ export async function postLootDrop(
         components: [
             new ContainerBuilder()
                 .addTextDisplayComponents(
-                    new TextDisplayBuilder().setContent("# Geschenk"),
-                    new TextDisplayBuilder().setContent(
-                        donor
-                            ? `${donor} hat ein Geschenk fallen lassen! Öffne es schnell, in ${timeoutSeconds} Sekunden ist es weg!`
-                            : `Ein Geschenk ist aufgetaucht! Öffne es schnell, in ${timeoutSeconds} Sekunden ist es weg!`,
-                    ),
+                    header => header.setContent("# Geschenk"),
+                    body =>
+                        body.setContent(
+                            donor
+                                ? `${donor} hat ein Geschenk fallen lassen! Öffne es schnell, in ${timeoutSeconds} Sekunden ist es weg!`
+                                : `Ein Geschenk ist aufgetaucht! Öffne es schnell, in ${timeoutSeconds} Sekunden ist es weg!`,
+                        ),
                 )
-                .addMediaGalleryComponents(
-                    new MediaGalleryBuilder().addItems(
-                        new MediaGalleryItemBuilder().setURL("attachment://00-unopened.gif"),
-                    ),
+                .addMediaGalleryComponents(media =>
+                    media.addItems(image => image.setURL("attachment://00-unopened.gif")),
                 ),
             new ActionRowBuilder<ButtonBuilder>().addComponents(takeLootButton),
         ],
@@ -140,14 +139,15 @@ export async function postLootDrop(
             flags: MessageFlags.IsComponentsV2,
             components: [
                 new ContainerBuilder().addTextDisplayComponents(
-                    new TextDisplayBuilder().setContent("-# Geschenk"),
-                    new TextDisplayBuilder().setContent(
-                        donor
-                            ? // TODO: `Keiner wollte das Geschenk von ${donor} haben. ${donor} hat es wieder mitgenommen.`
-                              `Das Geschenk von ${donor} verpuffte im nichts :(`
-                            : `Oki aber nächstes mal bitti aufmachi, sonst muss ichs wieder mitnehmi ${hamster}`,
-                    ),
-                    new TextDisplayBuilder().setContent("-# ❌ Niemand war schnell genug"),
+                    header => header.setContent("-# Geschenk"),
+                    body =>
+                        body.setContent(
+                            donor
+                                ? // TODO: `Keiner wollte das Geschenk von ${donor} haben. ${donor} hat es wieder mitgenommen.`
+                                  `Das Geschenk von ${donor} verpuffte im nichts :(`
+                                : `Oki aber nächstes mal bitti aufmachi, sonst muss ichs wieder mitnehmi ${hamster}`,
+                        ),
+                    footer => footer.setContent("-# ❌ Niemand war schnell genug"),
                 ),
             ],
             embeds: [],
@@ -200,27 +200,26 @@ export async function postLootDrop(
           : null;
 
     const container = new ContainerBuilder().addTextDisplayComponents(
-        new TextDisplayBuilder().setContent("-# Das Geschenk enthielt"),
-        new TextDisplayBuilder().setContent(`# ${template.titleText}`),
-        new TextDisplayBuilder().setContent(template.dropDescription),
-        new TextDisplayBuilder().setContent("**🎉 Ehrenwerter Empfänger**"),
-        new TextDisplayBuilder().setContent(winner.toString()),
+        t => t.setContent("-# Das Geschenk enthielt"),
+        t => t.setContent(`# ${template.titleText}`),
+        t => t.setContent(template.dropDescription),
+        t => t.setContent("**🎉 Ehrenwerter Empfänger**"),
+        t => t.setContent(winner.toString()),
     );
 
     if (rarityAttribute) {
         container.addTextDisplayComponents(
-            new TextDisplayBuilder().setContent("**✨ Rarität**"),
-            new TextDisplayBuilder().setContent(
-                `${rarityAttribute.shortDisplay} ${rarityAttribute.displayName}`.trim(),
-            ),
+            t => t.setContent("**✨ Rarität**"),
+            t =>
+                t.setContent(
+                    `${rarityAttribute.shortDisplay} ${rarityAttribute.displayName}`.trim(),
+                ),
         );
     }
 
     if (attachment) {
-        container.addMediaGalleryComponents(
-            new MediaGalleryBuilder().addItems(
-                new MediaGalleryItemBuilder().setURL("attachment://opened.gif"),
-            ),
+        container.addMediaGalleryComponents(media =>
+            media.addItems(image => image.setURL("attachment://opened.gif")),
         );
     }
 
