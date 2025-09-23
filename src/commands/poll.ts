@@ -42,8 +42,7 @@ export const delayedPolls: DelayedPoll[] = [];
 export const createOptionField = (option: string, index: number, author?: User): APIEmbedField => {
     let newOption = option;
     if (author) {
-        const authorNote = ` (von ${author.username})`;
-        newOption += authorNote;
+        newOption += ` (von ${author.username})`;
 
         if (newOption.length > POLL_OPTION_MAX_LENGTH) {
             throw new Error(
