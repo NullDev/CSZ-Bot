@@ -57,7 +57,7 @@
         "@types/node-cron": "^3.0.11",
         "@typescript/native-preview": "^7.0.0-dev.20250923.1",
         "expect": "^30.1.2",
-        "lefthook": "^1.13.3"
+        "lefthook": "^1.13.4"
     },
     "trustedDependencies": [
         "@biomejs/biome",
