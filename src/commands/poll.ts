@@ -20,6 +20,7 @@ import * as timeUtils from "@/utils/time.js";
 import log from "@log";
 import * as additionalMessageData from "@/storage/additionalMessageData.js";
 import { LETTERS, EMOJI } from "@/service/poll.js";
+import { defer } from "@/utils/interactionUtils.js";
 
 export const TEXT_LIMIT = 4096;
 export const FIELD_NAME_LIMIT = 256;
@@ -245,7 +246,8 @@ Optionen:
             ],
         });
 
-        await message.delete();
+        await using _ = defer(() => message.delete());
+
         await Promise.all(pollOptions.map((_e, i) => pollMessage.react(EMOJI[i])));
 
         if (finishTime) {
