@@ -9,6 +9,7 @@ import {
     SeparatorSpacingSize,
     type Snowflake,
     type TextChannel,
+    TextDisplayBuilder,
     time,
     TimestampStyles,
     type User,
@@ -80,7 +81,7 @@ function createOptionFieldMarkdown(option: string, index: number, author?: User)
     const firstTextBlock = optionDiscriminator + newOption.substring(0, splitIndex);
     const secondTextBlock = newOption.substring(splitIndex) || " ";
 
-    return `${firstTextBlock} ${secondTextBlock}`;
+    return `**${firstTextBlock} ${secondTextBlock}**`;
 }
 
 const argsConfig = {
@@ -189,7 +190,9 @@ Optionen:
             return `Bruder mindestens eine Antwortmöglichkeit ist länger als ${POLL_OPTION_MAX_LENGTH} Zeichen!`;
         }
 
-        const fields = pollOptions.map((o, i) => createOptionFieldMarkdown(o, i));
+        const fields = pollOptions.map(
+            (o, i) => new TextDisplayBuilder({ content: createOptionFieldMarkdown(o, i) }),
+        );
 
         const extendable =
             !!options.extendable &&
@@ -207,10 +210,9 @@ Optionen:
                     .addTextDisplayComponents(t =>
                         t.setContent(`## ${cleanContent(question, message.channel)}`),
                     )
+                    .addTextDisplayComponents(...fields)
                     .setThumbnailAccessory(t => t.setURL("attachment://question.png")),
             )
-            .addSeparatorComponents(separator => separator.setSpacing(SeparatorSpacingSize.Small))
-            .addTextDisplayComponents(t => t.setContent(fields.join("\n")))
             .addSeparatorComponents(separator => separator.setSpacing(SeparatorSpacingSize.Small));
 
         if (extendable) {
@@ -243,7 +245,7 @@ Optionen:
         }
 
         container.addTextDisplayComponents(t =>
-            t.setContent(`📝 ${options.straw ? "Einzelauswahl" : "Mehrfachauswahl"}`),
+            t.setContent(`-# 📝 ${options.straw ? "Einzelauswahl" : "Mehrfachauswahl"}`),
         );
 
         const voteChannel = context.textChannels.votes;
