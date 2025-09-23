@@ -1,4 +1,5 @@
 import { parseArgs, type ParseArgsConfig } from "node:util";
+import * as fs from "node:fs/promises";
 
 import {
     type APIEmbed,
@@ -19,6 +20,8 @@ import type { BotContext } from "@/context.js";
 import type { MessageCommand } from "@/commands/command.js";
 import { parseLegacyMessageParts, type ProcessableMessage } from "@/service/command.js";
 import * as timeUtils from "@/utils/time.js";
+
+import * as imageService from "@/service/image.js";
 
 import log from "@log";
 import * as additionalMessageData from "@/storage/additionalMessageData.js";
@@ -125,11 +128,16 @@ Optionen:
         }
     }
 
-    #getThumbnailAsset(extendable: boolean, straw: boolean): string {
+    #getThumbnailAssetName(extendable: boolean, straw: boolean): string {
         if (extendable) {
             return straw ? "assets/poll/extendable-straw.png" : "assets/poll/extendable-multi.png";
         }
         return straw ? "assets/poll/straw.png" : "assets/poll/multi.png";
+    }
+
+    async #getThumbnailAsset(extendable: boolean, straw: boolean): Promise<Buffer> {
+        const image = await fs.readFile(this.#getThumbnailAssetName(extendable, straw));
+        return await imageService.clampImageSizeByWidth(image, 32);
     }
 
     async legacyHandler(message: ProcessableMessage, context: BotContext, args: string[]) {
@@ -193,21 +201,21 @@ Optionen:
                     `-# ${options.straw ? "Strawpoll" : "Umfrage"} von ${message.author.username}`,
                 ),
             )
-            .addSectionComponents(section =>
-                section
-                    .addTextDisplayComponents(t =>
-                        t.setContent(`## ${cleanContent(question, message.channel)}`),
-                    )
-                    .addTextDisplayComponents(
-                        ...pollOptions.map(
-                            (o, i) =>
-                                new TextDisplayBuilder({
-                                    content: createOptionFieldMarkdown(o, i),
-                                }),
-                        ),
-                    )
-                    .setThumbnailAccessory(t => t.setURL("attachment://question.png")),
+            //.addSectionComponents(section =>
+            //    section
+            .addTextDisplayComponents(t =>
+                t.setContent(`## ${cleanContent(question, message.channel)}`),
             )
+            .addTextDisplayComponents(
+                ...pollOptions.map(
+                    (o, i) =>
+                        new TextDisplayBuilder({
+                            content: createOptionFieldMarkdown(o, i),
+                        }),
+                ),
+            )
+            // .setThumbnailAccessory(t => t.setURL("attachment://question.png")),
+            //)
             .addSeparatorComponents(separator => separator.setSpacing(SeparatorSpacingSize.Small));
 
         if (extendable) {
@@ -255,12 +263,14 @@ Optionen:
             flags: MessageFlags.IsComponentsV2,
             components: [container],
             embeds: [],
+            /*
             files: [
                 {
                     name: "question.png",
-                    attachment: this.#getThumbnailAsset(extendable, !!options.straw),
+                    attachment: await this.#getThumbnailAsset(extendable, !!options.straw),
                 },
             ],
+            */
         });
 
         await message.delete();
