@@ -199,6 +199,8 @@ Optionen:
             pollOptions.length < OPTION_LIMIT &&
             pollOptionsTextLength < TEXT_LIMIT;
 
+        const footerHints: string[] = [];
+
         const container = new ContainerBuilder()
             .addTextDisplayComponents(t =>
                 t.setContent(
@@ -220,9 +222,7 @@ Optionen:
                 return "Bruder du kannst -e nicht mit -d kombinieren. 🙄";
             }
 
-            container.addTextDisplayComponents(t =>
-                t.setContent("-# ✏️ Erweiterbar mit `.extend` als Reply"),
-            );
+            footerHints.push("✏️ **Erweiterbar** mit `.extend` als Reply");
         }
 
         let finishTime: Date | undefined;
@@ -244,9 +244,9 @@ Optionen:
             finishTime = end;
         }
 
-        container.addTextDisplayComponents(t =>
-            t.setContent(`-# 📝 ${options.straw ? "Einzelauswahl" : "Mehrfachauswahl"}`),
-        );
+        footerHints.push(`📝 **${options.straw ? "Einzelauswahl" : "Mehrfachauswahl"}**`);
+
+        container.addTextDisplayComponents(t => t.setContent(`-# ${footerHints.join("  ·  ")}`));
 
         const voteChannel = context.textChannels.votes;
         const channel = options.channel ? voteChannel : message.channel;
