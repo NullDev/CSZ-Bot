@@ -4,7 +4,9 @@ import {
     type APIEmbed,
     type APIEmbedField,
     cleanContent,
-    EmbedBuilder,
+    ContainerBuilder,
+    MessageFlags,
+    SeparatorSpacingSize,
     type Snowflake,
     type TextChannel,
     time,
@@ -58,6 +60,28 @@ export const createOptionField = (option: string, index: number, author?: User):
 
     return { name: firstTextBlock, value: secondTextBlock, inline: false };
 };
+
+function createOptionFieldMarkdown(option: string, index: number, author?: User): string {
+    let newOption = option;
+    if (author) {
+        newOption += ` (von ${author.username})`;
+
+        if (newOption.length > POLL_OPTION_MAX_LENGTH) {
+            throw new Error(
+                `Alter jetzt mal ganz im ernst, du hast etwas weniger als ${POLL_OPTION_MAX_LENGTH} Zeichen zur Verfüngung. Ich brauch auch noch ein bisschen Platz. Kannst du doch nicht ernst meinen.`,
+            );
+        }
+    }
+
+    // TODO: What is this?
+
+    const optionDiscriminator = `${LETTERS[index]}${POLL_OPTION_SEPARATOR}`;
+    const splitIndex = FIELD_NAME_LIMIT - optionDiscriminator.length;
+    const firstTextBlock = optionDiscriminator + newOption.substring(0, splitIndex);
+    const secondTextBlock = newOption.substring(splitIndex) || " ";
+
+    return `${firstTextBlock} ${secondTextBlock}`;
+}
 
 const argsConfig = {
     options: {
@@ -165,57 +189,43 @@ Optionen:
             return `Bruder mindestens eine Antwortmöglichkeit ist länger als ${POLL_OPTION_MAX_LENGTH} Zeichen!`;
         }
 
-        const fields = pollOptions.map((o, i) => createOptionField(o, i));
+        const fields = pollOptions.map((o, i) => createOptionFieldMarkdown(o, i));
 
         const extendable =
-            options.extendable &&
+            !!options.extendable &&
             pollOptions.length < OPTION_LIMIT &&
             pollOptionsTextLength < TEXT_LIMIT;
 
-        const embed = new EmbedBuilder({
-            description: `**${cleanContent(question, message.channel)}**`,
-            fields,
-            timestamp: new Date().toISOString(),
-            author: {
-                name: `${options.straw ? "Strawpoll" : "Umfrage"} von ${message.author.username}`,
-                icon_url: message.author.displayAvatarURL(),
-            },
-        });
-
-        let thumbnailFile: string;
-        if (extendable) {
-            if (options.straw) {
-                thumbnailFile = "extendable-straw.png";
-            } else {
-                thumbnailFile = "extendable-multi.png";
-            }
-        } else {
-            if (options.straw) {
-                thumbnailFile = "straw.png";
-            } else {
-                thumbnailFile = "multi.png";
-            }
-        }
-        embed.setThumbnail(`attachment://${thumbnailFile}`);
+        const container = new ContainerBuilder()
+            .addTextDisplayComponents(t =>
+                t.setContent(
+                    `-# ${options.straw ? "Strawpoll" : "Umfrage"} von ${message.author.username}`,
+                ),
+            )
+            .addSectionComponents(section =>
+                section
+                    .addTextDisplayComponents(t =>
+                        t.setContent(`## ${cleanContent(question, message.channel)}`),
+                    )
+                    .setThumbnailAccessory(t => t.setURL("attachment://question.png")),
+            )
+            .addSeparatorComponents(separator => separator.setSpacing(SeparatorSpacingSize.Small))
+            .addTextDisplayComponents(t => t.setContent(fields.join("\n")))
+            .addSeparatorComponents(separator => separator.setSpacing(SeparatorSpacingSize.Small));
 
         if (extendable) {
             if (options.delayed) {
                 return "Bruder du kannst -e nicht mit -d kombinieren. 🙄";
             }
 
-            embed.addFields({
-                name: "✏️ Erweiterbar",
-                value: "mit .extend als Reply",
-                inline: true,
-            });
-            embed.setColor(0x2ecc71);
+            container.addTextDisplayComponents(t =>
+                t.setContent("-# ✏️ Erweiterbar mit `.extend` als Reply"),
+            );
         }
 
         let finishTime: Date | undefined;
         if (options.delayed) {
             const delayTime = Number(options.delayed);
-            finishTime = new Date(Date.now() + delayTime * 60 * 1000);
-
             if (Number.isNaN(delayTime) || delayTime <= 0) {
                 return "Bruder keine ungültigen Zeiten angeben 🙄";
             }
@@ -224,19 +234,17 @@ Optionen:
                 return "Bruder du kannst maximal 7 Tage auf ein Ergebnis warten 🙄";
             }
 
-            embed.addFields({
-                name: "⏳ Verzögert",
-                value: `Abstimmungsende: ${time(finishTime, TimestampStyles.RelativeTime)}`,
-                inline: true,
-            });
-            embed.setColor(0xa10083);
+            const end = new Date(Date.now() + delayTime * 60 * 1000);
+            container.addTextDisplayComponents(t =>
+                t.setContent(`⏳ Abstimmungsende: ${time(end, TimestampStyles.RelativeTime)}`),
+            );
+
+            finishTime = end;
         }
 
-        embed.addFields({
-            name: `📝 ${options.straw ? "Einzelauswahl" : "Mehrfachauswahl"}`,
-            value: "\u200b", // Zero-width space because there has to be some value
-            inline: true,
-        });
+        container.addTextDisplayComponents(t =>
+            t.setContent(`📝 ${options.straw ? "Einzelauswahl" : "Mehrfachauswahl"}`),
+        );
 
         const voteChannel = context.textChannels.votes;
         const channel = options.channel ? voteChannel : message.channel;
@@ -249,8 +257,15 @@ Optionen:
         }
 
         const pollMessage = await channel.send({
-            embeds: [embed],
-            files: thumbnailFile ? [`./assets/poll/${thumbnailFile}`] : undefined,
+            flags: MessageFlags.IsComponentsV2,
+            components: [container],
+            embeds: [],
+            files: [
+                {
+                    name: "question.png",
+                    attachment: `assets/images/${this.#getThumbnailFileName(extendable, !!options.straw)}`,
+                },
+            ],
         });
 
         await message.delete();
