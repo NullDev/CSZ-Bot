@@ -134,11 +134,11 @@ Optionen:
         }
     }
 
-    #getThumbnailFileName(extendable: boolean, straw: boolean): string {
+    #getThumbnailAsset(extendable: boolean, straw: boolean): string {
         if (extendable) {
-            return straw ? "extendable-straw.png" : "extendable-multi.png";
+            return straw ? "assets/poll/extendable-straw.png" : "assets/poll/extendable-multi.png";
         }
-        return straw ? "straw.png" : "multi.png";
+        return straw ? "assets/poll/straw.png" : "assets/poll/multi.png";
     }
 
     async legacyHandler(message: ProcessableMessage, context: BotContext, args: string[]) {
@@ -263,7 +263,7 @@ Optionen:
             files: [
                 {
                     name: "question.png",
-                    attachment: `assets/images/${this.#getThumbnailFileName(extendable, !!options.straw)}`,
+                    attachment: this.#getThumbnailAsset(extendable, !!options.straw),
                 },
             ],
         });
