@@ -63,25 +63,15 @@ export const createOptionField = (option: string, index: number, author?: User):
 };
 
 function createOptionFieldMarkdown(option: string, index: number, author?: User): string {
-    let newOption = option;
-    if (author) {
-        newOption += ` (von ${author.username})`;
+    const res =
+        `${LETTERS[index]} **${POLL_OPTION_SEPARATOR} ${option}** ${author ? `(von ${author.username})` : ""}`.trim();
 
-        if (newOption.length > POLL_OPTION_MAX_LENGTH) {
-            throw new Error(
-                `Alter jetzt mal ganz im ernst, du hast etwas weniger als ${POLL_OPTION_MAX_LENGTH} Zeichen zur Verfüngung. Ich brauch auch noch ein bisschen Platz. Kannst du doch nicht ernst meinen.`,
-            );
-        }
+    if (res.length > POLL_OPTION_MAX_LENGTH) {
+        throw new Error(
+            `Alter jetzt mal ganz im ernst, du hast etwas weniger als ${POLL_OPTION_MAX_LENGTH} Zeichen zur Verfüngung. Ich brauch auch noch ein bisschen Platz. Kannst du doch nicht ernst meinen.`,
+        );
     }
-
-    // TODO: What is this?
-
-    const optionDiscriminator = `${LETTERS[index]}${POLL_OPTION_SEPARATOR}`;
-    const splitIndex = FIELD_NAME_LIMIT - optionDiscriminator.length;
-    const firstTextBlock = optionDiscriminator + newOption.substring(0, splitIndex);
-    const secondTextBlock = newOption.substring(splitIndex) || " ";
-
-    return `**${firstTextBlock} ${secondTextBlock}**`;
+    return res;
 }
 
 const argsConfig = {
@@ -190,10 +180,6 @@ Optionen:
             return `Bruder mindestens eine Antwortmöglichkeit ist länger als ${POLL_OPTION_MAX_LENGTH} Zeichen!`;
         }
 
-        const fields = pollOptions.map(
-            (o, i) => new TextDisplayBuilder({ content: createOptionFieldMarkdown(o, i) }),
-        );
-
         const extendable =
             !!options.extendable &&
             pollOptions.length < OPTION_LIMIT &&
@@ -212,7 +198,14 @@ Optionen:
                     .addTextDisplayComponents(t =>
                         t.setContent(`## ${cleanContent(question, message.channel)}`),
                     )
-                    .addTextDisplayComponents(...fields)
+                    .addTextDisplayComponents(
+                        ...pollOptions.map(
+                            (o, i) =>
+                                new TextDisplayBuilder({
+                                    content: createOptionFieldMarkdown(o, i),
+                                }),
+                        ),
+                    )
                     .setThumbnailAccessory(t => t.setURL("attachment://question.png")),
             )
             .addSeparatorComponents(separator => separator.setSpacing(SeparatorSpacingSize.Small));
