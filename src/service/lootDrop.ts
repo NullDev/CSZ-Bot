@@ -14,8 +14,6 @@ import {
     ContainerBuilder,
     TextDisplayBuilder,
     ActionRowBuilder,
-    MediaGalleryBuilder,
-    MediaGalleryItemBuilder,
 } from "discord.js";
 import { Temporal } from "@js-temporal/polyfill";
 import * as sentry from "@sentry/node";
