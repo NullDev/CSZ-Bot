@@ -3,7 +3,7 @@ import { describe, test } from "node:test";
 import { expect } from "expect";
 
 import { createDatabase, closeDatabase } from "@/storage/db/database-test-init.js";
-import defer from "@/utils/defer.js";
+import { defer } from "@/utils/interactionUtils.js";
 
 import db from "@db";
 
