@@ -136,22 +136,22 @@ export async function postLootDrop(
         });
     } catch {
         log.info(`Loot drop ${message.id} timed out; loot was not claimed, cleaning up`);
-        const original = message.embeds[0];
         await message.edit({
-            embeds: [
-                {
-                    ...original,
-                    description: donor
-                        ? // TODO: `Keiner wollte das Geschenk von ${donor} haben. ${donor} hat es wieder mitgenommen.`
-                          `Das Geschenk von ${donor} verpuffte im nichts :(`
-                        : `Oki aber nächstes mal bitti aufmachi, sonst muss ichs wieder mitnehmi ${hamster}`,
-                    footer: {
-                        text: "❌ Niemand war schnell genug",
-                    },
-                },
+            flags: MessageFlags.IsComponentsV2,
+            components: [
+                new ContainerBuilder().addTextDisplayComponents(
+                    new TextDisplayBuilder().setContent("-# Geschenk"),
+                    new TextDisplayBuilder().setContent(
+                        donor
+                            ? // TODO: `Keiner wollte das Geschenk von ${donor} haben. ${donor} hat es wieder mitgenommen.`
+                              `Das Geschenk von ${donor} verpuffte im nichts :(`
+                            : `Oki aber nächstes mal bitti aufmachi, sonst muss ichs wieder mitnehmi ${hamster}`,
+                    ),
+                    new TextDisplayBuilder().setContent("-# ❌ Niemand war schnell genug"),
+                ),
             ],
+            embeds: [],
             files: [],
-            components: [],
         });
         return;
     }
