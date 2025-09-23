@@ -110,6 +110,13 @@ Optionen:
         }
     }
 
+    #getThumbnailFileName(extendable: boolean, straw: boolean): string {
+        if (extendable) {
+            return straw ? "extendable-straw.png" : "extendable-multi.png";
+        }
+        return straw ? "straw.png" : "multi.png";
+    }
+
     async legacyHandler(message: ProcessableMessage, context: BotContext, args: string[]) {
         let params: ReturnType<typeof parseArgs>;
         try {
