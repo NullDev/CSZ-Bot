@@ -20,7 +20,6 @@ FROM node:alpine
     WORKDIR /app
 
     # ffmpeg needed for get-audio-duration
-    # deno: https://github.com/yt-dlp/yt-dlp/issues/14404
     RUN apk add --no-cache \
         font-noto-emoji \
         fontconfig \
@@ -28,9 +27,8 @@ FROM node:alpine
         font-liberation \
         python3 \
         py-pip \
-        deno \
         && fc-cache -f -v \
-        && pip install yt-dlp --break-system-packages
+        && pip install "yt-dlp[default]" --break-system-packages
 
     ENV NODE_ENV=production
     ENV TZ=Europe/Berlin
