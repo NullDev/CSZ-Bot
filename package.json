@@ -31,7 +31,7 @@
         "@napi-rs/canvas": "0.1.80",
         "@resvg/resvg-js": "^2.6.2",
         "@sentry/node": "^10.14.0",
-        "@snazzah/davey": "^0.1.6",
+        "@snazzah/davey": "^0.1.7",
         "@spotify/web-api-ts-sdk": "^1.2.0",
         "@std/jsonc": "npm:@jsr/std__jsonc@^1.0.2",
         "better-sqlite3": "^12.4.1",
@@ -55,9 +55,9 @@
         "@types/jsdom": "^21.1.7",
         "@types/node": "^24.5.2",
         "@types/node-cron": "^3.0.11",
-        "@typescript/native-preview": "^7.0.0-dev.20250923.1",
+        "@typescript/native-preview": "^7.0.0-dev.20250924.1",
         "expect": "^30.1.2",
-        "lefthook": "^1.13.3"
+        "lefthook": "^1.13.4"
     },
     "trustedDependencies": [
         "@biomejs/biome",
