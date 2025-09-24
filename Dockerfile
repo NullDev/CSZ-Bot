@@ -18,7 +18,9 @@ FROM node:alpine AS runtime-dependencies
 
 FROM node:alpine
     WORKDIR /app
+
     # ffmpeg needed for get-audio-duration
+    # deno: https://github.com/yt-dlp/yt-dlp/issues/14404
     RUN apk add --no-cache \
         font-noto-emoji \
         fontconfig \
@@ -26,6 +28,7 @@ FROM node:alpine
         font-liberation \
         python3 \
         py-pip \
+        deno \
         && fc-cache -f -v \
         && pip install yt-dlp --break-system-packages
 
