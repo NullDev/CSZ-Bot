@@ -543,6 +543,9 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
                 false,
                 [...owner.id].map(n => (Number(n) * 7) % 10).join(""),
             ),
+        onDuplicateDrop: async (context, owner, channel, loot) => {
+            return true;
+        },
     },
     [LootKindId.BAHNCARD_50]: {
         id: LootKindId.BAHNCARD_50,
@@ -562,8 +565,12 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
                 false,
                 [...owner.id].map(n => (Number(n) * 13) % 10).join(""),
             ),
+        onDuplicateDrop: async (context, owner, channel, loot) => {
+            return true;
+        },
     },
     [LootKindId.BAHNCARD_100]: {
+        // Not droppable, only via duplicate BahnCard 50
         id: LootKindId.BAHNCARD_100,
         weight: ACHTUNG_NICHT_DROPBAR_WEIGHT_KG,
         displayName: "BahnCard 100",
