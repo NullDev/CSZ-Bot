@@ -83,6 +83,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         // biome-ignore lint/style/noNonNullAssertion: Won't be shown anywhere else
         emote: null!,
         excludeFromInventory: true,
+        excludeFromDoubleDrops: true,
     },
     [LootKindId.KADSE]: {
         id: LootKindId.KADSE,
@@ -279,6 +280,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         emote: "🔨",
         asset: "assets/loot/15-ban.jpg",
         excludeFromInventory: true,
+        excludeFromDoubleDrops: true,
         onDrop: async (context, winner, _channel, _loot) => {
             const banService = await import("./ban.js");
             await banService.banUser(
@@ -420,6 +422,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         emote: "🔒",
         asset: "assets/loot/28-asse-2.jpg",
         excludeFromInventory: true,
+        excludeFromDoubleDrops: true,
         onDrop: async (context, winner, channel, _loot) => {
             const lootRoles = await import("./lootRoles.js");
             await lootRoles.startAsseGuardShift(context, winner, channel);

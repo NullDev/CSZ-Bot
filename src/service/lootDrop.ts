@@ -200,6 +200,7 @@ export async function postLootDrop(
           ? await fs.readFile(template.asset)
           : null;
 
+    const canBeDoubled = template.excludeFromDoubleDrops ? false : true;
     const doubleOrNothingButton = new ButtonBuilder()
         .setCustomId("double-or-nothing")
         .setLabel("Doppelt oder Nix")
@@ -236,7 +237,7 @@ export async function postLootDrop(
         );
     }
 
-    if (claimedLoot.lootKindId !== LootKindId.NICHTS) {
+    if (canBeDoubled) {
         container.addActionRowComponents(a => a.addComponents(doubleOrNothingButton));
     }
 
@@ -264,6 +265,10 @@ export async function postLootDrop(
             );
             sentry.captureException(err);
         });
+    }
+
+    if (!canBeDoubled) {
+        return;
     }
 
     let doubleOrNothingInteraction: MessageComponentInteraction | undefined;

@@ -37,6 +37,7 @@ export interface LootTemplate {
     excludeFromInventory?: boolean;
     effects?: string[];
     initialAttributes?: LootAttributeKindId[];
+    excludeFromDoubleDrops?: boolean;
 
     onDrop?: (
         context: BotContext,
