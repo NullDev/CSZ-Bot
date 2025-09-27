@@ -1,6 +1,7 @@
 import type { LootAttributeTemplate, LootTemplate } from "@/storage/loot.js";
 
 import * as lootDropService from "@/service/lootDrop.js";
+import * as lootService from "@/service/loot.js";
 import * as emoteService from "@/service/emote.js";
 import * as bahnCardService from "@/service/bahncard.js";
 import { GuildMember, type Guild } from "discord.js";
@@ -543,8 +544,29 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
                 false,
                 [...owner.id].map(n => (Number(n) * 7) % 10).join(""),
             ),
-        onDuplicateDrop: async (context, owner, channel, loot) => {
-            return true;
+        onDuplicateDrop: async (_context, winner, channel, loot) => {
+            // biome-ignore lint/style/noNonNullAssertion: :shrug:
+            const newBc = resolveLootTemplate(LootKindId.BAHNCARD_50)!;
+
+            await lootService.replaceLoot(
+                loot.id,
+                {
+                    displayName: newBc.displayName,
+                    lootKindId: newBc.id,
+                    winnerId: loot.winnerId,
+                    claimedAt: loot.claimedAt,
+                    guildId: loot.guildId,
+                    channelId: loot.channelId,
+                    messageId: loot.messageId,
+                    origin: "double-or-nothing",
+                },
+                true,
+            );
+
+            await channel.send(
+                `DOPPELT ODER NIX, ${winner}! Du hast aus deiner BahnCard 25 eine BahnCard 50 gemacht! 🎉`,
+            );
+            return false;
         },
     },
     [LootKindId.BAHNCARD_50]: {
@@ -565,8 +587,29 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
                 false,
                 [...owner.id].map(n => (Number(n) * 13) % 10).join(""),
             ),
-        onDuplicateDrop: async (context, owner, channel, loot) => {
-            return true;
+        onDuplicateDrop: async (_context, winner, channel, loot) => {
+            // biome-ignore lint/style/noNonNullAssertion: :shrug:
+            const newBc = resolveLootTemplate(LootKindId.BAHNCARD_100)!;
+
+            await lootService.replaceLoot(
+                loot.id,
+                {
+                    displayName: newBc.displayName,
+                    lootKindId: newBc.id,
+                    winnerId: loot.winnerId,
+                    claimedAt: loot.claimedAt,
+                    guildId: loot.guildId,
+                    channelId: loot.channelId,
+                    messageId: loot.messageId,
+                    origin: "double-or-nothing",
+                },
+                true,
+            );
+
+            await channel.send(
+                `DOPPELT ODER NIX, ${winner}! Du hast aus deiner BahnCard 50 eine BahnCard 100 gemacht! 🎉`,
+            );
+            return false;
         },
     },
     [LootKindId.BAHNCARD_100]: {
