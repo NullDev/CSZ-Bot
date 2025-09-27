@@ -295,12 +295,12 @@ export async function postLootDrop(
         await channel.send(
             `DOPPELT ODER NIX, ${winner}! Du bekommst dein Geschenk nicht nochmal und gehst stattdessen leer aus. Loser!`,
         );
-        const cleanups = [
+
+        await Promise.all([
             lootService.deleteLoot(claimedLoot.id),
             lootService.deleteLootWithPredecessor(claimedLoot.id),
             message.delete(),
-        ];
-        await Promise.all(cleanups);
+        ]);
         return;
     }
 
