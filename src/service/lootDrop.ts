@@ -14,8 +14,8 @@ import {
     ContainerBuilder,
     TextDisplayBuilder,
     ActionRowBuilder,
-    MessageEditOptions,
-    MessageComponentInteraction,
+    type MessageEditOptions,
+    type MessageComponentInteraction,
 } from "discord.js";
 import { Temporal } from "@js-temporal/polyfill";
 import * as sentry from "@sentry/node";
@@ -33,7 +33,6 @@ import {
 } from "@/service/lootData.js";
 
 import log from "@log";
-import { Container } from "node_modules/youtube-dl-exec/src/index.js";
 
 const lootTimeoutMs = 60 * 1000;
 
@@ -200,7 +199,7 @@ export async function postLootDrop(
           ? await fs.readFile(template.asset)
           : null;
 
-    const canBeDoubled = template.excludeFromDoubleDrops ? false : true;
+    const canBeDoubled = !template.excludeFromDoubleDrops;
     const doubleOrNothingButton = new ButtonBuilder()
         .setCustomId("double-or-nothing")
         .setLabel("Doppelt oder Nix")
