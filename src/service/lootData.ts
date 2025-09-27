@@ -51,6 +51,7 @@ export enum LootKindId {
     BAHNCARD_25 = 39,
     BAHNCARD_50 = 40,
     BAHNCARD_100 = 41,
+    LABUBU = 42,
 }
 
 export enum LootAttributeClassId {
@@ -573,6 +574,15 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         initialAttributes: [],
         drawCustomAsset: (context, owner, template, loot) =>
             bahnCardService.drawBahncardImage(context, owner, template, loot, true, owner.id),
+    },
+    [LootKindId.LABUBU]: {
+        id: LootKindId.LABUBU,
+        weight: 1,
+        displayName: "Labubu",
+        titleText: "Einen Labubu",
+        dropDescription: "Das Labubu, dein ~~Freund und Helfer in der Not~~ Plastikmüll",
+        emote: "🦦",
+        asset: "assets/loot/42-labubu.jpg",
     },
 } as const;
 
