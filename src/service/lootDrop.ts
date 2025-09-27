@@ -22,7 +22,7 @@ import * as sentry from "@sentry/node";
 
 import type { BotContext } from "@/context.js";
 import type { Loot, LootId } from "@/storage/db/model.js";
-import { randomEntry, randomEntryWeighted } from "@/service/random.js";
+import { randomBoolean, randomEntry, randomEntryWeighted } from "@/service/random.js";
 
 import * as lootService from "@/service/loot.js";
 import {
@@ -289,9 +289,7 @@ export async function postLootDrop(
         }
     }
 
-    const diceDouble = Math.random();
-    log.info(`Rolled dice for double or nothing: ${diceDouble}, against chance 0.5`);
-    if (diceDouble > 0.5) {
+    if (randomBoolean()) {
         await channel.send(
             `DOPPELT ODER NIX, ${winner}! Du bekommst dein Geschenk nicht nochmal und gehst stattdessen leer aus. Loser!`,
         );
