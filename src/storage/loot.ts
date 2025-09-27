@@ -389,7 +389,7 @@ export async function addLootAttributeIfNotPresent(
     return r.length > 0;
 }
 
-export function deleteLootWithPredecessor(lootId: number) {
+export function deleteLootByPredecessor(lootId: LootId) {
     return db()
         .transaction()
         .execute(async ctx => {

@@ -296,7 +296,7 @@ export async function postLootDrop(
 
         await Promise.all([
             lootService.deleteLoot(claimedLoot.id),
-            lootService.deleteLootWithPredecessor(claimedLoot.id),
+            lootService.deleteLootByPredecessor(claimedLoot.id),
             message.delete(),
         ]);
         return;
