@@ -376,3 +376,21 @@ export async function addLootAttributeIfNotPresent(
         .execute();
     return r.length > 0;
 }
+
+export function deleteLootWithPredecessor(lootId: number) {
+    return db()
+        .transaction()
+        .execute(async ctx => {
+            const toDelete = await ctx
+                .selectFrom("loot")
+                .where("predecessor", "=", lootId)
+                .select("id")
+                .execute();
+
+            for (const loot of toDelete) {
+                await deleteLoot(loot.id, ctx);
+            }
+
+            return toDelete.map(l => l.id);
+        });
+}

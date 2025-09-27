@@ -60,6 +60,10 @@ export function deleteLoot(lootId: LootId) {
     return loot.deleteLoot(lootId);
 }
 
+export function deleteLootWithPredecessor(lootId: LootId) {
+    return loot.deleteLootWithPredecessor(lootId);
+}
+
 export function replaceLoot(
     lootId: LootId,
     replacement: LootInsertable,

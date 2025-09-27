@@ -231,7 +231,12 @@ export interface ReminderTable extends AuditedTable {
 }
 
 export type LootId = number;
-export type LootOrigin = "drop" | "owner-transfer" | "replacement" | "birthday";
+export type LootOrigin =
+    | "drop"
+    | "owner-transfer"
+    | "replacement"
+    | "birthday"
+    | "double-or-nothing";
 
 export type Loot = Selectable<LootTable>;
 export type LootInsertable = Insertable<LootTable>;
