@@ -302,6 +302,18 @@ export async function postLootDrop(
         return;
     }
 
+    if (template.onDuplicateDrop) {
+        const proceedWithSecondDrop = await template.onDuplicateDrop(
+            context,
+            winner,
+            channel as TextChannel,
+            claimedLoot,
+        );
+        if (!proceedWithSecondDrop) {
+            return;
+        }
+    }
+
     const extraLoot = await lootService.createLoot(
         template,
         winner.user,

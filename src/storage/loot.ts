@@ -46,6 +46,17 @@ export interface LootTemplate {
         claimedLoot: Loot,
     ) => Promise<void>;
 
+    /**
+     * Invoked if the user used double-or-nothing and succeeded. Is executed before the second drop is created.
+     * @returns Return `true` to allow the second drop, `false` to cancel it.
+     */
+    onDuplicateDrop?: (
+        context: BotContext,
+        winner: GuildMember,
+        sourceChannel: TextChannel & GuildChannel,
+        claimedLoot: Loot,
+    ) => Promise<boolean>;
+
     /** @returns Return `true` if the item should be kept in the inventory, `false`/falsy if it should be deleted. If an exception occurs, the item will be kept. */
     onUse?: (
         interaction: LootUseCommandInteraction,
