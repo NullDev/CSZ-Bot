@@ -1,6 +1,7 @@
 import type { LootAttributeTemplate, LootTemplate } from "@/storage/loot.js";
 
 import * as lootDropService from "@/service/lootDrop.js";
+import * as lootService from "@/service/loot.js";
 import * as emoteService from "@/service/emote.js";
 import * as bahnCardService from "@/service/bahncard.js";
 import { GuildMember, type Guild } from "discord.js";
@@ -51,6 +52,7 @@ export enum LootKindId {
     BAHNCARD_25 = 39,
     BAHNCARD_50 = 40,
     BAHNCARD_100 = 41,
+    LABUBU = 42,
 }
 
 export enum LootAttributeClassId {
@@ -83,6 +85,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         // biome-ignore lint/style/noNonNullAssertion: Won't be shown anywhere else
         emote: null!,
         excludeFromInventory: true,
+        excludeFromDoubleDrops: true,
     },
     [LootKindId.KADSE]: {
         id: LootKindId.KADSE,
@@ -279,6 +282,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         emote: "🔨",
         asset: "assets/loot/15-ban.jpg",
         excludeFromInventory: true,
+        excludeFromDoubleDrops: true,
         onDrop: async (context, winner, _channel, _loot) => {
             const banService = await import("./ban.js");
             await banService.banUser(
@@ -420,6 +424,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         emote: "🔒",
         asset: "assets/loot/28-asse-2.jpg",
         excludeFromInventory: true,
+        excludeFromDoubleDrops: true,
         onDrop: async (context, winner, channel, _loot) => {
             const lootRoles = await import("./lootRoles.js");
             await lootRoles.startAsseGuardShift(context, winner, channel);
@@ -539,6 +544,30 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
                 false,
                 [...owner.id].map(n => (Number(n) * 7) % 10).join(""),
             ),
+        onDuplicateDrop: async (_context, winner, channel, loot) => {
+            // biome-ignore lint/style/noNonNullAssertion: :shrug:
+            const newBc = resolveLootTemplate(LootKindId.BAHNCARD_50)!;
+
+            await lootService.replaceLoot(
+                loot.id,
+                {
+                    displayName: newBc.displayName,
+                    lootKindId: newBc.id,
+                    winnerId: loot.winnerId,
+                    claimedAt: loot.claimedAt,
+                    guildId: loot.guildId,
+                    channelId: loot.channelId,
+                    messageId: loot.messageId,
+                    origin: "double-or-nothing",
+                },
+                true,
+            );
+
+            await channel.send(
+                `DOPPELT ODER NIX, ${winner}! Du hast aus deiner BahnCard 25 eine BahnCard 50 gemacht! 🎉`,
+            );
+            return false;
+        },
     },
     [LootKindId.BAHNCARD_50]: {
         id: LootKindId.BAHNCARD_50,
@@ -558,8 +587,33 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
                 false,
                 [...owner.id].map(n => (Number(n) * 13) % 10).join(""),
             ),
+        onDuplicateDrop: async (_context, winner, channel, loot) => {
+            // biome-ignore lint/style/noNonNullAssertion: :shrug:
+            const newBc = resolveLootTemplate(LootKindId.BAHNCARD_100)!;
+
+            await lootService.replaceLoot(
+                loot.id,
+                {
+                    displayName: newBc.displayName,
+                    lootKindId: newBc.id,
+                    winnerId: loot.winnerId,
+                    claimedAt: loot.claimedAt,
+                    guildId: loot.guildId,
+                    channelId: loot.channelId,
+                    messageId: loot.messageId,
+                    origin: "double-or-nothing",
+                },
+                true,
+            );
+
+            await channel.send(
+                `DOPPELT ODER NIX, ${winner}! Du hast aus deiner BahnCard 50 eine BahnCard 100 gemacht! 🎉`,
+            );
+            return false;
+        },
     },
     [LootKindId.BAHNCARD_100]: {
+        // Not droppable, only via duplicate BahnCard 50
         id: LootKindId.BAHNCARD_100,
         weight: ACHTUNG_NICHT_DROPBAR_WEIGHT_KG,
         displayName: "BahnCard 100",
@@ -570,6 +624,15 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         initialAttributes: [],
         drawCustomAsset: (context, owner, template, loot) =>
             bahnCardService.drawBahncardImage(context, owner, template, loot, true, owner.id),
+    },
+    [LootKindId.LABUBU]: {
+        id: LootKindId.LABUBU,
+        weight: 1,
+        displayName: "Labubu",
+        titleText: "Einen Labubu",
+        dropDescription: "Das Labubu, dein ~~Freund und Helfer in der Not~~ Plastikmüll",
+        emote: "🦦",
+        asset: "assets/loot/42-labubu.jpg",
     },
 } as const;
 

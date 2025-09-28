@@ -14,13 +14,15 @@ import {
     ContainerBuilder,
     TextDisplayBuilder,
     ActionRowBuilder,
+    type MessageEditOptions,
+    type MessageComponentInteraction,
 } from "discord.js";
 import { Temporal } from "@js-temporal/polyfill";
 import * as sentry from "@sentry/node";
 
 import type { BotContext } from "@/context.js";
 import type { Loot, LootId } from "@/storage/db/model.js";
-import { randomEntry, randomEntryWeighted } from "@/service/random.js";
+import { randomBoolean, randomEntry, randomEntryWeighted } from "@/service/random.js";
 
 import * as lootService from "@/service/loot.js";
 import {
@@ -197,6 +199,12 @@ export async function postLootDrop(
           ? await fs.readFile(template.asset)
           : null;
 
+    const canBeDoubled = !template.excludeFromDoubleDrops;
+    const doubleOrNothingButton = new ButtonBuilder()
+        .setCustomId("double-or-nothing")
+        .setLabel("Doppelt oder Nix")
+        .setStyle(ButtonStyle.Primary);
+
     const container = new ContainerBuilder().addTextDisplayComponents(
         t => t.setContent("-# Das Geschenk enthielt"),
         t => t.setContent(`# ${template.titleText}`),
@@ -228,7 +236,11 @@ export async function postLootDrop(
         );
     }
 
-    await message.edit({
+    if (canBeDoubled) {
+        container.addActionRowComponents(a => a.addComponents(doubleOrNothingButton));
+    }
+
+    const dropMessage: MessageEditOptions = {
         flags: MessageFlags.IsComponentsV2,
         components: [container],
         embeds: [],
@@ -240,7 +252,9 @@ export async function postLootDrop(
                   },
               ]
             : [],
-    });
+    };
+
+    await message.edit(dropMessage);
 
     if (template.onDrop) {
         await template.onDrop(context, winner, channel as TextChannel, claimedLoot).catch(err => {
@@ -251,6 +265,71 @@ export async function postLootDrop(
             sentry.captureException(err);
         });
     }
+
+    if (!canBeDoubled) {
+        return;
+    }
+
+    let doubleOrNothingInteraction: MessageComponentInteraction | undefined;
+
+    try {
+        doubleOrNothingInteraction = await message.awaitMessageComponent({
+            filter: i => i.customId === "double-or-nothing" && i.user.id === winner.id,
+            componentType: ComponentType.Button,
+            time: 5000,
+        });
+    } catch {
+        return;
+    } finally {
+        // Remove the last action row with the button. Only works because there is only one action row.
+        container.spliceComponents(container.components.length - 1, 1);
+        await message.edit(dropMessage);
+        if (doubleOrNothingInteraction) {
+            await doubleOrNothingInteraction.deferUpdate();
+        }
+    }
+
+    if (randomBoolean()) {
+        await channel.send(
+            `DOPPELT ODER NIX, ${winner}! Du bekommst dein Geschenk nicht nochmal und gehst stattdessen leer aus. Loser!`,
+        );
+
+        await Promise.all([
+            lootService.deleteLoot(claimedLoot.id),
+            lootService.deleteLootByPredecessor(claimedLoot.id),
+            message.delete(),
+        ]);
+        return;
+    }
+
+    if (template.onDuplicateDrop) {
+        const proceedWithSecondDrop = await template.onDuplicateDrop(
+            context,
+            winner,
+            channel as TextChannel,
+            claimedLoot,
+        );
+        if (!proceedWithSecondDrop) {
+            return;
+        }
+    }
+
+    const extraLoot = await lootService.createLoot(
+        template,
+        winner.user,
+        message,
+        "double-or-nothing",
+        claimedLoot.id,
+        rarityAttribute,
+    );
+    if (!extraLoot) {
+        await channel.send(`${winner}, ups, da ist was schief gelaufi ${hamster}`);
+        return;
+    }
+
+    await channel.send(
+        `DOPPELT ODER NIX, ${winner}! Du bekommst dein Geschenk nochmal! 99% der Spieler hören vor dem großen Gewinn auf. Du gehörst nicht dazu und bist ein Gewinnertyp! 🎉`,
+    );
 }
 
 type AdjustmentResult = {
