@@ -182,7 +182,7 @@ Optionen:
                 icon_url: message.author.displayAvatarURL(),
             },
             thumbnail: {
-                url: "attachment://question.png}",
+                url: "attachment://question.png",
             },
         });
 
