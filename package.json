@@ -30,7 +30,7 @@
         "@js-temporal/polyfill": "^0.5.1",
         "@napi-rs/canvas": "0.1.80",
         "@resvg/resvg-js": "^2.6.2",
-        "@sentry/node": "^10.15.0",
+        "@sentry/node": "^10.17.0",
         "@snazzah/davey": "^0.1.7",
         "@spotify/web-api-ts-sdk": "^1.2.0",
         "@std/jsonc": "npm:@jsr/std__jsonc@^1.0.2",
