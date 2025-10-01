@@ -6,9 +6,6 @@ FROM node:alpine AS runtime-dependencies
     WORKDIR /app
     RUN apk add --no-cache python3 alpine-sdk
 
-    # TODO: Use --mount=type=bind or secret for this?
-    RUN echo "@jsr:registry=https://npm.jsr.io" >> .npmrc
-
     RUN --mount=type=bind,source=package.json,target=package.json \
         --mount=type=bind,source=package-lock.json,target=package-lock.json \
         --mount=type=cache,target=/root/.npm \
