@@ -116,6 +116,7 @@ export default class InventarCommand implements ApplicationCommand {
 
         const collector = message.createMessageComponentCollector({
             componentType: ComponentType.Button,
+            filter: i => i.user.id === interaction.user.id,
             time: 45_000,
         });
 
