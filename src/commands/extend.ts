@@ -1,4 +1,12 @@
-import { type APIEmbedField, EmbedBuilder, type Message } from "discord.js";
+import {
+    ActionRowBuilder,
+    type APIEmbedField,
+    EmbedBuilder,
+    type GuildTextBasedChannel,
+    type Message,
+    StringSelectMenuBuilder,
+    type StringSelectMenuInteraction,
+} from "discord.js";
 import * as sentry from "@sentry/node";
 
 import type { MessageCommand } from "@/commands/command.js";
@@ -13,6 +21,42 @@ import log from "@log";
 const isPollField = (field: APIEmbedField): boolean =>
     !field.inline && LETTERS.some(l => field.name.startsWith(l));
 
+type ResolvedPoll = {
+    message: Message;
+    description: string;
+};
+
+async function fetchPollsFromChannel(
+    channel: GuildTextBasedChannel,
+    context: BotContext,
+): Promise<ResolvedPoll[]> {
+    const messagesFromBot = channel.messages.cache
+        .values()
+        .filter(m => m.author.id === context.client.user.id);
+    const polls = messagesFromBot
+        .filter(m => m.embeds.length === 1)
+        .filter(m => m.embeds[0].color === 0x2ecc71) // green color => extendable
+        .filter(
+            m =>
+                m.embeds[0].author?.name.startsWith("Umfrage") ||
+                m.embeds[0].author?.name.startsWith("Strawpoll"),
+        );
+
+    return Array.from(polls)
+        .sort((a, b) => b.createdTimestamp - a.createdTimestamp)
+        .map(m => {
+            let description = m.embeds[0].description || "";
+            // Remove leading and trailing double asterisks if present
+            if (description.startsWith("**") && description.endsWith("**")) {
+                description = description.slice(2, -2);
+            }
+            return {
+                message: m,
+                description,
+            } as ResolvedPoll;
+        });
+}
+
 export default class ExtendCommand implements MessageCommand {
     name = "extend";
     description = `Nutzbar als Reply auf eine mit --extendable erstellte Umfrage, um eine/mehrere Antwortmöglichkeit/en hinzuzufügen. Die Anzahl der bestehenden und neuen Antwortmöglichkeiten darf ${poll.OPTION_LIMIT} nicht übersteigen.\nUsage: $COMMAND_PREFIX$extend [Antwort 1] ; [...]`;
@@ -26,21 +70,72 @@ export default class ExtendCommand implements MessageCommand {
     }
 
     async legacyHandler(message: ProcessableMessage, context: BotContext, args: string[]) {
-        if (!message.reference) {
-            return "Bruder schon mal was von der Replyfunktion gehört?";
+        let pollMessage: Message | undefined = message.reference?.messageId
+            ? await (message.channel as GuildTextBasedChannel).messages.fetch(
+                  message.reference.messageId,
+              )
+            : undefined;
+        if (!pollMessage) {
+            const polls = await fetchPollsFromChannel(
+                message.channel as GuildTextBasedChannel,
+                context,
+            );
+            if (polls.length === 0) {
+                return "Bruder ich konnte echt keine Umfrage finden, welche du erweitern könntest. Sieh zu, dass du die Reply-Funktion benutzt oder den richtigen Channel auswählst.";
+            }
+
+            const pollSelectOption = new StringSelectMenuBuilder()
+                .setCustomId("poll_select")
+                .setPlaceholder("Wähle eine Umfrage aus")
+                .addOptions(
+                    polls
+                        .slice(0, 24) // Discord allows max. 25 options
+                        .map(poll => ({
+                            label:
+                                poll.description.length > 100
+                                    ? `${poll.description.slice(0, 97)}...`
+                                    : poll.description || "Kein Titel",
+                            value: poll.message.id,
+                        })),
+                );
+            const row: ActionRowBuilder<StringSelectMenuBuilder> =
+                new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(pollSelectOption);
+            const promptMessage = await message.channel.send({
+                content: "Bruder, auf welche Umfrage willst du antworten?",
+                components: [row],
+            });
+            try {
+                const interaction = (await promptMessage.awaitMessageComponent({
+                    filter: i => i.user.id === message.author.id && i.customId === "poll_select",
+                    time: 60000,
+                })) as StringSelectMenuInteraction;
+                await interaction.deferUpdate();
+                pollMessage = await (message.channel as GuildTextBasedChannel).messages.fetch(
+                    interaction.values[0],
+                );
+                await promptMessage.delete();
+            } catch (_e) {
+                await promptMessage.delete();
+                return;
+            }
         }
-        if (message.reference.guildId !== context.guild.id || !message.reference.channelId) {
+
+        if (!pollMessage) {
+            return "Bruder ich konnte echt keine Umfrage finden, welche du erweitern könntest. Sieh zu, dass du die Reply-Funktion benutzt oder den richtigen Channel auswählst.";
+        }
+
+        if (pollMessage.guildId !== context.guild.id || !pollMessage.channelId) {
             return "Bruder bleib mal hier auf'm Server.";
         }
 
-        if (!message.reference.messageId) {
+        if (!pollMessage.id) {
             return "Die Nachricht hat irgendwie keine reference-ID";
         }
         if (!args.length) {
             return "Bruder da sind keine Antwortmöglichkeiten :c";
         }
 
-        const channel = context.guild.channels.cache.get(message.reference.channelId);
+        const channel = context.guild.channels.cache.get(pollMessage.channelId);
 
         if (!channel) {
             return "Bruder der Channel existiert nicht? LOLWUT";
@@ -51,7 +146,7 @@ export default class ExtendCommand implements MessageCommand {
 
         let replyMessage: Message;
         try {
-            replyMessage = await channel.messages.fetch(message.reference.messageId);
+            replyMessage = await channel.messages.fetch(pollMessage.id);
         } catch (err) {
             log.error(err, "Could not fetch replies");
             sentry.captureException(err);

@@ -28,6 +28,10 @@ export interface Database {
     lootAttribute: LootAttributeTable;
     emote: EmoteTable;
     emoteUse: EmoteUseTable;
+
+    fightHistory: FightHistoryTable;
+    fightInventory: FightInventoryTable;
+
     lauscherRegistration: LauscherRegistrationTable;
     lauscherSpotifyLog: LauscherSpotifyLogTable;
     lauscherSpotifyLogView: LauscherSpotifyLogView;
@@ -35,6 +39,7 @@ export interface Database {
     spotifyTracks: SpotifyTrackTable;
     spotifyTrackToArtists: SpotifyTrackToArtistTable;
     locationHistory: LocationHistoryTable;
+    pets: PetsTable;
 }
 
 export type OneBasedMonth = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
@@ -230,7 +235,12 @@ export interface ReminderTable extends AuditedTable {
 }
 
 export type LootId = number;
-export type LootOrigin = "drop" | "owner-transfer" | "replacement" | "birthday";
+export type LootOrigin =
+    | "drop"
+    | "owner-transfer"
+    | "replacement"
+    | "birthday"
+    | "double-or-nothing";
 
 export type Loot = Selectable<LootTable>;
 export type LootInsertable = Insertable<LootTable>;
@@ -295,6 +305,28 @@ export interface EmoteUseTable extends AuditedTable {
     channelId: ColumnType<Snowflake, Snowflake, never>;
     emoteId: ColumnType<number, number, never>;
     isReaction: boolean;
+}
+
+interface FightHistoryTable extends AuditedTable {
+    id: GeneratedAlways<number>;
+    userId: Snowflake;
+    result: boolean;
+    bossName: string;
+    firstTime: boolean;
+}
+
+interface FightInventoryTable {
+    id: GeneratedAlways<number>;
+    userId: Snowflake;
+    lootId: LootId;
+    equippedSlot: string;
+}
+
+export interface MapPositonTable {
+    id: GeneratedAlways<number>;
+    userId: Snowflake;
+    x: number;
+    y: number;
 }
 
 export type LauscherRegistration = Selectable<LauscherRegistrationTable>;
@@ -377,4 +409,13 @@ export interface LocationHistoryTable extends AuditedTable {
     y: ColumnType<number, number, never>;
 
     successor: ColumnType<LocationHistoryId | null, null, LocationHistoryId>; // select can be location | null, insertion has to be null and update has to be a number
+}
+
+export type Pet = Selectable<PetsTable>;
+
+export interface PetsTable extends AuditedTable {
+    id: GeneratedAlways<LocationHistoryId>;
+    ownerId: Snowflake;
+    lootId: LootId;
+    name: string;
 }

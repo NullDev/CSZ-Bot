@@ -20,6 +20,7 @@ import * as timeUtils from "@/utils/time.js";
 import log from "@log";
 import * as additionalMessageData from "@/storage/additionalMessageData.js";
 import { LETTERS, EMOJI } from "@/service/poll.js";
+import { defer } from "@/utils/interactionUtils.js";
 
 export const TEXT_LIMIT = 4096;
 export const FIELD_NAME_LIMIT = 256;
@@ -42,8 +43,7 @@ export const delayedPolls: DelayedPoll[] = [];
 export const createOptionField = (option: string, index: number, author?: User): APIEmbedField => {
     let newOption = option;
     if (author) {
-        const authorNote = ` (von ${author.username})`;
-        newOption += authorNote;
+        newOption += ` (von ${author.username})`;
 
         if (newOption.length > POLL_OPTION_MAX_LENGTH) {
             throw new Error(
@@ -111,6 +111,13 @@ Optionen:
         }
     }
 
+    #getThumbnailAsset(extendable: boolean, straw: boolean): string {
+        if (extendable) {
+            return straw ? "assets/poll/extendable-straw.png" : "assets/poll/extendable-multi.png";
+        }
+        return straw ? "assets/poll/straw.png" : "assets/poll/multi.png";
+    }
+
     async legacyHandler(message: ProcessableMessage, context: BotContext, args: string[]) {
         let params: ReturnType<typeof parseArgs>;
         try {
@@ -162,7 +169,7 @@ Optionen:
         const fields = pollOptions.map((o, i) => createOptionField(o, i));
 
         const extendable =
-            options.extendable &&
+            !!options.extendable &&
             pollOptions.length < OPTION_LIMIT &&
             pollOptionsTextLength < TEXT_LIMIT;
 
@@ -174,23 +181,10 @@ Optionen:
                 name: `${options.straw ? "Strawpoll" : "Umfrage"} von ${message.author.username}`,
                 icon_url: message.author.displayAvatarURL(),
             },
+            thumbnail: {
+                url: "attachment://question.png",
+            },
         });
-
-        let thumbnailFile: string;
-        if (extendable) {
-            if (options.straw) {
-                thumbnailFile = "extendable-straw.png";
-            } else {
-                thumbnailFile = "extendable-multi.png";
-            }
-        } else {
-            if (options.straw) {
-                thumbnailFile = "straw.png";
-            } else {
-                thumbnailFile = "multi.png";
-            }
-        }
-        embed.setThumbnail(`attachment://${thumbnailFile}`);
 
         if (extendable) {
             if (options.delayed) {
@@ -244,10 +238,16 @@ Optionen:
 
         const pollMessage = await channel.send({
             embeds: [embed],
-            files: thumbnailFile ? [`./assets/poll/${thumbnailFile}`] : undefined,
+            files: [
+                {
+                    name: "question.png",
+                    attachment: this.#getThumbnailAsset(extendable, !!options.straw),
+                },
+            ],
         });
 
-        await message.delete();
+        await using _ = defer(() => message.delete());
+
         await Promise.all(pollOptions.map((_e, i) => pollMessage.react(EMOJI[i])));
 
         if (finishTime) {

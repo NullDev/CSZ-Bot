@@ -1,8 +1,7 @@
 import type { User } from "discord.js";
 import db from "@db";
 import type { Equipable, FightItemType } from "@/service/fightData.js";
-import type { Loot, LootId } from "@/storage/db/model.js";
-import * as lootDataService from "@/service/lootData.js";
+import type { Loot } from "@/storage/db/model.js";
 import { type LootKindId, resolveLootTemplate } from "@/service/lootData.js";
 import * as lootService from "@/service/loot.js";
 import { deleteLoot } from "@/storage/loot.js";

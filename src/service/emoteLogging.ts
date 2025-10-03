@@ -46,7 +46,7 @@ export async function processMessage(message: ProcessableMessage, context: BotCo
             continue;
         }
 
-        log.info({ emote, resolvedEmote }, "Processing emote");
+        log.trace({ emote, resolvedEmote }, "Processing emote");
 
         await dbEmote.logMessageUse(
             emote.id,

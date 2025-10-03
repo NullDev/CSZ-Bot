@@ -2,26 +2,18 @@ import { sql, type Kysely } from "kysely";
 
 export async function up(db: Kysely<any>) {
     await db.schema
-        .createTable("locationHistory")
+        .createTable("pets")
         .addColumn("id", "integer", c => c.primaryKey().autoIncrement())
-        .addColumn("userId", "text", c => c.notNull())
-        .addColumn("x", "integer", c => c.notNull())
-        .addColumn("y", "integer", c => c.notNull())
-        .addColumn("successor", "integer", c =>
-            c.references("locationHistory.id").defaultTo(null).onDelete("set null"),
-        )
+        .addColumn("ownerId", "text", c => c.notNull())
+        .addColumn("lootId", "integer", c => c.references("loot.id").notNull().onDelete("cascade"))
+        .addColumn("name", "text", c => c.notNull())
         .addColumn("createdAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
         .addColumn("updatedAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
         .execute();
 
-    await db.schema
-        .createIndex("locationHistory_userId_successor")
-        .on("locationHistory")
-        .columns(["userId", "successor"])
-        .unique()
-        .execute();
+    await db.schema.createIndex("pets_ownerId").on("pets").columns(["ownerId"]).unique().execute();
 
-    await createUpdatedAtTrigger(db, "locationHistory");
+    await createUpdatedAtTrigger(db, "pets");
 }
 
 function createUpdatedAtTrigger(db: Kysely<any>, tableName: string) {

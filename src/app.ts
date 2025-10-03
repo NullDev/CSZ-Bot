@@ -48,7 +48,7 @@ const release =
     console.log(" ┌───────────┐");
     console.log(` │ ${cszBot} │ Copyright (c) ${year} Users of the CSZ`);
     console.log(" └───────────┘");
-    console.log(`  ${prodMode} ${release ? `(${release})` : ""}`);
+    console.log(`  ${prodMode} ${release ? `(${release})` : ""} log level: ${log.level}`);
 }
 
 log.info(`Bot starting up...${release ? ` (release: ${release})` : ""}`);
