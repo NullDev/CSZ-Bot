@@ -1,6 +1,7 @@
 import type { LootAttributeTemplate, LootTemplate } from "@/storage/loot.js";
 
 import * as lootDropService from "@/service/lootDrop.js";
+import * as lootService from "@/service/loot.js";
 import * as emoteService from "@/service/emote.js";
 import * as bahnCardService from "@/service/bahncard.js";
 import { GuildMember, type Guild } from "discord.js";
@@ -52,6 +53,14 @@ export enum LootKindId {
     BAHNCARD_25 = 39,
     BAHNCARD_50 = 40,
     BAHNCARD_100 = 41,
+    LABUBU = 42,
+    BABYBEL_ORIGINAL = 43,
+    BABYBEL_LIGHT = 44,
+    BABYBEL_CHEDDAR = 45,
+    BABYBEL_EMMENTALER = 46,
+    BABYBEL_PROTEIN = 47,
+    BABYBEL_GOUDA = 48,
+    BABYBEL_VEGAN = 49,
 }
 
 export enum LootAttributeClassId {
@@ -84,6 +93,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         // biome-ignore lint/style/noNonNullAssertion: Won't be shown anywhere else
         emote: null!,
         excludeFromInventory: true,
+        excludeFromDoubleDrops: true,
     },
     [LootKindId.KADSE]: {
         id: LootKindId.KADSE,
@@ -282,6 +292,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         emote: "🔨",
         asset: "assets/loot/15-ban.jpg",
         excludeFromInventory: true,
+        excludeFromDoubleDrops: true,
         onDrop: async (context, winner, _channel, _loot) => {
             const banService = await import("./ban.js");
             await banService.banUser(
@@ -417,13 +428,14 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
     },
     [LootKindId.SCHICHTBEGINN_ASSE_2]: {
         id: LootKindId.SCHICHTBEGINN_ASSE_2,
-        weight: 8,
+        weight: 4,
         displayName: "Wärter Asse II",
         titleText: "Den Schichtbeginn in der Asse II",
         dropDescription: "Deine Wärterschicht bei der Asse II beginnt!",
         emote: "🔒",
         asset: "assets/loot/28-asse-2.jpg",
         excludeFromInventory: true,
+        excludeFromDoubleDrops: true,
         onDrop: async (context, winner, channel, _loot) => {
             const lootRoles = await import("./lootRoles.js");
             await lootRoles.startAsseGuardShift(context, winner, channel);
@@ -544,6 +556,38 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
                 false,
                 [...owner.id].map(n => (Number(n) * 7) % 10).join(""),
             ),
+        onDuplicateDrop: async (context, winner, loot, dropMessage) => {
+            // biome-ignore lint/style/noNonNullAssertion: :shrug:
+            const newBc = resolveLootTemplate(LootKindId.BAHNCARD_50)!;
+
+            const newLoot = await lootService.replaceLoot(
+                loot.id,
+                {
+                    displayName: newBc.displayName,
+                    lootKindId: newBc.id,
+                    winnerId: loot.winnerId,
+                    claimedAt: loot.claimedAt,
+                    guildId: loot.guildId,
+                    channelId: loot.channelId,
+                    messageId: loot.messageId,
+                    origin: "double-or-nothing",
+                },
+                true,
+            );
+
+            const newContent = await lootDropService.createDropTakenContent(
+                context,
+                lootTemplateMap[LootKindId.BAHNCARD_50],
+                newLoot,
+                winner.user,
+                [
+                    `DOPPELT ODER NIX, ${winner}! Du hast aus deiner BahnCard 25 eine BahnCard 50 gemacht! 🎉`,
+                ],
+            );
+
+            await dropMessage.edit(newContent);
+            return false;
+        },
     },
     [LootKindId.BAHNCARD_50]: {
         id: LootKindId.BAHNCARD_50,
@@ -563,8 +607,41 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
                 false,
                 [...owner.id].map(n => (Number(n) * 13) % 10).join(""),
             ),
+        onDuplicateDrop: async (context, winner, loot, dropMessage) => {
+            // biome-ignore lint/style/noNonNullAssertion: :shrug:
+            const newBc = resolveLootTemplate(LootKindId.BAHNCARD_100)!;
+
+            const newLoot = await lootService.replaceLoot(
+                loot.id,
+                {
+                    displayName: newBc.displayName,
+                    lootKindId: newBc.id,
+                    winnerId: loot.winnerId,
+                    claimedAt: loot.claimedAt,
+                    guildId: loot.guildId,
+                    channelId: loot.channelId,
+                    messageId: loot.messageId,
+                    origin: "double-or-nothing",
+                },
+                true,
+            );
+
+            const newContent = await lootDropService.createDropTakenContent(
+                context,
+                lootTemplateMap[LootKindId.BAHNCARD_100],
+                newLoot,
+                winner.user,
+                [
+                    `DOPPELT ODER NIX, ${winner}! Du hast aus deiner BahnCard 50 eine BahnCard 100 gemacht! 🎉`,
+                ],
+            );
+
+            await dropMessage.edit(newContent);
+            return false;
+        },
     },
     [LootKindId.BAHNCARD_100]: {
+        // Not droppable, only via duplicate BahnCard 50
         id: LootKindId.BAHNCARD_100,
         weight: ACHTUNG_NICHT_DROPBAR_WEIGHT_KG,
         displayName: "BahnCard 100",
@@ -575,6 +652,91 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         initialAttributes: [],
         drawCustomAsset: (context, owner, template, loot) =>
             bahnCardService.drawBahncardImage(context, owner, template, loot, true, owner.id),
+    },
+    [LootKindId.LABUBU]: {
+        id: LootKindId.LABUBU,
+        weight: 1,
+        displayName: "Labubu",
+        titleText: "Einen Labubu",
+        dropDescription: "Das Labubu, dein ~~Freund und Helfer in der Not~~ Plastikmüll",
+        emote: "🦦",
+        asset: "assets/loot/42-labubu.jpg",
+    },
+    [LootKindId.BABYBEL_ORIGINAL]: {
+        id: LootKindId.BABYBEL_ORIGINAL,
+        weight: 3,
+        displayName: "Mini Babybel® Original",
+        titleText: "Ein Babybel® Original",
+        dropDescription:
+            "Schon seit 1977 erobert unser roter Superstar die Herzen aller Snack-Liebhaber. Er ist nicht nur praktisch, lecker und immer für eine gute Portion Spaß zu haben, sondern auch ohne Gentechnik und ohne Zusatz von Konservierungsstoffen. Dank der natürlichen Reifung in seiner Wachshülle ist er außerdem laktosefrei sowie reich an Protein und Kalzium.",
+        emote: "🧀",
+        asset: "assets/loot/43-bb-original.png",
+        initialAttributes: [LootAttributeKindId.NUTRI_SCORE_C],
+    },
+    [LootKindId.BABYBEL_LIGHT]: {
+        id: LootKindId.BABYBEL_LIGHT,
+        weight: 2,
+        displayName: "Mini Babybel® Light",
+        titleText: "Ein Babybel® Light",
+        dropDescription: "Der kleine Käse mit der roten Wachsverpackung, mit weniger Fett!",
+        emote: "🧀",
+        asset: "assets/loot/44-bb-light.png",
+        initialAttributes: [LootAttributeKindId.NUTRI_SCORE_C],
+    },
+    [LootKindId.BABYBEL_CHEDDAR]: {
+        id: LootKindId.BABYBEL_CHEDDAR,
+        weight: 1,
+        displayName: "Mini Babybel® Cheddar-Geschmack",
+        titleText: "Ein Babybel® Cheddar-Geschmack",
+        dropDescription:
+            "Mini Babybel® mit Cheddar-Geschmack erfreut Groß und Klein und bringt Abwechslung in die Lunch-Box.\n\nFür Vegetarier geeignet.",
+        emote: "🧀",
+        asset: "assets/loot/45-bb-cheddar.png",
+        initialAttributes: [LootAttributeKindId.NUTRI_SCORE_D],
+    },
+    [LootKindId.BABYBEL_EMMENTALER]: {
+        id: LootKindId.BABYBEL_EMMENTALER,
+        weight: 1,
+        displayName: "Mini Babybel® Emmentaler-Geschmack",
+        titleText: "Ein Babybel® Emmentaler-Geschmack",
+        dropDescription:
+            "Mini Babybel® mit feinem Emmentaler-Geschmack sorgt für herzhafte Snack-Momente und bereitet viel Vergnügen bei Groß und Klein.",
+        emote: "🧀",
+        asset: "assets/loot/46-bb-emmentaler.png",
+        initialAttributes: [LootAttributeKindId.NUTRI_SCORE_D],
+    },
+    [LootKindId.BABYBEL_PROTEIN]: {
+        id: LootKindId.BABYBEL_PROTEIN,
+        weight: 1,
+        displayName: "Mini Babybel® High Protein",
+        titleText: "Ein Babybel® High Protein",
+        dropDescription:
+            "Lecker Käse in rotem Wachs. Genau der gleiche wie der blaue, aber für echte Männer.",
+        emote: "🧀",
+        asset: "assets/loot/47-bb-protein.png",
+        initialAttributes: [LootAttributeKindId.NUTRI_SCORE_C],
+    },
+    [LootKindId.BABYBEL_GOUDA]: {
+        id: LootKindId.BABYBEL_GOUDA,
+        weight: 1,
+        displayName: "Mini Babybel® Unser Würziger",
+        titleText: "Ein Babybel® Unser Würziger",
+        dropDescription:
+            "Babybel® Unser Würziger ist eine Varietät des klassischen Babybel® Original. Er vereint alle Vorteile eines leckeren Käse-Snacks mit einem würzig-nussigen Geschmack (wir wollten es nicht einfach nur Gouda nennen) und sorgt auf diese Weise für ein etwas intensiveres Babybel®-Erlebnis.\n\nDurch seinen intensiv-herzhaften Geschmack eignet sich der würzig-leckere Snack sehr gut für den kleinen Hunger zwischendurch und bietet damit auch Käseliebhabern mit einem intensiveren Käsegeschmack eine optimale Ergänzung zur klassischen Variante.",
+        emote: "🧀",
+        asset: "assets/loot/48-bb-gouda.png",
+        initialAttributes: [LootAttributeKindId.NUTRI_SCORE_D],
+    },
+    [LootKindId.BABYBEL_VEGAN]: {
+        id: LootKindId.BABYBEL_VEGAN,
+        weight: 1,
+        displayName: "Mini Babybel® Vegan",
+        titleText: "Ein Babybel® Vegan",
+        dropDescription:
+            "Den beliebten Babybel® gibt es jetzt auch als vegane Käsealternative, ganz ohne Milch und schnell erkennbar dank seiner grünen Wachshülle. Mit seinem milden Geschmack und der cremigen Textur ist der vegane Babybel® eine leckere und praktische Alternative als Snack für zuhause oder unterwegs.\n\nDer vegane Babybel® ist erhältlich im praktischen, recyclebaren Papierbeutel und ist eigentlich nur ein Block Kokosfett mit Salz.",
+        emote: "🧀",
+        asset: "assets/loot/49-bb-vegan.png",
+        initialAttributes: [LootAttributeKindId.NUTRI_SCORE_E],
     },
 } as const;
 

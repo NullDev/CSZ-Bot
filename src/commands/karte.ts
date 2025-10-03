@@ -299,7 +299,13 @@ export default class KarteCommand implements ApplicationCommand {
 
         ctx.closePath();
         ctx.clip();
-        ctx.drawImage(avatar, position.x * stepSize - radius, position.y * stepSize - radius);
+        ctx.drawImage(
+            avatar,
+            position.x * stepSize - radius,
+            position.y * stepSize - radius,
+            radius * 2,
+            radius * 2,
+        );
         ctx.restore();
     }
 
@@ -360,8 +366,8 @@ export default class KarteCommand implements ApplicationCommand {
 
         if (petEmoji) {
             ctx.fillTextExtended(
-                namePosition,
-                "right",
+                namePosition.add(new Vec2(radius, 0)),
+                "left",
                 "bottom",
                 "#fff",
                 "18px",
