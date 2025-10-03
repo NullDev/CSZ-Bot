@@ -95,6 +95,7 @@ export default class KarteCommand implements ApplicationCommand {
     ) {
         const mapFile = new AttachmentBuilder(map, {name: "map.png"});
 
+
         const container = new ContainerBuilder()
             .addTextDisplayComponents(
                 new TextDisplayBuilder().setContent("## Karte des heiligen CSZ-Landes")
@@ -106,6 +107,11 @@ export default class KarteCommand implements ApplicationCommand {
                         .setDescription("Karte")
                 )
             );
+        let place = await locationService.getCurrentPlaceforUser(currentPosition);
+        if (place != null) {
+
+            container.addTextDisplayComponents(new TextDisplayBuilder().setContent(place.description));
+        }
 
         if (withNavigation) {
             const navigationButtons = this.#createNavigationButtonRow(currentPosition, mapSize);
@@ -140,11 +146,11 @@ export default class KarteCommand implements ApplicationCommand {
         };
 
         const messageData = await this.createMessageData(map, currentPosition, mapSize, true);
-
         const replyData = await command.reply({
             withResponse: true,
             flags: MessageFlags.IsComponentsV2,
             ...messageData
+
         });
 
         const sentReply = replyData.resource?.message;
@@ -283,16 +289,16 @@ export default class KarteCommand implements ApplicationCommand {
 
     #drawLocation(
         ctx: ExtendedCanvasContext,
-        position: { name: string,x: number, y: number, width: number, height: number },
+        position: { name: string, x: number, y: number, width: number, height: number },
         strokeWidth: number,
         strokeColor: string
     ) {
         ctx.beginPath();
         ctx.strokeStyle = strokeColor;
         ctx.lineWidth = strokeWidth;
-        ctx.rect(position.x*stepSize, position.y*stepSize, position.width*stepSize, position.height*stepSize);
+        ctx.rect(position.x * stepSize, position.y * stepSize, position.width * stepSize, position.height * stepSize);
         ctx.fillTextExtended(
-            new Vec2((position.x )*  stepSize, (position.y)* stepSize +10),
+            new Vec2((position.x) * stepSize, (position.y) * stepSize + 10),
             "center",
             "top",
             strokeColor,
@@ -391,7 +397,7 @@ export default class KarteCommand implements ApplicationCommand {
                 x: location.x,
                 y: location.y,
                 height: location.height,
-                width: location.width,
+                width: location.width
             }, 2, location.color);
         }
     }

@@ -1,7 +1,7 @@
 [
   {
     "name": "Gudruns Haus",
-    "description": "",
+    "description": "Hier treibt Gudrun ihr Unwesen",
     "x": 5,
     "y": 3,
     "height": 10,
@@ -10,7 +10,7 @@
   },
   {
     "name": "Asse 2",
-    "description": "",
+    "description": " Ziemlich verstrahlt hier",
     "x": 25,
     "y": 39,
     "height": 11,
@@ -19,7 +19,7 @@
   },
   {
     "name": "CSZ-HQ",
-    "description": "",
+    "description": " In der Basis kannst du dich für deine Abenteuer ausrüsten",
     "x": 2,
     "y": 60,
     "height": 14,
@@ -28,7 +28,8 @@
   },
   {
     "name": "Berge",
-    "description": "",
+    "description": "Hier schneit es ... anders",
+
     "x": 53,
     "y": 3,
     "width": 20,
@@ -48,16 +49,16 @@
   },
   {
     "name": "Immerrath",
-    "description": "Pass auf das du nicht irgendwelche REEEEEEEEENTER triffst",
+    "description": "Meddeln sie ihre Pizza auch nach Immerrath?",
     "x": 51,
     "y": 40,
     "height": 18,
     "width": 15,
-    "color": "PuRPLE"
+    "color": "PURPLE"
   },
   {
     "name": "Crackfurt",
-    "description": "",
+    "description": "Pass auf, das du nicht am Bahnhof abgestochen wirst",
     "x": 80,
     "y":0 ,
     "width": 20,
@@ -66,7 +67,7 @@
   },
   {
     "name": "Autohaus",
-    "description": "",
+    "description": " Die neusten Cupras sind sofort (6-12Monate Lieferzeit) verfügbar",
     "x": 93,
     "y":0 ,
     "width": 17,
@@ -75,7 +76,7 @@
   },
   {
     "name": "Crackes",
-    "description": "",
+    "description": "Pommes? Nisschdaa",
     "x": 80,
     "y":34 ,
     "width": 10,
@@ -84,7 +85,7 @@
   },
   {
     "name": "Kirche",
-    "description": "",
+    "description": "An diesem Ort kannst du auf deinen Schöpfer, Dönerjesus, treffen",
     "x": 90,
     "y":47 ,
     "width": 18 ,
@@ -93,7 +94,7 @@
   },
   {
     "name": "BieberDAM",
-    "description": "",
+    "description": "Bieberlan zum zocken und Saufen",
     "x": 118,
     "y":44 ,
     "width": 22 ,
@@ -102,7 +103,7 @@
   },
   {
     "name": "Briggerbar",
-    "description": "",
+    "description": " Wetttrinken gegen den Barkeeper",
     "x": 146,
     "y":1 ,
     "width": 10 ,
@@ -111,7 +112,7 @@
   },
   {
     "name": "Nürnia",
-    "description": "",
+    "description": "Am Laternenpfahl hält sich eine kotzende Gestalt fest",
     "x": 135,
     "y":1 ,
     "width": 10 ,
