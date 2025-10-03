@@ -16,13 +16,14 @@ import {
     ActionRowBuilder,
     type MessageEditOptions,
     type MessageComponentInteraction,
+    BaseMessageOptions,
 } from "discord.js";
 import { Temporal } from "@js-temporal/polyfill";
 import * as sentry from "@sentry/node";
 
 import type { BotContext } from "@/context.js";
 import type { Loot, LootId } from "@/storage/db/model.js";
-import type { LootAttributeTemplate } from "@/storage/loot.js";
+import type { LootAttributeTemplate, LootTemplate } from "@/storage/loot.js";
 import { randomBoolean, randomEntry, randomEntryWeighted } from "@/service/random.js";
 
 import * as lootService from "@/service/loot.js";
@@ -194,43 +195,29 @@ export async function postLootDrop(
 
     const winner = await context.guild.members.fetch(claimedLoot.winnerId);
 
-    const attachment = template.drawCustomAsset
-        ? await template.drawCustomAsset(context, winner.user, template, claimedLoot)
-        : template.asset
-          ? await fs.readFile(template.asset)
-          : null;
-
     const canBeDoubled = !template.excludeFromDoubleDrops;
     const doubleOrNothingButton = new ButtonBuilder()
         .setCustomId("double-or-nothing")
         .setLabel("Doppelt oder Nix")
         .setStyle(ButtonStyle.Primary);
 
-    const container = createDropTakenContent(
-        template.displayName,
-        template.dropDescription,
+    const content = await createDropTakenContent(
+        context,
+        template,
+        claimedLoot,
         winner.user,
-        attachment ? "attachment://opened.gif" : undefined,
         messages,
-        rarityAttribute,
     );
 
     if (canBeDoubled) {
-        container.addActionRowComponents(a => a.addComponents(doubleOrNothingButton));
+        content.components[0].addActionRowComponents(a => a.addComponents(doubleOrNothingButton));
     }
 
     const dropMessage: MessageEditOptions = {
         flags: MessageFlags.IsComponentsV2,
-        components: [container],
+        components: content.components,
         embeds: [],
-        files: attachment
-            ? [
-                  {
-                      name: "opened.gif",
-                      attachment,
-                  },
-              ]
-            : [],
+        files: content.files,
     };
 
     await message.edit(dropMessage);
@@ -261,7 +248,7 @@ export async function postLootDrop(
         return;
     } finally {
         // Remove the last action row with the button. Only works because there is only one action row.
-        container.spliceComponents(container.components.length - 1, 1);
+        content.components[0].spliceComponents(content.components[0].components.length - 1, 1);
         await message.edit(dropMessage);
         if (doubleOrNothingInteraction) {
             await doubleOrNothingInteraction.deferUpdate();
@@ -285,8 +272,8 @@ export async function postLootDrop(
         const proceedWithSecondDrop = await template.onDuplicateDrop(
             context,
             winner,
-            channel as TextChannel,
             claimedLoot,
+            message,
         );
         if (!proceedWithSecondDrop) {
             return;
@@ -311,21 +298,37 @@ export async function postLootDrop(
     );
 }
 
-function createDropTakenContent(
-    itemName: string,
-    description: string,
+export type GeneratedContent = {
+    components: [ContainerBuilder];
+    files: BaseMessageOptions["files"];
+};
+
+export async function createDropTakenContent(
+    context: BotContext,
+    template: Readonly<LootTemplate>,
+    claimedLoot: Readonly<Loot>,
     winner: User,
-    attachmentUrl: string | undefined,
     dropMessages: readonly string[],
-    rarityAttribute: Readonly<LootAttributeTemplate> | null,
-): ContainerBuilder {
+): Promise<GeneratedContent> {
+    const attachment = template.drawCustomAsset
+        ? await template.drawCustomAsset(context, winner, template, claimedLoot)
+        : template.asset
+          ? await fs.readFile(template.asset)
+          : null;
+
     const container = new ContainerBuilder().addTextDisplayComponents(
         t => t.setContent("-# Das Geschenk enthielt"),
-        t => t.setContent(`# ${itemName}`),
-        t => t.setContent(description),
+        t => t.setContent(`# ${template.displayName}`),
+        t => t.setContent(template.dropDescription),
         t => t.setContent("**🎉 Ehrenwerter Empfänger**"),
         t => t.setContent(winner.toString()),
     );
+
+    const lootAttributes = await lootService.getLootAttributes(claimedLoot.id);
+
+    const rarityAttribute = lootAttributes.filter(
+        a => a.attributeClassId === LootAttributeClassId.RARITY,
+    )[0];
 
     if (rarityAttribute) {
         container.addTextDisplayComponents(
@@ -337,9 +340,9 @@ function createDropTakenContent(
         );
     }
 
-    if (attachmentUrl) {
+    if (attachment) {
         container.addMediaGalleryComponents(media =>
-            media.addItems(image => image.setURL(attachmentUrl)),
+            media.addItems(image => image.setURL("attachment://opened.gif")),
         );
     }
 
@@ -350,7 +353,17 @@ function createDropTakenContent(
         );
     }
 
-    return container;
+    return {
+        components: [container],
+        files: attachment
+            ? [
+                  {
+                      name: "opened.gif",
+                      attachment,
+                  },
+              ]
+            : [],
+    };
 }
 
 type AdjustmentResult = {

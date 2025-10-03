@@ -53,8 +53,8 @@ export interface LootTemplate {
     onDuplicateDrop?: (
         context: BotContext,
         winner: GuildMember,
-        sourceChannel: TextChannel & GuildChannel,
         claimedLoot: Loot,
+        dropMessage: Message,
     ) => Promise<boolean>;
 
     /** @returns Return `true` if the item should be kept in the inventory, `false`/falsy if it should be deleted. If an exception occurs, the item will be kept. */

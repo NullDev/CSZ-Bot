@@ -544,11 +544,11 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
                 false,
                 [...owner.id].map(n => (Number(n) * 7) % 10).join(""),
             ),
-        onDuplicateDrop: async (_context, winner, channel, loot) => {
+        onDuplicateDrop: async (context, winner, loot, dropMessage) => {
             // biome-ignore lint/style/noNonNullAssertion: :shrug:
             const newBc = resolveLootTemplate(LootKindId.BAHNCARD_50)!;
 
-            await lootService.replaceLoot(
+            const newLoot = await lootService.replaceLoot(
                 loot.id,
                 {
                     displayName: newBc.displayName,
@@ -563,9 +563,17 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
                 true,
             );
 
-            await channel.send(
-                `DOPPELT ODER NIX, ${winner}! Du hast aus deiner BahnCard 25 eine BahnCard 50 gemacht! 🎉`,
+            const newContent = await lootDropService.createDropTakenContent(
+                context,
+                lootTemplateMap[LootKindId.BAHNCARD_50],
+                newLoot,
+                winner.user,
+                [
+                    `DOPPELT ODER NIX, ${winner}! Du hast aus deiner BahnCard 25 eine BahnCard 50 gemacht! 🎉`,
+                ],
             );
+
+            await dropMessage.edit(newContent);
             return false;
         },
     },
@@ -587,11 +595,11 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
                 false,
                 [...owner.id].map(n => (Number(n) * 13) % 10).join(""),
             ),
-        onDuplicateDrop: async (_context, winner, channel, loot) => {
+        onDuplicateDrop: async (context, winner, loot, dropMessage) => {
             // biome-ignore lint/style/noNonNullAssertion: :shrug:
             const newBc = resolveLootTemplate(LootKindId.BAHNCARD_100)!;
 
-            await lootService.replaceLoot(
+            const newLoot = await lootService.replaceLoot(
                 loot.id,
                 {
                     displayName: newBc.displayName,
@@ -606,9 +614,17 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
                 true,
             );
 
-            await channel.send(
-                `DOPPELT ODER NIX, ${winner}! Du hast aus deiner BahnCard 50 eine BahnCard 100 gemacht! 🎉`,
+            const newContent = await lootDropService.createDropTakenContent(
+                context,
+                lootTemplateMap[LootKindId.BAHNCARD_100],
+                newLoot,
+                winner.user,
+                [
+                    `DOPPELT ODER NIX, ${winner}! Du hast aus deiner BahnCard 50 eine BahnCard 100 gemacht! 🎉`,
+                ],
             );
+
+            await dropMessage.edit(newContent);
             return false;
         },
     },
