@@ -22,6 +22,7 @@ import * as sentry from "@sentry/node";
 
 import type { BotContext } from "@/context.js";
 import type { Loot, LootId } from "@/storage/db/model.js";
+import type { LootAttributeTemplate } from "@/storage/loot.js";
 import { randomBoolean, randomEntry, randomEntryWeighted } from "@/service/random.js";
 
 import * as lootService from "@/service/loot.js";
@@ -205,36 +206,14 @@ export async function postLootDrop(
         .setLabel("Doppelt oder Nix")
         .setStyle(ButtonStyle.Primary);
 
-    const container = new ContainerBuilder().addTextDisplayComponents(
-        t => t.setContent("-# Das Geschenk enthielt"),
-        t => t.setContent(`# ${template.titleText}`),
-        t => t.setContent(template.dropDescription),
-        t => t.setContent("**🎉 Ehrenwerter Empfänger**"),
-        t => t.setContent(winner.toString()),
+    const container = createDropTakenContent(
+        template.displayName,
+        template.dropDescription,
+        winner.user,
+        attachment ? "attachment://opened.gif" : undefined,
+        messages,
+        rarityAttribute,
     );
-
-    if (rarityAttribute) {
-        container.addTextDisplayComponents(
-            t => t.setContent("**✨ Rarität**"),
-            t =>
-                t.setContent(
-                    `${rarityAttribute.shortDisplay} ${rarityAttribute.displayName}`.trim(),
-                ),
-        );
-    }
-
-    if (attachment) {
-        container.addMediaGalleryComponents(media =>
-            media.addItems(image => image.setURL("attachment://opened.gif")),
-        );
-    }
-
-    const allMessages = messages.join("\n").trim();
-    if (allMessages.length > 0) {
-        container.addTextDisplayComponents(
-            new TextDisplayBuilder().setContent(`-# ${allMessages}`),
-        );
-    }
 
     if (canBeDoubled) {
         container.addActionRowComponents(a => a.addComponents(doubleOrNothingButton));
@@ -330,6 +309,48 @@ export async function postLootDrop(
     await channel.send(
         `DOPPELT ODER NIX, ${winner}! Du bekommst dein Geschenk nochmal! 99% der Spieler hören vor dem großen Gewinn auf. Du gehörst nicht dazu und bist ein Gewinnertyp! 🎉`,
     );
+}
+
+function createDropTakenContent(
+    itemName: string,
+    description: string,
+    winner: User,
+    attachmentUrl: string | undefined,
+    dropMessages: readonly string[],
+    rarityAttribute: Readonly<LootAttributeTemplate> | null,
+): ContainerBuilder {
+    const container = new ContainerBuilder().addTextDisplayComponents(
+        t => t.setContent("-# Das Geschenk enthielt"),
+        t => t.setContent(`# ${itemName}`),
+        t => t.setContent(description),
+        t => t.setContent("**🎉 Ehrenwerter Empfänger**"),
+        t => t.setContent(winner.toString()),
+    );
+
+    if (rarityAttribute) {
+        container.addTextDisplayComponents(
+            t => t.setContent("**✨ Rarität**"),
+            t =>
+                t.setContent(
+                    `${rarityAttribute.shortDisplay} ${rarityAttribute.displayName}`.trim(),
+                ),
+        );
+    }
+
+    if (attachmentUrl) {
+        container.addMediaGalleryComponents(media =>
+            media.addItems(image => image.setURL(attachmentUrl)),
+        );
+    }
+
+    const allMessages = dropMessages.join("\n").trim();
+    if (allMessages.length > 0) {
+        container.addTextDisplayComponents(
+            new TextDisplayBuilder().setContent(`-# ${allMessages}`),
+        );
+    }
+
+    return container;
 }
 
 type AdjustmentResult = {
