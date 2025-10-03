@@ -53,6 +53,13 @@ export enum LootKindId {
     BAHNCARD_50 = 40,
     BAHNCARD_100 = 41,
     LABUBU = 42,
+    BABYBEL_ORIGINAL = 43,
+    BABYBEL_LIGHT = 44,
+    BABYBEL_CHEDDAR = 45,
+    BABYBEL_EMMENTALER = 46,
+    BABYBEL_PROTEIN = 47,
+    BABYBEL_GOUDA = 48,
+    BABYBEL_VEGAN = 49,
 }
 
 export enum LootAttributeClassId {
@@ -649,6 +656,82 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         dropDescription: "Das Labubu, dein ~~Freund und Helfer in der Not~~ Plastikmüll",
         emote: "🦦",
         asset: "assets/loot/42-labubu.jpg",
+    },
+    [LootKindId.BABYBEL_ORIGINAL]: {
+        id: LootKindId.BABYBEL_ORIGINAL,
+        weight: 3,
+        displayName: "Mini Babybel® Original",
+        titleText: "Ein Babybel® Original",
+        dropDescription:
+            "Schon seit 1977 erobert unser roter Superstar die Herzen aller Snack-Liebhaber. Er ist nicht nur praktisch, lecker und immer für eine gute Portion Spaß zu haben, sondern auch ohne Gentechnik und ohne Zusatz von Konservierungsstoffen. Dank der natürlichen Reifung in seiner Wachshülle ist er außerdem laktosefrei sowie reich an Protein und Kalzium.",
+        emote: "🧀",
+        asset: "assets/loot/43-bb-original.png",
+        initialAttributes: [LootAttributeKindId.NUTRI_SCORE_C],
+    },
+    [LootKindId.BABYBEL_LIGHT]: {
+        id: LootKindId.BABYBEL_LIGHT,
+        weight: 2,
+        displayName: "Mini Babybel® Light",
+        titleText: "Ein Babybel® Light",
+        dropDescription: "Der kleine Käse mit der roten Wachsverpackung, mit weniger Fett!",
+        emote: "🧀",
+        asset: "assets/loot/44-bb-light.png",
+        initialAttributes: [LootAttributeKindId.NUTRI_SCORE_C],
+    },
+    [LootKindId.BABYBEL_CHEDDAR]: {
+        id: LootKindId.BABYBEL_CHEDDAR,
+        weight: 1,
+        displayName: "Mini Babybel® Cheddar-Geschmack",
+        titleText: "Ein Babybel® Cheddar-Geschmack",
+        dropDescription:
+            "Mini Babybel® mit Cheddar-Geschmack erfreut Groß und Klein und bringt Abwechslung in die Lunch-Box.\n\nFür Vegetarier geeignet.",
+        emote: "🧀",
+        asset: "assets/loot/45-bb-cheddar.png",
+        initialAttributes: [LootAttributeKindId.NUTRI_SCORE_D],
+    },
+    [LootKindId.BABYBEL_EMMENTALER]: {
+        id: LootKindId.BABYBEL_EMMENTALER,
+        weight: 1,
+        displayName: "Mini Babybel® Emmentaler-Geschmack",
+        titleText: "Ein Babybel® Emmentaler-Geschmack",
+        dropDescription:
+            "Mini Babybel® mit feinem Emmentaler-Geschmack sorgt für herzhafte Snack-Momente und bereitet viel Vergnügen bei Groß und Klein.",
+        emote: "🧀",
+        asset: "assets/loot/46-bb-emmentaler.png",
+        initialAttributes: [LootAttributeKindId.NUTRI_SCORE_D],
+    },
+    [LootKindId.BABYBEL_PROTEIN]: {
+        id: LootKindId.BABYBEL_PROTEIN,
+        weight: 1,
+        displayName: "Mini Babybel® High Protein",
+        titleText: "Ein Babybel® High Protein",
+        dropDescription:
+            "Lecker Käse in rotem Wachs. Genau der gleiche wie der blaue, aber für echte Männer.",
+        emote: "🧀",
+        asset: "assets/loot/47-bb-protein.png",
+        initialAttributes: [LootAttributeKindId.NUTRI_SCORE_C],
+    },
+    [LootKindId.BABYBEL_GOUDA]: {
+        id: LootKindId.BABYBEL_GOUDA,
+        weight: 1,
+        displayName: "Mini Babybel® Unser Würziger",
+        titleText: "Ein Babybel® Unser Würziger",
+        dropDescription:
+            "Babybel® Unser Würziger ist eine Varietät des klassischen Babybel® Original. Er vereint alle Vorteile eines leckeren Käse-Snacks mit einem würzig-nussigen Geschmack (wir wollten es nicht einfach nur Gouda nennen) und sorgt auf diese Weise für ein etwas intensiveres Babybel®-Erlebnis.\n\nDurch seinen intensiv-herzhaften Geschmack eignet sich der würzig-leckere Snack sehr gut für den kleinen Hunger zwischendurch und bietet damit auch Käseliebhabern mit einem intensiveren Käsegeschmack eine optimale Ergänzung zur klassischen Variante.",
+        emote: "🧀",
+        asset: "assets/loot/48-bb-gouda.png",
+        initialAttributes: [LootAttributeKindId.NUTRI_SCORE_D],
+    },
+    [LootKindId.BABYBEL_VEGAN]: {
+        id: LootKindId.BABYBEL_VEGAN,
+        weight: 1,
+        displayName: "Mini Babybel® Vegan",
+        titleText: "Ein Babybel® Vegan",
+        dropDescription:
+            "Den beliebten Babybel® gibt es jetzt auch als vegane Käsealternative, ganz ohne Milch und schnell erkennbar dank seiner grünen Wachshülle. Mit seinem milden Geschmack und der cremigen Textur ist der vegane Babybel® eine leckere und praktische Alternative als Snack für zuhause oder unterwegs.\n\nDer vegane Babybel® ist erhältlich im praktischen, recyclebaren Papierbeutel und ist eigentlich nur ein Block Kokosfett mit Salz.",
+        emote: "🧀",
+        asset: "assets/loot/49-bb-vegan.png",
+        initialAttributes: [LootAttributeKindId.NUTRI_SCORE_E],
     },
 } as const;
 
