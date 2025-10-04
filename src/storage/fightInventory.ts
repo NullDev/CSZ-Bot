@@ -3,8 +3,7 @@ import db from "@db";
 import type { Equipable, FightItemType } from "@/service/fightData.js";
 import type { Loot } from "@/storage/db/model.js";
 import { type LootKindId, resolveLootTemplate } from "@/service/lootData.js";
-import * as lootService from "@/service/loot.js";
-import { deleteLoot } from "@/storage/loot.js";
+import * as lootStorage from "@/storage/loot.js";
 
 export async function getFightInventoryUnsorted(userId: User["id"], ctx = db()) {
     return await ctx
@@ -18,7 +17,7 @@ export async function getFightInventoryEnriched(userId: User["id"], ctx = db()) 
     const unsorted = await getFightInventoryUnsorted(userId, ctx);
     const enriched = [];
     for (const equip of unsorted) {
-        const itemInfo = await lootService.getUserLootById(userId, equip.lootId, ctx);
+        const itemInfo = await lootStorage.getUserLootById(userId, equip.lootId, ctx);
         enriched.push({
             gameTemplate: await getGameTemplate(itemInfo?.lootKindId),
             itemInfo: itemInfo,
@@ -50,7 +49,7 @@ export async function removeItemsAfterFight(userId: User["id"], ctx = db()) {
     await ctx.transaction().execute(async ctx => {
         const items = await getItemsByType(userId, "item", ctx);
         for (const item of items) {
-            await deleteLoot(item.lootId, ctx);
+            await lootStorage.deleteLoot(item.lootId, ctx);
         }
         await ctx
             .deleteFrom("fightInventory")
@@ -71,17 +70,17 @@ export async function equipItembyLoot(
         armor: 1,
         item: 3,
     };
-    const unequippeditems: string[] = [];
+    const unequippedItems: string[] = [];
 
     return await ctx.transaction().execute(async ctx => {
         const equippedStuff = await getItemsByType(userId, itemType, ctx);
         for (let i = 0; i <= equippedStuff.length - maxItems[itemType]; i++) {
-            const unequipitem = await lootService.getUserLootById(
+            const unequipitem = await lootStorage.getUserLootById(
                 userId,
                 equippedStuff[i].lootId,
                 ctx,
             );
-            unequippeditems.push(unequipitem?.displayName ?? String(equippedStuff[i].lootId));
+            unequippedItems.push(unequipitem?.displayName ?? String(equippedStuff[i].lootId));
             await ctx.deleteFrom("fightInventory").where("id", "=", equippedStuff[i].id).execute();
         }
 
@@ -93,6 +92,6 @@ export async function equipItembyLoot(
                 equippedSlot: itemType,
             })
             .execute();
-        return { unequipped: unequippeditems, equipped: loot };
+        return { unequipped: unequippedItems, equipped: loot };
     });
 }

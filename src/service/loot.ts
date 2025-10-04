@@ -24,8 +24,8 @@ export async function getUserLootsWithAttribute(
     return await loot.getUserLootsWithAttribute(userId, attributeKindId);
 }
 
-export async function getUserLootById(userId: Snowflake, id: LootId, ctx = db()) {
-    return await loot.getUserLootById(userId, id, ctx);
+export async function getUserLootById(userId: Snowflake, id: LootId) {
+    return await loot.getUserLootById(userId, id);
 }
 
 export async function getLootAttributes(id: LootId) {
