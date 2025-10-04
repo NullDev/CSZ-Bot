@@ -60,6 +60,7 @@ export enum LootKindId {
     BABYBEL_PROTEIN = 47,
     BABYBEL_GOUDA = 48,
     BABYBEL_VEGAN = 49,
+    BABYBEL_EXODIA = 50,
 }
 
 export enum LootAttributeClassId {
@@ -731,6 +732,16 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
             "Den beliebten Babybel® gibt es jetzt auch als vegane Käsealternative, ganz ohne Milch und schnell erkennbar dank seiner grünen Wachshülle. Mit seinem milden Geschmack und der cremigen Textur ist der vegane Babybel® eine leckere und praktische Alternative als Snack für zuhause oder unterwegs.\n\nDer vegane Babybel® ist erhältlich im praktischen, recyclebaren Papierbeutel und ist eigentlich nur ein Block Kokosfett mit Salz.",
         emote: "🧀",
         asset: "assets/loot/49-bb-vegan.png",
+        initialAttributes: [LootAttributeKindId.NUTRI_SCORE_E],
+    },
+    [LootKindId.BABYBEL_EXODIA]: {
+        id: LootKindId.BABYBEL_EXODIA,
+        weight: ACHTUNG_NICHT_DROPBAR_WEIGHT_KG,
+        displayName: "Mini Babybel® Exodia",
+        titleText: "Mini Babybel® Exodia",
+        dropDescription: "Du hast das Spiel gewonnen.",
+        emote: "🧀",
+        asset: "assets/loot/50-bb-exodia.png",
         initialAttributes: [LootAttributeKindId.NUTRI_SCORE_E],
     },
 } as const;
