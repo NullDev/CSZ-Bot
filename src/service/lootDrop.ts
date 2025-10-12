@@ -16,14 +16,14 @@ import {
     ActionRowBuilder,
     type MessageEditOptions,
     type MessageComponentInteraction,
-    BaseMessageOptions,
+    type BaseMessageOptions,
 } from "discord.js";
 import { Temporal } from "@js-temporal/polyfill";
 import * as sentry from "@sentry/node";
 
 import type { BotContext } from "@/context.js";
 import type { Loot, LootId } from "@/storage/db/model.js";
-import type { LootAttributeTemplate, LootTemplate } from "@/storage/loot.js";
+import type { LootTemplate } from "@/storage/loot.js";
 import { randomBoolean, randomEntry, randomEntryWeighted } from "@/service/random.js";
 
 import * as lootService from "@/service/loot.js";
