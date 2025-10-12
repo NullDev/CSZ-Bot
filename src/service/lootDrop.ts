@@ -317,7 +317,7 @@ export async function createDropTakenContent(
           : null;
 
     const container = new ContainerBuilder().addTextDisplayComponents(
-        t => t.setContent(`-# 🎉 ${winner.toString()} hat das Geschenk geöffnet und bekommt:`),
+        t => t.setContent(`-# 🎉 ${winner} hat das Geschenk geöffnet und bekommt:`),
         t => t.setContent(`# ${template.displayName}`),
         t => t.setContent(template.dropDescription),
     );
