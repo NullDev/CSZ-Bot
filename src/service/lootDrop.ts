@@ -346,9 +346,7 @@ export async function createDropTakenContent(
 
     const allMessages = dropMessages.join("\n").trim();
     if (allMessages.length > 0) {
-        container.addTextDisplayComponents(
-            new TextDisplayBuilder().setContent(`-# ${allMessages}`),
-        );
+        container.addTextDisplayComponents(t => t.setContent(`-# ${allMessages}`));
     }
 
     return {
