@@ -40,10 +40,7 @@ const lootTimeoutMs = 60 * 1000;
 
 export async function runDropAttempt(context: BotContext) {
     const lootConfig = context.commandConfig.loot;
-    const dice = Math.random();
-
-    log.info(`Rolled dice: ${dice}, against drop chance ${lootConfig.dropChance}`);
-    if (dice > lootConfig.dropChance) {
+    if (randomBoolean(lootConfig.dropChance)) {
         return;
     }
 
@@ -81,7 +78,7 @@ export async function runDropAttempt(context: BotContext) {
     }
 
     log.info(
-        `Dice was ${dice}, which is lower than configured ${lootConfig.dropChance}. Dropping loot to ${targetChannel.name}!`,
+        `Randomization hit threshold (${lootConfig.dropChance}). Dropping loot to ${targetChannel.name}!`,
     );
     await postLootDrop(context, targetChannel, undefined, undefined);
 }
