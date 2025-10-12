@@ -317,11 +317,9 @@ export async function createDropTakenContent(
           : null;
 
     const container = new ContainerBuilder().addTextDisplayComponents(
-        t => t.setContent("-# Das Geschenk enthielt"),
+        t => t.setContent(`-# 🎉 ${winner.toString()} hat das Geschenk geöffnet und bekommt:`),
         t => t.setContent(`# ${template.displayName}`),
         t => t.setContent(template.dropDescription),
-        t => t.setContent("**🎉 Ehrenwerter Empfänger**"),
-        t => t.setContent(winner.toString()),
     );
 
     const lootAttributes = await lootService.getLootAttributes(claimedLoot.id);
