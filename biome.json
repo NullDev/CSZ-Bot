@@ -9,8 +9,7 @@
     },
     "formatter": {
         "enabled": true,
-        "indentWidth": 4,
-        "indentStyle": "space",
+        "useEditorconfig": true,
         "lineWidth": 100
     },
     "vcs": {

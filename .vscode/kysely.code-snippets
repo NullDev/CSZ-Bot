@@ -1,18 +1,18 @@
 {
-    "Create Migration": {
-        "scope": "typescript",
-        "prefix": "cm",
-        "description": "Create Migration",
-        "body": [
-            "import { sql, type Kysely } from \"kysely\";",
-            "",
-            "export async function up(db: Kysely<any>) {",
-            "  await db.schema${0}",
-            "}",
-            "",
-            "export async function down(db: Kysely<any>) {",
-            "  // TODO: Implement",
-            "}"
-        ]
-    }
+	"Create Migration": {
+		"scope": "typescript",
+		"prefix": "cm",
+		"description": "Create Migration",
+		"body": [
+			"import { sql, type Kysely } from \"kysely\";",
+			"",
+			"export async function up(db: Kysely<any>) {",
+			"  await db.schema${0}",
+			"}",
+			"",
+			"export async function down(db: Kysely<any>) {",
+			"  // TODO: Implement",
+			"}"
+		]
+	}
 }
