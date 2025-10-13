@@ -7,11 +7,14 @@ pre-push:
       run: npm run test
 
 pre-commit:
-  parallel: true
   commands:
     format:
       glob: "*.{js,ts}"
       run: npm run format -- --staged
+      stage_fixed: true
+    lint-fix:
+      glob: "*.{js,ts}"
+      run: npm run lint:fix -- --staged
       stage_fixed: true
 
 skip_output:

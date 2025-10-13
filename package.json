@@ -12,7 +12,6 @@
         "format": "biome format --write ./src",
         "lint": "biome lint ./src",
         "lint:fix": "biome check --write ./src",
-        "lint:fix:file": "biome check --write",
         "watch": "tsx --require ./src/polyfills.ts --watch src/app.ts"
     },
     "repository": {
