@@ -9,8 +9,6 @@ trim_trailing_whitespace = true
 [*.{js,ts,json,code-snippets}]
 indent_style = space
 indent_size = 4
-# needed because biome behaves weird on windows
-end_of_line = lf
 
 [package.json]
 indent_style = space
