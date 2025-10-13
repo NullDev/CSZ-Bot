@@ -4,6 +4,8 @@ import assertNever from "@/utils/assertNever.js";
 
 import * as locationHistory from "@/storage/locationHistory.js";
 import type { MapLocation } from "@/storage/db/model.js";
+import fs from "node:fs/promises";
+import path from "node:path";
 
 export const startPosition = { x: 0, y: 0 };
 
@@ -71,4 +73,31 @@ export function canMove(position: Position, maxSize: Position, direction: Direct
                 return false;
         }
     });
+}
+
+interface Place {
+    name: string;
+    description: string;
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    color: string;
+}
+
+export async function getCurrentPlaceforUser(position: Position): Promise<Place | null> {
+    const locations: [Place] = JSON.parse(
+        await fs.readFile(path.resolve("assets/maps/locations.json"), "utf-8"),
+    );
+    for (const location of locations) {
+        if (
+            position.x > location.x &&
+            position.y > location.y &&
+            position.x < location.x + location.width &&
+            position.y < location.y + location.height
+        ) {
+            return location;
+        }
+    }
+    return null;
 }

@@ -12,18 +12,17 @@ import {
     type TextBasedChannel,
     MessageFlags,
     ContainerBuilder,
-    TextDisplayBuilder,
     ActionRowBuilder,
     type MessageEditOptions,
     type MessageComponentInteraction,
-    BaseMessageOptions,
+    type BaseMessageOptions,
 } from "discord.js";
 import { Temporal } from "@js-temporal/polyfill";
 import * as sentry from "@sentry/node";
 
 import type { BotContext } from "@/context.js";
 import type { Loot, LootId } from "@/storage/db/model.js";
-import type { LootAttributeTemplate, LootTemplate } from "@/storage/loot.js";
+import type { LootTemplate } from "@/storage/loot.js";
 import { randomBoolean, randomEntry, randomEntryWeighted } from "@/service/random.js";
 
 import * as lootService from "@/service/loot.js";
@@ -40,10 +39,8 @@ const lootTimeoutMs = 60 * 1000;
 
 export async function runDropAttempt(context: BotContext) {
     const lootConfig = context.commandConfig.loot;
-    const dice = Math.random();
-
-    log.info(`Rolled dice: ${dice}, against drop chance ${lootConfig.dropChance}`);
-    if (dice > lootConfig.dropChance) {
+    const shouldDropLoot = randomBoolean(lootConfig.dropChance);
+    if (!shouldDropLoot) {
         return;
     }
 
@@ -81,7 +78,7 @@ export async function runDropAttempt(context: BotContext) {
     }
 
     log.info(
-        `Dice was ${dice}, which is lower than configured ${lootConfig.dropChance}. Dropping loot to ${targetChannel.name}!`,
+        `Randomization hit threshold (${lootConfig.dropChance}). Dropping loot to ${targetChannel.name}!`,
     );
     await postLootDrop(context, targetChannel, undefined, undefined);
 }
@@ -317,11 +314,9 @@ export async function createDropTakenContent(
           : null;
 
     const container = new ContainerBuilder().addTextDisplayComponents(
-        t => t.setContent("-# Das Geschenk enthielt"),
+        t => t.setContent(`-# 🎉 ${winner} hat das Geschenk geöffnet und bekommt:`),
         t => t.setContent(`# ${template.displayName}`),
         t => t.setContent(template.dropDescription),
-        t => t.setContent("**🎉 Ehrenwerter Empfänger**"),
-        t => t.setContent(winner.toString()),
     );
 
     const lootAttributes = await lootService.getLootAttributes(claimedLoot.id);
@@ -348,9 +343,7 @@ export async function createDropTakenContent(
 
     const allMessages = dropMessages.join("\n").trim();
     if (allMessages.length > 0) {
-        container.addTextDisplayComponents(
-            new TextDisplayBuilder().setContent(`-# ${allMessages}`),
-        );
+        container.addTextDisplayComponents(t => t.setContent(`-# ${allMessages}`));
     }
 
     return {

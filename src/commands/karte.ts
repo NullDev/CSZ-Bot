@@ -109,6 +109,12 @@ export default class KarteCommand implements ApplicationCommand {
                         .setDescription("Karte"),
                 ),
             );
+        const place = await locationService.getCurrentPlaceforUser(currentPosition);
+        if (place != null) {
+            container.addTextDisplayComponents(
+                new TextDisplayBuilder().setContent(place.description),
+            );
+        }
 
         if (withNavigation) {
             const navigationButtons = this.#createNavigationButtonRow(currentPosition, mapSize);
@@ -146,7 +152,6 @@ export default class KarteCommand implements ApplicationCommand {
         };
 
         const messageData = await this.createMessageData(map, currentPosition, mapSize, true);
-
         const replyData = await command.reply({
             withResponse: true,
             flags: MessageFlags.IsComponentsV2,
@@ -219,6 +224,7 @@ export default class KarteCommand implements ApplicationCommand {
         const ctx = extendContext(canvas.getContext("2d"));
 
         ctx.drawImage(backgroundImage, 0, 0);
+
         switch (debugOverlay) {
             case "GRID":
                 this.#drawRaster(ctx);
@@ -318,6 +324,7 @@ export default class KarteCommand implements ApplicationCommand {
         ctx.beginPath();
         ctx.strokeStyle = strokeColor;
         ctx.lineWidth = strokeWidth;
+
         ctx.rect(
             position.x * stepSize,
             position.y * stepSize,
