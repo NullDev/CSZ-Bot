@@ -9,11 +9,11 @@ pre-push:
 pre-commit:
   commands:
     format:
-      glob: "*.{js,ts}"
+      glob: "*.{js,ts,json}"
       run: node --run format -- --staged
       stage_fixed: true
     lint-fix:
-      glob: "*.{js,ts}"
+      glob: "*.{js,ts,json}"
       run: node --run lint:fix -- --staged
       stage_fixed: true
 
