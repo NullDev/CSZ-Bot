@@ -5,8 +5,6 @@ services:
     image: ghcr.io/nulldev/csz-bot:latest
     environment:
       - LOG_LEVEL=debug
-    env_file:
-      - ../.env
     volumes:
       # cannot use docker secrets because the file will be updated by yt-dlp
       - ../cookies-youtube.txt:/cookies-youtube.txt

@@ -1,4 +1,5 @@
 import * as fs from "node:fs/promises";
+import * as path from "node:path";
 
 import {createCanvas, loadImage, type Image} from "@napi-rs/canvas";
 import {
@@ -13,7 +14,8 @@ import {
     MediaGalleryBuilder,
     MediaGalleryItemBuilder,
     MessageFlags,
-    SlashCommandBuilder, SlashCommandStringOption,
+    SlashCommandBuilder,
+    SlashCommandStringOption,
     TextDisplayBuilder,
     type User
 } from "discord.js";
@@ -23,8 +25,9 @@ import * as locationService from "@/service/location.js";
 import type {BotContext} from "@/context.js";
 import {Vec2, Vec4} from "@/utils/math.js";
 import * as fontService from "@/service/font.js";
-import {extendContext, type ExtendedCanvasContext} from "@/utils/ExtendedCanvasContext.js";
-import path from "node:path";
+import { extendContext, type ExtendedCanvasContext } from "@/utils/ExtendedCanvasContext.js";
+import assertNever from "@/utils/assertNever.js";
+import * as petService from "@/service/pet.js";
 
 const allDirections = [
     ["NW", "N", "NE"],
@@ -53,17 +56,17 @@ export default class KarteCommand implements ApplicationCommand {
             new SlashCommandStringOption()
                 .setDescription("Debug")
                 .setRequired(false)
-                .setName("debugchoice").addChoices(
-                {
-                    name: "Gridoverlay",
-                    value: "GRID"
-
-                },
-                {
-                    name: "LocationOverlay",
-                    value: "LOCATIONS"
-                }
-            )
+                .setName("debugchoice")
+                .addChoices(
+                    {
+                        name: "Gridoverlay",
+                        value: "GRID",
+                    },
+                    {
+                        name: "LocationOverlay",
+                        value: "LOCATIONS",
+                    },
+                ),
         )
         .setDescription(this.description);
 
@@ -137,12 +140,15 @@ export default class KarteCommand implements ApplicationCommand {
         const currentPosition =
             (await locationService.getPositionForUser(author.user as User)) ??
             locationService.startPosition;
-        const debugchoice = command.options.getString("debugchoice", false);
+        const debugchoice = command.options.getString("debugchoice", false) as
+            | "GRID"
+            | "LOCATIONS"
+            | null;
         const map = await this.#drawMap(debugchoice, currentPosition, command.user, context);
 
         const mapSize = {
             x: 1600,
-            y: 800
+            y: 800,
         };
 
         const messageData = await this.createMessageData(map, currentPosition, mapSize, true);
@@ -207,7 +213,7 @@ export default class KarteCommand implements ApplicationCommand {
     }
 
     async #drawMap(
-        debugchoice: string | null,
+        debugOverlay: "GRID" | "LOCATIONS" | null,
         position: locationService.Position,
         user: User,
         context: BotContext
@@ -219,12 +225,18 @@ export default class KarteCommand implements ApplicationCommand {
         const ctx = extendContext(canvas.getContext("2d"));
 
         ctx.drawImage(backgroundImage, 0, 0);
-        if (debugchoice === "GRID") {
-            this.#drawRaster(ctx);
-        }
-        if (debugchoice === "LOCATIONS") {
-            this.#drawLocations(ctx);
 
+        switch (debugOverlay) {
+            case "GRID":
+                this.#drawRaster(ctx);
+                break;
+            case "LOCATIONS":
+                await this.#drawLocations(ctx);
+                break;
+            case null:
+                break;
+            default:
+                assertNever(debugOverlay);
         }
 
         const allPlayerLocations = await locationService.getAllCurrentPostions();
@@ -244,7 +256,7 @@ export default class KarteCommand implements ApplicationCommand {
             }
 
             const avatar = await loadImage(avatarUrl);
-            this.#drawPlayer(ctx, pos, member.user.displayName, avatar, "small", "grey");
+            this.#drawPlayer(ctx, pos, member.user.displayName, avatar, "small", "grey", undefined);
         }
 
         const avatarUrl = user.avatarURL({size: 64, forceStatic: true});
@@ -253,7 +265,18 @@ export default class KarteCommand implements ApplicationCommand {
         }
 
         const avatar = await loadImage(avatarUrl);
-        this.#drawPlayer(ctx, position, user.displayName, avatar, "large", "blue");
+
+        const pet = await petService.getPet(user);
+
+        this.#drawPlayer(
+            ctx,
+            position,
+            user.displayName,
+            avatar,
+            "large",
+            "blue",
+            pet?.lootTemplate.emote ?? undefined,
+        );
 
         return await canvas.encode("png");
     }
@@ -283,28 +306,40 @@ export default class KarteCommand implements ApplicationCommand {
 
         ctx.closePath();
         ctx.clip();
-        ctx.drawImage(avatar, position.x * stepSize - radius, position.y * stepSize - radius);
+        ctx.drawImage(
+            avatar,
+            position.x * stepSize - radius,
+            position.y * stepSize - radius,
+            radius * 2,
+            radius * 2,
+        );
         ctx.restore();
     }
 
     #drawLocation(
         ctx: ExtendedCanvasContext,
-        position: { name: string, x: number, y: number, width: number, height: number },
+        position: { name: string; x: number; y: number; width: number; height: number },
         strokeWidth: number,
-        strokeColor: string
+        strokeColor: string,
     ) {
         ctx.beginPath();
         ctx.strokeStyle = strokeColor;
         ctx.lineWidth = strokeWidth;
-        ctx.rect(position.x * stepSize, position.y * stepSize, position.width * stepSize, position.height * stepSize);
+
+        ctx.rect(
+            position.x * stepSize,
+            position.y * stepSize,
+            position.width * stepSize,
+            position.height * stepSize,
+        );
         ctx.fillTextExtended(
-            new Vec2((position.x) * stepSize, (position.y) * stepSize + 10),
+            new Vec2(position.x * stepSize, position.y * stepSize + 10),
             "center",
             "top",
             strokeColor,
             "bold 20px",
             fontService.names.openSans,
-            position.name
+            position.name,
         );
 
         ctx.stroke();
@@ -318,12 +353,15 @@ export default class KarteCommand implements ApplicationCommand {
         name: string,
         avatar: Image,
         size: "small" | "large",
-        playerColor: "blue" | "grey"
+        playerColor: "blue" | "grey",
+        petEmoji: string | undefined,
     ) {
         const radius = size === "large" ? 32 : 16;
 
+        const namePosition = new Vec2(position.x * stepSize, position.y * stepSize + radius);
+
         ctx.fillTextExtended(
-            new Vec2(position.x * stepSize, position.y * stepSize + radius),
+            namePosition,
             "center",
             "top",
             playerColor,
@@ -333,6 +371,18 @@ export default class KarteCommand implements ApplicationCommand {
         );
 
         this.#drawAvatar(ctx, position, avatar, radius, size === "large" ? 4 : 1, playerColor);
+
+        if (petEmoji) {
+            ctx.fillTextExtended(
+                namePosition.add(new Vec2(radius, 0)),
+                "left",
+                "bottom",
+                "#fff",
+                "18px",
+                fontService.names.appleEmoji,
+                petEmoji,
+            );
+        }
     }
 
     #drawRaster(ctx: ExtendedCanvasContext) {
@@ -382,23 +432,30 @@ export default class KarteCommand implements ApplicationCommand {
     }
 
     async #drawLocations(ctx: ExtendedCanvasContext) {
-        const locations: [{
-            "name": string,
-            "description": string,
-            "x": number,
-            "y": number,
-            "width": number,
-            "height": number,
-            "color": string
-        }] = JSON.parse(await fs.readFile(path.resolve("assets/maps/locations.json"), "utf-8"));
+        const locations: [
+            {
+                name: string;
+                description: string;
+                x: number;
+                y: number;
+                width: number;
+                height: number;
+                color: string;
+            },
+        ] = JSON.parse(await fs.readFile(path.resolve("assets/maps/locations.json"), "utf-8"));
         for (const location of locations) {
-            this.#drawLocation(ctx, {
-                name: location.name,
-                x: location.x,
-                y: location.y,
-                height: location.height,
-                width: location.width
-            }, 2, location.color);
+            this.#drawLocation(
+                ctx,
+                {
+                    name: location.name,
+                    x: location.x,
+                    y: location.y,
+                    height: location.height,
+                    width: location.width,
+                },
+                2,
+                location.color,
+            );
         }
     }
 }

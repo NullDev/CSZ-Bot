@@ -37,6 +37,7 @@ export interface LootTemplate {
     excludeFromInventory?: boolean;
     effects?: string[];
     initialAttributes?: LootAttributeKindId[];
+    excludeFromDoubleDrops?: boolean;
 
     onDrop?: (
         context: BotContext,
@@ -44,6 +45,17 @@ export interface LootTemplate {
         sourceChannel: TextChannel & GuildChannel,
         claimedLoot: Loot,
     ) => Promise<void>;
+
+    /**
+     * Invoked if the user used double-or-nothing and succeeded. Is executed before the second drop is created.
+     * @returns Return `true` to allow the second drop, `false` to cancel it.
+     */
+    onDuplicateDrop?: (
+        context: BotContext,
+        winner: GuildMember,
+        claimedLoot: Loot,
+        dropMessage: Message,
+    ) => Promise<boolean>;
 
     /** @returns Return `true` if the item should be kept in the inventory, `false`/falsy if it should be deleted. If an exception occurs, the item will be kept. */
     onUse?: (
@@ -144,6 +156,15 @@ export async function findOfUser(user: User, ctx = db()) {
         .where(notDeleted)
         .selectAll()
         .execute();
+}
+
+export async function findById(id: LootId, ctx = db()) {
+    return await ctx
+        .selectFrom("loot")
+        .where("id", "=", id)
+        .where(notDeleted)
+        .selectAll()
+        .executeTakeFirst();
 }
 
 export type LootWithAttributes = Loot & { attributes: Readonly<LootAttribute>[] };
@@ -366,4 +387,22 @@ export async function addLootAttributeIfNotPresent(
         })
         .execute();
     return r.length > 0;
+}
+
+export function deleteLootByPredecessor(lootId: LootId) {
+    return db()
+        .transaction()
+        .execute(async ctx => {
+            const toDelete = await ctx
+                .selectFrom("loot")
+                .where("predecessor", "=", lootId)
+                .select("id")
+                .execute();
+
+            for (const loot of toDelete) {
+                await deleteLoot(loot.id, ctx);
+            }
+
+            return toDelete.map(l => l.id);
+        });
 }

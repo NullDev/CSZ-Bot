@@ -5,7 +5,7 @@ import type { LootAttributeKindId, LootKindId } from "./lootData.js";
 import * as loot from "@/storage/loot.js";
 import * as lootDataService from "@/service/lootData.js";
 
-export async function getInventoryContents(user: User) {
+export async function getInventoryContents(user: User): Promise<loot.LootWithAttributes[]> {
     const contents = await loot.findOfUserWithAttributes(user);
     const displayableLoot = contents.filter(
         l => !(lootDataService.resolveLootTemplate(l.lootKindId)?.excludeFromInventory ?? false),
@@ -58,6 +58,10 @@ export function transferMultipleLootToUser(
 
 export function deleteLoot(lootId: LootId) {
     return loot.deleteLoot(lootId);
+}
+
+export function deleteLootByPredecessor(lootId: LootId) {
+    return loot.deleteLootByPredecessor(lootId);
 }
 
 export function replaceLoot(

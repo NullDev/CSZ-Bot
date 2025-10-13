@@ -2,7 +2,7 @@ import * as fs from "node:fs/promises";
 import * as path from "node:path";
 import { parseArgs } from "node:util";
 
-import * as JSONC from "@std/jsonc";
+import * as JSONC from "comment-json";
 
 import type { Snowflake, ActivityType } from "discord.js";
 

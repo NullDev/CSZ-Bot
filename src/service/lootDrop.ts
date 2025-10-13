@@ -11,13 +11,19 @@ import {
     type GuildBasedChannel,
     type TextBasedChannel,
     MessageFlags,
+    ContainerBuilder,
+    ActionRowBuilder,
+    type MessageEditOptions,
+    type MessageComponentInteraction,
+    type BaseMessageOptions,
 } from "discord.js";
 import { Temporal } from "@js-temporal/polyfill";
 import * as sentry from "@sentry/node";
 
 import type { BotContext } from "@/context.js";
 import type { Loot, LootId } from "@/storage/db/model.js";
-import { randomEntry, randomEntryWeighted } from "@/service/random.js";
+import type { LootTemplate } from "@/storage/loot.js";
+import { randomBoolean, randomEntry, randomEntryWeighted } from "@/service/random.js";
 
 import * as lootService from "@/service/loot.js";
 import {
@@ -33,10 +39,8 @@ const lootTimeoutMs = 60 * 1000;
 
 export async function runDropAttempt(context: BotContext) {
     const lootConfig = context.commandConfig.loot;
-    const dice = Math.random();
-
-    log.info(`Rolled dice: ${dice}, against drop chance ${lootConfig.dropChance}`);
-    if (dice > lootConfig.dropChance) {
+    const shouldDropLoot = randomBoolean(lootConfig.dropChance);
+    if (!shouldDropLoot) {
         return;
     }
 
@@ -74,7 +78,7 @@ export async function runDropAttempt(context: BotContext) {
     }
 
     log.info(
-        `Dice was ${dice}, which is lower than configured ${lootConfig.dropChance}. Dropping loot to ${targetChannel.name}!`,
+        `Randomization hit threshold (${lootConfig.dropChance}). Dropping loot to ${targetChannel.name}!`,
     );
     await postLootDrop(context, targetChannel, undefined, undefined);
 }
@@ -94,16 +98,23 @@ export async function postLootDrop(
 
     const timeoutSeconds = (lootTimeoutMs / 1000) | 0;
     const message = await channel.send({
-        embeds: [
-            {
-                title: "Geschenk",
-                description: donor
-                    ? `${donor} hat ein Geschenk fallen lassen! Öffne es schnell, in ${timeoutSeconds} Sekunden ist es weg!`
-                    : `Ein Geschenk ist aufgetaucht! Öffne es schnell, in ${timeoutSeconds} Sekunden ist es weg!`,
-                image: {
-                    url: "attachment://00-unopened.gif",
-                },
-            },
+        flags: MessageFlags.IsComponentsV2,
+        embeds: [],
+        components: [
+            new ContainerBuilder()
+                .addTextDisplayComponents(
+                    header => header.setContent("# Geschenk"),
+                    body =>
+                        body.setContent(
+                            donor
+                                ? `${donor} hat ein Geschenk fallen lassen! Öffne es schnell, in ${timeoutSeconds} Sekunden ist es weg!`
+                                : `Ein Geschenk ist aufgetaucht! Öffne es schnell, in ${timeoutSeconds} Sekunden ist es weg!`,
+                        ),
+                )
+                .addMediaGalleryComponents(media =>
+                    media.addItems(image => image.setURL("attachment://00-unopened.gif")),
+                ),
+            new ActionRowBuilder<ButtonBuilder>().addComponents(takeLootButton),
         ],
         files: [
             {
@@ -111,7 +122,6 @@ export async function postLootDrop(
                 attachment: await fs.readFile("assets/loot/00-unopened.gif"),
             },
         ],
-        components: [{ type: ComponentType.ActionRow, components: [takeLootButton] }],
     });
 
     let interaction: Interaction | undefined;
@@ -124,22 +134,23 @@ export async function postLootDrop(
         });
     } catch {
         log.info(`Loot drop ${message.id} timed out; loot was not claimed, cleaning up`);
-        const original = message.embeds[0];
         await message.edit({
-            embeds: [
-                {
-                    ...original,
-                    description: donor
-                        ? // TODO: `Keiner wollte das Geschenk von ${donor} haben. ${donor} hat es wieder mitgenommen.`
-                          `Das Geschenk von ${donor} verpuffte im nichts :(`
-                        : `Oki aber nächstes mal bitti aufmachi, sonst muss ichs wieder mitnehmi ${hamster}`,
-                    footer: {
-                        text: "❌ Niemand war schnell genug",
-                    },
-                },
+            flags: MessageFlags.IsComponentsV2,
+            components: [
+                new ContainerBuilder().addTextDisplayComponents(
+                    header => header.setContent("-# Geschenk"),
+                    body =>
+                        body.setContent(
+                            donor
+                                ? // TODO: `Keiner wollte das Geschenk von ${donor} haben. ${donor} hat es wieder mitgenommen.`
+                                  `Das Geschenk von ${donor} verpuffte im nichts :(`
+                                : `Oki aber nächstes mal bitti aufmachi, sonst muss ichs wieder mitnehmi ${hamster}`,
+                        ),
+                    footer => footer.setContent("-# ❌ Niemand war schnell genug"),
+                ),
             ],
+            embeds: [],
             files: [],
-            components: [],
         });
         return;
     }
@@ -181,53 +192,32 @@ export async function postLootDrop(
 
     const winner = await context.guild.members.fetch(claimedLoot.winnerId);
 
-    const attachment = template.drawCustomAsset
-        ? await template.drawCustomAsset(context, winner.user, template, claimedLoot)
-        : template.asset
-          ? await fs.readFile(template.asset)
-          : null;
+    const canBeDoubled = !template.excludeFromDoubleDrops;
+    const doubleOrNothingButton = new ButtonBuilder()
+        .setCustomId("double-or-nothing")
+        .setLabel("Doppelt oder Nix")
+        .setStyle(ButtonStyle.Primary);
 
-    await message.edit({
-        embeds: [
-            {
-                title: `Das Geschenk enthielt: ${template.titleText}`,
-                description: template.dropDescription,
-                image: attachment
-                    ? {
-                          url: "attachment://opened.gif",
-                      }
-                    : undefined,
-                fields: [
-                    {
-                        name: "🎉 Ehrenwerter Empfänger",
-                        value: winner.toString(),
-                        inline: true,
-                    },
-                    ...(rarityAttribute
-                        ? [
-                              {
-                                  name: "✨ Rarität",
-                                  value: `${rarityAttribute.shortDisplay} ${rarityAttribute.displayName}`.trim(),
-                                  inline: true,
-                              },
-                          ]
-                        : []),
-                ],
-                footer: {
-                    text: messages.join("\n").trim(),
-                },
-            },
-        ],
-        files: attachment
-            ? [
-                  {
-                      name: "opened.gif",
-                      attachment,
-                  },
-              ]
-            : [],
-        components: [],
-    });
+    const content = await createDropTakenContent(
+        context,
+        template,
+        claimedLoot,
+        winner.user,
+        messages,
+    );
+
+    if (canBeDoubled) {
+        content.components[0].addActionRowComponents(a => a.addComponents(doubleOrNothingButton));
+    }
+
+    const dropMessage: MessageEditOptions = {
+        flags: MessageFlags.IsComponentsV2,
+        components: content.components,
+        embeds: [],
+        files: content.files,
+    };
+
+    await message.edit(dropMessage);
 
     if (template.onDrop) {
         await template.onDrop(context, winner, channel as TextChannel, claimedLoot).catch(err => {
@@ -238,6 +228,135 @@ export async function postLootDrop(
             sentry.captureException(err);
         });
     }
+
+    if (!canBeDoubled) {
+        return;
+    }
+
+    let doubleOrNothingInteraction: MessageComponentInteraction | undefined;
+
+    try {
+        doubleOrNothingInteraction = await message.awaitMessageComponent({
+            filter: i => i.customId === "double-or-nothing" && i.user.id === winner.id,
+            componentType: ComponentType.Button,
+            time: 5000,
+        });
+    } catch {
+        return;
+    } finally {
+        // Remove the last action row with the button. Only works because there is only one action row.
+        content.components[0].spliceComponents(content.components[0].components.length - 1, 1);
+        await message.edit(dropMessage);
+        if (doubleOrNothingInteraction) {
+            await doubleOrNothingInteraction.deferUpdate();
+        }
+    }
+
+    if (randomBoolean()) {
+        await channel.send(
+            `DOPPELT ODER NIX, ${winner}! Du bekommst dein Geschenk nicht nochmal und gehst stattdessen leer aus. Loser!`,
+        );
+
+        await Promise.all([
+            lootService.deleteLoot(claimedLoot.id),
+            lootService.deleteLootByPredecessor(claimedLoot.id),
+            message.delete(),
+        ]);
+        return;
+    }
+
+    if (template.onDuplicateDrop) {
+        const proceedWithSecondDrop = await template.onDuplicateDrop(
+            context,
+            winner,
+            claimedLoot,
+            message,
+        );
+        if (!proceedWithSecondDrop) {
+            return;
+        }
+    }
+
+    const extraLoot = await lootService.createLoot(
+        template,
+        winner.user,
+        message,
+        "double-or-nothing",
+        claimedLoot.id,
+        rarityAttribute,
+    );
+    if (!extraLoot) {
+        await channel.send(`${winner}, ups, da ist was schief gelaufi ${hamster}`);
+        return;
+    }
+
+    await channel.send(
+        `DOPPELT ODER NIX, ${winner}! Du bekommst dein Geschenk nochmal! 99% der Spieler hören vor dem großen Gewinn auf. Du gehörst nicht dazu und bist ein Gewinnertyp! 🎉`,
+    );
+}
+
+export type GeneratedContent = {
+    components: [ContainerBuilder];
+    files: BaseMessageOptions["files"];
+};
+
+export async function createDropTakenContent(
+    context: BotContext,
+    template: Readonly<LootTemplate>,
+    claimedLoot: Readonly<Loot>,
+    winner: User,
+    dropMessages: readonly string[],
+): Promise<GeneratedContent> {
+    const attachment = template.drawCustomAsset
+        ? await template.drawCustomAsset(context, winner, template, claimedLoot)
+        : template.asset
+          ? await fs.readFile(template.asset)
+          : null;
+
+    const container = new ContainerBuilder().addTextDisplayComponents(
+        t => t.setContent(`-# 🎉 ${winner} hat das Geschenk geöffnet und bekommt:`),
+        t => t.setContent(`# ${template.displayName}`),
+        t => t.setContent(template.dropDescription),
+    );
+
+    const lootAttributes = await lootService.getLootAttributes(claimedLoot.id);
+
+    const rarityAttribute = lootAttributes.filter(
+        a => a.attributeClassId === LootAttributeClassId.RARITY,
+    )[0];
+
+    if (rarityAttribute) {
+        container.addTextDisplayComponents(
+            t => t.setContent("**✨ Rarität**"),
+            t =>
+                t.setContent(
+                    `${rarityAttribute.shortDisplay} ${rarityAttribute.displayName}`.trim(),
+                ),
+        );
+    }
+
+    if (attachment) {
+        container.addMediaGalleryComponents(media =>
+            media.addItems(image => image.setURL("attachment://opened.gif")),
+        );
+    }
+
+    const allMessages = dropMessages.join("\n").trim();
+    if (allMessages.length > 0) {
+        container.addTextDisplayComponents(t => t.setContent(`-# ${allMessages}`));
+    }
+
+    return {
+        components: [container],
+        files: attachment
+            ? [
+                  {
+                      name: "opened.gif",
+                      attachment,
+                  },
+              ]
+            : [],
+    };
 }
 
 type AdjustmentResult = {

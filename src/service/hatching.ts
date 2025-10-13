@@ -1,8 +1,8 @@
-import type { BotContext } from "src/context.js";
 import * as fs from "node:fs/promises";
 
 import { userMention } from "discord.js";
 
+import type { BotContext } from "@/context.js";
 import type { Loot } from "@/storage/db/model.js";
 import log from "@log";
 import * as time from "@/utils/time.js";
