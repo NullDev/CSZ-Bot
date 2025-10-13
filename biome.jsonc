@@ -10,7 +10,6 @@
     "formatter": {
         "enabled": true,
         "useEditorconfig": true,
-        "lineEnding": "lf", // needed for biome on windows because editorconfig does not work
         "lineWidth": 100
     },
     "vcs": {
