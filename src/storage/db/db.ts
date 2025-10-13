@@ -2,13 +2,13 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
 
-import { FileMigrationProvider, SqliteDialect, Kysely, Migrator } from "kysely";
+import {FileMigrationProvider, SqliteDialect, Kysely, Migrator} from "kysely";
 import SQLite from "better-sqlite3";
-import { captureException, startInactiveSpan } from "@sentry/node";
+import {captureException, startInactiveSpan} from "@sentry/node";
 
-import type { Database } from "./model.js";
+import type {Database} from "./model.js";
 import datePlugin from "./date-plugin.js";
-import { SqliteBooleanPlugin } from "./boolean-plugin.js";
+import {SqliteBooleanPlugin} from "./boolean-plugin.js";
 import assertNever from "@/utils/assertNever.js";
 import log from "@log";
 
@@ -25,13 +25,13 @@ export async function connectToDb(databasePath: string) {
     const db = new Kysely<Database>({
         plugins: [datePlugin, new SqliteBooleanPlugin()],
         dialect: new SqliteDialect({
-            database: nativeDb,
+            database: nativeDb
         }),
         log: e => {
             const info = {
                 sql: e.query.sql,
                 params: e.query.parameters,
-                duration: e.queryDurationMillis,
+                duration: e.queryDurationMillis
             };
             switch (e.level) {
                 case "error":
@@ -40,11 +40,11 @@ export async function connectToDb(databasePath: string) {
                     break;
                 case "query":
                     if (
-                        info.sql.startsWith('select * from "fadingMessages"') ||
-                        info.sql.startsWith('delete from "fadingMessages" where') ||
-                        info.sql.startsWith('select * from "woisActions"') ||
-                        info.sql.startsWith('select * from "reminders"') ||
-                        info.sql.startsWith('select * from "bans"')
+                        info.sql.startsWith("select * from \"fadingMessages\"") ||
+                        info.sql.startsWith("delete from \"fadingMessages\" where") ||
+                        info.sql.startsWith("select * from \"woisActions\"") ||
+                        info.sql.startsWith("select * from \"reminders\"") ||
+                        info.sql.startsWith("select * from \"bans\"")
                     ) {
                         return;
                     }
@@ -53,7 +53,7 @@ export async function connectToDb(databasePath: string) {
                         name: info.sql,
                         op: "db.query",
                         startTime: new Date(Date.now() - info.duration),
-                        onlyIfParent: true,
+                        onlyIfParent: true
                     }).end();
 
                     log.debug(info, "DB Query");
@@ -61,7 +61,7 @@ export async function connectToDb(databasePath: string) {
                 default:
                     assertNever(e);
             }
-        },
+        }
     });
 
     log.info("Connected to database.");
@@ -102,7 +102,7 @@ async function runMigrationsIfNeeded(db: Kysely<Database>) {
     if (pendingMigrations > 0) {
         log.info("Running %d migrations.", pendingMigrations);
 
-        const { error, results } = await migrator.migrateToLatest();
+        const {error, results} = await migrator.migrateToLatest();
         const errors = results?.filter(r => r.status === "Error");
         if (errors) {
             for (const e of errors) {

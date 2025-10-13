@@ -1,7 +1,7 @@
 [
     {
         "name": "Gudruns Haus",
-        "description": "",
+        "description": "Hier treibt Gudrun ihr Unwesen",
         "x": 5,
         "y": 3,
         "height": 10,
@@ -10,7 +10,7 @@
     },
     {
         "name": "Asse 2",
-        "description": "",
+        "description": " Ziemlich verstrahlt hier",
         "x": 25,
         "y": 39,
         "height": 11,
@@ -19,7 +19,7 @@
     },
     {
         "name": "CSZ-HQ",
-        "description": "",
+        "description": " In der Basis kannst du dich für deine Abenteuer ausrüsten",
         "x": 2,
         "y": 60,
         "height": 14,
@@ -28,12 +28,11 @@
     },
     {
         "name": "Berge",
-        "description": "",
+        "description": "Hier schneit es ... anders",
         "x": 53,
         "y": 3,
         "width": 20,
         "height": 40,
-
         "color": "GREY"
     },
     {
@@ -43,7 +42,6 @@
         "y": 0,
         "width": 17,
         "height": 13,
-
         "color": "GREEN"
     },
     {

@@ -1,7 +1,7 @@
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
 
-import { createCanvas, loadImage, type Image } from "@napi-rs/canvas";
+import {createCanvas, loadImage, type Image} from "@napi-rs/canvas";
 import {
     ActionRowBuilder,
     AttachmentBuilder,
@@ -17,13 +17,13 @@ import {
     SlashCommandBuilder,
     SlashCommandStringOption,
     TextDisplayBuilder,
-    type User,
+    type User
 } from "discord.js";
 
-import type { ApplicationCommand } from "@/commands/command.js";
+import type {ApplicationCommand} from "@/commands/command.js";
 import * as locationService from "@/service/location.js";
-import type { BotContext } from "@/context.js";
-import { Vec2 } from "@/utils/math.js";
+import type {BotContext} from "@/context.js";
+import {Vec2, Vec4} from "@/utils/math.js";
 import * as fontService from "@/service/font.js";
 import { extendContext, type ExtendedCanvasContext } from "@/utils/ExtendedCanvasContext.js";
 import assertNever from "@/utils/assertNever.js";
@@ -32,7 +32,7 @@ import * as petService from "@/service/pet.js";
 const allDirections = [
     ["NW", "N", "NE"],
     ["W", "X", "E"],
-    ["SW", "S", "SE"],
+    ["SW", "S", "SE"]
 ] as const satisfies locationService.Direction[][];
 
 const buttonLabels: Record<locationService.Direction, string> = {
@@ -44,7 +44,7 @@ const buttonLabels: Record<locationService.Direction, string> = {
     E: "➡️",
     SW: "↙️",
     S: "⬇️",
-    SE: "↘️",
+    SE: "↘️"
 };
 
 export default class KarteCommand implements ApplicationCommand {
@@ -72,7 +72,7 @@ export default class KarteCommand implements ApplicationCommand {
 
     #createNavigationButtonRow(
         currentPosition: locationService.Position,
-        mapSize: locationService.Position,
+        mapSize: locationService.Position
     ) {
         return allDirections.map(directionRow => {
             const row = new ActionRowBuilder<ButtonBuilder>();
@@ -83,7 +83,7 @@ export default class KarteCommand implements ApplicationCommand {
                         .setCustomId(`karte-direction-${direction}`)
                         .setLabel(buttonLabels[direction])
                         .setStyle(ButtonStyle.Secondary)
-                        .setDisabled(!canPress),
+                        .setDisabled(!canPress)
                 );
             }
             return row;
@@ -94,21 +94,27 @@ export default class KarteCommand implements ApplicationCommand {
         map: Buffer,
         currentPosition: locationService.Position,
         mapSize: locationService.Position,
-        withNavigation: boolean,
+        withNavigation: boolean
     ) {
-        const mapFile = new AttachmentBuilder(map, { name: "map.png" });
+        const mapFile = new AttachmentBuilder(map, {name: "map.png"});
+
 
         const container = new ContainerBuilder()
             .addTextDisplayComponents(
-                new TextDisplayBuilder().setContent("## Karte des heiligen CSZ-Landes"),
+                new TextDisplayBuilder().setContent("## Karte des heiligen CSZ-Landes")
             )
             .addMediaGalleryComponents(
                 new MediaGalleryBuilder().addItems(
                     new MediaGalleryItemBuilder()
                         .setURL("attachment://map.png")
-                        .setDescription("Karte"),
-                ),
+                        .setDescription("Karte")
+                )
             );
+        let place = await locationService.getCurrentPlaceforUser(currentPosition);
+        if (place != null) {
+
+            container.addTextDisplayComponents(new TextDisplayBuilder().setContent(place.description));
+        }
 
         if (withNavigation) {
             const navigationButtons = this.#createNavigationButtonRow(currentPosition, mapSize);
@@ -117,7 +123,7 @@ export default class KarteCommand implements ApplicationCommand {
 
         return {
             components: [container],
-            files: [mapFile],
+            files: [mapFile]
         };
     }
 
@@ -146,11 +152,11 @@ export default class KarteCommand implements ApplicationCommand {
         };
 
         const messageData = await this.createMessageData(map, currentPosition, mapSize, true);
-
         const replyData = await command.reply({
             withResponse: true,
             flags: MessageFlags.IsComponentsV2,
-            ...messageData,
+            ...messageData
+
         });
 
         const sentReply = replyData.resource?.message;
@@ -168,13 +174,13 @@ export default class KarteCommand implements ApplicationCommand {
                 // For this reason, you may wish to .deferUpdate() all interactions in your filter,
                 await i.deferUpdate();
                 return i.customId.startsWith("karte-direction-") && i.user.id === command.user.id;
-            },
+            }
         });
 
         collector.on("collect", async i => {
             const currentPosition = await locationService.move(
                 i.user,
-                i.customId.replace("karte-direction-", "") as locationService.Direction,
+                i.customId.replace("karte-direction-", "") as locationService.Direction
             );
 
             const map = await this.#drawMap(debugchoice, currentPosition, i.user, context);
@@ -183,13 +189,13 @@ export default class KarteCommand implements ApplicationCommand {
                 map,
                 currentPosition,
                 mapSize,
-                true,
+                true
             );
 
-            await i.message.edit({ ...newMessageData });
+            await i.message.edit({...newMessageData});
         });
 
-        collector.on("end", async () => {
+        collector.on("end", async() => {
             const currentPosition =
                 (await locationService.getPositionForUser(author.user as User)) ??
                 locationService.startPosition;
@@ -200,9 +206,9 @@ export default class KarteCommand implements ApplicationCommand {
                 map,
                 currentPosition,
                 mapSize,
-                false,
+                false
             );
-            await sentReply.edit({ ...newMessageData });
+            await sentReply.edit({...newMessageData});
         });
     }
 
@@ -210,7 +216,7 @@ export default class KarteCommand implements ApplicationCommand {
         debugOverlay: "GRID" | "LOCATIONS" | null,
         position: locationService.Position,
         user: User,
-        context: BotContext,
+        context: BotContext
     ): Promise<Buffer> {
         const background = await fs.readFile("assets/maps/csz-karte-v1.png");
         const backgroundImage = await loadImage(background);
@@ -219,6 +225,7 @@ export default class KarteCommand implements ApplicationCommand {
         const ctx = extendContext(canvas.getContext("2d"));
 
         ctx.drawImage(backgroundImage, 0, 0);
+
         switch (debugOverlay) {
             case "GRID":
                 this.#drawRaster(ctx);
@@ -243,7 +250,7 @@ export default class KarteCommand implements ApplicationCommand {
                 continue;
             }
 
-            const avatarUrl = member.user.avatarURL({ size: 64, forceStatic: true });
+            const avatarUrl = member.user.avatarURL({size: 64, forceStatic: true});
             if (!avatarUrl) {
                 continue;
             }
@@ -252,7 +259,7 @@ export default class KarteCommand implements ApplicationCommand {
             this.#drawPlayer(ctx, pos, member.user.displayName, avatar, "small", "grey", undefined);
         }
 
-        const avatarUrl = user.avatarURL({ size: 64, forceStatic: true });
+        const avatarUrl = user.avatarURL({size: 64, forceStatic: true});
         if (!avatarUrl) {
             throw new Error("Could not fetch avatar of user.");
         }
@@ -280,7 +287,7 @@ export default class KarteCommand implements ApplicationCommand {
         avatar: Image,
         radius: number,
         strokeWidth: number,
-        strokeColor: string,
+        strokeColor: string
     ) {
         const pos = new Vec2(position.x, position.y);
 
@@ -318,6 +325,7 @@ export default class KarteCommand implements ApplicationCommand {
         ctx.beginPath();
         ctx.strokeStyle = strokeColor;
         ctx.lineWidth = strokeWidth;
+
         ctx.rect(
             position.x * stepSize,
             position.y * stepSize,
@@ -359,7 +367,7 @@ export default class KarteCommand implements ApplicationCommand {
             playerColor,
             "bold 20px",
             fontService.names.openSans,
-            name,
+            name
         );
 
         this.#drawAvatar(ctx, position, avatar, radius, size === "large" ? 4 : 1, playerColor);
@@ -390,7 +398,8 @@ export default class KarteCommand implements ApplicationCommand {
 
             if (x % 100 === 0) {
                 ctx.lineWidth = 2;
-            } else {
+            }
+            else {
                 ctx.lineWidth = 1;
             }
 
@@ -406,7 +415,8 @@ export default class KarteCommand implements ApplicationCommand {
 
             if (y % 100 === 0) {
                 ctx.lineWidth = 2;
-            } else {
+            }
+            else {
                 ctx.lineWidth = 1;
             }
 
