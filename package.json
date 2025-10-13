@@ -8,10 +8,10 @@
     "scripts": {
         "start": "tsx --require ./src/polyfills.ts src/app.ts",
         "test": "tsx --require ./src/polyfills.ts --test && tsgo",
-        "ci": "biome ci ./src",
-        "format": "biome format --write ./src",
-        "lint": "biome lint ./src",
-        "lint:fix": "biome check --write ./src",
+        "ci": "biome ci ./",
+        "format": "biome format --write ./",
+        "lint": "biome lint ./",
+        "lint:fix": "biome check --write ./",
         "watch": "tsx --require ./src/polyfills.ts --watch src/app.ts"
     },
     "repository": {
