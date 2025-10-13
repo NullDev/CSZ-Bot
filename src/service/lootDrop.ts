@@ -40,7 +40,8 @@ const lootTimeoutMs = 60 * 1000;
 
 export async function runDropAttempt(context: BotContext) {
     const lootConfig = context.commandConfig.loot;
-    if (randomBoolean(lootConfig.dropChance)) {
+    const shouldDropLoot = randomBoolean(lootConfig.dropChance); 
+    if (!shouldDropLoot) {
         return;
     }
 
