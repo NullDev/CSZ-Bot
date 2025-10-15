@@ -57,7 +57,7 @@ const sendPenis = async (
         components: [
             new ContainerBuilder().addTextDisplayComponents(
                 t => t.setContent(`-# Pimmel von ${user}`),
-                t => t.setContent(penis),
+                t => t.setContent(`## ${penis}`),
                 t =>
                     t.setContent(
                         `-# Länge: ${size.toFixed(2)} cm, Umfang: ${circumference} cm, Gemessen um ${time(measurement, TimestampStyles.LongDateTime)})`,
