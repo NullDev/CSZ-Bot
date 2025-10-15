@@ -45,7 +45,7 @@ export default {
         );
 
         if (role === undefined) {
-            throw new Error(`Could not find role ${role}`);
+            throw new Error(`Could not find role ${role} for "${message.content}"`);
         }
 
         if (reactionWasRemoved) {
