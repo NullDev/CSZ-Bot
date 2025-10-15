@@ -178,7 +178,7 @@ export default class SpringerWarningCommand implements SpecialCommand {
     randomness = 1;
     cooldownTime = 0;
 
-    matches(message: Message<boolean>, context: BotContext): boolean {
+    matches(message: Message<boolean>, _context: BotContext): boolean {
         const messageContent = message.content
             .toLowerCase()
             .replace("http://", "https://")
