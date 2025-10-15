@@ -196,7 +196,7 @@ export default class SpringerWarningCommand implements SpecialCommand {
     }
 
     async handleSpecialMessage(message: Message<true>, context: BotContext) {
-        const alarm = context.guild.emojis.resolve("alarm");
+        const alarm = context.guild.emojis.resolve("677503944007876608");
         if (!alarm) {
             throw new Error("Alarm emoji not found");
         }
