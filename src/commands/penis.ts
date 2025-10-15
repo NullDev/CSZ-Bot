@@ -47,10 +47,16 @@ const sendPenis = async (
               ? RADIUS_CHARS[1]
               : RADIUS_CHARS[2];
 
+    const cmFormatter = new Intl.NumberFormat("de-DE", {
+        style: "unit",
+        unit: "centimeter",
+        maximumFractionDigits: 2,
+    });
+
     const length = size | 0;
 
     const penis = `8${radiusChar.repeat(length)}D`;
-    const circumference = (Math.PI * radius * 2).toFixed(2);
+    const circumference = Math.PI * radius * 2;
 
     await message.reply({
         flags: MessageFlags.IsComponentsV2,
@@ -60,7 +66,7 @@ const sendPenis = async (
                 t => t.setContent(`## ${penis}`),
                 t =>
                     t.setContent(
-                        `-# Länge: ${size.toFixed(2)} cm, Umfang: ${circumference} cm, Gemessen um ${time(measurement, TimestampStyles.LongDateTime)}`,
+                        `-# Länge: ${cmFormatter.format(size)}, Umfang: ${cmFormatter.format(circumference)}, Gemessen um ${time(measurement, TimestampStyles.LongDateTime)}`,
                     ),
             ),
         ],
