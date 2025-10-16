@@ -1,11 +1,9 @@
-import { DatabaseSync } from "node:sqlite";
-import { Kysely } from "kysely";
-import { buildQueryFn, GenericSqliteDialect, parseBigInt } from "kysely-generic-sqlite";
+import type { DatabaseSync } from "node:sqlite";
+import { buildQueryFn, parseBigInt } from "kysely-generic-sqlite";
 import type { IGenericSqlite } from "kysely-generic-sqlite";
 
-const db = new Kysely({
-    dialect: new GenericSqliteDialect(() => createSqliteExecutor(new DatabaseSync(":memory:"))),
-});
+// Taken from:
+// https://github.com/kysely-org/kysely/issues/1292#issuecomment-2670341588
 
 export function createSqliteExecutor(db: DatabaseSync): IGenericSqlite<DatabaseSync> {
     const getStmt = (sql: string) => {
