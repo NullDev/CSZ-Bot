@@ -27,16 +27,14 @@ const validateDate = (date: Date): true | string => {
         throw new Error("Danke JS");
     }
 
-    const now = new Date();
-    if (date < now) {
+    if (date.getTime() < Date.now()) {
         return "Brudi das sollte schon in der Zukunft liegen, bin ich Marty McFly oder wat?";
     }
 
-    const diff = Math.round(date.getTime() - now.getTime());
-    if (diff < 60000) {
+    const diff = Math.round(date.getTime() - Date.now());
+    if (diff < 60_000) {
         return "Ach komm halt doch dein Maul";
     }
-
     return true;
 };
 
@@ -116,7 +114,7 @@ export default class ErinnerungCommand implements MessageCommand, ApplicationCom
                         t => t.setContent(samples.map(s => `- \`${s}\``).join("\n")),
                     ),
                 ],
-                flags: MessageFlags.Ephemeral,
+                flags: MessageFlags.Ephemeral | MessageFlags.IsComponentsV2,
             });
         }
     }
