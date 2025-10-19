@@ -38,6 +38,34 @@ const validateDate = (date: Date): true | string => {
     return true;
 };
 
+function getSamplesComponents() {
+    const samples = ["in 2 Stunden", "morgen um 15 Uhr", "nächsten Freitag"];
+
+    return new ContainerBuilder().addTextDisplayComponents(
+        t => t.setContent("Brudi was ist das denn für ne Datumsangabe? Gib was ordentliches an."),
+        t => t.setContent("Was ordentliches ist z. B.:"),
+        t => t.setContent(samples.map(s => `- \`${s}\``).join("\n")),
+    );
+}
+
+function parsDateSpec(param: string): Date | string {
+    let remindAt = chrono.de.parseDate(param);
+    const validationResult = validateDate(remindAt);
+    if (validationResult === true) {
+        return remindAt;
+    }
+
+    if (!param.startsWith("in")) {
+        remindAt = chrono.de.parseDate(`in ${param}`);
+    }
+
+    const secondAttemptValidation = validateDate(remindAt);
+    if (secondAttemptValidation === true) {
+        return remindAt;
+    }
+    return secondAttemptValidation;
+}
+
 export default class ErinnerungCommand implements MessageCommand, ApplicationCommand {
     name = "erinnerung";
     description = "Setzt eine Erinnerung für dich";
@@ -70,50 +98,32 @@ export default class ErinnerungCommand implements MessageCommand, ApplicationCom
         }
 
         try {
-            let remindAt = chrono.de.parseDate(remindAtStr);
-            const validationResult = validateDate(remindAt);
-            if (validationResult !== true) {
-                if (!remindAtStr.startsWith("in")) {
-                    remindAt = chrono.de.parseDate(`in ${remindAtStr}`);
-                }
-
-                const validationResult = validateDate(remindAt);
-                if (validationResult !== true) {
-                    await interaction.reply({
-                        content: validationResult,
-                        flags: MessageFlags.Ephemeral,
-                    });
-                    return;
-                }
+            const parsedDate = parsDateSpec(remindAtStr);
+            if (typeof parsedDate === "string") {
+                await interaction.reply({
+                    content: parsedDate,
+                    flags: MessageFlags.Ephemeral,
+                });
+                return;
             }
 
             await reminderService.insertStaticReminder(
                 command.user,
                 command.channelId,
                 command.guildId,
-                remindAt,
+                parsedDate,
                 note,
             );
 
             await command.reply(
                 `Ok brudi, werd dich ${formatTime(
-                    remindAt,
+                    parsedDate,
                     TimestampStyles.RelativeTime,
                 )} dran erinnern. Außer ich kack ab lol, dann mach ich das später (vielleicht)`,
             );
         } catch {
-            const samples = ["in 2 Stunden", "morgen um 15 Uhr", "nächsten Freitag"];
             await interaction.reply({
-                components: [
-                    new ContainerBuilder().addTextDisplayComponents(
-                        t =>
-                            t.setContent(
-                                "Brudi was ist das denn für ne Datumsangabe? Gib was ordentliches an.",
-                            ),
-                        t => t.setContent("Was ordentliches ist z. B.:"),
-                        t => t.setContent(samples.map(s => `- \`${s}\``).join("\n")),
-                    ),
-                ],
+                components: [getSamplesComponents()],
                 flags: MessageFlags.Ephemeral | MessageFlags.IsComponentsV2,
             });
         }
@@ -128,10 +138,9 @@ export default class ErinnerungCommand implements MessageCommand, ApplicationCom
         }
 
         try {
-            const date = chrono.de.parseDate(param);
-            const valid = validateDate(date);
-            if (valid !== true) {
-                await message.reply(valid);
+            const parsedDate = parsDateSpec(param);
+            if (typeof parsedDate === "string") {
+                await message.reply(parsedDate);
                 return;
             }
 
@@ -147,19 +156,19 @@ export default class ErinnerungCommand implements MessageCommand, ApplicationCom
                 messageId,
                 refMessage.channelId,
                 guildId,
-                date,
+                parsedDate,
             );
             await message.reply(
                 `Ok brudi, werd dich ${formatTime(
-                    date,
+                    parsedDate,
                     TimestampStyles.RelativeTime,
                 )} dran erinnern. Außer ich kack ab lol, dann mach ich das später (vielleicht)`,
             );
-        } catch (err) {
-            log.error(err, `Couldn't parse date from message ${message.content} due to`);
-            await message.reply(
-                "Brudi was ist das denn für ne Datumsangabe? Gib was ordentliches an",
-            );
+        } catch {
+            await message.reply({
+                components: [getSamplesComponents()],
+                flags: MessageFlags.Ephemeral | MessageFlags.IsComponentsV2,
+            });
         }
     }
 }
