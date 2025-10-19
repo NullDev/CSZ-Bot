@@ -2,7 +2,6 @@ import {
     type CacheType,
     type CommandInteraction,
     ContainerBuilder,
-    ContainerComponent,
     type GuildTextBasedChannel,
     MessageFlags,
     SlashCommandBuilder,
@@ -14,16 +13,17 @@ import * as chrono from "chrono-node";
 import * as sentry from "@sentry/node";
 
 import type { MessageCommand, ApplicationCommand } from "@/commands/command.js";
-import type { ProcessableMessage } from "@/service/command.js";
 import type { BotContext } from "@/context.js";
+import type { Reminder } from "@/storage/db/model.js";
+import type { ProcessableMessage } from "@/service/command.js";
 import log from "@log";
 import * as reminderService from "@/storage/reminders.js";
-import type { Reminder } from "@/storage/db/model.js";
+import * as dateUtils from "@/utils/dateUtils.js";
 
 import { ensureChatInputCommand } from "@/utils/interactionUtils.js";
 
 const validateDate = (date: Date): true | string => {
-    if (Number.isNaN(date.getTime()) || !Number.isFinite(date.getTime())) {
+    if (!dateUtils.isValidDate(date)) {
         throw new Error("Danke JS");
     }
 
@@ -61,7 +61,7 @@ export default class ErinnerungCommand implements MessageCommand, ApplicationCom
 
     async handleInteraction(interaction: CommandInteraction<CacheType>) {
         const command = ensureChatInputCommand(interaction);
-        const time = command.options.getString("time", true);
+        const remindAtStr = command.options.getString("time", true);
         const note = command.options.getString("note");
         if (command.guildId === null) {
             await interaction.reply({
@@ -72,27 +72,34 @@ export default class ErinnerungCommand implements MessageCommand, ApplicationCom
         }
 
         try {
-            const date = chrono.de.parseDate(time);
-            const validationResult = validateDate(date);
+            let remindAt = chrono.de.parseDate(remindAtStr);
+            const validationResult = validateDate(remindAt);
             if (validationResult !== true) {
-                await interaction.reply({
-                    content: validationResult,
-                    flags: MessageFlags.Ephemeral,
-                });
-                return;
+                if (!remindAtStr.startsWith("in")) {
+                    remindAt = chrono.de.parseDate(`in ${remindAtStr}`);
+                }
+
+                const validationResult = validateDate(remindAt);
+                if (validationResult !== true) {
+                    await interaction.reply({
+                        content: validationResult,
+                        flags: MessageFlags.Ephemeral,
+                    });
+                    return;
+                }
             }
 
             await reminderService.insertStaticReminder(
                 command.user,
                 command.channelId,
                 command.guildId,
-                date,
+                remindAt,
                 note,
             );
 
             await command.reply(
                 `Ok brudi, werd dich ${formatTime(
-                    date,
+                    remindAt,
                     TimestampStyles.RelativeTime,
                 )} dran erinnern. Außer ich kack ab lol, dann mach ich das später (vielleicht)`,
             );
@@ -103,7 +110,7 @@ export default class ErinnerungCommand implements MessageCommand, ApplicationCom
                     new ContainerBuilder().addTextDisplayComponents(
                         t =>
                             t.setContent(
-                                "Brudi was ist das denn für ne Datumsangabe? Gib was ordentliches an",
+                                "Brudi was ist das denn für ne Datumsangabe? Gib was ordentliches an.",
                             ),
                         t => t.setContent("Was ordentliches ist z. B.:"),
                         t => t.setContent(samples.map(s => `- \`${s}\``).join("\n")),
