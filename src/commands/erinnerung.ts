@@ -1,6 +1,8 @@
 import {
     type CacheType,
     type CommandInteraction,
+    ContainerBuilder,
+    ContainerComponent,
     type GuildTextBasedChannel,
     MessageFlags,
     SlashCommandBuilder,
@@ -94,10 +96,19 @@ export default class ErinnerungCommand implements MessageCommand, ApplicationCom
                     TimestampStyles.RelativeTime,
                 )} dran erinnern. Außer ich kack ab lol, dann mach ich das später (vielleicht)`,
             );
-        } catch (err) {
-            log.error(err, `Couldn't parse date from message ${time} due to`);
+        } catch {
+            const samples = ["in 2 Stunden", "morgen um 15 Uhr", "nächsten Freitag"];
             await interaction.reply({
-                content: "Brudi was ist das denn für ne Datumsangabe? Gib was ordentliches an",
+                components: [
+                    new ContainerBuilder().addTextDisplayComponents(
+                        t =>
+                            t.setContent(
+                                "Brudi was ist das denn für ne Datumsangabe? Gib was ordentliches an",
+                            ),
+                        t => t.setContent("Was ordentliches ist z. B.:"),
+                        t => t.setContent(samples.map(s => `- \`${s}\``).join("\n")),
+                    ),
+                ],
                 flags: MessageFlags.Ephemeral,
             });
         }
