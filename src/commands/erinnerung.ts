@@ -2,6 +2,7 @@ import {
     type CacheType,
     type CommandInteraction,
     type GuildTextBasedChannel,
+    MessageFlags,
     SlashCommandBuilder,
     SlashCommandStringOption,
     TimestampStyles,
@@ -56,31 +57,38 @@ export default class ErinnerungCommand implements MessageCommand, ApplicationCom
                 .setRequired(false),
         );
 
-    async handleInteraction(command: CommandInteraction<CacheType>) {
-        const cmd = ensureChatInputCommand(command);
-        const time = cmd.options.getString("time", true);
-        const note = cmd.options.getString("note");
-        if (cmd.guildId === null) {
-            await cmd.reply("Brudi ich muss schon wissen wo ich dich erinnern soll");
+    async handleInteraction(interaction: CommandInteraction<CacheType>) {
+        const command = ensureChatInputCommand(interaction);
+        const time = command.options.getString("time", true);
+        const note = command.options.getString("note");
+        if (command.guildId === null) {
+            await interaction.reply({
+                content: "Brudi ich muss schon wissen wo ich dich erinnern soll",
+                flags: MessageFlags.Ephemeral,
+            });
             return;
         }
 
         try {
             const date = chrono.de.parseDate(time);
-            const valid = validateDate(date);
-            if (valid !== true) {
-                await cmd.reply(valid);
+            const validationResult = validateDate(date);
+            if (validationResult !== true) {
+                await interaction.reply({
+                    content: validationResult,
+                    flags: MessageFlags.Ephemeral,
+                });
                 return;
             }
 
             await reminderService.insertStaticReminder(
-                cmd.user,
-                cmd.channelId,
-                cmd.guildId,
+                command.user,
+                command.channelId,
+                command.guildId,
                 date,
                 note,
             );
-            await cmd.reply(
+
+            await command.reply(
                 `Ok brudi, werd dich ${formatTime(
                     date,
                     TimestampStyles.RelativeTime,
@@ -88,7 +96,10 @@ export default class ErinnerungCommand implements MessageCommand, ApplicationCom
             );
         } catch (err) {
             log.error(err, `Couldn't parse date from message ${time} due to`);
-            await cmd.reply("Brudi was ist das denn für ne Datumsangabe? Gib was ordentliches an");
+            await interaction.reply({
+                content: "Brudi was ist das denn für ne Datumsangabe? Gib was ordentliches an",
+                flags: MessageFlags.Ephemeral,
+            });
         }
     }
 
