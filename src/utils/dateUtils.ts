@@ -104,3 +104,7 @@ export function getStartAndEndDay(instant: Temporal.Instant, timeZone = "Europe/
     const startOfTomorrow = tomorrow.toZonedDateTime({ timeZone }).toPlainDate();
     return { startOfToday, startOfTomorrow };
 }
+
+export function isValidDate(date: Date): boolean {
+    return date instanceof Date && !Number.isNaN(date.getTime()) && Number.isFinite(date.getTime());
+}
