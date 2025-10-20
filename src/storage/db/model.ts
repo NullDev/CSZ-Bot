@@ -421,3 +421,17 @@ export interface PollsTable extends AuditedTable {
     endsAt: ColumnType<string | null, string | null, string | null>; // TODO: Date is not supported by the DB driver
     ended: boolean;
 }
+
+export type PollOptionId = number;
+
+export type PollOption = Selectable<PollOptionsTable>;
+
+export interface PollOptionsTable extends AuditedTable {
+    id: GeneratedAlways<PollOptionId>;
+
+    pollId: PollId;
+    index: number;
+    option: string;
+
+    authorId: Snowflake;
+}
