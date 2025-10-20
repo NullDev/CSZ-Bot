@@ -55,14 +55,12 @@ export default {
             return;
         }
 
-        const poll = await pollService.findRunnigDelayedPoll(message);
+        const poll = await pollService.findPollForEmbedMessage(message);
         if (!poll) {
             return;
         }
 
-        const isMultipleChoice = poll.multipleChoices;
-
-        const validVoteReactions = isMultipleChoice ? pollEmojis : voteEmojis;
+        const validVoteReactions = poll.multipleChoices ? pollEmojis : voteEmojis;
         if (!validVoteReactions.includes(reactionName)) {
             return;
         }
@@ -70,7 +68,7 @@ export default {
         const delayedPoll = pollCommand.delayedPolls.find(x => x.pollId === message.id);
         const isDelayedPoll = delayedPoll !== undefined;
 
-        if (isMultipleChoice) {
+        if (poll.multipleChoices) {
             if (isDelayedPoll) {
                 const delayedPollReactions =
                     delayedPoll.reactions[voteEmojis.indexOf(reactionName)];
