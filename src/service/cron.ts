@@ -15,7 +15,7 @@ import { clearWoisLogTask } from "@/service/voiceState.js";
 import { checkBirthdays } from "@/service/birthday.js";
 import { handleFadingMessages } from "@/service/fadingMessage.js";
 import { checkExpiredShifts } from "@/service/lootRoles.js";
-import { getTrichterUnserEmbed } from "@/service/trichterUnser.js";
+import { sendTrichterUnser } from "@/service/trichterUnser.js";
 import { degradeItems, exposeWithRadiation, runHalfLife } from "@/service/lootDegradation.js";
 import { hatchEggs } from "@/service/hatching.js";
 
@@ -45,7 +45,7 @@ export async function schedule(context: BotContext) {
     cron("5 * * * *", () => clearWoisLogTask());
     cron("* * * * * *", () => handleFadingMessages(context));
     cron("*/15 * * * *", () => checkExpiredShifts(context));
-    cron("0 20 * * FRI", () => getTrichterUnserEmbed(context));
+    cron("0 20 * * FRI", () => sendTrichterUnser(context));
     cron("0 * * * *", () => degradeItems(context));
     cron("26 * * * *", () => hatchEggs(context));
     cron("26 18,19 * * *", () => exposeWithRadiation(context));
