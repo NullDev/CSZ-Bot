@@ -17,6 +17,7 @@ import { LETTERS, EMOJI } from "@/service/poll.js";
 import * as pollService from "@/service/poll.js";
 import { defer } from "@/utils/interactionUtils.js";
 import * as poll from "./poll.js";
+import { truncateToLength } from "@/utils/stringUtils.js";
 
 const isPollField = (field: APIEmbedField): boolean =>
     !field.inline && LETTERS.some(l => field.name.startsWith(l));
@@ -80,10 +81,7 @@ export default class ExtendCommand implements MessageCommand {
                 polls
                     .slice(0, 24) // Discord allows max. 25 options
                     .map(poll => ({
-                        label:
-                            poll.description.length > 100
-                                ? `${poll.description.slice(0, 97)}…`
-                                : poll.description || "Kein Titel",
+                        label: truncateToLength(poll.description, 100) || "Kein Titel",
                         value: poll.message.id,
                     })),
             );

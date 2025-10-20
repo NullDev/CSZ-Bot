@@ -16,7 +16,6 @@ import * as timeUtils from "@/utils/time.js";
 import * as pollService from "@/service/poll.js";
 import { LETTERS, EMOJI } from "@/service/poll.js";
 import * as legacyDelayedPoll from "@/service/delayedPollLegacy.js";
-
 import { defer } from "@/utils/interactionUtils.js";
 
 export const TEXT_LIMIT = 4096;

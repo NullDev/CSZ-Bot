@@ -4,6 +4,7 @@ import type { BotContext } from "@/context.js";
 import log from "@log";
 import * as additionalMessageData from "@/storage/additionalMessageData.js";
 import * as pollService from "@/service/poll.js";
+import { truncateToLength } from "@/utils/stringUtils.js";
 
 interface DelayedPoll {
     pollId: string;
@@ -88,10 +89,7 @@ export const processPolls = async (context: BotContext) => {
             continue;
         }
 
-        const question =
-            embedDescription.length > TEXT_LIMIT
-                ? `${embedDescription.slice(0, TEXT_LIMIT - 20)}…`
-                : embed.description;
+        const question = truncateToLength(embedDescription, TEXT_LIMIT) || embed.description;
 
         if (question === null) {
             throw new Error("There was no question?");
