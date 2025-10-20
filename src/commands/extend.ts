@@ -171,6 +171,10 @@ export default class ExtendCommand implements MessageCommand {
             return `Bruder mindestens eine Antwortmöglichkeit ist länger als ${poll.FIELD_VALUE_LIMIT} Zeichen!`;
         }
 
+        for (const option of additionalPollOptions) {
+            await pollService.addPollOption(message.author, dbPoll, option);
+        }
+
         const replyEmbed = pollMessage.embeds[0];
         const originalAuthor = replyEmbed.author?.name.split(" ").slice(2).join(" ");
         const author = originalAuthor === message.author.username ? undefined : message.author;
