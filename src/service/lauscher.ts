@@ -8,7 +8,7 @@ import {
     getTrackMetadata,
     mostRecentPlayback,
 } from "@/storage/lauscher.js";
-import { Temporal } from "@js-temporal/polyfill";
+import type { Temporal } from "@js-temporal/polyfill";
 import type { Activity, User } from "discord.js";
 import log from "@log";
 
@@ -97,11 +97,7 @@ async function handleSpotifyActivity(context: BotContext, user: User, activity: 
         return;
     }
 
-    await insertSpotifyLog(
-        user,
-        activity.syncId,
-        Temporal.Instant.fromEpochMilliseconds(activity.createdTimestamp),
-    );
+    await insertSpotifyLog(user, activity.syncId, activity.createdAt.toTemporalInstant());
 }
 
 async function fetchTrackMetadata(context: BotContext, trackId: string) {

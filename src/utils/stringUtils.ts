@@ -17,7 +17,7 @@ export function substringAfter(str: string, s: string): string {
     return str.substring(str.indexOf(s) + s.length);
 }
 
-export function truncateToLength(str: string, length: number, ellipsis = "..."): string {
+export function truncateToLength(str: string, length: number, ellipsis = "…"): string {
     if (str.length > length) {
         return str.substring(0, length - ellipsis.length) + ellipsis;
     }

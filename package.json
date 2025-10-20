@@ -29,7 +29,7 @@
     "@js-temporal/polyfill": "^0.5.1",
     "@napi-rs/canvas": "0.1.80",
     "@resvg/resvg-js": "^2.6.2",
-    "@sentry/node": "^10.19.0",
+    "@sentry/node": "^10.20.0",
     "@snazzah/davey": "^0.1.7",
     "@spotify/web-api-ts-sdk": "^1.2.0",
     "better-sqlite3": "^12.4.1",
@@ -39,24 +39,24 @@
     "discord.js": "^14.23.2",
     "get-audio-duration": "^4.0.1",
     "graphviz-wasm": "^3.0.2",
-    "jsdom": "^27.0.0",
+    "jsdom": "^27.0.1",
     "kysely": "^0.28.8",
     "libsodium-wrappers": "^0.7.15",
-    "pino": "^10.0.0",
+    "pino": "^10.1.0",
     "pino-pretty": "^13.1.2",
     "splid-js": "^1.5.3",
     "tsx": "^4.20.6",
-    "youtube-dl-exec": "^3.0.25"
+    "youtube-dl-exec": "^3.0.26"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.2.6",
     "@types/better-sqlite3": "^7.6.13",
     "@types/jsdom": "^27.0.0",
-    "@types/node": "^24.7.2",
+    "@types/node": "^24.8.1",
     "@types/node-cron": "^3.0.11",
-    "@typescript/native-preview": "^7.0.0-dev.20251013.1",
+    "@typescript/native-preview": "^7.0.0-dev.20251019.1",
     "expect": "^30.2.0",
-    "lefthook": "^1.13.6"
+    "lefthook": "^2.0.0"
   },
   "trustedDependencies": [
     "@biomejs/biome",

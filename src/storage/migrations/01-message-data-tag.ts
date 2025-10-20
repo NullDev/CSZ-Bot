@@ -14,26 +14,6 @@ export async function up(db: Kysely<any>) {
         .addColumn("updatedAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
         .execute();
 
-    // Unused data migration (the table does not contain any meaningful data anyways)
-    /*
-    await db
-        .insertinto("additionalmessagedata2")
-        .columns(["guildid", "channelid", "messageid", "usage" ,"payload", "createdat"])
-        .expression(
-            db
-                .selectfrom("additionalmessagedata")
-                .select(eb => [
-                    "guildid",
-                    "channelid",
-                    "messageid",
-                    eb.val("delayed_poll").as("usage"),
-                    "customdata as payload",
-                    "createdat",
-                ]),
-        )
-        .execute();
-    */
-
     await db.schema
         .createIndex("additionalMessageData_messageId_usage")
         .on("additionalMessageData")

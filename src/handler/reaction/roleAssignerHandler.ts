@@ -1,7 +1,7 @@
 import type { MessageReaction, User } from "discord.js";
 
 import type { BotContext } from "@/context.js";
-import type { ReactionHandler } from "./ReactionHandler.js";
+import type { ReactionHandler } from "../ReactionHandler.js";
 
 import log from "@log";
 
@@ -45,7 +45,7 @@ export default {
         );
 
         if (role === undefined) {
-            throw new Error(`Could not find role ${role}`);
+            throw new Error(`Could not find role ${role} for "${message.content}"`);
         }
 
         if (reactionWasRemoved) {

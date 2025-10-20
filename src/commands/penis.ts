@@ -1,4 +1,4 @@
-import { time, TimestampStyles, type User } from "discord.js";
+import { ContainerBuilder, MessageFlags, time, TimestampStyles, type User } from "discord.js";
 
 import type { BotContext } from "@/context.js";
 import type { MessageCommand } from "@/commands/command.js";
@@ -47,14 +47,30 @@ const sendPenis = async (
               ? RADIUS_CHARS[1]
               : RADIUS_CHARS[2];
 
+    const cmFormatter = new Intl.NumberFormat("de-DE", {
+        style: "unit",
+        unit: "centimeter",
+        maximumFractionDigits: 2,
+    });
+
     const length = size | 0;
 
     const penis = `8${radiusChar.repeat(length)}D`;
-    const circumference = (Math.PI * radius * 2).toFixed(2);
+    const circumference = Math.PI * radius * 2;
 
-    await message.reply(
-        `Pimmel von ${user}:\n${penis}\n(Länge: ${size.toFixed(2)} cm, Umfang: ${circumference} cm, Gemessen um ${time(measurement, TimestampStyles.LongDateTime)})`,
-    );
+    await message.reply({
+        flags: MessageFlags.IsComponentsV2,
+        components: [
+            new ContainerBuilder().addTextDisplayComponents(
+                t => t.setContent(`-# Pimmel von ${user}`),
+                t => t.setContent(`## ${penis}`),
+                t =>
+                    t.setContent(
+                        `-# Länge: ${cmFormatter.format(size)}, Umfang: ${cmFormatter.format(circumference)}, gemessen um ${time(measurement, TimestampStyles.LongDateTime)}`,
+                    ),
+            ),
+        ],
+    });
 };
 
 /**
