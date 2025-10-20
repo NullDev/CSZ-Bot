@@ -78,3 +78,7 @@ export async function createPoll(
         endsAt,
     );
 }
+
+export async function getExpiredPolls(now: Temporal.Instant): Promise<Poll[]> {
+    return await polls.getExpiredPolls(now);
+}

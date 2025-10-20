@@ -417,4 +417,5 @@ export interface PollsTable extends AuditedTable {
     extendable: boolean;
 
     endsAt: ColumnType<string | null, string | null, string | null>; // TODO: Date is not supported by the DB driver
+    ended: boolean;
 }

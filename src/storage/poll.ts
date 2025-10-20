@@ -41,7 +41,18 @@ export async function createPoll(
             anonymous,
             extendable,
             endsAt: endsAt?.toString(),
+            ended: false,
         })
         .returningAll()
         .executeTakeFirstOrThrow();
+}
+
+export async function getExpiredPolls(now: Temporal.Instant): Promise<Poll[]> {
+    return await db()
+        .selectFrom("polls")
+        .where("endsAt", "is not", null)
+        .where("endsAt", "<=", now.toString())
+        .where("ended", "=", false)
+        .selectAll()
+        .execute();
 }
