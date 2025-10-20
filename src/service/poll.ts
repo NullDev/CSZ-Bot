@@ -131,10 +131,76 @@ export async function findPollForEmbedMessage(
 export async function countDelayedVote(poll: Poll, _reaction: MessageReaction) {
     console.assert(!poll.ended, "Poll already ended");
 
+    // const delayedPoll = pollCommand.delayedPolls.find(x => x.pollId === message.id);
+
     if (poll.multipleChoices) {
         // TODO: Toogle user vote
-        return;
+        // Old code:
+        /*
+        const delayedPollReactions =
+            delayedPoll.reactions[voteEmojis.indexOf(reactionName)];
+        const hasVoted = delayedPollReactions.some(x => x === invokingMember.id);
+        if (!hasVoted) {
+            delayedPollReactions.push(invokingMember.id);
+        } else {
+            delayedPollReactions.splice(delayedPollReactions.indexOf(invokingMember.id), 1);
+        }
+
+        const msg = await message.channel.send(
+            hasVoted
+                ? "🗑 Deine Reaktion wurde gelöscht."
+                : "💾 Deine Reaktion wurde gespeichert.",
+        );
+        await fadingMessage.startFadingMessage(msg as ProcessableMessage, 2500);
+        */
+    } else {
+        // TODO: Set user vote
+        // Old code:
+        /*
+        for (const reactionList of delayedPoll.reactions) {
+            reactionList.forEach((x, i) => {
+                if (x === invokingMember.id) reactionList.splice(i);
+            });
+        }
+        const delayedPollReactions =
+            delayedPoll.reactions[pollEmojis.indexOf(reactionName)];
+        delayedPollReactions.push(invokingMember.id);
+        */
     }
 
-    // TODO: Set user vote
+    /*
+    // If it's a delayed poll, we clear all Reactions
+    const allUserReactions = message.reactions.cache.filter(r => {
+        const emojiName = r.emoji.name;
+        return (
+            emojiName &&
+            r.users.cache.has(invokingMember.id) &&
+            pollEmojis.includes(emojiName)
+        );
+    });
+    await Promise.all(allUserReactions.map(r => r.users.remove(invokingMember.id)));
+
+    await additionalMessageData.upsertForMessage(
+        message,
+        "DELAYED_POLL",
+        JSON.stringify(delayedPoll),
+    );
+    */
+}
+
+export async function countVote(poll: Poll, _reaction: MessageReaction) {
+    console.assert(poll.endsAt === null, "Poll is a delayed poll");
+    /*
+    const reactions = message.reactions.cache.filter(r => {
+        const emojiName = r.emoji.name;
+        return (
+            emojiName &&
+            r.users.cache.has(invokingMember.id) &&
+            emojiName !== reactionEvent.emoji.name &&
+            pollEmojis.includes(emojiName)
+        );
+    });
+
+    await Promise.all(reactions.map(r => r.users.remove(invokingMember.id)));
+    */
 }
