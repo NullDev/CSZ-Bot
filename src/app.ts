@@ -11,12 +11,13 @@ import * as kysely from "@/storage/db/db.js";
 
 import type { ReactionHandler } from "@/handler/ReactionHandler.js";
 import messageDeleteHandler from "@/handler/messageDeleteHandler.js";
-import roleAssignerHandler from "@/handler/roleAssignerHandler.js";
-import pollReactionHandler from "@/handler/pollReactionHandler.js";
-import logEmotesReactionHandler from "@/handler/logEmotesReactionHandler.js";
-import quoteReactionHandler from "@/handler/quoteHandler.js";
 import { woisVoteReactionHandler } from "@/commands/woisvote.js";
 import * as voiceStateService from "@/service/voiceState.js";
+
+import roleAssignerHandler from "@/handler/reaction/roleAssignerHandler.js";
+import pollReactionHandler from "@/handler/reaction/pollReactionHandler.js";
+import logEmotesReactionHandler from "@/handler/reaction/logEmotesReactionHandler.js";
+import quoteReactionHandler from "@/handler/reaction/quoteHandler.js";
 
 import {
     handleInteractionEvent,

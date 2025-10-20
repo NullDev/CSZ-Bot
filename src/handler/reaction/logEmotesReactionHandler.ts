@@ -1,4 +1,4 @@
-import type { ReactionHandler } from "./ReactionHandler.js";
+import type { ReactionHandler } from "../ReactionHandler.js";
 
 import * as emoteLoggingService from "@/service/emoteLogging.js";
 

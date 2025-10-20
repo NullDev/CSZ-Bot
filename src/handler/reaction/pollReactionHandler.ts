@@ -1,7 +1,7 @@
 import type { MessageReaction, User } from "discord.js";
 
 import type { BotContext } from "@/context.js";
-import type { ReactionHandler } from "./ReactionHandler.js";
+import type { ReactionHandler } from "../ReactionHandler.js";
 
 import * as pollService from "@/service/poll.js";
 import { POLL_EMOJIS, VOTE_EMOJIS } from "@/service/poll.js";
