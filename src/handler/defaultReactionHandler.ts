@@ -4,11 +4,7 @@ import type { BotContext } from "@/context.js";
 import type { ReactionHandler } from "./ReactionHandler.js";
 
 import * as pollService from "@/service/poll.js";
-import { EMOJI } from "@/service/poll.js";
-
-const pollEmojis = EMOJI;
-const voteEmojis = ["👍", "👎"];
-const pollVoteEmojis = pollEmojis.concat(voteEmojis);
+import { POLL_EMOJIS, VOTE_EMOJIS } from "@/service/poll.js";
 
 export default {
     displayName: "Default Reaction Handler",
@@ -43,7 +39,7 @@ export default {
             throw new Error("Could not find reaction name");
         }
 
-        if (!pollVoteEmojis.includes(reactionName)) {
+        if (!POLL_EMOJIS.includes(reactionName) && !VOTE_EMOJIS.includes(reactionName)) {
             return;
         }
 
@@ -57,7 +53,7 @@ export default {
             return;
         }
 
-        const validVoteReactions = poll.multipleChoices ? pollEmojis : voteEmojis;
+        const validVoteReactions = poll.multipleChoices ? POLL_EMOJIS : VOTE_EMOJIS;
         if (!validVoteReactions.includes(reactionName)) {
             return;
         }

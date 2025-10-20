@@ -51,6 +51,9 @@ export const EMOJI = [
     "🇹",
 ];
 
+export const POLL_EMOJIS = EMOJI;
+export const VOTE_EMOJIS = ["👍", "👎"];
+
 export async function createPoll(
     sourceMessage: Message<true>,
     embedMessage: Message<true>,
