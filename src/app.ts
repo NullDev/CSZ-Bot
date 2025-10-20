@@ -167,6 +167,7 @@ client.once("clientReady", async initializedClient => {
             process.exit(0);
         }
     } catch (err) {
+        sentry.captureException(err);
         log.error(err, "Error in `ready` handler");
         process.exit(1);
     }
