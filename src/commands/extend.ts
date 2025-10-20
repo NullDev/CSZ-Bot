@@ -162,7 +162,7 @@ export default class ExtendCommand implements MessageCommand {
             throw new Error("replyMessage is not in a guild");
         }
 
-        const dbPoll = pollService.findPollForEmbedMessage(replyMessage);
+        const dbPoll = await pollService.findPollForEmbedMessage(replyMessage);
         if (!dbPoll) {
             return "Bruder das ist keine Umfrage ಠ╭╮ಠ";
         }
@@ -170,7 +170,8 @@ export default class ExtendCommand implements MessageCommand {
         if (!replyMessage.editable) {
             return "Bruder aus irgrndeinem Grund hat der Bot verkackt und kann die Umfrage nicht bearbeiten :<";
         }
-        if (replyMessage.embeds[0].color !== 0x2ecc71) {
+
+        if (!dbPoll.extendable) {
             return "Bruder die Umfrage ist nicht erweiterbar (ง'̀-'́)ง";
         }
 
