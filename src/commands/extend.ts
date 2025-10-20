@@ -15,6 +15,7 @@ import type { ProcessableMessage } from "@/service/command.js";
 
 import { parseLegacyMessageParts } from "@/service/command.js";
 import { LETTERS, EMOJI } from "@/service/poll.js";
+import * as pollService from "@/service/poll.js";
 import * as poll from "./poll.js";
 import log from "@log";
 
@@ -153,17 +154,14 @@ export default class ExtendCommand implements MessageCommand {
             return "Bruder irgendwas stimmt nicht mit deinem Reply ¯\\_(ツ)_/¯";
         }
 
-        const botUser = context.client.user;
-        const replyEmbed = replyMessage.embeds[0];
-
-        if (replyMessage.author.id !== botUser.id || replyMessage.embeds.length !== 1) {
-            return "Bruder das ist keine Umfrage ಠ╭╮ಠ";
+        if (!replyMessage.inGuild()) {
+            throw new Error("replyMessage is not in a guild");
         }
 
-        if (
-            !replyEmbed.author?.name.startsWith("Umfrage") &&
-            !replyEmbed.author?.name.startsWith("Strawpoll")
-        ) {
+        const replyEmbed = replyMessage.embeds[0];
+
+        const dbPoll = pollService.findPollForEmbedMessage(replyMessage);
+        if (!dbPoll) {
             return "Bruder das ist keine Umfrage ಠ╭╮ಠ";
         }
 
