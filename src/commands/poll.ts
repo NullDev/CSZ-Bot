@@ -119,15 +119,12 @@ Optionen:
             return "Bruder da ist keine Umfrage :c";
         }
 
-        const pollArray = positionals
-            .join(" ")
-            .split(";")
-            .map(e => e.trim())
-            .filter(e => e.replace(/\s/g, "") !== "");
+        const pollArray = pollService.parsePollOptionString(positionals.join(" "));
 
         const question = pollArray[0];
-        if (question.length > TEXT_LIMIT)
-            return "Bruder die Frage ist ja länger als mein Schwanz :c";
+        if (question.length > TEXT_LIMIT) {
+            return "Bruder die Frage ist ja länger als mein Schwands :c";
+        }
 
         const pollOptions = pollArray.slice(1);
         let pollOptionsTextLength = 0;

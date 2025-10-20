@@ -160,12 +160,7 @@ export default class ExtendCommand implements MessageCommand {
             return "Bruder die Umfrage ist leider schon voll (⚆ ͜ʖ⚆)";
         }
 
-        const additionalPollOptions = args
-            .join(" ")
-            .split(";")
-            .map(e => e.trim())
-            .filter(e => e.replace(/\s/g, "") !== "");
-
+        const additionalPollOptions = pollService.parsePollOptionString(args.join(" "));
         if (!additionalPollOptions.length) {
             return "Bruder da sind keine Antwortmöglichkeiten :c";
         }

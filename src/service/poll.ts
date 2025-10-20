@@ -220,3 +220,11 @@ export async function countVote(
             .map(reaction => reaction.users.remove(invoker.id)),
     );
 }
+
+export function parsePollOptionString(value: string): string[] {
+    // TODO: Handle quoted strings, so the user can have ; in an option
+    return value
+        .split(";")
+        .map(e => e.trim())
+        .filter(e => e.replace(/\s/g, "") !== "");
+}
