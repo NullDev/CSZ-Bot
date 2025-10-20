@@ -22,7 +22,6 @@ import { LETTERS, EMOJI } from "@/service/poll.js";
 import log from "@log";
 import * as additionalMessageData from "@/storage/additionalMessageData.js";
 import { defer } from "@/utils/interactionUtils.js";
-import { Temporal } from "node_modules/@js-temporal/polyfill/index.js";
 
 export const TEXT_LIMIT = 4096;
 export const FIELD_NAME_LIMIT = 256;
@@ -355,24 +354,21 @@ export const processPolls = async (context: BotContext) => {
                 ? `${embedDescription.slice(0, TEXT_LIMIT - 20)}…`
                 : embed.description;
 
-        const toSend: APIEmbed = {
-            description: `Zusammenfassung: ${question}`,
-            fields,
-            timestamp: new Date().toISOString(),
-            author: {
-                name: `${embedAuthor.name}`,
-                icon_url: embedAuthor.iconURL,
-            },
-            footer: {
-                text: `Gesamtabstimmungen: ${Math.sumPrecise(
-                    delayedPoll.reactions.map(x => x.length),
-                )}`,
-            },
-        };
+        if (question === null) {
+            throw new Error("There was no question?");
+        }
 
         await channel.send({
-            embeds: [toSend],
+            embeds: [
+                pollService.getDelayedPollResultEmbed(
+                    embedAuthor,
+                    question,
+                    fields,
+                    Math.sumPrecise(delayedPoll.reactions.map(x => x.length)),
+                ),
+            ],
         });
+
         await Promise.all(message.reactions.cache.map(reaction => reaction.remove()));
         await message.react("✅");
         delayedPolls.splice(delayedPolls.indexOf(delayedPoll), 1);

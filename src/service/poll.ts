@@ -1,8 +1,9 @@
-import type { Message } from "discord.js";
+import type { APIEmbed, APIEmbedField, Message } from "discord.js";
 import type { Temporal } from "@js-temporal/polyfill";
 
-import * as polls from "@/storage/poll.js";
 import type { Poll, PollId } from "@/storage/db/model.js";
+import type { BotContext } from "@/context.js";
+import * as polls from "@/storage/poll.js";
 
 export const LETTERS = [
     ":regional_indicator_a:",
@@ -85,4 +86,26 @@ export async function getExpiredPolls(now: Temporal.Instant): Promise<Poll[]> {
 
 export async function markPollAsEnded(pollId: PollId): Promise<void> {
     await polls.markPollAsEnded(pollId);
+}
+
+export async function processPolls(context: BotContext): Promise<void> {}
+
+export function getDelayedPollResultEmbed(
+    author: { name: string; iconURL?: string },
+    question: string,
+    fields: APIEmbedField[], // TODO: Take reactions directly
+    totalReactions: number, // TODO: Compute
+): APIEmbed {
+    return {
+        description: `Zusammenfassung: ${question}`,
+        fields,
+        timestamp: new Date().toISOString(),
+        author: {
+            name: author.name,
+            icon_url: author.iconURL,
+        },
+        footer: {
+            text: `Gesamtabstimmungen: ${totalReactions}`,
+        },
+    };
 }
