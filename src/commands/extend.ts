@@ -72,15 +72,9 @@ export default class ExtendCommand implements MessageCommand {
     }
 
     async #offerChannelSelection(
-        context: BotContext,
         extendMessage: Message<true>,
-    ): Promise<Message<true> | string | undefined> {
-        const polls = await fetchPollsFromChannel(extendMessage.channel, context);
-
-        if (polls.length === 0) {
-            return "Bruder ich konnte echt keine Umfrage finden, welche du erweitern könntest. Sieh zu, dass du die Reply-Funktion benutzt oder den richtigen Channel auswählst.";
-        }
-
+        polls: readonly ResolvedPoll[],
+    ): Promise<Message<true> | undefined> {
         const pollSelectOption = new StringSelectMenuBuilder()
             .setCustomId("extend-poll-select")
             .setPlaceholder("Wähle eine Umfrage aus")
@@ -123,11 +117,17 @@ export default class ExtendCommand implements MessageCommand {
     }
 
     async legacyHandler(message: ProcessableMessage, context: BotContext, args: string[]) {
-        const pollMessage: Message<true> | undefined = message.reference?.messageId
+        let pollMessage = message.reference?.messageId
             ? await message.channel.messages.fetch(message.reference.messageId)
             : undefined;
 
-        const alternative = await this.#offerChannelSelection(context, message);
+        if (!pollMessage) {
+            const polls = await fetchPollsFromChannel(message.channel, context);
+            if (polls.length === 0) {
+                return "Bruder ich konnte echt keine Umfrage finden, welche du erweitern könntest. Sieh zu, dass du die Reply-Funktion benutzt oder den richtigen Channel auswählst.";
+            }
+            pollMessage ??= await this.#offerChannelSelection(message, polls);
+        }
 
         if (!pollMessage) {
             return "Bruder ich konnte echt keine Umfrage finden, welche du erweitern könntest. Sieh zu, dass du die Reply-Funktion benutzt oder den richtigen Channel auswählst.";
@@ -161,8 +161,6 @@ export default class ExtendCommand implements MessageCommand {
         if (!replyMessage.inGuild()) {
             throw new Error("replyMessage is not in a guild");
         }
-
-        const replyEmbed = replyMessage.embeds[0];
 
         const dbPoll = pollService.findPollForEmbedMessage(replyMessage);
         if (!dbPoll) {
@@ -202,6 +200,7 @@ export default class ExtendCommand implements MessageCommand {
             return `Bruder mindestens eine Antwortmöglichkeit ist länger als ${poll.FIELD_VALUE_LIMIT} Zeichen!`;
         }
 
+        const replyEmbed = replyMessage.embeds[0];
         const originalAuthor = replyEmbed.author?.name.split(" ").slice(2).join(" ");
         const author = originalAuthor === message.author.username ? undefined : message.author;
 
