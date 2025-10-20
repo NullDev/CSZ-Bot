@@ -28,6 +28,10 @@ export interface Database {
     lootAttribute: LootAttributeTable;
     emote: EmoteTable;
     emoteUse: EmoteUseTable;
+
+    fightHistory: FightHistoryTable;
+    fightInventory: FightInventoryTable;
+
     lauscherRegistration: LauscherRegistrationTable;
     lauscherSpotifyLog: LauscherSpotifyLogTable;
     lauscherSpotifyLogView: LauscherSpotifyLogView;
@@ -302,6 +306,28 @@ export interface EmoteUseTable extends AuditedTable {
     channelId: ColumnType<Snowflake, Snowflake, never>;
     emoteId: ColumnType<number, number, never>;
     isReaction: boolean;
+}
+
+interface FightHistoryTable extends AuditedTable {
+    id: GeneratedAlways<number>;
+    userId: Snowflake;
+    result: boolean;
+    bossName: string;
+    firstTime: boolean;
+}
+
+interface FightInventoryTable {
+    id: GeneratedAlways<number>;
+    userId: Snowflake;
+    lootId: LootId;
+    equippedSlot: string;
+}
+
+export interface MapPositonTable {
+    id: GeneratedAlways<number>;
+    userId: Snowflake;
+    x: number;
+    y: number;
 }
 
 export type LauscherRegistration = Selectable<LauscherRegistrationTable>;
