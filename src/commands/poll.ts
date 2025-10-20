@@ -241,6 +241,7 @@ Optionen:
             false,
             !options.straw && extendable,
             finishTime?.toTemporalInstant() ?? null,
+            pollOptions,
         );
 
         if (finishTime) {

@@ -66,6 +66,7 @@ export async function createPoll(
     anonymous: boolean,
     extendable: boolean,
     endsAt: Temporal.Instant | null,
+    initialOptions: string[],
 ): Promise<Poll> {
     return await polls.createPoll(
         sourceMessage.author.id,
@@ -84,6 +85,7 @@ export async function createPoll(
         anonymous,
         extendable,
         endsAt,
+        initialOptions,
     );
 }
 

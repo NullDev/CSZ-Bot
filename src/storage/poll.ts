@@ -21,30 +21,47 @@ export async function createPoll(
     anonymous: boolean,
     extendable: boolean,
     endsAt: Temporal.Instant | null,
+    initialOptions: string[],
     ctx = db(),
 ): Promise<Poll> {
-    return await ctx
-        .insertInto("polls")
-        .values({
-            authorId,
+    return await ctx.transaction().execute(async ctx => {
+        const poll = await ctx
+            .insertInto("polls")
+            .values({
+                authorId,
 
-            guildId: sourceMessage.guildId,
+                guildId: sourceMessage.guildId,
 
-            sourceChannelId: sourceMessage.channelId,
-            sourceMessageId: sourceMessage.messageId,
+                sourceChannelId: sourceMessage.channelId,
+                sourceMessageId: sourceMessage.messageId,
 
-            embedChannelId: embedMessage.channelId,
-            embedMessageId: embedMessage.messageId,
+                embedChannelId: embedMessage.channelId,
+                embedMessageId: embedMessage.messageId,
 
-            question,
-            multipleChoices,
-            anonymous,
-            extendable,
-            endsAt: endsAt?.toString(),
-            ended: false,
-        })
-        .returningAll()
-        .executeTakeFirstOrThrow();
+                question,
+                multipleChoices,
+                anonymous,
+                extendable,
+                endsAt: endsAt?.toString(),
+                ended: false,
+            })
+            .returningAll()
+            .executeTakeFirstOrThrow();
+
+        await ctx
+            .insertInto("pollOptions")
+            .values(
+                initialOptions.map((option, index) => ({
+                    pollId: poll.id,
+                    index,
+                    option,
+                    authorId,
+                })),
+            )
+            .execute();
+
+        return poll;
+    });
 }
 
 export async function getExpiredPolls(now: Temporal.Instant, ctx = db()): Promise<Poll[]> {

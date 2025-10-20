@@ -37,6 +37,7 @@ export interface Database {
     locationHistory: LocationHistoryTable;
     pets: PetsTable;
     polls: PollsTable;
+    pollOptions: PollOptionsTable;
 }
 
 export type OneBasedMonth = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
