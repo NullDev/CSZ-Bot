@@ -10,15 +10,18 @@ const deleteInlineRepliesFromBot = (messageRef: Message<true>, botUser: ClientUs
     );
 
 export default async function (message: Message<true>, context: BotContext) {
-    if (message.author && message.author.id !== context.client.user.id) {
-        if (message.content) {
-            const isNormalCommand =
-                message.content.startsWith(context.prefix.command) ||
-                message.content.startsWith(context.prefix.modCommand);
+    if (message.author.id === context.client.user.id) {
+        return;
+    }
+    if (!message.content) {
+        return;
+    }
 
-            if (isNormalCommand) {
-                await deleteInlineRepliesFromBot(message, context.client.user);
-            }
-        }
+    const isNormalCommand =
+        message.content.startsWith(context.prefix.command) ||
+        message.content.startsWith(context.prefix.modCommand);
+
+    if (isNormalCommand) {
+        await deleteInlineRepliesFromBot(message, context.client.user);
     }
 }

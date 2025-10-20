@@ -11,12 +11,13 @@ import * as kysely from "@/storage/db/db.js";
 
 import type { ReactionHandler } from "@/handler/ReactionHandler.js";
 import messageDeleteHandler from "@/handler/messageDeleteHandler.js";
-import roleAssignerHandler from "@/handler/roleAssignerHandler.js";
-import defaultReactionHandler from "@/handler/defaultReactionHandler.js";
-import logEmotesReactionHandler from "@/handler/logEmotesReactionHandler.js";
-import quoteReactionHandler from "@/handler/quoteHandler.js";
 import { woisVoteReactionHandler } from "@/commands/woisvote.js";
 import * as voiceStateService from "@/service/voiceState.js";
+
+import roleAssignerHandler from "@/handler/reaction/roleAssignerHandler.js";
+import pollReactionHandler from "@/handler/reaction/pollReactionHandler.js";
+import logEmotesReactionHandler from "@/handler/reaction/logEmotesReactionHandler.js";
+import quoteReactionHandler from "@/handler/reaction/quoteHandler.js";
 
 import {
     handleInteractionEvent,
@@ -58,7 +59,7 @@ const config = await readConfig();
 
 // This polyfill requires that Temporal is already available in the runtime
 // We cannot add it in the polyfills.ts because that file is also used as --require argument for ts-node
-// TODO: Remove this once temporal is available in Node.js
+// TODO: Remove this once temporal is available in Node.js, see: https://github.com/nodejs/node/issues/57127
 if (typeof Date.prototype.toTemporalInstant !== "function") {
     Date.prototype.toTemporalInstant = function () {
         return Temporal.Instant.fromEpochMilliseconds(this.getTime());
@@ -111,7 +112,7 @@ const client = new Client({
  * All of them will be executed in the given order, regardless of their result or if they throw an error.
  */
 const reactionHandlers: ReactionHandler[] = [
-    defaultReactionHandler,
+    pollReactionHandler,
     logEmotesReactionHandler,
     quoteReactionHandler,
     ehreReactionHandler,

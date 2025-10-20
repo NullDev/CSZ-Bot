@@ -19,7 +19,7 @@ import { sendTrichterUnser } from "@/service/trichterUnser.js";
 import { degradeItems, exposeWithRadiation, runHalfLife } from "@/service/lootDegradation.js";
 import { hatchEggs } from "@/service/hatching.js";
 
-import * as poll from "@/commands/poll.js";
+import * as pollLegacy from "@/service/delayedPollLegacy.js";
 import * as ehre from "@/storage/ehre.js";
 
 const options = {
@@ -59,6 +59,6 @@ export async function schedule(context: BotContext) {
     cron("2025-04-01T00:00:00", () => startAprilFools(context));
     cron("2025-04-02T00:00:00", () => endAprilFools(context));
 
-    await poll.importPolls();
-    cron("* * * * *", () => poll.processPolls(context));
+    await pollLegacy.importPolls();
+    cron("* * * * *", () => pollLegacy.processPolls(context));
 }

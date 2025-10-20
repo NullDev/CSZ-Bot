@@ -137,13 +137,13 @@ export default class ExtendCommand implements MessageCommand {
             return "Bruder bleib mal hier auf'm Server.";
         }
 
+        if (!pollMessage.editable) {
+            return "Bruder aus irgrndeinem Grund hat der Bot verkackt und kann die Umfrage nicht bearbeiten :<";
+        }
+
         const dbPoll = await pollService.findPollForEmbedMessage(pollMessage);
         if (!dbPoll) {
             return "Bruder das ist keine Umfrage ಠ╭╮ಠ";
-        }
-
-        if (!pollMessage.editable) {
-            return "Bruder aus irgrndeinem Grund hat der Bot verkackt und kann die Umfrage nicht bearbeiten :<";
         }
 
         if (!dbPoll.extendable) {

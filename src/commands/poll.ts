@@ -4,8 +4,6 @@ import {
     type APIEmbedField,
     cleanContent,
     EmbedBuilder,
-    type GuildTextBasedChannel,
-    type Snowflake,
     time,
     TimestampStyles,
     type User,
@@ -17,11 +15,8 @@ import { parseLegacyMessageParts, type ProcessableMessage } from "@/service/comm
 import * as timeUtils from "@/utils/time.js";
 import * as pollService from "@/service/poll.js";
 import { LETTERS, EMOJI } from "@/service/poll.js";
+import * as legacyDelayedPoll from "@/service/delayedPollLegacy.js";
 import { defer } from "@/utils/interactionUtils.js";
-import { truncateToLength } from "@/utils/stringUtils.js";
-
-import log from "@log";
-import * as additionalMessageData from "@/storage/additionalMessageData.js";
 
 export const TEXT_LIMIT = 4096;
 export const FIELD_NAME_LIMIT = 256;
@@ -30,16 +25,6 @@ export const POLL_OPTION_SEPARATOR = " - ";
 export const POLL_OPTION_MAX_LENGTH =
     2 * FIELD_VALUE_LIMIT - Math.max(...LETTERS.map(s => s.length)) - POLL_OPTION_SEPARATOR.length;
 export const OPTION_LIMIT = LETTERS.length;
-
-interface DelayedPoll {
-    pollId: string;
-    createdAt: Date;
-    finishesAt: Date;
-    reactions: string[][];
-    reactionMap: string[];
-}
-
-export const delayedPolls: DelayedPoll[] = [];
 
 export const createOptionField = (option: string, index: number, author?: User): APIEmbedField => {
     let newOption = option;
@@ -275,89 +260,7 @@ Optionen:
                 reactionMap,
             };
 
-            await additionalMessageData.upsertForMessage(
-                pollMessage,
-                "DELAYED_POLL",
-                JSON.stringify(delayedPollData),
-            );
-            delayedPolls.push(delayedPollData);
+            await legacyDelayedPoll.addDelayedPoll(pollMessage, delayedPollData);
         }
     }
 }
-
-export const importPolls = async () => {
-    const additionalDatas = await additionalMessageData.findAll("DELAYED_POLL");
-    let count = 0;
-    for (const additionalData of additionalDatas) {
-        const delayedPollData = JSON.parse(additionalData.payload);
-        if (!delayedPollData) {
-            continue;
-        }
-        delayedPolls.push(delayedPollData);
-        count++;
-    }
-    log.info(`Loaded ${count} polls from database`);
-};
-
-export const processPolls = async (context: BotContext) => {
-    const currentDate = new Date();
-    const pollsToFinish = delayedPolls.filter(delayedPoll => currentDate >= delayedPoll.finishesAt);
-
-    const channel: GuildTextBasedChannel = context.textChannels.votes;
-
-    for (const element of pollsToFinish) {
-        const delayedPoll = element;
-        const message = await channel.messages.fetch(delayedPoll.pollId);
-
-        const users: Record<Snowflake, User> = {};
-        await Promise.all(
-            delayedPoll.reactions
-                .flat()
-                .filter(
-                    (x, uidi) =>
-                        delayedPoll.reactions.indexOf(
-                            // biome-ignore lint/suspicious/noExplicitAny: I don't know if this works
-                            x as any as string[],
-                        ) !== uidi,
-                )
-                .map(async uidToResolve => {
-                    users[uidToResolve] = await context.client.users.fetch(uidToResolve);
-                }),
-        );
-
-        const options: pollService.PollOption[] = delayedPoll.reactions.map((value, i) => ({
-            letter: LETTERS[i],
-            content: delayedPoll.reactionMap[i],
-            chosenBy: value.map(uid => users[uid]),
-        }));
-
-        const embed = message.embeds[0];
-        if (embed === undefined) {
-            continue;
-        }
-        const embedDescription = embed.description;
-        if (embedDescription === null) {
-            continue;
-        }
-        const embedAuthor = embed.author;
-        if (embedAuthor === null) {
-            continue;
-        }
-
-        const question = truncateToLength(embedDescription, TEXT_LIMIT) || embed.description;
-
-        if (question === null) {
-            throw new Error("There was no question?");
-        }
-
-        await channel.send({
-            embeds: [pollService.getDelayedPollResultEmbed(embedAuthor, question, options)],
-        });
-
-        await Promise.all(message.reactions.cache.map(reaction => reaction.remove()));
-        await message.react("✅");
-        delayedPolls.splice(delayedPolls.indexOf(delayedPoll), 1);
-
-        await additionalMessageData.destroyForMessage(message, "DELAYED_POLL");
-    }
-};
