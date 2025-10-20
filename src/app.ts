@@ -12,7 +12,7 @@ import * as kysely from "@/storage/db/db.js";
 import type { ReactionHandler } from "@/handler/ReactionHandler.js";
 import messageDeleteHandler from "@/handler/messageDeleteHandler.js";
 import roleAssignerHandler from "@/handler/roleAssignerHandler.js";
-import defaultReactionHandler from "@/handler/defaultReactionHandler.js";
+import pollReactionHandler from "@/handler/pollReactionHandler.js";
 import logEmotesReactionHandler from "@/handler/logEmotesReactionHandler.js";
 import quoteReactionHandler from "@/handler/quoteHandler.js";
 import { woisVoteReactionHandler } from "@/commands/woisvote.js";
@@ -111,7 +111,7 @@ const client = new Client({
  * All of them will be executed in the given order, regardless of their result or if they throw an error.
  */
 const reactionHandlers: ReactionHandler[] = [
-    defaultReactionHandler,
+    pollReactionHandler,
     logEmotesReactionHandler,
     quoteReactionHandler,
     ehreReactionHandler,

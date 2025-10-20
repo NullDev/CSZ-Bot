@@ -7,7 +7,7 @@ import * as pollService from "@/service/poll.js";
 import { POLL_EMOJIS, VOTE_EMOJIS } from "@/service/poll.js";
 
 export default {
-    displayName: "Default Reaction Handler",
+    displayName: "Poll Reaction Handler",
     async execute(
         reactionEvent: MessageReaction,
         invoker: User,

@@ -182,17 +182,15 @@ export async function countDelayedVote(
         delayedPollReactions.push(invoker.id);
     }
 
-    const newMessage = await message.fetch();
-
     // It's a delayed poll, we clear all Reactions
-    const allUserReactions = newMessage.reactions.cache.filter(r => {
+    const allUserReactions = message.reactions.cache.filter(r => {
         const emojiName = r.emoji.name;
         return emojiName && r.users.cache.has(invoker.id) && POLL_EMOJIS.includes(emojiName);
     });
     await Promise.all(allUserReactions.map(r => r.users.remove(invoker.id)));
 
     await additionalMessageData.upsertForMessage(
-        newMessage,
+        message,
         "DELAYED_POLL",
         JSON.stringify(delayedPoll),
     );
