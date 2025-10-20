@@ -1,4 +1,4 @@
-import type { APIEmbed, APIEmbedField, Message } from "discord.js";
+import type { APIEmbed, GuildMember, Message, User } from "discord.js";
 import type { Temporal } from "@js-temporal/polyfill";
 
 import type { Poll, PollId } from "@/storage/db/model.js";
@@ -90,15 +90,25 @@ export async function markPollAsEnded(pollId: PollId): Promise<void> {
 
 export async function processPolls(context: BotContext): Promise<void> {}
 
+export type PollOption = {
+    letter: string;
+    content: string;
+    chosenBy: User[];
+};
+
 export function getDelayedPollResultEmbed(
     author: { name: string; iconURL?: string },
     question: string,
-    fields: APIEmbedField[], // TODO: Take reactions directly
-    totalReactions: number, // TODO: Compute
+    options: PollOption[],
 ): APIEmbed {
+    const totalReactions = Math.sumPrecise(options.map(o => o.chosenBy.length));
     return {
         description: `Zusammenfassung: ${question}`,
-        fields,
+        fields: options.map(option => ({
+            name: `${option.letter} ${option.content} (${option.chosenBy.length})`,
+            value: option.chosenBy.map(user => user.toString()).join("\n") || "-",
+            inline: false,
+        })),
         timestamp: new Date().toISOString(),
         author: {
             name: author.name,

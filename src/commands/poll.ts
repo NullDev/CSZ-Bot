@@ -1,12 +1,11 @@
 import { parseArgs, type ParseArgsConfig } from "node:util";
 
 import {
-    type APIEmbed,
     type APIEmbedField,
     cleanContent,
     EmbedBuilder,
+    type GuildTextBasedChannel,
     type Snowflake,
-    type TextChannel,
     time,
     TimestampStyles,
     type User,
@@ -306,7 +305,7 @@ export const processPolls = async (context: BotContext) => {
     const currentDate = new Date();
     const pollsToFinish = delayedPolls.filter(delayedPoll => currentDate >= delayedPoll.finishesAt);
 
-    const channel: TextChannel = context.textChannels.votes;
+    const channel: GuildTextBasedChannel = context.textChannels.votes;
 
     for (const element of pollsToFinish) {
         const delayedPoll = element;
@@ -328,13 +327,11 @@ export const processPolls = async (context: BotContext) => {
                 }),
         );
 
-        const fields: APIEmbedField[] = delayedPoll.reactions.map((value, i) => {
-            return {
-                name: `${LETTERS[i]} ${delayedPoll.reactionMap[i]} (${value.length})`,
-                value: value.map(uid => users[uid]).join("\n") || "-",
-                inline: false,
-            };
-        });
+        const options: pollService.PollOption[] = delayedPoll.reactions.map((value, i) => ({
+            letter: LETTERS[i],
+            content: delayedPoll.reactionMap[i],
+            chosenBy: value.map(uid => users[uid]),
+        }));
 
         const embed = message.embeds[0];
         if (embed === undefined) {
@@ -359,14 +356,7 @@ export const processPolls = async (context: BotContext) => {
         }
 
         await channel.send({
-            embeds: [
-                pollService.getDelayedPollResultEmbed(
-                    embedAuthor,
-                    question,
-                    fields,
-                    Math.sumPrecise(delayedPoll.reactions.map(x => x.length)),
-                ),
-            ],
+            embeds: [pollService.getDelayedPollResultEmbed(embedAuthor, question, options)],
         });
 
         await Promise.all(message.reactions.cache.map(reaction => reaction.remove()));
