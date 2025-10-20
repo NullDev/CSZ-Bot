@@ -12,26 +12,35 @@ export interface MessageLocation {
 
 export async function createPoll(
     authorId: Snowflake,
-    message: MessageLocation,
+
+    sourceMessage: MessageLocation,
+    embedMessage: MessageLocation,
+
     question: string,
     multipleChoices: boolean,
     anonymous: boolean,
     extendable: boolean,
-    endsAt: Temporal.Instant,
+    endsAt: Temporal.Instant | null,
     ctx = db(),
 ): Promise<Poll> {
     return await ctx
         .insertInto("polls")
         .values({
             authorId,
-            guildId: message.guildId,
-            channelId: message.channelId,
-            messageId: message.messageId,
+
+            guildId: sourceMessage.guildId,
+
+            sourceChannelId: sourceMessage.channelId,
+            sourceMessageId: sourceMessage.messageId,
+
+            embedChannelId: embedMessage.channelId,
+            embedMessageId: embedMessage.messageId,
+
             question,
             multipleChoices,
             anonymous,
             extendable,
-            endsAt: endsAt.toString(),
+            endsAt: endsAt?.toString(),
         })
         .returningAll()
         .executeTakeFirstOrThrow();

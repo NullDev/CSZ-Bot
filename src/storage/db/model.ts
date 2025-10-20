@@ -401,8 +401,12 @@ export interface PollsTable extends AuditedTable {
     id: GeneratedAlways<number>;
 
     guildId: Snowflake;
-    channelId: Snowflake;
-    messageId: Snowflake;
+
+    sourceChannelId: Snowflake;
+    sourceMessageId: Snowflake;
+
+    embedChannelId: Snowflake;
+    embedMessageId: Snowflake;
 
     authorId: Snowflake;
 
