@@ -1,13 +1,12 @@
 import {
     ActionRowBuilder,
     type APIEmbedField,
+    ComponentType,
     EmbedBuilder,
     type GuildTextBasedChannel,
     type Message,
     StringSelectMenuBuilder,
-    type StringSelectMenuInteraction,
 } from "discord.js";
-import * as sentry from "@sentry/node";
 
 import type { MessageCommand } from "@/commands/command.js";
 import type { BotContext } from "@/context.js";
@@ -16,8 +15,8 @@ import type { ProcessableMessage } from "@/service/command.js";
 import { parseLegacyMessageParts } from "@/service/command.js";
 import { LETTERS, EMOJI } from "@/service/poll.js";
 import * as pollService from "@/service/poll.js";
+import { defer } from "@/utils/interactionUtils.js";
 import * as poll from "./poll.js";
-import log from "@log";
 
 const isPollField = (field: APIEmbedField): boolean =>
     !field.inline && LETTERS.some(l => field.name.startsWith(l));
@@ -70,109 +69,90 @@ export default class ExtendCommand implements MessageCommand {
         }
     }
 
-    async legacyHandler(message: ProcessableMessage, context: BotContext, args: string[]) {
-        let pollMessage: Message | undefined = message.reference?.messageId
-            ? await (message.channel as GuildTextBasedChannel).messages.fetch(
-                  message.reference.messageId,
-              )
-            : undefined;
-        if (!pollMessage) {
-            const polls = await fetchPollsFromChannel(
-                message.channel as GuildTextBasedChannel,
-                context,
+    async #offerPollSelection(
+        extendMessage: Message<true>,
+        polls: readonly ResolvedPoll[],
+    ): Promise<Message<true> | undefined> {
+        const pollSelectOption = new StringSelectMenuBuilder()
+            .setCustomId("extend-poll-select")
+            .setPlaceholder("Wähle eine Umfrage aus")
+            .addOptions(
+                polls
+                    .slice(0, 24) // Discord allows max. 25 options
+                    .map(poll => ({
+                        label:
+                            poll.description.length > 100
+                                ? `${poll.description.slice(0, 97)}…`
+                                : poll.description || "Kein Titel",
+                        value: poll.message.id,
+                    })),
             );
+
+        const row = new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(pollSelectOption);
+
+        const promptMessage = await extendMessage.channel.send({
+            content: "Bruder, auf welche Umfrage willst du antworten?",
+            components: [row],
+        });
+
+        await using _ = defer(() => promptMessage.delete());
+
+        try {
+            const interaction = await promptMessage.awaitMessageComponent({
+                filter: i =>
+                    i.user.id === extendMessage.author.id && i.customId === "extend-poll-select",
+                componentType: ComponentType.StringSelect,
+                time: 60000,
+            });
+
+            await interaction.deferUpdate();
+
+            return await extendMessage.channel.messages.fetch(interaction.values[0]);
+        } catch {
+            // interaction timeout
+            return undefined;
+        }
+    }
+
+    async legacyHandler(message: ProcessableMessage, context: BotContext, args: string[]) {
+        if (!args.length) {
+            return "Bruder da sind keine Antwortmöglichkeiten :c";
+        }
+
+        let pollMessage = message.reference?.messageId
+            ? await message.channel.messages.fetch(message.reference.messageId)
+            : undefined;
+
+        if (!pollMessage) {
+            const polls = await fetchPollsFromChannel(message.channel, context);
             if (polls.length === 0) {
                 return "Bruder ich konnte echt keine Umfrage finden, welche du erweitern könntest. Sieh zu, dass du die Reply-Funktion benutzt oder den richtigen Channel auswählst.";
             }
-
-            const pollSelectOption = new StringSelectMenuBuilder()
-                .setCustomId("poll_select")
-                .setPlaceholder("Wähle eine Umfrage aus")
-                .addOptions(
-                    polls
-                        .slice(0, 24) // Discord allows max. 25 options
-                        .map(poll => ({
-                            label:
-                                poll.description.length > 100
-                                    ? `${poll.description.slice(0, 97)}...`
-                                    : poll.description || "Kein Titel",
-                            value: poll.message.id,
-                        })),
-                );
-            const row: ActionRowBuilder<StringSelectMenuBuilder> =
-                new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(pollSelectOption);
-            const promptMessage = await message.channel.send({
-                content: "Bruder, auf welche Umfrage willst du antworten?",
-                components: [row],
-            });
-            try {
-                const interaction = (await promptMessage.awaitMessageComponent({
-                    filter: i => i.user.id === message.author.id && i.customId === "poll_select",
-                    time: 60000,
-                })) as StringSelectMenuInteraction;
-                await interaction.deferUpdate();
-                pollMessage = await (message.channel as GuildTextBasedChannel).messages.fetch(
-                    interaction.values[0],
-                );
-                await promptMessage.delete();
-            } catch (_e) {
-                await promptMessage.delete();
-                return;
-            }
+            pollMessage ??= await this.#offerPollSelection(message, polls);
         }
 
         if (!pollMessage) {
             return "Bruder ich konnte echt keine Umfrage finden, welche du erweitern könntest. Sieh zu, dass du die Reply-Funktion benutzt oder den richtigen Channel auswählst.";
         }
 
-        if (pollMessage.guildId !== context.guild.id || !pollMessage.channelId) {
+        if (pollMessage.guildId !== context.guild.id) {
             return "Bruder bleib mal hier auf'm Server.";
         }
 
-        if (!pollMessage.id) {
-            return "Die Nachricht hat irgendwie keine reference-ID";
-        }
-        if (!args.length) {
-            return "Bruder da sind keine Antwortmöglichkeiten :c";
-        }
-
-        const channel = context.guild.channels.cache.get(pollMessage.channelId);
-
-        if (!channel) {
-            return "Bruder der Channel existiert nicht? LOLWUT";
-        }
-        if (!channel.isTextBased()) {
-            return "Channel ist kein Text-Channel";
-        }
-
-        let replyMessage: Message;
-        try {
-            replyMessage = await channel.messages.fetch(pollMessage.id);
-        } catch (err) {
-            log.error(err, "Could not fetch replies");
-            sentry.captureException(err);
-            return "Bruder irgendwas stimmt nicht mit deinem Reply ¯\\_(ツ)_/¯";
-        }
-
-        if (!replyMessage.inGuild()) {
-            throw new Error("replyMessage is not in a guild");
-        }
-
-        const replyEmbed = replyMessage.embeds[0];
-
-        const dbPoll = pollService.findPollForEmbedMessage(replyMessage);
+        const dbPoll = await pollService.findPollForEmbedMessage(pollMessage);
         if (!dbPoll) {
             return "Bruder das ist keine Umfrage ಠ╭╮ಠ";
         }
 
-        if (!replyMessage.editable) {
+        if (!pollMessage.editable) {
             return "Bruder aus irgrndeinem Grund hat der Bot verkackt und kann die Umfrage nicht bearbeiten :<";
         }
-        if (replyMessage.embeds[0].color !== 0x2ecc71) {
+
+        if (!dbPoll.extendable) {
             return "Bruder die Umfrage ist nicht erweiterbar (ง'̀-'́)ง";
         }
 
-        const oldPollOptionFields = replyMessage.embeds[0].fields.filter(field =>
+        const oldPollOptionFields = pollMessage.embeds[0].fields.filter(field =>
             isPollField(field),
         );
 
@@ -198,6 +178,7 @@ export default class ExtendCommand implements MessageCommand {
             return `Bruder mindestens eine Antwortmöglichkeit ist länger als ${poll.FIELD_VALUE_LIMIT} Zeichen!`;
         }
 
+        const replyEmbed = pollMessage.embeds[0];
         const originalAuthor = replyEmbed.author?.name.split(" ").slice(2).join(" ");
         const author = originalAuthor === message.author.username ? undefined : message.author;
 
@@ -205,8 +186,8 @@ export default class ExtendCommand implements MessageCommand {
             poll.createOptionField(value, oldPollOptionFields.length + i, author),
         );
 
-        let metaFields = replyMessage.embeds[0].fields.filter(field => !isPollField(field));
-        const embed = EmbedBuilder.from(replyMessage.embeds[0]).data;
+        let metaFields = pollMessage.embeds[0].fields.filter(field => !isPollField(field));
+        const embed = EmbedBuilder.from(pollMessage.embeds[0]).data;
 
         if (oldPollOptionFields.length + additionalPollOptions.length === poll.OPTION_LIMIT) {
             embed.color = 0xcd5c5c;
@@ -215,7 +196,7 @@ export default class ExtendCommand implements MessageCommand {
 
         embed.fields = [...oldPollOptionFields, ...newFields, ...metaFields];
 
-        const msg = await replyMessage.edit({
+        const msg = await pollMessage.edit({
             embeds: [embed],
             // Re-Applying embed thumbnails from attachments will post a picture,
             // therefore we keep attachments empty.
@@ -223,8 +204,6 @@ export default class ExtendCommand implements MessageCommand {
         });
 
         for (const i in additionalPollOptions) {
-            // Disabling rule because the order is important
-
             await msg.react(EMOJI[oldPollOptionFields.length + Number(i)]);
         }
         await message.delete();
