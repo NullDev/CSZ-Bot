@@ -8,14 +8,13 @@ Official Coding Shitpost Central Discord Bot
 </p>
 
 ## :information_source: OwO wats dis?
-
 Please ignore this repo. This is just a management bot I made for my stupid german coding discord server...
 
 German description of the Discord Server:
 
-> Deutscher Server für diverse programmier- und nerd Themen. <br>
-> Language-Bashing, shitposting und Autismus stehen an der Tagesordnung. <br>
-> Jeder ist willkommen da jede Programmiersprache gleichermaßen diskreditiert wird!
+> Deutscher Server für diverse Programmier- und Nerd-Themen.
+> Language-Bashing, Shitposting und Autismus stehen an der Tagesordnung.
+> Jeder ist willkommen da jede Programmiersprache gleichermaßen diskreditiert wird.
 
 <sub>I'm sorry</sub>
 
