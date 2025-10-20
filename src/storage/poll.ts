@@ -2,7 +2,7 @@ import type { Snowflake } from "discord.js";
 import type { Temporal } from "@js-temporal/polyfill";
 
 import db from "@db";
-import type { Poll } from "./db/model.js";
+import type { Poll, PollId } from "./db/model.js";
 
 export interface MessageLocation {
     guildId: Snowflake;
@@ -47,12 +47,21 @@ export async function createPoll(
         .executeTakeFirstOrThrow();
 }
 
-export async function getExpiredPolls(now: Temporal.Instant): Promise<Poll[]> {
-    return await db()
+export async function getExpiredPolls(now: Temporal.Instant, ctx = db()): Promise<Poll[]> {
+    return await ctx
         .selectFrom("polls")
         .where("endsAt", "is not", null)
         .where("endsAt", "<=", now.toString())
         .where("ended", "=", false)
         .selectAll()
         .execute();
+}
+
+export async function markPollAsEnded(pollId: PollId, ctx = db()): Promise<void> {
+    await ctx
+        .updateTable("polls")
+        .where("id", "=", pollId)
+        .set({ ended: true })
+        .returningAll()
+        .executeTakeFirstOrThrow();
 }

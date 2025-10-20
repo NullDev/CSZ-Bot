@@ -2,7 +2,7 @@ import type { Message } from "discord.js";
 import type { Temporal } from "@js-temporal/polyfill";
 
 import * as polls from "@/storage/poll.js";
-import type { Poll } from "@/storage/db/model.js";
+import type { Poll, PollId } from "@/storage/db/model.js";
 
 export const LETTERS = [
     ":regional_indicator_a:",
@@ -81,4 +81,8 @@ export async function createPoll(
 
 export async function getExpiredPolls(now: Temporal.Instant): Promise<Poll[]> {
     return await polls.getExpiredPolls(now);
+}
+
+export async function markPollAsEnded(pollId: PollId): Promise<void> {
+    await polls.markPollAsEnded(pollId);
 }

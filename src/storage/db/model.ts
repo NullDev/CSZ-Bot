@@ -395,10 +395,12 @@ export interface PetsTable extends AuditedTable {
     name: string;
 }
 
+export type PollId = number;
+
 export type Poll = Selectable<PollsTable>;
 
 export interface PollsTable extends AuditedTable {
-    id: GeneratedAlways<number>;
+    id: GeneratedAlways<PollId>;
 
     guildId: Snowflake;
 

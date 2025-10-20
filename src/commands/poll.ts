@@ -250,6 +250,8 @@ Optionen:
 
         await using _ = defer(() => message.delete());
 
+        await Promise.all(pollOptions.map((_e, i) => pollMessage.react(EMOJI[i])));
+
         const dbPoll = await pollService.createPoll(
             message,
             pollMessage,
@@ -259,8 +261,6 @@ Optionen:
             !options.straw && extendable,
             finishTime?.toTemporalInstant() ?? null,
         );
-
-        await Promise.all(pollOptions.map((_e, i) => pollMessage.react(EMOJI[i])));
 
         if (finishTime) {
             const reactionMap: string[] = [];
