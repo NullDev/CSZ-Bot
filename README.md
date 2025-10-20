@@ -12,9 +12,9 @@ Please ignore this repo. This is just a management bot I made for my stupid germ
 
 German description of the Discord Server:
 
-> Deutscher Server für diverse Programmier- und Nerd-Themen.
-> Language-Bashing, Shitposting und Autismus stehen an der Tagesordnung.
-> Jeder ist willkommen da jede Programmiersprache gleichermaßen diskreditiert wird.
+> Deutscher Server für diverse Programmier- und Nerd-Themen.<br>
+> Language-Bashing, Shitposting und Autismus stehen an der Tagesordnung.<br>
+> Jeder ist willkommen da, jede Programmiersprache gleichermaßen diskreditiert wird.
 
 <sub>I'm sorry</sub>
 
