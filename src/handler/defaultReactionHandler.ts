@@ -65,14 +65,10 @@ export default {
         }
 
         const isStrawpoll =
-            message.embeds.length === 1 &&
-            embedAuthor.name.indexOf("Strawpoll") >= 0 &&
-            pollEmojis.includes(reactionName);
+            embedAuthor.name.indexOf("Strawpoll") >= 0 && pollEmojis.includes(reactionName);
 
         const isUmfrage =
-            message.embeds.length === 1 &&
-            embedAuthor.name.indexOf("Umfrage") >= 0 &&
-            voteEmojis.includes(reactionName);
+            embedAuthor.name.indexOf("Umfrage") >= 0 && voteEmojis.includes(reactionName);
 
         const delayedPoll = poll.delayedPolls.find(x => x.pollId === message.id);
         const isDelayedPoll = delayedPoll !== undefined;
