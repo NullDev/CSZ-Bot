@@ -1,7 +1,7 @@
-import { ContainerBuilder, EmbedBuilder, MessageFlags } from "discord.js";
+import { ContainerBuilder, MessageFlags } from "discord.js";
 import type { BotContext } from "@/context.js";
 
-export async function getTrichterUnserEmbed(ctx: BotContext) {
+export async function sendTrichterUnser(ctx: BotContext) {
     const trichterEmote = ctx.guild.emojis.cache.find(value => value.name === "trichter");
     if (!trichterEmote) {
         return;
