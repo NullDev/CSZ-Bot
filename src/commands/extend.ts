@@ -94,7 +94,7 @@ export default class ExtendCommand implements MessageCommand {
                         .map(poll => ({
                             label:
                                 poll.description.length > 100
-                                    ? `${poll.description.slice(0, 97)}...`
+                                    ? `${poll.description.slice(0, 97)}…`
                                     : poll.description || "Kein Titel",
                             value: poll.message.id,
                         })),
