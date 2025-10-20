@@ -36,6 +36,7 @@ export interface Database {
     spotifyTrackToArtists: SpotifyTrackToArtistTable;
     locationHistory: LocationHistoryTable;
     pets: PetsTable;
+    polls: PollsTable;
 }
 
 export type OneBasedMonth = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
@@ -392,4 +393,24 @@ export interface PetsTable extends AuditedTable {
     ownerId: Snowflake;
     lootId: LootId;
     name: string;
+}
+
+export type Poll = Selectable<PollsTable>;
+
+export interface PollsTable extends AuditedTable {
+    id: GeneratedAlways<number>;
+
+    guildId: Snowflake;
+    channelId: Snowflake;
+    messageId: Snowflake;
+
+    authorId: Snowflake;
+
+    question: string;
+
+    multipleChoices: boolean;
+    anonymous: boolean;
+    extendable: boolean;
+
+    endsAt: ColumnType<string | null, string | null, string | null>; // TODO: Date is not supported by the DB driver
 }
