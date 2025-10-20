@@ -1,4 +1,4 @@
-import type { APIEmbed, Message, User } from "discord.js";
+import type { APIEmbed, Message, MessageReaction, User } from "discord.js";
 import type { Temporal } from "@js-temporal/polyfill";
 
 import type { Poll, PollId } from "@/storage/db/model.js";
@@ -128,4 +128,6 @@ export async function findPollForEmbedMessage(
     return await polls.findPollForEmbedMessage(embedMessage.id);
 }
 
-export async function countDelayedVote(_poll: Poll) {}
+export async function countDelayedVote(_poll: Poll, _reaction: MessageReaction) {
+    // TODO
+}

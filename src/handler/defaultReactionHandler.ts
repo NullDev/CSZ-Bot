@@ -66,6 +66,15 @@ export default {
             return;
         }
 
+        if (poll.endsAt !== null) {
+            if (poll.ended) {
+                return;
+            }
+
+            await pollService.countDelayedVote(poll, reactionEvent);
+            return;
+        }
+
         const delayedPoll = pollCommand.delayedPolls.find(x => x.pollId === message.id);
         const isDelayedPoll = delayedPoll !== undefined;
 
