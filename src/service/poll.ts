@@ -128,6 +128,13 @@ export async function findPollForEmbedMessage(
     return await polls.findPollForEmbedMessage(embedMessage.id);
 }
 
-export async function countDelayedVote(_poll: Poll, _reaction: MessageReaction) {
-    // TODO
+export async function countDelayedVote(poll: Poll, _reaction: MessageReaction) {
+    console.assert(!poll.ended, "Poll already ended");
+
+    if (poll.multipleChoices) {
+        // TODO: Toogle user vote
+        return;
+    }
+
+    // TODO: Set user vote
 }
