@@ -11,11 +11,15 @@ export default {
     async execute(
         reactionEvent: MessageReaction,
         invoker: User,
-        context: BotContext,
+        _context: BotContext,
         reactionWasRemoved: boolean,
     ) {
         if (reactionWasRemoved) {
             // TODO: If we're persisting state in DB, we have to remove some stuff here
+            return;
+        }
+
+        if (invoker.bot) {
             return;
         }
 
@@ -24,22 +28,12 @@ export default {
             throw new Error("Guild is null");
         }
 
-        const botUser = context.client.user;
-        if (message.author.id !== botUser.id) {
-            return;
-        }
-
         const reactionName = reactionEvent.emoji.name;
         if (reactionName === null) {
             throw new Error("Could not find reaction name");
         }
 
         if (!POLL_EMOJIS.includes(reactionName) && !VOTE_EMOJIS.includes(reactionName)) {
-            return;
-        }
-
-        const invokingMember = await message.guild.members.fetch(invoker.id);
-        if (invokingMember.id === botUser.id) {
             return;
         }
 
@@ -52,6 +46,8 @@ export default {
         if (!validVoteReactions.includes(reactionName)) {
             return;
         }
+
+        const invokingMember = await message.guild.members.fetch(invoker.id);
 
         if (poll.endsAt === null) {
             await pollService.countVote(poll, message, invokingMember, reactionEvent);
