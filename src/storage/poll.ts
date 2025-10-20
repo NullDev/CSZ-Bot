@@ -57,6 +57,18 @@ export async function getExpiredPolls(now: Temporal.Instant, ctx = db()): Promis
         .execute();
 }
 
+export async function findRunnigDelayedPoll(
+    embedMessageId: Snowflake,
+    ctx = db(),
+): Promise<Poll | undefined> {
+    return await ctx
+        .selectFrom("polls")
+        .where("embedMessageId", "=", embedMessageId)
+        .where("ended", "=", false)
+        .selectAll()
+        .executeTakeFirst();
+}
+
 export async function markPollAsEnded(pollId: PollId, ctx = db()): Promise<void> {
     await ctx
         .updateTable("polls")

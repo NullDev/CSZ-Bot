@@ -6,7 +6,8 @@ import * as additionalMessageData from "@/storage/additionalMessageData.js";
 import * as fadingMessage from "@/storage/fadingMessage.js";
 import type { ReactionHandler } from "./ReactionHandler.js";
 
-import * as poll from "@/commands/poll.js";
+import * as pollService from "@/service/poll.js";
+import * as pollCommand from "@/commands/poll.js";
 import { EMOJI } from "@/service/poll.js";
 
 const pollEmojis = EMOJI;
@@ -40,8 +41,6 @@ export default {
             return;
         }
 
-        const member = await message.guild.members.fetch(invoker.id);
-
         const reactionName = reactionEvent.emoji.name;
         if (reactionName === null) {
             throw new Error("Could not find reaction name");
@@ -51,39 +50,35 @@ export default {
             return;
         }
 
-        const fromThisBot = member.id === botUser.id;
-        if (fromThisBot) {
-            return;
-        }
-        if (message.embeds.length !== 1) {
+        const invokingMember = await message.guild.members.fetch(invoker.id);
+        if (invokingMember.id === botUser.id) {
             return;
         }
 
-        const embedAuthor = message.embeds[0].author;
-        if (embedAuthor === null) {
-            throw new Error("Embed author is null");
+        const poll = await pollService.findRunnigDelayedPoll(message);
+        if (!poll) {
+            return;
         }
 
-        const allowMultipleChoice = embedAuthor.name.startsWith("Strawpoll");
-        console.assert(allowMultipleChoice || embedAuthor.name.startsWith("Umfrage"));
+        const isMultipleChoice = poll.multipleChoices;
 
-        const validVoteReactions = allowMultipleChoice ? pollEmojis : voteEmojis;
+        const validVoteReactions = isMultipleChoice ? pollEmojis : voteEmojis;
         if (!validVoteReactions.includes(reactionName)) {
             return;
         }
 
-        const delayedPoll = poll.delayedPolls.find(x => x.pollId === message.id);
+        const delayedPoll = pollCommand.delayedPolls.find(x => x.pollId === message.id);
         const isDelayedPoll = delayedPoll !== undefined;
 
-        if (allowMultipleChoice) {
+        if (isMultipleChoice) {
             if (isDelayedPoll) {
                 const delayedPollReactions =
                     delayedPoll.reactions[voteEmojis.indexOf(reactionName)];
-                const hasVoted = delayedPollReactions.some(x => x === member.id);
+                const hasVoted = delayedPollReactions.some(x => x === invokingMember.id);
                 if (!hasVoted) {
-                    delayedPollReactions.push(member.id);
+                    delayedPollReactions.push(invokingMember.id);
                 } else {
-                    delayedPollReactions.splice(delayedPollReactions.indexOf(member.id), 1);
+                    delayedPollReactions.splice(delayedPollReactions.indexOf(invokingMember.id), 1);
                 }
 
                 const msg = await message.channel.send(
@@ -97,34 +92,38 @@ export default {
             if (isDelayedPoll) {
                 for (const reactionList of delayedPoll.reactions) {
                     reactionList.forEach((x, i) => {
-                        if (x === member.id) reactionList.splice(i);
+                        if (x === invokingMember.id) reactionList.splice(i);
                     });
                 }
                 const delayedPollReactions =
                     delayedPoll.reactions[pollEmojis.indexOf(reactionName)];
-                delayedPollReactions.push(member.id);
+                delayedPollReactions.push(invokingMember.id);
             }
 
             const reactions = message.reactions.cache.filter(r => {
                 const emojiName = r.emoji.name;
                 return (
                     emojiName &&
-                    r.users.cache.has(member.id) &&
+                    r.users.cache.has(invokingMember.id) &&
                     emojiName !== reactionEvent.emoji.name &&
                     pollEmojis.includes(emojiName)
                 );
             });
 
-            await Promise.all(reactions.map(r => r.users.remove(member.id)));
+            await Promise.all(reactions.map(r => r.users.remove(invokingMember.id)));
         }
 
         // If it's a delayed poll, we clear all Reactions
         if (isDelayedPoll && delayedPoll !== undefined) {
             const allUserReactions = message.reactions.cache.filter(r => {
                 const emojiName = r.emoji.name;
-                return emojiName && r.users.cache.has(member.id) && pollEmojis.includes(emojiName);
+                return (
+                    emojiName &&
+                    r.users.cache.has(invokingMember.id) &&
+                    pollEmojis.includes(emojiName)
+                );
             });
-            await Promise.all(allUserReactions.map(r => r.users.remove(member.id)));
+            await Promise.all(allUserReactions.map(r => r.users.remove(invokingMember.id)));
 
             await additionalMessageData.upsertForMessage(
                 message,

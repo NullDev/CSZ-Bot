@@ -121,3 +121,9 @@ export function getDelayedPollResultEmbed(
         },
     };
 }
+
+export async function findRunnigDelayedPoll(
+    embedMessage: Message<true>,
+): Promise<Poll | undefined> {
+    return await polls.findRunnigDelayedPoll(embedMessage.id);
+}
