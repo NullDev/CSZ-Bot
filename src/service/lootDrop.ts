@@ -58,7 +58,7 @@ export async function runDropAttempt(context: BotContext) {
         return;
     }
 
-    const lm = targetChannel.lastMessage?.createdTimestamp;
+    const lm = targetChannel.lastMessage?.createdAt;
     if (lm === undefined) {
         log.info(
             `Would have dropped loot to ${targetChannel.name}, but it does not have any messages yet`,
@@ -67,7 +67,7 @@ export async function runDropAttempt(context: BotContext) {
     }
 
     const now = Temporal.Now.instant();
-    const lastMessage = Temporal.Instant.fromEpochMilliseconds(lm);
+    const lastMessage = lm.toTemporalInstant();
     const passedTime = now.since(lastMessage);
 
     if (passedTime.subtract(lootConfig.maxTimePassedSinceLastMessage).sign > 0) {

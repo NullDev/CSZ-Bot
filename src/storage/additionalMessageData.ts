@@ -1,4 +1,4 @@
-import type { Message, Snowflake } from "discord.js";
+import type { Message } from "discord.js";
 
 import type { AdditionalMessageData, DataUsage } from "./db/model.js";
 import db from "@db";
@@ -17,7 +17,7 @@ export async function getForMessage(message: Message, usage: DataUsage, ctx = db
 }
 
 export async function upsertForMessage(
-    message: Message,
+    message: Message<true>,
     usage: DataUsage,
     payload: string,
     ctx = db(),
@@ -29,14 +29,14 @@ export async function upsertForMessage(
     await ctx
         .insertInto("additionalMessageData")
         .values({
-            guildId: message.guildId as Snowflake,
+            guildId: message.guildId,
             channelId: message.channelId,
             messageId: message.id,
             usage,
             payload,
         })
         .onConflict(oc =>
-            oc.columns(["guildId", "channelId", "messageId"]).doUpdateSet({
+            oc.columns(["messageId", "usage"]).doUpdateSet({
                 payload,
             }),
         )

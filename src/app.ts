@@ -4,18 +4,20 @@ import * as sentry from "@sentry/node";
 import { readConfig, databasePath, args } from "@/service/config.js";
 import log from "@log";
 
+import { Temporal } from "@js-temporal/polyfill";
 import "@/polyfills.js";
 
 import * as kysely from "@/storage/db/db.js";
 
 import type { ReactionHandler } from "@/handler/ReactionHandler.js";
 import messageDeleteHandler from "@/handler/messageDeleteHandler.js";
-import roleAssignerHandler from "@/handler/roleAssignerHandler.js";
-import defaultReactionHandler from "@/handler/defaultReactionHandler.js";
-import logEmotesReactionHandler from "@/handler/logEmotesReactionHandler.js";
-import quoteReactionHandler from "@/handler/quoteHandler.js";
 import { woisVoteReactionHandler } from "@/commands/woisvote.js";
 import * as voiceStateService from "@/service/voiceState.js";
+
+import roleAssignerHandler from "@/handler/reaction/roleAssignerHandler.js";
+import pollReactionHandler from "@/handler/reaction/pollReactionHandler.js";
+import logEmotesReactionHandler from "@/handler/reaction/logEmotesReactionHandler.js";
+import quoteReactionHandler from "@/handler/reaction/quoteHandler.js";
 
 import {
     handleInteractionEvent,
@@ -54,6 +56,15 @@ const release =
 log.info(`Bot starting up...${release ? ` (release: ${release})` : ""}`);
 
 const config = await readConfig();
+
+// This polyfill requires that Temporal is already available in the runtime
+// We cannot add it in the polyfills.ts because that file is also used as --require argument for ts-node
+// TODO: Remove this once temporal is available in Node.js, see: https://github.com/nodejs/node/issues/57127
+if (typeof Date.prototype.toTemporalInstant !== "function") {
+    Date.prototype.toTemporalInstant = function () {
+        return Temporal.Instant.fromEpochMilliseconds(this.getTime());
+    };
+}
 
 if (config.sentry?.dsn) {
     sentry.init({
@@ -101,7 +112,7 @@ const client = new Client({
  * All of them will be executed in the given order, regardless of their result or if they throw an error.
  */
 const reactionHandlers: ReactionHandler[] = [
-    defaultReactionHandler,
+    pollReactionHandler,
     logEmotesReactionHandler,
     quoteReactionHandler,
     ehreReactionHandler,
@@ -124,14 +135,37 @@ process.once("exit", code => {
     log.warn(`Process exited with code: ${code}`);
 });
 
+let botContext: BotContext;
 login().then(
-    client => {
+    async client => {
         log.info(`Logged in as ${client.user.tag}`);
         log.info(
             `Got ${client.users.cache.size} users, in ${client.channels.cache.size} channels of ${client.guilds.cache.size} guilds`,
         );
         log.info(`Prefixes: "${config.prefix.command}" and "${config.prefix.modCommand}"`);
         client.user.setActivity(config.activity);
+
+        try {
+            botContext = await createBotContext(client);
+
+            await loadCommands(botContext);
+
+            await cronService.schedule(botContext);
+
+            // When the application is ready, slash commands should be registered
+            await registerAllApplicationCommandsAsGuildCommands(botContext);
+        } catch (err) {
+            sentry.captureException(err);
+            log.error(err, "Error in `ready` handler");
+            process.exit(1);
+        }
+
+        log.info("Bot successfully started");
+
+        if (args.values["dry-run"]) {
+            log.info("--dry-run was specified, shutting down");
+            process.exit(0);
+        }
     },
     err => {
         log.error(err, "Token login was not successful");
@@ -139,28 +173,6 @@ login().then(
         process.exit(1);
     },
 );
-
-let botContext: BotContext;
-client.once("clientReady", async initializedClient => {
-    try {
-        botContext = await createBotContext(initializedClient);
-
-        await loadCommands(botContext);
-
-        await cronService.schedule(botContext);
-
-        // When the application is ready, slash commands should be registered
-        await registerAllApplicationCommandsAsGuildCommands(botContext);
-
-        log.info("Bot successfully started");
-        if (args.values["dry-run"]) {
-            process.exit(0);
-        }
-    } catch (err) {
-        log.error(err, "Error in `ready` handler");
-        process.exit(1);
-    }
-});
 
 client.on("interactionCreate", interaction => handleInteractionEvent(interaction, botContext));
 
