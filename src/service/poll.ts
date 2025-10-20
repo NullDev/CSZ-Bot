@@ -1,11 +1,4 @@
-import type {
-    APIEmbed,
-    GuildMember,
-    GuildTextBasedChannel,
-    Message,
-    MessageReaction,
-    User,
-} from "discord.js";
+import type { APIEmbed, GuildMember, Message, MessageReaction, User } from "discord.js";
 import type { Temporal } from "@js-temporal/polyfill";
 
 import * as legacyDelayedPoll from "@/service/delayedPollLegacy.js";
