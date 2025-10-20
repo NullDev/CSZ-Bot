@@ -5,8 +5,7 @@ import type { BotContext } from "@/context.js";
 import * as instagramService from "@/service/instagram.js";
 
 const instagramOptions = {
-    // TODO: https://www.instagram.com/p/C_OQe4FON7Q/
-    uriPattern: /https?:\/\/(?:www\.)?instagram\.com\/(?:reel|tv|p)\/(?:[0-9a-zA-Z_-]+)\/?/gi,
+    uriPattern: /https?:\/\/(?:www\.)?instagram\.com\/(?:reel|tv|p)\/([0-9a-zA-Z_-]+)\/?/gi,
     headers: {
         "User-Agent":
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.5005.124 Safari/537.36 Edg/102.0.1245.44",
@@ -38,6 +37,11 @@ export default class InstagramLink implements SpecialCommand {
         // https://developer.mozilla.org/en-US/docs/Web/API/URL_Pattern_API
         const res = message.matchAll(instagramOptions.uriPattern);
         return [...res].map(match => match[0]);
+    }
+
+    static extractShortCodes(message: string): string[] {
+        const res = message.matchAll(instagramOptions.uriPattern);
+        return [...res].map(match => match[1]);
     }
 
     async handleSpecialMessage(message: Message<true>, context: BotContext) {
