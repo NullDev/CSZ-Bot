@@ -23,6 +23,7 @@ export default {
         reactionWasRemoved: boolean,
     ) {
         if (reactionWasRemoved) {
+            // TODO: If we're persisting state in DB, we have to remove some stuff here
             return;
         }
 
