@@ -25,6 +25,10 @@ export async function addDelayedPoll(pollMessage: Message<true>, pollData: Delay
     delayedPolls.push(pollData);
 }
 
+export function findPoll(message: Message<true>) {
+    return delayedPolls.find(x => x.pollId === message.id);
+}
+
 export const importPolls = async () => {
     const additionalDatas = await additionalMessageData.findAll("DELAYED_POLL");
     let count = 0;

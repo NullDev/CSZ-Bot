@@ -19,11 +19,6 @@ export default {
             return;
         }
 
-        const channel = reactionEvent.message.channel;
-        if (!channel.isTextBased()) {
-            throw new Error("Channel is not text based");
-        }
-
         const message = await reactionEvent.message.fetch();
         if (!message.inGuild()) {
             throw new Error("Guild is null");
@@ -59,13 +54,13 @@ export default {
         }
 
         if (poll.endsAt === null) {
-            await pollService.countVote(poll, invokingMember, reactionEvent);
+            await pollService.countVote(poll, message, invokingMember, reactionEvent);
             return;
         }
 
         if (poll.ended) {
             return;
         }
-        await pollService.countDelayedVote(poll, invokingMember, reactionEvent);
+        await pollService.countDelayedVote(poll, message, invokingMember, reactionEvent);
     },
 } satisfies ReactionHandler;

@@ -1,9 +1,20 @@
-import type { APIEmbed, Message, MessageReaction, User } from "discord.js";
+import type {
+    APIEmbed,
+    GuildMember,
+    GuildTextBasedChannel,
+    Message,
+    MessageReaction,
+    User,
+} from "discord.js";
 import type { Temporal } from "@js-temporal/polyfill";
 
+import * as legacyDelayedPoll from "@/service/delayedPollLegacy.js";
 import type { Poll, PollId } from "@/storage/db/model.js";
 import type { BotContext } from "@/context.js";
 import * as polls from "@/storage/poll.js";
+import * as fadingMessage from "@/storage/fadingMessage.js";
+import * as additionalMessageData from "@/storage/additionalMessageData.js";
+import type { ProcessableMessage } from "./command.js";
 
 export const LETTERS = [
     ":regional_indicator_a:",
@@ -133,81 +144,88 @@ export async function findPollForEmbedMessage(
 
 export async function countDelayedVote(
     poll: Poll,
+    message: Message<true>,
     invoker: GuildMember,
     reaction: MessageReaction,
 ) {
     console.assert(!poll.ended, "Poll already ended");
 
-    // const delayedPoll = pollCommand.delayedPolls.find(x => x.pollId === message.id);
+    const delayedPoll = legacyDelayedPoll.findPoll(reaction.message as Message<true>);
+    if (!delayedPoll) {
+        return;
+    }
+
+    const reactionName = reaction.emoji.name;
+    if (reactionName === null) {
+        throw new Error("Could not find reaction name");
+    }
 
     if (poll.multipleChoices) {
-        // TODO: Toogle user vote
+        // TODO: Toogle user vote with DB backing
+
         // Old code:
-        /*
-        const delayedPollReactions =
-            delayedPoll.reactions[voteEmojis.indexOf(reactionName)];
-        const hasVoted = delayedPollReactions.some(x => x === invokingMember.id);
+        const delayedPollReactions = delayedPoll.reactions[VOTE_EMOJIS.indexOf(reactionName)];
+        const hasVoted = delayedPollReactions.some(x => x === invoker.id);
         if (!hasVoted) {
-            delayedPollReactions.push(invokingMember.id);
+            delayedPollReactions.push(invoker.id);
         } else {
-            delayedPollReactions.splice(delayedPollReactions.indexOf(invokingMember.id), 1);
+            delayedPollReactions.splice(delayedPollReactions.indexOf(invoker.id), 1);
         }
 
         const msg = await message.channel.send(
-            hasVoted
-                ? "🗑 Deine Reaktion wurde gelöscht."
-                : "💾 Deine Reaktion wurde gespeichert.",
+            hasVoted ? "🗑 Deine Reaktion wurde gelöscht." : "💾 Deine Reaktion wurde gespeichert.",
         );
         await fadingMessage.startFadingMessage(msg as ProcessableMessage, 2500);
-        */
     } else {
-        // TODO: Set user vote
+        // TODO: Set user vote with DB backing
+
         // Old code:
-        /*
         for (const reactionList of delayedPoll.reactions) {
             reactionList.forEach((x, i) => {
-                if (x === invokingMember.id) reactionList.splice(i);
+                if (x === invoker.id) reactionList.splice(i);
             });
         }
-        const delayedPollReactions =
-            delayedPoll.reactions[pollEmojis.indexOf(reactionName)];
-        delayedPollReactions.push(invokingMember.id);
-        */
+        const delayedPollReactions = delayedPoll.reactions[POLL_EMOJIS.indexOf(reactionName)];
+        delayedPollReactions.push(invoker.id);
     }
 
-    /*
-    // If it's a delayed poll, we clear all Reactions
-    const allUserReactions = message.reactions.cache.filter(r => {
+    const newMessage = await message.fetch();
+
+    // It's a delayed poll, we clear all Reactions
+    const allUserReactions = newMessage.reactions.cache.filter(r => {
         const emojiName = r.emoji.name;
-        return (
-            emojiName &&
-            r.users.cache.has(invokingMember.id) &&
-            pollEmojis.includes(emojiName)
-        );
+        return emojiName && r.users.cache.has(invoker.id) && POLL_EMOJIS.includes(emojiName);
     });
-    await Promise.all(allUserReactions.map(r => r.users.remove(invokingMember.id)));
+    await Promise.all(allUserReactions.map(r => r.users.remove(invoker.id)));
 
     await additionalMessageData.upsertForMessage(
-        message,
+        newMessage,
         "DELAYED_POLL",
         JSON.stringify(delayedPoll),
     );
-    */
 }
 
-export async function countVote(poll: Poll, _invoker: GuildMember, _reaction: MessageReaction) {
+export async function countVote(
+    poll: Poll,
+    message: Message<true>,
+    invoker: GuildMember,
+    reaction: MessageReaction,
+) {
     console.assert(poll.endsAt === null, "Poll is a delayed poll");
-    /*
-    const reactions = message.reactions.cache.filter(r => {
-        const emojiName = r.emoji.name;
-        return (
-            emojiName &&
-            r.users.cache.has(invokingMember.id) &&
-            emojiName !== reactionEvent.emoji.name &&
-            pollEmojis.includes(emojiName)
-        );
-    });
+    // TODO: Set user vote with DB backing
 
-    await Promise.all(reactions.map(r => r.users.remove(invokingMember.id)));
-    */
+    // Old code:
+    return await Promise.allSettled(
+        message.reactions.cache
+            .filter(r => {
+                const emojiName = r.emoji.name;
+                return (
+                    !!emojiName &&
+                    r.users.cache.has(invoker.id) &&
+                    emojiName !== reaction.emoji.name &&
+                    POLL_EMOJIS.includes(emojiName)
+                );
+            })
+            .map(reaction => reaction.users.remove(invoker.id)),
+    );
 }
