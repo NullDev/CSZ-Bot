@@ -1,4 +1,4 @@
-import type { APIEmbed, GuildMember, Message, User } from "discord.js";
+import type { APIEmbed, Message, User } from "discord.js";
 import type { Temporal } from "@js-temporal/polyfill";
 
 import type { Poll, PollId } from "@/storage/db/model.js";
@@ -88,7 +88,9 @@ export async function markPollAsEnded(pollId: PollId): Promise<void> {
     await polls.markPollAsEnded(pollId);
 }
 
-export async function processPolls(context: BotContext): Promise<void> {}
+export async function processPolls(_context: BotContext): Promise<void> {
+    // TODO
+}
 
 export type PollOption = {
     letter: string;

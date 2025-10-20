@@ -250,7 +250,7 @@ Optionen:
 
         await Promise.all(pollOptions.map((_e, i) => pollMessage.react(EMOJI[i])));
 
-        const dbPoll = await pollService.createPoll(
+        const _dbPoll = await pollService.createPoll(
             message,
             pollMessage,
             question,
