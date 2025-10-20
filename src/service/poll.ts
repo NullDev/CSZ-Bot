@@ -187,7 +187,8 @@ export async function countDelayedVote(
         const emojiName = r.emoji.name;
         return emojiName && r.users.cache.has(invoker.id) && POLL_EMOJIS.includes(emojiName);
     });
-    await Promise.all(allUserReactions.map(r => r.users.remove(invoker.id)));
+
+    await Promise.allSettled(allUserReactions.map(r => r.users.remove(invoker.id)));
 
     await additionalMessageData.upsertForMessage(
         message,
