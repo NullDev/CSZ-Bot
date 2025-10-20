@@ -86,7 +86,7 @@ export default class ExtendCommand implements MessageCommand {
             }
 
             const pollSelectOption = new StringSelectMenuBuilder()
-                .setCustomId("poll_select")
+                .setCustomId("extend-poll-select")
                 .setPlaceholder("Wähle eine Umfrage aus")
                 .addOptions(
                     polls
@@ -107,7 +107,8 @@ export default class ExtendCommand implements MessageCommand {
             });
             try {
                 const interaction = (await promptMessage.awaitMessageComponent({
-                    filter: i => i.user.id === message.author.id && i.customId === "poll_select",
+                    filter: i =>
+                        i.user.id === message.author.id && i.customId === "extend-poll-select",
                     time: 60000,
                 })) as StringSelectMenuInteraction;
                 await interaction.deferUpdate();
