@@ -135,14 +135,37 @@ process.once("exit", code => {
     log.warn(`Process exited with code: ${code}`);
 });
 
+let botContext: BotContext;
 login().then(
-    client => {
+    async client => {
         log.info(`Logged in as ${client.user.tag}`);
         log.info(
             `Got ${client.users.cache.size} users, in ${client.channels.cache.size} channels of ${client.guilds.cache.size} guilds`,
         );
         log.info(`Prefixes: "${config.prefix.command}" and "${config.prefix.modCommand}"`);
         client.user.setActivity(config.activity);
+
+        try {
+            botContext = await createBotContext(client);
+
+            await loadCommands(botContext);
+
+            await cronService.schedule(botContext);
+
+            // When the application is ready, slash commands should be registered
+            await registerAllApplicationCommandsAsGuildCommands(botContext);
+        } catch (err) {
+            sentry.captureException(err);
+            log.error(err, "Error in `ready` handler");
+            process.exit(1);
+        }
+
+        log.info("Bot successfully started");
+
+        if (args.values["dry-run"]) {
+            log.info("--dry-run was specified, shutting down");
+            process.exit(0);
+        }
     },
     err => {
         log.error(err, "Token login was not successful");
@@ -150,28 +173,6 @@ login().then(
         process.exit(1);
     },
 );
-
-let botContext: BotContext;
-client.once("clientReady", async initializedClient => {
-    try {
-        botContext = await createBotContext(initializedClient);
-
-        await loadCommands(botContext);
-
-        await cronService.schedule(botContext);
-
-        // When the application is ready, slash commands should be registered
-        await registerAllApplicationCommandsAsGuildCommands(botContext);
-
-        log.info("Bot successfully started");
-        if (args.values["dry-run"]) {
-            process.exit(0);
-        }
-    } catch (err) {
-        log.error(err, "Error in `ready` handler");
-        process.exit(1);
-    }
-});
 
 client.on("interactionCreate", interaction => handleInteractionEvent(interaction, botContext));
 

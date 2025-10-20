@@ -36,7 +36,7 @@ export async function upsertForMessage(
             payload,
         })
         .onConflict(oc =>
-            oc.columns(["guildId", "channelId", "messageId"]).doUpdateSet({
+            oc.columns(["messageId", "usage"]).doUpdateSet({
                 payload,
             }),
         )
