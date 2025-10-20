@@ -71,7 +71,7 @@ export default class ExtendCommand implements MessageCommand {
         }
     }
 
-    async #offerChannelSelection(
+    async #offerPollSelection(
         extendMessage: Message<true>,
         polls: readonly ResolvedPoll[],
     ): Promise<Message<true> | undefined> {
@@ -117,6 +117,10 @@ export default class ExtendCommand implements MessageCommand {
     }
 
     async legacyHandler(message: ProcessableMessage, context: BotContext, args: string[]) {
+        if (!args.length) {
+            return "Bruder da sind keine Antwortmöglichkeiten :c";
+        }
+
         let pollMessage = message.reference?.messageId
             ? await message.channel.messages.fetch(message.reference.messageId)
             : undefined;
@@ -126,48 +130,23 @@ export default class ExtendCommand implements MessageCommand {
             if (polls.length === 0) {
                 return "Bruder ich konnte echt keine Umfrage finden, welche du erweitern könntest. Sieh zu, dass du die Reply-Funktion benutzt oder den richtigen Channel auswählst.";
             }
-            pollMessage ??= await this.#offerChannelSelection(message, polls);
+            pollMessage ??= await this.#offerPollSelection(message, polls);
         }
 
         if (!pollMessage) {
             return "Bruder ich konnte echt keine Umfrage finden, welche du erweitern könntest. Sieh zu, dass du die Reply-Funktion benutzt oder den richtigen Channel auswählst.";
         }
 
-        if (pollMessage.guildId !== context.guild.id || !pollMessage.channelId) {
+        if (pollMessage.guildId !== context.guild.id) {
             return "Bruder bleib mal hier auf'm Server.";
         }
 
-        if (!pollMessage.id) {
-            return "Die Nachricht hat irgendwie keine reference-ID";
-        }
-        if (!args.length) {
-            return "Bruder da sind keine Antwortmöglichkeiten :c";
-        }
-
-        const channel = await pollMessage.channel.fetch();
-        if (!channel) {
-            return "Bruder der Channel existiert nicht? LOLWUT";
-        }
-
-        let replyMessage: Message;
-        try {
-            replyMessage = await channel.messages.fetch(pollMessage.id);
-        } catch (err) {
-            log.error(err, "Could not fetch replies");
-            sentry.captureException(err);
-            return "Bruder irgendwas stimmt nicht mit deinem Reply ¯\\_(ツ)_/¯";
-        }
-
-        if (!replyMessage.inGuild()) {
-            throw new Error("replyMessage is not in a guild");
-        }
-
-        const dbPoll = await pollService.findPollForEmbedMessage(replyMessage);
+        const dbPoll = await pollService.findPollForEmbedMessage(pollMessage);
         if (!dbPoll) {
             return "Bruder das ist keine Umfrage ಠ╭╮ಠ";
         }
 
-        if (!replyMessage.editable) {
+        if (!pollMessage.editable) {
             return "Bruder aus irgrndeinem Grund hat der Bot verkackt und kann die Umfrage nicht bearbeiten :<";
         }
 
@@ -175,7 +154,7 @@ export default class ExtendCommand implements MessageCommand {
             return "Bruder die Umfrage ist nicht erweiterbar (ง'̀-'́)ง";
         }
 
-        const oldPollOptionFields = replyMessage.embeds[0].fields.filter(field =>
+        const oldPollOptionFields = pollMessage.embeds[0].fields.filter(field =>
             isPollField(field),
         );
 
@@ -201,7 +180,7 @@ export default class ExtendCommand implements MessageCommand {
             return `Bruder mindestens eine Antwortmöglichkeit ist länger als ${poll.FIELD_VALUE_LIMIT} Zeichen!`;
         }
 
-        const replyEmbed = replyMessage.embeds[0];
+        const replyEmbed = pollMessage.embeds[0];
         const originalAuthor = replyEmbed.author?.name.split(" ").slice(2).join(" ");
         const author = originalAuthor === message.author.username ? undefined : message.author;
 
@@ -209,8 +188,8 @@ export default class ExtendCommand implements MessageCommand {
             poll.createOptionField(value, oldPollOptionFields.length + i, author),
         );
 
-        let metaFields = replyMessage.embeds[0].fields.filter(field => !isPollField(field));
-        const embed = EmbedBuilder.from(replyMessage.embeds[0]).data;
+        let metaFields = pollMessage.embeds[0].fields.filter(field => !isPollField(field));
+        const embed = EmbedBuilder.from(pollMessage.embeds[0]).data;
 
         if (oldPollOptionFields.length + additionalPollOptions.length === poll.OPTION_LIMIT) {
             embed.color = 0xcd5c5c;
@@ -219,7 +198,7 @@ export default class ExtendCommand implements MessageCommand {
 
         embed.fields = [...oldPollOptionFields, ...newFields, ...metaFields];
 
-        const msg = await replyMessage.edit({
+        const msg = await pollMessage.edit({
             embeds: [embed],
             // Re-Applying embed thumbnails from attachments will post a picture,
             // therefore we keep attachments empty.
