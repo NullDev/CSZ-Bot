@@ -52,15 +52,9 @@ export default {
         }
 
         const fromThisBot = member.id === botUser.id;
-
         if (fromThisBot) {
             return;
         }
-
-        if (message.author.id !== botUser.id) {
-            return;
-        }
-
         if (message.embeds.length !== 1) {
             return;
         }
