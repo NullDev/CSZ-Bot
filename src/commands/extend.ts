@@ -136,13 +136,9 @@ export default class ExtendCommand implements MessageCommand {
             return "Bruder da sind keine Antwortmöglichkeiten :c";
         }
 
-        const channel = context.guild.channels.cache.get(pollMessage.channelId);
-
+        const channel = await pollMessage.channel.fetch();
         if (!channel) {
             return "Bruder der Channel existiert nicht? LOLWUT";
-        }
-        if (!channel.isTextBased()) {
-            return "Channel ist kein Text-Channel";
         }
 
         let replyMessage: Message;
