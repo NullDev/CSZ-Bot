@@ -41,11 +41,3 @@ if (typeof Map.prototype.getOrInsertComputed === "undefined") {
         return this.get(key);
     };
 }
-
-if (typeof Date.prototype.toTemporalInstant !== "function") {
-    Date.prototype.toTemporalInstant = function () {
-        // @ts-expect-error we cannot require Temporal here (only the types) because this is used in --require as cli-param
-        // We have to assume that it is present in the runtime
-        return Temporal.Instant.fromEpochMilliseconds(this.getTime());
-    };
-}
