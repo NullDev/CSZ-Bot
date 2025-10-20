@@ -89,6 +89,13 @@ export async function createPoll(
     );
 }
 
+export async function addPollOption(author: User, poll: Poll, option: string) {
+    if (option.trim().length === 0) {
+        throw new Error("`option` is empty.");
+    }
+    return await polls.addPollOption(author.id, poll.id, option);
+}
+
 export async function getExpiredPolls(now: Temporal.Instant): Promise<Poll[]> {
     return await polls.getExpiredPolls(now);
 }

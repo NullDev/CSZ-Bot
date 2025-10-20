@@ -2,7 +2,7 @@ import type { Snowflake } from "discord.js";
 import type { Temporal } from "@js-temporal/polyfill";
 
 import db from "@db";
-import type { Poll, PollId } from "./db/model.js";
+import type { Poll, PollId, PollOption } from "./db/model.js";
 
 export interface MessageLocation {
     guildId: Snowflake;
@@ -61,6 +61,35 @@ export async function createPoll(
             .execute();
 
         return poll;
+    });
+}
+
+export async function addPollOption(
+    authorId: Snowflake,
+    pollId: PollId,
+    option: string,
+    ctx = db(),
+): Promise<PollOption> {
+    return await ctx.transaction().execute(async ctx => {
+        // this could be made simpler with a subquery or CTE
+        // no time for that
+
+        const { indexCount } = await ctx
+            .selectFrom("pollOptions")
+            .where("pollId", "=", pollId)
+            .select(eb => eb.fn.count<number>("index").as("indexCount"))
+            .executeTakeFirstOrThrow();
+
+        return await ctx
+            .insertInto("pollOptions")
+            .values({
+                pollId,
+                index: indexCount,
+                option,
+                authorId,
+            })
+            .returningAll()
+            .executeTakeFirstOrThrow();
     });
 }
 
