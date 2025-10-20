@@ -352,7 +352,7 @@ export const processPolls = async (context: BotContext) => {
 
         const question =
             embedDescription.length > TEXT_LIMIT
-                ? `${embedDescription.slice(0, TEXT_LIMIT - 20)}...`
+                ? `${embedDescription.slice(0, TEXT_LIMIT - 20)}…`
                 : embed.description;
 
         const toSend: APIEmbed = {
