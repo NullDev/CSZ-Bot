@@ -121,3 +121,11 @@ export function getDelayedPollResultEmbed(
         },
     };
 }
+
+export async function findPollForEmbedMessage(
+    embedMessage: Message<true>,
+): Promise<Poll | undefined> {
+    return await polls.findPollForEmbedMessage(embedMessage.id);
+}
+
+export async function countDelayedVote(_poll: Poll) {}
