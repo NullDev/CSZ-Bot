@@ -64,16 +64,36 @@ export default {
             throw new Error("Embed author is null");
         }
 
-        const isStrawpoll =
-            embedAuthor.name.indexOf("Strawpoll") >= 0 && pollEmojis.includes(reactionName);
+        const allowMultipleChoice = embedAuthor.name.startsWith("Strawpoll");
+        console.assert(allowMultipleChoice || embedAuthor.name.startsWith("Umfrage"));
 
-        const isUmfrage =
-            embedAuthor.name.indexOf("Umfrage") >= 0 && voteEmojis.includes(reactionName);
+        const validVoteReactions = allowMultipleChoice ? pollEmojis : voteEmojis;
+        if (!validVoteReactions.includes(reactionName)) {
+            return;
+        }
 
         const delayedPoll = poll.delayedPolls.find(x => x.pollId === message.id);
         const isDelayedPoll = delayedPoll !== undefined;
 
-        if (isStrawpoll) {
+        if (allowMultipleChoice) {
+            if (isDelayedPoll) {
+                const delayedPollReactions =
+                    delayedPoll.reactions[voteEmojis.indexOf(reactionName)];
+                const hasVoted = delayedPollReactions.some(x => x === member.id);
+                if (!hasVoted) {
+                    delayedPollReactions.push(member.id);
+                } else {
+                    delayedPollReactions.splice(delayedPollReactions.indexOf(member.id), 1);
+                }
+
+                const msg = await message.channel.send(
+                    hasVoted
+                        ? "🗑 Deine Reaktion wurde gelöscht."
+                        : "💾 Deine Reaktion wurde gespeichert.",
+                );
+                await fadingMessage.startFadingMessage(msg as ProcessableMessage, 2500);
+            }
+        } else {
             if (isDelayedPoll) {
                 for (const reactionList of delayedPoll.reactions) {
                     reactionList.forEach((x, i) => {
@@ -96,24 +116,6 @@ export default {
             });
 
             await Promise.all(reactions.map(r => r.users.remove(member.id)));
-        } else if (isUmfrage) {
-            if (isDelayedPoll) {
-                const delayedPollReactions =
-                    delayedPoll.reactions[voteEmojis.indexOf(reactionName)];
-                const hasVoted = delayedPollReactions.some(x => x === member.id);
-                if (!hasVoted) {
-                    delayedPollReactions.push(member.id);
-                } else {
-                    delayedPollReactions.splice(delayedPollReactions.indexOf(member.id), 1);
-                }
-
-                const msg = await message.channel.send(
-                    hasVoted
-                        ? "🗑 Deine Reaktion wurde gelöscht."
-                        : "💾 Deine Reaktion wurde gespeichert.",
-                );
-                await fadingMessage.startFadingMessage(msg as ProcessableMessage, 2500);
-            }
         }
 
         // If it's a delayed poll, we clear all Reactions
