@@ -1,3 +1,9 @@
+import type { Message } from "discord.js";
+import type { Temporal } from "@js-temporal/polyfill";
+
+import * as polls from "@/storage/poll.js";
+import type { Poll } from "@/storage/db/model.js";
+
 export const LETTERS = [
     ":regional_indicator_a:",
     ":regional_indicator_b:",
@@ -43,3 +49,32 @@ export const EMOJI = [
     "🇸",
     "🇹",
 ];
+
+export async function createPoll(
+    sourceMessage: Message<true>,
+    embedMessage: Message<true>,
+    question: string,
+    multipleChoices: boolean,
+    anonymous: boolean,
+    extendable: boolean,
+    endsAt: Temporal.Instant | null,
+): Promise<Poll> {
+    return await polls.createPoll(
+        sourceMessage.author.id,
+        {
+            guildId: sourceMessage.guildId,
+            channelId: sourceMessage.channelId,
+            messageId: sourceMessage.id,
+        },
+        {
+            guildId: embedMessage.guildId,
+            channelId: embedMessage.channelId,
+            messageId: embedMessage.id,
+        },
+        question,
+        multipleChoices,
+        anonymous,
+        extendable,
+        endsAt,
+    );
+}

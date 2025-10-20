@@ -16,11 +16,13 @@ import type { BotContext } from "@/context.js";
 import type { MessageCommand } from "@/commands/command.js";
 import { parseLegacyMessageParts, type ProcessableMessage } from "@/service/command.js";
 import * as timeUtils from "@/utils/time.js";
+import * as pollService from "@/service/poll.js";
+import { LETTERS, EMOJI } from "@/service/poll.js";
 
 import log from "@log";
 import * as additionalMessageData from "@/storage/additionalMessageData.js";
-import { LETTERS, EMOJI } from "@/service/poll.js";
 import { defer } from "@/utils/interactionUtils.js";
+import { Temporal } from "node_modules/@js-temporal/polyfill/index.js";
 
 export const TEXT_LIMIT = 4096;
 export const FIELD_NAME_LIMIT = 256;
@@ -247,6 +249,16 @@ Optionen:
         });
 
         await using _ = defer(() => message.delete());
+
+        const dbPoll = await pollService.createPoll(
+            message,
+            pollMessage,
+            question,
+            !options.straw,
+            false,
+            !options.straw && extendable,
+            finishTime?.toTemporalInstant() ?? null,
+        );
 
         await Promise.all(pollOptions.map((_e, i) => pollMessage.react(EMOJI[i])));
 
