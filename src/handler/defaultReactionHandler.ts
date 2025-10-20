@@ -59,13 +59,13 @@ export default {
         }
 
         if (poll.endsAt === null) {
-            await pollService.countVote(poll, reactionEvent);
+            await pollService.countVote(poll, invokingMember, reactionEvent);
             return;
         }
 
         if (poll.ended) {
             return;
         }
-        await pollService.countDelayedVote(poll, reactionEvent);
+        await pollService.countDelayedVote(poll, invokingMember, reactionEvent);
     },
 } satisfies ReactionHandler;

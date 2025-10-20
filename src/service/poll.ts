@@ -131,7 +131,11 @@ export async function findPollForEmbedMessage(
     return await polls.findPollForEmbedMessage(embedMessage.id);
 }
 
-export async function countDelayedVote(poll: Poll, _reaction: MessageReaction) {
+export async function countDelayedVote(
+    poll: Poll,
+    invoker: GuildMember,
+    reaction: MessageReaction,
+) {
     console.assert(!poll.ended, "Poll already ended");
 
     // const delayedPoll = pollCommand.delayedPolls.find(x => x.pollId === message.id);
@@ -191,7 +195,7 @@ export async function countDelayedVote(poll: Poll, _reaction: MessageReaction) {
     */
 }
 
-export async function countVote(poll: Poll, _reaction: MessageReaction) {
+export async function countVote(poll: Poll, _invoker: GuildMember, _reaction: MessageReaction) {
     console.assert(poll.endsAt === null, "Poll is a delayed poll");
     /*
     const reactions = message.reactions.cache.filter(r => {
