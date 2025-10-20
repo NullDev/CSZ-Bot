@@ -27,8 +27,7 @@ export default {
         }
 
         const message = await reactionEvent.message.fetch();
-        const { guild } = message;
-        if (guild === null) {
+        if (!message.inGuild()) {
             throw new Error("Guild is null");
         }
 
@@ -37,7 +36,7 @@ export default {
             return;
         }
 
-        const member = await guild.members.fetch(invoker.id);
+        const member = await message.guild.members.fetch(invoker.id);
 
         const reactionName = reactionEvent.emoji.name;
         if (reactionName === null) {

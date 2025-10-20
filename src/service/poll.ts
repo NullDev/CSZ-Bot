@@ -1,3 +1,10 @@
+import type { APIEmbed, Message, User } from "discord.js";
+import type { Temporal } from "@js-temporal/polyfill";
+
+import type { Poll, PollId } from "@/storage/db/model.js";
+import type { BotContext } from "@/context.js";
+import * as polls from "@/storage/poll.js";
+
 export const LETTERS = [
     ":regional_indicator_a:",
     ":regional_indicator_b:",
@@ -43,3 +50,74 @@ export const EMOJI = [
     "🇸",
     "🇹",
 ];
+
+export async function createPoll(
+    sourceMessage: Message<true>,
+    embedMessage: Message<true>,
+    question: string,
+    multipleChoices: boolean,
+    anonymous: boolean,
+    extendable: boolean,
+    endsAt: Temporal.Instant | null,
+): Promise<Poll> {
+    return await polls.createPoll(
+        sourceMessage.author.id,
+        {
+            guildId: sourceMessage.guildId,
+            channelId: sourceMessage.channelId,
+            messageId: sourceMessage.id,
+        },
+        {
+            guildId: embedMessage.guildId,
+            channelId: embedMessage.channelId,
+            messageId: embedMessage.id,
+        },
+        question,
+        multipleChoices,
+        anonymous,
+        extendable,
+        endsAt,
+    );
+}
+
+export async function getExpiredPolls(now: Temporal.Instant): Promise<Poll[]> {
+    return await polls.getExpiredPolls(now);
+}
+
+export async function markPollAsEnded(pollId: PollId): Promise<void> {
+    await polls.markPollAsEnded(pollId);
+}
+
+export async function processPolls(_context: BotContext): Promise<void> {
+    // TODO
+}
+
+export type PollOption = {
+    letter: string;
+    content: string;
+    chosenBy: User[];
+};
+
+export function getDelayedPollResultEmbed(
+    author: { name: string; iconURL?: string },
+    question: string,
+    options: PollOption[],
+): APIEmbed {
+    const totalReactions = Math.sumPrecise(options.map(o => o.chosenBy.length));
+    return {
+        description: `Zusammenfassung: ${question}`,
+        fields: options.map(option => ({
+            name: `${option.letter} ${option.content} (${option.chosenBy.length})`,
+            value: option.chosenBy.map(user => user.toString()).join("\n") || "-",
+            inline: false,
+        })),
+        timestamp: new Date().toISOString(),
+        author: {
+            name: author.name,
+            icon_url: author.iconURL,
+        },
+        footer: {
+            text: `Gesamtabstimmungen: ${totalReactions}`,
+        },
+    };
+}

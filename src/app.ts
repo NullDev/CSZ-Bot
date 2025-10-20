@@ -4,6 +4,7 @@ import * as sentry from "@sentry/node";
 import { readConfig, databasePath, args } from "@/service/config.js";
 import log from "@log";
 
+import { Temporal } from "@js-temporal/polyfill";
 import "@/polyfills.js";
 
 import * as kysely from "@/storage/db/db.js";
@@ -54,6 +55,15 @@ const release =
 log.info(`Bot starting up...${release ? ` (release: ${release})` : ""}`);
 
 const config = await readConfig();
+
+// This polyfill requires that Temporal is already available in the runtime
+// We cannot add it in the polyfills.ts because that file is also used as --require argument for ts-node
+// TODO: Remove this once temporal is available in Node.js
+if (typeof Date.prototype.toTemporalInstant !== "function") {
+    Date.prototype.toTemporalInstant = function () {
+        return Temporal.Instant.fromEpochMilliseconds(this.getTime());
+    };
+}
 
 if (config.sentry?.dsn) {
     sentry.init({

@@ -1,12 +1,11 @@
 import { parseArgs, type ParseArgsConfig } from "node:util";
 
 import {
-    type APIEmbed,
     type APIEmbedField,
     cleanContent,
     EmbedBuilder,
+    type GuildTextBasedChannel,
     type Snowflake,
-    type TextChannel,
     time,
     TimestampStyles,
     type User,
@@ -16,10 +15,11 @@ import type { BotContext } from "@/context.js";
 import type { MessageCommand } from "@/commands/command.js";
 import { parseLegacyMessageParts, type ProcessableMessage } from "@/service/command.js";
 import * as timeUtils from "@/utils/time.js";
+import * as pollService from "@/service/poll.js";
+import { LETTERS, EMOJI } from "@/service/poll.js";
 
 import log from "@log";
 import * as additionalMessageData from "@/storage/additionalMessageData.js";
-import { LETTERS, EMOJI } from "@/service/poll.js";
 import { defer } from "@/utils/interactionUtils.js";
 
 export const TEXT_LIMIT = 4096;
@@ -250,6 +250,16 @@ Optionen:
 
         await Promise.all(pollOptions.map((_e, i) => pollMessage.react(EMOJI[i])));
 
+        const _dbPoll = await pollService.createPoll(
+            message,
+            pollMessage,
+            question,
+            !options.straw,
+            false,
+            !options.straw && extendable,
+            finishTime?.toTemporalInstant() ?? null,
+        );
+
         if (finishTime) {
             const reactionMap: string[] = [];
             const reactions: string[][] = [];
@@ -295,7 +305,7 @@ export const processPolls = async (context: BotContext) => {
     const currentDate = new Date();
     const pollsToFinish = delayedPolls.filter(delayedPoll => currentDate >= delayedPoll.finishesAt);
 
-    const channel: TextChannel = context.textChannels.votes;
+    const channel: GuildTextBasedChannel = context.textChannels.votes;
 
     for (const element of pollsToFinish) {
         const delayedPoll = element;
@@ -317,13 +327,11 @@ export const processPolls = async (context: BotContext) => {
                 }),
         );
 
-        const fields: APIEmbedField[] = delayedPoll.reactions.map((value, i) => {
-            return {
-                name: `${LETTERS[i]} ${delayedPoll.reactionMap[i]} (${value.length})`,
-                value: value.map(uid => users[uid]).join("\n") || "-",
-                inline: false,
-            };
-        });
+        const options: pollService.PollOption[] = delayedPoll.reactions.map((value, i) => ({
+            letter: LETTERS[i],
+            content: delayedPoll.reactionMap[i],
+            chosenBy: value.map(uid => users[uid]),
+        }));
 
         const embed = message.embeds[0];
         if (embed === undefined) {
@@ -340,27 +348,17 @@ export const processPolls = async (context: BotContext) => {
 
         const question =
             embedDescription.length > TEXT_LIMIT
-                ? `${embedDescription.slice(0, TEXT_LIMIT - 20)}...`
+                ? `${embedDescription.slice(0, TEXT_LIMIT - 20)}…`
                 : embed.description;
 
-        const toSend: APIEmbed = {
-            description: `Zusammenfassung: ${question}`,
-            fields,
-            timestamp: new Date().toISOString(),
-            author: {
-                name: `${embedAuthor.name}`,
-                icon_url: embedAuthor.iconURL,
-            },
-            footer: {
-                text: `Gesamtabstimmungen: ${Math.sumPrecise(
-                    delayedPoll.reactions.map(x => x.length),
-                )}`,
-            },
-        };
+        if (question === null) {
+            throw new Error("There was no question?");
+        }
 
         await channel.send({
-            embeds: [toSend],
+            embeds: [pollService.getDelayedPollResultEmbed(embedAuthor, question, options)],
         });
+
         await Promise.all(message.reactions.cache.map(reaction => reaction.remove()));
         await message.react("✅");
         delayedPolls.splice(delayedPolls.indexOf(delayedPoll), 1);
