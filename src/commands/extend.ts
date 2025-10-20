@@ -7,7 +7,6 @@ import {
     type Message,
     StringSelectMenuBuilder,
 } from "discord.js";
-import * as sentry from "@sentry/node";
 
 import type { MessageCommand } from "@/commands/command.js";
 import type { BotContext } from "@/context.js";
@@ -18,7 +17,6 @@ import { LETTERS, EMOJI } from "@/service/poll.js";
 import * as pollService from "@/service/poll.js";
 import { defer } from "@/utils/interactionUtils.js";
 import * as poll from "./poll.js";
-import log from "@log";
 
 const isPollField = (field: APIEmbedField): boolean =>
     !field.inline && LETTERS.some(l => field.name.startsWith(l));
@@ -206,8 +204,6 @@ export default class ExtendCommand implements MessageCommand {
         });
 
         for (const i in additionalPollOptions) {
-            // Disabling rule because the order is important
-
             await msg.react(EMOJI[oldPollOptionFields.length + Number(i)]);
         }
         await message.delete();
