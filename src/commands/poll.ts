@@ -17,10 +17,11 @@ import { parseLegacyMessageParts, type ProcessableMessage } from "@/service/comm
 import * as timeUtils from "@/utils/time.js";
 import * as pollService from "@/service/poll.js";
 import { LETTERS, EMOJI } from "@/service/poll.js";
+import { defer } from "@/utils/interactionUtils.js";
+import { truncateToLength } from "@/utils/stringUtils.js";
 
 import log from "@log";
 import * as additionalMessageData from "@/storage/additionalMessageData.js";
-import { defer } from "@/utils/interactionUtils.js";
 
 export const TEXT_LIMIT = 4096;
 export const FIELD_NAME_LIMIT = 256;
@@ -343,10 +344,7 @@ export const processPolls = async (context: BotContext) => {
             continue;
         }
 
-        const question =
-            embedDescription.length > TEXT_LIMIT
-                ? `${embedDescription.slice(0, TEXT_LIMIT - 20)}…`
-                : embed.description;
+        const question = truncateToLength(embedDescription, TEXT_LIMIT) || embed.description;
 
         if (question === null) {
             throw new Error("There was no question?");
