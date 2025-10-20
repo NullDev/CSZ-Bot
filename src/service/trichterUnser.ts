@@ -1,4 +1,4 @@
-import { EmbedBuilder } from "discord.js";
+import { ContainerBuilder, EmbedBuilder, MessageFlags } from "discord.js";
 import type { BotContext } from "@/context.js";
 
 export async function getTrichterUnserEmbed(ctx: BotContext) {
@@ -7,7 +7,12 @@ export async function getTrichterUnserEmbed(ctx: BotContext) {
         return;
     }
 
-    const embed = new EmbedBuilder().setTitle(`Das ${trichterEmote}-Unser`).setDescription(`
+    await ctx.textChannels.hauptchat.send({
+        components: [
+            new ContainerBuilder().addTextDisplayComponents(
+                t => t.setContent(`# Das ${trichterEmote}-Unser`),
+                t =>
+                    t.setContent(`
 Unser Bier, das im Kühlschrank steht,
 geheiligt werde Dein Rausch.
 Dein Kater komme,
@@ -26,9 +31,9 @@ und der Rausch
 in Ewigkeit.
 
 Prost. 🍻
-`);
-
-    await ctx.textChannels.hauptchat.send({
-        embeds: [embed],
+`),
+            ),
+        ],
+        flags: MessageFlags.IsComponentsV2,
     });
 }
