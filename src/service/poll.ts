@@ -1,8 +1,8 @@
-import type { APIEmbed, GuildMember, Message, MessageReaction, User } from "discord.js";
+import type { GuildMember, Message, MessageReaction, User } from "discord.js";
 import type { Temporal } from "@js-temporal/polyfill";
 
 import * as legacyDelayedPoll from "@/service/delayedPollLegacy.js";
-import type { Poll, PollId } from "@/storage/db/model.js";
+import type { Poll, PollId, PollOption } from "@/storage/db/model.js";
 import type { BotContext } from "@/context.js";
 import * as polls from "@/storage/poll.js";
 import * as fadingMessage from "@/storage/fadingMessage.js";
@@ -94,6 +94,10 @@ export async function addPollOption(author: User, poll: Poll, option: string) {
         throw new Error("`option` is empty.");
     }
     return await polls.addPollOption(author.id, poll.id, option);
+}
+
+export async function findPollOptions(pollId: PollId): Promise<PollOption[] | undefined> {
+    return await polls.findPollOptions(pollId);
 }
 
 export async function getExpiredPolls(now: Temporal.Instant): Promise<Poll[]> {

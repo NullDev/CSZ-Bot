@@ -93,6 +93,19 @@ export async function addPollOption(
     });
 }
 
+export async function findPollOptions(
+    pollId: PollId,
+    ctx = db(),
+): Promise<PollOption[] | undefined> {
+    const res = await ctx
+        .selectFrom("pollOptions")
+        .where("pollId", "=", pollId)
+        .selectAll()
+        .orderBy("index", "asc")
+        .execute();
+    return res.length === 0 ? undefined : res;
+}
+
 export async function getExpiredPolls(now: Temporal.Instant, ctx = db()): Promise<Poll[]> {
     return await ctx
         .selectFrom("polls")
