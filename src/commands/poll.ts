@@ -1,14 +1,5 @@
 import { parseArgs, type ParseArgsConfig } from "node:util";
 
-import {
-    type APIEmbedField,
-    cleanContent,
-    EmbedBuilder,
-    time,
-    TimestampStyles,
-    type User,
-} from "discord.js";
-
 import type { BotContext } from "@/context.js";
 import type { MessageCommand } from "@/commands/command.js";
 import { parseLegacyMessageParts, type ProcessableMessage } from "@/service/command.js";
@@ -26,26 +17,6 @@ export const POLL_OPTION_SEPARATOR = " - ";
 export const POLL_OPTION_MAX_LENGTH =
     2 * FIELD_VALUE_LIMIT - Math.max(...LETTERS.map(s => s.length)) - POLL_OPTION_SEPARATOR.length;
 export const OPTION_LIMIT = LETTERS.length;
-
-export const createOptionField = (option: string, index: number, author?: User): APIEmbedField => {
-    let newOption = option;
-    if (author) {
-        newOption += ` (von ${author.username})`;
-
-        if (newOption.length > POLL_OPTION_MAX_LENGTH) {
-            throw new Error(
-                `Alter jetzt mal ganz im ernst, du hast etwas weniger als ${POLL_OPTION_MAX_LENGTH} Zeichen zur Verfüngung. Ich brauch auch noch ein bisschen Platz. Kannst du doch nicht ernst meinen.`,
-            );
-        }
-    }
-
-    const optionDiscriminator = `${LETTERS[index]}${POLL_OPTION_SEPARATOR}`;
-    const splitIndex = FIELD_NAME_LIMIT - optionDiscriminator.length;
-    const firstTextBlock = optionDiscriminator + newOption.substring(0, splitIndex);
-    const secondTextBlock = newOption.substring(splitIndex) || " ";
-
-    return { name: firstTextBlock, value: secondTextBlock, inline: false };
-};
 
 const argsConfig = {
     options: {

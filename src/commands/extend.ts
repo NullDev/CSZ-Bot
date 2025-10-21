@@ -2,7 +2,6 @@ import {
     ActionRowBuilder,
     type APIEmbedField,
     ComponentType,
-    EmbedBuilder,
     type GuildTextBasedChannel,
     type Message,
     StringSelectMenuBuilder,
@@ -12,6 +11,7 @@ import type { MessageCommand } from "@/commands/command.js";
 import type { BotContext } from "@/context.js";
 import type { ProcessableMessage } from "@/service/command.js";
 
+import * as pollEmbedService from "@/service/pollEmbed.js";
 import { parseLegacyMessageParts } from "@/service/command.js";
 import { LETTERS, EMOJI } from "@/service/poll.js";
 import * as pollService from "@/service/poll.js";
@@ -175,23 +175,30 @@ export default class ExtendCommand implements MessageCommand {
             await pollService.addPollOption(message.author, dbPoll, option);
         }
 
-        const replyEmbed = pollMessage.embeds[0];
-        const originalAuthor = replyEmbed.author?.name.split(" ").slice(2).join(" ");
-        const author = originalAuthor === message.author.username ? undefined : message.author;
-
-        const newFields = additionalPollOptions.map((value, i) =>
-            poll.createOptionField(value, oldPollOptionFields.length + i, author),
-        );
-
-        let metaFields = pollMessage.embeds[0].fields.filter(field => !isPollField(field));
-        const embed = EmbedBuilder.from(pollMessage.embeds[0]).data;
-
-        if (oldPollOptionFields.length + additionalPollOptions.length === poll.OPTION_LIMIT) {
-            embed.color = 0xcd5c5c;
-            metaFields = metaFields.filter(field => !field.name.endsWith("Erweiterbar"));
+        const allOptions = await pollService.findPollOptions(dbPoll.id);
+        if (allOptions === undefined) {
+            throw new Error("Could not find poll that should have been there.");
         }
 
-        embed.fields = [...oldPollOptionFields, ...newFields, ...metaFields];
+        const embed = pollEmbedService.buildPollEmbed(
+            message.channel,
+            {
+                question: dbPoll.question,
+                anonymous: dbPoll.anonymous,
+                extendable: dbPoll.extendable,
+                ended: dbPoll.ended,
+                endsAt: dbPoll.endsAt ? new Date(dbPoll.endsAt) : null,
+                multipleChoices: dbPoll.multipleChoices,
+                // biome-ignore lint/style/noNonNullAssertion: TODO
+                author: message.guild.members.cache.get(dbPoll.authorId)?.user!,
+            },
+            allOptions.map(o => ({
+                index: o.index,
+                option: o.option,
+                // biome-ignore lint/style/noNonNullAssertion: TODO
+                author: message.guild.members.cache.get(o.authorId)?.user!,
+            })),
+        );
 
         const msg = await pollMessage.edit({
             embeds: [embed],
