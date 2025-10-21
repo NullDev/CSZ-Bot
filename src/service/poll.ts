@@ -1,4 +1,4 @@
-import type { APIEmbed, GuildMember, Message, MessageReaction, User } from "discord.js";
+import type { GuildMember, Message, MessageReaction, User } from "discord.js";
 import type { Temporal } from "@js-temporal/polyfill";
 
 import * as legacyDelayedPoll from "@/service/delayedPollLegacy.js";
@@ -8,52 +8,7 @@ import * as polls from "@/storage/poll.js";
 import * as fadingMessage from "@/storage/fadingMessage.js";
 import * as additionalMessageData from "@/storage/additionalMessageData.js";
 import type { ProcessableMessage } from "./command.js";
-
-export const LETTERS = [
-    ":regional_indicator_a:",
-    ":regional_indicator_b:",
-    ":regional_indicator_c:",
-    ":regional_indicator_d:",
-    ":regional_indicator_e:",
-    ":regional_indicator_f:",
-    ":regional_indicator_g:",
-    ":regional_indicator_h:",
-    ":regional_indicator_i:",
-    ":regional_indicator_j:",
-    ":regional_indicator_k:",
-    ":regional_indicator_l:",
-    ":regional_indicator_m:",
-    ":regional_indicator_n:",
-    ":regional_indicator_o:",
-    ":regional_indicator_p:",
-    ":regional_indicator_q:",
-    ":regional_indicator_r:",
-    ":regional_indicator_s:",
-    ":regional_indicator_t:",
-];
-
-export const EMOJI = [
-    "🇦",
-    "🇧",
-    "🇨",
-    "🇩",
-    "🇪",
-    "🇫",
-    "🇬",
-    "🇭",
-    "🇮",
-    "🇯",
-    "🇰",
-    "🇱",
-    "🇲",
-    "🇳",
-    "🇴",
-    "🇵",
-    "🇶",
-    "🇷",
-    "🇸",
-    "🇹",
-];
+import { EMOJI } from "@/service/pollEmbed.js";
 
 export const POLL_EMOJIS = EMOJI;
 export const VOTE_EMOJIS = ["👍", "👎"];
@@ -96,6 +51,10 @@ export async function addPollOption(author: User, poll: Poll, option: string) {
     return await polls.addPollOption(author.id, poll.id, option);
 }
 
+export async function findPoll(pollId: PollId): Promise<polls.PollWithOptions | undefined> {
+    return await polls.findPoll(pollId);
+}
+
 export async function getExpiredPolls(now: Temporal.Instant): Promise<Poll[]> {
     return await polls.getExpiredPolls(now);
 }
@@ -108,39 +67,9 @@ export async function processPolls(_context: BotContext): Promise<void> {
     // TODO
 }
 
-export type PollOption = {
-    letter: string;
-    content: string;
-    chosenBy: User[];
-};
-
-export function getDelayedPollResultEmbed(
-    author: { name: string; iconURL?: string },
-    question: string,
-    options: PollOption[],
-): APIEmbed {
-    const totalReactions = Math.sumPrecise(options.map(o => o.chosenBy.length));
-    return {
-        description: `Zusammenfassung: ${question}`,
-        fields: options.map(option => ({
-            name: `${option.letter} ${option.content} (${option.chosenBy.length})`,
-            value: option.chosenBy.map(user => user.toString()).join("\n") || "-",
-            inline: false,
-        })),
-        timestamp: new Date().toISOString(),
-        author: {
-            name: author.name,
-            icon_url: author.iconURL,
-        },
-        footer: {
-            text: `Gesamtabstimmungen: ${totalReactions}`,
-        },
-    };
-}
-
 export async function findPollForEmbedMessage(
     embedMessage: Message<true>,
-): Promise<Poll | undefined> {
+): Promise<polls.PollWithOptions | undefined> {
     return await polls.findPollForEmbedMessage(embedMessage.id);
 }
 

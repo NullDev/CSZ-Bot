@@ -93,6 +93,39 @@ export async function addPollOption(
     });
 }
 
+export type PollWithOptions = {
+    poll: Poll;
+    options: readonly PollOption[];
+};
+
+export async function findPoll(pollId: PollId, ctx = db()): Promise<PollWithOptions | undefined> {
+    return await ctx.transaction().execute(async ctx => {
+        // TODO: Make this a single query
+
+        const poll = await ctx
+            .selectFrom("polls")
+            .where("id", "=", pollId)
+            .selectAll()
+            .executeTakeFirst();
+
+        if (!poll) {
+            return undefined;
+        }
+
+        const options = await ctx
+            .selectFrom("pollOptions")
+            .where("pollId", "=", pollId)
+            .selectAll()
+            .orderBy("index", "asc")
+            .execute();
+
+        return {
+            poll,
+            options,
+        };
+    });
+}
+
 export async function getExpiredPolls(now: Temporal.Instant, ctx = db()): Promise<Poll[]> {
     return await ctx
         .selectFrom("polls")
@@ -106,12 +139,32 @@ export async function getExpiredPolls(now: Temporal.Instant, ctx = db()): Promis
 export async function findPollForEmbedMessage(
     embedMessageId: Snowflake,
     ctx = db(),
-): Promise<Poll | undefined> {
-    return await ctx
-        .selectFrom("polls")
-        .where("embedMessageId", "=", embedMessageId)
-        .selectAll()
-        .executeTakeFirst();
+): Promise<PollWithOptions | undefined> {
+    return await ctx.transaction().execute(async ctx => {
+        // TODO: Make this a single query
+
+        const poll = await ctx
+            .selectFrom("polls")
+            .where("embedMessageId", "=", embedMessageId)
+            .selectAll()
+            .executeTakeFirst();
+
+        if (!poll) {
+            return undefined;
+        }
+
+        const options = await ctx
+            .selectFrom("pollOptions")
+            .where("pollId", "=", poll.id)
+            .selectAll()
+            .orderBy("index", "asc")
+            .execute();
+
+        return {
+            poll,
+            options,
+        };
+    });
 }
 
 export async function markPollAsEnded(pollId: PollId, ctx = db()): Promise<void> {

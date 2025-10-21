@@ -4,8 +4,7 @@ import type { MessageCommand } from "@/commands/command.js";
 import type { BotContext } from "@/context.js";
 import type { ProcessableMessage } from "@/service/command.js";
 
-import { LETTERS } from "@/service/poll.js";
-import * as poll from "./poll.js";
+import * as pollEmbedService from "@/service/pollEmbed.js";
 
 export default class ToggleCommand implements MessageCommand {
     name = "toggle";
@@ -56,12 +55,12 @@ export default class ToggleCommand implements MessageCommand {
 }
 
 const isPollField = (field: APIEmbedField): boolean =>
-    !field.inline && LETTERS.some(l => field.name.startsWith(l));
+    !field.inline && pollEmbedService.LETTERS.some(l => field.name.startsWith(l));
 
 const togglePoll = async (message: Message) => {
     const pollEmbed = message.embeds[0];
     const pollOptions = pollEmbed.fields.filter(field => isPollField(field));
-    const isFull = pollOptions.length === poll.OPTION_LIMIT;
+    const isFull = pollOptions.length === pollEmbedService.OPTION_LIMIT;
     if (isFull) return "Bruder die ist eh schon voll :<";
 
     const extendColor = 3066993;

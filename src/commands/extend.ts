@@ -1,8 +1,6 @@
 import {
     ActionRowBuilder,
-    type APIEmbedField,
     ComponentType,
-    EmbedBuilder,
     type GuildTextBasedChannel,
     type Message,
     StringSelectMenuBuilder,
@@ -12,15 +10,11 @@ import type { MessageCommand } from "@/commands/command.js";
 import type { BotContext } from "@/context.js";
 import type { ProcessableMessage } from "@/service/command.js";
 
+import * as pollEmbedService from "@/service/pollEmbed.js";
 import { parseLegacyMessageParts } from "@/service/command.js";
-import { LETTERS, EMOJI } from "@/service/poll.js";
 import * as pollService from "@/service/poll.js";
 import { defer } from "@/utils/interactionUtils.js";
-import * as poll from "./poll.js";
 import { truncateToLength } from "@/utils/stringUtils.js";
-
-const isPollField = (field: APIEmbedField): boolean =>
-    !field.inline && LETTERS.some(l => field.name.startsWith(l));
 
 type ResolvedPoll = {
     message: Message;
@@ -60,7 +54,7 @@ async function fetchPollsFromChannel(
 
 export default class ExtendCommand implements MessageCommand {
     name = "extend";
-    description = `Nutzbar als Reply auf eine mit --extendable erstellte Umfrage, um eine/mehrere Antwortmöglichkeit/en hinzuzufügen. Die Anzahl der bestehenden und neuen Antwortmöglichkeiten darf ${poll.OPTION_LIMIT} nicht übersteigen.\nUsage: $COMMAND_PREFIX$extend [Antwort 1] ; [...]`;
+    description = `Nutzbar als Reply auf eine mit --extendable erstellte Umfrage, um eine/mehrere Antwortmöglichkeit/en hinzuzufügen. Die Anzahl der bestehenden und neuen Antwortmöglichkeiten darf ${pollEmbedService.OPTION_LIMIT} nicht übersteigen.\nUsage: $COMMAND_PREFIX$extend [Antwort 1] ; [...]`;
 
     async handleMessage(message: ProcessableMessage, context: BotContext): Promise<void> {
         const { args } = parseLegacyMessageParts(context, message);
@@ -146,15 +140,13 @@ export default class ExtendCommand implements MessageCommand {
             return "Bruder das ist keine Umfrage ಠ╭╮ಠ";
         }
 
-        if (!dbPoll.extendable) {
+        const { poll, options: oldOptions } = dbPoll;
+
+        if (!poll.extendable) {
             return "Bruder die Umfrage ist nicht erweiterbar (ง'̀-'́)ง";
         }
 
-        const oldPollOptionFields = pollMessage.embeds[0].fields.filter(field =>
-            isPollField(field),
-        );
-
-        if (oldPollOptionFields.length === poll.OPTION_LIMIT) {
+        if (oldOptions.length === pollEmbedService.OPTION_LIMIT) {
             return "Bruder die Umfrage ist leider schon voll (⚆ ͜ʖ⚆)";
         }
 
@@ -163,35 +155,47 @@ export default class ExtendCommand implements MessageCommand {
             return "Bruder da sind keine Antwortmöglichkeiten :c";
         }
 
-        if (additionalPollOptions.length + oldPollOptionFields.length > poll.OPTION_LIMIT) {
-            return `Bruder mit deinen Antwortmöglichkeiten wird das Limit von ${poll.OPTION_LIMIT} überschritten!`;
+        if (additionalPollOptions.length + oldOptions.length > pollEmbedService.OPTION_LIMIT) {
+            return `Bruder mit deinen Antwortmöglichkeiten wird das Limit von ${pollEmbedService.OPTION_LIMIT} überschritten!`;
         }
 
-        if (additionalPollOptions.some(value => value.length > poll.FIELD_VALUE_LIMIT)) {
-            return `Bruder mindestens eine Antwortmöglichkeit ist länger als ${poll.FIELD_VALUE_LIMIT} Zeichen!`;
+        if (
+            additionalPollOptions.some(value => value.length > pollEmbedService.FIELD_VALUE_LIMIT)
+        ) {
+            return `Bruder mindestens eine Antwortmöglichkeit ist länger als ${pollEmbedService.FIELD_VALUE_LIMIT} Zeichen!`;
         }
 
         for (const option of additionalPollOptions) {
-            await pollService.addPollOption(message.author, dbPoll, option);
+            await pollService.addPollOption(message.author, poll, option);
         }
 
-        const replyEmbed = pollMessage.embeds[0];
-        const originalAuthor = replyEmbed.author?.name.split(" ").slice(2).join(" ");
-        const author = originalAuthor === message.author.username ? undefined : message.author;
+        const newPoll = await pollService.findPoll(poll.id);
+        if (newPoll === undefined) {
+            throw new Error("Could not find poll that should have been there.");
+        }
 
-        const newFields = additionalPollOptions.map((value, i) =>
-            poll.createOptionField(value, oldPollOptionFields.length + i, author),
+        const pollAuthor = (await message.guild.members.fetch(newPoll.poll.authorId))?.user ?? {
+            username: "<unbekannt>",
+            iconURL: undefined,
+        };
+
+        const embed = pollEmbedService.buildPollEmbed(
+            message.channel,
+            {
+                question: newPoll.poll.question,
+                anonymous: newPoll.poll.anonymous,
+                extendable: newPoll.poll.extendable,
+                ended: newPoll.poll.ended,
+                endsAt: newPoll.poll.endsAt ? new Date(newPoll.poll.endsAt) : null,
+                multipleChoices: newPoll.poll.multipleChoices,
+                author: pollAuthor,
+            },
+            newPoll.options.map(o => ({
+                index: o.index,
+                option: o.option,
+                author: message.guild.members.cache.get(o.authorId)?.user,
+            })),
         );
-
-        let metaFields = pollMessage.embeds[0].fields.filter(field => !isPollField(field));
-        const embed = EmbedBuilder.from(pollMessage.embeds[0]).data;
-
-        if (oldPollOptionFields.length + additionalPollOptions.length === poll.OPTION_LIMIT) {
-            embed.color = 0xcd5c5c;
-            metaFields = metaFields.filter(field => !field.name.endsWith("Erweiterbar"));
-        }
-
-        embed.fields = [...oldPollOptionFields, ...newFields, ...metaFields];
 
         const msg = await pollMessage.edit({
             embeds: [embed],
@@ -201,7 +205,7 @@ export default class ExtendCommand implements MessageCommand {
         });
 
         for (const i in additionalPollOptions) {
-            await msg.react(EMOJI[oldPollOptionFields.length + Number(i)]);
+            await msg.react(pollEmbedService.EMOJI[oldOptions.length + Number(i)]);
         }
         await message.delete();
     }

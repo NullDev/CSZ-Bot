@@ -3,7 +3,7 @@ import type { Message, Snowflake, User } from "discord.js";
 import type { BotContext } from "@/context.js";
 import log from "@log";
 import * as additionalMessageData from "@/storage/additionalMessageData.js";
-import * as pollService from "@/service/poll.js";
+import * as pollEmbedService from "@/service/pollEmbed.js";
 import { truncateToLength } from "@/utils/stringUtils.js";
 
 interface DelayedPoll {
@@ -70,8 +70,8 @@ export const processPolls = async (context: BotContext) => {
                 }),
         );
 
-        const options: pollService.PollOption[] = delayedPoll.reactions.map((value, i) => ({
-            letter: pollService.LETTERS[i],
+        const options: pollEmbedService.PollOption[] = delayedPoll.reactions.map((value, i) => ({
+            letter: pollEmbedService.LETTERS[i],
             content: delayedPoll.reactionMap[i],
             chosenBy: value.map(uid => users[uid]),
         }));
@@ -96,7 +96,7 @@ export const processPolls = async (context: BotContext) => {
         }
 
         await channel.send({
-            embeds: [pollService.getDelayedPollResultEmbed(embedAuthor, question, options)],
+            embeds: [pollEmbedService.buildDelayedPollResultEmbed(embedAuthor, question, options)],
         });
 
         await Promise.all(message.reactions.cache.map(reaction => reaction.remove()));

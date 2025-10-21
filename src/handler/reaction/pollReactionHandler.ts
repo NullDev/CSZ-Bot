@@ -37,26 +37,26 @@ export default {
             return;
         }
 
-        const poll = await pollService.findPollForEmbedMessage(message);
-        if (!poll) {
+        const dbPoll = await pollService.findPollForEmbedMessage(message);
+        if (!dbPoll) {
             return;
         }
 
-        const validVoteReactions = poll.multipleChoices ? POLL_EMOJIS : VOTE_EMOJIS;
+        const validVoteReactions = dbPoll.poll.multipleChoices ? POLL_EMOJIS : VOTE_EMOJIS;
         if (!validVoteReactions.includes(reactionName)) {
             return;
         }
 
         const invokingMember = await message.guild.members.fetch(invoker.id);
 
-        if (poll.endsAt === null) {
-            await pollService.countVote(poll, message, invokingMember, reactionEvent);
+        if (dbPoll.poll.endsAt === null) {
+            await pollService.countVote(dbPoll.poll, message, invokingMember, reactionEvent);
             return;
         }
 
-        if (poll.ended) {
+        if (dbPoll.poll.ended) {
             return;
         }
-        await pollService.countDelayedVote(poll, message, invokingMember, reactionEvent);
+        await pollService.countDelayedVote(dbPoll.poll, message, invokingMember, reactionEvent);
     },
 } satisfies ReactionHandler;
