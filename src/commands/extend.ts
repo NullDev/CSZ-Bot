@@ -9,48 +9,13 @@ import {
 import type { MessageCommand } from "@/commands/command.js";
 import type { BotContext } from "@/context.js";
 import type { ProcessableMessage } from "@/service/command.js";
+import type { Poll } from "@/storage/db/model.js";
 
 import * as pollEmbedService from "@/service/pollEmbed.js";
 import { parseLegacyMessageParts } from "@/service/command.js";
 import * as pollService from "@/service/poll.js";
 import { defer } from "@/utils/interactionUtils.js";
 import { truncateToLength } from "@/utils/stringUtils.js";
-
-type ResolvedPoll = {
-    message: Message;
-    description: string;
-};
-
-async function fetchPollsFromChannel(
-    channel: GuildTextBasedChannel,
-    context: BotContext,
-): Promise<ResolvedPoll[]> {
-    const messagesFromBot = channel.messages.cache
-        .values()
-        .filter(m => m.author.id === context.client.user.id);
-    const polls = messagesFromBot
-        .filter(m => m.embeds.length === 1)
-        .filter(m => m.embeds[0].color === 0x2ecc71) // green color => extendable
-        .filter(
-            m =>
-                m.embeds[0].author?.name.startsWith("Umfrage") ||
-                m.embeds[0].author?.name.startsWith("Strawpoll"),
-        );
-
-    return Array.from(polls)
-        .sort((a, b) => b.createdTimestamp - a.createdTimestamp)
-        .map(m => {
-            let description = m.embeds[0].description || "";
-            // Remove leading and trailing double asterisks if present
-            if (description.startsWith("**") && description.endsWith("**")) {
-                description = description.slice(2, -2);
-            }
-            return {
-                message: m,
-                description,
-            } as ResolvedPoll;
-        });
-}
 
 export default class ExtendCommand implements MessageCommand {
     name = "extend";
@@ -66,7 +31,7 @@ export default class ExtendCommand implements MessageCommand {
 
     async #offerPollSelection(
         extendMessage: Message<true>,
-        polls: readonly ResolvedPoll[],
+        polls: readonly Poll[],
     ): Promise<Message<true> | undefined> {
         const pollSelectOption = new StringSelectMenuBuilder()
             .setCustomId("extend-poll-select")
@@ -75,8 +40,8 @@ export default class ExtendCommand implements MessageCommand {
                 polls
                     .slice(0, 24) // Discord allows max. 25 options
                     .map(poll => ({
-                        label: truncateToLength(poll.description, 100) || "Kein Titel",
-                        value: poll.message.id,
+                        label: truncateToLength(poll.question, 100) || "Kein Titel",
+                        value: poll.embedMessageId,
                     })),
             );
 
@@ -116,7 +81,7 @@ export default class ExtendCommand implements MessageCommand {
             : undefined;
 
         if (!pollMessage) {
-            const polls = await fetchPollsFromChannel(message.channel, context);
+            const polls = await pollService.findExtendablePollsInChannel(message.channel);
             if (polls.length === 0) {
                 return "Bruder ich konnte echt keine Umfrage finden, welche du erweitern könntest. Sieh zu, dass du die Reply-Funktion benutzt oder den richtigen Channel auswählst.";
             }
