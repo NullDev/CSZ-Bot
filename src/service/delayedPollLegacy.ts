@@ -72,7 +72,7 @@ export const processPolls = async (context: BotContext) => {
         );
 
         const options: pollEmbedService.PollOption[] = delayedPoll.reactions.map((value, i) => ({
-            letter: pollService.LETTERS[i],
+            letter: pollEmbedService.LETTERS[i],
             content: delayedPoll.reactionMap[i],
             chosenBy: value.map(uid => users[uid]),
         }));

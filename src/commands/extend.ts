@@ -12,10 +12,8 @@ import type { ProcessableMessage } from "@/service/command.js";
 
 import * as pollEmbedService from "@/service/pollEmbed.js";
 import { parseLegacyMessageParts } from "@/service/command.js";
-import { EMOJI } from "@/service/poll.js";
 import * as pollService from "@/service/poll.js";
 import { defer } from "@/utils/interactionUtils.js";
-import * as poll from "./poll.js";
 import { truncateToLength } from "@/utils/stringUtils.js";
 
 type ResolvedPoll = {
@@ -56,7 +54,7 @@ async function fetchPollsFromChannel(
 
 export default class ExtendCommand implements MessageCommand {
     name = "extend";
-    description = `Nutzbar als Reply auf eine mit --extendable erstellte Umfrage, um eine/mehrere Antwortmöglichkeit/en hinzuzufügen. Die Anzahl der bestehenden und neuen Antwortmöglichkeiten darf ${poll.OPTION_LIMIT} nicht übersteigen.\nUsage: $COMMAND_PREFIX$extend [Antwort 1] ; [...]`;
+    description = `Nutzbar als Reply auf eine mit --extendable erstellte Umfrage, um eine/mehrere Antwortmöglichkeit/en hinzuzufügen. Die Anzahl der bestehenden und neuen Antwortmöglichkeiten darf ${pollEmbedService.OPTION_LIMIT} nicht übersteigen.\nUsage: $COMMAND_PREFIX$extend [Antwort 1] ; [...]`;
 
     async handleMessage(message: ProcessableMessage, context: BotContext): Promise<void> {
         const { args } = parseLegacyMessageParts(context, message);
@@ -151,7 +149,7 @@ export default class ExtendCommand implements MessageCommand {
             throw new Error("Could not find poll that should have been there.");
         }
 
-        if (oldOptions.length === poll.OPTION_LIMIT) {
+        if (oldOptions.length === pollEmbedService.OPTION_LIMIT) {
             return "Bruder die Umfrage ist leider schon voll (⚆ ͜ʖ⚆)";
         }
 
@@ -160,12 +158,14 @@ export default class ExtendCommand implements MessageCommand {
             return "Bruder da sind keine Antwortmöglichkeiten :c";
         }
 
-        if (additionalPollOptions.length + oldOptions.length > poll.OPTION_LIMIT) {
-            return `Bruder mit deinen Antwortmöglichkeiten wird das Limit von ${poll.OPTION_LIMIT} überschritten!`;
+        if (additionalPollOptions.length + oldOptions.length > pollEmbedService.OPTION_LIMIT) {
+            return `Bruder mit deinen Antwortmöglichkeiten wird das Limit von ${pollEmbedService.OPTION_LIMIT} überschritten!`;
         }
 
-        if (additionalPollOptions.some(value => value.length > poll.FIELD_VALUE_LIMIT)) {
-            return `Bruder mindestens eine Antwortmöglichkeit ist länger als ${poll.FIELD_VALUE_LIMIT} Zeichen!`;
+        if (
+            additionalPollOptions.some(value => value.length > pollEmbedService.FIELD_VALUE_LIMIT)
+        ) {
+            return `Bruder mindestens eine Antwortmöglichkeit ist länger als ${pollEmbedService.FIELD_VALUE_LIMIT} Zeichen!`;
         }
 
         for (const option of additionalPollOptions) {
@@ -208,7 +208,7 @@ export default class ExtendCommand implements MessageCommand {
         });
 
         for (const i in additionalPollOptions) {
-            await msg.react(EMOJI[oldOptions.length + Number(i)]);
+            await msg.react(pollEmbedService.EMOJI[oldOptions.length + Number(i)]);
         }
         await message.delete();
     }

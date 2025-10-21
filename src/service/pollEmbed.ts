@@ -9,17 +9,59 @@ import {
     type User,
 } from "discord.js";
 
-import * as pollService from "@/service/poll.js";
+export const LETTERS = [
+    ":regional_indicator_a:",
+    ":regional_indicator_b:",
+    ":regional_indicator_c:",
+    ":regional_indicator_d:",
+    ":regional_indicator_e:",
+    ":regional_indicator_f:",
+    ":regional_indicator_g:",
+    ":regional_indicator_h:",
+    ":regional_indicator_i:",
+    ":regional_indicator_j:",
+    ":regional_indicator_k:",
+    ":regional_indicator_l:",
+    ":regional_indicator_m:",
+    ":regional_indicator_n:",
+    ":regional_indicator_o:",
+    ":regional_indicator_p:",
+    ":regional_indicator_q:",
+    ":regional_indicator_r:",
+    ":regional_indicator_s:",
+    ":regional_indicator_t:",
+];
+
+export const EMOJI = [
+    "🇦",
+    "🇧",
+    "🇨",
+    "🇩",
+    "🇪",
+    "🇫",
+    "🇬",
+    "🇭",
+    "🇮",
+    "🇯",
+    "🇰",
+    "🇱",
+    "🇲",
+    "🇳",
+    "🇴",
+    "🇵",
+    "🇶",
+    "🇷",
+    "🇸",
+    "🇹",
+];
 
 export const TEXT_LIMIT = 4096;
 export const FIELD_NAME_LIMIT = 256;
 export const FIELD_VALUE_LIMIT = 1024;
 export const POLL_OPTION_SEPARATOR = " - ";
 export const POLL_OPTION_MAX_LENGTH =
-    2 * FIELD_VALUE_LIMIT -
-    Math.max(...pollService.LETTERS.map(s => s.length)) -
-    POLL_OPTION_SEPARATOR.length;
-export const OPTION_LIMIT = pollService.LETTERS.length;
+    2 * FIELD_VALUE_LIMIT - Math.max(...LETTERS.map(s => s.length)) - POLL_OPTION_SEPARATOR.length;
+export const OPTION_LIMIT = LETTERS.length;
 
 export type AuthorSpec = { username: string; iconURL?: string };
 
@@ -113,7 +155,7 @@ function createOptionField(
         }
     }
 
-    const optionDiscriminator = `${pollService.LETTERS[index]}${POLL_OPTION_SEPARATOR}`;
+    const optionDiscriminator = `${LETTERS[index]}${POLL_OPTION_SEPARATOR}`;
     const splitIndex = FIELD_NAME_LIMIT - optionDiscriminator.length;
     const firstTextBlock = optionDiscriminator + newOption.substring(0, splitIndex);
     const secondTextBlock = newOption.substring(splitIndex) || " ";

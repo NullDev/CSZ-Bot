@@ -5,18 +5,9 @@ import type { MessageCommand } from "@/commands/command.js";
 import { parseLegacyMessageParts, type ProcessableMessage } from "@/service/command.js";
 import * as timeUtils from "@/utils/time.js";
 import * as pollService from "@/service/poll.js";
-import { LETTERS, EMOJI } from "@/service/poll.js";
 import * as legacyDelayedPoll from "@/service/delayedPollLegacy.js";
 import * as pollEmbedService from "@/service/pollEmbed.js";
 import { defer } from "@/utils/interactionUtils.js";
-
-export const TEXT_LIMIT = 4096;
-export const FIELD_NAME_LIMIT = 256;
-export const FIELD_VALUE_LIMIT = 1024;
-export const POLL_OPTION_SEPARATOR = " - ";
-export const POLL_OPTION_MAX_LENGTH =
-    2 * FIELD_VALUE_LIMIT - Math.max(...LETTERS.map(s => s.length)) - POLL_OPTION_SEPARATOR.length;
-export const OPTION_LIMIT = LETTERS.length;
 
 const argsConfig = {
     options: {
@@ -49,7 +40,7 @@ const argsConfig = {
 
 export default class PollCommand implements MessageCommand {
     name = "poll";
-    description = `Erstellt eine Umfrage mit mehreren Antwortmöglichkeiten (standardmäßig mit Mehrfachauswahl) (maximal ${OPTION_LIMIT}).
+    description = `Erstellt eine Umfrage mit mehreren Antwortmöglichkeiten (standardmäßig mit Mehrfachauswahl) (maximal ${pollEmbedService.OPTION_LIMIT}).
 Usage: $COMMAND_PREFIX$poll [Optionen?] [Hier die Frage] ; [Antwort 1] ; [Antwort 2] ; [...]
 Optionen:
 \t-c, --channel
@@ -93,7 +84,7 @@ Optionen:
         const pollArray = pollService.parsePollOptionString(positionals.join(" "));
 
         const question = pollArray[0];
-        if (question.length > TEXT_LIMIT) {
+        if (question.length > pollEmbedService.TEXT_LIMIT) {
             return "Bruder die Frage ist ja länger als mein Schwands :c";
         }
 
@@ -113,18 +104,18 @@ Optionen:
             return "Bruder du musst schon mehr als eine Antwortmöglichkeit geben 🙄";
         }
 
-        if (pollOptions.length > OPTION_LIMIT) {
-            return `Bitte gib nicht mehr als ${OPTION_LIMIT} Antwortmöglichkeiten an!`;
+        if (pollOptions.length > pollEmbedService.OPTION_LIMIT) {
+            return `Bitte gib nicht mehr als ${pollEmbedService.OPTION_LIMIT} Antwortmöglichkeiten an!`;
         }
 
-        if (pollOptions.some(value => value.length > POLL_OPTION_MAX_LENGTH)) {
-            return `Bruder mindestens eine Antwortmöglichkeit ist länger als ${POLL_OPTION_MAX_LENGTH} Zeichen!`;
+        if (pollOptions.some(value => value.length > pollEmbedService.POLL_OPTION_MAX_LENGTH)) {
+            return `Bruder mindestens eine Antwortmöglichkeit ist länger als ${pollEmbedService.POLL_OPTION_MAX_LENGTH} Zeichen!`;
         }
 
         const extendable =
             !!options.extendable &&
-            pollOptions.length < OPTION_LIMIT &&
-            pollOptionsTextLength < TEXT_LIMIT;
+            pollOptions.length < pollEmbedService.OPTION_LIMIT &&
+            pollOptionsTextLength < pollEmbedService.TEXT_LIMIT;
 
         if (extendable && options.delayed) {
             return "Bruder du kannst -e nicht mit -d kombinieren. 🙄";
@@ -180,7 +171,7 @@ Optionen:
 
         await using _ = defer(() => message.delete());
 
-        await Promise.all(pollOptions.map((_e, i) => pollMessage.react(EMOJI[i])));
+        await Promise.all(pollOptions.map((_e, i) => pollMessage.react(pollEmbedService.EMOJI[i])));
 
         const _dbPoll = await pollService.createPoll(
             message,
