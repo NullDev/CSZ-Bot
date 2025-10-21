@@ -171,6 +171,7 @@ login().then(
             await botContext.textChannels.hauptchat.send(
                 `Hallo, ich wurde gerade gestartet!\nMeine Präfixe sind: \`${botContext.prefix.command}\`/\`${botContext.prefix.modCommand}\``,
             );
+            log.info("Sent welcome message");
         }
     },
     err => {
