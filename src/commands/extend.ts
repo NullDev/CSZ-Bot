@@ -196,8 +196,7 @@ export default class ExtendCommand implements MessageCommand {
             allOptions.map(o => ({
                 index: o.index,
                 option: o.option,
-                // biome-ignore lint/style/noNonNullAssertion: TODO
-                author: message.guild.members.cache.get(o.authorId)?.user!,
+                author: message.guild.members.cache.get(o.authorId)?.user,
             })),
         );
 
