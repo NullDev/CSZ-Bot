@@ -81,6 +81,8 @@ export interface Config {
         modCommand: string;
     };
 
+    sendWelcomeMessage?: boolean;
+
     moderatorRoleIds: readonly Snowflake[];
 
     command: {

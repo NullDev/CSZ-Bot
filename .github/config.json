@@ -19,10 +19,12 @@
     },
     "prefix": {
         // You may want to choose a prefix that does not collide with others on the test server
-        "command": ".",
-        "modCommand": "~"
+        "command": ".$PR_ID",
+        "modCommand": "~$PR_ID"
     },
     "moderatorRoleIds": ["893179190709477413"],
+
+    "sendWelcomeMessage": true,
 
     "command": {
         "faulenzerPing": {

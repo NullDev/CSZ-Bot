@@ -36,6 +36,8 @@ export interface BotContext {
         modCommand: string;
     };
 
+    sendWelcomeMessage: boolean;
+
     spotifyClient: SpotifyApi | null;
 
     youtube: {
@@ -219,6 +221,7 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
             command: config.prefix.command,
             modCommand: config.prefix.modCommand,
         },
+        sendWelcomeMessage: config.sendWelcomeMessage ?? false,
         spotifyClient:
             config.spotify?.clientId && config.spotify?.clientSecret
                 ? SpotifyApi.withClientCredentials(
