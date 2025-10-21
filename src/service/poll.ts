@@ -114,7 +114,7 @@ export type PollOption = {
     chosenBy: User[];
 };
 
-export function getDelayedPollResultEmbed(
+export function buildDelayedPollResultEmbed(
     author: { name: string; iconURL?: string },
     question: string,
     options: PollOption[],

@@ -96,7 +96,7 @@ export const processPolls = async (context: BotContext) => {
         }
 
         await channel.send({
-            embeds: [pollService.getDelayedPollResultEmbed(embedAuthor, question, options)],
+            embeds: [pollService.buildDelayedPollResultEmbed(embedAuthor, question, options)],
         });
 
         await Promise.all(message.reactions.cache.map(reaction => reaction.remove()));
