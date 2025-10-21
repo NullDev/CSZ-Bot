@@ -3,7 +3,6 @@ import type { Message, Snowflake, User } from "discord.js";
 import type { BotContext } from "@/context.js";
 import log from "@log";
 import * as additionalMessageData from "@/storage/additionalMessageData.js";
-import * as pollService from "@/service/poll.js";
 import * as pollEmbedService from "@/service/pollEmbed.js";
 import { truncateToLength } from "@/utils/stringUtils.js";
 
