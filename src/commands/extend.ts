@@ -181,6 +181,11 @@ export default class ExtendCommand implements MessageCommand {
             throw new Error("Could not find poll that should have been there.");
         }
 
+        const pollAuthor = (await message.guild.members.fetch(dbPoll.authorId))?.user ?? {
+            username: "<unbekannt>",
+            iconURL: undefined,
+        };
+
         const embed = pollEmbedService.buildPollEmbed(
             message.channel,
             {
@@ -190,8 +195,7 @@ export default class ExtendCommand implements MessageCommand {
                 ended: dbPoll.ended,
                 endsAt: dbPoll.endsAt ? new Date(dbPoll.endsAt) : null,
                 multipleChoices: dbPoll.multipleChoices,
-                // biome-ignore lint/style/noNonNullAssertion: TODO
-                author: message.guild.members.cache.get(dbPoll.authorId)?.user!,
+                author: pollAuthor,
             },
             allOptions.map(o => ({
                 index: o.index,
