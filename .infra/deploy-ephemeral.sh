@@ -27,3 +27,5 @@ docker compose -p e2e -f .infra/compose.ephemeral.yaml pull bot
 docker compose -p e2e -f .infra/compose.ephemeral.yaml up \
     -d \
     --remove-orphans
+
+rm -rvf -- "$TEMP_DIR"
