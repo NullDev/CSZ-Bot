@@ -108,36 +108,6 @@ export async function processPolls(_context: BotContext): Promise<void> {
     // TODO
 }
 
-export type PollOption = {
-    letter: string;
-    content: string;
-    chosenBy: User[];
-};
-
-export function buildDelayedPollResultEmbed(
-    author: { name: string; iconURL?: string },
-    question: string,
-    options: PollOption[],
-): APIEmbed {
-    const totalReactions = Math.sumPrecise(options.map(o => o.chosenBy.length));
-    return {
-        description: `Zusammenfassung: ${question}`,
-        fields: options.map(option => ({
-            name: `${option.letter} ${option.content} (${option.chosenBy.length})`,
-            value: option.chosenBy.map(user => user.toString()).join("\n") || "-",
-            inline: false,
-        })),
-        timestamp: new Date().toISOString(),
-        author: {
-            name: author.name,
-            icon_url: author.iconURL,
-        },
-        footer: {
-            text: `Gesamtabstimmungen: ${totalReactions}`,
-        },
-    };
-}
-
 export async function findPollForEmbedMessage(
     embedMessage: Message<true>,
 ): Promise<Poll | undefined> {
