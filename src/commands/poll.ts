@@ -16,6 +16,7 @@ import * as timeUtils from "@/utils/time.js";
 import * as pollService from "@/service/poll.js";
 import { LETTERS, EMOJI } from "@/service/poll.js";
 import * as legacyDelayedPoll from "@/service/delayedPollLegacy.js";
+import * as pollEmbedService from "@/service/pollEmbed.js";
 import { defer } from "@/utils/interactionUtils.js";
 
 export const TEXT_LIMIT = 4096;
@@ -149,37 +150,13 @@ Optionen:
             return `Bruder mindestens eine Antwortmöglichkeit ist länger als ${POLL_OPTION_MAX_LENGTH} Zeichen!`;
         }
 
-        const fields = pollOptions.map((o, i) => createOptionField(o, i));
-
         const extendable =
             !!options.extendable &&
             pollOptions.length < OPTION_LIMIT &&
             pollOptionsTextLength < TEXT_LIMIT;
 
-        const embed = new EmbedBuilder({
-            description: `**${cleanContent(question, message.channel)}**`,
-            fields,
-            timestamp: new Date().toISOString(),
-            author: {
-                name: `${options.straw ? "Strawpoll" : "Umfrage"} von ${message.author.username}`,
-                icon_url: message.author.displayAvatarURL(),
-            },
-            thumbnail: {
-                url: "attachment://question.png",
-            },
-        });
-
-        if (extendable) {
-            if (options.delayed) {
-                return "Bruder du kannst -e nicht mit -d kombinieren. 🙄";
-            }
-
-            embed.addFields({
-                name: "✏️ Erweiterbar",
-                value: "mit .extend als Reply",
-                inline: true,
-            });
-            embed.setColor(0x2ecc71);
+        if (extendable && options.delayed) {
+            return "Bruder du kannst -e nicht mit -d kombinieren. 🙄";
         }
 
         let finishTime: Date | undefined;
@@ -194,20 +171,7 @@ Optionen:
             if (delayTime > timeUtils.days(7)) {
                 return "Bruder du kannst maximal 7 Tage auf ein Ergebnis warten 🙄";
             }
-
-            embed.addFields({
-                name: "⏳ Verzögert",
-                value: `Abstimmungsende: ${time(finishTime, TimestampStyles.RelativeTime)}`,
-                inline: true,
-            });
-            embed.setColor(0xa10083);
         }
-
-        embed.addFields({
-            name: `📝 ${options.straw ? "Einzelauswahl" : "Mehrfachauswahl"}`,
-            value: "\u200b", // Zero-width space because there has to be some value
-            inline: true,
-        });
 
         const voteChannel = context.textChannels.votes;
         const channel = options.channel ? voteChannel : message.channel;
@@ -218,6 +182,20 @@ Optionen:
         if (!channel.isTextBased()) {
             return "Der Zielchannel ist irgenwie kein Text-Channel?";
         }
+
+        const embed = pollEmbedService.buildPollEmbed(
+            channel,
+            {
+                question,
+                anonymous: !!finishTime,
+                author: message.author,
+                extendable,
+                multipleChoices: !options.straw,
+                endsAt: finishTime ?? null,
+                ended: !!finishTime && Date.now() >= finishTime.getTime(),
+            },
+            pollOptions.map((option, index) => ({ author: message.author, index, option })),
+        );
 
         const pollMessage = await channel.send({
             embeds: [embed],
