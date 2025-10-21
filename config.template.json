@@ -28,6 +28,9 @@
         "command": "xd",
         "modCommand": "yd"
     },
+
+    "sendWelcomeMessage": true,
+
     "moderatorRoleIds": ["893179190709477413"],
 
     "command": {

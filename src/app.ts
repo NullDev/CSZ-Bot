@@ -166,6 +166,12 @@ login().then(
             log.info("--dry-run was specified, shutting down");
             process.exit(0);
         }
+
+        if (botContext.sendWelcomeMessage) {
+            await botContext.textChannels.hauptchat.send(
+                `Hallo, ich wurde gerade gestartet!\nMeine Präfixe sind: \`${botContext.prefix.command}\`/\`${botContext.prefix.modCommand}\``,
+            );
+        }
     },
     err => {
         log.error(err, "Token login was not successful");

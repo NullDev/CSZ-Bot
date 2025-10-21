@@ -24,6 +24,8 @@
     },
     "moderatorRoleIds": ["893179190709477413"],
 
+    "sendWelcomeMessage": true,
+
     "command": {
         "faulenzerPing": {
             "allowedRoleIds": [],
