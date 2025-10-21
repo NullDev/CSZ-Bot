@@ -1,10 +1,4 @@
-import {
-    ActionRowBuilder,
-    ComponentType,
-    type GuildTextBasedChannel,
-    type Message,
-    StringSelectMenuBuilder,
-} from "discord.js";
+import { ActionRowBuilder, ComponentType, type Message, StringSelectMenuBuilder } from "discord.js";
 
 import type { MessageCommand } from "@/commands/command.js";
 import type { BotContext } from "@/context.js";
