@@ -99,7 +99,7 @@ export function buildPollEmbed(
         ),
         timestamp: new Date().toISOString(),
         author: {
-            name: `${poll.multipleChoices ? "Umfrage" : "Strawpoll"} von ${poll.author}`,
+            name: `${poll.multipleChoices ? "Umfrage" : "Strawpoll"} von ${poll.author.username}`,
             icon_url: poll.author.iconURL,
         },
         thumbnail: {
