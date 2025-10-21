@@ -1,6 +1,5 @@
 import {
     ActionRowBuilder,
-    type APIEmbedField,
     ComponentType,
     type GuildTextBasedChannel,
     type Message,
@@ -13,14 +12,11 @@ import type { ProcessableMessage } from "@/service/command.js";
 
 import * as pollEmbedService from "@/service/pollEmbed.js";
 import { parseLegacyMessageParts } from "@/service/command.js";
-import { LETTERS, EMOJI } from "@/service/poll.js";
+import { EMOJI } from "@/service/poll.js";
 import * as pollService from "@/service/poll.js";
 import { defer } from "@/utils/interactionUtils.js";
 import * as poll from "./poll.js";
 import { truncateToLength } from "@/utils/stringUtils.js";
-
-const isPollField = (field: APIEmbedField): boolean =>
-    !field.inline && LETTERS.some(l => field.name.startsWith(l));
 
 type ResolvedPoll = {
     message: Message;
