@@ -140,13 +140,10 @@ export default class ExtendCommand implements MessageCommand {
             return "Bruder das ist keine Umfrage ಠ╭╮ಠ";
         }
 
-        if (!dbPoll.extendable) {
-            return "Bruder die Umfrage ist nicht erweiterbar (ง'̀-'́)ง";
-        }
+        const { poll, options: oldOptions } = dbPoll;
 
-        const oldOptions = await pollService.findPollOptions(dbPoll.id);
-        if (oldOptions === undefined) {
-            throw new Error("Could not find poll that should have been there.");
+        if (!poll.extendable) {
+            return "Bruder die Umfrage ist nicht erweiterbar (ง'̀-'́)ง";
         }
 
         if (oldOptions.length === pollEmbedService.OPTION_LIMIT) {
@@ -169,15 +166,15 @@ export default class ExtendCommand implements MessageCommand {
         }
 
         for (const option of additionalPollOptions) {
-            await pollService.addPollOption(message.author, dbPoll, option);
+            await pollService.addPollOption(message.author, poll, option);
         }
 
-        const allOptions = await pollService.findPollOptions(dbPoll.id);
-        if (allOptions === undefined) {
+        const newPoll = await pollService.findPoll(poll.id);
+        if (newPoll === undefined) {
             throw new Error("Could not find poll that should have been there.");
         }
 
-        const pollAuthor = (await message.guild.members.fetch(dbPoll.authorId))?.user ?? {
+        const pollAuthor = (await message.guild.members.fetch(newPoll.poll.authorId))?.user ?? {
             username: "<unbekannt>",
             iconURL: undefined,
         };
@@ -185,15 +182,15 @@ export default class ExtendCommand implements MessageCommand {
         const embed = pollEmbedService.buildPollEmbed(
             message.channel,
             {
-                question: dbPoll.question,
-                anonymous: dbPoll.anonymous,
-                extendable: dbPoll.extendable,
-                ended: dbPoll.ended,
-                endsAt: dbPoll.endsAt ? new Date(dbPoll.endsAt) : null,
-                multipleChoices: dbPoll.multipleChoices,
+                question: newPoll.poll.question,
+                anonymous: newPoll.poll.anonymous,
+                extendable: newPoll.poll.extendable,
+                ended: newPoll.poll.ended,
+                endsAt: newPoll.poll.endsAt ? new Date(newPoll.poll.endsAt) : null,
+                multipleChoices: newPoll.poll.multipleChoices,
                 author: pollAuthor,
             },
-            allOptions.map(o => ({
+            newPoll.options.map(o => ({
                 index: o.index,
                 option: o.option,
                 author: message.guild.members.cache.get(o.authorId)?.user,

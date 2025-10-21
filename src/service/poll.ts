@@ -51,8 +51,8 @@ export async function addPollOption(author: User, poll: Poll, option: string) {
     return await polls.addPollOption(author.id, poll.id, option);
 }
 
-export async function findPollOptions(pollId: PollId): Promise<PollOption[] | undefined> {
-    return await polls.findPollOptions(pollId);
+export async function findPoll(pollId: PollId): Promise<polls.PollWithOptions | undefined> {
+    return await polls.findPoll(pollId);
 }
 
 export async function getExpiredPolls(now: Temporal.Instant): Promise<Poll[]> {
@@ -69,7 +69,7 @@ export async function processPolls(_context: BotContext): Promise<void> {
 
 export async function findPollForEmbedMessage(
     embedMessage: Message<true>,
-): Promise<Poll | undefined> {
+): Promise<polls.PollWithOptions | undefined> {
     return await polls.findPollForEmbedMessage(embedMessage.id);
 }
 
