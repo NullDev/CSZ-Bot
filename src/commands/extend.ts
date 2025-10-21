@@ -150,11 +150,12 @@ export default class ExtendCommand implements MessageCommand {
             return "Bruder die Umfrage ist nicht erweiterbar (ง'̀-'́)ง";
         }
 
-        const oldPollOptionFields = pollMessage.embeds[0].fields.filter(field =>
-            isPollField(field),
-        );
+        const oldOptions = await pollService.findPollOptions(dbPoll.id);
+        if (oldOptions === undefined) {
+            throw new Error("Could not find poll that should have been there.");
+        }
 
-        if (oldPollOptionFields.length === poll.OPTION_LIMIT) {
+        if (oldOptions.length === poll.OPTION_LIMIT) {
             return "Bruder die Umfrage ist leider schon voll (⚆ ͜ʖ⚆)";
         }
 
@@ -163,7 +164,7 @@ export default class ExtendCommand implements MessageCommand {
             return "Bruder da sind keine Antwortmöglichkeiten :c";
         }
 
-        if (additionalPollOptions.length + oldPollOptionFields.length > poll.OPTION_LIMIT) {
+        if (additionalPollOptions.length + oldOptions.length > poll.OPTION_LIMIT) {
             return `Bruder mit deinen Antwortmöglichkeiten wird das Limit von ${poll.OPTION_LIMIT} überschritten!`;
         }
 
@@ -208,7 +209,7 @@ export default class ExtendCommand implements MessageCommand {
         });
 
         for (const i in additionalPollOptions) {
-            await msg.react(EMOJI[oldPollOptionFields.length + Number(i)]);
+            await msg.react(EMOJI[oldOptions.length + Number(i)]);
         }
         await message.delete();
     }
