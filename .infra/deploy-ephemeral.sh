@@ -18,7 +18,7 @@ cp -r "$BOT_HOME_PATH/banners" "$TEMP_DIR"
 cp -r "$BOT_HOME_PATH/sounds" "$TEMP_DIR"
 cp -r "$BOT_HOME_PATH/.infra" "$TEMP_DIR"
 
-echo "$EPHEMERAL_BOT_CONFIG" >config.json
+echo "$EPHEMERAL_BOT_CONFIG" > config.json
 echo "" >.env # Dummy env
 
 docker stop csz-bot-ephemeral || true
