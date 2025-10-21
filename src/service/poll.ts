@@ -1,4 +1,4 @@
-import type { GuildMember, Message, MessageReaction, User } from "discord.js";
+import type { GuildMember, Message, MessageReaction, TextBasedChannel, User } from "discord.js";
 import type { Temporal } from "@js-temporal/polyfill";
 
 import * as legacyDelayedPoll from "@/service/delayedPollLegacy.js";
@@ -53,6 +53,10 @@ export async function addPollOption(author: User, poll: Poll, option: string) {
 
 export async function findPoll(pollId: PollId): Promise<polls.PollWithOptions | undefined> {
     return await polls.findPoll(pollId);
+}
+
+export async function findExtendablePollsInChannel(channel: TextBasedChannel): Promise<Poll[]> {
+    return polls.findExtendablePollsInChannel(channel.id);
 }
 
 export async function getExpiredPolls(now: Temporal.Instant): Promise<Poll[]> {

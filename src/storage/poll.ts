@@ -126,6 +126,21 @@ export async function findPoll(pollId: PollId, ctx = db()): Promise<PollWithOpti
     });
 }
 
+export async function findExtendablePollsInChannel(
+    channelId: Snowflake,
+    ctx = db(),
+): Promise<Poll[]> {
+    return ctx
+        .selectFrom("polls")
+        .where("embedChannelId", "=", channelId)
+        .where("extendable", "=", true)
+        .where("ended", "=", false)
+        .orderBy("createdAt", "desc")
+        .limit(25)
+        .selectAll()
+        .execute();
+}
+
 export async function getExpiredPolls(now: Temporal.Instant, ctx = db()): Promise<Poll[]> {
     return await ctx
         .selectFrom("polls")
