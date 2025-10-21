@@ -36,7 +36,8 @@ export type PollEmbedParameters = {
 export type PollEmbedOptionParameters = {
     index: number;
     option: string;
-    author: AuthorSpec;
+    /** if not present, will be "unknown author". NOT used to show/hide the author */
+    author: AuthorSpec | undefined;
 };
 
 export function buildPollEmbed(
@@ -46,7 +47,14 @@ export function buildPollEmbed(
 ): APIEmbed {
     const embed = new EmbedBuilder({
         description: `**${cleanContent(poll.question, targetChannel)}**`,
-        fields: options.map(o => createOptionField(o.option, o.index, o.author)),
+        fields: options.map(o =>
+            createOptionField(
+                o.option,
+                o.index,
+                o.author,
+                o.author?.username !== poll.author.username,
+            ),
+        ),
         timestamp: new Date().toISOString(),
         author: {
             name: `${poll.multipleChoices ? "Umfrage" : "Strawpoll"} von ${poll.author}`,
@@ -88,10 +96,15 @@ export function buildPollEmbed(
     return embed.data;
 }
 
-function createOptionField(option: string, index: number, author?: AuthorSpec): APIEmbedField {
+function createOptionField(
+    option: string,
+    index: number,
+    author: AuthorSpec | undefined,
+    showAuthor: boolean,
+): APIEmbedField {
     let newOption = option;
-    if (author) {
-        newOption += ` (von ${author.username})`;
+    if (showAuthor) {
+        newOption += author ? ` (von ${author.username})` : " (Author nicht gefunden)";
 
         if (newOption.length > POLL_OPTION_MAX_LENGTH) {
             throw new Error(
