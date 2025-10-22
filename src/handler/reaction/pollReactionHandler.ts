@@ -42,21 +42,21 @@ export default {
             return;
         }
 
-        const validVoteReactions = dbPoll.poll.multipleChoices ? POLL_EMOJIS : VOTE_EMOJIS;
+        const validVoteReactions = dbPoll.multipleChoices ? POLL_EMOJIS : VOTE_EMOJIS;
         if (!validVoteReactions.includes(reactionName)) {
             return;
         }
 
         const invokingMember = await message.guild.members.fetch(invoker.id);
 
-        if (dbPoll.poll.endsAt === null) {
-            await pollService.countVote(dbPoll.poll, message, invokingMember, reactionEvent);
+        if (dbPoll.endsAt === null) {
+            await pollService.countVote(dbPoll, message, invokingMember, reactionEvent);
             return;
         }
 
-        if (dbPoll.poll.ended) {
+        if (dbPoll.ended) {
             return;
         }
-        await pollService.countDelayedVote(dbPoll.poll, message, invokingMember, reactionEvent);
+        await pollService.countDelayedVote(dbPoll, message, invokingMember, reactionEvent);
     },
 } satisfies ReactionHandler;

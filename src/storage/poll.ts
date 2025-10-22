@@ -93,8 +93,7 @@ export async function addPollOption(
     });
 }
 
-export type PollWithOptions = {
-    poll: Poll;
+export type PollWithOptions = Poll & {
     options: readonly PollOption[];
 };
 
@@ -120,7 +119,7 @@ export async function findPoll(pollId: PollId, ctx = db()): Promise<PollWithOpti
             .execute();
 
         return {
-            poll,
+            ...poll,
             options,
         };
     });
@@ -176,7 +175,7 @@ export async function findPollForEmbedMessage(
             .execute();
 
         return {
-            poll,
+            ...poll,
             options,
         };
     });

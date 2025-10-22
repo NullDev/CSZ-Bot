@@ -99,13 +99,11 @@ export default class ExtendCommand implements MessageCommand {
             return "Bruder das ist keine Umfrage ಠ╭╮ಠ";
         }
 
-        const { poll, options: oldOptions } = dbPoll;
-
-        if (!poll.extendable) {
+        if (!dbPoll.extendable) {
             return "Bruder die Umfrage ist nicht erweiterbar (ง'̀-'́)ง";
         }
 
-        if (oldOptions.length === pollEmbedService.OPTION_LIMIT) {
+        if (dbPoll.options.length === pollEmbedService.OPTION_LIMIT) {
             return "Bruder die Umfrage ist leider schon voll (⚆ ͜ʖ⚆)";
         }
 
@@ -114,7 +112,7 @@ export default class ExtendCommand implements MessageCommand {
             return "Bruder da sind keine Antwortmöglichkeiten :c";
         }
 
-        if (additionalPollOptions.length + oldOptions.length > pollEmbedService.OPTION_LIMIT) {
+        if (additionalPollOptions.length + dbPoll.options.length > pollEmbedService.OPTION_LIMIT) {
             return `Bruder mit deinen Antwortmöglichkeiten wird das Limit von ${pollEmbedService.OPTION_LIMIT} überschritten!`;
         }
 
@@ -125,15 +123,15 @@ export default class ExtendCommand implements MessageCommand {
         }
 
         for (const option of additionalPollOptions) {
-            await pollService.addPollOption(message.author, poll, option);
+            await pollService.addPollOption(message.author, dbPoll, option);
         }
 
-        const newPoll = await pollService.findPoll(poll.id);
+        const newPoll = await pollService.findPoll(dbPoll.id);
         if (newPoll === undefined) {
             throw new Error("Could not find poll that should have been there.");
         }
 
-        const pollAuthor = (await message.guild.members.fetch(newPoll.poll.authorId))?.user ?? {
+        const pollAuthor = (await message.guild.members.fetch(newPoll.authorId))?.user ?? {
             username: "<unbekannt>",
             iconURL: undefined,
         };
@@ -141,12 +139,12 @@ export default class ExtendCommand implements MessageCommand {
         const embed = pollEmbedService.buildPollEmbed(
             message.channel,
             {
-                question: newPoll.poll.question,
-                anonymous: newPoll.poll.anonymous,
-                extendable: newPoll.poll.extendable,
-                ended: newPoll.poll.ended,
-                endsAt: newPoll.poll.endsAt ? new Date(newPoll.poll.endsAt) : null,
-                multipleChoices: newPoll.poll.multipleChoices,
+                question: newPoll.question,
+                anonymous: newPoll.anonymous,
+                extendable: newPoll.extendable,
+                ended: newPoll.ended,
+                endsAt: newPoll.endsAt ? new Date(newPoll.endsAt) : null,
+                multipleChoices: newPoll.multipleChoices,
                 author: pollAuthor,
             },
             newPoll.options.map(o => ({
@@ -164,7 +162,7 @@ export default class ExtendCommand implements MessageCommand {
         });
 
         for (const i in additionalPollOptions) {
-            await msg.react(pollEmbedService.EMOJI[oldOptions.length + Number(i)]);
+            await msg.react(pollEmbedService.EMOJI[dbPoll.options.length + Number(i)]);
         }
         await message.delete();
     }
