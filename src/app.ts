@@ -25,11 +25,11 @@ import {
     messageCommandHandler,
     registerAllApplicationCommandsAsGuildCommands,
 } from "@/handler/commandHandler.js";
+import * as guildMemberHandler from "@/handler/guildMemberHandler.js";
 import deleteThreadMessagesHandler from "@/handler/deleteThreadMessagesHandler.js";
 import { createBotContext, type BotContext } from "@/context.js";
 import { ehreReactionHandler } from "@/commands/ehre.js";
 import * as terminal from "@/utils/terminal.js";
-import * as guildRageQuit from "@/storage/guildRageQuit.js";
 import * as cronService from "@/service/cron.js";
 import { handlePresenceUpdate } from "./handler/presenceHandler.js";
 
@@ -189,30 +189,8 @@ client.on("guildCreate", guild =>
 
 client.on("guildDelete", guild => log.info(`Deleted from guild: ${guild.name} (id: ${guild.id}).`));
 
-client.on("guildMemberAdd", async member => {
-    const numRageQuits = await guildRageQuit.getNumRageQuits(member.guild, member);
-    if (numRageQuits === 0) {
-        return;
-    }
-
-    if (member.roles.cache.has(botContext.roles.shame.id)) {
-        log.debug(`Member "${member.id}" already has the shame role, skipping`);
-        return;
-    }
-
-    await member.roles.add(botContext.roles.shame);
-
-    await botContext.textChannels.hauptchat.send({
-        content: `Haha, schau mal einer guck wer wieder hergekommen ist! ${member} hast es aber nicht lange ohne uns ausgehalten. ${
-            numRageQuits > 1 ? `Und das schon zum ${numRageQuits}. mal` : ""
-        }`,
-        allowedMentions: {
-            users: [member.id],
-        },
-    });
-});
-
-client.on("guildMemberRemove", member => guildRageQuit.incrementRageQuit(member.guild, member));
+client.on("guildMemberAdd", async m => await guildMemberHandler.added(botContext, m));
+client.on("guildMemberRemove", async m => await guildMemberHandler.removed(botContext, m));
 
 client.on("messageCreate", message => messageCommandHandler(message, botContext));
 client.on("messageCreate", m => deleteThreadMessagesHandler(m, botContext));
