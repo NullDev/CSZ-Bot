@@ -26,7 +26,7 @@ import {
     registerAllApplicationCommandsAsGuildCommands,
 } from "@/handler/commandHandler.js";
 import * as guildMemberHandler from "@/handler/guildMemberHandler.js";
-import deleteThreadMessagesHandler from "@/handler/deleteThreadMessagesHandler.js";
+import deleteThreadMessagesHandler from "@/handler/messageCreate/deleteThreadMessagesHandler.js";
 import { createBotContext, type BotContext } from "@/context.js";
 import { ehreReactionHandler } from "@/commands/ehre.js";
 import * as terminal from "@/utils/terminal.js";
@@ -192,7 +192,7 @@ client.on("guildDelete", guild => log.info(`Deleted from guild: ${guild.name} (i
 client.on("guildMemberAdd", async m => await guildMemberHandler.added(botContext, m));
 client.on("guildMemberRemove", async m => await guildMemberHandler.removed(botContext, m));
 
-client.on("messageCreate", message => messageCommandHandler(message, botContext));
+client.on("messageCreate", m => messageCommandHandler(m, botContext));
 client.on("messageCreate", m => deleteThreadMessagesHandler(m, botContext));
 
 client.on("messageDelete", async message => {
