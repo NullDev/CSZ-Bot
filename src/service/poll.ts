@@ -77,6 +77,10 @@ export async function findPollForEmbedMessage(
     return await polls.findPollForEmbedMessage(embedMessage.id);
 }
 
+export async function deletePoll(id: PollId) {
+    return await polls.deletePoll(id);
+}
+
 export async function countDelayedVote(
     poll: Poll,
     message: Message<true>,

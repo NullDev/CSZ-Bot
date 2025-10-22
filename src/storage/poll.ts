@@ -182,6 +182,10 @@ export async function findPollForEmbedMessage(
     });
 }
 
+export async function deletePoll(id: PollId, ctx = db()): Promise<Poll> {
+    return ctx.deleteFrom("polls").where("id", "=", id).returningAll().executeTakeFirstOrThrow();
+}
+
 export async function markPollAsEnded(pollId: PollId, ctx = db()): Promise<void> {
     await ctx
         .updateTable("polls")
