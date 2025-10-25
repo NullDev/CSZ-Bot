@@ -198,13 +198,46 @@ export async function markPollAsEnded(pollId: PollId, ctx = db()): Promise<void>
 export async function addAwnser(
     optionId: PollOptionId,
     userId: Snowflake,
+    removeOthers: boolean,
     ctx = db(),
 ): Promise<PollAnswer> {
-    return await ctx
-        .insertInto("pollAnswers")
-        .values({ optionId, userId })
-        .returningAll()
-        .executeTakeFirstOrThrow();
+    if (!removeOthers) {
+        return await ctx
+            .insertInto("pollAnswers")
+            .values({ optionId, userId })
+            .returningAll()
+            .executeTakeFirstOrThrow();
+    }
+
+    return await ctx.transaction().execute(async ctx => {
+        const { pollId } = await ctx
+            .selectFrom("pollOptions")
+            .where("id", "=", optionId)
+            .select("pollId")
+            .executeTakeFirstOrThrow();
+
+        const options = await ctx
+            .selectFrom("pollOptions")
+            .where("pollId", "=", pollId)
+            .select("id")
+            .execute();
+
+        await ctx
+            .deleteFrom("pollAnswers")
+            .where("userId", "=", userId)
+            .where(
+                "optionId",
+                "in",
+                options.map(o => o.id),
+            )
+            .execute();
+
+        return await ctx
+            .insertInto("pollAnswers")
+            .values({ optionId, userId })
+            .returningAll()
+            .executeTakeFirstOrThrow();
+    });
 }
 
 export async function removeAwnser(
