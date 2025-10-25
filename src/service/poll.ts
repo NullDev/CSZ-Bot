@@ -142,6 +142,7 @@ export async function countVote(
 
     const optionIndex = determineOptionIndex(reaction);
     if (optionIndex === undefined) {
+        log.info(reaction, "Unknown option index"); // TODO: Remove
         return;
     }
 
@@ -150,19 +151,35 @@ export async function countVote(
 
     // Old code:
     if (!poll.multipleChoices) {
-        return await Promise.allSettled(
-            message.reactions.cache
-                .filter(r => {
-                    const emojiName = r.emoji.name;
-                    return (
-                        !!emojiName &&
-                        r.users.cache.has(invoker.id) &&
-                        emojiName !== reaction.emoji.name &&
-                        POLL_EMOJIS.includes(emojiName)
-                    );
-                })
-                .map(reaction => reaction.users.remove(invoker.id)),
-        );
+        await removeAllOtherReactionsFromUser(invoker, reaction);
+    }
+}
+
+async function removeAllOtherReactionsFromUser(
+    invoker: GuildMember,
+    reactionToKeep: MessageReaction,
+): Promise<void> {
+    const message = await reactionToKeep.message.fetch();
+
+    const nameToKeep = reactionToKeep.emoji.name;
+    if (nameToKeep === null || nameToKeep.length === 0) {
+        throw new Error("`nameToKeep` was null or empty.");
+    }
+
+    const results = await Promise.allSettled(
+        message.reactions.cache
+            .filter(
+                r =>
+                    r.emoji.name &&
+                    r.emoji.name !== nameToKeep &&
+                    POLL_EMOJIS.includes(r.emoji.name),
+            )
+            .map(r => r.users.remove(invoker.id)),
+    );
+
+    const failedTasks = results.filter(r => r.status === "rejected").length;
+    if (failedTasks) {
+        throw new Error(`Failed to update ${failedTasks} reaction users`);
     }
 }
 
