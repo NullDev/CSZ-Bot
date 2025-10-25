@@ -38,6 +38,7 @@ export interface Database {
     pets: PetsTable;
     polls: PollsTable;
     pollOptions: PollOptionsTable;
+    pollAnswers: PollAnswersTable;
 }
 
 export type OneBasedMonth = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
@@ -435,4 +436,15 @@ export interface PollOptionsTable extends AuditedTable {
     option: string;
 
     authorId: Snowflake;
+}
+
+export type PollAnswerId = number;
+
+export type PollAnswer = Selectable<PollAnswersTable>;
+
+export interface PollAnswersTable extends AuditedTable {
+    id: GeneratedAlways<PollAnswerId>;
+
+    optionId: PollOptionId;
+    userId: Snowflake;
 }
