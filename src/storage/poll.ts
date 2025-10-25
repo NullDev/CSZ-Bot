@@ -2,7 +2,7 @@ import type { Snowflake } from "discord.js";
 import type { Temporal } from "@js-temporal/polyfill";
 
 import db from "@db";
-import type { Poll, PollId, PollOption } from "./db/model.js";
+import type { Poll, PollAnswer, PollId, PollOption, PollOptionId } from "./db/model.js";
 
 export interface MessageLocation {
     guildId: Snowflake;
@@ -191,6 +191,31 @@ export async function markPollAsEnded(pollId: PollId, ctx = db()): Promise<void>
         .where("id", "=", pollId)
         .where("endsAt", "is not", null)
         .set({ ended: true })
+        .returningAll()
+        .executeTakeFirstOrThrow();
+}
+
+export async function addAwnser(
+    optionId: PollOptionId,
+    userId: Snowflake,
+    ctx = db(),
+): Promise<PollAnswer> {
+    return await ctx
+        .insertInto("pollAnswers")
+        .values({ optionId, userId })
+        .returningAll()
+        .executeTakeFirstOrThrow();
+}
+
+export async function removeAwnser(
+    optionId: PollOptionId,
+    userId: Snowflake,
+    ctx = db(),
+): Promise<PollAnswer> {
+    return await ctx
+        .deleteFrom("pollAnswers")
+        .where("optionId", "=", optionId)
+        .where("userId", "=", userId)
         .returningAll()
         .executeTakeFirstOrThrow();
 }
