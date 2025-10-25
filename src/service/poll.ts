@@ -168,6 +168,16 @@ export async function countVote(
     );
 }
 
+function determineOptionIndex(reaction: MessageReaction) {
+    const reactionName = reaction.emoji.name;
+    if (reactionName === null) {
+        throw new Error("Reaction does not have a name.");
+    }
+
+    const index = POLL_EMOJIS.indexOf(reactionName);
+    return index < 0 ? undefined : index;
+}
+
 export function parsePollOptionString(value: string): string[] {
     // TODO: Handle quoted strings, so the user can have ; in an option
     return value
