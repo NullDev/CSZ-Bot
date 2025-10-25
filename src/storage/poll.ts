@@ -201,36 +201,23 @@ export async function addAwnser(
     removeOthers: boolean,
     ctx = db(),
 ): Promise<PollAnswer> {
-    if (!removeOthers) {
-        return await ctx
-            .insertInto("pollAnswers")
-            .values({ optionId, userId })
-            .returningAll()
-            .executeTakeFirstOrThrow();
-    }
-
     return await ctx.transaction().execute(async ctx => {
-        const { pollId } = await ctx
-            .selectFrom("pollOptions")
-            .where("id", "=", optionId)
-            .select("pollId")
-            .executeTakeFirstOrThrow();
+        if (removeOthers) {
+            const pollIdSubquery = ctx
+                .selectFrom("pollOptions")
+                .select("pollId")
+                .where("id", "=", optionId);
 
-        const options = await ctx
-            .selectFrom("pollOptions")
-            .where("pollId", "=", pollId)
-            .select("id")
-            .execute();
-
-        await ctx
-            .deleteFrom("pollAnswers")
-            .where("userId", "=", userId)
-            .where(
-                "optionId",
-                "in",
-                options.map(o => o.id),
-            )
-            .execute();
+            await ctx
+                .deleteFrom("pollAnswers")
+                .where("userId", "=", userId)
+                .where(
+                    "optionId",
+                    "in",
+                    ctx.selectFrom("pollOptions").select("id").where("pollId", "=", pollIdSubquery),
+                )
+                .execute();
+        }
 
         return await ctx
             .insertInto("pollAnswers")
