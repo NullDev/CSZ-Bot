@@ -100,55 +100,36 @@ export async function countDelayedVote(
     if (optionIndex === undefined) {
         return;
     }
-    await polls.addOrToggleAnswer(poll.id, optionIndex, invoker.id, !poll.multipleChoices);
 
-    if (poll.multipleChoices) {
-        // TODO: Toogle user vote with DB backing
+    const addedOrRemoved = await polls.addOrToggleAnswer(
+        poll.id,
+        optionIndex,
+        invoker.id,
+        !poll.multipleChoices,
+    );
 
-        const reactionName = reaction.emoji.name;
-        if (reactionName === null) {
-            throw new Error("Could not find reaction name");
-        }
-
-        // Old code:
-        const delayedPollReactions = delayedPoll.reactions[VOTE_EMOJIS.indexOf(reactionName)];
-        const hasVoted = delayedPollReactions.some(x => x === invoker.id);
-        if (!hasVoted) {
-            delayedPollReactions.push(invoker.id);
-        } else {
-            delayedPollReactions.splice(delayedPollReactions.indexOf(invoker.id), 1);
-        }
-
-        const msg = await message.channel.send(
-            hasVoted ? "🗑 Deine Reaktion wurde gelöscht." : "💾 Deine Reaktion wurde gespeichert.",
-        );
-        await fadingMessage.startFadingMessage(msg as ProcessableMessage, 2500);
-    } else {
-        // TODO: Set user vote with DB backing
-
-        // Old code:
-        for (const reactionList of delayedPoll.reactions) {
-            reactionList.forEach((x, i) => {
-                if (x === invoker.id) reactionList.splice(i);
-            });
-        }
-        const delayedPollReactions = delayedPoll.reactions[optionIndex];
-        delayedPollReactions.push(invoker.id);
-    }
-
-    // It's a delayed poll, we clear all Reactions
-    const allUserReactions = message.reactions.cache.filter(r => {
-        const emojiName = r.emoji.name;
-        return emojiName && r.users.cache.has(invoker.id) && POLL_EMOJIS.includes(emojiName);
-    });
-
-    await Promise.allSettled(allUserReactions.map(r => r.users.remove(invoker.id)));
+    const msg = await message.channel.send(
+        addedOrRemoved === "removed"
+            ? "🗑 Deine Reaktion wurde gelöscht."
+            : "💾 Deine Reaktion wurde gespeichert.",
+    );
+    await fadingMessage.startFadingMessage(msg as ProcessableMessage, 2500);
+    await removeAllReactions(message, invoker);
 
     await additionalMessageData.upsertForMessage(
         message,
         "DELAYED_POLL",
         JSON.stringify(delayedPoll),
     );
+}
+
+async function removeAllReactions(message: Message<true>, invoker: GuildMember) {
+    const allUserReactions = message.reactions.cache.filter(r => {
+        const emojiName = r.emoji.name;
+        return emojiName && POLL_EMOJIS.includes(emojiName);
+    });
+
+    await Promise.allSettled(allUserReactions.map(r => r.users.remove(invoker.id)));
 }
 
 export async function countVote(
@@ -168,19 +149,21 @@ export async function countVote(
     log.info("Counted vote");
 
     // Old code:
-    return await Promise.allSettled(
-        message.reactions.cache
-            .filter(r => {
-                const emojiName = r.emoji.name;
-                return (
-                    !!emojiName &&
-                    r.users.cache.has(invoker.id) &&
-                    emojiName !== reaction.emoji.name &&
-                    POLL_EMOJIS.includes(emojiName)
-                );
-            })
-            .map(reaction => reaction.users.remove(invoker.id)),
-    );
+    if (!poll.multipleChoices) {
+        return await Promise.allSettled(
+            message.reactions.cache
+                .filter(r => {
+                    const emojiName = r.emoji.name;
+                    return (
+                        !!emojiName &&
+                        r.users.cache.has(invoker.id) &&
+                        emojiName !== reaction.emoji.name &&
+                        POLL_EMOJIS.includes(emojiName)
+                    );
+                })
+                .map(reaction => reaction.users.remove(invoker.id)),
+        );
+    }
 }
 
 function determineOptionIndex(reaction: MessageReaction) {
