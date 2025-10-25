@@ -201,8 +201,8 @@ export async function addOrToggleAnswer(
     userId: Snowflake,
     removeOthers: boolean,
     ctx = db(),
-): Promise<void> {
-    await ctx.transaction().execute(async ctx => {
+): Promise<"added" | "removed"> {
+    return await ctx.transaction().execute(async ctx => {
         const { optionId } = await ctx
             .selectFrom("pollOptions")
             .where("pollId", "=", pollId)
@@ -235,14 +235,15 @@ export async function addOrToggleAnswer(
 
         if (preExistingAnswer) {
             // answer already existed and has been deleted
-            return;
+            return "removed";
         }
 
-        return await ctx
+        await ctx
             .insertInto("pollAnswers")
             .values({ optionId, userId })
             .returningAll()
             .executeTakeFirstOrThrow();
+        return "added";
     });
 }
 
