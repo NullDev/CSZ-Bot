@@ -10,6 +10,8 @@ import * as additionalMessageData from "@/storage/additionalMessageData.js";
 import type { ProcessableMessage } from "./command.js";
 import { EMOJI } from "@/service/pollEmbed.js";
 
+import log from "@log";
+
 export const POLL_EMOJIS = EMOJI;
 export const VOTE_EMOJIS = ["👍", "👎"];
 
@@ -150,7 +152,14 @@ export async function countVote(
     reaction: MessageReaction,
 ) {
     console.assert(poll.endsAt === null, "Poll is a delayed poll");
-    // TODO: Set user vote with DB backing
+
+    const optionIndex = determineOptionIndex(reaction);
+    if (optionIndex === undefined) {
+        return;
+    }
+
+    await polls.addOrToggleAnswer(poll.id, optionIndex, invoker.id, !poll.multipleChoices);
+    log.info("Counted vote");
 
     // Old code:
     return await Promise.allSettled(

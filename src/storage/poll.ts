@@ -195,28 +195,51 @@ export async function markPollAsEnded(pollId: PollId, ctx = db()): Promise<void>
         .executeTakeFirstOrThrow();
 }
 
-export async function addAwnser(
-    optionId: PollOptionId,
+export async function addOrToggleAnswer(
+    pollId: PollId,
+    optionIndex: number,
     userId: Snowflake,
     removeOthers: boolean,
     ctx = db(),
-): Promise<PollAnswer> {
-    return await ctx.transaction().execute(async ctx => {
-        if (removeOthers) {
-            const pollIdSubquery = ctx
-                .selectFrom("pollOptions")
-                .select("pollId")
-                .where("id", "=", optionId);
+): Promise<void> {
+    await ctx.transaction().execute(async ctx => {
+        const { optionId } = await ctx
+            .selectFrom("pollOptions")
+            .where("pollId", "=", pollId)
+            .where("index", "=", optionIndex)
+            .select("id as optionId")
+            .executeTakeFirstOrThrow();
 
+        if (removeOthers) {
             await ctx
                 .deleteFrom("pollAnswers")
                 .where("userId", "=", userId)
                 .where(
                     "optionId",
                     "in",
-                    ctx.selectFrom("pollOptions").select("id").where("pollId", "=", pollIdSubquery),
+                    ctx
+                        .selectFrom("pollOptions")
+                        .select("id")
+                        .where("pollId", "=", pollId)
+                        .where("id", "!=", optionId),
                 )
                 .execute();
+        }
+
+        const alreadyExists = await ctx
+            .selectFrom("pollAnswers")
+            .where("optionId", "=", optionId)
+            .where("userId", "=", userId)
+            .selectAll()
+            .executeTakeFirst();
+
+        if (alreadyExists) {
+            return await ctx
+                .deleteFrom("pollAnswers")
+                .where("optionId", "=", optionId)
+                .where("userId", "=", userId)
+                .returningAll()
+                .executeTakeFirstOrThrow();
         }
 
         return await ctx
