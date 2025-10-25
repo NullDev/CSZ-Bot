@@ -81,17 +81,12 @@ Optionen:
             return "Bruder da ist keine Umfrage :c";
         }
 
-        const pollArray = pollService.parsePollOptionString(positionals.join(" "));
-
-        const question = pollArray[0];
+        const [question, ...pollOptions] = pollService.parsePollOptionString(positionals.join(" "));
         if (question.length > pollEmbedService.TEXT_LIMIT) {
             return "Bruder die Frage ist ja länger als mein Schwands :c";
         }
 
-        const pollOptions = pollArray.slice(1);
         let pollOptionsTextLength = 0;
-
-        const isExtendable = options.extendable;
         for (const pollOption of pollOptions) {
             pollOptionsTextLength += pollOption.length;
         }
@@ -100,7 +95,7 @@ Optionen:
             return "Bruder da sind keine Antwortmöglichkeiten :c";
         }
 
-        if (pollOptions.length < 2 && !isExtendable) {
+        if (pollOptions.length < 2 && !options.extendable) {
             return "Bruder du musst schon mehr als eine Antwortmöglichkeit geben 🙄";
         }
 
