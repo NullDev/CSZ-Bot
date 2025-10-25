@@ -96,13 +96,13 @@ export async function countDelayedVote(
         return;
     }
 
-    const reactionName = reaction.emoji.name;
-    if (reactionName === null) {
-        throw new Error("Could not find reaction name");
-    }
-
     if (poll.multipleChoices) {
         // TODO: Toogle user vote with DB backing
+
+        const reactionName = reaction.emoji.name;
+        if (reactionName === null) {
+            throw new Error("Could not find reaction name");
+        }
 
         // Old code:
         const delayedPollReactions = delayedPoll.reactions[VOTE_EMOJIS.indexOf(reactionName)];
@@ -120,13 +120,18 @@ export async function countDelayedVote(
     } else {
         // TODO: Set user vote with DB backing
 
+        const optionIndex = determineOptionIndex(reaction);
+        if (optionIndex === undefined) {
+            return;
+        }
+
         // Old code:
         for (const reactionList of delayedPoll.reactions) {
             reactionList.forEach((x, i) => {
                 if (x === invoker.id) reactionList.splice(i);
             });
         }
-        const delayedPollReactions = delayedPoll.reactions[POLL_EMOJIS.indexOf(reactionName)];
+        const delayedPollReactions = delayedPoll.reactions[optionIndex];
         delayedPollReactions.push(invoker.id);
     }
 
