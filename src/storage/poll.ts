@@ -226,20 +226,16 @@ export async function addOrToggleAnswer(
                 .execute();
         }
 
-        const alreadyExists = await ctx
-            .selectFrom("pollAnswers")
+        const preExistingAnswer = await ctx
+            .deleteFrom("pollAnswers")
             .where("optionId", "=", optionId)
             .where("userId", "=", userId)
-            .selectAll()
+            .returningAll()
             .executeTakeFirst();
 
-        if (alreadyExists) {
-            return await ctx
-                .deleteFrom("pollAnswers")
-                .where("optionId", "=", optionId)
-                .where("userId", "=", userId)
-                .returningAll()
-                .executeTakeFirstOrThrow();
+        if (preExistingAnswer) {
+            // answer already existed and has been deleted
+            return;
         }
 
         return await ctx
