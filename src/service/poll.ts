@@ -96,6 +96,12 @@ export async function countDelayedVote(
         return;
     }
 
+    const optionIndex = determineOptionIndex(reaction);
+    if (optionIndex === undefined) {
+        return;
+    }
+    await polls.addOrToggleAnswer(poll.id, optionIndex, invoker.id, !poll.multipleChoices);
+
     if (poll.multipleChoices) {
         // TODO: Toogle user vote with DB backing
 
@@ -119,11 +125,6 @@ export async function countDelayedVote(
         await fadingMessage.startFadingMessage(msg as ProcessableMessage, 2500);
     } else {
         // TODO: Set user vote with DB backing
-
-        const optionIndex = determineOptionIndex(reaction);
-        if (optionIndex === undefined) {
-            return;
-        }
 
         // Old code:
         for (const reactionList of delayedPoll.reactions) {
