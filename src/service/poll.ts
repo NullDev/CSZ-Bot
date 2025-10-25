@@ -7,7 +7,6 @@ import type { BotContext } from "@/context.js";
 import * as polls from "@/storage/poll.js";
 import * as fadingMessage from "@/storage/fadingMessage.js";
 import * as additionalMessageData from "@/storage/additionalMessageData.js";
-import type { ProcessableMessage } from "./command.js";
 import { EMOJI } from "@/service/pollEmbed.js";
 
 import log from "@log";
@@ -113,7 +112,7 @@ export async function countDelayedVote(
             ? "🗑 Deine Reaktion wurde gelöscht."
             : "💾 Deine Reaktion wurde gespeichert.",
     );
-    await fadingMessage.startFadingMessage(msg as ProcessableMessage, 2500);
+    await fadingMessage.startFadingMessage(msg, 2500);
     await removeAllReactions(message, invoker);
 
     await additionalMessageData.upsertForMessage(
@@ -134,7 +133,7 @@ async function removeAllReactions(message: Message<true>, invoker: GuildMember) 
 
 export async function countVote(
     poll: Poll,
-    message: Message<true>,
+    _message: Message<true>,
     invoker: GuildMember,
     reaction: MessageReaction,
 ) {

@@ -1,9 +1,10 @@
-import type { ProcessableMessage } from "@/service/command.js";
+import type { Message } from "discord.js";
+
 import type { FadingMessage } from "./db/model.js";
 import db from "@db";
 
 export function startFadingMessage(
-    message: ProcessableMessage,
+    message: Message<true>,
     deleteInMs: number,
     ctx = db(),
 ): Promise<FadingMessage> {
