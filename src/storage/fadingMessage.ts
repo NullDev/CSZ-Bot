@@ -14,7 +14,7 @@ export function startFadingMessage(
         .values({
             beginTime: now.toISOString(),
             // adding milliseconds to a date is a hassle in sqlite, so we're doing it in JS
-            endTime: new Date(now.getTime() + deleteInMs).toDateString(),
+            endTime: new Date(now.getTime() + deleteInMs).toISOString(),
             guildId: message.guild.id,
             channelId: message.channel.id,
             messageId: message.id,

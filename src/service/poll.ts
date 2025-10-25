@@ -148,10 +148,11 @@ export async function countVote(
     await polls.addOrToggleAnswer(poll.id, optionIndex, invoker.id, !poll.multipleChoices);
     log.info("Counted vote");
 
-    // Old code:
-    if (!poll.multipleChoices) {
-        await removeAllOtherReactionsFromUser(invoker, reaction);
+    if (poll.multipleChoices) {
+        return;
     }
+
+    await removeAllOtherReactionsFromUser(invoker, reaction);
 }
 
 async function removeAllOtherReactionsFromUser(
