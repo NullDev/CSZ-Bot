@@ -1,9 +1,10 @@
-import type { ProcessableMessage } from "@/service/command.js";
+import type { Message } from "discord.js";
+
 import type { FadingMessage } from "./db/model.js";
 import db from "@db";
 
 export function startFadingMessage(
-    message: ProcessableMessage,
+    message: Message<true>,
     deleteInMs: number,
     ctx = db(),
 ): Promise<FadingMessage> {
@@ -13,7 +14,7 @@ export function startFadingMessage(
         .values({
             beginTime: now.toISOString(),
             // adding milliseconds to a date is a hassle in sqlite, so we're doing it in JS
-            endTime: new Date(now.getTime() + deleteInMs).toDateString(),
+            endTime: new Date(now.getTime() + deleteInMs).toISOString(),
             guildId: message.guild.id,
             channelId: message.channel.id,
             messageId: message.id,

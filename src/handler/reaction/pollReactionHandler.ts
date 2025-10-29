@@ -42,8 +42,12 @@ export default {
             return;
         }
 
-        const validVoteReactions = dbPoll.multipleChoices ? POLL_EMOJIS : VOTE_EMOJIS;
-        if (!validVoteReactions.includes(reactionName)) {
+        if (VOTE_EMOJIS.includes(reactionName)) {
+            // this is a .vote poll -> TODO
+            return;
+        }
+
+        if (!POLL_EMOJIS.includes(reactionName)) {
             return;
         }
 

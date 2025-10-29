@@ -2,7 +2,7 @@ import type { Snowflake } from "discord.js";
 import type { Temporal } from "@js-temporal/polyfill";
 
 import db from "@db";
-import type { Poll, PollId, PollOption } from "./db/model.js";
+import type { Poll, PollAnswer, PollId, PollOption, PollOptionId } from "./db/model.js";
 
 export interface MessageLocation {
     guildId: Snowflake;
@@ -191,6 +191,71 @@ export async function markPollAsEnded(pollId: PollId, ctx = db()): Promise<void>
         .where("id", "=", pollId)
         .where("endsAt", "is not", null)
         .set({ ended: true })
+        .returningAll()
+        .executeTakeFirstOrThrow();
+}
+
+export async function addOrToggleAnswer(
+    pollId: PollId,
+    optionIndex: number,
+    userId: Snowflake,
+    removeOthers: boolean,
+    ctx = db(),
+): Promise<"added" | "removed"> {
+    return await ctx.transaction().execute(async ctx => {
+        const { optionId } = await ctx
+            .selectFrom("pollOptions")
+            .where("pollId", "=", pollId)
+            .where("index", "=", optionIndex)
+            .select("id as optionId")
+            .executeTakeFirstOrThrow();
+
+        if (removeOthers) {
+            await ctx
+                .deleteFrom("pollAnswers")
+                .where("userId", "=", userId)
+                .where(
+                    "optionId",
+                    "in",
+                    ctx
+                        .selectFrom("pollOptions")
+                        .select("id")
+                        .where("pollId", "=", pollId)
+                        .where("id", "!=", optionId),
+                )
+                .execute();
+        }
+
+        const preExistingAnswer = await ctx
+            .deleteFrom("pollAnswers")
+            .where("optionId", "=", optionId)
+            .where("userId", "=", userId)
+            .returningAll()
+            .executeTakeFirst();
+
+        if (preExistingAnswer) {
+            // answer already existed and has been deleted
+            return "removed";
+        }
+
+        await ctx
+            .insertInto("pollAnswers")
+            .values({ optionId, userId })
+            .returningAll()
+            .executeTakeFirstOrThrow();
+        return "added";
+    });
+}
+
+export async function removeAwnser(
+    optionId: PollOptionId,
+    userId: Snowflake,
+    ctx = db(),
+): Promise<PollAnswer> {
+    return await ctx
+        .deleteFrom("pollAnswers")
+        .where("optionId", "=", optionId)
+        .where("userId", "=", userId)
         .returningAll()
         .executeTakeFirstOrThrow();
 }
