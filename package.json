@@ -36,7 +36,7 @@
     "chrono-node": "^2.9.0",
     "comment-json": "^4.4.1",
     "croner": "^9.1.0",
-    "discord.js": "^14.24.1",
+    "discord.js": "^14.24.2",
     "get-audio-duration": "^4.0.1",
     "graphviz-wasm": "^3.0.2",
     "jsdom": "^27.0.1",
@@ -56,7 +56,7 @@
     "@types/node-cron": "^3.0.11",
     "@typescript/native-preview": "^7.0.0-dev.20251027.1",
     "expect": "^30.2.0",
-    "lefthook": "^2.0.1"
+    "lefthook": "^2.0.2"
   },
   "trustedDependencies": [
     "@biomejs/biome",
