@@ -39,7 +39,7 @@
     "discord.js": "^14.24.2",
     "get-audio-duration": "^4.0.1",
     "graphviz-wasm": "^3.0.2",
-    "jsdom": "^27.0.1",
+    "jsdom": "^27.1.0",
     "kysely": "^0.28.8",
     "libsodium-wrappers": "^0.7.15",
     "pino": "^10.1.0",
