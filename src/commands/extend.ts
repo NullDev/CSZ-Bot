@@ -72,7 +72,9 @@ export default class ExtendCommand implements MessageCommand {
 
         let pollMessage = message.reference?.messageId
             ? await message.channel.messages.fetch(message.reference.messageId)
-            : undefined;
+            : message.channel.isThread()
+              ? await message.channel.fetchStarterMessage()
+              : undefined;
 
         if (!pollMessage) {
             const polls = await pollService.findExtendablePollsInChannel(message.channel);
