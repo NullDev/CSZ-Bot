@@ -29,7 +29,7 @@
     "@js-temporal/polyfill": "^0.5.1",
     "@napi-rs/canvas": "0.1.81",
     "@resvg/resvg-js": "^2.6.2",
-    "@sentry/node": "^10.22.0",
+    "@sentry/node": "^10.23.0",
     "@snazzah/davey": "^0.1.7",
     "@spotify/web-api-ts-sdk": "^1.2.0",
     "better-sqlite3": "^12.4.1",
@@ -49,12 +49,12 @@
     "youtube-dl-exec": "^3.0.26"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.3.2",
+    "@biomejs/biome": "^2.3.4",
     "@types/better-sqlite3": "^7.6.13",
     "@types/jsdom": "^27.0.0",
-    "@types/node": "^24.9.2",
+    "@types/node": "^24.10.0",
     "@types/node-cron": "^3.0.11",
-    "@typescript/native-preview": "^7.0.0-dev.20251031.1",
+    "@typescript/native-preview": "^7.0.0-dev.20251109.1",
     "expect": "^30.2.0",
     "lefthook": "^2.0.2"
   },
