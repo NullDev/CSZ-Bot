@@ -1,10 +1,10 @@
 import { cleanContent } from "discord.js";
 
-import type { ProcessableMessage } from "#/service/command.ts";
-import type { SpecialCommand } from "#/commands/command.ts";
-import type { BotContext } from "#/context.ts";
-import { substringAfter } from "#/utils/stringUtils.ts";
-import { randomEntry } from "#/service/random.ts";
+import type { ProcessableMessage } from "#service/command.ts";
+import type { SpecialCommand } from "#commands/command.ts";
+import type { BotContext } from "#context.ts";
+import { substringAfter } from "#utils/stringUtils.ts";
+import { randomEntry } from "#service/random.ts";
 
 type Lang = "german" | "austrian";
 

@@ -1,9 +1,9 @@
-import type { ProcessableMessage } from "#/service/command.ts";
-import type { SpecialCommand } from "#/commands/command.ts";
-import type { BotContext } from "#/context.ts";
+import type { ProcessableMessage } from "#service/command.ts";
+import type { SpecialCommand } from "#commands/command.ts";
+import type { BotContext } from "#context.ts";
 
-import * as emoteService from "#/service/emote.ts";
-import * as emoteLoggingService from "#/service/emoteLogging.ts";
+import * as emoteService from "#service/emote.ts";
+import * as emoteLoggingService from "#service/emoteLogging.ts";
 
 export default class EmoteLoggerCommand implements SpecialCommand {
     name = "EmoteLogger";

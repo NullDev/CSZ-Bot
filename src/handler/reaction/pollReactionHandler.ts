@@ -1,10 +1,10 @@
 import type { MessageReaction, User } from "discord.js";
 
-import type { BotContext } from "#/context.ts";
+import type { BotContext } from "#context.ts";
 import type { ReactionHandler } from "../ReactionHandler.ts";
 
-import * as pollService from "#/service/poll.ts";
-import { POLL_EMOJIS, VOTE_EMOJIS } from "#/service/poll.ts";
+import * as pollService from "#service/poll.ts";
+import { POLL_EMOJIS, VOTE_EMOJIS } from "#service/poll.ts";
 
 export default {
     displayName: "Poll Reaction Handler",

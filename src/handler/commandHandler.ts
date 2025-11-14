@@ -17,18 +17,18 @@ import * as sentry from "@sentry/node";
  * Completely new bullish command handler it unifies slash commands and
  * message commands and relies on the "new commands"
  */
-import type { ApplicationCommand, Command, SpecialCommand } from "#/commands/command.ts";
-import type { BotContext } from "#/context.ts";
-import * as banService from "#/service/ban.ts";
+import type { ApplicationCommand, Command, SpecialCommand } from "#commands/command.ts";
+import type { BotContext } from "#context.ts";
+import * as banService from "#service/ban.ts";
 import log from "#log";
 
-import * as commandService from "#/service/command.ts";
+import * as commandService from "#service/command.ts";
 
-import TriggerReactOnKeyword from "#/commands/special/keywordReact.ts";
+import TriggerReactOnKeyword from "#commands/special/keywordReact.ts";
 
-import SplidCommand from "#/commands/splid.ts";
+import SplidCommand from "#commands/splid.ts";
 
-import { isProcessableMessage, type ProcessableMessage } from "#/service/command.ts";
+import { isProcessableMessage, type ProcessableMessage } from "#service/command.ts";
 
 /**  Commands that need special init parameters and cannot be instantiated automatically */
 const staticCommands: readonly Command[] = [

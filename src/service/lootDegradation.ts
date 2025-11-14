@@ -1,11 +1,11 @@
 import { type BaseMessageOptions, type Snowflake, userMention } from "discord.js";
-import type { BotContext } from "#/context.ts";
+import type { BotContext } from "#context.ts";
 
-import * as time from "#/utils/time.ts";
-import * as lootService from "#/service/loot.ts";
-import { LootAttributeKindId, LootKindId, resolveLootTemplate } from "#/service/lootData.ts";
+import * as time from "#utils/time.ts";
+import * as lootService from "#service/loot.ts";
+import { LootAttributeKindId, LootKindId, resolveLootTemplate } from "#service/lootData.ts";
 import log from "#log";
-import { randomEntry } from "#/service/random.ts";
+import { randomEntry } from "#service/random.ts";
 
 export async function degradeItems(_context: BotContext) {
     log.info("Degrading loot items");

@@ -13,13 +13,13 @@ import {
 } from "discord.js";
 import * as sentry from "@sentry/node";
 
-import type { BotContext } from "#/context.ts";
-import type { ApplicationCommand, AutocompleteCommand } from "#/commands/command.ts";
-import type { SplidMember } from "#/service/splid.ts";
+import type { BotContext } from "#context.ts";
+import type { ApplicationCommand, AutocompleteCommand } from "#commands/command.ts";
+import type { SplidMember } from "#service/splid.ts";
 
-import { ensureChatInputCommand } from "#/utils/interactionUtils.ts";
-import * as splidLink from "#/storage/splidLink.ts";
-import * as splidService from "#/service/splid.ts";
+import { ensureChatInputCommand } from "#utils/interactionUtils.ts";
+import * as splidLink from "#storage/splidLink.ts";
+import * as splidService from "#service/splid.ts";
 import log from "#log";
 
 const createNumberFormatter = (currency: string) =>

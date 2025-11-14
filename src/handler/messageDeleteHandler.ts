@@ -1,8 +1,8 @@
 import type { ClientUser, Message } from "discord.js";
 
-import type { BotContext } from "#/context.ts";
+import type { BotContext } from "#context.ts";
 
-import * as pollService from "#/service/poll.ts";
+import * as pollService from "#service/poll.ts";
 
 import log from "#log";
 

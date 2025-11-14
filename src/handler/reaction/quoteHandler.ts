@@ -13,7 +13,7 @@ import {
     type ApplicationEmoji,
 } from "discord.js";
 
-import type { BotContext, QuoteConfig } from "#/context.ts";
+import type { BotContext, QuoteConfig } from "#context.ts";
 import type { ReactionHandler } from "../ReactionHandler.ts";
 import log from "#log";
 

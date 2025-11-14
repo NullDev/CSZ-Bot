@@ -5,9 +5,9 @@ import {
     ChatInputCommandInteraction,
 } from "discord.js";
 
-import type { ApplicationCommand } from "#/commands/command.ts";
-import * as stempelService from "#/service/stempel.ts";
-import { randomEntry } from "#/service/random.ts";
+import type { ApplicationCommand } from "#commands/command.ts";
+import * as stempelService from "#service/stempel.ts";
+import { randomEntry } from "#service/random.ts";
 
 const replies = [
     "Der Bruder {0} hat den neuen Bruder {1} eingeladen und du hast dies so eben bestätigt!",

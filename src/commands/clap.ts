@@ -8,9 +8,9 @@ import {
     SlashCommandStringOption,
 } from "discord.js";
 
-import type { BotContext } from "#/context.ts";
-import type { ProcessableMessage } from "#/service/command.ts";
-import type { ApplicationCommand, MessageCommand } from "#/commands/command.ts";
+import type { BotContext } from "#context.ts";
+import type { ProcessableMessage } from "#service/command.ts";
+import type { ApplicationCommand, MessageCommand } from "#commands/command.ts";
 
 const clapify = (str: string): string => `${str.split(/\s+/).join(" :clap: ")} :clap:`;
 

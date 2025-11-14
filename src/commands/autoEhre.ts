@@ -1,7 +1,7 @@
-import type { ProcessableMessage } from "#/service/command.ts";
-import type { SpecialCommand } from "#/commands/command.ts";
+import type { ProcessableMessage } from "#service/command.ts";
+import type { SpecialCommand } from "#commands/command.ts";
 
-import * as ehreService from "#/service/ehre.ts";
+import * as ehreService from "#service/ehre.ts";
 
 export default class AutoEhreCommand implements SpecialCommand {
     name = "AutoEhre";

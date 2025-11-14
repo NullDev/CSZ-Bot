@@ -3,8 +3,8 @@ import * as fs from "node:fs/promises";
 import { createCanvas, loadImage } from "@napi-rs/canvas";
 import type { GuildMember } from "discord.js";
 
-import type { MessageCommand } from "#/commands/command.ts";
-import type { ProcessableMessage } from "#/service/command.ts";
+import type { MessageCommand } from "#commands/command.ts";
+import type { ProcessableMessage } from "#service/command.ts";
 import log from "#log";
 
 const createBonkMeme = async (author: GuildMember): Promise<Buffer> => {

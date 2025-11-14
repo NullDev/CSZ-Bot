@@ -11,10 +11,10 @@ import {
     type AutocompleteInteraction,
 } from "discord.js";
 
-import type { ApplicationCommand, AutocompleteCommand } from "#/commands/command.ts";
-import type { BotContext } from "#/context.ts";
-import { connectAndPlaySaufen } from "#/handler/voiceHandler.ts";
-import assertNever from "#/utils/assertNever.ts";
+import type { ApplicationCommand, AutocompleteCommand } from "#commands/command.ts";
+import type { BotContext } from "#context.ts";
+import { connectAndPlaySaufen } from "#handler/voiceHandler.ts";
+import assertNever from "#utils/assertNever.ts";
 
 type SubCommand = "los" | "add" | "list" | "select";
 

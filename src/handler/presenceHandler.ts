@@ -1,7 +1,7 @@
 import type { Activity, Presence } from "discord.js";
 
-import type { BotContext } from "#/context.ts";
-import { handleSpotifyActivityUpdate, type SpotifyActivity } from "#/service/lauscher.ts";
+import type { BotContext } from "#context.ts";
+import { handleSpotifyActivityUpdate, type SpotifyActivity } from "#service/lauscher.ts";
 
 export async function handlePresenceUpdate(
     context: BotContext,

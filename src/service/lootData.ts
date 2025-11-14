@@ -1,11 +1,11 @@
-import type { LootAttributeTemplate, LootTemplate } from "#/storage/loot.ts";
+import type { LootAttributeTemplate, LootTemplate } from "#storage/loot.ts";
 
-import * as lootDropService from "#/service/lootDrop.ts";
-import * as lootService from "#/service/loot.ts";
-import * as emoteService from "#/service/emote.ts";
-import * as bahnCardService from "#/service/bahncard.ts";
+import * as lootDropService from "#service/lootDrop.ts";
+import * as lootService from "#service/loot.ts";
+import * as emoteService from "#service/emote.ts";
+import * as bahnCardService from "#service/bahncard.ts";
 import { GuildMember, type Guild } from "discord.js";
-import type { Loot, LootAttribute } from "#/storage/db/model.ts";
+import type { Loot, LootAttribute } from "#storage/db/model.ts";
 
 const ACHTUNG_NICHT_DROPBAR_WEIGHT_KG = 0;
 

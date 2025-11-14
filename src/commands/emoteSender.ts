@@ -1,7 +1,7 @@
 import type { Message } from "discord.js";
 
-import type { BotContext } from "#/context.ts";
-import type { SpecialCommand } from "#/commands/command.ts";
+import type { BotContext } from "#context.ts";
+import type { SpecialCommand } from "#commands/command.ts";
 import log from "#log";
 
 export default class EmoteSenderCommand implements SpecialCommand {

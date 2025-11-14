@@ -1,36 +1,36 @@
 import { GatewayIntentBits, Partials, Client } from "discord.js";
 import * as sentry from "@sentry/node";
 
-import { readConfig, databasePath, args } from "#/service/config.ts";
+import { readConfig, databasePath, args } from "#service/config.ts";
 import log from "#log";
 
 import { Temporal } from "@js-temporal/polyfill";
-import "#/polyfills.ts";
+import "#polyfills.ts";
 
-import * as kysely from "#/storage/db/db.ts";
+import * as kysely from "#storage/db/db.ts";
 
-import type { ReactionHandler } from "#/handler/ReactionHandler.ts";
-import messageDeleteHandler from "#/handler/messageDeleteHandler.ts";
-import { woisVoteReactionHandler } from "#/commands/woisvote.ts";
-import * as voiceStateService from "#/service/voiceState.ts";
+import type { ReactionHandler } from "#handler/ReactionHandler.ts";
+import messageDeleteHandler from "#handler/messageDeleteHandler.ts";
+import { woisVoteReactionHandler } from "#commands/woisvote.ts";
+import * as voiceStateService from "#service/voiceState.ts";
 
-import roleAssignerHandler from "#/handler/reaction/roleAssignerHandler.ts";
-import pollReactionHandler from "#/handler/reaction/pollReactionHandler.ts";
-import logEmotesReactionHandler from "#/handler/reaction/logEmotesReactionHandler.ts";
-import quoteReactionHandler from "#/handler/reaction/quoteHandler.ts";
+import roleAssignerHandler from "#handler/reaction/roleAssignerHandler.ts";
+import pollReactionHandler from "#handler/reaction/pollReactionHandler.ts";
+import logEmotesReactionHandler from "#handler/reaction/logEmotesReactionHandler.ts";
+import quoteReactionHandler from "#handler/reaction/quoteHandler.ts";
 
 import {
     handleInteractionEvent,
     loadCommands,
     messageCommandHandler,
     registerAllApplicationCommandsAsGuildCommands,
-} from "#/handler/commandHandler.ts";
-import * as guildMemberHandler from "#/handler/guildMemberHandler.ts";
-import deleteThreadMessagesHandler from "#/handler/messageCreate/deleteThreadMessagesHandler.ts";
-import { createBotContext, type BotContext } from "#/context.ts";
-import { ehreReactionHandler } from "#/commands/ehre.ts";
-import * as terminal from "#/utils/terminal.ts";
-import * as cronService from "#/service/cron.ts";
+} from "#handler/commandHandler.ts";
+import * as guildMemberHandler from "#handler/guildMemberHandler.ts";
+import deleteThreadMessagesHandler from "#handler/messageCreate/deleteThreadMessagesHandler.ts";
+import { createBotContext, type BotContext } from "#context.ts";
+import { ehreReactionHandler } from "#commands/ehre.ts";
+import * as terminal from "#utils/terminal.ts";
+import * as cronService from "#service/cron.ts";
 import { handlePresenceUpdate } from "./handler/presenceHandler.ts";
 
 const env = process.env;

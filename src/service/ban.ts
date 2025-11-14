@@ -1,9 +1,9 @@
 import { time, type GuildMember, type User, TimestampStyles } from "discord.js";
 import * as sentry from "@sentry/node";
 
-import type { BotContext } from "#/context.ts";
-import * as ban from "#/storage/ban.ts";
-import { formatDuration } from "#/utils/dateUtils.ts";
+import type { BotContext } from "#context.ts";
+import * as ban from "#storage/ban.ts";
+import { formatDuration } from "#utils/dateUtils.ts";
 
 import log from "#log";
 

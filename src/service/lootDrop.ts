@@ -20,18 +20,18 @@ import {
 import { Temporal } from "@js-temporal/polyfill";
 import * as sentry from "@sentry/node";
 
-import type { BotContext } from "#/context.ts";
-import type { Loot, LootId } from "#/storage/db/model.ts";
-import type { LootTemplate } from "#/storage/loot.ts";
-import { randomBoolean, randomEntry, randomEntryWeighted } from "#/service/random.ts";
+import type { BotContext } from "#context.ts";
+import type { Loot, LootId } from "#storage/db/model.ts";
+import type { LootTemplate } from "#storage/loot.ts";
+import { randomBoolean, randomEntry, randomEntryWeighted } from "#service/random.ts";
 
-import * as lootService from "#/service/loot.ts";
+import * as lootService from "#service/loot.ts";
 import {
     LootAttributeClassId,
     lootAttributeTemplates,
     LootKindId,
     lootTemplates,
-} from "#/service/lootData.ts";
+} from "#service/lootData.ts";
 
 import log from "#log";
 

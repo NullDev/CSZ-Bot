@@ -1,7 +1,7 @@
 import type { GuildMember, PartialGuildMember } from "discord.js";
-import type { BotContext } from "#/context.ts";
+import type { BotContext } from "#context.ts";
 
-import * as guildRageQuit from "#/storage/guildRageQuit.ts";
+import * as guildRageQuit from "#storage/guildRageQuit.ts";
 
 import log from "#log";
 

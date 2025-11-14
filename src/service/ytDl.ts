@@ -3,7 +3,7 @@ import * as fs from "node:fs/promises";
 
 import { create as createYoutubeDl, type Flags, type Payload } from "youtube-dl-exec";
 
-import type { BotContext } from "#/context.ts";
+import type { BotContext } from "#context.ts";
 
 const ytdl = createYoutubeDl("yt-dlp");
 

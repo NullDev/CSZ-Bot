@@ -2,8 +2,8 @@ import { describe, test } from "node:test";
 
 import { expect } from "expect";
 
-import { createDatabase, closeDatabase } from "#/storage/db/database-test-init.ts";
-import { defer } from "#/utils/interactionUtils.ts";
+import { createDatabase, closeDatabase } from "#storage/db/database-test-init.ts";
+import { defer } from "#utils/interactionUtils.ts";
 
 import db from "#db";
 

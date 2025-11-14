@@ -1,8 +1,8 @@
 import * as path from "node:path";
 import * as fs from "node:fs/promises";
 
-import type { BotContext } from "#/context.ts";
-import { randomEntry } from "#/service/random.ts";
+import type { BotContext } from "#context.ts";
+import { randomEntry } from "#service/random.ts";
 import log from "#log";
 
 export const rotate = async (context: BotContext) => {
