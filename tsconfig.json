@@ -5,6 +5,8 @@
         "strict": true,
         "lib": ["esnext"],
 
+        "allowImportingTsExtensions": true,
+
         // Additional Checks
         // "noUnusedLocals": true,
         // "noUnusedParameters": true,
