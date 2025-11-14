@@ -1,6 +1,6 @@
-import type { MessageCommand } from "@/commands/command.js";
-import type { BotContext } from "@/context.js";
-import type { ProcessableMessage } from "@/service/command.js";
+import type { MessageCommand } from "#/commands/command.js";
+import type { BotContext } from "#/context.js";
+import type { ProcessableMessage } from "#/service/command.js";
 
 export default class ToggleCommand implements MessageCommand {
     modCommand = true;

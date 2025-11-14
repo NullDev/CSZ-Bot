@@ -1,6 +1,6 @@
 import type { SKRSContext2D, Image } from "@napi-rs/canvas";
 
-import * as fontService from "@/service/font.js";
+import * as fontService from "#/service/font.js";
 import type { Vec2 } from "./math.js";
 
 export interface ExtendedCanvasContext extends SKRSContext2D {

@@ -1,15 +1,15 @@
 import type { GuildMember, Message, MessageReaction, TextBasedChannel, User } from "discord.js";
 import type { Temporal } from "@js-temporal/polyfill";
 
-import * as legacyDelayedPoll from "@/service/delayedPollLegacy.js";
-import type { Poll, PollId } from "@/storage/db/model.js";
-import type { BotContext } from "@/context.js";
-import * as polls from "@/storage/poll.js";
-import * as fadingMessage from "@/storage/fadingMessage.js";
-import * as additionalMessageData from "@/storage/additionalMessageData.js";
-import { EMOJI } from "@/service/pollEmbed.js";
+import * as legacyDelayedPoll from "#/service/delayedPollLegacy.js";
+import type { Poll, PollId } from "#/storage/db/model.js";
+import type { BotContext } from "#/context.js";
+import * as polls from "#/storage/poll.js";
+import * as fadingMessage from "#/storage/fadingMessage.js";
+import * as additionalMessageData from "#/storage/additionalMessageData.js";
+import { EMOJI } from "#/service/pollEmbed.js";
 
-import log from "@log";
+import log from "#log";
 
 export const POLL_EMOJIS = EMOJI;
 export const VOTE_EMOJIS = ["👍", "👎"];

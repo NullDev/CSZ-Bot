@@ -9,9 +9,9 @@ import {
     EmbedBuilder,
 } from "discord.js";
 
-import type { ApplicationCommand, MessageCommand } from "@/commands/command.js";
-import type { ProcessableMessage } from "@/service/command.js";
-import { substringAfter } from "@/utils/stringUtils.js";
+import type { ApplicationCommand, MessageCommand } from "#/commands/command.js";
+import type { ProcessableMessage } from "#/service/command.js";
+import { substringAfter } from "#/utils/stringUtils.js";
 
 const createSecureDecisionMessage = (
     question: string,

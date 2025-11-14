@@ -1,9 +1,9 @@
 import type { User, Snowflake, Message } from "discord.js";
 
-import type { LootId, LootInsertable, LootOrigin } from "@/storage/db/model.js";
+import type { LootId, LootInsertable, LootOrigin } from "#/storage/db/model.js";
 import type { LootAttributeKindId, LootKindId } from "./lootData.js";
-import * as loot from "@/storage/loot.js";
-import * as lootDataService from "@/service/lootData.js";
+import * as loot from "#/storage/loot.js";
+import * as lootDataService from "#/service/lootData.js";
 
 export async function getInventoryContents(user: User): Promise<loot.LootWithAttributes[]> {
     const contents = await loot.findOfUserWithAttributes(user);

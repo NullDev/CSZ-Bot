@@ -1,6 +1,6 @@
-import type { BotContext } from "@/context.js";
+import type { BotContext } from "#/context.js";
 
-import log from "@log";
+import log from "#log";
 
 export async function leetTask(context: BotContext) {
     const { hauptchat } = context.textChannels;

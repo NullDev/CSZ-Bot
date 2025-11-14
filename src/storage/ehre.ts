@@ -2,8 +2,8 @@ import { sql } from "kysely";
 import type { Snowflake, User } from "discord.js";
 
 import type { EhrePoints } from "./db/model.js";
-import db from "@db";
-import log from "@log";
+import db from "#db";
+import log from "#log";
 
 export async function hasVoted(userId: Snowflake, ctx = db()): Promise<boolean> {
     const { votes } = await ctx

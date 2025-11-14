@@ -9,11 +9,11 @@ import {
     type AutocompleteInteraction,
 } from "discord.js";
 
-import type { ApplicationCommand, AutocompleteCommand } from "@/commands/command.js";
-import type { BotContext } from "@/context.js";
-import type { Emote } from "@/storage/db/model.js";
-import * as emoteLoggingService from "@/service/emoteLogging.js";
-import { formatDateTime } from "@/utils/dateUtils.js";
+import type { ApplicationCommand, AutocompleteCommand } from "#/commands/command.js";
+import type { BotContext } from "#/context.js";
+import type { Emote } from "#/storage/db/model.js";
+import * as emoteLoggingService from "#/service/emoteLogging.js";
+import { formatDateTime } from "#/utils/dateUtils.js";
 
 function buildSingleEmoteResponse(
     emote: Emote,

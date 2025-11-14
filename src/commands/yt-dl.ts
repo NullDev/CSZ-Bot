@@ -4,12 +4,12 @@ import {
     SlashCommandBuilder,
     SlashCommandStringOption,
 } from "discord.js";
-import type { ApplicationCommand } from "@/commands/command.js";
-import type { BotContext } from "@/context.js";
+import type { ApplicationCommand } from "#/commands/command.js";
+import type { BotContext } from "#/context.js";
 
-import * as ytDlService from "@/service/ytDl.js";
-import assertNever from "@/utils/assertNever.js";
-import TempDir from "@/utils/TempDir.js";
+import * as ytDlService from "#/service/ytDl.js";
+import assertNever from "#/utils/assertNever.js";
+import TempDir from "#/utils/TempDir.js";
 
 export default class PollYoutubeDownloadCommand implements ApplicationCommand {
     name = "yt-dl";

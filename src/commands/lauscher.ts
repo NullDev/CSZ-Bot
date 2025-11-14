@@ -12,16 +12,16 @@ import {
 } from "discord.js";
 import { type Canvas, createCanvas, loadImage, type Image } from "@napi-rs/canvas";
 
-import type { ApplicationCommand } from "@/commands/command.js";
-import type { BotContext } from "@/context.js";
-import assertNever from "@/utils/assertNever.js";
-import { getPlaybackStats, setUserRegistration, type TrackStat } from "@/service/lauscher.js";
+import type { ApplicationCommand } from "#/commands/command.js";
+import type { BotContext } from "#/context.js";
+import assertNever from "#/utils/assertNever.js";
+import { getPlaybackStats, setUserRegistration, type TrackStat } from "#/service/lauscher.js";
 import { Temporal } from "@js-temporal/polyfill";
-import { truncateToLength } from "@/utils/stringUtils.js";
-import { chunkArray } from "@/utils/arrayUtils.js";
-import { Vec2 } from "@/utils/math.js";
-import * as fontService from "@/service/font.js";
-import { extendContext } from "@/utils/ExtendedCanvasContext.js";
+import { truncateToLength } from "#/utils/stringUtils.js";
+import { chunkArray } from "#/utils/arrayUtils.js";
+import { Vec2 } from "#/utils/math.js";
+import * as fontService from "#/service/font.js";
+import { extendContext } from "#/utils/ExtendedCanvasContext.js";
 
 type SubCommand = "aktivierung" | "stats";
 

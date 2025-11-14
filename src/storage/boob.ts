@@ -2,8 +2,8 @@ import type { Snowflake, User } from "discord.js";
 
 import type { Boob } from "./db/model.js";
 
-import db from "@db";
-import log from "@log";
+import db from "#db";
+import log from "#log";
 
 export function insertMeasurement(
     user: User,

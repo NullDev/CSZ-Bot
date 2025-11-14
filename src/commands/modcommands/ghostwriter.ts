@@ -6,8 +6,8 @@ import {
     SlashCommandStringOption,
 } from "discord.js";
 
-import type { ApplicationCommand } from "@/commands/command.js";
-import type { BotContext } from "@/context.js";
+import type { ApplicationCommand } from "#/commands/command.js";
+import type { BotContext } from "#/context.js";
 
 export default class GhostwriterCommand implements ApplicationCommand {
     name = "gw";

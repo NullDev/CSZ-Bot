@@ -1,36 +1,36 @@
 import { GatewayIntentBits, Partials, Client } from "discord.js";
 import * as sentry from "@sentry/node";
 
-import { readConfig, databasePath, args } from "@/service/config.js";
-import log from "@log";
+import { readConfig, databasePath, args } from "#/service/config.js";
+import log from "#log";
 
 import { Temporal } from "@js-temporal/polyfill";
-import "@/polyfills.js";
+import "#/polyfills.js";
 
-import * as kysely from "@/storage/db/db.js";
+import * as kysely from "#/storage/db/db.js";
 
-import type { ReactionHandler } from "@/handler/ReactionHandler.js";
-import messageDeleteHandler from "@/handler/messageDeleteHandler.js";
-import { woisVoteReactionHandler } from "@/commands/woisvote.js";
-import * as voiceStateService from "@/service/voiceState.js";
+import type { ReactionHandler } from "#/handler/ReactionHandler.js";
+import messageDeleteHandler from "#/handler/messageDeleteHandler.js";
+import { woisVoteReactionHandler } from "#/commands/woisvote.js";
+import * as voiceStateService from "#/service/voiceState.js";
 
-import roleAssignerHandler from "@/handler/reaction/roleAssignerHandler.js";
-import pollReactionHandler from "@/handler/reaction/pollReactionHandler.js";
-import logEmotesReactionHandler from "@/handler/reaction/logEmotesReactionHandler.js";
-import quoteReactionHandler from "@/handler/reaction/quoteHandler.js";
+import roleAssignerHandler from "#/handler/reaction/roleAssignerHandler.js";
+import pollReactionHandler from "#/handler/reaction/pollReactionHandler.js";
+import logEmotesReactionHandler from "#/handler/reaction/logEmotesReactionHandler.js";
+import quoteReactionHandler from "#/handler/reaction/quoteHandler.js";
 
 import {
     handleInteractionEvent,
     loadCommands,
     messageCommandHandler,
     registerAllApplicationCommandsAsGuildCommands,
-} from "@/handler/commandHandler.js";
-import * as guildMemberHandler from "@/handler/guildMemberHandler.js";
-import deleteThreadMessagesHandler from "@/handler/messageCreate/deleteThreadMessagesHandler.js";
-import { createBotContext, type BotContext } from "@/context.js";
-import { ehreReactionHandler } from "@/commands/ehre.js";
-import * as terminal from "@/utils/terminal.js";
-import * as cronService from "@/service/cron.js";
+} from "#/handler/commandHandler.js";
+import * as guildMemberHandler from "#/handler/guildMemberHandler.js";
+import deleteThreadMessagesHandler from "#/handler/messageCreate/deleteThreadMessagesHandler.js";
+import { createBotContext, type BotContext } from "#/context.js";
+import { ehreReactionHandler } from "#/commands/ehre.js";
+import * as terminal from "#/utils/terminal.js";
+import * as cronService from "#/service/cron.js";
 import { handlePresenceUpdate } from "./handler/presenceHandler.js";
 
 const env = process.env;

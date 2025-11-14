@@ -1,7 +1,7 @@
 import type { Message } from "discord.js";
 
-import type { SpecialCommand } from "@/commands/command.js";
-import type { BotContext } from "@/context.js";
+import type { SpecialCommand } from "#/commands/command.js";
+import type { BotContext } from "#/context.js";
 
 const hosts = {
     // Taken from:

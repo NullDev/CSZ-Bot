@@ -1,6 +1,6 @@
 import type { Snowflake } from "discord.js";
 
-import db from "@db";
+import db from "#db";
 import type { Pet } from "./db/model.js";
 
 import * as loot from "./loot.js";

@@ -3,12 +3,12 @@ import * as fs from "node:fs/promises";
 import type { User } from "discord.js";
 import { createCanvas, loadImage } from "@napi-rs/canvas";
 
-import type { BotContext } from "@/context.js";
-import type { Loot } from "@/storage/db/model.js";
-import type { LootTemplate } from "@/storage/loot.js";
-import * as fontService from "@/service/font.js";
-import { Vec2 } from "@/utils/math.js";
-import { extendContext } from "@/utils/ExtendedCanvasContext.js";
+import type { BotContext } from "#/context.js";
+import type { Loot } from "#/storage/db/model.js";
+import type { LootTemplate } from "#/storage/loot.js";
+import * as fontService from "#/service/font.js";
+import { Vec2 } from "#/utils/math.js";
+import { extendContext } from "#/utils/ExtendedCanvasContext.js";
 
 const namePos = new Vec2(38, 567);
 const avatarPos = new Vec2(790, 230);

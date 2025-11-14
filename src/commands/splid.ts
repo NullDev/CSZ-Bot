@@ -13,14 +13,14 @@ import {
 } from "discord.js";
 import * as sentry from "@sentry/node";
 
-import type { BotContext } from "@/context.js";
-import type { ApplicationCommand, AutocompleteCommand } from "@/commands/command.js";
-import type { SplidMember } from "@/service/splid.js";
+import type { BotContext } from "#/context.js";
+import type { ApplicationCommand, AutocompleteCommand } from "#/commands/command.js";
+import type { SplidMember } from "#/service/splid.js";
 
-import { ensureChatInputCommand } from "@/utils/interactionUtils.js";
-import * as splidLink from "@/storage/splidLink.js";
-import * as splidService from "@/service/splid.js";
-import log from "@log";
+import { ensureChatInputCommand } from "#/utils/interactionUtils.js";
+import * as splidLink from "#/storage/splidLink.js";
+import * as splidService from "#/service/splid.js";
+import log from "#log";
 
 const createNumberFormatter = (currency: string) =>
     new Intl.NumberFormat("de-DE", {

@@ -7,14 +7,14 @@ import {
     type User,
 } from "discord.js";
 
-import type { BotContext } from "@/context.js";
-import type { ApplicationCommand } from "@/commands/command.js";
-import * as lootService from "@/service/loot.js";
-import { ensureChatInputCommand } from "@/utils/interactionUtils.js";
-import * as lootDataService from "@/service/lootData.js";
-import { LootAttributeKindId } from "@/service/lootData.js";
+import type { BotContext } from "#/context.js";
+import type { ApplicationCommand } from "#/commands/command.js";
+import * as lootService from "#/service/loot.js";
+import { ensureChatInputCommand } from "#/utils/interactionUtils.js";
+import * as lootDataService from "#/service/lootData.js";
+import { LootAttributeKindId } from "#/service/lootData.js";
 
-import log from "@log";
+import log from "#log";
 
 export default class InventarCommand implements ApplicationCommand {
     name = "inventar";

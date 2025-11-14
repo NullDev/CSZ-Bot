@@ -9,8 +9,8 @@ import { captureException, startInactiveSpan } from "@sentry/node";
 import type { Database } from "./model.js";
 import datePlugin from "./date-plugin.js";
 import { SqliteBooleanPlugin } from "./boolean-plugin.js";
-import assertNever from "@/utils/assertNever.js";
-import log from "@log";
+import assertNever from "#/utils/assertNever.js";
+import log from "#log";
 
 let kysely: Kysely<Database>;
 

@@ -7,10 +7,10 @@ import {
 } from "discord.js";
 import type * as discord from "discord.js";
 
-import type { BotContext } from "@/context.js";
-import type { ApplicationCommand } from "@/commands/command.js";
+import type { BotContext } from "#/context.js";
+import type { ApplicationCommand } from "#/commands/command.js";
 
-import log from "@log";
+import log from "#log";
 
 type CompletionInfo = Record<1 | 2, { get_start_ts: number }>;
 

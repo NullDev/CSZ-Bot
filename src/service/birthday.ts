@@ -1,12 +1,12 @@
 import type { GuildMember, Role } from "discord.js";
 import * as sentry from "@sentry/node";
 
-import log from "@log";
-import * as birthday from "@/storage/birthday.js";
-import * as lootService from "@/service/loot.js";
-import * as lootDataService from "@/service/lootData.js";
+import log from "#log";
+import * as birthday from "#/storage/birthday.js";
+import * as lootService from "#/service/loot.js";
+import * as lootDataService from "#/service/lootData.js";
 
-import type { BotContext } from "@/context.js";
+import type { BotContext } from "#/context.js";
 
 /**
  * Iterates over the list of birthdays and assigns a role to people having their cake day.

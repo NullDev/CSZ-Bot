@@ -1,15 +1,15 @@
 import { ActionRowBuilder, ComponentType, type Message, StringSelectMenuBuilder } from "discord.js";
 
-import type { MessageCommand } from "@/commands/command.js";
-import type { BotContext } from "@/context.js";
-import type { ProcessableMessage } from "@/service/command.js";
-import type { Poll } from "@/storage/db/model.js";
+import type { MessageCommand } from "#/commands/command.js";
+import type { BotContext } from "#/context.js";
+import type { ProcessableMessage } from "#/service/command.js";
+import type { Poll } from "#/storage/db/model.js";
 
-import * as pollEmbedService from "@/service/pollEmbed.js";
-import { parseLegacyMessageParts } from "@/service/command.js";
-import * as pollService from "@/service/poll.js";
-import { defer } from "@/utils/interactionUtils.js";
-import { truncateToLength } from "@/utils/stringUtils.js";
+import * as pollEmbedService from "#/service/pollEmbed.js";
+import { parseLegacyMessageParts } from "#/service/command.js";
+import * as pollService from "#/service/poll.js";
+import { defer } from "#/utils/interactionUtils.js";
+import { truncateToLength } from "#/utils/stringUtils.js";
 
 export default class ExtendCommand implements MessageCommand {
     name = "extend";

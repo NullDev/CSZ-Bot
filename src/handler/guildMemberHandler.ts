@@ -1,9 +1,9 @@
 import type { GuildMember, PartialGuildMember } from "discord.js";
-import type { BotContext } from "@/context.js";
+import type { BotContext } from "#/context.js";
 
-import * as guildRageQuit from "@/storage/guildRageQuit.js";
+import * as guildRageQuit from "#/storage/guildRageQuit.js";
 
-import log from "@log";
+import log from "#log";
 
 export async function added(context: BotContext, member: GuildMember) {
     const numRageQuits = await guildRageQuit.getNumRageQuits(member.guild, member);

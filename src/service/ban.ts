@@ -1,11 +1,11 @@
 import { time, type GuildMember, type User, TimestampStyles } from "discord.js";
 import * as sentry from "@sentry/node";
 
-import type { BotContext } from "@/context.js";
-import * as ban from "@/storage/ban.js";
-import { formatDuration } from "@/utils/dateUtils.js";
+import type { BotContext } from "#/context.js";
+import * as ban from "#/storage/ban.js";
+import { formatDuration } from "#/utils/dateUtils.js";
 
-import log from "@log";
+import log from "#log";
 
 export async function processBans(context: BotContext) {
     const now = new Date();

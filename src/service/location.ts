@@ -1,9 +1,9 @@
 import type { User } from "discord.js";
 
-import assertNever from "@/utils/assertNever.js";
+import assertNever from "#/utils/assertNever.js";
 
-import * as locationHistory from "@/storage/locationHistory.js";
-import type { MapLocation } from "@/storage/db/model.js";
+import * as locationHistory from "#/storage/locationHistory.js";
+import type { MapLocation } from "#/storage/db/model.js";
 import fs from "node:fs/promises";
 import path from "node:path";
 

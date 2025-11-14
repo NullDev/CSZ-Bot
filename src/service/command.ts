@@ -4,10 +4,10 @@ import * as path from "node:path";
 import type { Guild, GuildMember, Message } from "discord.js";
 import * as sentry from "@sentry/node";
 
-import type { BotContext } from "@/context.js";
-import type { Command } from "@/commands/command.js";
+import type { BotContext } from "#/context.js";
+import type { Command } from "#/commands/command.js";
 
-import log from "@log";
+import log from "#log";
 
 const commandExtensions = [".ts", ".js"];
 const ignoredExtensions = [".spec.ts", ".test.ts", ".d.ts", ".test.js", ".spec.js"];

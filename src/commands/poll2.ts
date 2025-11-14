@@ -11,10 +11,10 @@ import {
     TextInputBuilder,
     TextInputStyle,
 } from "discord.js";
-import type { ApplicationCommand } from "@/commands/command.js";
-import type { BotContext } from "@/context.js";
+import type { ApplicationCommand } from "#/commands/command.js";
+import type { BotContext } from "#/context.js";
 
-import log from "@log";
+import log from "#log";
 
 export default class Poll2Command implements ApplicationCommand {
     name = "poll2";

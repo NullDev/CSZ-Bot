@@ -58,6 +58,9 @@
     "expect": "^30.2.0",
     "lefthook": "^2.0.4"
   },
+  "imports": {
+    "#/*": "./src/*"
+  },
   "trustedDependencies": [
     "@biomejs/biome",
     "lefthook"

@@ -7,7 +7,7 @@ import type {
     UnknownRow,
 } from "kysely";
 
-import log from "@log";
+import log from "#log";
 
 export default {
     transformQuery(args: PluginTransformQueryArgs): RootOperationNode {

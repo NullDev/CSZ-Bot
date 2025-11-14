@@ -1,7 +1,7 @@
 import type { GuildMember } from "discord.js";
 
 import type { Stempel } from "./db/model.js";
-import db from "@db";
+import db from "#db";
 
 /**
  * @returns true/false depending if the invitedMember is already in the database

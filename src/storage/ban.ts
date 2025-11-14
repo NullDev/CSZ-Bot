@@ -1,8 +1,8 @@
 import type { GuildMember, Snowflake, User } from "discord.js";
 
 import type { Ban } from "./db/model.js";
-import db from "@db";
-import log from "@log";
+import db from "#db";
+import log from "#log";
 
 export async function persistOrUpdate(
     user: GuildMember,

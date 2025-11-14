@@ -12,12 +12,12 @@ import {
     userMention,
 } from "discord.js";
 
-import type { ApplicationCommand } from "@/commands/command.js";
-import type { BotContext } from "@/context.js";
-import type { EhrePoints } from "@/storage/db/model.js";
-import type { ReactionHandler } from "@/handler/ReactionHandler.js";
+import type { ApplicationCommand } from "#/commands/command.js";
+import type { BotContext } from "#/context.js";
+import type { EhrePoints } from "#/storage/db/model.js";
+import type { ReactionHandler } from "#/handler/ReactionHandler.js";
 
-import * as ehreService from "@/service/ehre.js";
+import * as ehreService from "#/service/ehre.js";
 
 function createUserPointString(e: EhrePoints) {
     return `${userMention(e.userId)}: ${ehreService.formatPoints(e.points)}`;

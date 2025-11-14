@@ -1,12 +1,12 @@
 import type { MessageReaction } from "discord.js";
 
-import type { BotContext } from "@/context.js";
-import type { ProcessableMessage } from "@/service/command.js";
+import type { BotContext } from "#/context.js";
+import type { ProcessableMessage } from "#/service/command.js";
 
-import * as dbEmote from "@/storage/emote.js";
+import * as dbEmote from "#/storage/emote.js";
 import * as emoteService from "./emote.js";
 
-import log from "@log";
+import log from "#log";
 
 export async function processReactionAdd(reactionEvent: MessageReaction, _context: BotContext) {
     const message = reactionEvent.message;

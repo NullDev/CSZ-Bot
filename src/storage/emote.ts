@@ -3,7 +3,7 @@ import type { Message, Snowflake } from "discord.js";
 
 import type { Emote } from "./db/model.js";
 
-import db from "@db";
+import db from "#db";
 
 export async function logMessageUse(
     emoteId: Snowflake,

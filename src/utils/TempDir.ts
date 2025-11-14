@@ -1,7 +1,7 @@
 import * as fs from "node:fs/promises";
 import * as sentry from "@sentry/node";
 
-import log from "@log";
+import log from "#log";
 
 export default class TempDir {
     readonly path: string;

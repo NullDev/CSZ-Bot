@@ -1,10 +1,10 @@
 import type { ClientUser, Message } from "discord.js";
 
-import type { BotContext } from "@/context.js";
+import type { BotContext } from "#/context.js";
 
-import * as pollService from "@/service/poll.js";
+import * as pollService from "#/service/poll.js";
 
-import log from "@log";
+import log from "#log";
 
 const deleteInlineRepliesFromBot = (messageRef: Message<true>, botUser: ClientUser) =>
     Promise.allSettled(
