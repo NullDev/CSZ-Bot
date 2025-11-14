@@ -9,7 +9,7 @@ import type {
 } from "discord.js";
 import { type ExpressionBuilder, sql } from "kysely";
 
-import type { BotContext } from "#/context.js";
+import type { BotContext } from "#/context.ts";
 import type {
     Database,
     Loot,
@@ -17,10 +17,10 @@ import type {
     LootInsertable,
     LootOrigin,
     LootAttribute,
-} from "./db/model.js";
+} from "./db/model.ts";
 
 import db from "#db";
-import { resolveLootAttributeTemplate, type LootAttributeKindId } from "#/service/lootData.js";
+import { resolveLootAttributeTemplate, type LootAttributeKindId } from "#/service/lootData.ts";
 
 export type LootUseCommandInteraction = ChatInputCommandInteraction & {
     channel: GuildTextBasedChannel;

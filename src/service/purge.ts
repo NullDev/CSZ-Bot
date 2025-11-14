@@ -1,4 +1,4 @@
-import type { BotContext } from "#/context.js";
+import type { BotContext } from "#/context.ts";
 
 import log from "#log";
 

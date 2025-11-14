@@ -1,13 +1,13 @@
 import type { GuildMember, Message, MessageReaction, TextBasedChannel, User } from "discord.js";
 import type { Temporal } from "@js-temporal/polyfill";
 
-import * as legacyDelayedPoll from "#/service/delayedPollLegacy.js";
-import type { Poll, PollId } from "#/storage/db/model.js";
-import type { BotContext } from "#/context.js";
-import * as polls from "#/storage/poll.js";
-import * as fadingMessage from "#/storage/fadingMessage.js";
-import * as additionalMessageData from "#/storage/additionalMessageData.js";
-import { EMOJI } from "#/service/pollEmbed.js";
+import * as legacyDelayedPoll from "#/service/delayedPollLegacy.ts";
+import type { Poll, PollId } from "#/storage/db/model.ts";
+import type { BotContext } from "#/context.ts";
+import * as polls from "#/storage/poll.ts";
+import * as fadingMessage from "#/storage/fadingMessage.ts";
+import * as additionalMessageData from "#/storage/additionalMessageData.ts";
+import { EMOJI } from "#/service/pollEmbed.ts";
 
 import log from "#log";
 

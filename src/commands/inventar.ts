@@ -7,12 +7,12 @@ import {
     type User,
 } from "discord.js";
 
-import type { BotContext } from "#/context.js";
-import type { ApplicationCommand } from "#/commands/command.js";
-import * as lootService from "#/service/loot.js";
-import { ensureChatInputCommand } from "#/utils/interactionUtils.js";
-import * as lootDataService from "#/service/lootData.js";
-import { LootAttributeKindId } from "#/service/lootData.js";
+import type { BotContext } from "#/context.ts";
+import type { ApplicationCommand } from "#/commands/command.ts";
+import * as lootService from "#/service/loot.ts";
+import { ensureChatInputCommand } from "#/utils/interactionUtils.ts";
+import * as lootDataService from "#/service/lootData.ts";
+import { LootAttributeKindId } from "#/service/lootData.ts";
 
 import log from "#log";
 

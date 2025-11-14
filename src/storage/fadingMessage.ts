@@ -1,6 +1,6 @@
 import type { Message } from "discord.js";
 
-import type { FadingMessage } from "./db/model.js";
+import type { FadingMessage } from "./db/model.ts";
 import db from "#db";
 
 export function startFadingMessage(

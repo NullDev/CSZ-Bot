@@ -1,6 +1,6 @@
 import type { Guild, User } from "discord.js";
 
-import type { SplidGroup } from "./db/model.js";
+import type { SplidGroup } from "./db/model.ts";
 
 import db from "#db";
 import log from "#log";

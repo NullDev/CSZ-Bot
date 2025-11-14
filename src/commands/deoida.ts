@@ -1,7 +1,7 @@
-import type { BotContext } from "#/context.js";
-import type { ProcessableMessage } from "#/service/command.js";
-import type { MessageCommand } from "#/commands/command.js";
-import * as austrianTranslation from "#/storage/austrianTranslation.js";
+import type { BotContext } from "#/context.ts";
+import type { ProcessableMessage } from "#/service/command.ts";
+import type { MessageCommand } from "#/commands/command.ts";
+import * as austrianTranslation from "#/storage/austrianTranslation.ts";
 
 async function deOidaLine(line: string): Promise<string> {
     // We cannot just split all words using \s*. That could tear apart words or translations like "fescher bub"

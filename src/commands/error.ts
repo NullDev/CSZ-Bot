@@ -1,6 +1,6 @@
-import type { MessageCommand } from "./command.js";
-import type { ProcessableMessage } from "#/service/command.js";
-import type { BotContext } from "#/context.js";
+import type { MessageCommand } from "./command.ts";
+import type { ProcessableMessage } from "#/service/command.ts";
+import type { BotContext } from "#/context.ts";
 
 export default class ErrorCommand implements MessageCommand {
     name = "feler";

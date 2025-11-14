@@ -1,10 +1,10 @@
 import type { Guild, User } from "discord.js";
 import { SplidClient } from "splid-js";
 
-import type { SplidGroup } from "#/storage/db/model.js";
+import type { SplidGroup } from "#/storage/db/model.ts";
 
-import * as splidGroup from "#/storage/splidGroup.js";
-import * as time from "#/utils/time.js";
+import * as splidGroup from "#/storage/splidGroup.ts";
+import * as time from "#/utils/time.ts";
 import log from "#log";
 
 type ExternalInfo = { name: string; objectId: string };

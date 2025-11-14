@@ -1,7 +1,7 @@
 import { sql } from "kysely";
 import type { Message, Snowflake } from "discord.js";
 
-import type { Emote } from "./db/model.js";
+import type { Emote } from "./db/model.ts";
 
 import db from "#db";
 

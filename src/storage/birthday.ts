@@ -1,6 +1,6 @@
 import type { Snowflake } from "discord.js";
 
-import type { Birthday, OneBasedMonth } from "./db/model.js";
+import type { Birthday, OneBasedMonth } from "./db/model.ts";
 import db from "#db";
 
 export function getBirthday(userId: Snowflake, ctx = db()): Promise<Birthday | undefined> {

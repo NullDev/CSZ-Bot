@@ -1,9 +1,9 @@
 import type { Snowflake } from "discord.js";
 
 import db from "#db";
-import type { Pet } from "./db/model.js";
+import type { Pet } from "./db/model.ts";
 
-import * as loot from "./loot.js";
+import * as loot from "./loot.ts";
 
 export async function setPet(ownerId: Snowflake, lootId: number, petName: string): Promise<Pet> {
     if (petName.trim().length === 0) {

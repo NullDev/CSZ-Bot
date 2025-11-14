@@ -1,4 +1,4 @@
-import type { BotContext } from "#/context.js";
+import type { BotContext } from "#/context.ts";
 import {
     getRecentPlaybacks,
     insertRegistration,
@@ -7,7 +7,7 @@ import {
     isActivatedForScrobbling,
     getTrackMetadata,
     mostRecentPlayback,
-} from "#/storage/lauscher.js";
+} from "#/storage/lauscher.ts";
 import type { Temporal } from "@js-temporal/polyfill";
 import type { Activity, User } from "discord.js";
 import log from "#log";

@@ -2,7 +2,7 @@ import type { Snowflake } from "discord.js";
 import type { Temporal } from "@js-temporal/polyfill";
 
 import db from "#db";
-import type { Poll, PollAnswer, PollId, PollOption, PollOptionId } from "./db/model.js";
+import type { Poll, PollAnswer, PollId, PollOption, PollOptionId } from "./db/model.ts";
 
 export interface MessageLocation {
     guildId: Snowflake;

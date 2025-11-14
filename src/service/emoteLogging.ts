@@ -1,10 +1,10 @@
 import type { MessageReaction } from "discord.js";
 
-import type { BotContext } from "#/context.js";
-import type { ProcessableMessage } from "#/service/command.js";
+import type { BotContext } from "#/context.ts";
+import type { ProcessableMessage } from "#/service/command.ts";
 
-import * as dbEmote from "#/storage/emote.js";
-import * as emoteService from "./emote.js";
+import * as dbEmote from "#/storage/emote.ts";
+import * as emoteService from "./emote.ts";
 
 import log from "#log";
 

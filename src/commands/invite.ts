@@ -1,5 +1,5 @@
-import type { ProcessableMessage } from "#/service/command.js";
-import type { MessageCommand } from "#/commands/command.js";
+import type { ProcessableMessage } from "#/service/command.ts";
+import type { MessageCommand } from "#/commands/command.ts";
 
 export const description = "";
 

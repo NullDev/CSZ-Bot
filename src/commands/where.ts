@@ -1,9 +1,9 @@
 import { type Message, cleanContent } from "discord.js";
 import { createCanvas, loadImage } from "@napi-rs/canvas";
 
-import type { SpecialCommand } from "#/commands/command.js";
-import * as fonts from "#/service/font.js";
-import { countWords, substringAfter } from "#/utils/stringUtils.js";
+import type { SpecialCommand } from "#/commands/command.ts";
+import * as fonts from "#/service/font.ts";
+import { countWords, substringAfter } from "#/utils/stringUtils.ts";
 
 export default class WhereCommand implements SpecialCommand {
     name = "Where";

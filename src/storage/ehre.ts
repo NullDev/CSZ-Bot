@@ -1,7 +1,7 @@
 import { sql } from "kysely";
 import type { Snowflake, User } from "discord.js";
 
-import type { EhrePoints } from "./db/model.js";
+import type { EhrePoints } from "./db/model.ts";
 import db from "#db";
 import log from "#log";
 

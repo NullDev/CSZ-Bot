@@ -1,6 +1,6 @@
 import type { Snowflake, User } from "discord.js";
 
-import type { NickName } from "./db/model.js";
+import type { NickName } from "./db/model.ts";
 
 import db from "#db";
 import log from "#log";

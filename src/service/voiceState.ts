@@ -1,5 +1,5 @@
 import type { VoiceState } from "discord.js";
-import type { BotContext } from "#/context.js";
+import type { BotContext } from "#/context.ts";
 import log from "#log";
 
 export interface VoiceUpdateEvent {

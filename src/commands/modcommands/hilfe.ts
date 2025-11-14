@@ -1,10 +1,10 @@
-import type { MessageCommand } from "#/commands/command.js";
-import type { BotContext } from "#/context.js";
-import type { ProcessableMessage } from "#/service/command.js";
-import * as chunkingService from "#/service/chunking.js";
+import type { MessageCommand } from "#/commands/command.ts";
+import type { BotContext } from "#/context.ts";
+import type { ProcessableMessage } from "#/service/command.ts";
+import * as chunkingService from "#/service/chunking.ts";
 
-import { replacePrefixPlaceholders } from "#/commands/hilfe.js";
-import * as commandService from "#/service/command.js";
+import { replacePrefixPlaceholders } from "#/commands/hilfe.ts";
+import * as commandService from "#/service/command.ts";
 
 export default class ModHilfeCommand implements MessageCommand {
     modCommand = true;

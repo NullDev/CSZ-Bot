@@ -16,11 +16,11 @@ import {
     MessageFlags,
 } from "discord.js";
 
-import type { ReactionHandler } from "#/handler/ReactionHandler.js";
-import type { ApplicationCommand } from "#/commands/command.js";
-import * as woisAction from "#/storage/woisAction.js";
-import type { BotContext } from "#/context.js";
-import { chunkArray } from "#/utils/arrayUtils.js";
+import type { ReactionHandler } from "#/handler/ReactionHandler.ts";
+import type { ApplicationCommand } from "#/commands/command.ts";
+import * as woisAction from "#/storage/woisAction.ts";
+import type { BotContext } from "#/context.ts";
+import { chunkArray } from "#/utils/arrayUtils.ts";
 import log from "#log";
 
 const defaultWoisTime = "20:00";

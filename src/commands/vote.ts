@@ -2,11 +2,11 @@ import { parseArgs, type ParseArgsConfig } from "node:util";
 
 import { cleanContent } from "discord.js";
 
-import type { MessageCommand } from "#/commands/command.js";
-import type { BotContext } from "#/context.js";
-import type { ProcessableMessage } from "#/service/command.js";
+import type { MessageCommand } from "#/commands/command.ts";
+import type { BotContext } from "#/context.ts";
+import type { ProcessableMessage } from "#/service/command.ts";
 
-import { parseLegacyMessageParts } from "#/service/command.js";
+import { parseLegacyMessageParts } from "#/service/command.ts";
 
 const argsConfig = {
     options: {

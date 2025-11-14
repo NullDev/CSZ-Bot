@@ -6,8 +6,8 @@ import type {
     SlashCommandBuilder,
 } from "discord.js";
 
-import type { ProcessableMessage } from "#/service/command.js";
-import type { BotContext } from "#/context.js";
+import type { ProcessableMessage } from "#/service/command.ts";
+import type { BotContext } from "#/context.ts";
 
 export type Command = ApplicationCommand | AutocompleteCommand | MessageCommand | SpecialCommand;
 

@@ -1,9 +1,9 @@
 import { ChannelType } from "discord.js";
 
-import type { ProcessableMessage } from "#/service/command.js";
-import * as chunkingService from "#/service/chunking.js";
-import type { MessageCommand } from "#/commands/command.js";
-import type { BotContext } from "#/context.js";
+import type { ProcessableMessage } from "#/service/command.ts";
+import * as chunkingService from "#/service/chunking.ts";
+import type { MessageCommand } from "#/commands/command.ts";
+import type { BotContext } from "#/context.ts";
 
 /**
  * Info command. Displays some useless information about the bot.

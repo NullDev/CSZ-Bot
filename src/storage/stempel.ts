@@ -1,6 +1,6 @@
 import type { GuildMember } from "discord.js";
 
-import type { Stempel } from "./db/model.js";
+import type { Stempel } from "./db/model.ts";
 import db from "#db";
 
 /**

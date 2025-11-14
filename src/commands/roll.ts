@@ -1,11 +1,11 @@
 import { ChannelType } from "discord.js";
 
-import type { MessageCommand } from "#/commands/command.js";
-import type { BotContext } from "#/context.js";
+import type { MessageCommand } from "#/commands/command.ts";
+import type { BotContext } from "#/context.ts";
 
-import { parseLegacyMessageParts, type ProcessableMessage } from "#/service/command.js";
-import { defer } from "#/utils/interactionUtils.js";
-import * as rollService from "#/service/roll.js";
+import { parseLegacyMessageParts, type ProcessableMessage } from "#/service/command.ts";
+import { defer } from "#/utils/interactionUtils.ts";
+import * as rollService from "#/service/roll.ts";
 
 export default class RollCommand implements MessageCommand {
     name = "roll";

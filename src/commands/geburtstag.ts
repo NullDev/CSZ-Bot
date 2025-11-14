@@ -1,9 +1,9 @@
 import { type CommandInteraction, type CacheType, SlashCommandBuilder } from "discord.js";
 import * as sentry from "@sentry/node";
 
-import type { ApplicationCommand } from "#/commands/command.js";
+import type { ApplicationCommand } from "#/commands/command.ts";
 import log from "#log";
-import * as birthday from "#/storage/birthday.js";
+import * as birthday from "#/storage/birthday.ts";
 
 export default class GeburtstagCommand implements ApplicationCommand {
     name = "geburtstag";

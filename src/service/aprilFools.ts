@@ -1,10 +1,10 @@
 import type { Collection, GuildMember, Role, Snowflake } from "discord.js";
 import * as sentry from "@sentry/node";
 
-import type { BotContext } from "#/context.js";
-import * as penis from "#/storage/penis.js";
-import * as boob from "#/storage/boob.js";
-import { shuffleArray } from "#/utils/arrayUtils.js";
+import type { BotContext } from "#/context.ts";
+import * as penis from "#/storage/penis.ts";
+import * as boob from "#/storage/boob.ts";
+import { shuffleArray } from "#/utils/arrayUtils.ts";
 import log from "#log";
 
 // Store old usernames. Hope the bot doesn't crash lol

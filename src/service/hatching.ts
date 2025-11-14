@@ -2,13 +2,13 @@ import * as fs from "node:fs/promises";
 
 import { userMention } from "discord.js";
 
-import type { BotContext } from "#/context.js";
-import type { Loot } from "#/storage/db/model.js";
+import type { BotContext } from "#/context.ts";
+import type { Loot } from "#/storage/db/model.ts";
 import log from "#log";
-import * as time from "#/utils/time.js";
-import * as lootService from "#/service/loot.js";
-import { LootKindId, resolveLootTemplate } from "./lootData.js";
-import * as randomService from "./random.js";
+import * as time from "#/utils/time.ts";
+import * as lootService from "#/service/loot.ts";
+import { LootKindId, resolveLootTemplate } from "./lootData.ts";
+import * as randomService from "./random.ts";
 
 export async function hatchEggs(context: BotContext) {
     log.info("Checking egg hatching");

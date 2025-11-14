@@ -15,10 +15,10 @@ import {
     userMention,
 } from "discord.js";
 
-import type { BotContext } from "#/context.js";
-import type { ApplicationCommand } from "#/commands/command.js";
-import { chunkArray } from "#/utils/arrayUtils.js";
-import * as time from "#/utils/time.js";
+import type { BotContext } from "#/context.ts";
+import type { ApplicationCommand } from "#/commands/command.ts";
+import { chunkArray } from "#/utils/arrayUtils.ts";
+import * as time from "#/utils/time.ts";
 
 export default class FaulenzerPingCommand implements ApplicationCommand {
     name = "Faulenzerping"; // Must be upper case, because this name will be matched against the application command name
