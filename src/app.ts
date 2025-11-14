@@ -130,8 +130,8 @@ process.once("SIGTERM", signal => {
     process.exit(1);
 });
 process.once("exit", code => {
-    client.destroy();
-    kysely.disconnectFromDb();
+    const _ = client.destroy();
+    const __ = kysely.disconnectFromDb();
     log.warn(`Process exited with code: ${code}`);
 });
 
