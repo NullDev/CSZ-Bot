@@ -7,12 +7,15 @@ export default class TriggerReactOnKeyword implements SpecialCommand {
     name = "ReactTrigger";
     description = "Trigger a Bot reaction on keyword";
     cooldownTime = 300000;
+    readonly keyword: string;
+    readonly emoteName: string;
+    readonly randomness: number;
 
-    constructor(
-        public readonly keyword: string,
-        public readonly emoteName: string,
-        public readonly randomness = 0.2,
-    ) {}
+    constructor(keyword: string, emoteName: string, randomness = 0.2) {
+        this.keyword = keyword;
+        this.emoteName = emoteName;
+        this.randomness = randomness;
+    }
 
     matches(message: ProcessableMessage): boolean {
         return message.content.toLowerCase().includes(this.keyword);
