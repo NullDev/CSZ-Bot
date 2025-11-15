@@ -6,13 +6,13 @@
   "module": "src/app.ts",
   "type": "module",
   "scripts": {
-    "start": "tsx --require ./src/polyfills.ts src/app.ts",
-    "test": "tsx --require ./src/polyfills.ts --test && tsgo",
+    "start": "node --require ./src/polyfills.ts src/app.ts",
+    "test": "node --require ./src/polyfills.ts --test && tsgo",
     "ci": "biome ci ./",
     "format": "biome format --write ./",
     "lint": "biome lint ./",
     "lint:fix": "biome check --write ./",
-    "watch": "tsx --require ./src/polyfills.ts --watch src/app.ts"
+    "watch": "node --require ./src/polyfills.ts --watch src/app.ts"
   },
   "repository": {
     "type": "git",
@@ -45,7 +45,6 @@
     "pino": "^10.1.0",
     "pino-pretty": "^13.1.2",
     "splid-js": "^1.5.3",
-    "tsx": "^4.20.6",
     "youtube-dl-exec": "^3.0.26"
   },
   "devDependencies": {
