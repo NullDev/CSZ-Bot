@@ -1,66 +1,19 @@
-import {
-    ActionRowBuilder,
-    type APIEmbedField,
-    ComponentType,
-    EmbedBuilder,
-    type GuildTextBasedChannel,
-    type Message,
-    StringSelectMenuBuilder,
-} from "discord.js";
+import { ActionRowBuilder, ComponentType, type Message, StringSelectMenuBuilder } from "discord.js";
 
-import type { MessageCommand } from "@/commands/command.js";
-import type { BotContext } from "@/context.js";
-import type { ProcessableMessage } from "@/service/command.js";
+import type { MessageCommand } from "#commands/command.ts";
+import type { BotContext } from "#context.ts";
+import type { ProcessableMessage } from "#service/command.ts";
+import type { Poll } from "#storage/db/model.ts";
 
-import { parseLegacyMessageParts } from "@/service/command.js";
-import { LETTERS, EMOJI } from "@/service/poll.js";
-import * as pollService from "@/service/poll.js";
-import { defer } from "@/utils/interactionUtils.js";
-import * as poll from "./poll.js";
-import { truncateToLength } from "@/utils/stringUtils.js";
-
-const isPollField = (field: APIEmbedField): boolean =>
-    !field.inline && LETTERS.some(l => field.name.startsWith(l));
-
-type ResolvedPoll = {
-    message: Message;
-    description: string;
-};
-
-async function fetchPollsFromChannel(
-    channel: GuildTextBasedChannel,
-    context: BotContext,
-): Promise<ResolvedPoll[]> {
-    const messagesFromBot = channel.messages.cache
-        .values()
-        .filter(m => m.author.id === context.client.user.id);
-    const polls = messagesFromBot
-        .filter(m => m.embeds.length === 1)
-        .filter(m => m.embeds[0].color === 0x2ecc71) // green color => extendable
-        .filter(
-            m =>
-                m.embeds[0].author?.name.startsWith("Umfrage") ||
-                m.embeds[0].author?.name.startsWith("Strawpoll"),
-        );
-
-    return Array.from(polls)
-        .sort((a, b) => b.createdTimestamp - a.createdTimestamp)
-        .map(m => {
-            let description = m.embeds[0].description || "";
-            // Remove leading and trailing double asterisks if present
-            if (description.startsWith("**") && description.endsWith("**")) {
-                description = description.slice(2, -2);
-            }
-            return {
-                message: m,
-                description,
-            } as ResolvedPoll;
-        });
-}
+import * as pollEmbedService from "#service/pollEmbed.ts";
+import { parseLegacyMessageParts } from "#service/command.ts";
+import * as pollService from "#service/poll.ts";
+import { defer } from "#utils/interactionUtils.ts";
+import { truncateToLength } from "#utils/stringUtils.ts";
 
 export default class ExtendCommand implements MessageCommand {
     name = "extend";
-    description = `Nutzbar als Reply auf eine mit --extendable erstellte Umfrage, um eine/mehrere Antwortmöglichkeit/en hinzuzufügen. Die Anzahl der bestehenden und neuen Antwortmöglichkeiten darf ${poll.OPTION_LIMIT} nicht übersteigen.\nUsage: $COMMAND_PREFIX$extend [Antwort 1] ; [...]`;
+    description = `Nutzbar als Reply auf eine mit --extendable erstellte Umfrage, um eine/mehrere Antwortmöglichkeit/en hinzuzufügen. Die Anzahl der bestehenden und neuen Antwortmöglichkeiten darf ${pollEmbedService.OPTION_LIMIT} nicht übersteigen.\nUsage: $COMMAND_PREFIX$extend [Antwort 1] ; [...]`;
 
     async handleMessage(message: ProcessableMessage, context: BotContext): Promise<void> {
         const { args } = parseLegacyMessageParts(context, message);
@@ -72,7 +25,7 @@ export default class ExtendCommand implements MessageCommand {
 
     async #offerPollSelection(
         extendMessage: Message<true>,
-        polls: readonly ResolvedPoll[],
+        polls: readonly Poll[],
     ): Promise<Message<true> | undefined> {
         const pollSelectOption = new StringSelectMenuBuilder()
             .setCustomId("extend-poll-select")
@@ -81,8 +34,8 @@ export default class ExtendCommand implements MessageCommand {
                 polls
                     .slice(0, 24) // Discord allows max. 25 options
                     .map(poll => ({
-                        label: truncateToLength(poll.description, 100) || "Kein Titel",
-                        value: poll.message.id,
+                        label: truncateToLength(poll.question, 100) || "Kein Titel",
+                        value: poll.embedMessageId,
                     })),
             );
 
@@ -119,10 +72,12 @@ export default class ExtendCommand implements MessageCommand {
 
         let pollMessage = message.reference?.messageId
             ? await message.channel.messages.fetch(message.reference.messageId)
-            : undefined;
+            : message.channel.isThread()
+              ? await message.channel.fetchStarterMessage()
+              : undefined;
 
         if (!pollMessage) {
-            const polls = await fetchPollsFromChannel(message.channel, context);
+            const polls = await pollService.findExtendablePollsInChannel(message.channel);
             if (polls.length === 0) {
                 return "Bruder ich konnte echt keine Umfrage finden, welche du erweitern könntest. Sieh zu, dass du die Reply-Funktion benutzt oder den richtigen Channel auswählst.";
             }
@@ -150,11 +105,7 @@ export default class ExtendCommand implements MessageCommand {
             return "Bruder die Umfrage ist nicht erweiterbar (ง'̀-'́)ง";
         }
 
-        const oldPollOptionFields = pollMessage.embeds[0].fields.filter(field =>
-            isPollField(field),
-        );
-
-        if (oldPollOptionFields.length === poll.OPTION_LIMIT) {
+        if (dbPoll.options.length === pollEmbedService.OPTION_LIMIT) {
             return "Bruder die Umfrage ist leider schon voll (⚆ ͜ʖ⚆)";
         }
 
@@ -163,31 +114,47 @@ export default class ExtendCommand implements MessageCommand {
             return "Bruder da sind keine Antwortmöglichkeiten :c";
         }
 
-        if (additionalPollOptions.length + oldPollOptionFields.length > poll.OPTION_LIMIT) {
-            return `Bruder mit deinen Antwortmöglichkeiten wird das Limit von ${poll.OPTION_LIMIT} überschritten!`;
+        if (additionalPollOptions.length + dbPoll.options.length > pollEmbedService.OPTION_LIMIT) {
+            return `Bruder mit deinen Antwortmöglichkeiten wird das Limit von ${pollEmbedService.OPTION_LIMIT} überschritten!`;
         }
 
-        if (additionalPollOptions.some(value => value.length > poll.FIELD_VALUE_LIMIT)) {
-            return `Bruder mindestens eine Antwortmöglichkeit ist länger als ${poll.FIELD_VALUE_LIMIT} Zeichen!`;
+        if (
+            additionalPollOptions.some(value => value.length > pollEmbedService.FIELD_VALUE_LIMIT)
+        ) {
+            return `Bruder mindestens eine Antwortmöglichkeit ist länger als ${pollEmbedService.FIELD_VALUE_LIMIT} Zeichen!`;
         }
 
-        const replyEmbed = pollMessage.embeds[0];
-        const originalAuthor = replyEmbed.author?.name.split(" ").slice(2).join(" ");
-        const author = originalAuthor === message.author.username ? undefined : message.author;
+        for (const option of additionalPollOptions) {
+            await pollService.addPollOption(message.author, dbPoll, option);
+        }
 
-        const newFields = additionalPollOptions.map((value, i) =>
-            poll.createOptionField(value, oldPollOptionFields.length + i, author),
+        const newPoll = await pollService.findPoll(dbPoll.id);
+        if (newPoll === undefined) {
+            throw new Error("Could not find poll that should have been there.");
+        }
+
+        const pollAuthor = (await message.guild.members.fetch(newPoll.authorId))?.user ?? {
+            username: "<unbekannt>",
+            iconURL: undefined,
+        };
+
+        const embed = pollEmbedService.buildPollEmbed(
+            message.channel,
+            {
+                question: newPoll.question,
+                anonymous: newPoll.anonymous,
+                extendable: newPoll.extendable,
+                ended: newPoll.ended,
+                endsAt: newPoll.endsAt ? new Date(newPoll.endsAt) : null,
+                multipleChoices: newPoll.multipleChoices,
+                author: pollAuthor,
+            },
+            newPoll.options.map(o => ({
+                index: o.index,
+                option: o.option,
+                author: message.guild.members.cache.get(o.authorId)?.user,
+            })),
         );
-
-        let metaFields = pollMessage.embeds[0].fields.filter(field => !isPollField(field));
-        const embed = EmbedBuilder.from(pollMessage.embeds[0]).data;
-
-        if (oldPollOptionFields.length + additionalPollOptions.length === poll.OPTION_LIMIT) {
-            embed.color = 0xcd5c5c;
-            metaFields = metaFields.filter(field => !field.name.endsWith("Erweiterbar"));
-        }
-
-        embed.fields = [...oldPollOptionFields, ...newFields, ...metaFields];
 
         const msg = await pollMessage.edit({
             embeds: [embed],
@@ -197,7 +164,7 @@ export default class ExtendCommand implements MessageCommand {
         });
 
         for (const i in additionalPollOptions) {
-            await msg.react(EMOJI[oldPollOptionFields.length + Number(i)]);
+            await msg.react(pollEmbedService.EMOJI[dbPoll.options.length + Number(i)]);
         }
         await message.delete();
     }

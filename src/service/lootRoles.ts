@@ -1,11 +1,11 @@
 import type { GuildChannel, GuildMember, TextChannel } from "discord.js";
 
-import type { BotContext } from "@/context.js";
+import type { BotContext } from "#context.ts";
 
-import { LootKindId } from "@/service/lootData.js";
-import * as lootService from "@/service/loot.js";
+import { LootKindId } from "#service/lootData.ts";
+import * as lootService from "#service/loot.ts";
 
-import log from "@log";
+import log from "#log";
 
 export async function startAsseGuardShift(
     context: BotContext,

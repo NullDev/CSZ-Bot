@@ -1,10 +1,10 @@
 import type { MessageReaction, User } from "discord.js";
 
-import type { BotContext } from "@/context.js";
-import type { ReactionHandler } from "../ReactionHandler.js";
+import type { BotContext } from "#context.ts";
+import type { ReactionHandler } from "../ReactionHandler.ts";
 
-import * as pollService from "@/service/poll.js";
-import { POLL_EMOJIS, VOTE_EMOJIS } from "@/service/poll.js";
+import * as pollService from "#service/poll.ts";
+import { POLL_EMOJIS, VOTE_EMOJIS } from "#service/poll.ts";
 
 export default {
     displayName: "Poll Reaction Handler",
@@ -37,26 +37,30 @@ export default {
             return;
         }
 
-        const poll = await pollService.findPollForEmbedMessage(message);
-        if (!poll) {
+        const dbPoll = await pollService.findPollForEmbedMessage(message);
+        if (!dbPoll) {
             return;
         }
 
-        const validVoteReactions = poll.multipleChoices ? POLL_EMOJIS : VOTE_EMOJIS;
-        if (!validVoteReactions.includes(reactionName)) {
+        if (VOTE_EMOJIS.includes(reactionName)) {
+            // this is a .vote poll -> TODO
+            return;
+        }
+
+        if (!POLL_EMOJIS.includes(reactionName)) {
             return;
         }
 
         const invokingMember = await message.guild.members.fetch(invoker.id);
 
-        if (poll.endsAt === null) {
-            await pollService.countVote(poll, message, invokingMember, reactionEvent);
+        if (dbPoll.endsAt === null) {
+            await pollService.countVote(dbPoll, message, invokingMember, reactionEvent);
             return;
         }
 
-        if (poll.ended) {
+        if (dbPoll.ended) {
             return;
         }
-        await pollService.countDelayedVote(poll, message, invokingMember, reactionEvent);
+        await pollService.countDelayedVote(dbPoll, message, invokingMember, reactionEvent);
     },
 } satisfies ReactionHandler;

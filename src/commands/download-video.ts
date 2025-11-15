@@ -6,11 +6,11 @@ import {
     MessageFlags,
 } from "discord.js";
 
-import type { BotContext } from "@/context.js";
-import type { ApplicationCommand } from "@/commands/command.js";
-import * as ytDlService from "@/service/ytDl.js";
-import assertNever from "@/utils/assertNever.js";
-import TempDir from "@/utils/TempDir.js";
+import type { BotContext } from "#context.ts";
+import type { ApplicationCommand } from "#commands/command.ts";
+import * as ytDlService from "#service/ytDl.ts";
+import assertNever from "#utils/assertNever.ts";
+import TempDir from "#utils/TempDir.ts";
 
 export default class DownloadVideoCommand implements ApplicationCommand {
     name = "Download Video"; // Must be upper case, because this name will be matched against the application command name

@@ -6,7 +6,7 @@ import * as JSONC from "comment-json";
 
 import type { Snowflake, ActivityType } from "discord.js";
 
-import log from "@log";
+import log from "#log";
 
 const configPath = path.resolve("config.json");
 
@@ -80,6 +80,8 @@ export interface Config {
         command: string;
         modCommand: string;
     };
+
+    sendWelcomeMessage?: boolean;
 
     moderatorRoleIds: readonly Snowflake[];
 

@@ -20,20 +20,20 @@ import {
 import { Temporal } from "@js-temporal/polyfill";
 import * as sentry from "@sentry/node";
 
-import type { BotContext } from "@/context.js";
-import type { Loot, LootId } from "@/storage/db/model.js";
-import type { LootTemplate } from "@/storage/loot.js";
-import { randomBoolean, randomEntry, randomEntryWeighted } from "@/service/random.js";
+import type { BotContext } from "#context.ts";
+import type { Loot, LootId } from "#storage/db/model.ts";
+import type { LootTemplate } from "#storage/loot.ts";
+import { randomBoolean, randomEntry, randomEntryWeighted } from "#service/random.ts";
 
-import * as lootService from "@/service/loot.js";
+import * as lootService from "#service/loot.ts";
 import {
     LootAttributeClassId,
     lootAttributeTemplates,
     LootKindId,
     lootTemplates,
-} from "@/service/lootData.js";
+} from "#service/lootData.ts";
 
-import log from "@log";
+import log from "#log";
 
 const lootTimeoutMs = 60 * 1000;
 

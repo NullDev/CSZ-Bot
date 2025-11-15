@@ -41,6 +41,8 @@ export interface Database {
     locationHistory: LocationHistoryTable;
     pets: PetsTable;
     polls: PollsTable;
+    pollOptions: PollOptionsTable;
+    pollAnswers: PollAnswersTable;
 }
 
 export type OneBasedMonth = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
@@ -446,4 +448,29 @@ export interface PollsTable extends AuditedTable {
 
     endsAt: ColumnType<string | null, string | null, string | null>; // TODO: Date is not supported by the DB driver
     ended: boolean;
+}
+
+export type PollOptionId = number;
+
+export type PollOption = Selectable<PollOptionsTable>;
+
+export interface PollOptionsTable extends AuditedTable {
+    id: GeneratedAlways<PollOptionId>;
+
+    pollId: PollId;
+    index: number;
+    option: string;
+
+    authorId: Snowflake;
+}
+
+export type PollAnswerId = number;
+
+export type PollAnswer = Selectable<PollAnswersTable>;
+
+export interface PollAnswersTable extends AuditedTable {
+    id: GeneratedAlways<PollAnswerId>;
+
+    optionId: PollOptionId;
+    userId: Snowflake;
 }

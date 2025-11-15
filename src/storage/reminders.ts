@@ -1,9 +1,9 @@
 import type { Snowflake, User } from "discord.js";
 
-import type { Reminder } from "./db/model.js";
+import type { Reminder } from "./db/model.ts";
 
-import db from "@db";
-import log from "@log";
+import db from "#db";
+import log from "#log";
 
 export async function removeReminder(reminderId: Reminder["id"], ctx = db()) {
     await ctx.deleteFrom("reminders").where("id", "=", reminderId).execute();

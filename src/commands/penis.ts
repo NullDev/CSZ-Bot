@@ -1,13 +1,13 @@
 import { ContainerBuilder, MessageFlags, time, TimestampStyles, type User } from "discord.js";
 
-import type { BotContext } from "@/context.js";
-import type { MessageCommand } from "@/commands/command.js";
-import type { ProcessableMessage } from "@/service/command.js";
-import type { Penis } from "@/storage/db/model.js";
-import { NormalDistribution, RandomNumberGenerator, SecureRandomSource } from "@/service/random.js";
-import * as penis from "@/storage/penis.js";
+import type { BotContext } from "#context.ts";
+import type { MessageCommand } from "#commands/command.ts";
+import type { ProcessableMessage } from "#service/command.ts";
+import type { Penis } from "#storage/db/model.ts";
+import { NormalDistribution, RandomNumberGenerator, SecureRandomSource } from "#service/random.ts";
+import * as penis from "#storage/penis.ts";
 
-import log from "@log";
+import log from "#log";
 
 const randomSource = new SecureRandomSource();
 

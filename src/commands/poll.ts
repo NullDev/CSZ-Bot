@@ -1,50 +1,13 @@
 import { parseArgs, type ParseArgsConfig } from "node:util";
 
-import {
-    type APIEmbedField,
-    cleanContent,
-    EmbedBuilder,
-    time,
-    TimestampStyles,
-    type User,
-} from "discord.js";
-
-import type { BotContext } from "@/context.js";
-import type { MessageCommand } from "@/commands/command.js";
-import { parseLegacyMessageParts, type ProcessableMessage } from "@/service/command.js";
-import * as timeUtils from "@/utils/time.js";
-import * as pollService from "@/service/poll.js";
-import { LETTERS, EMOJI } from "@/service/poll.js";
-import * as legacyDelayedPoll from "@/service/delayedPollLegacy.js";
-import { defer } from "@/utils/interactionUtils.js";
-
-export const TEXT_LIMIT = 4096;
-export const FIELD_NAME_LIMIT = 256;
-export const FIELD_VALUE_LIMIT = 1024;
-export const POLL_OPTION_SEPARATOR = " - ";
-export const POLL_OPTION_MAX_LENGTH =
-    2 * FIELD_VALUE_LIMIT - Math.max(...LETTERS.map(s => s.length)) - POLL_OPTION_SEPARATOR.length;
-export const OPTION_LIMIT = LETTERS.length;
-
-export const createOptionField = (option: string, index: number, author?: User): APIEmbedField => {
-    let newOption = option;
-    if (author) {
-        newOption += ` (von ${author.username})`;
-
-        if (newOption.length > POLL_OPTION_MAX_LENGTH) {
-            throw new Error(
-                `Alter jetzt mal ganz im ernst, du hast etwas weniger als ${POLL_OPTION_MAX_LENGTH} Zeichen zur Verfüngung. Ich brauch auch noch ein bisschen Platz. Kannst du doch nicht ernst meinen.`,
-            );
-        }
-    }
-
-    const optionDiscriminator = `${LETTERS[index]}${POLL_OPTION_SEPARATOR}`;
-    const splitIndex = FIELD_NAME_LIMIT - optionDiscriminator.length;
-    const firstTextBlock = optionDiscriminator + newOption.substring(0, splitIndex);
-    const secondTextBlock = newOption.substring(splitIndex) || " ";
-
-    return { name: firstTextBlock, value: secondTextBlock, inline: false };
-};
+import type { BotContext } from "#context.ts";
+import type { MessageCommand } from "#commands/command.ts";
+import { parseLegacyMessageParts, type ProcessableMessage } from "#service/command.ts";
+import * as timeUtils from "#utils/time.ts";
+import * as pollService from "#service/poll.ts";
+import * as legacyDelayedPoll from "#service/delayedPollLegacy.ts";
+import * as pollEmbedService from "#service/pollEmbed.ts";
+import { defer } from "#utils/interactionUtils.ts";
 
 const argsConfig = {
     options: {
@@ -77,7 +40,7 @@ const argsConfig = {
 
 export default class PollCommand implements MessageCommand {
     name = "poll";
-    description = `Erstellt eine Umfrage mit mehreren Antwortmöglichkeiten (standardmäßig mit Mehrfachauswahl) (maximal ${OPTION_LIMIT}).
+    description = `Erstellt eine Umfrage mit mehreren Antwortmöglichkeiten (standardmäßig mit Mehrfachauswahl) (maximal ${pollEmbedService.OPTION_LIMIT}).
 Usage: $COMMAND_PREFIX$poll [Optionen?] [Hier die Frage] ; [Antwort 1] ; [Antwort 2] ; [...]
 Optionen:
 \t-c, --channel
@@ -118,17 +81,12 @@ Optionen:
             return "Bruder da ist keine Umfrage :c";
         }
 
-        const pollArray = pollService.parsePollOptionString(positionals.join(" "));
-
-        const question = pollArray[0];
-        if (question.length > TEXT_LIMIT) {
+        const [question, ...pollOptions] = pollService.parsePollOptionString(positionals.join(" "));
+        if (question.length > pollEmbedService.TEXT_LIMIT) {
             return "Bruder die Frage ist ja länger als mein Schwands :c";
         }
 
-        const pollOptions = pollArray.slice(1);
         let pollOptionsTextLength = 0;
-
-        const isExtendable = options.extendable;
         for (const pollOption of pollOptions) {
             pollOptionsTextLength += pollOption.length;
         }
@@ -137,49 +95,25 @@ Optionen:
             return "Bruder da sind keine Antwortmöglichkeiten :c";
         }
 
-        if (pollOptions.length < 2 && !isExtendable) {
+        if (pollOptions.length < 2 && !options.extendable) {
             return "Bruder du musst schon mehr als eine Antwortmöglichkeit geben 🙄";
         }
 
-        if (pollOptions.length > OPTION_LIMIT) {
-            return `Bitte gib nicht mehr als ${OPTION_LIMIT} Antwortmöglichkeiten an!`;
+        if (pollOptions.length > pollEmbedService.OPTION_LIMIT) {
+            return `Bitte gib nicht mehr als ${pollEmbedService.OPTION_LIMIT} Antwortmöglichkeiten an!`;
         }
 
-        if (pollOptions.some(value => value.length > POLL_OPTION_MAX_LENGTH)) {
-            return `Bruder mindestens eine Antwortmöglichkeit ist länger als ${POLL_OPTION_MAX_LENGTH} Zeichen!`;
+        if (pollOptions.some(value => value.length > pollEmbedService.POLL_OPTION_MAX_LENGTH)) {
+            return `Bruder mindestens eine Antwortmöglichkeit ist länger als ${pollEmbedService.POLL_OPTION_MAX_LENGTH} Zeichen!`;
         }
-
-        const fields = pollOptions.map((o, i) => createOptionField(o, i));
 
         const extendable =
             !!options.extendable &&
-            pollOptions.length < OPTION_LIMIT &&
-            pollOptionsTextLength < TEXT_LIMIT;
+            pollOptions.length < pollEmbedService.OPTION_LIMIT &&
+            pollOptionsTextLength < pollEmbedService.TEXT_LIMIT;
 
-        const embed = new EmbedBuilder({
-            description: `**${cleanContent(question, message.channel)}**`,
-            fields,
-            timestamp: new Date().toISOString(),
-            author: {
-                name: `${options.straw ? "Strawpoll" : "Umfrage"} von ${message.author.username}`,
-                icon_url: message.author.displayAvatarURL(),
-            },
-            thumbnail: {
-                url: "attachment://question.png",
-            },
-        });
-
-        if (extendable) {
-            if (options.delayed) {
-                return "Bruder du kannst -e nicht mit -d kombinieren. 🙄";
-            }
-
-            embed.addFields({
-                name: "✏️ Erweiterbar",
-                value: "mit .extend als Reply",
-                inline: true,
-            });
-            embed.setColor(0x2ecc71);
+        if (extendable && options.delayed) {
+            return "Bruder du kannst -e nicht mit -d kombinieren. 🙄";
         }
 
         let finishTime: Date | undefined;
@@ -194,20 +128,7 @@ Optionen:
             if (delayTime > timeUtils.days(7)) {
                 return "Bruder du kannst maximal 7 Tage auf ein Ergebnis warten 🙄";
             }
-
-            embed.addFields({
-                name: "⏳ Verzögert",
-                value: `Abstimmungsende: ${time(finishTime, TimestampStyles.RelativeTime)}`,
-                inline: true,
-            });
-            embed.setColor(0xa10083);
         }
-
-        embed.addFields({
-            name: `📝 ${options.straw ? "Einzelauswahl" : "Mehrfachauswahl"}`,
-            value: "\u200b", // Zero-width space because there has to be some value
-            inline: true,
-        });
 
         const voteChannel = context.textChannels.votes;
         const channel = options.channel ? voteChannel : message.channel;
@@ -218,6 +139,20 @@ Optionen:
         if (!channel.isTextBased()) {
             return "Der Zielchannel ist irgenwie kein Text-Channel?";
         }
+
+        const embed = pollEmbedService.buildPollEmbed(
+            channel,
+            {
+                question,
+                anonymous: !!finishTime,
+                author: message.author,
+                extendable,
+                multipleChoices: !options.straw,
+                endsAt: finishTime ?? null,
+                ended: !!finishTime && Date.now() >= finishTime.getTime(),
+            },
+            pollOptions.map((option, index) => ({ author: message.author, index, option })),
+        );
 
         const pollMessage = await channel.send({
             embeds: [embed],
@@ -231,7 +166,7 @@ Optionen:
 
         await using _ = defer(() => message.delete());
 
-        await Promise.all(pollOptions.map((_e, i) => pollMessage.react(EMOJI[i])));
+        await Promise.all(pollOptions.map((_e, i) => pollMessage.react(pollEmbedService.EMOJI[i])));
 
         const _dbPoll = await pollService.createPoll(
             message,
@@ -241,6 +176,7 @@ Optionen:
             false,
             !options.straw && extendable,
             finishTime?.toTemporalInstant() ?? null,
+            pollOptions,
         );
 
         if (finishTime) {

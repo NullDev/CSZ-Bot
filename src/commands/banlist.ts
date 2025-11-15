@@ -6,12 +6,12 @@ import {
     time,
 } from "discord.js";
 
-import type { ApplicationCommand } from "@/commands/command.js";
-import type { BotContext } from "@/context.js";
-import type { Ban } from "@/storage/db/model.js";
+import type { ApplicationCommand } from "#commands/command.ts";
+import type { BotContext } from "#context.ts";
+import type { Ban } from "#storage/db/model.ts";
 
-import * as banService from "@/service/ban.js";
-import log from "@log";
+import * as banService from "#service/ban.ts";
+import log from "#log";
 
 export default class BanListCommand implements ApplicationCommand {
     name = "banlist";

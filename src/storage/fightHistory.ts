@@ -1,5 +1,5 @@
 import type { User } from "discord.js";
-import db from "@db";
+import db from "#db";
 
 export async function insertResult(userId: User["id"], boss: string, win: boolean, ctx = db()) {
     const lastWins = await getWinsForBoss(userId, boss);

@@ -1,59 +1,15 @@
-import type { APIEmbed, GuildMember, Message, MessageReaction, User } from "discord.js";
+import type { GuildMember, Message, MessageReaction, TextBasedChannel, User } from "discord.js";
 import type { Temporal } from "@js-temporal/polyfill";
 
-import * as legacyDelayedPoll from "@/service/delayedPollLegacy.js";
-import type { Poll, PollId } from "@/storage/db/model.js";
-import type { BotContext } from "@/context.js";
-import * as polls from "@/storage/poll.js";
-import * as fadingMessage from "@/storage/fadingMessage.js";
-import * as additionalMessageData from "@/storage/additionalMessageData.js";
-import type { ProcessableMessage } from "./command.js";
+import * as legacyDelayedPoll from "#service/delayedPollLegacy.ts";
+import type { Poll, PollId } from "#storage/db/model.ts";
+import type { BotContext } from "#context.ts";
+import * as polls from "#storage/poll.ts";
+import * as fadingMessage from "#storage/fadingMessage.ts";
+import * as additionalMessageData from "#storage/additionalMessageData.ts";
+import { EMOJI } from "#service/pollEmbed.ts";
 
-export const LETTERS = [
-    ":regional_indicator_a:",
-    ":regional_indicator_b:",
-    ":regional_indicator_c:",
-    ":regional_indicator_d:",
-    ":regional_indicator_e:",
-    ":regional_indicator_f:",
-    ":regional_indicator_g:",
-    ":regional_indicator_h:",
-    ":regional_indicator_i:",
-    ":regional_indicator_j:",
-    ":regional_indicator_k:",
-    ":regional_indicator_l:",
-    ":regional_indicator_m:",
-    ":regional_indicator_n:",
-    ":regional_indicator_o:",
-    ":regional_indicator_p:",
-    ":regional_indicator_q:",
-    ":regional_indicator_r:",
-    ":regional_indicator_s:",
-    ":regional_indicator_t:",
-];
-
-export const EMOJI = [
-    "🇦",
-    "🇧",
-    "🇨",
-    "🇩",
-    "🇪",
-    "🇫",
-    "🇬",
-    "🇭",
-    "🇮",
-    "🇯",
-    "🇰",
-    "🇱",
-    "🇲",
-    "🇳",
-    "🇴",
-    "🇵",
-    "🇶",
-    "🇷",
-    "🇸",
-    "🇹",
-];
+import log from "#log";
 
 export const POLL_EMOJIS = EMOJI;
 export const VOTE_EMOJIS = ["👍", "👎"];
@@ -66,6 +22,7 @@ export async function createPoll(
     anonymous: boolean,
     extendable: boolean,
     endsAt: Temporal.Instant | null,
+    initialOptions: string[],
 ): Promise<Poll> {
     return await polls.createPoll(
         sourceMessage.author.id,
@@ -84,7 +41,23 @@ export async function createPoll(
         anonymous,
         extendable,
         endsAt,
+        initialOptions,
     );
+}
+
+export async function addPollOption(author: User, poll: Poll, option: string) {
+    if (option.trim().length === 0) {
+        throw new Error("`option` is empty.");
+    }
+    return await polls.addPollOption(author.id, poll.id, option);
+}
+
+export async function findPoll(pollId: PollId): Promise<polls.PollWithOptions | undefined> {
+    return await polls.findPoll(pollId);
+}
+
+export async function findExtendablePollsInChannel(channel: TextBasedChannel): Promise<Poll[]> {
+    return polls.findExtendablePollsInChannel(channel.id);
 }
 
 export async function getExpiredPolls(now: Temporal.Instant): Promise<Poll[]> {
@@ -99,40 +72,14 @@ export async function processPolls(_context: BotContext): Promise<void> {
     // TODO
 }
 
-export type PollOption = {
-    letter: string;
-    content: string;
-    chosenBy: User[];
-};
-
-export function getDelayedPollResultEmbed(
-    author: { name: string; iconURL?: string },
-    question: string,
-    options: PollOption[],
-): APIEmbed {
-    const totalReactions = Math.sumPrecise(options.map(o => o.chosenBy.length));
-    return {
-        description: `Zusammenfassung: ${question}`,
-        fields: options.map(option => ({
-            name: `${option.letter} ${option.content} (${option.chosenBy.length})`,
-            value: option.chosenBy.map(user => user.toString()).join("\n") || "-",
-            inline: false,
-        })),
-        timestamp: new Date().toISOString(),
-        author: {
-            name: author.name,
-            icon_url: author.iconURL,
-        },
-        footer: {
-            text: `Gesamtabstimmungen: ${totalReactions}`,
-        },
-    };
-}
-
 export async function findPollForEmbedMessage(
     embedMessage: Message<true>,
-): Promise<Poll | undefined> {
+): Promise<polls.PollWithOptions | undefined> {
     return await polls.findPollForEmbedMessage(embedMessage.id);
+}
+
+export async function deletePoll(id: PollId) {
+    return await polls.deletePoll(id);
 }
 
 export async function countDelayedVote(
@@ -148,47 +95,25 @@ export async function countDelayedVote(
         return;
     }
 
-    const reactionName = reaction.emoji.name;
-    if (reactionName === null) {
-        throw new Error("Could not find reaction name");
+    const optionIndex = determineOptionIndex(reaction);
+    if (optionIndex === undefined) {
+        return;
     }
 
-    if (poll.multipleChoices) {
-        // TODO: Toogle user vote with DB backing
+    const addedOrRemoved = await polls.addOrToggleAnswer(
+        poll.id,
+        optionIndex,
+        invoker.id,
+        !poll.multipleChoices,
+    );
 
-        // Old code:
-        const delayedPollReactions = delayedPoll.reactions[VOTE_EMOJIS.indexOf(reactionName)];
-        const hasVoted = delayedPollReactions.some(x => x === invoker.id);
-        if (!hasVoted) {
-            delayedPollReactions.push(invoker.id);
-        } else {
-            delayedPollReactions.splice(delayedPollReactions.indexOf(invoker.id), 1);
-        }
-
-        const msg = await message.channel.send(
-            hasVoted ? "🗑 Deine Reaktion wurde gelöscht." : "💾 Deine Reaktion wurde gespeichert.",
-        );
-        await fadingMessage.startFadingMessage(msg as ProcessableMessage, 2500);
-    } else {
-        // TODO: Set user vote with DB backing
-
-        // Old code:
-        for (const reactionList of delayedPoll.reactions) {
-            reactionList.forEach((x, i) => {
-                if (x === invoker.id) reactionList.splice(i);
-            });
-        }
-        const delayedPollReactions = delayedPoll.reactions[POLL_EMOJIS.indexOf(reactionName)];
-        delayedPollReactions.push(invoker.id);
-    }
-
-    // It's a delayed poll, we clear all Reactions
-    const allUserReactions = message.reactions.cache.filter(r => {
-        const emojiName = r.emoji.name;
-        return emojiName && r.users.cache.has(invoker.id) && POLL_EMOJIS.includes(emojiName);
-    });
-
-    await Promise.allSettled(allUserReactions.map(r => r.users.remove(invoker.id)));
+    const msg = await message.channel.send(
+        addedOrRemoved === "removed"
+            ? "🗑 Deine Reaktion wurde gelöscht."
+            : "💾 Deine Reaktion wurde gespeichert.",
+    );
+    await fadingMessage.startFadingMessage(msg, 2500);
+    await removeAllReactions(message, invoker);
 
     await additionalMessageData.upsertForMessage(
         message,
@@ -197,29 +122,75 @@ export async function countDelayedVote(
     );
 }
 
+async function removeAllReactions(message: Message<true>, invoker: GuildMember) {
+    const allUserReactions = message.reactions.cache.filter(r => {
+        const emojiName = r.emoji.name;
+        return emojiName && POLL_EMOJIS.includes(emojiName);
+    });
+
+    await Promise.allSettled(allUserReactions.map(r => r.users.remove(invoker.id)));
+}
+
 export async function countVote(
     poll: Poll,
-    message: Message<true>,
+    _message: Message<true>,
     invoker: GuildMember,
     reaction: MessageReaction,
 ) {
     console.assert(poll.endsAt === null, "Poll is a delayed poll");
-    // TODO: Set user vote with DB backing
 
-    // Old code:
-    return await Promise.allSettled(
+    const optionIndex = determineOptionIndex(reaction);
+    if (optionIndex === undefined) {
+        log.info(reaction, "Unknown option index"); // TODO: Remove
+        return;
+    }
+
+    await polls.addOrToggleAnswer(poll.id, optionIndex, invoker.id, !poll.multipleChoices);
+    log.info("Counted vote");
+
+    if (poll.multipleChoices) {
+        return;
+    }
+
+    await removeAllOtherReactionsFromUser(invoker, reaction);
+}
+
+async function removeAllOtherReactionsFromUser(
+    invoker: GuildMember,
+    reactionToKeep: MessageReaction,
+): Promise<void> {
+    const message = await reactionToKeep.message.fetch();
+
+    const nameToKeep = reactionToKeep.emoji.name;
+    if (nameToKeep === null || nameToKeep.length === 0) {
+        throw new Error("`nameToKeep` was null or empty.");
+    }
+
+    const results = await Promise.allSettled(
         message.reactions.cache
-            .filter(r => {
-                const emojiName = r.emoji.name;
-                return (
-                    !!emojiName &&
-                    r.users.cache.has(invoker.id) &&
-                    emojiName !== reaction.emoji.name &&
-                    POLL_EMOJIS.includes(emojiName)
-                );
-            })
-            .map(reaction => reaction.users.remove(invoker.id)),
+            .filter(
+                r =>
+                    r.emoji.name &&
+                    r.emoji.name !== nameToKeep &&
+                    POLL_EMOJIS.includes(r.emoji.name),
+            )
+            .map(r => r.users.remove(invoker.id)),
     );
+
+    const failedTasks = results.filter(r => r.status === "rejected").length;
+    if (failedTasks) {
+        throw new Error(`Failed to update ${failedTasks} reaction users`);
+    }
+}
+
+function determineOptionIndex(reaction: MessageReaction) {
+    const reactionName = reaction.emoji.name;
+    if (reactionName === null) {
+        throw new Error("Reaction does not have a name.");
+    }
+
+    const index = POLL_EMOJIS.indexOf(reactionName);
+    return index < 0 ? undefined : index;
 }
 
 export function parsePollOptionString(value: string): string[] {

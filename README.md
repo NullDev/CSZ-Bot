@@ -8,14 +8,13 @@ Official Coding Shitpost Central Discord Bot
 </p>
 
 ## :information_source: OwO wats dis?
-
 Please ignore this repo. This is just a management bot I made for my stupid german coding discord server...
 
 German description of the Discord Server:
 
-> Deutscher Server für diverse programmier- und nerd Themen. <br>
-> Language-Bashing, shitposting und Autismus stehen an der Tagesordnung. <br>
-> Jeder ist willkommen da jede Programmiersprache gleichermaßen diskreditiert wird!
+> Deutscher Server für diverse Programmier- und Nerd-Themen.<br>
+> Language-Bashing, Shitposting und Autismus stehen an der Tagesordnung.<br>
+> Jeder ist willkommen da, jede Programmiersprache gleichermaßen diskreditiert wird.
 
 <sub>I'm sorry</sub>
 
@@ -31,7 +30,7 @@ Du hast 2 Optionen: [Lokale installation](#lokale-installation) und [GitHub Code
 
 ### Lokale Installation
 
-<sub>node Version: >=24</sub>
+<sub>node Version: >=25</sub>
 
 1. Terminal aufmachen und dorthin navigieren, wo man es downloaden möchte
 2. Sichergehen, dass [Node.js](https://nodejs.org) installiert ist. Teste mit: `node --version`. Wenn es eine Versionsnummer zurückgibt, ist Node.js installiert.

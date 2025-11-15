@@ -17,18 +17,18 @@ import * as sentry from "@sentry/node";
  * Completely new bullish command handler it unifies slash commands and
  * message commands and relies on the "new commands"
  */
-import type { ApplicationCommand, Command, SpecialCommand } from "@/commands/command.js";
-import type { BotContext } from "@/context.js";
-import * as banService from "@/service/ban.js";
-import log from "@log";
+import type { ApplicationCommand, Command, SpecialCommand } from "#commands/command.ts";
+import type { BotContext } from "#context.ts";
+import * as banService from "#service/ban.ts";
+import log from "#log";
 
-import * as commandService from "@/service/command.js";
+import * as commandService from "#service/command.ts";
 
-import TriggerReactOnKeyword from "@/commands/special/keywordReact.js";
+import TriggerReactOnKeyword from "#commands/special/keywordReact.ts";
 
-import SplidCommand from "@/commands/splid.js";
+import SplidCommand from "#commands/splid.ts";
 
-import { isProcessableMessage, type ProcessableMessage } from "@/service/command.js";
+import { isProcessableMessage, type ProcessableMessage } from "#service/command.ts";
 
 /**  Commands that need special init parameters and cannot be instantiated automatically */
 const staticCommands: readonly Command[] = [
@@ -288,8 +288,15 @@ export const messageCommandHandler = async (
     // TODO: The Prefix is now completely irrelevant, since the commands itself define their permission.
     const plebPrefix = context.prefix.command;
     const modPrefix = context.prefix.modCommand;
-    if (message.content.startsWith(plebPrefix) || message.content.startsWith(modPrefix)) {
-        const cmdString = message.content.split(/\s+/)[0].slice(1);
+
+    const { content } = message;
+    if (content.startsWith(plebPrefix) || content.startsWith(modPrefix)) {
+        const splitContent = content.split(/\s+/);
+
+        const cmdString = content.startsWith(plebPrefix)
+            ? splitContent[0].slice(plebPrefix.length)
+            : splitContent[0].slice(modPrefix.length);
+
         if (cmdString) {
             try {
                 await commandMessageHandler(cmdString, message, context);
@@ -299,7 +306,7 @@ export const messageCommandHandler = async (
 
                 // Not using message.reply because the original message might be deleted by the command handler
                 await message.channel.send(
-                    `${message.author} wollte gerade dieses Command ausführen:\n\`${message.content}\`\nDabei ist irgendwas explodiert. Irgendjemand sollte das fixen.`,
+                    `${message.author} wollte gerade dieses Command ausführen:\n\`${content}\`\nDabei ist irgendwas explodiert. Irgendjemand sollte das fixen.`,
                 );
             }
         }

@@ -1,4 +1,4 @@
-import { randomValue, type Range } from "@/service/random.js";
+import { randomValue, type Range } from "#service/random.js";
 
 export const fightTemplates: { [name: string]: Equipable } = {
     ayran: {

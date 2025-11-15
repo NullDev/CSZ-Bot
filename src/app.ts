@@ -1,37 +1,37 @@
 import { GatewayIntentBits, Partials, Client } from "discord.js";
 import * as sentry from "@sentry/node";
 
-import { readConfig, databasePath, args } from "@/service/config.js";
-import log from "@log";
+import { readConfig, databasePath, args } from "#service/config.ts";
+import log from "#log";
 
 import { Temporal } from "@js-temporal/polyfill";
-import "@/polyfills.js";
+import "#polyfills.ts";
 
-import * as kysely from "@/storage/db/db.js";
+import * as kysely from "#storage/db/db.ts";
 
-import type { ReactionHandler } from "@/handler/ReactionHandler.js";
-import messageDeleteHandler from "@/handler/messageDeleteHandler.js";
-import { woisVoteReactionHandler } from "@/commands/woisvote.js";
-import * as voiceStateService from "@/service/voiceState.js";
+import type { ReactionHandler } from "#handler/ReactionHandler.ts";
+import messageDeleteHandler from "#handler/messageDeleteHandler.ts";
+import { woisVoteReactionHandler } from "#commands/woisvote.ts";
+import * as voiceStateService from "#service/voiceState.ts";
 
-import roleAssignerHandler from "@/handler/reaction/roleAssignerHandler.js";
-import pollReactionHandler from "@/handler/reaction/pollReactionHandler.js";
-import logEmotesReactionHandler from "@/handler/reaction/logEmotesReactionHandler.js";
-import quoteReactionHandler from "@/handler/reaction/quoteHandler.js";
+import roleAssignerHandler from "#handler/reaction/roleAssignerHandler.ts";
+import pollReactionHandler from "#handler/reaction/pollReactionHandler.ts";
+import logEmotesReactionHandler from "#handler/reaction/logEmotesReactionHandler.ts";
+import quoteReactionHandler from "#handler/reaction/quoteHandler.ts";
 
 import {
     handleInteractionEvent,
     loadCommands,
     messageCommandHandler,
     registerAllApplicationCommandsAsGuildCommands,
-} from "@/handler/commandHandler.js";
-import deleteThreadMessagesHandler from "@/handler/deleteThreadMessagesHandler.js";
-import { createBotContext, type BotContext } from "@/context.js";
-import { ehreReactionHandler } from "@/commands/ehre.js";
-import * as terminal from "@/utils/terminal.js";
-import * as guildRageQuit from "@/storage/guildRageQuit.js";
-import * as cronService from "@/service/cron.js";
-import { handlePresenceUpdate } from "./handler/presenceHandler.js";
+} from "#handler/commandHandler.ts";
+import * as guildMemberHandler from "#handler/guildMemberHandler.ts";
+import deleteThreadMessagesHandler from "#handler/messageCreate/deleteThreadMessagesHandler.ts";
+import { createBotContext, type BotContext } from "#context.ts";
+import { ehreReactionHandler } from "#commands/ehre.ts";
+import * as terminal from "#utils/terminal.ts";
+import * as cronService from "#service/cron.ts";
+import { handlePresenceUpdate } from "./handler/presenceHandler.ts";
 
 const env = process.env;
 
@@ -130,8 +130,8 @@ process.once("SIGTERM", signal => {
     process.exit(1);
 });
 process.once("exit", code => {
-    client.destroy();
-    kysely.disconnectFromDb();
+    const _ = client.destroy();
+    const __ = kysely.disconnectFromDb();
     log.warn(`Process exited with code: ${code}`);
 });
 
@@ -166,6 +166,13 @@ login().then(
             log.info("--dry-run was specified, shutting down");
             process.exit(0);
         }
+
+        if (botContext.sendWelcomeMessage) {
+            await botContext.textChannels.hauptchat.send(
+                `Hallo, ich wurde gerade gestartet!\nMeine Präfixe sind: \`${botContext.prefix.command}\`/\`${botContext.prefix.modCommand}\``,
+            );
+            log.info("Sent welcome message");
+        }
     },
     err => {
         log.error(err, "Token login was not successful");
@@ -182,32 +189,10 @@ client.on("guildCreate", guild =>
 
 client.on("guildDelete", guild => log.info(`Deleted from guild: ${guild.name} (id: ${guild.id}).`));
 
-client.on("guildMemberAdd", async member => {
-    const numRageQuits = await guildRageQuit.getNumRageQuits(member.guild, member);
-    if (numRageQuits === 0) {
-        return;
-    }
+client.on("guildMemberAdd", async m => await guildMemberHandler.added(botContext, m));
+client.on("guildMemberRemove", async m => await guildMemberHandler.removed(botContext, m));
 
-    if (member.roles.cache.has(botContext.roles.shame.id)) {
-        log.debug(`Member "${member.id}" already has the shame role, skipping`);
-        return;
-    }
-
-    await member.roles.add(botContext.roles.shame);
-
-    await botContext.textChannels.hauptchat.send({
-        content: `Haha, schau mal einer guck wer wieder hergekommen ist! ${member} hast es aber nicht lange ohne uns ausgehalten. ${
-            numRageQuits > 1 ? `Und das schon zum ${numRageQuits}. mal` : ""
-        }`,
-        allowedMentions: {
-            users: [member.id],
-        },
-    });
-});
-
-client.on("guildMemberRemove", member => guildRageQuit.incrementRageQuit(member.guild, member));
-
-client.on("messageCreate", message => messageCommandHandler(message, botContext));
+client.on("messageCreate", m => messageCommandHandler(m, botContext));
 client.on("messageCreate", m => deleteThreadMessagesHandler(m, botContext));
 
 client.on("messageDelete", async message => {

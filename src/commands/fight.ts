@@ -1,4 +1,4 @@
-import type { ApplicationCommand } from "@/commands/command.js";
+import type { ApplicationCommand } from "#commands/command.ts";
 import {
     type APIEmbed,
     type BooleanCache,
@@ -8,7 +8,7 @@ import {
     SlashCommandBuilder,
     type User,
 } from "discord.js";
-import type { BotContext } from "@/context.js";
+import type { BotContext } from "#context.ts";
 import type { JSONEncodable } from "@discordjs/util";
 import {
     type BaseEntity,
@@ -19,10 +19,10 @@ import {
     type EquipableItem,
     type EquipableWeapon,
     type FightScene,
-} from "@/service/fightData.js";
+} from "#service/fightData.js";
 import { setTimeout } from "node:timers/promises";
-import { getFightInventoryEnriched, removeItemsAfterFight } from "@/storage/fightInventory.js";
-import { getLastFight, insertResult } from "@/storage/fightHistory.js";
+import { getFightInventoryEnriched, removeItemsAfterFight } from "#/storage/fightInventory.js";
+import { getLastFight, insertResult } from "#/storage/fightHistory.js";
 
 async function getFighter(user: User): Promise<BaseEntity> {
     const userInventory = await getFightInventoryEnriched(user.id);

@@ -2,7 +2,7 @@ import { describe, test } from "node:test";
 
 import { expect } from "expect";
 
-import InstagramLink from "./instagram.js";
+import InstagramLink from "./instagram.ts";
 
 describe("instagram pattern matching", () => {
     test("base cases", () => {
