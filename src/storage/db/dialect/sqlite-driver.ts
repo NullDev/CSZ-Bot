@@ -10,7 +10,8 @@ import {
     RawNode,
     IdentifierNode,
 } from "kysely";
-import type { SqliteDialectConfig } from "./sqlite-dialect-config.js";
+
+import type { SqliteDialectConfig } from "./sqlite-dialect-config.ts";
 
 export class SqliteDriver implements Driver {
     readonly #config: SqliteDialectConfig;
