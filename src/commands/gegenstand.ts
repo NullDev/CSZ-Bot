@@ -265,7 +265,7 @@ export default class GegenstandCommand implements ApplicationCommand {
 
         const nutriScoreColor = lootDataService.getAttributesByClass(
             otherAttributes,
-            lootDataService.LootAttributeClassId.NUTRI_SCORE,
+            lootDataService.LootAttributeClass.NUTRI_SCORE,
         )[0]?.color;
 
         await interaction.reply({

@@ -11,7 +11,7 @@ export async function up(db: Kysely<any>): Promise<void> {
                     .values({
                         lootId: loot.id,
                         attributeKindId: 5, // LootAttributeKindId.NUTRI_SCORE_A,
-                        attributeClassId: 2, // LootAttributeClassId.NUTRI_SCORE,
+                        attributeClassId: 2, // LootAttributeClass.NUTRI_SCORE,
                         displayName: "Nutri-Score A",
                         shortDisplay: "🟩",
                         color: 0x00_ff_00,
@@ -26,7 +26,7 @@ export async function up(db: Kysely<any>): Promise<void> {
                     .values({
                         lootId: loot.id,
                         attributeKindId: 6, // LootAttributeKindId.NUTRI_SCORE_B,
-                        attributeClassId: 2, // LootAttributeClassId.NUTRI_SCORE,
+                        attributeClassId: 2, // LootAttributeClass.NUTRI_SCORE,
                         displayName: "Nutri-Score B",
                         shortDisplay: "🟨",
                         color: 0x99_ff_00,
@@ -41,7 +41,7 @@ export async function up(db: Kysely<any>): Promise<void> {
                     .values({
                         lootId: loot.id,
                         attributeKindId: 7, // LootAttributeKindId.NUTRI_SCORE_C,
-                        attributeClassId: 2, // LootAttributeClassId.NUTRI_SCORE,
+                        attributeClassId: 2, // LootAttributeClass.NUTRI_SCORE,
                         displayName: "Nutri-Score C",
                         shortDisplay: "🟧",
                         color: 0xff_ff_00,
@@ -58,7 +58,7 @@ export async function up(db: Kysely<any>): Promise<void> {
                     .values({
                         lootId: loot.id,
                         attributeKindId: 8, // LootAttributeKindId.NUTRI_SCORE_D,
-                        attributeClassId: 2, // LootAttributeClassId.NUTRI_SCORE,
+                        attributeClassId: 2, // LootAttributeClass.NUTRI_SCORE,
                         displayName: "Nutri-Score D",
                         shortDisplay: "🟥",
                         color: 0xff_99_00,
@@ -73,7 +73,7 @@ export async function up(db: Kysely<any>): Promise<void> {
                     .values({
                         lootId: loot.id,
                         attributeKindId: 9, // LootAttributeKindId.NUTRI_SCORE_E,
-                        attributeClassId: 2, // LootAttributeClassId.NUTRI_SCORE,
+                        attributeClassId: 2, // LootAttributeClass.NUTRI_SCORE,
 
                         displayName: "Nutri-Score E",
                         shortDisplay: "🟥",

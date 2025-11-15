@@ -37,7 +37,7 @@ export async function up(db: Kysely<any>) {
             .insertInto("lootAttribute")
             .values({
                 lootId: id,
-                attributeClassId: 1, // LootAttributeClassId.RARITY
+                attributeClassId: 1, // LootAttributeClass.RARITY
                 attributeKindId: 0, // LootAttributeKindId.RARITY_NORMAL
                 displayName: "Normal",
                 shortDisplay: "",
@@ -52,7 +52,7 @@ export async function up(db: Kysely<any>) {
                 .insertInto("lootAttribute")
                 .values({
                     lootId: id,
-                    attributeClassId: 0, // LootAttributeClassId.OTHER
+                    attributeClassId: 0, // LootAttributeClass.OTHER
                     attributeKindId: 4, // LootAttributeKindId.SWEET
                     displayName: "Süß",
                     shortDisplay: "🍬",

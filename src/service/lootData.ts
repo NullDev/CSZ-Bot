@@ -63,11 +63,12 @@ export enum LootKindId {
     BABYBEL_EXODIA = 50,
 }
 
-export enum LootAttributeClassId {
-    OTHER = 0,
-    RARITY = 1,
-    NUTRI_SCORE = 2,
-}
+export const LootAttributeClass = Object.freeze({
+    OTHER: 0,
+    RARITY: 1,
+    NUTRI_SCORE: 2,
+});
+export type LootAttributeClassId = (typeof LootAttributeClass)[keyof typeof LootAttributeClass];
 
 export enum LootAttributeKindId {
     RARITY_NORMAL = 0,
@@ -767,69 +768,69 @@ export const lootTemplates: LootTemplate[] = Object.values(lootTemplateMap);
 export const lootAttributeTemplates: LootAttributeTemplate[] = [
     {
         id: LootAttributeKindId.RARITY_NORMAL,
-        classId: LootAttributeClassId.RARITY,
+        classId: LootAttributeClass.RARITY,
         displayName: "Normal",
         shortDisplay: "",
         initialDropWeight: 90,
     },
     {
         id: LootAttributeKindId.RARITY_RARE,
-        classId: LootAttributeClassId.RARITY,
+        classId: LootAttributeClass.RARITY,
         displayName: "Selten",
         shortDisplay: "⭐",
         initialDropWeight: 10,
     },
     {
         id: LootAttributeKindId.RARITY_VERY_RARE,
-        classId: LootAttributeClassId.RARITY,
+        classId: LootAttributeClass.RARITY,
         displayName: "Sehr Selten",
         shortDisplay: "🌟",
         initialDropWeight: 1,
     },
     {
         id: LootAttributeKindId.RADIOACTIVE,
-        classId: LootAttributeClassId.OTHER,
+        classId: LootAttributeClass.OTHER,
         displayName: "Verstrahlt",
         shortDisplay: "☢️",
         color: 0xff_ff_ff,
     },
     {
         id: LootAttributeKindId.SWEET,
-        classId: LootAttributeClassId.OTHER,
+        classId: LootAttributeClass.OTHER,
         displayName: "Süß",
         shortDisplay: "🍬",
     },
     {
         id: LootAttributeKindId.NUTRI_SCORE_A,
-        classId: LootAttributeClassId.NUTRI_SCORE,
+        classId: LootAttributeClass.NUTRI_SCORE,
         displayName: "Nutri-Score A",
         shortDisplay: "🟩",
         color: 0x00_ff_00,
     },
     {
         id: LootAttributeKindId.NUTRI_SCORE_B,
-        classId: LootAttributeClassId.NUTRI_SCORE,
+        classId: LootAttributeClass.NUTRI_SCORE,
         displayName: "Nutri-Score B",
         shortDisplay: "🟨",
         color: 0x99_ff_00,
     },
     {
         id: LootAttributeKindId.NUTRI_SCORE_C,
-        classId: LootAttributeClassId.NUTRI_SCORE,
+        classId: LootAttributeClass.NUTRI_SCORE,
         displayName: "Nutri-Score C",
         shortDisplay: "🟧",
         color: 0xff_ff_00,
     },
     {
         id: LootAttributeKindId.NUTRI_SCORE_D,
-        classId: LootAttributeClassId.NUTRI_SCORE,
+        classId: LootAttributeClass.NUTRI_SCORE,
         displayName: "Nutri-Score D",
         shortDisplay: "🟥",
         color: 0xff_99_00,
     },
     {
         id: LootAttributeKindId.NUTRI_SCORE_E,
-        classId: LootAttributeClassId.NUTRI_SCORE,
+        classId: LootAttributeClass.NUTRI_SCORE,
         displayName: "Nutri-Score E",
         shortDisplay: "🟥",
         color: 0xff_00_00,
@@ -859,14 +860,14 @@ export function getAttributesByClass(
 export function extractRarityAttribute(
     attributes: readonly Readonly<LootAttribute>[],
 ): Readonly<LootAttribute> | undefined {
-    const rarities = getAttributesByClass(attributes, LootAttributeClassId.RARITY);
+    const rarities = getAttributesByClass(attributes, LootAttributeClass.RARITY);
     return rarities[0] ?? undefined;
 }
 
 export function extractNonRarityAttributes(
     attributes: readonly Readonly<LootAttribute>[],
 ): Readonly<LootAttribute>[] {
-    return attributes.filter(a => a.attributeClassId !== LootAttributeClassId.RARITY);
+    return attributes.filter(a => a.attributeClassId !== LootAttributeClass.RARITY);
 }
 
 export function itemHasAttribute(
