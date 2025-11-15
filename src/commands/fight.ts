@@ -1,3 +1,6 @@
+import { setTimeout } from "node:timers/promises";
+import type { JSONEncodable } from "@discordjs/util";
+
 import type { ApplicationCommand } from "#commands/command.ts";
 import {
     type APIEmbed,
@@ -9,7 +12,6 @@ import {
     type User,
 } from "discord.js";
 import type { BotContext } from "#context.ts";
-import type { JSONEncodable } from "@discordjs/util";
 import {
     type BaseEntity,
     baseStats,
@@ -20,7 +22,6 @@ import {
     type EquipableWeapon,
     type FightScene,
 } from "#service/fightData.js";
-import { setTimeout } from "node:timers/promises";
 import { getFightInventoryEnriched, removeItemsAfterFight } from "#/storage/fightInventory.js";
 import { getLastFight, insertResult } from "#/storage/fightHistory.js";
 
