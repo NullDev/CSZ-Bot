@@ -1,11 +1,12 @@
 import { fileURLToPath, pathToFileURL } from "node:url";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
+import { DatabaseSync } from "node:sqlite";
 
-import { FileMigrationProvider, SqliteDialect, Kysely, Migrator } from "kysely";
-import SQLite from "better-sqlite3";
+import { FileMigrationProvider, Kysely, Migrator } from "kysely";
 import { captureException, startInactiveSpan } from "@sentry/node";
 
+import { SqliteDialect } from "./dialect/sqlite-dialect.js";
 import type { Database } from "./model.ts";
 import datePlugin from "./date-plugin.ts";
 import { SqliteBooleanPlugin } from "./boolean-plugin.ts";
@@ -21,12 +22,13 @@ export async function connectToDb(databasePath: string) {
         return;
     }
 
-    const nativeDb = new SQLite(databasePath);
+    const nativeDb = new DatabaseSync(databasePath, {
+        enableForeignKeyConstraints: true,
+    });
+
     const db = new Kysely<Database>({
         plugins: [datePlugin, new SqliteBooleanPlugin()],
-        dialect: new SqliteDialect({
-            database: nativeDb,
-        }),
+        dialect: new SqliteDialect({ database: nativeDb }),
         log: e => {
             const info = {
                 sql: e.query.sql,
@@ -65,8 +67,6 @@ export async function connectToDb(databasePath: string) {
     });
 
     log.info("Connected to database.");
-
-    nativeDb.pragma("foreign_keys = ON");
 
     await runMigrationsIfNeeded(db);
 
