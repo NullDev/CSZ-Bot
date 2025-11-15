@@ -1,7 +1,7 @@
 import type { Message } from "discord.js";
 
-import type { AdditionalMessageData, DataUsage } from "./db/model.js";
-import db from "@db";
+import type { AdditionalMessageData, DataUsage } from "./db/model.ts";
+import db from "#db";
 
 export async function getForMessage(message: Message, usage: DataUsage, ctx = db()) {
     if (!message.guild) {

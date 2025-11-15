@@ -3,7 +3,7 @@ import * as fs from "node:fs/promises";
 
 import { expect } from "expect";
 
-import { lootTemplates } from "./lootData.js";
+import { lootTemplates } from "./lootData.ts";
 
 describe("loot template assets", () => {
     const assets = lootTemplates.filter(l => l.asset).map(l => l.asset as string);

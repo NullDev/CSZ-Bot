@@ -15,12 +15,12 @@ import {
 } from "discord.js";
 import * as sentry from "@sentry/node";
 
-import type { BotContext } from "@/context.js";
-import type { ApplicationCommand, AutocompleteCommand } from "@/commands/command.js";
-import log from "@log";
-import { ensureChatInputCommand } from "@/utils/interactionUtils.js";
-import * as nickName from "@/storage/nickName.js";
-import * as time from "@/utils/time.js";
+import type { BotContext } from "#context.ts";
+import type { ApplicationCommand, AutocompleteCommand } from "#commands/command.ts";
+import log from "#log";
+import { ensureChatInputCommand } from "#utils/interactionUtils.ts";
+import * as nickName from "#storage/nickName.ts";
+import * as time from "#utils/time.ts";
 
 type Vote = "YES" | "NO";
 

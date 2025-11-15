@@ -1,4 +1,4 @@
-import { connectToDb, disconnectFromDb } from "./db.js";
+import { connectToDb, disconnectFromDb } from "./db.ts";
 
 export async function createDatabase() {
     await connectToDb(":memory:");

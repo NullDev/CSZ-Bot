@@ -13,9 +13,9 @@ import {
     type ApplicationEmoji,
 } from "discord.js";
 
-import type { BotContext, QuoteConfig } from "@/context.js";
-import type { ReactionHandler } from "../ReactionHandler.js";
-import log from "@log";
+import type { BotContext, QuoteConfig } from "#context.ts";
+import type { ReactionHandler } from "../ReactionHandler.ts";
+import log from "#log";
 
 const quoteMessage = "Ihr quoted echt jeden Scheiß, oder?";
 

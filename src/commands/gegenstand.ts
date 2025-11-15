@@ -12,20 +12,20 @@ import {
 } from "discord.js";
 import * as sentry from "@sentry/node";
 
-import type { BotContext } from "@/context.js";
-import type { ApplicationCommand } from "@/commands/command.js";
-import type { LootUseCommandInteraction } from "@/storage/loot.js";
-import * as lootService from "@/service/loot.js";
-import * as petService from "@/service/pet.js";
-import * as lootRoleService from "@/service/lootRoles.js";
-import { randomEntry } from "@/service/random.js";
-import { ensureChatInputCommand } from "@/utils/interactionUtils.js";
-import * as imageService from "@/service/image.js";
+import type { BotContext } from "#context.ts";
+import type { ApplicationCommand } from "#commands/command.ts";
+import type { LootUseCommandInteraction } from "#storage/loot.ts";
+import * as lootService from "#service/loot.ts";
+import * as petService from "#service/pet.ts";
+import * as lootRoleService from "#service/lootRoles.ts";
+import { randomEntry } from "#service/random.ts";
+import { ensureChatInputCommand } from "#utils/interactionUtils.ts";
+import * as imageService from "#service/image.ts";
 
-import * as lootDataService from "@/service/lootData.js";
-import { LootAttributeKindId, LootKindId } from "@/service/lootData.js";
+import * as lootDataService from "#service/lootData.ts";
+import { LootAttributeKindId, LootKindId } from "#service/lootData.ts";
 
-import log from "@log";
+import log from "#log";
 
 export default class GegenstandCommand implements ApplicationCommand {
     name = "gegenstand";

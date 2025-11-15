@@ -1,26 +1,26 @@
 import { Cron, type CronOptions } from "croner";
 
-import type { BotContext } from "@/context.js";
-import { rerollNicknames } from "@/service/nickNameRoll.js";
-import { connectAndPlaySaufen } from "@/handler/voiceHandler.js";
-import { reminderHandler } from "@/commands/erinnerung.js";
-import { endAprilFools, startAprilFools } from "@/service/aprilFools.js";
-import { woisVoteScheduler } from "@/commands/woisvote.js";
-import { publishAocLeaderBoard } from "@/commands/aoc.js";
-import { rotate } from "@/service/banner.js";
-import { leetTask } from "@/service/purge.js";
-import { processBans } from "@/service/ban.js";
-import { runDropAttempt } from "@/service/lootDrop.js";
-import { clearWoisLogTask } from "@/service/voiceState.js";
-import { checkBirthdays } from "@/service/birthday.js";
-import { handleFadingMessages } from "@/service/fadingMessage.js";
-import { checkExpiredShifts } from "@/service/lootRoles.js";
-import { sendTrichterUnser } from "@/service/trichterUnser.js";
-import { degradeItems, exposeWithRadiation, runHalfLife } from "@/service/lootDegradation.js";
-import { hatchEggs } from "@/service/hatching.js";
+import type { BotContext } from "#context.ts";
+import { rerollNicknames } from "#service/nickNameRoll.ts";
+import { connectAndPlaySaufen } from "#handler/voiceHandler.ts";
+import { reminderHandler } from "#commands/erinnerung.ts";
+import { endAprilFools, startAprilFools } from "#service/aprilFools.ts";
+import { woisVoteScheduler } from "#commands/woisvote.ts";
+import { publishAocLeaderBoard } from "#commands/aoc.ts";
+import { rotate } from "#service/banner.ts";
+import { leetTask } from "#service/purge.ts";
+import { processBans } from "#service/ban.ts";
+import { runDropAttempt } from "#service/lootDrop.ts";
+import { clearWoisLogTask } from "#service/voiceState.ts";
+import { checkBirthdays } from "#service/birthday.ts";
+import { handleFadingMessages } from "#service/fadingMessage.ts";
+import { checkExpiredShifts } from "#service/lootRoles.ts";
+import { sendTrichterUnser } from "#service/trichterUnser.ts";
+import { degradeItems, exposeWithRadiation, runHalfLife } from "#service/lootDegradation.ts";
+import { hatchEggs } from "#service/hatching.ts";
 
-import * as pollLegacy from "@/service/delayedPollLegacy.js";
-import * as ehre from "@/storage/ehre.js";
+import * as pollLegacy from "#service/delayedPollLegacy.ts";
+import * as ehre from "#storage/ehre.ts";
 
 const options = {
     timezone: "Europe/Berlin",

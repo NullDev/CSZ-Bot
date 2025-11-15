@@ -8,13 +8,13 @@ import {
     type PartialEmoji,
 } from "discord.js";
 
-import log from "@log";
+import log from "#log";
 
-import type { ApplicationCommand, MessageCommand } from "@/commands/command.js";
-import type { ProcessableMessage } from "@/service/command.js";
-import type { BotContext } from "@/context.js";
-import { ensureChatInputCommand } from "@/utils/interactionUtils.js";
-import * as emoteService from "@/service/emote.js";
+import type { ApplicationCommand, MessageCommand } from "#commands/command.ts";
+import type { ProcessableMessage } from "#service/command.ts";
+import type { BotContext } from "#context.ts";
+import { ensureChatInputCommand } from "#utils/interactionUtils.ts";
+import * as emoteService from "#service/emote.ts";
 
 /**
  * Sends instructions on how to ask better questions

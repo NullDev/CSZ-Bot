@@ -1,5 +1,5 @@
-import type { ProcessableMessage } from "@/service/command.js";
-import type { SpecialCommand } from "@/commands/command.js";
+import type { ProcessableMessage } from "#service/command.ts";
+import type { SpecialCommand } from "#commands/command.ts";
 
 // this is the former nixos.ts
 

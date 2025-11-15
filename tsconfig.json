@@ -21,9 +21,9 @@
 
         "paths": {
             "*": ["./*"],
-            "@/*": ["./src/*"],
-            "@log": ["./src/utils/logger.ts"],
-            "@db": ["./src/storage/db/db.ts"]
+            "#log": ["./src/utils/logger.ts"],
+            "#db": ["./src/storage/db/db.ts"],
+            "#*": ["./src/*"]
         }
     },
     "include": ["src"]

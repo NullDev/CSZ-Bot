@@ -2,10 +2,10 @@ import { describe, test } from "node:test";
 
 import { expect } from "expect";
 
-import { createDatabase, closeDatabase } from "@/storage/db/database-test-init.js";
-import { defer } from "@/utils/interactionUtils.js";
+import { createDatabase, closeDatabase } from "#storage/db/database-test-init.ts";
+import { defer } from "#utils/interactionUtils.ts";
 
-import db from "@db";
+import db from "#db";
 
 describe("smoke", () => {
     test("does math still hold?", () => {

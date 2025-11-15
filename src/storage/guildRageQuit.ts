@@ -1,7 +1,7 @@
 import type { Guild, GuildMember, PartialGuildMember } from "discord.js";
 import { sql } from "kysely";
 
-import db from "@db";
+import db from "#db";
 
 export async function getNumRageQuits(
     guild: Guild,

@@ -58,11 +58,16 @@
     "expect": "^30.2.0",
     "lefthook": "^2.0.4"
   },
+  "imports": {
+    "#log": "./src/utils/logger.ts",
+    "#db": "./src/storage/db/db.ts",
+    "#*": "./src/*"
+  },
   "trustedDependencies": [
     "@biomejs/biome",
     "lefthook"
   ],
   "engines": {
-    "node": ">=24.10.0"
+    "node": ">=25.1.0"
   }
 }

@@ -8,10 +8,10 @@ import {
     SlashCommandStringOption,
 } from "discord.js";
 
-import type { BotContext } from "@/context.js";
-import type { ApplicationCommand, MessageCommand } from "@/commands/command.js";
-import type { ProcessableMessage } from "@/service/command.js";
-import { ensureChatInputCommand } from "@/utils/interactionUtils.js";
+import type { BotContext } from "#context.ts";
+import type { ApplicationCommand, MessageCommand } from "#commands/command.ts";
+import type { ProcessableMessage } from "#service/command.ts";
+import { ensureChatInputCommand } from "#utils/interactionUtils.ts";
 
 /**
  * Randomly capitalize letters

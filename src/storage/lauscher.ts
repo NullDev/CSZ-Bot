@@ -1,10 +1,10 @@
 import { Temporal } from "@js-temporal/polyfill"; // TODO: Remove once Node.js ships temporal
 import type { User } from "discord.js";
 
-import type { LauscherRegistration, LauscherSpotifyLogEntry } from "@/storage/db/model.js";
+import type { LauscherRegistration, LauscherSpotifyLogEntry } from "#storage/db/model.ts";
 
-import db from "@db";
-import log from "@log";
+import db from "#db";
+import log from "#log";
 import type { Artist, Track } from "@spotify/web-api-ts-sdk";
 
 export function insertRegistration(
