@@ -54,7 +54,7 @@
     "@types/jsdom": "^27.0.0",
     "@types/node": "^24.10.1",
     "@types/node-cron": "^3.0.11",
-    "@typescript/native-preview": "^7.0.0-dev.20251114.1",
+    "@typescript/native-preview": "^7.0.0-dev.20251115.1",
     "expect": "^30.2.0",
     "lefthook": "^2.0.4"
   },
