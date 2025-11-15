@@ -385,7 +385,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         asset: "assets/loot/23-ehre.jpg",
         excludeFromInventory: true,
         onDrop: async (_context, winner, _channel, _loot) => {
-            const ehre = await import("#/storage/ehre.js");
+            const ehre = await import("#/storage/ehre.ts");
             await ehre.addPoints(winner.id, 1);
         },
     },
