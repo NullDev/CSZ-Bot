@@ -20,12 +20,14 @@ import type {
 } from "./db/model.ts";
 
 import db from "#db";
+
 import {
     type LootKindId,
     resolveLootAttributeTemplate,
     type LootAttributeKindId,
     type LootAttributeClassId,
 } from "#service/lootData.ts";
+import type { Equipable } from "#service/fightData.ts";
 
 export type LootUseCommandInteraction = ChatInputCommandInteraction & {
     channel: GuildTextBasedChannel;
@@ -41,6 +43,7 @@ export interface LootTemplate {
     emote: string;
     excludeFromInventory?: boolean;
     effects?: string[];
+    gameEquip?: Equipable;
     initialAttributes?: LootAttributeKindId[];
     excludeFromDoubleDrops?: boolean;
 
@@ -174,6 +177,7 @@ export async function findById(id: LootId, ctx = db()) {
 }
 
 export type LootWithAttributes = Loot & { attributes: Readonly<LootAttribute>[] };
+
 export async function findOfUserWithAttributes(
     user: User,
     ctx = db(),
