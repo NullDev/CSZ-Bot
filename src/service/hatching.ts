@@ -7,7 +7,7 @@ import type { Loot } from "#storage/db/model.ts";
 import log from "#log";
 import * as time from "#utils/time.ts";
 import * as lootService from "#service/loot.ts";
-import { LootKindId, resolveLootTemplate } from "./lootData.ts";
+import { LootKind, resolveLootTemplate } from "./lootData.ts";
 import * as randomService from "./random.ts";
 
 export async function hatchEggs(context: BotContext) {
@@ -15,7 +15,7 @@ export async function hatchEggs(context: BotContext) {
 
     const now = Date.now();
     const maxEggAge = time.days(30);
-    const eggs = await lootService.getLootsByKindId(LootKindId.EI);
+    const eggs = await lootService.getLootsByKindId(LootKind.EI);
 
     for (const e of eggs) {
         const itemAge = now - new Date(e.claimedAt).getTime();
@@ -34,15 +34,15 @@ export async function hatchEggs(context: BotContext) {
 }
 
 async function hatchEgg(context: BotContext, egg: Loot) {
-    console.assert(egg.lootKindId === LootKindId.EI, "Can only hatch eggs");
+    console.assert(egg.lootKindId === LootKind.EI, "Can only hatch eggs");
 
     const hatchCandidates = [
-        LootKindId.KADSE,
-        LootKindId.BIBER,
-        LootKindId.FERRIS,
-        LootKindId.OETTINGER,
-        LootKindId.THUNFISCHSHAKE,
-        LootKindId.EI,
+        LootKind.KADSE,
+        LootKind.BIBER,
+        LootKind.FERRIS,
+        LootKind.OETTINGER,
+        LootKind.THUNFISCHSHAKE,
+        LootKind.EI,
     ];
     const hatchWeights = [10, 10, 10, 1, 1, 5];
 

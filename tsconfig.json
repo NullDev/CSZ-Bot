@@ -6,6 +6,7 @@
         "lib": ["esnext"],
 
         "allowImportingTsExtensions": true,
+        "erasableSyntaxOnly": true,
 
         // Additional Checks
         // "noUnusedLocals": true,

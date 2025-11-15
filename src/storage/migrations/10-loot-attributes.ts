@@ -37,8 +37,8 @@ export async function up(db: Kysely<any>) {
             .insertInto("lootAttribute")
             .values({
                 lootId: id,
-                attributeClassId: 1, // LootAttributeClassId.RARITY
-                attributeKindId: 0, // LootAttributeKindId.RARITY_NORMAL
+                attributeClassId: 1, // LootAttributeClass.RARITY
+                attributeKindId: 0, // LootAttributeKind.RARITY_NORMAL
                 displayName: "Normal",
                 shortDisplay: "",
                 color: null,
@@ -47,13 +47,13 @@ export async function up(db: Kysely<any>) {
             .returningAll()
             .executeTakeFirstOrThrow();
 
-        if (lootKindId === 1 /* LootKindId.KADSE */ || lootKindId === 36 /* LootKindId.BIBER */) {
+        if (lootKindId === 1 /* LootKind.KADSE */ || lootKindId === 36 /* LootKind.BIBER */) {
             await db
                 .insertInto("lootAttribute")
                 .values({
                     lootId: id,
-                    attributeClassId: 0, // LootAttributeClassId.OTHER
-                    attributeKindId: 4, // LootAttributeKindId.SWEET
+                    attributeClassId: 0, // LootAttributeClass.OTHER
+                    attributeKindId: 4, // LootAttributeKind.SWEET
                     displayName: "Süß",
                     shortDisplay: "🍬",
                     color: null,

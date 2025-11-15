@@ -32,7 +32,6 @@
     "@sentry/node": "^10.25.0",
     "@snazzah/davey": "^0.1.7",
     "@spotify/web-api-ts-sdk": "^1.2.0",
-    "better-sqlite3": "^12.4.1",
     "chrono-node": "^2.9.0",
     "comment-json": "^4.4.1",
     "croner": "^9.1.0",
@@ -67,6 +66,6 @@
     "lefthook"
   ],
   "engines": {
-    "node": ">=25.1.0"
+    "node": ">=25.2.0"
   }
 }
