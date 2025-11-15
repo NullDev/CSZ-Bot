@@ -3,7 +3,7 @@ import type { BotContext } from "#context.ts";
 
 import * as time from "#utils/time.ts";
 import * as lootService from "#service/loot.ts";
-import { LootAttributeKindId, LootKindId, resolveLootTemplate } from "#service/lootData.ts";
+import { LootAttributeKind, LootKind, resolveLootTemplate } from "#service/lootData.ts";
 import log from "#log";
 import { randomEntry } from "#service/random.ts";
 
@@ -12,7 +12,7 @@ export async function degradeItems(_context: BotContext) {
 
     const now = Date.now();
     const maxKebabAge = time.days(3);
-    const kebabs = await lootService.getLootsByKindId(LootKindId.DOENER);
+    const kebabs = await lootService.getLootsByKindId(LootKind.DOENER);
 
     for (const k of kebabs) {
         const itemAge = now - new Date(k.claimedAt).getTime();
@@ -20,7 +20,7 @@ export async function degradeItems(_context: BotContext) {
             continue;
         }
 
-        const fridges = await lootService.getUserLootsByTypeId(k.winnerId, LootKindId.KUEHLSCHRANK);
+        const fridges = await lootService.getUserLootsByTypeId(k.winnerId, LootKind.KUEHLSCHRANK);
 
         if (fridges.length > 0) {
             // user has a fridge, don't verschimmel döner
@@ -31,7 +31,7 @@ export async function degradeItems(_context: BotContext) {
             k.id,
             {
                 displayName: "Verschimmelter Döner",
-                lootKindId: LootKindId.VERSCHIMMELTER_DOENER,
+                lootKindId: LootKind.VERSCHIMMELTER_DOENER,
                 winnerId: k.winnerId,
                 claimedAt: k.claimedAt,
                 guildId: k.guildId,
@@ -46,7 +46,7 @@ export async function degradeItems(_context: BotContext) {
 
 export async function exposeWithRadiation(context: BotContext) {
     // currently also includes sweets that are already radioactive
-    const sweets = await lootService.getLootsWithAttribute(LootAttributeKindId.SWEET);
+    const sweets = await lootService.getLootsWithAttribute(LootAttributeKind.SWEET);
 
     const targetLoot = randomEntry(sweets);
     if (!targetLoot) {
@@ -55,7 +55,7 @@ export async function exposeWithRadiation(context: BotContext) {
 
     const wasteItems = await lootService.getUserLootsByTypeId(
         targetLoot.winnerId,
-        LootKindId.RADIOACTIVE_WASTE,
+        LootKind.RADIOACTIVE_WASTE,
     );
     if (wasteItems.length === 0) {
         return;
@@ -63,7 +63,7 @@ export async function exposeWithRadiation(context: BotContext) {
 
     const attributeAdded = await lootService.addLootAttributeIfNotPresent(
         targetLoot.id,
-        LootAttributeKindId.RADIOACTIVE,
+        LootAttributeKind.RADIOACTIVE,
     );
     if (!attributeAdded) {
         return;
@@ -86,7 +86,7 @@ export async function runHalfLife(context: BotContext) {
 
     logger.info("Running half life");
 
-    const allWaste = await lootService.getLootsByKindId(LootKindId.RADIOACTIVE_WASTE);
+    const allWaste = await lootService.getLootsByKindId(LootKind.RADIOACTIVE_WASTE);
 
     // See: https://github.com/NullDev/CSZ-Bot/issues/470
     const targetWasteCount = Math.ceil(allWaste.length / 2);
@@ -103,7 +103,7 @@ export async function runHalfLife(context: BotContext) {
         return;
     }
 
-    const leadTemplate = resolveLootTemplate(LootKindId.BLEI);
+    const leadTemplate = resolveLootTemplate(LootKind.BLEI);
     if (!leadTemplate) {
         logger.error("Could not resolve loot template for lead.");
         return;

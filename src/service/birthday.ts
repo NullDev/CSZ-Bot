@@ -103,7 +103,7 @@ ${userString} ${gotPresents ? "Zum Geurtstag habt ihr ein Geschenk erhalten" : "
 }
 
 async function awardBirthdayPresents(users: GuildMember[]) {
-    const present = lootDataService.resolveLootTemplate(lootDataService.LootKindId.GESCHENK);
+    const present = lootDataService.resolveLootTemplate(lootDataService.LootKind.GESCHENK);
     if (!present) {
         throw new Error("Could not resolve loot template");
     }
@@ -115,9 +115,7 @@ async function awardBirthdayPresents(users: GuildMember[]) {
             null,
             "birthday",
             null,
-            lootDataService.lootAttributeTemplates[
-                lootDataService.LootAttributeKindId.RARITY_NORMAL
-            ],
+            lootDataService.lootAttributeTemplates[lootDataService.LootAttributeKind.RARITY_NORMAL],
         );
     }
 }

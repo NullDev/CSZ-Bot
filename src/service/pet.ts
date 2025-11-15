@@ -1,21 +1,23 @@
 import type { User } from "discord.js";
 
 import * as lootService from "#service/loot.ts";
-import { LootKindId } from "./lootData.ts";
+import { LootKind } from "./lootData.ts";
 import * as pet from "#storage/pet.ts";
 import * as lootData from "#service/lootData.ts";
 
 const petCandidates = new Set([
-    LootKindId.KADSE,
-    LootKindId.BIBER,
-    LootKindId.FERRIS,
-    LootKindId.OETTINGER,
-    LootKindId.MAXWELL,
+    LootKind.KADSE,
+    LootKind.BIBER,
+    LootKind.FERRIS,
+    LootKind.OETTINGER,
+    LootKind.MAXWELL,
 ]);
 
 export async function getPetCandidates(user: User) {
+    type ValidPets = typeof petCandidates extends Set<infer U> ? U : never;
+
     const inventory = await lootService.getInventoryContents(user);
-    return inventory.filter(i => petCandidates.has(i.lootKindId));
+    return inventory.filter(i => petCandidates.has(i.lootKindId as ValidPets));
 }
 
 export async function setPet(user: User, lootId: number, petName: string) {
