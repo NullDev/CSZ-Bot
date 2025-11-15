@@ -29,7 +29,7 @@ import * as lootService from "#service/loot.ts";
 import {
     LootAttributeClass,
     lootAttributeTemplates,
-    LootKindId,
+    LootKind,
     lootTemplates,
 } from "#service/lootData.ts";
 
@@ -164,7 +164,7 @@ export async function postLootDrop(
     const rarityWeights = rarities.map(a => a.initialDropWeight ?? 0);
 
     const rarityAttribute =
-        template.id === LootKindId.NICHTS ? null : randomEntryWeighted(rarities, rarityWeights);
+        template.id === LootKind.NICHTS ? null : randomEntryWeighted(rarities, rarityWeights);
 
     const claimedLoot = await lootService.createLoot(
         template,
@@ -368,7 +368,7 @@ async function getDropWeightAdjustments(
     user: User,
     weights: readonly number[],
 ): Promise<AdjustmentResult> {
-    const waste = await lootService.getUserLootCountById(user.id, LootKindId.RADIOACTIVE_WASTE);
+    const waste = await lootService.getUserLootCountById(user.id, LootKind.RADIOACTIVE_WASTE);
     const messages = [];
 
     let wasteFactor = 1;
@@ -380,7 +380,7 @@ async function getDropWeightAdjustments(
         );
     }
 
-    const pkv = await lootService.getUserLootCountById(user.id, LootKindId.PKV);
+    const pkv = await lootService.getUserLootCountById(user.id, LootKind.PKV);
     let pkvFactor = 1;
     if (pkv > 0) {
         pkvFactor = 2;
@@ -388,8 +388,8 @@ async function getDropWeightAdjustments(
     }
 
     const newWeights = [...weights];
-    newWeights[LootKindId.NICHTS] = Math.ceil(weights[LootKindId.NICHTS] * wasteFactor) | 0;
-    newWeights[LootKindId.KRANKSCHREIBUNG] = (weights[LootKindId.KRANKSCHREIBUNG] * pkvFactor) | 0;
+    newWeights[LootKind.NICHTS] = Math.ceil(weights[LootKind.NICHTS] * wasteFactor) | 0;
+    newWeights[LootKind.KRANKSCHREIBUNG] = (weights[LootKind.KRANKSCHREIBUNG] * pkvFactor) | 0;
 
     return {
         messages,

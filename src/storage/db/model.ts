@@ -1,3 +1,4 @@
+import type { LootAttributeClassId, LootKindId } from "#service/lootData.ts";
 import type { Snowflake } from "discord.js";
 import type { ColumnType, Generated, GeneratedAlways, Insertable, Selectable } from "kysely";
 
@@ -248,7 +249,7 @@ export interface LootTable extends AuditedTable {
     id: GeneratedAlways<LootId>;
 
     displayName: string;
-    lootKindId: number;
+    lootKindId: LootKindId;
     winnerId: string;
     /** Different from createdAt. If the item is replaced, this may be copied form the previous loot item */
     claimedAt: ColumnType<string, string, string>; // TODO: Date is not supported by the DB driver
@@ -272,7 +273,7 @@ export interface LootAttributeTable extends AuditedTable {
 
     lootId: LootId;
     attributeKindId: number;
-    attributeClassId: number;
+    attributeClassId: LootAttributeClassId;
 
     displayName: string;
     shortDisplay: string;

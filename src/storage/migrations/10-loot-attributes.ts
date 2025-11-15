@@ -47,7 +47,7 @@ export async function up(db: Kysely<any>) {
             .returningAll()
             .executeTakeFirstOrThrow();
 
-        if (lootKindId === 1 /* LootKindId.KADSE */ || lootKindId === 36 /* LootKindId.BIBER */) {
+        if (lootKindId === 1 /* LootKind.KADSE */ || lootKindId === 36 /* LootKind.BIBER */) {
             await db
                 .insertInto("lootAttribute")
                 .values({

@@ -4,7 +4,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     const allLoots = await db.selectFrom("loot").selectAll().execute();
     for (const loot of allLoots) {
         switch (loot.lootKindId) {
-            case 33: // LootKindId.THUNFISCHSHAKE:
+            case 33: // LootKind.THUNFISCHSHAKE:
                 await db
                     .insertInto("lootAttribute")
                     .orIgnore()
@@ -19,7 +19,7 @@ export async function up(db: Kysely<any>): Promise<void> {
                     })
                     .execute();
                 break;
-            case 16: // LootKindId.OETTINGER:
+            case 16: // LootKind.OETTINGER:
                 await db
                     .insertInto("lootAttribute")
                     .orIgnore()
@@ -34,7 +34,7 @@ export async function up(db: Kysely<any>): Promise<void> {
                     })
                     .execute();
                 break;
-            case 4: // LootKindId.DOENER:
+            case 4: // LootKind.DOENER:
                 await db
                     .insertInto("lootAttribute")
                     .orIgnore()
@@ -49,9 +49,9 @@ export async function up(db: Kysely<any>): Promise<void> {
                     })
                     .execute();
                 break;
-            case 25: // LootKindId.POWERADE_BLAU:
-            case 22: // LootKindId.SAHNE:
-            case 9: // LootKindId.AYRAN:
+            case 25: // LootKind.POWERADE_BLAU:
+            case 22: // LootKind.SAHNE:
+            case 9: // LootKind.AYRAN:
                 await db
                     .insertInto("lootAttribute")
                     .orIgnore()
@@ -66,7 +66,7 @@ export async function up(db: Kysely<any>): Promise<void> {
                     })
                     .execute();
                 break;
-            case 32: // LootKindId.VERSCHIMMELTER_DOENER:
+            case 32: // LootKind.VERSCHIMMELTER_DOENER:
                 await db
                     .insertInto("lootAttribute")
                     .orIgnore()

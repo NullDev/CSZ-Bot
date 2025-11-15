@@ -20,14 +20,19 @@ import type {
 } from "./db/model.ts";
 
 import db from "#db";
-import { resolveLootAttributeTemplate, type LootAttributeKindId } from "#service/lootData.ts";
+import {
+    type LootKindId,
+    resolveLootAttributeTemplate,
+    type LootAttributeKindId,
+    type LootAttributeClassId,
+} from "#service/lootData.ts";
 
 export type LootUseCommandInteraction = ChatInputCommandInteraction & {
     channel: GuildTextBasedChannel;
 };
 
 export interface LootTemplate {
-    id: number;
+    id: LootKindId;
     weight: number;
     displayName: string;
     titleText: string;
@@ -83,7 +88,7 @@ export interface LootTemplate {
 
 export interface LootAttributeTemplate {
     id: number;
-    classId: number;
+    classId: LootAttributeClassId;
     displayName: string;
     shortDisplay: string;
     color?: number;
@@ -197,7 +202,7 @@ export async function findOfMessage(message: Message<true>, ctx = db()) {
         .executeTakeFirst();
 }
 
-export async function getUserLootsByTypeId(userId: User["id"], lootKindId: number, ctx = db()) {
+export async function getUserLootsByTypeId(userId: User["id"], lootKindId: LootKindId, ctx = db()) {
     return await ctx
         .selectFrom("loot")
         .where("winnerId", "=", userId)
@@ -209,7 +214,7 @@ export async function getUserLootsByTypeId(userId: User["id"], lootKindId: numbe
 
 export async function getUserLootsWithAttribute(
     userId: User["id"],
-    attributeKindId: number,
+    attributeKindId: LootKindId,
     ctx = db(),
 ) {
     return await ctx
@@ -231,7 +236,7 @@ export async function getUserLootById(userId: User["id"], lootId: LootId, ctx = 
         .executeTakeFirst();
 }
 
-export async function getLootsByKindId(lootKindId: number, ctx = db()) {
+export async function getLootsByKindId(lootKindId: LootKindId, ctx = db()) {
     return await ctx
         .selectFrom("loot")
         .where("lootKindId", "=", lootKindId)

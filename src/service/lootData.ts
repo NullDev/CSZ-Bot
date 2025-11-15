@@ -9,65 +9,66 @@ import type { Loot, LootAttribute } from "#storage/db/model.ts";
 
 const ACHTUNG_NICHT_DROPBAR_WEIGHT_KG = 0;
 
-export enum LootKindId {
-    NICHTS = 0,
-    KADSE = 1,
-    MESSERBLOCK = 2,
-    KUEHLSCHRANK = 3,
-    DOENER = 4,
-    KINN = 5,
-    KRANKSCHREIBUNG = 6,
-    WUERFELWURF = 7,
-    GESCHENK = 8,
-    AYRAN = 9,
-    PKV = 10,
-    TRICHTER = 11,
-    GRAFIKKARTE = 12,
-    HAENDEDRUCK = 13,
-    ERLEUCHTUNG = 14,
-    BAN = 15,
-    OETTINGER = 16,
-    ACHIEVEMENT = 17,
-    GME_AKTIE = 18,
-    FERRIS = 19,
-    HOMEPOD = 20,
-    RADIOACTIVE_WASTE = 21,
-    SAHNE = 22,
-    AEHRE = 23,
-    CROWDSTRIKE = 24,
-    POWERADE_BLAU = 25,
-    GAULOISES_BLAU = 26,
-    MAXWELL = 27,
-    SCHICHTBEGINN_ASSE_2 = 28,
-    DRECK = 29,
-    EI = 30,
-    BRAVO = 31,
-    VERSCHIMMELTER_DOENER = 32,
-    THUNFISCHSHAKE = 33,
-    KAFFEEMUEHLE = 34,
-    AWS_RECHNUNG = 35,
-    BIBER = 36,
-    BLEI = 37,
-    USV = 38,
-    BAHNCARD_25 = 39,
-    BAHNCARD_50 = 40,
-    BAHNCARD_100 = 41,
-    LABUBU = 42,
-    BABYBEL_ORIGINAL = 43,
-    BABYBEL_LIGHT = 44,
-    BABYBEL_CHEDDAR = 45,
-    BABYBEL_EMMENTALER = 46,
-    BABYBEL_PROTEIN = 47,
-    BABYBEL_GOUDA = 48,
-    BABYBEL_VEGAN = 49,
-    BABYBEL_EXODIA = 50,
-}
+export const LootKind = Object.freeze({
+    NICHTS: 0,
+    KADSE: 1,
+    MESSERBLOCK: 2,
+    KUEHLSCHRANK: 3,
+    DOENER: 4,
+    KINN: 5,
+    KRANKSCHREIBUNG: 6,
+    WUERFELWURF: 7,
+    GESCHENK: 8,
+    AYRAN: 9,
+    PKV: 10,
+    TRICHTER: 11,
+    GRAFIKKARTE: 12,
+    HAENDEDRUCK: 13,
+    ERLEUCHTUNG: 14,
+    BAN: 15,
+    OETTINGER: 16,
+    ACHIEVEMENT: 17,
+    GME_AKTIE: 18,
+    FERRIS: 19,
+    HOMEPOD: 20,
+    RADIOACTIVE_WASTE: 21,
+    SAHNE: 22,
+    AEHRE: 23,
+    CROWDSTRIKE: 24,
+    POWERADE_BLAU: 25,
+    GAULOISES_BLAU: 26,
+    MAXWELL: 27,
+    SCHICHTBEGINN_ASSE_2: 28,
+    DRECK: 29,
+    EI: 30,
+    BRAVO: 31,
+    VERSCHIMMELTER_DOENER: 32,
+    THUNFISCHSHAKE: 33,
+    KAFFEEMUEHLE: 34,
+    AWS_RECHNUNG: 35,
+    BIBER: 36,
+    BLEI: 37,
+    USV: 38,
+    BAHNCARD_25: 39,
+    BAHNCARD_50: 40,
+    BAHNCARD_100: 41,
+    LABUBU: 42,
+    BABYBEL_ORIGINAL: 43,
+    BABYBEL_LIGHT: 44,
+    BABYBEL_CHEDDAR: 45,
+    BABYBEL_EMMENTALER: 46,
+    BABYBEL_PROTEIN: 47,
+    BABYBEL_GOUDA: 48,
+    BABYBEL_VEGAN: 49,
+    BABYBEL_EXODIA: 50,
+} as const);
+export type LootKindId = (typeof LootKind)[keyof typeof LootKind];
 
 export const LootAttributeClass = Object.freeze({
     OTHER: 0,
     RARITY: 1,
     NUTRI_SCORE: 2,
-});
+} as const);
 export type LootAttributeClassId = (typeof LootAttributeClass)[keyof typeof LootAttributeClass];
 
 export enum LootAttributeKindId {
@@ -84,8 +85,8 @@ export enum LootAttributeKindId {
 }
 
 export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
-    [LootKindId.NICHTS]: {
-        id: LootKindId.NICHTS,
+    [LootKind.NICHTS]: {
+        id: LootKind.NICHTS,
         weight: 24,
         displayName: "Nichts",
         titleText: "✨Nichts✨",
@@ -96,8 +97,8 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         excludeFromInventory: true,
         excludeFromDoubleDrops: true,
     },
-    [LootKindId.KADSE]: {
-        id: LootKindId.KADSE,
+    [LootKind.KADSE]: {
+        id: LootKind.KADSE,
         weight: 4,
         displayName: "Niedliche Kadse",
         titleText: "Eine niedliche Kadse",
@@ -109,8 +110,8 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
             [LootAttributeKindId.RADIOACTIVE]: "assets/loot/attributes/01-kadse-verstrahlt.jpg",
         },
     },
-    [LootKindId.MESSERBLOCK]: {
-        id: LootKindId.MESSERBLOCK,
+    [LootKind.MESSERBLOCK]: {
+        id: LootKind.MESSERBLOCK,
         weight: 1,
         displayName: "Messerblock",
         titleText: "Einen Messerblock",
@@ -118,8 +119,8 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         emote: "🔪",
         asset: "assets/loot/02-messerblock.jpg",
     },
-    [LootKindId.KUEHLSCHRANK]: {
-        id: LootKindId.KUEHLSCHRANK,
+    [LootKind.KUEHLSCHRANK]: {
+        id: LootKind.KUEHLSCHRANK,
         weight: 1,
         displayName: "Sehr teurer Kühlschrank",
         titleText: "Ein sehr teurer Kühlschrank",
@@ -129,8 +130,8 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         asset: "assets/loot/03-kuehlschrank.jpg",
         effects: ["Lässt Essen nicht schimmeln"],
     },
-    [LootKindId.DOENER]: {
-        id: LootKindId.DOENER,
+    [LootKind.DOENER]: {
+        id: LootKind.DOENER,
         weight: 5,
         displayName: "Döner",
         titleText: "Einen Döner",
@@ -139,8 +140,8 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         asset: "assets/loot/04-doener.jpg",
         initialAttributes: [LootAttributeKindId.NUTRI_SCORE_C],
     },
-    [LootKindId.KINN]: {
-        id: LootKindId.KINN,
+    [LootKind.KINN]: {
+        id: LootKind.KINN,
         weight: 0.5,
         displayName: "Kinn",
         titleText: "Ein Kinn",
@@ -148,8 +149,8 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         emote: "👶",
         asset: "assets/loot/05-kinn.jpg",
     },
-    [LootKindId.KRANKSCHREIBUNG]: {
-        id: LootKindId.KRANKSCHREIBUNG,
+    [LootKind.KRANKSCHREIBUNG]: {
+        id: LootKind.KRANKSCHREIBUNG,
         weight: 0.5,
         displayName: "Arbeitsunfähigkeitsbescheinigung",
         titleText: "Einen gelben Urlaubsschein",
@@ -181,8 +182,8 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
             return false;
         },
     },
-    [LootKindId.WUERFELWURF]: {
-        id: LootKindId.WUERFELWURF,
+    [LootKind.WUERFELWURF]: {
+        id: LootKind.WUERFELWURF,
         weight: 4,
         displayName: "Würfelwurf",
         titleText: "Einen Wurf mit einem Würfel",
@@ -196,8 +197,8 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
             await rollService.rollInChannel(winner.user, channel, 1, 6);
         },
     },
-    [LootKindId.GESCHENK]: {
-        id: LootKindId.GESCHENK,
+    [LootKind.GESCHENK]: {
+        id: LootKind.GESCHENK,
         weight: 2,
         displayName: "Geschenk",
         titleText: "Ein Geschenk",
@@ -214,8 +215,8 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
             return false;
         },
     },
-    [LootKindId.AYRAN]: {
-        id: LootKindId.AYRAN,
+    [LootKind.AYRAN]: {
+        id: LootKind.AYRAN,
         weight: 1,
         displayName: "Ayran",
         titleText: "Einen Ayran",
@@ -224,8 +225,8 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         asset: "assets/loot/09-ayran.png",
         initialAttributes: [LootAttributeKindId.NUTRI_SCORE_D], // Ref: https://de.openfoodfacts.org/produkt/4388860730685/ayran-ja
     },
-    [LootKindId.PKV]: {
-        id: LootKindId.PKV,
+    [LootKind.PKV]: {
+        id: LootKind.PKV,
         weight: 1,
         displayName: "Private Krankenversicherung",
         titleText: "Eine private Krankenversicherung",
@@ -234,8 +235,8 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         asset: "assets/loot/10-pkv.jpg",
         effects: ["` +100% ` Chance auf AU 🟢"],
     },
-    [LootKindId.TRICHTER]: {
-        id: LootKindId.TRICHTER,
+    [LootKind.TRICHTER]: {
+        id: LootKind.TRICHTER,
         weight: 1,
         displayName: "Trichter",
         titleText: "Einen Trichter",
@@ -243,8 +244,8 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         emote: ":trichter:",
         asset: "assets/loot/11-trichter.png",
     },
-    [LootKindId.GRAFIKKARTE]: {
-        id: LootKindId.GRAFIKKARTE,
+    [LootKind.GRAFIKKARTE]: {
+        id: LootKind.GRAFIKKARTE,
         weight: 1,
         displayName: "Grafikkarte aus der Zukunft",
         titleText: "Eine Grafikkarte aus der Zukunft",
@@ -252,8 +253,8 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         emote: "🖥️",
         asset: "assets/loot/12-grafikkarte.png",
     },
-    [LootKindId.HAENDEDRUCK]: {
-        id: LootKindId.HAENDEDRUCK,
+    [LootKind.HAENDEDRUCK]: {
+        id: LootKind.HAENDEDRUCK,
         weight: 1,
         displayName: "Feuchter Händedruck",
         titleText: "Einen feuchten Händedruck",
@@ -262,8 +263,8 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         asset: "assets/loot/13-haendedruck.jpg",
         excludeFromInventory: true,
     },
-    [LootKindId.ERLEUCHTUNG]: {
-        id: LootKindId.ERLEUCHTUNG,
+    [LootKind.ERLEUCHTUNG]: {
+        id: LootKind.ERLEUCHTUNG,
         weight: 1,
         displayName: "Erleuchtung",
         titleText: "Eine Erleuchtung",
@@ -283,8 +284,8 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
             });
         },
     },
-    [LootKindId.BAN]: {
-        id: LootKindId.BAN,
+    [LootKind.BAN]: {
+        id: LootKind.BAN,
         weight: 1,
         displayName: "Willkürban",
         titleText: "Einen Ban aus reiner Willkür",
@@ -305,8 +306,8 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
             );
         },
     },
-    [LootKindId.OETTINGER]: {
-        id: LootKindId.OETTINGER,
+    [LootKind.OETTINGER]: {
+        id: LootKind.OETTINGER,
         weight: 1,
         displayName: "Oettinger",
         titleText: "Ein warmes Oettinger",
@@ -315,8 +316,8 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         asset: "assets/loot/16-oettinger.png",
         initialAttributes: [LootAttributeKindId.NUTRI_SCORE_B], // Ref: https://archive.is/aonnZ
     },
-    [LootKindId.ACHIEVEMENT]: {
-        id: LootKindId.ACHIEVEMENT,
+    [LootKind.ACHIEVEMENT]: {
+        id: LootKind.ACHIEVEMENT,
         weight: 1,
         displayName: "Achievement",
         titleText: "Ein Achievement",
@@ -324,8 +325,8 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         emote: "🏆",
         asset: "assets/loot/17-achievement.png",
     },
-    [LootKindId.GME_AKTIE]: {
-        id: LootKindId.GME_AKTIE,
+    [LootKind.GME_AKTIE]: {
+        id: LootKind.GME_AKTIE,
         weight: 5,
         displayName: "Wertlose GME-Aktie",
         titleText: "Eine wertlose GME-Aktie",
@@ -333,8 +334,8 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         emote: "📉",
         asset: "assets/loot/18-gme.jpg",
     },
-    [LootKindId.FERRIS]: {
-        id: LootKindId.FERRIS,
+    [LootKind.FERRIS]: {
+        id: LootKind.FERRIS,
         weight: 3,
         displayName: "Ferris",
         titleText: "Einen Ferris - Die Krabbe",
@@ -342,8 +343,8 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         emote: "🦀",
         asset: "assets/loot/19-ferris.png",
     },
-    [LootKindId.HOMEPOD]: {
-        id: LootKindId.HOMEPOD,
+    [LootKind.HOMEPOD]: {
+        id: LootKind.HOMEPOD,
         weight: 3,
         displayName: "HomePod",
         titleText: "Einen Apple:registered: HomePod:copyright:",
@@ -351,8 +352,8 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         emote: "🍎",
         asset: "assets/loot/20-homepod.jpg",
     },
-    [LootKindId.RADIOACTIVE_WASTE]: {
-        id: LootKindId.RADIOACTIVE_WASTE,
+    [LootKind.RADIOACTIVE_WASTE]: {
+        id: LootKind.RADIOACTIVE_WASTE,
         weight: 1,
         displayName: "Radioaktiver Müll",
         titleText: "Radioaktiver Müll",
@@ -362,8 +363,8 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         asset: "assets/loot/21-radioaktiver-muell.jpg",
         effects: ["` +5% ` Chance auf leeres Geschenk 🔴"],
     },
-    [LootKindId.SAHNE]: {
-        id: LootKindId.SAHNE,
+    [LootKind.SAHNE]: {
+        id: LootKind.SAHNE,
         weight: 1,
         displayName: "Sprühsahne",
         titleText: "Sprühsahne",
@@ -372,8 +373,8 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         asset: "assets/loot/22-sahne.png",
         initialAttributes: [LootAttributeKindId.NUTRI_SCORE_D], // Ref: https://de.openfoodfacts.org/produkt/4311501745663/spr%C3%BChsahne-gut-g%C3%BCnstig
     },
-    [LootKindId.AEHRE]: {
-        id: LootKindId.AEHRE,
+    [LootKind.AEHRE]: {
+        id: LootKind.AEHRE,
         weight: 1,
         displayName: "Ehre",
         titleText: "Ehre aus Mitleid",
@@ -387,8 +388,8 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
             await ehre.addPoints(winner.id, 1);
         },
     },
-    [LootKindId.CROWDSTRIKE]: {
-        id: LootKindId.CROWDSTRIKE,
+    [LootKind.CROWDSTRIKE]: {
+        id: LootKind.CROWDSTRIKE,
         weight: 1,
         displayName: "Crowdstrike Falcon",
         titleText: "Crowdstrike Falcon Installation",
@@ -396,8 +397,8 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         emote: "🦅",
         asset: "assets/loot/24-crowdstrike.jpg",
     },
-    [LootKindId.POWERADE_BLAU]: {
-        id: LootKindId.POWERADE_BLAU,
+    [LootKind.POWERADE_BLAU]: {
+        id: LootKind.POWERADE_BLAU,
         weight: 1,
         displayName: "Blaue Powerade",
         titleText: "Blaue Powerade",
@@ -406,8 +407,8 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         emote: ":powerade:",
         initialAttributes: [LootAttributeKindId.NUTRI_SCORE_D], // Ref: https://de.openfoodfacts.org/produkt/90357350/powerrade-mountain-blast-blue-coca-cola
     },
-    [LootKindId.GAULOISES_BLAU]: {
-        id: LootKindId.GAULOISES_BLAU,
+    [LootKind.GAULOISES_BLAU]: {
+        id: LootKind.GAULOISES_BLAU,
         weight: 1,
         displayName: "Gauloises Blau",
         titleText: "Eine Schachtel Gauloises Blau",
@@ -416,8 +417,8 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         emote: "🚬",
         asset: "assets/loot/26-gauloises-blau.png",
     },
-    [LootKindId.MAXWELL]: {
-        id: LootKindId.MAXWELL,
+    [LootKind.MAXWELL]: {
+        id: LootKind.MAXWELL,
         weight: 1,
         displayName: "Maxwell",
         titleText: "Einen Maxwell",
@@ -425,8 +426,8 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         emote: "😸",
         asset: "assets/loot/27-maxwell.gif",
     },
-    [LootKindId.SCHICHTBEGINN_ASSE_2]: {
-        id: LootKindId.SCHICHTBEGINN_ASSE_2,
+    [LootKind.SCHICHTBEGINN_ASSE_2]: {
+        id: LootKind.SCHICHTBEGINN_ASSE_2,
         weight: 4,
         displayName: "Wärter Asse II",
         titleText: "Den Schichtbeginn in der Asse II",
@@ -440,8 +441,8 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
             await lootRoles.startAsseGuardShift(context, winner, channel);
         },
     },
-    [LootKindId.DRECK]: {
-        id: LootKindId.DRECK,
+    [LootKind.DRECK]: {
+        id: LootKind.DRECK,
         weight: 2,
         displayName: "Ein Glas Dreck",
         titleText: "Ein Glas Dreck",
@@ -449,8 +450,8 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         emote: "🫙",
         asset: "assets/loot/29-dreck.jpg",
     },
-    [LootKindId.EI]: {
-        id: LootKindId.EI,
+    [LootKind.EI]: {
+        id: LootKind.EI,
         weight: 3,
         displayName: "Ei",
         titleText: "Ein Ei",
@@ -459,8 +460,8 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         emote: "🥚",
         asset: "assets/loot/30-ei.png",
     },
-    [LootKindId.BRAVO]: {
-        id: LootKindId.BRAVO,
+    [LootKind.BRAVO]: {
+        id: LootKind.BRAVO,
         weight: 2,
         displayName: "Bravo",
         titleText: "Eine Bravo vom Dachboden",
@@ -468,8 +469,8 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         emote: "🗞️",
         asset: "assets/loot/31-bravo.jpg",
     },
-    [LootKindId.VERSCHIMMELTER_DOENER]: {
-        id: LootKindId.VERSCHIMMELTER_DOENER,
+    [LootKind.VERSCHIMMELTER_DOENER]: {
+        id: LootKind.VERSCHIMMELTER_DOENER,
         weight: ACHTUNG_NICHT_DROPBAR_WEIGHT_KG,
         displayName: "Verschimmelter Döner",
         titleText: "Einen verschimmelten Döner",
@@ -478,8 +479,8 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         asset: null,
         initialAttributes: [LootAttributeKindId.NUTRI_SCORE_E],
     },
-    [LootKindId.THUNFISCHSHAKE]: {
-        id: LootKindId.THUNFISCHSHAKE,
+    [LootKind.THUNFISCHSHAKE]: {
+        id: LootKind.THUNFISCHSHAKE,
         weight: 2,
         displayName: "Thunfischshake",
         titleText: "Ein Thunfischshake, serviert von Markus Rühl persönlich",
@@ -488,8 +489,8 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         asset: "assets/loot/33-thunfischshake.jpg",
         initialAttributes: [LootAttributeKindId.NUTRI_SCORE_A],
     },
-    [LootKindId.KAFFEEMUEHLE]: {
-        id: LootKindId.KAFFEEMUEHLE,
+    [LootKind.KAFFEEMUEHLE]: {
+        id: LootKind.KAFFEEMUEHLE,
         weight: 1,
         displayName: "Kaffeemühle",
         titleText: "Eine Kaffeemühle für 400€",
@@ -497,8 +498,8 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         emote: "☕",
         asset: "assets/loot/34-kaffeemuehle.png",
     },
-    [LootKindId.AWS_RECHNUNG]: {
-        id: LootKindId.AWS_RECHNUNG,
+    [LootKind.AWS_RECHNUNG]: {
+        id: LootKind.AWS_RECHNUNG,
         weight: 1,
         displayName: "AWS-Rechnung",
         titleText: "Ne dicke AWS-Rechnung",
@@ -506,8 +507,8 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         emote: "📦",
         asset: "assets/loot/35-aws-rechnung.png",
     },
-    [LootKindId.BIBER]: {
-        id: LootKindId.BIBER,
+    [LootKind.BIBER]: {
+        id: LootKind.BIBER,
         weight: 2,
         displayName: "Süßer Biber",
         titleText: "Bóbr",
@@ -516,8 +517,8 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         asset: "assets/loot/36-biber.jpg",
         initialAttributes: [LootAttributeKindId.SWEET],
     },
-    [LootKindId.BLEI]: {
-        id: LootKindId.BLEI,
+    [LootKind.BLEI]: {
+        id: LootKind.BLEI,
         weight: ACHTUNG_NICHT_DROPBAR_WEIGHT_KG,
         displayName: "Blei",
         titleText: "Einen Block Blei",
@@ -526,8 +527,8 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         asset: "assets/loot/37-blei.png",
         initialAttributes: [],
     },
-    [LootKindId.USV]: {
-        id: LootKindId.USV,
+    [LootKind.USV]: {
+        id: LootKind.USV,
         weight: 2,
         displayName: "USV",
         titleText: "Eine kaputte USV",
@@ -536,8 +537,8 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         asset: "assets/loot/38-usv.png",
         initialAttributes: [],
     },
-    [LootKindId.BAHNCARD_25]: {
-        id: LootKindId.BAHNCARD_25,
+    [LootKind.BAHNCARD_25]: {
+        id: LootKind.BAHNCARD_25,
         weight: 6,
         displayName: "BahnCard 25",
         titleText: "Eine BahnCard 25",
@@ -556,7 +557,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
             ),
         onDuplicateDrop: async (context, winner, loot, dropMessage) => {
             // biome-ignore lint/style/noNonNullAssertion: :shrug:
-            const newBc = resolveLootTemplate(LootKindId.BAHNCARD_50)!;
+            const newBc = resolveLootTemplate(LootKind.BAHNCARD_50)!;
 
             const newLoot = await lootService.replaceLoot(
                 loot.id,
@@ -575,7 +576,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
 
             const newContent = await lootDropService.createDropTakenContent(
                 context,
-                lootTemplateMap[LootKindId.BAHNCARD_50],
+                lootTemplateMap[LootKind.BAHNCARD_50],
                 newLoot,
                 winner.user,
                 [
@@ -587,8 +588,8 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
             return false;
         },
     },
-    [LootKindId.BAHNCARD_50]: {
-        id: LootKindId.BAHNCARD_50,
+    [LootKind.BAHNCARD_50]: {
+        id: LootKind.BAHNCARD_50,
         weight: 3,
         displayName: "BahnCard 50",
         titleText: "Eine BahnCard 50",
@@ -607,7 +608,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
             ),
         onDuplicateDrop: async (context, winner, loot, dropMessage) => {
             // biome-ignore lint/style/noNonNullAssertion: :shrug:
-            const newBc = resolveLootTemplate(LootKindId.BAHNCARD_100)!;
+            const newBc = resolveLootTemplate(LootKind.BAHNCARD_100)!;
 
             const newLoot = await lootService.replaceLoot(
                 loot.id,
@@ -626,7 +627,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
 
             const newContent = await lootDropService.createDropTakenContent(
                 context,
-                lootTemplateMap[LootKindId.BAHNCARD_100],
+                lootTemplateMap[LootKind.BAHNCARD_100],
                 newLoot,
                 winner.user,
                 [
@@ -638,9 +639,9 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
             return false;
         },
     },
-    [LootKindId.BAHNCARD_100]: {
+    [LootKind.BAHNCARD_100]: {
         // Not droppable, only via duplicate BahnCard 50
-        id: LootKindId.BAHNCARD_100,
+        id: LootKind.BAHNCARD_100,
         weight: ACHTUNG_NICHT_DROPBAR_WEIGHT_KG,
         displayName: "BahnCard 100",
         titleText: "Eine BahnCard 100",
@@ -651,8 +652,8 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         drawCustomAsset: (context, owner, template, loot) =>
             bahnCardService.drawBahncardImage(context, owner, template, loot, true, owner.id),
     },
-    [LootKindId.LABUBU]: {
-        id: LootKindId.LABUBU,
+    [LootKind.LABUBU]: {
+        id: LootKind.LABUBU,
         weight: 1,
         displayName: "Labubu",
         titleText: "Einen Labubu",
@@ -660,8 +661,8 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         emote: "🦦",
         asset: "assets/loot/42-labubu.jpg",
     },
-    [LootKindId.BABYBEL_ORIGINAL]: {
-        id: LootKindId.BABYBEL_ORIGINAL,
+    [LootKind.BABYBEL_ORIGINAL]: {
+        id: LootKind.BABYBEL_ORIGINAL,
         weight: 3,
         displayName: "Mini Babybel® Original",
         titleText: "Ein Babybel® Original",
@@ -671,8 +672,8 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         asset: "assets/loot/43-bb-original.png",
         initialAttributes: [LootAttributeKindId.NUTRI_SCORE_C],
     },
-    [LootKindId.BABYBEL_LIGHT]: {
-        id: LootKindId.BABYBEL_LIGHT,
+    [LootKind.BABYBEL_LIGHT]: {
+        id: LootKind.BABYBEL_LIGHT,
         weight: 2,
         displayName: "Mini Babybel® Light",
         titleText: "Ein Babybel® Light",
@@ -681,8 +682,8 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         asset: "assets/loot/44-bb-light.png",
         initialAttributes: [LootAttributeKindId.NUTRI_SCORE_C],
     },
-    [LootKindId.BABYBEL_CHEDDAR]: {
-        id: LootKindId.BABYBEL_CHEDDAR,
+    [LootKind.BABYBEL_CHEDDAR]: {
+        id: LootKind.BABYBEL_CHEDDAR,
         weight: 1,
         displayName: "Mini Babybel® Cheddar-Geschmack",
         titleText: "Ein Babybel® Cheddar-Geschmack",
@@ -692,8 +693,8 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         asset: "assets/loot/45-bb-cheddar.png",
         initialAttributes: [LootAttributeKindId.NUTRI_SCORE_D],
     },
-    [LootKindId.BABYBEL_EMMENTALER]: {
-        id: LootKindId.BABYBEL_EMMENTALER,
+    [LootKind.BABYBEL_EMMENTALER]: {
+        id: LootKind.BABYBEL_EMMENTALER,
         weight: 1,
         displayName: "Mini Babybel® Emmentaler-Geschmack",
         titleText: "Ein Babybel® Emmentaler-Geschmack",
@@ -703,8 +704,8 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         asset: "assets/loot/46-bb-emmentaler.png",
         initialAttributes: [LootAttributeKindId.NUTRI_SCORE_D],
     },
-    [LootKindId.BABYBEL_PROTEIN]: {
-        id: LootKindId.BABYBEL_PROTEIN,
+    [LootKind.BABYBEL_PROTEIN]: {
+        id: LootKind.BABYBEL_PROTEIN,
         weight: 1,
         displayName: "Mini Babybel® High Protein",
         titleText: "Ein Babybel® High Protein",
@@ -714,8 +715,8 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         asset: "assets/loot/47-bb-protein.png",
         initialAttributes: [LootAttributeKindId.NUTRI_SCORE_C],
     },
-    [LootKindId.BABYBEL_GOUDA]: {
-        id: LootKindId.BABYBEL_GOUDA,
+    [LootKind.BABYBEL_GOUDA]: {
+        id: LootKind.BABYBEL_GOUDA,
         weight: 1,
         displayName: "Mini Babybel® Unser Würziger",
         titleText: "Ein Babybel® Unser Würziger",
@@ -725,8 +726,8 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         asset: "assets/loot/48-bb-gouda.png",
         initialAttributes: [LootAttributeKindId.NUTRI_SCORE_D],
     },
-    [LootKindId.BABYBEL_VEGAN]: {
-        id: LootKindId.BABYBEL_VEGAN,
+    [LootKind.BABYBEL_VEGAN]: {
+        id: LootKind.BABYBEL_VEGAN,
         weight: 1,
         displayName: "Mini Babybel® Vegan",
         titleText: "Ein Babybel® Vegan",
@@ -736,8 +737,8 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         asset: "assets/loot/49-bb-vegan.png",
         initialAttributes: [LootAttributeKindId.NUTRI_SCORE_E],
     },
-    [LootKindId.BABYBEL_EXODIA]: {
-        id: LootKindId.BABYBEL_EXODIA,
+    [LootKind.BABYBEL_EXODIA]: {
+        id: LootKind.BABYBEL_EXODIA,
         weight: ACHTUNG_NICHT_DROPBAR_WEIGHT_KG,
         displayName: "Mini Babybel® Exodia",
         titleText: "Mini Babybel® Exodia",

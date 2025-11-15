@@ -23,7 +23,7 @@ import { ensureChatInputCommand } from "#utils/interactionUtils.ts";
 import * as imageService from "#service/image.ts";
 
 import * as lootDataService from "#service/lootData.ts";
-import { LootAttributeKindId, LootKindId } from "#service/lootData.ts";
+import { LootAttributeKindId, LootKind } from "#service/lootData.ts";
 
 import log from "#log";
 
@@ -156,7 +156,7 @@ export default class GegenstandCommand implements ApplicationCommand {
 
         const wasteContents = await lootService.getUserLootsByTypeId(
             interaction.user.id,
-            LootKindId.RADIOACTIVE_WASTE,
+            LootKind.RADIOACTIVE_WASTE,
         );
 
         if (wasteContents.length === 0) {

@@ -32,7 +32,10 @@ export async function getLootAttributes(id: LootId) {
     return await loot.getLootAttributes(id);
 }
 
-export async function getUserLootCountById(userId: Snowflake, lootTypeId: number): Promise<number> {
+export async function getUserLootCountById(
+    userId: Snowflake,
+    lootTypeId: LootKindId,
+): Promise<number> {
     return (await loot.getUserLootsByTypeId(userId, lootTypeId)).length;
 }
 
