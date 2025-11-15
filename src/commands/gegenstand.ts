@@ -23,7 +23,7 @@ import { ensureChatInputCommand } from "#utils/interactionUtils.ts";
 import * as imageService from "#service/image.ts";
 
 import * as lootDataService from "#service/lootData.ts";
-import { LootAttributeKindId, LootKind } from "#service/lootData.ts";
+import { LootAttributeKind, LootKind } from "#service/lootData.ts";
 
 import log from "#log";
 
@@ -168,7 +168,7 @@ export default class GegenstandCommand implements ApplicationCommand {
 
         const sweetContent = await lootService.getUserLootsWithAttribute(
             interaction.user.id,
-            LootAttributeKindId.SWEET,
+            LootAttributeKind.SWEET,
         );
 
         if (sweetContent.length === 0) {
@@ -222,7 +222,7 @@ export default class GegenstandCommand implements ApplicationCommand {
 
         const rarity =
             lootDataService.extractRarityAttribute(attributes) ??
-            lootDataService.lootAttributeTemplates[LootAttributeKindId.RARITY_NORMAL];
+            lootDataService.lootAttributeTemplates[LootAttributeKind.RARITY_NORMAL];
 
         const otherAttributes = lootDataService.extractNonRarityAttributes(attributes);
 
@@ -233,8 +233,7 @@ export default class GegenstandCommand implements ApplicationCommand {
             let assetPath = template.asset;
             if (template.attributeAsset) {
                 for (const attribute of otherAttributes) {
-                    const asset =
-                        template.attributeAsset[attribute.attributeKindId as LootAttributeKindId];
+                    const asset = template.attributeAsset[attribute.attributeKindId];
                     if (asset) {
                         assetPath = asset;
                         break;

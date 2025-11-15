@@ -87,7 +87,7 @@ export interface LootTemplate {
 }
 
 export interface LootAttributeTemplate {
-    id: number;
+    id: LootAttributeKindId;
     classId: LootAttributeClassId;
     displayName: string;
     shortDisplay: string;
@@ -98,15 +98,16 @@ export interface LootAttributeTemplate {
 const notDeleted = (eb: ExpressionBuilder<Database, "loot" | "lootAttribute">) =>
     eb.or([eb("deletedAt", "is", null), eb("deletedAt", ">", sql<string>`current_timestamp`)]);
 
-const hasAttribute = (attributeKindId: number) => (eb: ExpressionBuilder<Database, "loot">) =>
-    eb(
-        "id",
-        "in",
-        eb
-            .selectFrom("lootAttribute")
-            .where("attributeKindId", "=", attributeKindId)
-            .select("lootId"),
-    );
+const hasAttribute =
+    (attributeKindId: LootAttributeKindId) => (eb: ExpressionBuilder<Database, "loot">) =>
+        eb(
+            "id",
+            "in",
+            eb
+                .selectFrom("lootAttribute")
+                .where("attributeKindId", "=", attributeKindId)
+                .select("lootId"),
+        );
 
 export async function createLoot(
     template: LootTemplate,
@@ -214,7 +215,7 @@ export async function getUserLootsByTypeId(userId: User["id"], lootKindId: LootK
 
 export async function getUserLootsWithAttribute(
     userId: User["id"],
-    attributeKindId: LootKindId,
+    attributeKindId: LootAttributeKindId,
     ctx = db(),
 ) {
     return await ctx
@@ -245,7 +246,7 @@ export async function getLootsByKindId(lootKindId: LootKindId, ctx = db()) {
         .execute();
 }
 
-export async function getLootsWithAttribute(attributeKindId: number, ctx = db()) {
+export async function getLootsWithAttribute(attributeKindId: LootAttributeKindId, ctx = db()) {
     return await ctx
         .selectFrom("loot")
         .where(notDeleted)

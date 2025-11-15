@@ -3,7 +3,7 @@ import type { BotContext } from "#context.ts";
 
 import * as time from "#utils/time.ts";
 import * as lootService from "#service/loot.ts";
-import { LootAttributeKindId, LootKind, resolveLootTemplate } from "#service/lootData.ts";
+import { LootAttributeKind, LootKind, resolveLootTemplate } from "#service/lootData.ts";
 import log from "#log";
 import { randomEntry } from "#service/random.ts";
 
@@ -46,7 +46,7 @@ export async function degradeItems(_context: BotContext) {
 
 export async function exposeWithRadiation(context: BotContext) {
     // currently also includes sweets that are already radioactive
-    const sweets = await lootService.getLootsWithAttribute(LootAttributeKindId.SWEET);
+    const sweets = await lootService.getLootsWithAttribute(LootAttributeKind.SWEET);
 
     const targetLoot = randomEntry(sweets);
     if (!targetLoot) {
@@ -63,7 +63,7 @@ export async function exposeWithRadiation(context: BotContext) {
 
     const attributeAdded = await lootService.addLootAttributeIfNotPresent(
         targetLoot.id,
-        LootAttributeKindId.RADIOACTIVE,
+        LootAttributeKind.RADIOACTIVE,
     );
     if (!attributeAdded) {
         return;

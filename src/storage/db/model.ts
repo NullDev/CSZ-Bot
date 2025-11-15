@@ -1,4 +1,4 @@
-import type { LootAttributeClassId, LootKindId } from "#service/lootData.ts";
+import type { LootAttributeClassId, LootAttributeKindId, LootKindId } from "#service/lootData.ts";
 import type { Snowflake } from "discord.js";
 import type { ColumnType, Generated, GeneratedAlways, Insertable, Selectable } from "kysely";
 
@@ -272,7 +272,7 @@ export interface LootAttributeTable extends AuditedTable {
     id: GeneratedAlways<LootAttributeId>;
 
     lootId: LootId;
-    attributeKindId: number;
+    attributeKindId: LootAttributeKindId;
     attributeClassId: LootAttributeClassId;
 
     displayName: string;

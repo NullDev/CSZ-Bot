@@ -71,18 +71,19 @@ export const LootAttributeClass = Object.freeze({
 } as const);
 export type LootAttributeClassId = (typeof LootAttributeClass)[keyof typeof LootAttributeClass];
 
-export enum LootAttributeKindId {
-    RARITY_NORMAL = 0,
-    RARITY_RARE = 1,
-    RARITY_VERY_RARE = 2,
-    RADIOACTIVE = 3,
-    SWEET = 4,
-    NUTRI_SCORE_A = 5,
-    NUTRI_SCORE_B = 6,
-    NUTRI_SCORE_C = 7,
-    NUTRI_SCORE_D = 8,
-    NUTRI_SCORE_E = 9,
-}
+export const LootAttributeKind = Object.freeze({
+    RARITY_NORMAL: 0,
+    RARITY_RARE: 1,
+    RARITY_VERY_RARE: 2,
+    RADIOACTIVE: 3,
+    SWEET: 4,
+    NUTRI_SCORE_A: 5,
+    NUTRI_SCORE_B: 6,
+    NUTRI_SCORE_C: 7,
+    NUTRI_SCORE_D: 8,
+    NUTRI_SCORE_E: 9,
+} as const);
+export type LootAttributeKindId = (typeof LootAttributeKind)[keyof typeof LootAttributeKind];
 
 export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
     [LootKind.NICHTS]: {
@@ -105,9 +106,9 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         dropDescription: "Awww",
         emote: "🐈",
         asset: "assets/loot/01-kadse.jpg",
-        initialAttributes: [LootAttributeKindId.SWEET],
+        initialAttributes: [LootAttributeKind.SWEET],
         attributeAsset: {
-            [LootAttributeKindId.RADIOACTIVE]: "assets/loot/attributes/01-kadse-verstrahlt.jpg",
+            [LootAttributeKind.RADIOACTIVE]: "assets/loot/attributes/01-kadse-verstrahlt.jpg",
         },
     },
     [LootKind.MESSERBLOCK]: {
@@ -138,7 +139,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         dropDescription: "Bewahre ihn gut als Geldanlage auf!",
         emote: "🥙",
         asset: "assets/loot/04-doener.jpg",
-        initialAttributes: [LootAttributeKindId.NUTRI_SCORE_C],
+        initialAttributes: [LootAttributeKind.NUTRI_SCORE_C],
     },
     [LootKind.KINN]: {
         id: LootKind.KINN,
@@ -223,7 +224,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         dropDescription: "Der gute von Müller",
         emote: "🥛",
         asset: "assets/loot/09-ayran.png",
-        initialAttributes: [LootAttributeKindId.NUTRI_SCORE_D], // Ref: https://de.openfoodfacts.org/produkt/4388860730685/ayran-ja
+        initialAttributes: [LootAttributeKind.NUTRI_SCORE_D], // Ref: https://de.openfoodfacts.org/produkt/4388860730685/ayran-ja
     },
     [LootKind.PKV]: {
         id: LootKind.PKV,
@@ -314,7 +315,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         dropDescription: "Ja dann Prost ne!",
         emote: "🍺",
         asset: "assets/loot/16-oettinger.png",
-        initialAttributes: [LootAttributeKindId.NUTRI_SCORE_B], // Ref: https://archive.is/aonnZ
+        initialAttributes: [LootAttributeKind.NUTRI_SCORE_B], // Ref: https://archive.is/aonnZ
     },
     [LootKind.ACHIEVEMENT]: {
         id: LootKind.ACHIEVEMENT,
@@ -371,7 +372,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         dropDescription: "Fürs Frühstück oder so",
         emote: ":sahne:",
         asset: "assets/loot/22-sahne.png",
-        initialAttributes: [LootAttributeKindId.NUTRI_SCORE_D], // Ref: https://de.openfoodfacts.org/produkt/4311501745663/spr%C3%BChsahne-gut-g%C3%BCnstig
+        initialAttributes: [LootAttributeKind.NUTRI_SCORE_D], // Ref: https://de.openfoodfacts.org/produkt/4311501745663/spr%C3%BChsahne-gut-g%C3%BCnstig
     },
     [LootKind.AEHRE]: {
         id: LootKind.AEHRE,
@@ -405,7 +406,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         dropDescription: "Erfrischend erquickend. Besonders mit Vodka. Oder Korn.",
         asset: "assets/loot/25-powerade-blau.jpg",
         emote: ":powerade:",
-        initialAttributes: [LootAttributeKindId.NUTRI_SCORE_D], // Ref: https://de.openfoodfacts.org/produkt/90357350/powerrade-mountain-blast-blue-coca-cola
+        initialAttributes: [LootAttributeKind.NUTRI_SCORE_D], // Ref: https://de.openfoodfacts.org/produkt/90357350/powerrade-mountain-blast-blue-coca-cola
     },
     [LootKind.GAULOISES_BLAU]: {
         id: LootKind.GAULOISES_BLAU,
@@ -477,7 +478,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         dropDescription: "Du hättest ihn früher essen sollen",
         emote: "🥙",
         asset: null,
-        initialAttributes: [LootAttributeKindId.NUTRI_SCORE_E],
+        initialAttributes: [LootAttributeKind.NUTRI_SCORE_E],
     },
     [LootKind.THUNFISCHSHAKE]: {
         id: LootKind.THUNFISCHSHAKE,
@@ -487,7 +488,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         dropDescription: "Nach Rezept zubereitet, bestehend aus Thunfisch und Reiswaffeln",
         emote: "🍼",
         asset: "assets/loot/33-thunfischshake.jpg",
-        initialAttributes: [LootAttributeKindId.NUTRI_SCORE_A],
+        initialAttributes: [LootAttributeKind.NUTRI_SCORE_A],
     },
     [LootKind.KAFFEEMUEHLE]: {
         id: LootKind.KAFFEEMUEHLE,
@@ -515,7 +516,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         dropDescription: "Bóbr kurwa! Ja pierdolę! Jakie bydlę!",
         emote: "🦫",
         asset: "assets/loot/36-biber.jpg",
-        initialAttributes: [LootAttributeKindId.SWEET],
+        initialAttributes: [LootAttributeKind.SWEET],
     },
     [LootKind.BLEI]: {
         id: LootKind.BLEI,
@@ -670,7 +671,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
             "Schon seit 1977 erobert unser roter Superstar die Herzen aller Snack-Liebhaber. Er ist nicht nur praktisch, lecker und immer für eine gute Portion Spaß zu haben, sondern auch ohne Gentechnik und ohne Zusatz von Konservierungsstoffen. Dank der natürlichen Reifung in seiner Wachshülle ist er außerdem laktosefrei sowie reich an Protein und Kalzium.",
         emote: "🧀",
         asset: "assets/loot/43-bb-original.png",
-        initialAttributes: [LootAttributeKindId.NUTRI_SCORE_C],
+        initialAttributes: [LootAttributeKind.NUTRI_SCORE_C],
     },
     [LootKind.BABYBEL_LIGHT]: {
         id: LootKind.BABYBEL_LIGHT,
@@ -680,7 +681,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         dropDescription: "Der kleine Käse mit der roten Wachsverpackung, mit weniger Fett!",
         emote: "🧀",
         asset: "assets/loot/44-bb-light.png",
-        initialAttributes: [LootAttributeKindId.NUTRI_SCORE_C],
+        initialAttributes: [LootAttributeKind.NUTRI_SCORE_C],
     },
     [LootKind.BABYBEL_CHEDDAR]: {
         id: LootKind.BABYBEL_CHEDDAR,
@@ -691,7 +692,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
             "Mini Babybel® mit Cheddar-Geschmack erfreut Groß und Klein und bringt Abwechslung in die Lunch-Box.\n\nFür Vegetarier geeignet.",
         emote: "🧀",
         asset: "assets/loot/45-bb-cheddar.png",
-        initialAttributes: [LootAttributeKindId.NUTRI_SCORE_D],
+        initialAttributes: [LootAttributeKind.NUTRI_SCORE_D],
     },
     [LootKind.BABYBEL_EMMENTALER]: {
         id: LootKind.BABYBEL_EMMENTALER,
@@ -702,7 +703,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
             "Mini Babybel® mit feinem Emmentaler-Geschmack sorgt für herzhafte Snack-Momente und bereitet viel Vergnügen bei Groß und Klein.",
         emote: "🧀",
         asset: "assets/loot/46-bb-emmentaler.png",
-        initialAttributes: [LootAttributeKindId.NUTRI_SCORE_D],
+        initialAttributes: [LootAttributeKind.NUTRI_SCORE_D],
     },
     [LootKind.BABYBEL_PROTEIN]: {
         id: LootKind.BABYBEL_PROTEIN,
@@ -713,7 +714,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
             "Lecker Käse in rotem Wachs. Genau der gleiche wie der blaue, aber für echte Männer.",
         emote: "🧀",
         asset: "assets/loot/47-bb-protein.png",
-        initialAttributes: [LootAttributeKindId.NUTRI_SCORE_C],
+        initialAttributes: [LootAttributeKind.NUTRI_SCORE_C],
     },
     [LootKind.BABYBEL_GOUDA]: {
         id: LootKind.BABYBEL_GOUDA,
@@ -724,7 +725,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
             "Babybel® Unser Würziger ist eine Varietät des klassischen Babybel® Original. Er vereint alle Vorteile eines leckeren Käse-Snacks mit einem würzig-nussigen Geschmack (wir wollten es nicht einfach nur Gouda nennen) und sorgt auf diese Weise für ein etwas intensiveres Babybel®-Erlebnis.\n\nDurch seinen intensiv-herzhaften Geschmack eignet sich der würzig-leckere Snack sehr gut für den kleinen Hunger zwischendurch und bietet damit auch Käseliebhabern mit einem intensiveren Käsegeschmack eine optimale Ergänzung zur klassischen Variante.",
         emote: "🧀",
         asset: "assets/loot/48-bb-gouda.png",
-        initialAttributes: [LootAttributeKindId.NUTRI_SCORE_D],
+        initialAttributes: [LootAttributeKind.NUTRI_SCORE_D],
     },
     [LootKind.BABYBEL_VEGAN]: {
         id: LootKind.BABYBEL_VEGAN,
@@ -735,7 +736,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
             "Den beliebten Babybel® gibt es jetzt auch als vegane Käsealternative, ganz ohne Milch und schnell erkennbar dank seiner grünen Wachshülle. Mit seinem milden Geschmack und der cremigen Textur ist der vegane Babybel® eine leckere und praktische Alternative als Snack für zuhause oder unterwegs.\n\nDer vegane Babybel® ist erhältlich im praktischen, recyclebaren Papierbeutel und ist eigentlich nur ein Block Kokosfett mit Salz.",
         emote: "🧀",
         asset: "assets/loot/49-bb-vegan.png",
-        initialAttributes: [LootAttributeKindId.NUTRI_SCORE_E],
+        initialAttributes: [LootAttributeKind.NUTRI_SCORE_E],
     },
     [LootKind.BABYBEL_EXODIA]: {
         id: LootKind.BABYBEL_EXODIA,
@@ -745,7 +746,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         dropDescription: "Du hast das Spiel gewonnen.",
         emote: "🧀",
         asset: "assets/loot/50-bb-exodia.png",
-        initialAttributes: [LootAttributeKindId.NUTRI_SCORE_E],
+        initialAttributes: [LootAttributeKind.NUTRI_SCORE_E],
     },
 } as const;
 
@@ -768,69 +769,69 @@ export const lootTemplates: LootTemplate[] = Object.values(lootTemplateMap);
  */
 export const lootAttributeTemplates: LootAttributeTemplate[] = [
     {
-        id: LootAttributeKindId.RARITY_NORMAL,
+        id: LootAttributeKind.RARITY_NORMAL,
         classId: LootAttributeClass.RARITY,
         displayName: "Normal",
         shortDisplay: "",
         initialDropWeight: 90,
     },
     {
-        id: LootAttributeKindId.RARITY_RARE,
+        id: LootAttributeKind.RARITY_RARE,
         classId: LootAttributeClass.RARITY,
         displayName: "Selten",
         shortDisplay: "⭐",
         initialDropWeight: 10,
     },
     {
-        id: LootAttributeKindId.RARITY_VERY_RARE,
+        id: LootAttributeKind.RARITY_VERY_RARE,
         classId: LootAttributeClass.RARITY,
         displayName: "Sehr Selten",
         shortDisplay: "🌟",
         initialDropWeight: 1,
     },
     {
-        id: LootAttributeKindId.RADIOACTIVE,
+        id: LootAttributeKind.RADIOACTIVE,
         classId: LootAttributeClass.OTHER,
         displayName: "Verstrahlt",
         shortDisplay: "☢️",
         color: 0xff_ff_ff,
     },
     {
-        id: LootAttributeKindId.SWEET,
+        id: LootAttributeKind.SWEET,
         classId: LootAttributeClass.OTHER,
         displayName: "Süß",
         shortDisplay: "🍬",
     },
     {
-        id: LootAttributeKindId.NUTRI_SCORE_A,
+        id: LootAttributeKind.NUTRI_SCORE_A,
         classId: LootAttributeClass.NUTRI_SCORE,
         displayName: "Nutri-Score A",
         shortDisplay: "🟩",
         color: 0x00_ff_00,
     },
     {
-        id: LootAttributeKindId.NUTRI_SCORE_B,
+        id: LootAttributeKind.NUTRI_SCORE_B,
         classId: LootAttributeClass.NUTRI_SCORE,
         displayName: "Nutri-Score B",
         shortDisplay: "🟨",
         color: 0x99_ff_00,
     },
     {
-        id: LootAttributeKindId.NUTRI_SCORE_C,
+        id: LootAttributeKind.NUTRI_SCORE_C,
         classId: LootAttributeClass.NUTRI_SCORE,
         displayName: "Nutri-Score C",
         shortDisplay: "🟧",
         color: 0xff_ff_00,
     },
     {
-        id: LootAttributeKindId.NUTRI_SCORE_D,
+        id: LootAttributeKind.NUTRI_SCORE_D,
         classId: LootAttributeClass.NUTRI_SCORE,
         displayName: "Nutri-Score D",
         shortDisplay: "🟥",
         color: 0xff_99_00,
     },
     {
-        id: LootAttributeKindId.NUTRI_SCORE_E,
+        id: LootAttributeKind.NUTRI_SCORE_E,
         classId: LootAttributeClass.NUTRI_SCORE,
         displayName: "Nutri-Score E",
         shortDisplay: "🟥",
