@@ -38,4 +38,4 @@ FROM node:alpine
     RUN echo "RELEASE_IDENTIFIER=${RELEASE_IDENTIFIER:-debug}" >> /app/.env && \
         echo "BUILD_NUMBER=${BUILD_NUMBER:-0}" >> /app/.env
 
-    ENTRYPOINT ["./node_modules/.bin/tsx", "--env-file", "/app/.env", "src/app.ts"]
+    ENTRYPOINT ["node", "--env-file", "/app/.env", "src/app.ts"]
