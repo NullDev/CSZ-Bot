@@ -1,10 +1,10 @@
 import type { User } from "discord.js";
 
 import db from "#db";
-import type { Equipable, FightItemType } from "#service/fightData.js";
-import type { Loot } from "#storage/db/model.js";
-import { type LootKindId, resolveLootTemplate } from "#service/lootData.js";
-import * as lootStorage from "#storage/loot.js";
+import type { Equipable, FightItemType } from "#service/fightData.ts";
+import type { Loot } from "#storage/db/model.ts";
+import { type LootKindId, resolveLootTemplate } from "#service/lootData.ts";
+import * as lootStorage from "#storage/loot.ts";
 
 export async function getFightInventoryUnsorted(userId: User["id"], ctx = db()) {
     return await ctx

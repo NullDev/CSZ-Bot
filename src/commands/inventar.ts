@@ -17,7 +17,7 @@ import * as lootDataService from "#service/lootData.ts";
 import { LootAttributeKind } from "#service/lootData.ts";
 
 import log from "#log";
-import { getFightInventoryEnriched } from "#storage/fightInventory.js";
+import { getFightInventoryEnriched } from "#storage/fightInventory.ts";
 
 export default class InventarCommand implements ApplicationCommand {
     name = "inventar";

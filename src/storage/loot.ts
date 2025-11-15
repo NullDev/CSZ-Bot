@@ -27,7 +27,7 @@ import {
     type LootAttributeKindId,
     type LootAttributeClassId,
 } from "#service/lootData.ts";
-import type { Equipable } from "#service/fightData.js";
+import type { Equipable } from "#service/fightData.ts";
 
 export type LootUseCommandInteraction = ChatInputCommandInteraction & {
     channel: GuildTextBasedChannel;

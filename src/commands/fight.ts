@@ -21,9 +21,9 @@ import {
     type EquipableItem,
     type EquipableWeapon,
     type FightScene,
-} from "#service/fightData.js";
-import { getFightInventoryEnriched, removeItemsAfterFight } from "#/storage/fightInventory.js";
-import { getLastFight, insertResult } from "#/storage/fightHistory.js";
+} from "#service/fightData.ts";
+import { getFightInventoryEnriched, removeItemsAfterFight } from "#/storage/fightInventory.ts";
+import { getLastFight, insertResult } from "#/storage/fightHistory.ts";
 
 async function getFighter(user: User): Promise<BaseEntity> {
     const userInventory = await getFightInventoryEnriched(user.id);

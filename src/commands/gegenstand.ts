@@ -25,7 +25,7 @@ import * as imageService from "#service/image.ts";
 import * as lootDataService from "#service/lootData.ts";
 import { LootAttributeKind, LootKind } from "#service/lootData.ts";
 
-import { equipItembyLoot, getFightInventoryUnsorted } from "#storage/fightInventory.js";
+import { equipItembyLoot, getFightInventoryUnsorted } from "#storage/fightInventory.ts";
 import log from "#log";
 
 export default class GegenstandCommand implements ApplicationCommand {

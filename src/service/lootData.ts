@@ -6,7 +6,7 @@ import * as emoteService from "#service/emote.ts";
 import * as bahnCardService from "#service/bahncard.ts";
 import { GuildMember, type Guild } from "discord.js";
 import type { Loot, LootAttribute } from "#storage/db/model.ts";
-import { fightTemplates } from "#service/fightData.js";
+import { fightTemplates } from "#service/fightData.ts";
 
 const ACHTUNG_NICHT_DROPBAR_WEIGHT_KG = 0;
 
@@ -389,7 +389,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         asset: "assets/loot/23-ehre.jpg",
         excludeFromInventory: true,
         onDrop: async (_context, winner, _channel, _loot) => {
-            const ehre = await import("#/storage/ehre.js");
+            const ehre = await import("#/storage/ehre.ts");
             await ehre.addPoints(winner.id, 1);
         },
     },
