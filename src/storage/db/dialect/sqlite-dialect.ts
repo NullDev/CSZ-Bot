@@ -56,7 +56,7 @@ export class SqliteDialect implements Dialect {
         return new SqliteAdapter();
     }
 
-    createIntrospector(db: Kysely<any>): DatabaseIntrospector {
+    createIntrospector(db: Kysely<unknown>): DatabaseIntrospector {
         return new SqliteIntrospector(db);
     }
 }
