@@ -12,11 +12,11 @@ import {
 } from "discord.js";
 import * as sentry from "@sentry/node";
 
-import type { ApplicationCommand } from "@/commands/command.js";
+import type { ApplicationCommand } from "#commands/command.ts";
 
-import * as stempelService from "@/service/stempel.js";
-import { chunkArray } from "@/utils/arrayUtils.js";
-import log from "@log";
+import * as stempelService from "#service/stempel.ts";
+import { chunkArray } from "#utils/arrayUtils.ts";
+import log from "#log";
 
 const stempelLocations = [
     // 1-3

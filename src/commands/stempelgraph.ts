@@ -10,10 +10,10 @@ import {
 import { Resvg } from "@resvg/resvg-js";
 import * as sentry from "@sentry/node";
 
-import type { ApplicationCommand } from "@/commands/command.js";
-import type { BotContext } from "@/context.js";
-import * as stempelService from "@/service/stempel.js";
-import log from "@log";
+import type { ApplicationCommand } from "#commands/command.ts";
+import type { BotContext } from "#context.ts";
+import * as stempelService from "#service/stempel.ts";
+import log from "#log";
 
 const supportedLayoutEngines = [
     "circo",

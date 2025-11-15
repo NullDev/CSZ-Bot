@@ -1,6 +1,6 @@
 import type { User } from "discord.js";
 
-import * as ehre from "@/storage/ehre.js";
+import * as ehre from "#storage/ehre.ts";
 
 export async function addEhre(thankingUser: User, ehrenbruder: User): Promise<string> {
     if (thankingUser.id === ehrenbruder.id) {

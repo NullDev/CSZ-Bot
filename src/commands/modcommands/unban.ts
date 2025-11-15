@@ -6,10 +6,10 @@ import {
 } from "discord.js";
 import type { Message, CommandInteraction, PermissionsString } from "discord.js";
 
-import type { ApplicationCommand, MessageCommand } from "@/commands/command.js";
-import type { BotContext } from "@/context.js";
+import type { ApplicationCommand, MessageCommand } from "#commands/command.ts";
+import type { BotContext } from "#context.ts";
 
-import * as banService from "@/service/ban.js";
+import * as banService from "#service/ban.ts";
 
 export default class UnbanCommand implements ApplicationCommand, MessageCommand {
     name = "unban";

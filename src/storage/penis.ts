@@ -1,9 +1,9 @@
 import type { Snowflake, User } from "discord.js";
 
-import type { Penis } from "@/storage/db/model.js";
+import type { Penis } from "#storage/db/model.ts";
 
-import db from "@db";
-import log from "@log";
+import db from "#db";
+import log from "#log";
 
 export function insertMeasurement(
     user: User,

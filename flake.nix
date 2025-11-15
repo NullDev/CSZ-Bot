@@ -20,9 +20,7 @@
             pkg-config
             cairo
             pango
-            biome
-            nodejs_24
-            typescript
+            nodejs_25
           ] ++ lib.optionals stdenv.isDarwin (with darwin.apple_sdk.frameworks; [
             CoreText
           ]);

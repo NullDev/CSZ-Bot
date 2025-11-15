@@ -1,8 +1,8 @@
 import { channelMention } from "discord.js";
-import type { BotContext } from "@/context.js";
-import type { MessageCommand } from "@/commands/command.js";
-import * as commandService from "@/service/command.js";
-import * as chunking from "@/service/chunking.js";
+import type { BotContext } from "#context.ts";
+import type { MessageCommand } from "#commands/command.ts";
+import * as commandService from "#service/command.ts";
+import * as chunking from "#service/chunking.ts";
 
 export default class HilfeCommand implements MessageCommand {
     name = "hilfe";

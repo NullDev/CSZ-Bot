@@ -18,10 +18,10 @@ import type { VoiceChannel } from "discord.js";
 import * as gad from "get-audio-duration";
 import * as sentry from "@sentry/node";
 
-import type { BotContext } from "@/context.js";
+import type { BotContext } from "#context.ts";
 
-import { randomEntry } from "@/service/random.js";
-import log from "@log";
+import { randomEntry } from "#service/random.ts";
+import log from "#log";
 
 const player = createAudioPlayer();
 

@@ -1,6 +1,6 @@
-import type { BotContext } from "@/context.js";
-import type { ProcessableMessage } from "@/service/command.js";
-import type { MessageCommand } from "@/commands/command.js";
+import type { BotContext } from "#context.ts";
+import type { ProcessableMessage } from "#service/command.ts";
+import type { MessageCommand } from "#commands/command.ts";
 
 const prices = {
     kebab: 5.5,

@@ -14,8 +14,8 @@ import type {
 import { ChannelType } from "discord.js";
 import { Temporal } from "@js-temporal/polyfill";
 
-import type { UserMapEntry } from "@/commands/aoc.js";
-import { readConfig } from "@/service/config.js";
+import type { UserMapEntry } from "#commands/aoc.ts";
+import { readConfig } from "#service/config.ts";
 import { SpotifyApi } from "@spotify/web-api-ts-sdk";
 
 /**
@@ -35,6 +35,8 @@ export interface BotContext {
         command: string;
         modCommand: string;
     };
+
+    sendWelcomeMessage: boolean;
 
     spotifyClient: SpotifyApi | null;
 
@@ -219,6 +221,7 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
             command: config.prefix.command,
             modCommand: config.prefix.modCommand,
         },
+        sendWelcomeMessage: config.sendWelcomeMessage ?? false,
         spotifyClient:
             config.spotify?.clientId && config.spotify?.clientSecret
                 ? SpotifyApi.withClientCredentials(

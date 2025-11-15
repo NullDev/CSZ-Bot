@@ -1,6 +1,10 @@
 import type { ClientUser, Message } from "discord.js";
 
-import type { BotContext } from "@/context.js";
+import type { BotContext } from "#context.ts";
+
+import * as pollService from "#service/poll.ts";
+
+import log from "#log";
 
 const deleteInlineRepliesFromBot = (messageRef: Message<true>, botUser: ClientUser) =>
     Promise.allSettled(
@@ -17,6 +21,8 @@ export default async function (message: Message<true>, context: BotContext) {
         return;
     }
 
+    await handlePollDeletion(message);
+
     const isNormalCommand =
         message.content.startsWith(context.prefix.command) ||
         message.content.startsWith(context.prefix.modCommand);
@@ -24,4 +30,14 @@ export default async function (message: Message<true>, context: BotContext) {
     if (isNormalCommand) {
         await deleteInlineRepliesFromBot(message, context.client.user);
     }
+}
+
+async function handlePollDeletion(message: Message<true>) {
+    const foundPoll = await pollService.findPollForEmbedMessage(message);
+    if (!foundPoll) {
+        return;
+    }
+
+    const deletedPoll = await pollService.deletePoll(foundPoll.id);
+    log.info(deletedPoll, "Poll deleted");
 }
