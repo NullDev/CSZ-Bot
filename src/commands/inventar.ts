@@ -14,7 +14,7 @@ import type { ApplicationCommand } from "#commands/command.ts";
 import * as lootService from "#service/loot.ts";
 import { ensureChatInputCommand } from "#utils/interactionUtils.ts";
 import * as lootDataService from "#service/lootData.ts";
-import { LootAttributeKindId } from "#service/lootData.ts";
+import { LootAttributeKind } from "#service/lootData.ts";
 
 import log from "#log";
 import { getFightInventoryEnriched } from "#storage/fightInventory.js";
@@ -80,7 +80,7 @@ export default class InventarCommand implements ApplicationCommand {
                     const rarityAttribute = lootDataService.extractRarityAttribute(item.attributes);
                     const rarity =
                         rarityAttribute &&
-                        rarityAttribute.attributeKindId !== LootAttributeKindId.RARITY_NORMAL
+                        rarityAttribute.attributeKindId !== LootAttributeKind.RARITY_NORMAL
                             ? ` (${rarityAttribute.displayName})`
                             : "";
 

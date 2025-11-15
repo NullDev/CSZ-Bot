@@ -21,7 +21,12 @@ import type {
 
 import db from "#db";
 
-import { resolveLootAttributeTemplate, type LootAttributeKindId } from "#service/lootData.ts";
+import {
+    type LootKindId,
+    resolveLootAttributeTemplate,
+    type LootAttributeKindId,
+    type LootAttributeClassId,
+} from "#service/lootData.ts";
 import type { Equipable } from "#service/fightData.js";
 
 export type LootUseCommandInteraction = ChatInputCommandInteraction & {
@@ -29,7 +34,7 @@ export type LootUseCommandInteraction = ChatInputCommandInteraction & {
 };
 
 export interface LootTemplate {
-    id: number;
+    id: LootKindId;
     weight: number;
     displayName: string;
     titleText: string;
@@ -85,8 +90,8 @@ export interface LootTemplate {
 }
 
 export interface LootAttributeTemplate {
-    id: number;
-    classId: number;
+    id: LootAttributeKindId;
+    classId: LootAttributeClassId;
     displayName: string;
     shortDisplay: string;
     color?: number;
@@ -96,15 +101,16 @@ export interface LootAttributeTemplate {
 const notDeleted = (eb: ExpressionBuilder<Database, "loot" | "lootAttribute">) =>
     eb.or([eb("deletedAt", "is", null), eb("deletedAt", ">", sql<string>`current_timestamp`)]);
 
-const hasAttribute = (attributeKindId: number) => (eb: ExpressionBuilder<Database, "loot">) =>
-    eb(
-        "id",
-        "in",
-        eb
-            .selectFrom("lootAttribute")
-            .where("attributeKindId", "=", attributeKindId)
-            .select("lootId"),
-    );
+const hasAttribute =
+    (attributeKindId: LootAttributeKindId) => (eb: ExpressionBuilder<Database, "loot">) =>
+        eb(
+            "id",
+            "in",
+            eb
+                .selectFrom("lootAttribute")
+                .where("attributeKindId", "=", attributeKindId)
+                .select("lootId"),
+        );
 
 export async function createLoot(
     template: LootTemplate,
@@ -201,7 +207,7 @@ export async function findOfMessage(message: Message<true>, ctx = db()) {
         .executeTakeFirst();
 }
 
-export async function getUserLootsByTypeId(userId: User["id"], lootKindId: number, ctx = db()) {
+export async function getUserLootsByTypeId(userId: User["id"], lootKindId: LootKindId, ctx = db()) {
     return await ctx
         .selectFrom("loot")
         .where("winnerId", "=", userId)
@@ -213,7 +219,7 @@ export async function getUserLootsByTypeId(userId: User["id"], lootKindId: numbe
 
 export async function getUserLootsWithAttribute(
     userId: User["id"],
-    attributeKindId: number,
+    attributeKindId: LootAttributeKindId,
     ctx = db(),
 ) {
     return await ctx
@@ -235,7 +241,7 @@ export async function getUserLootById(userId: User["id"], lootId: LootId, ctx = 
         .executeTakeFirst();
 }
 
-export async function getLootsByKindId(lootKindId: number, ctx = db()) {
+export async function getLootsByKindId(lootKindId: LootKindId, ctx = db()) {
     return await ctx
         .selectFrom("loot")
         .where("lootKindId", "=", lootKindId)
@@ -244,7 +250,7 @@ export async function getLootsByKindId(lootKindId: number, ctx = db()) {
         .execute();
 }
 
-export async function getLootsWithAttribute(attributeKindId: number, ctx = db()) {
+export async function getLootsWithAttribute(attributeKindId: LootAttributeKindId, ctx = db()) {
     return await ctx
         .selectFrom("loot")
         .where(notDeleted)

@@ -10,8 +10,8 @@ import {
     type QueryCompiler,
 } from "kysely";
 
-import type { SqliteDialectConfig } from "./sqlite-dialect-config.js";
-import { SqliteDriver } from "./sqlite-driver.js";
+import type { SqliteDialectConfig } from "./sqlite-dialect-config.ts";
+import { SqliteDriver } from "./sqlite-driver.ts";
 
 /**
  * SQLite dialect that uses the [better-sqlite3](https://github.com/JoshuaWise/better-sqlite3) library.
