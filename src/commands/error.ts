@@ -7,7 +7,7 @@ export default class ErrorCommand implements MessageCommand {
     description = "Macht ne exception. Mehr nicht.";
 
     async handleMessage(_: ProcessableMessage, _context: BotContext): Promise<void> {
-        // (await import("../service/lootDegradation.js")).runHalfLife(context);
+        // (await import("../service/lootDegradation.ts")).runHalfLife(context);
         throw new Error("Fehler!");
     }
 }
