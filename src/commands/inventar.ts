@@ -149,41 +149,44 @@ export default class InventarCommand implements ApplicationCommand {
 }
 
 type CircleItem = { path: string; target: Vec2; size?: Vec2 };
-const lookup: Record<string, CircleItem> = {
-    "bb-cheddar": {
+const lookup: Partial<Record<lootDataService.LootKindId, CircleItem>> = {
+    [lootDataService.LootKind.BABYBEL_CHEDDAR]: {
         path: "assets/inventory/bb-cheddar.png",
         target: new Vec2(42, 200),
         size: new Vec2(40, 40),
     },
-    "bb-emmentaler": {
+    [lootDataService.LootKind.BABYBEL_EMMENTALER]: {
         path: "assets/inventory/bb-emmentaler.png",
         target: new Vec2(61, 120),
         size: new Vec2(40, 40),
     },
-    "bb-gouda": {
+    [lootDataService.LootKind.BABYBEL_GOUDA]: {
         path: "assets/inventory/bb-gouda.png",
         target: new Vec2(337, 120),
         size: new Vec2(40, 40),
     },
-    "bb-light": { path: "assets/inventory/bb-light.png", target: new Vec2(337, 276) },
-    "bb-original": {
+    [lootDataService.LootKind.BABYBEL_LIGHT]: {
+        path: "assets/inventory/bb-light.png",
+        target: new Vec2(337, 276),
+    },
+    [lootDataService.LootKind.BABYBEL_ORIGINAL]: {
         path: "assets/inventory/bb-original.png",
         target: new Vec2(200, 200),
         size: new Vec2(40, 40),
     },
-    "bb-protein": {
+    [lootDataService.LootKind.BABYBEL_PROTEIN]: {
         path: "assets/inventory/bb-protein.png",
         target: new Vec2(61, 276),
         size: new Vec2(40, 40),
     },
-    "bb-vegan": {
+    [lootDataService.LootKind.BABYBEL_VEGAN]: {
         path: "assets/inventory/bb-vegan.png",
         target: new Vec2(200, 353),
         size: new Vec2(40, 40),
     },
 };
 
-async function drawBbCircle(contents: Set<string>) {
+async function drawBbCircle(contents: Set<lootDataService.LootKindId>) {
     const circle = await fs.readFile("assets/inventory/bb-circle.png");
     const circleImage = await loadImage(circle);
 
