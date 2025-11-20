@@ -278,6 +278,7 @@ export default class NicknameCommand implements ApplicationCommand, Autocomplete
         const collector = reply.createMessageComponentCollector({
             componentType: ComponentType.Button,
             time: time.minutes(5),
+            filter: i => i.customId === "nickname-vote-yes" || i.customId === "nickname-vote-no",
         });
 
         const votes: Record<Snowflake, UserVote> = {
