@@ -160,41 +160,44 @@ export default class InventarCommand implements ApplicationCommand {
     }
 }
 
-type CircleItem = { path: string; target: Vec2; size?: Vec2 };
+const size = new Vec2(80, 80);
+
+type CircleItem = { path: string; target: Vec2; size: Vec2 };
 const lookup: Partial<Record<lootDataService.LootKindId, CircleItem>> = {
     [lootDataService.LootKind.BABYBEL_CHEDDAR]: {
         path: "assets/inventory/bb-cheddar.png",
-        target: new Vec2(42, 200),
-        size: new Vec2(40, 40),
+        target: new Vec2(200, 42),
+        size,
     },
     [lootDataService.LootKind.BABYBEL_EMMENTALER]: {
         path: "assets/inventory/bb-emmentaler.png",
         target: new Vec2(61, 120),
-        size: new Vec2(40, 40),
+        size,
     },
     [lootDataService.LootKind.BABYBEL_GOUDA]: {
         path: "assets/inventory/bb-gouda.png",
         target: new Vec2(337, 120),
-        size: new Vec2(40, 40),
+        size,
     },
     [lootDataService.LootKind.BABYBEL_LIGHT]: {
         path: "assets/inventory/bb-light.png",
         target: new Vec2(337, 276),
+        size,
     },
     [lootDataService.LootKind.BABYBEL_ORIGINAL]: {
         path: "assets/inventory/bb-original.png",
         target: new Vec2(200, 200),
-        size: new Vec2(40, 40),
+        size,
     },
     [lootDataService.LootKind.BABYBEL_PROTEIN]: {
         path: "assets/inventory/bb-protein.png",
         target: new Vec2(61, 276),
-        size: new Vec2(40, 40),
+        size,
     },
     [lootDataService.LootKind.BABYBEL_VEGAN]: {
         path: "assets/inventory/bb-vegan.png",
         target: new Vec2(200, 353),
-        size: new Vec2(40, 40),
+        size,
     },
 };
 
@@ -209,21 +212,15 @@ async function drawBbCircle(contents: Set<lootDataService.LootKindId>) {
 
     for (const id of contents) {
         const entry = lookup[id];
-        if (!entry) continue;
+        if (!entry) {
+            continue;
+        }
 
         try {
             const buf = await fs.readFile(entry.path);
             const img = await loadImage(buf);
 
-            // center all images: compute draw position by subtracting half of the image dimensions
-            const offset = new Vec2(img.width / 2, img.height / 2);
-            const drawPos = entry.target.minus(offset);
-
-            if (entry.size) {
-                ctx.drawImageEx(drawPos, entry.size, img);
-            } else {
-                ctx.drawImage(img, drawPos.x, drawPos.y);
-            }
+            ctx.drawImageEx(entry.target.minus(entry.size.scale(0.5)), entry.size, img);
         } catch (err) {
             log.warn(`Failed to draw inventory item '${id}': ${err}`);
         }
