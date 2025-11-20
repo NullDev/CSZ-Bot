@@ -1,3 +1,4 @@
+import * as fs from "node:fs/promises";
 import {
     ActionRowBuilder,
     ButtonBuilder,
@@ -10,6 +11,7 @@ import {
     TextDisplayBuilder,
     type User,
 } from "discord.js";
+import { createCanvas, loadImage } from "@napi-rs/canvas";
 
 import type { BotContext } from "#context.ts";
 import type { ApplicationCommand } from "#commands/command.ts";
@@ -19,6 +21,8 @@ import * as lootDataService from "#service/lootData.ts";
 import { LootAttributeKind } from "#service/lootData.ts";
 
 import log from "#log";
+import { extendContext } from "#utils/ExtendedCanvasContext.ts";
+import { Vec2 } from "#utils/math.ts";
 
 export default class InventarCommand implements ApplicationCommand {
     name = "inventar";
@@ -142,4 +146,59 @@ export default class InventarCommand implements ApplicationCommand {
             });
         });
     }
+}
+
+async function drawBbCircle(contents: Set<string>) {
+    const circle = await fs.readFile("assets/inventory/bb-circle.png");
+    const circleImage = await loadImage(circle);
+
+    const canvas = createCanvas(circleImage.width, circleImage.height);
+    const ctx = extendContext(canvas.getContext("2d"));
+
+    ctx.drawImage(circleImage, 0, 0);
+
+    const size = new Vec2(40, 40);
+
+    if (contents.has("bb-cheddar")) {
+        const file = await fs.readFile("assets/inventory/bb-cheddar.png");
+        const image = await loadImage(file);
+        const target = new Vec2(42, 200);
+        ctx.drawImageEx(target.minus(new Vec2(image.width / 2, image.height / 2)), size, image);
+    }
+    if (contents.has("bb-emmentaler")) {
+        const file = await fs.readFile("assets/inventory/bb-emmentaler.png");
+        const image = await loadImage(file);
+        const target = new Vec2(61, 120);
+        ctx.drawImageEx(target.minus(new Vec2(image.width / 2, image.height / 2)), size, image);
+    }
+    if (contents.has("bb-gouda")) {
+        const file = await fs.readFile("assets/inventory/bb-gouda.png");
+        const image = await loadImage(file);
+        const target = new Vec2(337, 120);
+        ctx.drawImageEx(target.minus(new Vec2(image.width / 2, image.height / 2)), size, image);
+    }
+    if (contents.has("bb-light")) {
+        const bbLight = await fs.readFile("assets/inventory/bb-light.png");
+        const bbLightImage = await loadImage(bbLight);
+        ctx.drawImage(bbLightImage, 337, 276);
+    }
+    if (contents.has("bb-original")) {
+        const file = await fs.readFile("assets/inventory/bb-original.png");
+        const image = await loadImage(file);
+        const target = new Vec2(200, 200);
+        ctx.drawImageEx(target.minus(new Vec2(image.width / 2, image.height / 2)), size, image);
+    }
+    if (contents.has("bb-protein")) {
+        const file = await fs.readFile("assets/inventory/bb-protein.png");
+        const image = await loadImage(file);
+        const target = new Vec2(61, 276);
+        ctx.drawImageEx(target.minus(new Vec2(image.width / 2, image.height / 2)), size, image);
+    }
+    if (contents.has("bb-vegan")) {
+        const file = await fs.readFile("assets/inventory/bb-vegan.png");
+        const image = await loadImage(file);
+        const target = new Vec2(200, 353);
+        ctx.drawImageEx(target.minus(new Vec2(image.width / 2, image.height / 2)), size, image);
+    }
+    return await canvas.encode("png");
 }
