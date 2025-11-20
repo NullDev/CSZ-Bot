@@ -84,7 +84,7 @@ export default class InventarCommand implements ApplicationCommand {
                         section
                             .setThumbnailAccessory(t => t.setURL("attachment://circle.png"))
                             .addTextDisplayComponents(t => t.setContent(`### Inventar von ${user}`))
-                            .addTextDisplayComponents(t => t.setContent(list.join("\n")))
+                            .addTextDisplayComponents(t => t.setContent(listItems.join("\n")))
                             .addTextDisplayComponents(t =>
                                 t.setContent(`-# Seite ${pageIndex + 1} von ${lastPageIndex + 1}`),
                             ),
