@@ -69,7 +69,7 @@ export default class InventarCommand implements ApplicationCommand {
                 return `${lootDataService.getEmote(context.guild, item)} ${item.displayName}${rarity} ${shortAttributeList}`.trim();
             });
 
-            const listItems = list.length > 0 ? list.map(l => `- ${l}`) : ["_leer_"];
+            const listItems = list.length > 0 ? list : ["_leer_"];
 
             return {
                 components: [
