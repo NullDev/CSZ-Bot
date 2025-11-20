@@ -83,10 +83,8 @@ export default class InventarCommand implements ApplicationCommand {
                     new ContainerBuilder().addSectionComponents(section =>
                         section
                             .setThumbnailAccessory(t => t.setURL("attachment://circle.png"))
-                            .addTextDisplayComponents(t => t.setContent(`## Inventar von ${user}`))
-                            .addTextDisplayComponents(
-                                ...listItems.map(li => new TextDisplayBuilder().setContent(li)),
-                            )
+                            .addTextDisplayComponents(t => t.setContent(`### Inventar von ${user}`))
+                            .addTextDisplayComponents(t => t.setContent(list.join("\n")))
                             .addTextDisplayComponents(t =>
                                 t.setContent(`-# Seite ${pageIndex + 1} von ${lastPageIndex + 1}`),
                             ),
