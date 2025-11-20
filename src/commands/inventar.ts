@@ -80,15 +80,17 @@ export default class InventarCommand implements ApplicationCommand {
 
             return {
                 components: [
-                    new SectionBuilder()
-                        .setThumbnailAccessory(t => t.setURL("attachment://circle.png"))
-                        .addTextDisplayComponents(t => t.setContent(`## Inventar von ${user}`))
-                        .addTextDisplayComponents(
-                            ...listItems.map(li => new TextDisplayBuilder().setContent(li)),
-                        )
-                        .addTextDisplayComponents(t =>
-                            t.setContent(`-# Seite ${pageIndex + 1} von ${lastPageIndex + 1}`),
-                        ),
+                    new ContainerBuilder().addSectionComponents(section =>
+                        section
+                            .setThumbnailAccessory(t => t.setURL("attachment://circle.png"))
+                            .addTextDisplayComponents(t => t.setContent(`## Inventar von ${user}`))
+                            .addTextDisplayComponents(
+                                ...listItems.map(li => new TextDisplayBuilder().setContent(li)),
+                            )
+                            .addTextDisplayComponents(t =>
+                                t.setContent(`-# Seite ${pageIndex + 1} von ${lastPageIndex + 1}`),
+                            ),
+                    ),
                     new ActionRowBuilder<ButtonBuilder>().addComponents(
                         new ButtonBuilder()
                             .setCustomId("page-prev")
