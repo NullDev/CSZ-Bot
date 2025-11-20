@@ -1,9 +1,13 @@
 import {
-    type APIEmbed,
+    ActionRowBuilder,
+    ButtonBuilder,
     ButtonStyle,
     type CommandInteraction,
     ComponentType,
+    ContainerBuilder,
+    MessageFlags,
     SlashCommandBuilder,
+    TextDisplayBuilder,
     type User,
 } from "discord.js";
 
@@ -52,52 +56,44 @@ export default class InventarCommand implements ApplicationCommand {
             const firstItemIndex = pageIndex * pageSize;
             const pageContents = contents.slice(firstItemIndex, firstItemIndex + pageSize);
 
-            const embed = {
-                title: `Inventar von ${user.displayName}`,
-                fields: pageContents.map(item => {
-                    const rarityAttribute = lootDataService.extractRarityAttribute(item.attributes);
-                    const rarity =
-                        rarityAttribute &&
-                        rarityAttribute.attributeKindId !== LootAttributeKind.RARITY_NORMAL
-                            ? ` (${rarityAttribute.displayName})`
-                            : "";
+            const list = pageContents.map(item => {
+                const rarityAttribute = lootDataService.extractRarityAttribute(item.attributes);
+                const rarity =
+                    rarityAttribute &&
+                    rarityAttribute.attributeKindId !== LootAttributeKind.RARITY_NORMAL
+                        ? ` (${rarityAttribute.displayName})`
+                        : "";
 
-                    const shortAttributeList = item.attributes.map(a => a.shortDisplay).join("");
+                const shortAttributeList = item.attributes.map(a => a.shortDisplay).join("");
 
-                    return {
-                        name: `${lootDataService.getEmote(context.guild, item)} ${item.displayName}${rarity} ${shortAttributeList}`.trim(),
-                        value: "",
-                        inline: false,
-                    };
-                }),
-                footer: {
-                    text: `Seite ${pageIndex + 1} von ${lastPageIndex + 1}`,
-                },
-            } satisfies APIEmbed;
+                return `${lootDataService.getEmote(context.guild, item)} ${item.displayName}${rarity} ${shortAttributeList}`.trim();
+            });
+
+            const listItems = list.length > 0 ? list.map(l => `- ${l}`) : ["_leer_"];
 
             return {
                 components: [
-                    {
-                        type: ComponentType.ActionRow,
-                        components: [
-                            {
-                                type: ComponentType.Button,
-                                label: "<<",
-                                customId: "page-prev",
-                                disabled: pageIndex <= 0,
-                                style: ButtonStyle.Secondary,
-                            },
-                            {
-                                type: ComponentType.Button,
-                                label: ">>",
-                                customId: "page-next",
-                                disabled: pageIndex >= lastPageIndex,
-                                style: ButtonStyle.Secondary,
-                            },
-                        ],
-                    },
+                    new ContainerBuilder()
+                        .addTextDisplayComponents(t => t.setContent(`## Inventar von ${user}`))
+                        .addTextDisplayComponents(
+                            ...listItems.map(li => new TextDisplayBuilder().setContent(li)),
+                        )
+                        .addTextDisplayComponents(t =>
+                            t.setContent(`-# Seite ${pageIndex + 1} von ${lastPageIndex + 1}`),
+                        ),
+                    new ActionRowBuilder<ButtonBuilder>().addComponents(
+                        new ButtonBuilder()
+                            .setCustomId("page-prev")
+                            .setLabel("<<")
+                            .setStyle(ButtonStyle.Secondary)
+                            .setDisabled(pageIndex <= 0),
+                        new ButtonBuilder()
+                            .setCustomId("page-next")
+                            .setLabel(">>")
+                            .setStyle(ButtonStyle.Secondary)
+                            .setDisabled(pageIndex >= lastPageIndex),
+                    ),
                 ],
-                embeds: [embed],
             } as const;
         }
 
@@ -105,6 +101,7 @@ export default class InventarCommand implements ApplicationCommand {
 
         const callbackResponse = await interaction.reply({
             ...buildMessageData(pageIndex),
+            flags: MessageFlags.IsComponentsV2,
             withResponse: true,
             tts: false,
         });
