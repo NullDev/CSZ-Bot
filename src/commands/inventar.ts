@@ -7,9 +7,7 @@ import {
     ComponentType,
     ContainerBuilder,
     MessageFlags,
-    SectionBuilder,
     SlashCommandBuilder,
-    TextDisplayBuilder,
     type User,
 } from "discord.js";
 import { createCanvas, loadImage } from "@napi-rs/canvas";
