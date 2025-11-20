@@ -7,6 +7,7 @@ import {
     ComponentType,
     ContainerBuilder,
     MessageFlags,
+    SectionBuilder,
     SlashCommandBuilder,
     TextDisplayBuilder,
     type User,
@@ -53,6 +54,8 @@ export default class InventarCommand implements ApplicationCommand {
             b.createdAt.localeCompare(a.createdAt),
         );
 
+        const circle = await drawBbCircle(new Set(contents.map(i => i.lootKindId)));
+
         let lastPageIndex = Math.floor(contents.length / pageSize);
         lastPageIndex -= contents.length % pageSize === 0 ? 1 : 0;
 
@@ -77,7 +80,8 @@ export default class InventarCommand implements ApplicationCommand {
 
             return {
                 components: [
-                    new ContainerBuilder()
+                    new SectionBuilder()
+                        .setThumbnailAccessory(t => t.setURL("attachment://circle.png"))
                         .addTextDisplayComponents(t => t.setContent(`## Inventar von ${user}`))
                         .addTextDisplayComponents(
                             ...listItems.map(li => new TextDisplayBuilder().setContent(li)),
@@ -108,6 +112,12 @@ export default class InventarCommand implements ApplicationCommand {
             flags: MessageFlags.IsComponentsV2,
             withResponse: true,
             tts: false,
+            files: [
+                {
+                    attachment: circle,
+                    name: "circle.png",
+                },
+            ],
         });
 
         const message = callbackResponse.resource?.message;
