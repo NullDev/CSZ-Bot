@@ -148,6 +148,41 @@ export default class InventarCommand implements ApplicationCommand {
     }
 }
 
+type CircleItem = { path: string; target: Vec2; size?: Vec2 };
+const lookup: Record<string, CircleItem> = {
+    "bb-cheddar": {
+        path: "assets/inventory/bb-cheddar.png",
+        target: new Vec2(42, 200),
+        size: new Vec2(40, 40),
+    },
+    "bb-emmentaler": {
+        path: "assets/inventory/bb-emmentaler.png",
+        target: new Vec2(61, 120),
+        size: new Vec2(40, 40),
+    },
+    "bb-gouda": {
+        path: "assets/inventory/bb-gouda.png",
+        target: new Vec2(337, 120),
+        size: new Vec2(40, 40),
+    },
+    "bb-light": { path: "assets/inventory/bb-light.png", target: new Vec2(337, 276) },
+    "bb-original": {
+        path: "assets/inventory/bb-original.png",
+        target: new Vec2(200, 200),
+        size: new Vec2(40, 40),
+    },
+    "bb-protein": {
+        path: "assets/inventory/bb-protein.png",
+        target: new Vec2(61, 276),
+        size: new Vec2(40, 40),
+    },
+    "bb-vegan": {
+        path: "assets/inventory/bb-vegan.png",
+        target: new Vec2(200, 353),
+        size: new Vec2(40, 40),
+    },
+};
+
 async function drawBbCircle(contents: Set<string>) {
     const circle = await fs.readFile("assets/inventory/bb-circle.png");
     const circleImage = await loadImage(circle);
@@ -157,48 +192,27 @@ async function drawBbCircle(contents: Set<string>) {
 
     ctx.drawImage(circleImage, 0, 0);
 
-    const size = new Vec2(40, 40);
+    for (const id of contents) {
+        const entry = lookup[id];
+        if (!entry) continue;
 
-    if (contents.has("bb-cheddar")) {
-        const file = await fs.readFile("assets/inventory/bb-cheddar.png");
-        const image = await loadImage(file);
-        const target = new Vec2(42, 200);
-        ctx.drawImageEx(target.minus(new Vec2(image.width / 2, image.height / 2)), size, image);
+        try {
+            const buf = await fs.readFile(entry.path);
+            const img = await loadImage(buf);
+
+            // center all images: compute draw position by subtracting half of the image dimensions
+            const offset = new Vec2(img.width / 2, img.height / 2);
+            const drawPos = entry.target.minus(offset);
+
+            if (entry.size) {
+                ctx.drawImageEx(drawPos, entry.size, img);
+            } else {
+                ctx.drawImage(img, drawPos.x, drawPos.y);
+            }
+        } catch (err) {
+            log.warn(`Failed to draw inventory item '${id}': ${err}`);
+        }
     }
-    if (contents.has("bb-emmentaler")) {
-        const file = await fs.readFile("assets/inventory/bb-emmentaler.png");
-        const image = await loadImage(file);
-        const target = new Vec2(61, 120);
-        ctx.drawImageEx(target.minus(new Vec2(image.width / 2, image.height / 2)), size, image);
-    }
-    if (contents.has("bb-gouda")) {
-        const file = await fs.readFile("assets/inventory/bb-gouda.png");
-        const image = await loadImage(file);
-        const target = new Vec2(337, 120);
-        ctx.drawImageEx(target.minus(new Vec2(image.width / 2, image.height / 2)), size, image);
-    }
-    if (contents.has("bb-light")) {
-        const bbLight = await fs.readFile("assets/inventory/bb-light.png");
-        const bbLightImage = await loadImage(bbLight);
-        ctx.drawImage(bbLightImage, 337, 276);
-    }
-    if (contents.has("bb-original")) {
-        const file = await fs.readFile("assets/inventory/bb-original.png");
-        const image = await loadImage(file);
-        const target = new Vec2(200, 200);
-        ctx.drawImageEx(target.minus(new Vec2(image.width / 2, image.height / 2)), size, image);
-    }
-    if (contents.has("bb-protein")) {
-        const file = await fs.readFile("assets/inventory/bb-protein.png");
-        const image = await loadImage(file);
-        const target = new Vec2(61, 276);
-        ctx.drawImageEx(target.minus(new Vec2(image.width / 2, image.height / 2)), size, image);
-    }
-    if (contents.has("bb-vegan")) {
-        const file = await fs.readFile("assets/inventory/bb-vegan.png");
-        const image = await loadImage(file);
-        const target = new Vec2(200, 353);
-        ctx.drawImageEx(target.minus(new Vec2(image.width / 2, image.height / 2)), size, image);
-    }
+
     return await canvas.encode("png");
 }
