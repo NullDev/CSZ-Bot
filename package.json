@@ -29,7 +29,7 @@
     "@js-temporal/polyfill": "^0.5.1",
     "@napi-rs/canvas": "0.1.82",
     "@resvg/resvg-js": "^2.6.2",
-    "@sentry/node": "^10.26.0",
+    "@sentry/node": "^10.27.0",
     "@snazzah/davey": "^0.1.8",
     "@spotify/web-api-ts-sdk": "^1.2.0",
     "chrono-node": "^2.9.0",
