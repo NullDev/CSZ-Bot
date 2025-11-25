@@ -172,7 +172,13 @@ const hosts = {
         "zanox.de",
         "zimbio.com",
     ],
-    "Julian Reichelt": ["nius.de", "pleiteticker.de"],
+    "Julian Reichelt": [
+        "nius.de",
+        "pleiteticker.de",
+        "vxtwitter.com/jreichelt",
+        "x.com/jreichelt",
+        "twitter.com/jreichelt",
+    ],
 };
 
 export default class SpringerWarningCommand implements SpecialCommand {
