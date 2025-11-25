@@ -55,6 +55,20 @@ const sendPenis = async (
 
     const length = size | 0;
 
+    const drawSizeFactor =
+        (length - lengthDistribution.mean) / lengthDistribution.standardDeviation;
+
+    const markdownSizePrefix =
+        drawSizeFactor < -1
+            ? "-# "
+            : drawSizeFactor < 0
+              ? ""
+              : drawSizeFactor < 1
+                ? "### "
+                : drawSizeFactor < 2
+                  ? "## "
+                  : "# ";
+
     const penis = `8${radiusChar.repeat(length)}D`;
     const circumference = Math.PI * radius * 2;
 
@@ -63,7 +77,7 @@ const sendPenis = async (
         components: [
             new ContainerBuilder().addTextDisplayComponents(
                 t => t.setContent(`-# Pimmel von ${user}`),
-                t => t.setContent(`## ${penis}`),
+                t => t.setContent(`${markdownSizePrefix}${penis}`),
                 t =>
                     t.setContent(
                         `-# Länge: ${cmFormatter.format(size)}, Umfang: ${cmFormatter.format(circumference)}, gemessen um ${time(measurement, TimestampStyles.LongDateTime)}`,
