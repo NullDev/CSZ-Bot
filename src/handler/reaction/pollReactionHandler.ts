@@ -43,7 +43,13 @@ export default {
         }
 
         if (VOTE_EMOJIS.includes(reactionName)) {
-            // this is a .vote poll -> TODO
+            // this is a .vote poll -> remove other vote reactions from the user
+            const messageReactions = message.reactions.cache;
+            for (const [emojiName, reaction] of messageReactions) {
+                if (VOTE_EMOJIS.includes(emojiName) && emojiName !== reactionName) {
+                    await reaction.users.remove(invoker.id);
+                }
+            }
             return;
         }
 
