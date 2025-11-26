@@ -4,7 +4,8 @@
 FROM node:alpine AS runtime-dependencies
 
     WORKDIR /app
-    RUN apk add --no-cache python3 alpine-sdk
+    RUN --mount=type=cache,target=/var/cache/apk \
+        apk add --no-cache python3 alpine-sdk
 
     RUN --mount=type=bind,source=package.json,target=package.json \
         --mount=type=bind,source=package-lock.json,target=package-lock.json \
@@ -17,7 +18,8 @@ FROM node:alpine
     WORKDIR /app
 
     # ffmpeg needed for get-audio-duration
-    RUN apk add --no-cache \
+    RUN --mount=type=cache,target=/var/cache/apk \
+        apk add --no-cache \
         font-noto-emoji \
         fontconfig \
         ffmpeg \
