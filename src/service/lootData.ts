@@ -161,7 +161,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         emote: "🩺",
         asset: "assets/loot/06-krankschreibung.jpg",
         onUse: async (interaction, context, _loot) => {
-            const lootRoles = await import("./lootRoles.js");
+            const lootRoles = await import("./lootRoles.ts");
             const member = interaction.member;
             if (!member || !(member instanceof GuildMember)) {
                 return false;
@@ -274,7 +274,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         asset: null,
         excludeFromInventory: true,
         onDrop: async (_context, winner, channel, _loot) => {
-            const erleuchtungService = await import("./erleuchtung.js");
+            const erleuchtungService = await import("./erleuchtung.ts");
             const { setTimeout } = await import("node:timers/promises");
 
             await setTimeout(3000);
@@ -296,7 +296,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         excludeFromInventory: true,
         excludeFromDoubleDrops: true,
         onDrop: async (context, winner, _channel, _loot) => {
-            const banService = await import("./ban.js");
+            const banService = await import("./ban.ts");
             await banService.banUser(
                 context,
                 winner,
@@ -438,7 +438,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         excludeFromInventory: true,
         excludeFromDoubleDrops: true,
         onDrop: async (context, winner, channel, _loot) => {
-            const lootRoles = await import("./lootRoles.js");
+            const lootRoles = await import("./lootRoles.ts");
             await lootRoles.startAsseGuardShift(context, winner, channel);
         },
     },
