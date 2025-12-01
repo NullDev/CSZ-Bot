@@ -194,7 +194,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         excludeFromInventory: true,
         excludeFromDoubleDrops: true,
         onDrop: async (_content, winner, channel, _loot) => {
-            const rollService = await import("./roll.js");
+            const rollService = await import("./roll.ts");
             await rollService.rollInChannel(winner.user, channel, 1, 6);
         },
     },
