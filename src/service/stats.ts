@@ -381,22 +381,3 @@ export async function getMostFrequentEmote(
         usageCount: r.usageCount,
     }));
 }
-
-/**
- * Get most frequently used emote by a specific user
- */
-export async function getUserMostFrequentEmote(
-    userId: Snowflake,
-    limit: number = 1,
-    ctx: Kysely<Database> = db(),
-): Promise<EmoteStats[]> {
-    // Note: This assumes we track which user used which emote
-    // Looking at the emoteUse table, it doesn't seem to track userId
-    // This would require additional information from messages or reactions
-    // For now, we'll return an empty array or implement if message context is available
-
-    // If we need this, we'd need to join with message data or reactions
-    // which might not be directly available in the emoteUse table
-    // This is a placeholder implementation
-    return [];
-}
