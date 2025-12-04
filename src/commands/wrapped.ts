@@ -51,120 +51,109 @@ export default class WrappedCommand implements ApplicationCommand {
         const totalPages = 5;
 
         function buildMessageData(pageIndex: number) {
-            const container = new ContainerBuilder().addSectionComponents(section => {
-                section.addTextDisplayComponents(t =>
-                    t.setContent(`## 📊 ${user}'s Wrapped ${new Date().getUTCFullYear()}`),
-                );
+            const container = new ContainerBuilder().addTextDisplayComponents(t =>
+                t.setContent(`## 📊 ${user}'s Wrapped ${new Date().getUTCFullYear()}`),
+            );
 
-                switch (pageIndex) {
-                    case 0: {
-                        // Umfragen
-                        section.addTextDisplayComponents(
-                            t => t.setContent(`### 📋 Umfragen\n`),
-                            t =>
-                                t.setContent(
-                                    `Du hast **${pollStats.userPolls ?? 0}** Umfragen erstellt\n` +
-                                        `und bei **${pollStats.userVotes ?? 0}** Umfragen abgestimmt\n\n` +
-                                        `Insgesamt gibt es **${pollStats.totalPolls}** Umfragen\n` +
-                                        `mit **${pollStats.totalVotes}** Stimmen.`,
-                                ),
-                        );
-                        break;
-                    }
-
-                    case 1: {
-                        // Inventar
-                        section.addTextDisplayComponents(
-                            t => t.setContent(`### 🎁 Inventar\n`),
-                            t =>
-                                t.setContent(
-                                    `Du besitzt **${inventoryStats.itemCount}** Items\n\n` +
-                                        `Du bist besser als **${inventoryStats.percentile.toFixed(1)}%** ` +
-                                        `aller anderen Nutzer! 🎉`,
-                                ),
-                        );
-                        break;
-                    }
-
-                    case 2: {
-                        // Ehre
-                        section.addTextDisplayComponents(
-                            t => t.setContent(`### ⭐ Ehre\n`),
-                            t =>
-                                t.setContent(
-                                    `Du hast **${honorStats.collectedPoints.toFixed(1)}** Ehre-Punkte gesammelt\n\n` +
-                                        `Du hast **${honorStats.votesGiven}** mal Ehre vergeben\n` +
-                                        `und dabei etwa **${honorStats.awardedPoints}** Punkte verteilt.`,
-                                ),
-                        );
-                        break;
-                    }
-
-                    case 3: {
-                        // Penis & Boobs
-                        section.addTextDisplayComponents(t => t.setContent(`### 📏 Messungen\n`));
-
-                        let penisContent: string;
-                        if (penisStats.userSize !== undefined) {
-                            penisContent =
-                                `**Penis:** ${penisStats.userSize}cm (${penisStats.userRadius}cm Radius)\n` +
-                                `Du bist größer als **${penisStats.userSizePercentile?.toFixed(1) ?? 0}%** der anderen\n\n` +
-                                `*Durchschnitt: ${penisStats.averageSize.toFixed(1)}cm (${penisStats.averageRadius.toFixed(1)}cm Radius)*\n` +
-                                `*Min: ${penisStats.minSize}cm | Max: ${penisStats.maxSize}cm*\n\n`;
-                        } else {
-                            penisContent = `**Penis:** Noch nicht gemessen\n\n`;
-                        }
-
-                        let boobsContent: string;
-                        if (boobsStats.userSize !== undefined) {
-                            boobsContent =
-                                `**Boobs:** Größe ${boobsStats.userSize}\n` +
-                                `Du bist größer als **${boobsStats.userSizePercentile?.toFixed(1) ?? 0}%** der anderen\n\n` +
-                                `*Durchschnitt: ${boobsStats.averageSize.toFixed(1)}*\n` +
-                                `*Min: ${boobsStats.minSize} | Max: ${boobsStats.maxSize}*`;
-                        } else {
-                            boobsContent = `**Boobs:** Noch nicht gemessen`;
-                        }
-
-                        section.addTextDisplayComponents(t =>
-                            t.setContent(penisContent + boobsContent),
-                        );
-                        break;
-                    }
-
-                    case 4: {
-                        // Emotes
-                        section.addTextDisplayComponents(t => t.setContent(`### 😀 Emotes\n`));
-
-                        if (topEmotes.length > 0) {
-                            const emoteList = topEmotes
-                                .map((emote, idx) => {
-                                    const emoji = context.client.emojis.cache.get(emote.emoteId);
-                                    const display = emoji ? `${emoji}` : emote.emoteName;
-                                    return `${idx + 1}. ${display} - **${emote.usageCount}** mal verwendet`;
-                                })
-                                .join("\n");
-
-                            section.addTextDisplayComponents(t =>
-                                t.setContent(
-                                    `Top 5 häufigste Emotes auf dem Server:\n\n${emoteList}`,
-                                ),
-                            );
-                        } else {
-                            section.addTextDisplayComponents(t =>
-                                t.setContent("Keine Emote-Statistiken verfügbar."),
-                            );
-                        }
-                        break;
-                    }
-
-                    default: {
-                        section.addTextDisplayComponents(t => t.setContent("Ungültige Seite."));
-                    }
+            switch (pageIndex) {
+                case 0: {
+                    container.addTextDisplayComponents(
+                        t => t.setContent(`### 📋 Umfragen\n`),
+                        t =>
+                            t.setContent(
+                                `Du hast **${pollStats.userPolls ?? 0}** Umfragen erstellt\n` +
+                                    `und bei **${pollStats.userVotes ?? 0}** Umfragen abgestimmt\n\n` +
+                                    `Insgesamt gibt es **${pollStats.totalPolls}** Umfragen\n` +
+                                    `mit **${pollStats.totalVotes}** Stimmen.`,
+                            ),
+                    );
+                    break;
                 }
 
-                return section;
-            });
+                case 1: {
+                    container.addTextDisplayComponents(
+                        t => t.setContent(`### 🎁 Inventar\n`),
+                        t =>
+                            t.setContent(
+                                `Du besitzt **${inventoryStats.itemCount}** Items\n\n` +
+                                    `Du bist besser als **${inventoryStats.percentile.toFixed(1)}%** ` +
+                                    `aller anderen Nutzer! 🎉`,
+                            ),
+                    );
+                    break;
+                }
+
+                case 2: {
+                    container.addTextDisplayComponents(
+                        t => t.setContent(`### ⭐ Ehre\n`),
+                        t =>
+                            t.setContent(
+                                `Du hast **${honorStats.collectedPoints.toFixed(1)}** Ehre-Punkte gesammelt\n\n` +
+                                    `Du hast **${honorStats.votesGiven}** mal Ehre vergeben\n` +
+                                    `und dabei etwa **${honorStats.awardedPoints}** Punkte verteilt.`,
+                            ),
+                    );
+                    break;
+                }
+
+                case 3: {
+                    container.addTextDisplayComponents(t => t.setContent(`### 📏 Messungen\n`));
+
+                    let penisContent: string;
+                    if (penisStats.userSize !== undefined) {
+                        penisContent =
+                            `**Penis:** ${penisStats.userSize}cm (${penisStats.userRadius}cm Radius)\n` +
+                            `Du bist größer als **${penisStats.userSizePercentile?.toFixed(1) ?? 0}%** der anderen\n\n` +
+                            `*Durchschnitt: ${penisStats.averageSize.toFixed(1)}cm (${penisStats.averageRadius.toFixed(1)}cm Radius)*\n` +
+                            `*Min: ${penisStats.minSize}cm | Max: ${penisStats.maxSize}cm*\n\n`;
+                    } else {
+                        penisContent = `**Penis:** Noch nicht gemessen\n\n`;
+                    }
+
+                    let boobsContent: string;
+                    if (boobsStats.userSize !== undefined) {
+                        boobsContent =
+                            `**Boobs:** Größe ${boobsStats.userSize}\n` +
+                            `Du bist größer als **${boobsStats.userSizePercentile?.toFixed(1) ?? 0}%** der anderen\n\n` +
+                            `*Durchschnitt: ${boobsStats.averageSize.toFixed(1)}*\n` +
+                            `*Min: ${boobsStats.minSize} | Max: ${boobsStats.maxSize}*`;
+                    } else {
+                        boobsContent = `**Boobs:** Noch nicht gemessen`;
+                    }
+
+                    container.addTextDisplayComponents(t =>
+                        t.setContent(penisContent + boobsContent),
+                    );
+                    break;
+                }
+
+                case 4: {
+                    container.addTextDisplayComponents(t => t.setContent(`### 😀 Emotes\n`));
+
+                    if (topEmotes.length > 0) {
+                        const emoteList = topEmotes
+                            .map((emote, idx) => {
+                                const emoji = context.client.emojis.cache.get(emote.emoteId);
+                                const display = emoji ? `${emoji}` : emote.emoteName;
+                                return `${idx + 1}. ${display} - **${emote.usageCount}** mal verwendet`;
+                            })
+                            .join("\n");
+
+                        container.addTextDisplayComponents(t =>
+                            t.setContent(`Top 5 häufigste Emotes auf dem Server:\n\n${emoteList}`),
+                        );
+                    } else {
+                        container.addTextDisplayComponents(t =>
+                            t.setContent("Keine Emote-Statistiken verfügbar."),
+                        );
+                    }
+                    break;
+                }
+
+                default: {
+                    container.addTextDisplayComponents(t => t.setContent("Ungültige Seite."));
+                }
+            }
 
             return {
                 components: [
