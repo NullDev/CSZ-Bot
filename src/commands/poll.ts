@@ -174,7 +174,7 @@ Optionen:
             question,
             !options.straw,
             false,
-            !options.straw && extendable,
+            extendable,
             finishTime?.toTemporalInstant() ?? null,
             pollOptions,
         );
