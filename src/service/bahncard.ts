@@ -31,7 +31,7 @@ export async function drawBahncardImage(
 ): Promise<Buffer> {
     // biome-ignore lint/style/noNonNullAssertion: We check for assetPath below
     const assetPath = template.asset!;
-    console.assert(assetPath, "Bahncard template must have an asset");
+    console.assert(!!assetPath, "Bahncard template must have an asset");
 
     const backgroundImage = await loadImage(await fs.readFile(assetPath));
     const canvas = createCanvas(backgroundImage.width, backgroundImage.height);
