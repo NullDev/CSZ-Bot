@@ -178,6 +178,9 @@ const hosts = {
         "vxtwitter.com/jreichelt",
         "x.com/jreichelt",
         "twitter.com/jreichelt",
+        "vxtwitter.com/niusde_",
+        "x.com/niusde_",
+        "twitter.com/niusde_",
     ],
 };
 
