@@ -107,7 +107,7 @@ export default class DoenerCommand implements MessageCommand {
 
         const kaffeemuehleStr =
             Math.random() > 0.7
-                ? `Oder ${(amount / prices.ghettorade).toFixed(0)} absolut kranke Kaffeemühlen kaufen.`
+                ? `Oder ${(amount / prices.kaffeemuehle).toFixed(0)} absolut kranke Kaffeemühlen kaufen.`
                 : "";
 
         await targetMessage.reply({
