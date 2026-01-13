@@ -82,8 +82,6 @@ const hosts = {
         "emarketer.com",
         "europeanvoice.com",
         "fakt.pl",
-        "faz.de",
-        "faz.net",
         "ffh.de",
         "ffn.de",
         "finanz.ru",
