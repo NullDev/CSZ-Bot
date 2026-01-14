@@ -178,4 +178,10 @@ export interface Config {
         emotifiziererRoleId: Snowflake;
         lootRoleAsseGuardRoleId: Snowflake;
     };
+
+    emoji: {
+        alarmEmojiId: Snowflake;
+        sadHamsterEmojiId: Snowflake;
+        trichterEmojiId: Snowflake;
+    };
 }

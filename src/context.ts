@@ -203,10 +203,16 @@ function ensureVoiceChannel(guild: Guild, channelId: Snowflake): VoiceChannel {
     return channel;
 }
 
-function ensureEmoji(guild: Guild, emojiId: Snowflake): GuildEmoji {
+function ensureEmoji(guild: Guild, emojiId: Snowflake, fallbackName: string): GuildEmoji {
     const emoji = guild.emojis.resolve(emojiId);
     if (!emoji) {
-        throw new Error(`Emoji with ID "${emojiId}" not found in guild "${guild.id}"`);
+        const fallback = guild.emojis.cache.find(e => e.name === fallbackName);
+        if (!fallback) {
+            throw new Error(
+                `Emoji with ID "${emojiId}" not found in guild "${guild.id}". Also did not fine a fallback with name "${fallbackName}"`,
+            );
+        }
+        return fallback;
     }
     return emoji;
 }
@@ -368,9 +374,9 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
         },
 
         emoji: {
-            alarm: ensureEmoji(guild, "677503944007876608"),
-            sadHamster: ensureEmoji(guild, "1237071954591092828"),
-            trichter: ensureEmoji(guild, "1017040526555488366"),
+            alarm: ensureEmoji(guild, config.emoji.alarmEmojiId, "alarm"),
+            sadHamster: ensureEmoji(guild, config.emoji.sadHamsterEmojiId, "sad_hamster"),
+            trichter: ensureEmoji(guild, config.emoji.trichterEmojiId, "trichter"),
         },
     };
 }
