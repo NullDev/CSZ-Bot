@@ -333,11 +333,7 @@ export default class SpringerWarningCommand implements SpecialCommand {
             return;
         }
 
-        const alarm = context.guild.emojis.resolve("677503944007876608");
-        if (!alarm) {
-            throw new Error("Alarm emoji not found");
-        }
-
+        const alarm = context.emoji.alarm;
         await message.suppressEmbeds(true);
         await message.reply(`${alarm} Achtung, Link geht zu ${warning} ${alarm}`);
     }

@@ -10,6 +10,7 @@ import type {
     VoiceChannel,
     APIInteractionGuildMember,
     Message,
+    GuildEmoji,
 } from "discord.js";
 import { ChannelType } from "discord.js";
 import { SpotifyApi } from "@spotify/web-api-ts-sdk";
@@ -149,6 +150,10 @@ export interface BotContext {
     channelGuard: {
         isInBotSpam: (message: Message) => boolean;
     };
+
+    emoji: {
+        alarm: GuildEmoji;
+    };
 }
 
 export interface QuoteConfig {
@@ -194,6 +199,14 @@ function ensureVoiceChannel(guild: Guild, channelId: Snowflake): VoiceChannel {
             `Main channel is not a voice channel. "${channel.id}" is "${channel.type}"`,
         );
     return channel;
+}
+
+function ensureEmoji(guild: Guild, emojiId: Snowflake): GuildEmoji {
+    const emoji = guild.emojis.resolve(emojiId);
+    if (!emoji) {
+        throw new Error(`Emoji with ID "${emojiId}" not found in guild "${guild.id}"`);
+    }
+    return emoji;
 }
 
 // #endregion
@@ -350,6 +363,10 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
 
         channelGuard: {
             isInBotSpam: message => message.channelId === config.textChannel.botSpamChannelId,
+        },
+
+        emoji: {
+            alarm: ensureEmoji(guild, "677503944007876608"),
         },
     };
 }
