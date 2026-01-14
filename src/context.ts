@@ -115,6 +115,7 @@ export interface BotContext {
         votes: TextChannel;
         botSpam: TextChannel;
         hauptwoisText: TextChannel;
+        roleAssigner: TextChannel;
     };
 
     voiceChannels: {
@@ -338,6 +339,7 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
             votes: ensureTextChannel(guild, textChannel.votesChannelId),
             botSpam: ensureTextChannel(guild, textChannel.botSpamChannelId),
             hauptwoisText: ensureTextChannel(guild, textChannel.hauptwoisTextChannelId),
+            roleAssigner: ensureTextChannel(guild, textChannel.roleAssignerChannelId),
         },
 
         voiceChannels: {

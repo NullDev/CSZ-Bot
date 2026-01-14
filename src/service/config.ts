@@ -156,6 +156,7 @@ export interface Config {
         votesChannelId: Snowflake;
         botSpamChannelId: Snowflake;
         hauptwoisTextChannelId: Snowflake;
+        roleAssignerChannelId: Snowflake;
     };
 
     voiceChannel: {

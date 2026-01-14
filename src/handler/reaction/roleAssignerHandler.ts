@@ -18,6 +18,10 @@ export default {
             throw new Error("Channel is not text based");
         }
 
+        if (channel.id !== context.textChannels.roleAssigner.id) {
+            return;
+        }
+
         const message = await reactionEvent.message.fetch();
         const { guild } = message;
         if (guild === null) {
