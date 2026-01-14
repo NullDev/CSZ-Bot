@@ -160,6 +160,27 @@ login().then(
             process.exit(1);
         }
 
+        log.info("Registering main event handlers...");
+
+        client.on("messageCreate", m => messageCommandHandler(m, botContext));
+        client.on("messageCreate", m => deleteThreadMessagesHandler(m, botContext));
+        client.on("guildMemberAdd", m => guildMemberHandler.added(botContext, m));
+        client.on("guildMemberRemove", m => guildMemberHandler.removed(botContext, m));
+        client.on("interactionCreate", i => handleInteractionEvent(i, botContext));
+        client.on("voiceStateUpdate", (old, next) =>
+            voiceStateService.checkVoiceUpdate(old, next, botContext),
+        );
+        client.on("messageDelete", async message => {
+            if (!message.inGuild()) {
+                return;
+            }
+
+            await messageDeleteHandler(message, botContext).catch(err => {
+                log.error(err, `[messageDelete] Error for ${message.id}`);
+                sentry.captureException(err);
+            });
+        });
+
         log.info("Bot successfully started");
 
         if (args.values["dry-run"]) {
@@ -181,30 +202,11 @@ login().then(
     },
 );
 
-client.on("interactionCreate", interaction => handleInteractionEvent(interaction, botContext));
-
 client.on("guildCreate", guild =>
     log.info(`New guild joined: ${guild.name} (id: ${guild.id}) with ${guild.memberCount} members`),
 );
 
 client.on("guildDelete", guild => log.info(`Deleted from guild: ${guild.name} (id: ${guild.id}).`));
-
-client.on("guildMemberAdd", async m => await guildMemberHandler.added(botContext, m));
-client.on("guildMemberRemove", async m => await guildMemberHandler.removed(botContext, m));
-
-client.on("messageCreate", m => messageCommandHandler(m, botContext));
-client.on("messageCreate", m => deleteThreadMessagesHandler(m, botContext));
-
-client.on("messageDelete", async message => {
-    if (!message.inGuild()) {
-        return;
-    }
-
-    await messageDeleteHandler(message, botContext).catch(err => {
-        log.error(err, `[messageDelete] Error for ${message.id}`);
-        sentry.captureException(err);
-    });
-});
 
 client.on("error", e => log.error(e, "Discord Client Error"));
 client.on("warn", w => log.warn(`Discord Client Warning: "${w}"`));
@@ -234,10 +236,6 @@ client.on("messageReactionRemove", async (event, user) => {
         });
     }
 });
-
-client.on("voiceStateUpdate", (old, next) =>
-    voiceStateService.checkVoiceUpdate(old, next, botContext),
-);
 
 client.on("presenceUpdate", async (oldPresence, newPresence) => {
     try {
