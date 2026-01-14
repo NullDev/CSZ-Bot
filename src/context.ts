@@ -205,16 +205,18 @@ function ensureVoiceChannel(guild: Guild, channelId: Snowflake): VoiceChannel {
 
 function ensureEmoji(guild: Guild, emojiId: Snowflake, fallbackName: string): GuildEmoji {
     const emoji = guild.emojis.resolve(emojiId);
-    if (!emoji) {
-        const fallback = guild.emojis.cache.find(e => e.name === fallbackName);
-        if (!fallback) {
-            throw new Error(
-                `Emoji with ID "${emojiId}" not found in guild "${guild.id}". Also did not find a fallback with name "${fallbackName}"`,
-            );
-        }
+    if (emoji) {
+        return emoji;
+    }
+
+    const fallback = guild.emojis.cache.find(e => e.name === fallbackName);
+    if (fallback) {
         return fallback;
     }
-    return emoji;
+
+    throw new Error(
+        `Emoji with ID "${emojiId}" not found in guild "${guild.id}". Also did not find a fallback with name "${fallbackName}"`,
+    );
 }
 
 // #endregion
