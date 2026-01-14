@@ -153,6 +153,8 @@ export interface BotContext {
 
     emoji: {
         alarm: GuildEmoji;
+        sadHamster: GuildEmoji;
+        trichter: GuildEmoji;
     };
 }
 
@@ -367,6 +369,8 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
 
         emoji: {
             alarm: ensureEmoji(guild, "677503944007876608"),
+            sadHamster: ensureEmoji(guild, "1237071954591092828"),
+            trichter: ensureEmoji(guild, "1017040526555488366"),
         },
     };
 }

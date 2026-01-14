@@ -89,8 +89,6 @@ export async function postLootDrop(
     donor: User | undefined,
     predecessorLootId: LootId | undefined,
 ): Promise<Loot | undefined> {
-    const hamster = context.guild.emojis.cache.find(e => e.name === "sad_hamster") ?? ":(";
-
     const takeLootButton = new ButtonBuilder()
         .setCustomId("take-loot")
         .setLabel("Geschenk nehmen")
@@ -144,7 +142,7 @@ export async function postLootDrop(
                             donor
                                 ? // TODO: `Keiner wollte das Geschenk von ${donor} haben. ${donor} hat es wieder mitgenommen.`
                                   `Das Geschenk von ${donor} verpuffte im nichts :(`
-                                : `Oki aber nächstes mal bitti aufmachi, sonst muss ichs wieder mitnehmi ${hamster}`,
+                                : `Oki aber nächstes mal bitti aufmachi, sonst muss ichs wieder mitnehmi ${context.emoji.sadHamster}`,
                         ),
                     footer => footer.setContent("-# ❌ Niemand war schnell genug"),
                 ),
@@ -179,7 +177,7 @@ export async function postLootDrop(
 
     if (!claimedLoot) {
         await reply.edit({
-            content: `Upsi, da ist was schief gelaufi oder jemand anderes war schnelli ${hamster}`,
+            content: `Upsi, da ist was schief gelaufi oder jemand anderes war schnelli ${context.emoji.sadHamster}`,
         });
         return;
     }
@@ -286,7 +284,7 @@ export async function postLootDrop(
         rarityAttribute,
     );
     if (!extraLoot) {
-        await channel.send(`${winner}, ups, da ist was schief gelaufi ${hamster}`);
+        await channel.send(`${winner}, ups, da ist was schief gelaufi ${context.emoji.sadHamster}`);
         return;
     }
 
