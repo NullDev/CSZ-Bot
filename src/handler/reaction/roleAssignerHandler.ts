@@ -13,7 +13,12 @@ export default {
         context: BotContext,
         reactionWasRemoved: boolean,
     ) {
-        const channel = reactionEvent.message.channel;
+        const message = await reactionEvent.message.fetch();
+        if (message.guild === null) {
+            throw new Error("Message guild is null");
+        }
+
+        const channel = message.channel;
         if (!channel.isTextBased()) {
             throw new Error("Channel is not text based");
         }
@@ -22,29 +27,23 @@ export default {
             return;
         }
 
-        const message = await reactionEvent.message.fetch();
-        const { guild } = message;
-        if (guild === null) {
-            throw new Error("Guild is null");
-        }
-
         const botUser = context.client.user;
         if (message.author.id !== botUser.id) {
             return;
         }
 
-        const member = await guild.members.fetch(invoker.id);
         if (reactionEvent.emoji.name !== "✅") {
             return;
         }
 
+        const member = await message.guild.members.fetch(invoker.id);
         if (!member.id || member.id === botUser.id) {
             return;
         }
 
         // Some roles, especially "C" are prefixed with a invisible whitespace to ensure they are not mentioned
         // by accident.
-        const role = guild.roles.cache.find(
+        const role = message.guild.roles.cache.find(
             r => r.name.replace(/[\u200B-\u200D\uFEFF]/g, "") === message.content,
         );
 
