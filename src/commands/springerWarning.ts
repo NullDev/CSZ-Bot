@@ -304,6 +304,10 @@ const hosts = {
         "www.businessinsider.nl",
         "www.businessinsider.com",
         "www.businessinsider.com.pl",
+
+        "vxtwitter.com/welt",
+        "x.com/welt",
+        "twitter.com/welt",
     ],
     "Julian Reichelt": [
         "nius.de",
