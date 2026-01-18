@@ -13,8 +13,12 @@ export default class TikTokLink implements SpecialCommand {
     cooldownTime = 0;
 
     matches(message: Message<boolean>): boolean {
+        return TikTokLink.matchesPattern(message.content);
+    }
+
+    static matchesPattern(message: string): boolean {
         const pattern = /((www|m\.)?tiktok\.com)|(vm\.tiktok\.com)/i;
-        return pattern.test(message.content);
+        return pattern.test(message);
     }
 
     async handleSpecialMessage(message: Message<true>) {
