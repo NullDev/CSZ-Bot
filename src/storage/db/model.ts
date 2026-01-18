@@ -40,6 +40,7 @@ export interface Database {
     polls: PollsTable;
     pollOptions: PollOptionsTable;
     pollAnswers: PollAnswersTable;
+    botReplies: BotReplyTable;
 }
 
 export type OneBasedMonth = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
@@ -448,4 +449,32 @@ export interface PollAnswersTable extends AuditedTable {
 
     optionId: PollOptionId;
     userId: Snowflake;
+}
+
+export type BotReplyId = number;
+
+export type BotReplyOrigin =
+    | "instagram"
+    | "tiktok"
+    | "download-video"
+    | "springer-warning"
+    | "auto-ehre"
+    | "dad-joke"
+    | "nischdaaa"
+    | "sdm"
+    | "deoida";
+
+export type BotReply = Selectable<BotReplyTable>;
+
+export interface BotReplyTable extends AuditedTable {
+    id: GeneratedAlways<BotReplyId>;
+
+    guildId: Snowflake;
+    channelId: Snowflake;
+    /** Die ursprüngliche Nachricht, auf die der Bot geantwortet hat */
+    originalMessageId: Snowflake;
+    /** Die Antwort-Nachricht, die der Bot gesendet hat */
+    botReplyMessageId: Snowflake;
+    /** Herkunft/Quelle der Nachricht (z.B. "instagram", "tiktok", etc.) */
+    origin: BotReplyOrigin;
 }
