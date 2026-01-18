@@ -5,6 +5,7 @@ import type { BotContext } from "#context.ts";
 import * as pollService from "#service/poll.ts";
 
 import InstagramLink from "#commands/instagram.ts";
+import TikTokLink from "#commands/tiktok.ts";
 
 import log from "#log";
 
@@ -30,8 +31,9 @@ export default async function (message: Message<true>, context: BotContext) {
         message.content.startsWith(context.prefix.modCommand);
 
     const isInstagramLink = InstagramLink.matchesPattern(message.content);
+    const isTikTokLink = TikTokLink.matchesPattern(message.content);
 
-    if (isNormalCommand || isInstagramLink) {
+    if (isNormalCommand || isInstagramLink || isTikTokLink) {
         await deleteInlineRepliesFromBot(message, context.client.user);
     }
 }
