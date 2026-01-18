@@ -89,7 +89,6 @@ export default class DownloadVideoCommand implements ApplicationCommand {
                     ],
                 });
 
-                // Record bot reply for context menu commands
                 const targetMessage = command.targetMessage;
                 const reply = await command.fetchReply();
                 if (targetMessage.inGuild() && reply.inGuild()) {

@@ -471,10 +471,7 @@ export interface BotReplyTable extends AuditedTable {
 
     guildId: Snowflake;
     channelId: Snowflake;
-    /** Die ursprüngliche Nachricht, auf die der Bot geantwortet hat */
     originalMessageId: Snowflake;
-    /** Die Antwort-Nachricht, die der Bot gesendet hat */
     botReplyMessageId: Snowflake;
-    /** Herkunft/Quelle der Nachricht (z.B. "instagram", "tiktok", etc.) */
     origin: BotReplyOrigin;
 }

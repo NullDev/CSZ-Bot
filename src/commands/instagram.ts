@@ -81,7 +81,6 @@ export default class InstagramLink implements SpecialCommand {
                 files,
             });
 
-            // Record bot reply
             await botReplyService.recordBotReply(message, reply, "instagram");
         }
         await message.suppressEmbeds(true);

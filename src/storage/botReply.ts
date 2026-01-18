@@ -80,9 +80,6 @@ export async function deleteBotRepliesForOriginalMessage(
     await ctx.deleteFrom("botReplies").where("originalMessageId", "=", originalMessageId).execute();
 }
 
-/**
- * Deletes a bot reply record by its ID.
- */
 export async function deleteBotReply(id: number, ctx = db()): Promise<BotReply> {
     return await ctx
         .deleteFrom("botReplies")
