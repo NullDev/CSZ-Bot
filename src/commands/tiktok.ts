@@ -1,6 +1,7 @@
 import type { Message } from "discord.js";
 
 import type { SpecialCommand } from "#commands/command.ts";
+import * as botReplyService from "#service/botReply.ts";
 
 const proxitokInstance = "https://proxitok.pussthecat.org";
 // const downloadUrlRegex = /href=["'](\/download[^"']*)["']/;
@@ -31,12 +32,16 @@ export default class TikTokLink implements SpecialCommand {
         }
 
         const defaultResponse = () =>
-            message.reply({
-                content: `Hab's nicht geschafft aber guck mal hier: ${response.url}`,
-                allowedMentions: {
-                    repliedUser: false,
-                },
-            });
+            message
+                .reply({
+                    content: `Hab's nicht geschafft aber guck mal hier: ${response.url}`,
+                    allowedMentions: {
+                        repliedUser: false,
+                    },
+                })
+                .then(async reply => {
+                    await botReplyService.recordBotReply(message, reply, "tiktok");
+                });
 
         const responseString = await response.text();
         const linkCandidates = responseString.match(downloadUrlRegex);
@@ -56,7 +61,7 @@ export default class TikTokLink implements SpecialCommand {
 
         const downloadLink = `${proxitokInstance}${link}`;
 
-        await message.reply({
+        const reply = await message.reply({
             content: `Dein TikTok du Hund: <${response.url}>`,
             allowedMentions: {
                 repliedUser: false,
@@ -68,6 +73,8 @@ export default class TikTokLink implements SpecialCommand {
                 },
             ],
         });
+
+        await botReplyService.recordBotReply(message, reply, "tiktok");
         await message.suppressEmbeds(true);
     }
 }

@@ -3,6 +3,7 @@ import type { Message } from "discord.js";
 import type { SpecialCommand } from "#commands/command.ts";
 import type { BotContext } from "#context.ts";
 import * as instagramService from "#service/instagram.ts";
+import * as botReplyService from "#service/botReply.ts";
 
 const instagramOptions = {
     uriPattern: /https?:\/\/(?:www\.)?instagram\.com\/(?:reel|tv|p|share)\/([0-9a-zA-Z_-]+)\/?/gi,
@@ -75,10 +76,13 @@ export default class InstagramLink implements SpecialCommand {
             const files = [...imageFiles, ...videoFiles];
 
             // We need to reply, since we cannot edit a message created by a different user (only remove embeds)
-            await message.reply({
+            const reply = await message.reply({
                 content: "Dein Dreckspost du Hund:",
                 files,
             });
+
+            // Record bot reply
+            await botReplyService.recordBotReply(message, reply, "instagram");
         }
         await message.suppressEmbeds(true);
     }

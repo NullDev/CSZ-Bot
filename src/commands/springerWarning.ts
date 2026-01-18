@@ -2,6 +2,7 @@ import type { Message } from "discord.js";
 
 import type { SpecialCommand } from "#commands/command.ts";
 import type { BotContext } from "#context.ts";
+import * as botReplyService from "#service/botReply.ts";
 
 const hosts = {
     // Taken from:
@@ -339,7 +340,8 @@ export default class SpringerWarningCommand implements SpecialCommand {
 
         const alarm = context.emoji.alarm;
         await message.suppressEmbeds(true);
-        await message.reply(`${alarm} Achtung, Link geht zu ${warning} ${alarm}`);
+        const reply = await message.reply(`${alarm} Achtung, Link geht zu ${warning} ${alarm}`);
+        await botReplyService.recordBotReply(message, reply, "springer-warning");
     }
 
     #getWarning(value: string): string | undefined {

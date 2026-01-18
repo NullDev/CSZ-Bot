@@ -5,6 +5,7 @@ import type { SpecialCommand } from "#commands/command.ts";
 import type { BotContext } from "#context.ts";
 import { substringAfter } from "#utils/stringUtils.ts";
 import { randomEntry } from "#service/random.ts";
+import * as botReplyService from "#service/botReply.ts";
 
 type Lang = "german" | "austrian";
 
@@ -81,9 +82,11 @@ export default class DadJokeCommand implements SpecialCommand {
 
             const answer = this.#getRandomAnswer(attributes, slots);
 
-            await message.reply({
+            const replyMessage = await message.reply({
                 content: answer,
             });
+
+            await botReplyService.recordBotReply(message, replyMessage, "dad-joke");
         }
     }
 }

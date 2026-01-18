@@ -2,6 +2,7 @@ import type { ProcessableMessage } from "#service/command.ts";
 import type { SpecialCommand } from "#commands/command.ts";
 
 import * as ehreService from "#service/ehre.ts";
+import * as botReplyService from "#service/botReply.ts";
 
 export default class AutoEhreCommand implements SpecialCommand {
     name = "AutoEhre";
@@ -39,6 +40,7 @@ export default class AutoEhreCommand implements SpecialCommand {
         }
 
         const reply = await ehreService.addEhre(message.author, repliedToMessage.author);
-        await message.reply(reply);
+        const replyMessage = await message.reply(reply);
+        await botReplyService.recordBotReply(message, replyMessage, "auto-ehre");
     }
 }

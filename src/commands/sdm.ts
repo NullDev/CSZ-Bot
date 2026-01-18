@@ -12,6 +12,7 @@ import {
 import type { ApplicationCommand, MessageCommand } from "#commands/command.ts";
 import type { ProcessableMessage } from "#service/command.ts";
 import { substringAfter } from "#utils/stringUtils.ts";
+import * as botReplyService from "#service/botReply.ts";
 
 const createSecureDecisionMessage = (
     question: string,
@@ -127,7 +128,8 @@ export default class SdmCommand implements MessageCommand, ApplicationCommand {
             .filter(s => !!s);
 
         if (!args.length && !isReply) {
-            await message.reply("Bruder da ist keine Frage :c");
+            const replyMessage = await message.reply("Bruder da ist keine Frage :c");
+            await botReplyService.recordBotReply(message, replyMessage, "sdm");
             return;
         }
 
@@ -148,14 +150,16 @@ export default class SdmCommand implements MessageCommand, ApplicationCommand {
             });
             question = listFormatter.format(options);
             const msg = createSecureDecisionMessage(question, message.member, options);
-            await message.reply(msg);
+            const reply = await message.reply(msg);
+            await botReplyService.recordBotReply(message, reply, "sdm");
             // Don't delete as it would trigger the messageDeleteHandler
             // await message.delete();
             return;
         }
 
         const msg = createSecureDecisionMessage(question, message.member);
-        await message.reply(msg);
+        const reply = await message.reply(msg);
+        await botReplyService.recordBotReply(message, reply, "sdm");
         // Don't delete as it would trigger the messageDeleteHandler
         // await message.delete();
         return;

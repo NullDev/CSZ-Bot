@@ -1,5 +1,6 @@
 import type { ProcessableMessage } from "#service/command.ts";
 import type { SpecialCommand } from "#commands/command.ts";
+import * as botReplyService from "#service/botReply.ts";
 
 export default class NischdaaaCommand implements SpecialCommand {
     name = "Nischdaaa";
@@ -11,8 +12,9 @@ export default class NischdaaaCommand implements SpecialCommand {
     }
 
     async handleSpecialMessage(message: ProcessableMessage) {
-        await message.reply({
+        const replyMessage = await message.reply({
             content: "Nischdaaaa",
         });
+        await botReplyService.recordBotReply(message, replyMessage, "nischdaaa");
     }
 }

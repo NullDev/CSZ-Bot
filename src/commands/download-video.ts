@@ -9,6 +9,7 @@ import {
 import type { BotContext } from "#context.ts";
 import type { ApplicationCommand } from "#commands/command.ts";
 import * as ytDlService from "#service/ytDl.ts";
+import * as botReplyService from "#service/botReply.ts";
 import assertNever from "#utils/assertNever.ts";
 import TempDir from "#utils/TempDir.ts";
 
@@ -65,18 +66,20 @@ export default class DownloadVideoCommand implements ApplicationCommand {
         await using tempDir = await TempDir.create("yt-dl");
         const result = await ytDlService.downloadVideo(context, tempDir.path, link);
         switch (result.result) {
-            case "aborted":
+            case "aborted": {
                 await command.editReply({
                     content:
                         "Der Download wurde abgebrochen, da er zu lange gedauert hat. Such dir einfach ein kleineres Video aus.\n\nhurensohn",
                 });
                 return;
-            case "error":
+            }
+            case "error": {
                 await command.editReply({
                     content: "Es ist irgendein Fehler aufgetreten.\n\nhurensohn",
                 });
                 return;
-            case "success":
+            }
+            case "success": {
                 await command.editReply({
                     content: result.title ? `**${result.title}**` : null,
                     files: [
@@ -85,7 +88,15 @@ export default class DownloadVideoCommand implements ApplicationCommand {
                         },
                     ],
                 });
+
+                // Record bot reply for context menu commands
+                const targetMessage = command.targetMessage;
+                const reply = await command.fetchReply();
+                if (targetMessage.inGuild() && reply.inGuild()) {
+                    await botReplyService.recordBotReply(targetMessage, reply, "download-video");
+                }
                 return;
+            }
             default:
                 assertNever(result);
         }
