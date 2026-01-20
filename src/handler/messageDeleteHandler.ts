@@ -25,7 +25,10 @@ export default async function (message: Message<true>, context: BotContext) {
         try {
             message = await message.fetch();
         } catch {
-            log.error("Failed to fetch partial message on delete, probably it was too old");
+            log.debug(
+                message,
+                "Failed to fetch partial message on delete, probably it was too old",
+            );
             return;
         }
     }
