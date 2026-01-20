@@ -20,7 +20,8 @@ export default async function (message: Message<true>, context: BotContext) {
     log.info(
         `Message deleted: ${message.id} by user ${message.member?.nickname || message.author.username}`,
     );
-    if (message.author.id === context.client.user.id) {
+    const authorId = message.author.id;
+    if (authorId === context.client.user.id) {
         return;
     }
     if (!message.content) {
