@@ -18,7 +18,8 @@ const deleteInlineRepliesFromBot = (messageRef: Message<true>, botUser: ClientUs
 
 export default async function (message: Message<true>, context: BotContext) {
     log.info(
-        `Message deleted: ${message.id} by user ${message.member?.nickname || message.author.username}`,
+        message,
+        `Message deleted: ${message.id} by user ${message.member?.nickname ?? message.author?.username ?? "Unknown user"} in channel ${message.channelId}. Content: "${message.content}"`,
     );
     const authorId = message.author.id;
     if (authorId === context.client.user.id) {
