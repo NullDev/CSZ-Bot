@@ -49,7 +49,7 @@ export default class GeburtstagCommand implements ApplicationCommand {
 
         try {
             await birthday.insertBirthday(command.user.id, day, month);
-            await command.reply("Danke mein G, ich hab dein Geburtstag eingetragen!");
+            await command.reply("Danke mein G, ich hab deinen Geburtstag eingetragen!");
         } catch (err) {
             log.error(err, "Geburtstag ist schief gelaufen");
             sentry.captureException(err);
