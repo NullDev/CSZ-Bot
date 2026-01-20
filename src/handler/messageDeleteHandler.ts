@@ -17,12 +17,18 @@ const deleteInlineRepliesFromBot = (messageRef: Message<true>, botUser: ClientUs
     );
 
 export default async function (message: Message<true>, context: BotContext) {
-    message = await message.fetch();
-
     log.info(
-        message,
-        `Message deleted: ${message.id} by user ${message.member?.nickname ?? message.author?.username ?? "Unknown user"} in channel ${message.channelId}. Content: "${message.content}"`,
+        `Message deleted: ${message.id} by user ${message.member?.nickname ?? message.author?.username ?? "<unknown user>"} in channel <#${message.channelId}>. Content: "${message.content ?? "<null>"}"`,
     );
+
+    if (message.partial) {
+        try {
+            message = await message.fetch();
+        } catch {
+            log.error("Failed to fetch partial message on delete, probably it was too old");
+            return;
+        }
+    }
 
     const authorId = message.author.id;
     if (authorId === context.client.user.id) {
