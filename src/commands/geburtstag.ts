@@ -62,5 +62,5 @@ export default class GeburtstagCommand implements ApplicationCommand {
 
 function isValidDate(mmDd: string): boolean {
     const isoDate = new Date(`2000-${mmDd}`);
-    return Number.isNaN(isoDate.getTime());
+    return !Number.isNaN(isoDate.getTime());
 }
