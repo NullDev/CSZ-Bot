@@ -62,6 +62,7 @@ export const LootKind = Object.freeze({
     BABYBEL_VEGAN: 49,
     BABYBEL_EXODIA: 50,
     GIROKONTO: 51,
+    STROMTARIF: 52,
 } as const);
 export type LootKindId = (typeof LootKind)[keyof typeof LootKind];
 
@@ -757,6 +758,15 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         dropDescription: "Werbe andere User und erhalte eine Prämie von 75€!",
         emote: "💳",
         asset: "assets/loot/51-girokonto.jpg",
+    },
+    [LootKind.STROMTARIF]: {
+        id: LootKind.STROMTARIF,
+        weight: 1,
+        displayName: "Dynamischer Stromtarif",
+        titleText: "Ein dynamischer Stromtarif",
+        dropDescription: "So bezahlst du immer den günstigsten Strompreis.",
+        emote: "🔌",
+        asset: "assets/loot/52-stromtarif.jpg",
     },
 } as const;
 
