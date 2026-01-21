@@ -61,6 +61,7 @@ export const LootKind = Object.freeze({
     BABYBEL_GOUDA: 48,
     BABYBEL_VEGAN: 49,
     BABYBEL_EXODIA: 50,
+    GIROKONTO: 51,
 } as const);
 export type LootKindId = (typeof LootKind)[keyof typeof LootKind];
 
@@ -747,6 +748,15 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         emote: "🧀",
         asset: "assets/loot/50-bb-exodia.png",
         initialAttributes: [LootAttributeKind.NUTRI_SCORE_E],
+    },
+    [LootKind.GIROKONTO]: {
+        id: LootKind.GIROKONTO,
+        weight: 1,
+        displayName: "Girokonto mit Metallkarte",
+        titleText: "Ein Girokonto mit Metallkarte",
+        dropDescription: "Werbe andere User und erhalte eine Prämie von 75€!",
+        emote: "💳",
+        asset: "assets/loot/51-girokonto.jpg",
     },
 } as const;
 
