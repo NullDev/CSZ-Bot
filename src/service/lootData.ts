@@ -63,6 +63,7 @@ export const LootKind = Object.freeze({
     BABYBEL_EXODIA: 50,
     GIROKONTO: 51,
     STROMTARIF: 52,
+    MAGERQUARK: 53,
 } as const);
 export type LootKindId = (typeof LootKind)[keyof typeof LootKind];
 
@@ -767,6 +768,16 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         dropDescription: "So bezahlst du immer den günstigsten Strompreis.",
         emote: "🔌",
         asset: "assets/loot/52-stromtarif.jpg",
+    },
+    [LootKind.MAGERQUARK]: {
+        id: LootKind.MAGERQUARK,
+        weight: 2,
+        displayName: "Magerquark",
+        titleText: "Einen Becher Magerquark",
+        dropDescription: "Viel Protein, wenig Fett.",
+        emote: "🍶",
+        asset: "assets/loot/53-magerquark.png",
+        initialAttributes: [LootAttributeKind.NUTRI_SCORE_A],
     },
 } as const;
 
