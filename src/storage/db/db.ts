@@ -4,7 +4,7 @@ import * as path from "node:path";
 import { DatabaseSync } from "node:sqlite";
 
 import { FileMigrationProvider, Kysely, Migrator } from "kysely";
-import { captureException, startInactiveSpan } from "@sentry/node";
+import { captureException } from "@sentry/node";
 
 import { SqliteDialect } from "./dialect/sqlite-dialect.ts";
 import type { Database } from "./model.ts";
@@ -50,14 +50,6 @@ export async function connectToDb(databasePath: string) {
                     ) {
                         return;
                     }
-
-                    startInactiveSpan({
-                        name: info.sql,
-                        op: "db.query",
-                        startTime: new Date(Date.now() - info.duration),
-                        onlyIfParent: true,
-                    }).end();
-
                     log.debug(info, "DB Query");
                     break;
                 default:
