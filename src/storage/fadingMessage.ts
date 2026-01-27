@@ -6,13 +6,13 @@ import db from "#db";
 
 export function startFadingMessage(
     message: Message<true>,
-    deleteInMs: number,
+    deleteIn: Temporal.Duration,
     ctx = db(),
 ): Promise<FadingMessage> {
     const now = Temporal.Now.instant();
 
     // adding milliseconds to a date is a hassle in sqlite, so we're doing it in JS
-    const endTime = now.add({ milliseconds: deleteInMs });
+    const endTime = now.add(deleteIn);
 
     return ctx
         .insertInto("fadingMessages")

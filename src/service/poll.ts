@@ -1,5 +1,5 @@
 import type { GuildMember, Message, MessageReaction, TextBasedChannel, User } from "discord.js";
-import type { Temporal } from "@js-temporal/polyfill";
+import { Temporal } from "@js-temporal/polyfill";
 
 import * as legacyDelayedPoll from "#service/delayedPollLegacy.ts";
 import type { Poll, PollId } from "#storage/db/model.ts";
@@ -112,7 +112,9 @@ export async function countDelayedVote(
             ? "🗑 Deine Reaktion wurde gelöscht."
             : "💾 Deine Reaktion wurde gespeichert.",
     );
-    await fadingMessage.startFadingMessage(msg, 2500);
+
+    const deleteIn = Temporal.Duration.from({ milliseconds: 2500 });
+    await fadingMessage.startFadingMessage(msg, deleteIn);
     await removeAllReactions(message, invoker);
 
     await additionalMessageData.upsertForMessage(
