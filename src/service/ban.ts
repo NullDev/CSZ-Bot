@@ -5,6 +5,7 @@ import { Temporal } from "@js-temporal/polyfill";
 import type { BotContext } from "#context.ts";
 import * as ban from "#storage/ban.ts";
 import { formatDuration } from "#utils/dateUtils.ts";
+import * as timeUtils from "#utils/time.ts";
 
 import log from "#log";
 
@@ -84,7 +85,7 @@ export async function banUser(
     const unbanAt =
         durationInHours === null
             ? null // infinite ban
-            : new Date(Date.now() + durationInHours * 60 * 60 * 1000);
+            : new Date(Date.now() + timeUtils.hours(durationInHours));
 
     await ban.persistOrUpdate(member, unbanAt?.toTemporalInstant() ?? null, isSelfBan, reason);
 
