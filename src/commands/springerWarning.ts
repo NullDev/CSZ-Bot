@@ -328,7 +328,11 @@ export default class SpringerWarningCommand implements SpecialCommand {
     cooldownTime = 0;
 
     matches(message: Message<boolean>, _context: BotContext): boolean {
-        return this.#getWarning(message.content) !== undefined;
+        return SpringerWarningCommand.matchesPattern(message.content);
+    }
+
+    static matchesPattern(message: string): boolean {
+        return SpringerWarningCommand.#getWarningStatic(message) !== undefined;
     }
 
     async handleSpecialMessage(message: Message<true>, context: BotContext) {
@@ -343,6 +347,10 @@ export default class SpringerWarningCommand implements SpecialCommand {
     }
 
     #getWarning(value: string): string | undefined {
+        return SpringerWarningCommand.#getWarningStatic(value);
+    }
+
+    static #getWarningStatic(value: string): string | undefined {
         const message = value
             .toLowerCase()
             .replace("http://", "https://")
