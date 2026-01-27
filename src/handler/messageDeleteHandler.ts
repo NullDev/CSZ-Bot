@@ -5,6 +5,7 @@ import type { BotContext } from "#context.ts";
 import * as pollService from "#service/poll.ts";
 
 import InstagramLink from "#commands/instagram.ts";
+import SpringerWarningCommand from "#commands/springerWarning.ts";
 import TikTokLink from "#commands/tiktok.ts";
 
 import log from "#log";
@@ -49,8 +50,9 @@ export default async function (message: Message<true>, context: BotContext) {
 
     const isInstagramLink = InstagramLink.matchesPattern(message.content);
     const isTikTokLink = TikTokLink.matchesPattern(message.content);
+    const isSpringerLink = SpringerWarningCommand.matchesPattern(message.content);
 
-    if (isNormalCommand || isInstagramLink || isTikTokLink) {
+    if (isNormalCommand || isInstagramLink || isTikTokLink || isSpringerLink) {
         await deleteInlineRepliesFromBot(message, context.client.user);
     }
 }
