@@ -111,7 +111,7 @@ const sendBoob = async (
     }
 
     await message.reply(
-        `${booba.description} von ${user}, gemessen um ${time(measurement, TimestampStyles.LongDateTime)}:\n${booba.representation}`,
+        `${booba.description} von ${user}, gemessen um ${time(measurement, TimestampStyles.FullDateShortTime)}:\n${booba.representation}`,
     );
 };
 
