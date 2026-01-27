@@ -15,6 +15,7 @@ import type { ApplicationCommand, AutocompleteCommand } from "#commands/command.
 import type { BotContext } from "#context.ts";
 import { connectAndPlaySaufen } from "#handler/voiceHandler.ts";
 import assertNever from "#utils/assertNever.ts";
+import { zonedNow } from "#utils/dateUtils.ts";
 
 type SubCommand = "los" | "add" | "list" | "select";
 
@@ -65,15 +66,11 @@ export default class Saufen implements ApplicationCommand, AutocompleteCommand {
         }
 
         const subCommand = command.options.getSubcommand() as SubCommand;
-        const isWeekend = (): boolean => {
-            const today = new Date();
-            if (today.getDay() === 0 || today.getDay() === 6) {
-                return true;
-            }
-            if (today.getDay() === 5 && today.getHours() > 18) {
-                return true;
-            }
-            return false;
+        const isWeekend = () => {
+            const now = zonedNow();
+            return (
+                now.dayOfWeek === 6 || now.dayOfWeek === 7 || (now.dayOfWeek === 5 && now.hour > 18)
+            );
         };
 
         const reply = () => {
