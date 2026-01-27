@@ -27,11 +27,12 @@ import {
 } from "#handler/commandHandler.ts";
 import * as guildMemberHandler from "#handler/guildMemberHandler.ts";
 import deleteThreadMessagesHandler from "#handler/messageCreate/deleteThreadMessagesHandler.ts";
+import { handlePresenceUpdate } from "#handler/presenceHandler.ts";
 import { createBotContext, type BotContext } from "#context.ts";
 import { ehreReactionHandler } from "#commands/ehre.ts";
 import * as terminal from "#utils/terminal.ts";
+import * as dateUtils from "#utils/dateUtils.ts";
 import * as cronService from "#service/cron.ts";
-import { handlePresenceUpdate } from "./handler/presenceHandler.ts";
 
 const env = process.env;
 
@@ -44,7 +45,7 @@ const release =
     const prodMode = env.NODE_ENV === "production" ? terminal.highlightWarn(" prod mode ") : "";
 
     const cszBot = terminal.highlight(" CSZ Bot ");
-    const year = new Date().getFullYear();
+    const year = dateUtils.zonedNow().year;
 
     console.log();
     console.log(" ┌───────────┐");
