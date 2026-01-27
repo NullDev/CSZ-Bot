@@ -8,6 +8,7 @@ import type {
     User,
 } from "discord.js";
 import { type ExpressionBuilder, sql } from "kysely";
+import type { Temporal } from "@js-temporal/polyfill";
 
 import type { BotContext } from "#context.ts";
 import type {
@@ -113,7 +114,7 @@ export async function createLoot(
     template: LootTemplate,
     winner: User,
     message: Message<true> | null,
-    now: Date,
+    now: Temporal.Instant,
     origin: LootOrigin,
     predecessorLootId: LootId | null,
     rarityAttribute: LootAttributeTemplate | null,
@@ -126,7 +127,7 @@ export async function createLoot(
                 displayName: template.displayName,
                 lootKindId: template.id,
                 winnerId: winner.id,
-                claimedAt: now.toISOString(),
+                claimedAt: now.toString(),
                 guildId: message?.guildId ?? "",
                 channelId: message?.channelId ?? "",
                 messageId: message?.id ?? "",

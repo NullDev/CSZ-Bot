@@ -138,7 +138,7 @@ export default class WoisCommand implements ApplicationCommand {
         const result = await woisAction.insertWoisAction(
             woisMessage,
             reason,
-            new Date(timeForWois.toString()),
+            new Date(timeForWois.toString()).toTemporalInstant(), // TODO
             isWoisgangVote,
         );
         if (!result) {
@@ -206,7 +206,7 @@ export const woisVoteReactionHandler: ReactionHandler = {
 };
 
 export const woisVoteScheduler = async (context: BotContext): Promise<void> => {
-    const pendingAction = await woisAction.getPendingWoisAction(new Date());
+    const pendingAction = await woisAction.getPendingWoisAction(Temporal.Now.instant());
     if (pendingAction === undefined) {
         return;
     }

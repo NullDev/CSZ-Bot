@@ -8,6 +8,7 @@ import {
     TimestampStyles,
     type User,
 } from "discord.js";
+import { Temporal } from "@js-temporal/polyfill";
 
 export const LETTERS = [
     ":regional_indicator_a:",
@@ -97,7 +98,7 @@ export function buildPollEmbed(
                 o.author?.username !== poll.author.username,
             ),
         ),
-        timestamp: new Date().toISOString(),
+        timestamp: Temporal.Now.instant().toString(),
         author: {
             name: `${poll.multipleChoices ? "Umfrage" : "Strawpoll"} von ${poll.author.username}`,
             icon_url: poll.author.iconURL,
@@ -182,7 +183,7 @@ export function buildDelayedPollResultEmbed(
             value: option.chosenBy.map(user => user.toString()).join("\n") || "-",
             inline: false,
         })),
-        timestamp: new Date().toISOString(),
+        timestamp: Temporal.Now.instant().toString(),
         author: {
             name: author.name,
             icon_url: author.iconURL,

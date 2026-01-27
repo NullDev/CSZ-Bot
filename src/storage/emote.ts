@@ -1,4 +1,5 @@
 import { sql } from "kysely";
+import { Temporal } from "@js-temporal/polyfill";
 import type { Message, Snowflake } from "discord.js";
 
 import type { Emote } from "./db/model.ts";
@@ -95,7 +96,7 @@ export async function ensureEmote(
 export async function markAsDeleted(emoteId: Emote["id"], ctx = db()): Promise<void> {
     await ctx
         .updateTable("emote")
-        .set("deletedAt", new Date().toISOString())
+        .set("deletedAt", Temporal.Now.instant().toString())
         .where("id", "=", emoteId)
         .execute();
 }

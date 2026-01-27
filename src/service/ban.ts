@@ -1,5 +1,6 @@
 import { time, type GuildMember, type User, TimestampStyles } from "discord.js";
 import * as sentry from "@sentry/node";
+import { Temporal } from "@js-temporal/polyfill";
 
 import type { BotContext } from "#context.ts";
 import * as ban from "#storage/ban.ts";
@@ -8,7 +9,7 @@ import { formatDuration } from "#utils/dateUtils.ts";
 import log from "#log";
 
 export async function processBans(context: BotContext) {
-    const now = new Date();
+    const now = Temporal.Now.instant();
 
     try {
         const expiredBans = await ban.findExpiredBans(now);
@@ -85,7 +86,7 @@ export async function banUser(
             ? null // infinite ban
             : new Date(Date.now() + durationInHours * 60 * 60 * 1000);
 
-    await ban.persistOrUpdate(member, unbanAt, isSelfBan, reason);
+    await ban.persistOrUpdate(member, unbanAt?.toTemporalInstant() ?? null, isSelfBan, reason);
 
     const humanReadableDuration = durationInHours
         ? formatDuration(durationInHours * 60 * 60)

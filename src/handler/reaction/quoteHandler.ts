@@ -12,6 +12,7 @@ import {
     type GuildTextBasedChannel,
     type ApplicationEmoji,
 } from "discord.js";
+import { Temporal } from "@js-temporal/polyfill";
 
 import type { BotContext, QuoteConfig } from "#context.ts";
 import type { ReactionHandler } from "../ReactionHandler.ts";
@@ -142,7 +143,9 @@ const createQuote = async (
                     color: randomizedColor,
                     description: quotedMessage.content,
                     author: await getAuthor(quotedUser),
-                    timestamp: new Date(quotedMessage.createdTimestamp).toISOString(),
+                    timestamp: Temporal.Instant.fromEpochMilliseconds(
+                        quotedMessage.createdTimestamp,
+                    ).toString(),
                     fields: [
                         {
                             name: "Link zur Nachricht",
