@@ -362,6 +362,36 @@ type AdjustmentResult = {
     weights: number[];
 };
 
+function getTimeOfDayMultipliers(weights: readonly number[]): number[] {
+    const now = new Date();
+    const hour = Number(
+        now.toLocaleString("de-DE", { timeZone: "Europe/Berlin", hour: "numeric", hour12: false }),
+    );
+
+    const multipliers = new Array(weights.length).fill(1);
+
+    // Morgens (6:00 - 12:00): Höhere Wahrscheinlichkeit für Frühstücks-Items
+    const isMorning = hour >= 6 && hour < 12;
+    // Abends (18:00 - 24:00): Höhere Wahrscheinlichkeit für Feierabend-Items
+    const isEvening = hour >= 18 && hour < 24;
+
+    if (isMorning) {
+        multipliers[LootKind.KAFFEEMUEHLE] = 2;
+        multipliers[LootKind.KRANKSCHREIBUNG] = 2;
+        multipliers[LootKind.OETTINGER] = 2;
+    }
+
+    if (isEvening) {
+        multipliers[LootKind.DOENER] = 2;
+        multipliers[LootKind.AYRAN] = 2;
+        multipliers[LootKind.SAHNE] = 2;
+        multipliers[LootKind.TRICHTER] = 2;
+        multipliers[LootKind.GAULOISES_BLAU] = 2;
+    }
+
+    return multipliers;
+}
+
 async function getDropWeightAdjustments(
     user: User,
     weights: readonly number[],
@@ -385,9 +415,26 @@ async function getDropWeightAdjustments(
         messages.push("Da du privat versichert bist, hast du die doppelte Chance auf eine AU.");
     }
 
+    const timeMultipliers = getTimeOfDayMultipliers(weights);
+
     const newWeights = [...weights];
     newWeights[LootKind.NICHTS] = Math.ceil(weights[LootKind.NICHTS] * wasteFactor) | 0;
-    newWeights[LootKind.KRANKSCHREIBUNG] = (weights[LootKind.KRANKSCHREIBUNG] * pkvFactor) | 0;
+    newWeights[LootKind.KRANKSCHREIBUNG] =
+        (weights[LootKind.KRANKSCHREIBUNG] * pkvFactor * timeMultipliers[LootKind.KRANKSCHREIBUNG]) |
+        0;
+
+    // Tageszeitabhängige Anpassungen
+    newWeights[LootKind.KAFFEEMUEHLE] =
+        (weights[LootKind.KAFFEEMUEHLE] * timeMultipliers[LootKind.KAFFEEMUEHLE]) | 0;
+    newWeights[LootKind.OETTINGER] =
+        (weights[LootKind.OETTINGER] * timeMultipliers[LootKind.OETTINGER]) | 0;
+    newWeights[LootKind.DOENER] = (weights[LootKind.DOENER] * timeMultipliers[LootKind.DOENER]) | 0;
+    newWeights[LootKind.AYRAN] = (weights[LootKind.AYRAN] * timeMultipliers[LootKind.AYRAN]) | 0;
+    newWeights[LootKind.SAHNE] = (weights[LootKind.SAHNE] * timeMultipliers[LootKind.SAHNE]) | 0;
+    newWeights[LootKind.TRICHTER] =
+        (weights[LootKind.TRICHTER] * timeMultipliers[LootKind.TRICHTER]) | 0;
+    newWeights[LootKind.GAULOISES_BLAU] =
+        (weights[LootKind.GAULOISES_BLAU] * timeMultipliers[LootKind.GAULOISES_BLAU]) | 0;
 
     return {
         messages,
