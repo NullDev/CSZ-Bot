@@ -4,6 +4,7 @@ import type { MessageCommand } from "#commands/command.ts";
 import type { BotContext } from "#context.ts";
 import type { ProcessableMessage } from "#service/command.ts";
 
+import * as timeUtils from "#utils/time.ts";
 import * as banService from "#service/ban.ts";
 import { parseLegacyMessageParts } from "#service/command.ts";
 
@@ -75,7 +76,7 @@ export default class MinCommand implements MessageCommand {
             return err;
         }
 
-        const targetTime = new Date(Date.now() + durationInMinutes * 60 * 1000);
+        const targetTime = new Date(Date.now() + timeUtils.minutes(durationInMinutes));
 
         if (tilt) {
             const alarmEmote = message.guild?.emojis.cache.find(e => e.name === "alarm");

@@ -1,4 +1,5 @@
 import type { Snowflake, User } from "discord.js";
+import { Temporal } from "@js-temporal/polyfill";
 
 import type { Reminder } from "./db/model.ts";
 
@@ -9,10 +10,10 @@ export async function removeReminder(reminderId: Reminder["id"], ctx = db()) {
     await ctx.deleteFrom("reminders").where("id", "=", reminderId).execute();
 }
 
-export function getCurrentReminders(now = new Date(), ctx = db()): Promise<Reminder[]> {
+export function getCurrentReminders(now = Temporal.Now.instant(), ctx = db()): Promise<Reminder[]> {
     return ctx
         .selectFrom("reminders")
-        .where("remindAt", "<=", now.toISOString())
+        .where("remindAt", "<=", now.toString())
         .selectAll()
         .execute();
 }

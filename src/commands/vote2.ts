@@ -16,6 +16,7 @@ import {
     time,
 } from "discord.js";
 
+import * as timeUtils from "#utils/time.ts";
 import type { ApplicationCommand } from "#commands/command.ts";
 
 export default class Vote2Command implements ApplicationCommand {
@@ -109,7 +110,7 @@ export default class Vote2Command implements ApplicationCommand {
             .setLabel("👎")
             .setStyle(ButtonStyle.Secondary);
 
-        const end = new Date(Date.now() + duration * 1000);
+        const end = new Date(Date.now() + timeUtils.seconds(duration));
         const endStr = time(end, "R");
 
         const embed: APIEmbed = {
@@ -141,7 +142,7 @@ export default class Vote2Command implements ApplicationCommand {
         const collector: InteractionCollector<ButtonInteraction> =
             response.createMessageComponentCollector({
                 componentType: ComponentType.Button,
-                time: duration * 1000,
+                time: timeUtils.seconds(duration),
                 filter: i => !collector.users.has(i.user.id),
             });
 
