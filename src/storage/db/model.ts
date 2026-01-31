@@ -451,8 +451,10 @@ export interface PollAnswersTable extends AuditedTable {
     userId: Snowflake;
 }
 
+export type QuotedMessagesId = number;
+export type QuotedMessage = Selectable<QuotedMessagesTable>;
 export interface QuotedMessagesTable extends AuditedTable {
-    id: GeneratedAlways<PollAnswerId>;
+    id: GeneratedAlways<QuotedMessagesId>;
 
     guildId: Snowflake;
     channelId: Snowflake;
