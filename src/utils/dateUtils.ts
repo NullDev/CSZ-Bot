@@ -108,3 +108,7 @@ export function getStartAndEndDay(instant: Temporal.Instant, timeZone = "Europe/
 export function isValidDate(date: Date): boolean {
     return date instanceof Date && !Number.isNaN(date.getTime()) && Number.isFinite(date.getTime());
 }
+
+export function zonedNow(): Temporal.ZonedDateTime {
+    return Temporal.Now.zonedDateTimeISO("Europe/Berlin");
+}

@@ -1,6 +1,7 @@
 import { parseArgs, type ParseArgsConfig } from "node:util";
 
 import { cleanContent } from "discord.js";
+import { Temporal } from "@js-temporal/polyfill";
 
 import type { MessageCommand } from "#commands/command.ts";
 import type { BotContext } from "#context.ts";
@@ -53,7 +54,7 @@ Optionen:
 
         const embed = {
             description: `**${cleanContent(question, message.channel)}**`,
-            timestamp: new Date().toISOString(),
+            timestamp: Temporal.Now.instant().toString(),
             color: 0x9400d3,
             author: {
                 name: `Umfrage von ${message.author.username}`,

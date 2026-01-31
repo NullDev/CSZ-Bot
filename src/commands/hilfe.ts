@@ -1,4 +1,5 @@
-import { channelMention } from "discord.js";
+import { channelMention, ContextMenuCommandBuilder } from "discord.js";
+
 import type { BotContext } from "#context.ts";
 import type { MessageCommand } from "#commands/command.ts";
 import * as commandService from "#service/command.ts";
@@ -18,6 +19,14 @@ export default class HilfeCommand implements MessageCommand {
         const newCommands = await commandService.readAvailableCommands(context);
         for (const command of newCommands) {
             if (command.modCommand) {
+                continue;
+            }
+
+            // TODO: Hack to exclude faulenzerping and video download
+            if (
+                "applicationCommand" in command &&
+                command.applicationCommand instanceof ContextMenuCommandBuilder
+            ) {
                 continue;
             }
 

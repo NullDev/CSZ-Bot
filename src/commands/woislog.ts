@@ -12,14 +12,11 @@ export default class WoisLog implements ApplicationCommand {
         .setDescription(this.description);
 
     async handleInteraction(command: CommandInteraction) {
-        const events = voiceStateService.getLatestEvents();
-
-        const maxAge = Date.now() - 2 * 60 * 1000;
-        const latestEvents = events.filter(event => event.createdAt.getTime() > maxAge);
+        const latestEvents = voiceStateService.getCurrentLog();
 
         if (latestEvents.length === 0) {
             await command.reply({
-                content: "Es gab keine Aktivitäten in den letzten 2 Minuten",
+                content: "Es gab keine Aktivitäten in den letzten X Minuten", // TODO: Format duration
                 flags: MessageFlags.Ephemeral,
             });
             return;

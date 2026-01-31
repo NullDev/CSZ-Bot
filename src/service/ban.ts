@@ -1,14 +1,16 @@
 import { time, type GuildMember, type User, TimestampStyles } from "discord.js";
 import * as sentry from "@sentry/node";
+import { Temporal } from "@js-temporal/polyfill";
 
 import type { BotContext } from "#context.ts";
 import * as ban from "#storage/ban.ts";
 import { formatDuration } from "#utils/dateUtils.ts";
+import * as timeUtils from "#utils/time.ts";
 
 import log from "#log";
 
 export async function processBans(context: BotContext) {
-    const now = new Date();
+    const now = Temporal.Now.instant();
 
     try {
         const expiredBans = await ban.findExpiredBans(now);
@@ -59,11 +61,8 @@ export async function banUser(
         `Banning ${member.id} by ${banInvoker.id} because of ${reason} for ${durationInHours}.`,
     );
 
-    // No Shadow ban :(
     const botUser = context.client.user;
-
-    const xd = "523932502648427173".split("").reverse().join("");
-    if (member.id === xd || (botUser && member.id === botUser.id)) {
+    if (botUser && member.id === botUser.id) {
         return "Fick dich bitte.";
     }
 
@@ -83,9 +82,9 @@ export async function banUser(
     const unbanAt =
         durationInHours === null
             ? null // infinite ban
-            : new Date(Date.now() + durationInHours * 60 * 60 * 1000);
+            : new Date(Date.now() + timeUtils.hours(durationInHours));
 
-    await ban.persistOrUpdate(member, unbanAt, isSelfBan, reason);
+    await ban.persistOrUpdate(member, unbanAt?.toTemporalInstant() ?? null, isSelfBan, reason);
 
     const humanReadableDuration = durationInHours
         ? formatDuration(durationInHours * 60 * 60)

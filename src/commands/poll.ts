@@ -119,7 +119,7 @@ Optionen:
         let finishTime: Date | undefined;
         if (options.delayed) {
             const delayTime = Number(options.delayed);
-            finishTime = new Date(Date.now() + delayTime * 60 * 1000);
+            finishTime = new Date(Date.now() + timeUtils.minutes(delayTime));
 
             if (Number.isNaN(delayTime) || delayTime <= 0) {
                 return "Bruder keine ungültigen Zeiten angeben 🙄";

@@ -1,4 +1,5 @@
 import type { GuildMember, Snowflake, User } from "discord.js";
+import type { Temporal } from "@js-temporal/polyfill";
 
 import type { Ban } from "./db/model.ts";
 import db from "#db";
@@ -6,7 +7,7 @@ import log from "#log";
 
 export async function persistOrUpdate(
     user: GuildMember,
-    until: Date | null,
+    until: Temporal.Instant | null,
     isSelfBan: boolean,
     reason: string | null = null,
     ctx = db(),
@@ -15,7 +16,7 @@ export async function persistOrUpdate(
         `Saving Ban for user ${user} until ${until} (is self ban: ${isSelfBan}, reason: ${reason})`,
     );
 
-    const bannedUntil = until?.toISOString();
+    const bannedUntil = until?.toString();
     await ctx
         .insertInto("bans")
         .values({
@@ -42,11 +43,11 @@ export async function remove(userId: Snowflake, ctx = db()) {
     await ctx.deleteFrom("bans").where("userId", "=", userId).execute();
 }
 
-export async function findExpiredBans(now: Date, ctx = db()): Promise<Ban[]> {
+export async function findExpiredBans(now: Temporal.Instant, ctx = db()): Promise<Ban[]> {
     return ctx
         .selectFrom("bans")
         .where("bannedUntil", "is not", null)
-        .where("bannedUntil", "<=", now.toISOString())
+        .where("bannedUntil", "<=", now.toString())
         .selectAll()
         .execute();
 }

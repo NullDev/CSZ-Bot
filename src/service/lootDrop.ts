@@ -24,6 +24,7 @@ import type { BotContext } from "#context.ts";
 import type { Loot, LootId } from "#storage/db/model.ts";
 import type { LootTemplate } from "#storage/loot.ts";
 import { randomBoolean, randomEntry, randomEntryWeighted } from "#service/random.ts";
+import * as timeUtils from "#utils/time.ts";
 
 import * as lootService from "#service/loot.ts";
 import {
@@ -35,7 +36,7 @@ import {
 
 import log from "#log";
 
-const lootTimeoutMs = 60 * 1000;
+const lootTimeoutMs = timeUtils.minutes(1);
 
 export async function runDropAttempt(context: BotContext) {
     const lootConfig = context.commandConfig.loot;

@@ -40,6 +40,7 @@ export interface Database {
     polls: PollsTable;
     pollOptions: PollOptionsTable;
     pollAnswers: PollAnswersTable;
+    quotedMessages: QuotedMessagesTable;
 }
 
 export type OneBasedMonth = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
@@ -448,4 +449,15 @@ export interface PollAnswersTable extends AuditedTable {
 
     optionId: PollOptionId;
     userId: Snowflake;
+}
+
+export type QuotedMessagesId = number;
+export type QuotedMessage = Selectable<QuotedMessagesTable>;
+export interface QuotedMessagesTable extends AuditedTable {
+    id: GeneratedAlways<QuotedMessagesId>;
+
+    guildId: Snowflake;
+    channelId: Snowflake;
+    messageId: Snowflake;
+    authorId: Snowflake;
 }

@@ -80,7 +80,7 @@ const sendPenis = async (
                 t => t.setContent(`${markdownSizePrefix}${penis}`),
                 t =>
                     t.setContent(
-                        `-# Länge: ${cmFormatter.format(size)}, Umfang: ${cmFormatter.format(circumference)}, gemessen um ${time(measurement, TimestampStyles.LongDateTime)}`,
+                        `-# Länge: ${cmFormatter.format(size)}, Umfang: ${cmFormatter.format(circumference)}, gemessen um ${time(measurement, TimestampStyles.FullDateShortTime)}`,
                     ),
             ),
         ],

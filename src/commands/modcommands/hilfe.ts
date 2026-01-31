@@ -1,3 +1,5 @@
+import { ContextMenuCommandBuilder } from "discord.js";
+
 import type { MessageCommand } from "#commands/command.ts";
 import type { BotContext } from "#context.ts";
 import type { ProcessableMessage } from "#service/command.ts";
@@ -18,6 +20,14 @@ export default class ModHilfeCommand implements MessageCommand {
         const newCommands = await commandService.readAvailableCommands(context);
         for (const command of newCommands) {
             if (!command.modCommand) {
+                continue;
+            }
+
+            // TODO: Hack to exclude faulenzerping and video download
+            if (
+                "applicationCommand" in command &&
+                command.applicationCommand instanceof ContextMenuCommandBuilder
+            ) {
                 continue;
             }
 
