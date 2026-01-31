@@ -61,11 +61,8 @@ export async function banUser(
         `Banning ${member.id} by ${banInvoker.id} because of ${reason} for ${durationInHours}.`,
     );
 
-    // No Shadow ban :(
     const botUser = context.client.user;
-
-    const xd = "523932502648427173".split("").reverse().join("");
-    if (member.id === xd || (botUser && member.id === botUser.id)) {
+    if (botUser && member.id === botUser.id) {
         return "Fick dich bitte.";
     }
 
