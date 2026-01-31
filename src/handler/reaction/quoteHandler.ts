@@ -3,13 +3,11 @@ import {
     type Message,
     type MessageReaction,
     type User,
-    type GuildEmoji,
-    type ReactionEmoji,
     ChannelType,
     type Channel,
     type Snowflake,
     type GuildTextBasedChannel,
-    type ApplicationEmoji,
+    hyperlink,
 } from "discord.js";
 import { Temporal } from "@js-temporal/polyfill";
 
@@ -20,6 +18,8 @@ import log from "#log";
 import * as quoteService from "#service/quote.ts";
 
 const quoteMessage = "Ihr quoted echt jeden Scheiß, oder?";
+
+// TODO: Move some of these functions to the service
 
 const isChannelAnonymous = async (context: BotContext, channel: Channel) => {
     const anonChannels = context.commandConfig.quote.anonymousChannelIds;
@@ -300,6 +300,7 @@ export default {
         }
 
         await message.react(event.emoji);
+
         if (message.channel.isTextBased() && message.channel.type === ChannelType.GuildText) {
             await message.reply(quoteMessage);
         }
@@ -316,7 +317,7 @@ function createSelfQuoteReply(quoter: GuildMember, message: Message<true>) {
                     icon_url: quoter.avatarURL({ forceStatic: true }) ?? undefined,
                 },
                 title: `${quoter.displayName} der Lellek hat gerade versucht sich, selbst zu quoten. Was für ein Opfer!`,
-                description: `${message.cleanContent}\n\n([link](${message.url}))`,
+                description: `${message.cleanContent}\n\n(${hyperlink("link", message.url)})`,
             },
         ],
         allowedMentions: {
