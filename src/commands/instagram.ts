@@ -78,6 +78,9 @@ export default class InstagramLink implements SpecialCommand {
             await message.reply({
                 content: "Dein Dreckspost du Hund:",
                 files,
+                allowedMentions: {
+                    repliedUser: false,
+                },
             });
         }
         await message.suppressEmbeds(true);
