@@ -87,8 +87,6 @@ export interface BotContext {
         birthday: Role;
         botDeny: Role;
         default: Role;
-        gruendervaeter: Role;
-        gruendervaeterBanned: Role;
         roleDeny: Role;
         shame: Role;
         trusted: Role;
@@ -138,7 +136,6 @@ export interface BotContext {
         isMod: (member: GuildMember) => boolean;
         isNerd: (member: GuildMember | APIInteractionGuildMember) => boolean;
         isTrusted: (member: GuildMember | APIInteractionGuildMember) => boolean;
-        isGruendervater: (member: GuildMember | APIInteractionGuildMember) => boolean;
         isWoisGang: (member: GuildMember | APIInteractionGuildMember) => boolean;
         isEmotifizierer: (member: GuildMember | APIInteractionGuildMember) => boolean;
         hasBotDenyRole: (member: GuildMember | APIInteractionGuildMember) => boolean;
@@ -319,8 +316,6 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
             birthday: ensureRole(guild, role.birthdayRoleId),
             botDeny: ensureRole(guild, role.botDenyRoleId),
             default: ensureRole(guild, role.defaultRoleId),
-            gruendervaeter: ensureRole(guild, role.gruendervaeterRoleId),
-            gruendervaeterBanned: ensureRole(guild, role.gruendervaeterBannedRoleId),
             roleDeny: ensureRole(guild, role.roleDenyRoleId),
             shame: ensureRole(guild, role.shameRoleId),
             trusted: ensureRole(guild, role.trustedRoleId),
@@ -361,9 +356,6 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
             isTrusted: member =>
                 hasRoleById(member, config.role.trustedRoleId) ||
                 hasRoleById(member, config.role.trustedBannedRoleId),
-            isGruendervater: member =>
-                hasRoleById(member, config.role.gruendervaeterRoleId) ||
-                hasRoleById(member, config.role.gruendervaeterBannedRoleId),
             isWoisGang: member => hasRoleById(member, config.role.woisgangRoleId),
             isEmotifizierer: member => hasRoleById(member, config.role.emotifiziererRoleId),
             hasBotDenyRole: member => hasRoleById(member, config.role.botDenyRoleId),
