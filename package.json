@@ -29,7 +29,7 @@
     "@js-temporal/polyfill": "^0.5.1",
     "@napi-rs/canvas": "0.1.89",
     "@resvg/resvg-js": "^2.6.2",
-    "@sentry/node": "^10.37.0",
+    "@sentry/node": "^10.38.0",
     "@snazzah/davey": "^0.1.9",
     "@spotify/web-api-ts-sdk": "^1.2.0",
     "chrono-node": "^2.9.0",
@@ -52,7 +52,7 @@
     "@types/jsdom": "^27.0.0",
     "@types/node": "^25.1.0",
     "@types/node-cron": "^3.0.11",
-    "@typescript/native-preview": "^7.0.0-dev.20260128.1",
+    "@typescript/native-preview": "^7.0.0-dev.20260130.1",
     "expect": "^30.2.0",
     "lefthook": "^2.0.16"
   },
