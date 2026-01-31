@@ -37,7 +37,6 @@ type RoleInGraph =
     | "woisgang"
     | "trusted"
     | "moderator"
-    | "gruendervaeter"
     | "administrator"
     | "booster";
 
@@ -46,7 +45,6 @@ const roleColors: Partial<Record<RoleInGraph, string>> = {
     booster: "#1cb992",
     trusted: "#e91e63",
     moderator: "#5865f2",
-    gruendervaeter: "#faa81a",
     administrator: "#8b51ff",
 };
 
@@ -170,9 +168,6 @@ function getRoles(context: BotContext, member: GuildMember): RoleInGraph[] {
     }
     if (context.roleGuard.isTrusted(member)) {
         res.push("trusted");
-    }
-    if (context.roleGuard.isGruendervater(member)) {
-        res.push("gruendervaeter");
     }
     if (context.roleGuard.isRejoiner(member)) {
         res.push("rejoiner");
