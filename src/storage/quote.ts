@@ -1,5 +1,5 @@
 import type { Snowflake } from "discord.js";
-import type { Insertable } from "kysely";
+import { sql, type Insertable } from "kysely";
 
 import type { QuotedMessagesTable } from "#storage/db/model.ts";
 
@@ -12,7 +12,13 @@ export async function addQuoteIfNotPresent(
     message: Insertable<QuotedMessagesTable>,
     ctx = db(),
 ): Promise<boolean> {
-    throw new Error("Not implemented");
+    const res = await ctx
+        .insertInto("quotedMessages")
+        .values(message)
+        .onConflict(c => c.column("messageId").doNothing())
+        .returning(sql`1`.as("inserted"))
+        .executeTakeFirst();
+    return !!res?.inserted;
 }
 
 export async function isMessageAlreadyQuoted(messageId: Snowflake, ctx = db()): Promise<boolean> {
