@@ -38,13 +38,6 @@ const isChannelAnonymous = async (context: BotContext, channel: Channel) => {
     return false;
 };
 
-const isQuoteEmoji = (
-    quoteConfig: QuoteConfig,
-    emoji: GuildEmoji | ReactionEmoji | ApplicationEmoji,
-) => {
-    return emoji.name === quoteConfig.emojiName;
-};
-
 const getMessageQuoter = async (
     quoteConfig: QuoteConfig,
     message: Message,
@@ -54,8 +47,8 @@ const getMessageQuoter = async (
         throw new Error("Guild is null");
     }
     const fetchedMessage = await message.fetch(true);
-    const messageReaction = fetchedMessage.reactions.cache.find(r =>
-        isQuoteEmoji(quoteConfig, r.emoji),
+    const messageReaction = fetchedMessage.reactions.cache.find(
+        r => r.emoji.name === quoteConfig.emojiName,
     );
 
     if (messageReaction === undefined) {
@@ -191,7 +184,7 @@ export default {
         }
 
         const quoteConfig = context.commandConfig.quote;
-        if (!isQuoteEmoji(quoteConfig, event.emoji)) {
+        if (event.emoji.name !== quoteConfig.emojiName) {
             return;
         }
 
@@ -251,23 +244,7 @@ export default {
         }
 
         if (isQuoterQuotingHimself(quoter, quotedMember)) {
-            await context.textChannels.hauptchat.send({
-                embeds: [
-                    {
-                        color: 0xe83e41,
-                        author: {
-                            name: quoter.displayName,
-                            icon_url: quoter.avatarURL({ forceStatic: true }) ?? undefined,
-                        },
-                        title: `${quoter.displayName} der Lellek hat gerade versucht sich, selbst zu quoten. Was für ein Opfer!`,
-                        description: `${message.cleanContent}\n\n([link](${message.url}))`,
-                    },
-                ],
-                allowedMentions: {
-                    users: [quoter.id],
-                },
-            });
-
+            await context.textChannels.hauptchat.send(createSelfQuoteReply(quoter, message));
             await event.users.remove(quoter);
             return;
         }
@@ -328,3 +305,22 @@ export default {
         }
     },
 } satisfies ReactionHandler;
+
+function createSelfQuoteReply(quoter: GuildMember, message: Message<true>) {
+    return {
+        embeds: [
+            {
+                color: 0xe83e41,
+                author: {
+                    name: quoter.displayName,
+                    icon_url: quoter.avatarURL({ forceStatic: true }) ?? undefined,
+                },
+                title: `${quoter.displayName} der Lellek hat gerade versucht sich, selbst zu quoten. Was für ein Opfer!`,
+                description: `${message.cleanContent}\n\n([link](${message.url}))`,
+            },
+        ],
+        allowedMentions: {
+            users: [quoter.id],
+        },
+    };
+}
