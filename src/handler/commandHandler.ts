@@ -52,12 +52,17 @@ export const loadCommands = async (context: BotContext): Promise<void> => {
         "mod",
         "normal",
     ]);
-    const loadedCommandNames = new Set(staticCommands.map(c => c.name));
+
+    // We also respect the modCommand flag, so we can load .hilfe and ~hilfe
+    const loadedCommandNames = new Set(
+        staticCommands.map(c => `${c.name}-${c.modCommand ?? false}`),
+    );
 
     const dynamicCommands = [];
     for (const instance of availableCommands) {
-        if (loadedCommandNames.has(instance.name)) {
-            log.debug(`Command "${instance.name}" is already loaded, skipping`);
+        const loadedName = `${instance.name}-${instance.modCommand ?? false}`;
+        if (loadedCommandNames.has(loadedName)) {
+            log.debug(`Command "${loadedName}" is already loaded, skipping`);
             continue;
         }
 
