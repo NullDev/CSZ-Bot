@@ -42,10 +42,7 @@ const allCommands: Command[] = [];
 const getApplicationCommands = () => allCommands.filter(c => "handleInteraction" in c);
 const getAutocompleteCommands = () => allCommands.filter(c => "autocomplete" in c);
 const getSpecialCommands = () => allCommands.filter(c => "handleSpecialMessage" in c);
-const getMessageCommands = (modCommand: boolean) =>
-    allCommands
-        .filter(c => modCommand === (c.modCommand ?? false))
-        .filter(c => "handleMessage" in c);
+const getMessageCommands = () => allCommands.filter(c => "handleMessage" in c);
 
 const latestSpecialCommandInvocations: Record<string, number> = {};
 
@@ -190,18 +187,17 @@ const hasPermissions = (
  */
 
 async function commandMessageHandler(
-    isModCommand: boolean,
     commandString: string,
     message: ProcessableMessage,
     context: BotContext,
 ): Promise<unknown> {
     const lowerCommand = commandString.toLowerCase();
-    const matchingCommand = getMessageCommands(isModCommand).find(
+    const command = getMessageCommands().find(
         cmd => cmd.name.toLowerCase() === lowerCommand || cmd.aliases?.includes(lowerCommand),
     );
 
-    if ((matchingCommand?.modCommand ?? false) !== isModCommand) {
-        throw new Error("Somehow we got `command.modCommand !== isModCommand`");
+    if (!command) {
+        return;
     }
 
     if (
@@ -214,21 +210,14 @@ async function commandMessageHandler(
         return;
     }
 
-    if (!matchingCommand) {
-        return;
-    }
-
     const invoker = message.member;
 
-    const isModCommandAndAllowed = !isModCommand || context.roleGuard.isMod(invoker);
+    const isNormalCommandOrUserIsMod = !command.modCommand || context.roleGuard.isMod(invoker);
 
-    if (
-        isModCommandAndAllowed &&
-        hasPermissions(invoker, matchingCommand.requiredPermissions ?? [])
-    ) {
+    if (isNormalCommandOrUserIsMod && hasPermissions(invoker, command.requiredPermissions ?? [])) {
         return await sentry.startSpan(
-            { name: matchingCommand.name, op: "command.message" },
-            async () => await matchingCommand.handleMessage(message, context),
+            { name: command.name, op: "command.message" },
+            async () => await command.handleMessage(message, context),
         );
     }
 
@@ -308,15 +297,13 @@ export const messageCommandHandler = async (
     if (content.startsWith(plebPrefix) || content.startsWith(modPrefix)) {
         const splitContent = content.split(/\s+/);
 
-        const isModCommand = content.startsWith(modPrefix);
-
-        const cmdString = isModCommand
+        const cmdString = content.startsWith(modPrefix)
             ? splitContent[0].slice(modPrefix.length)
             : splitContent[0].slice(plebPrefix.length);
 
         if (cmdString) {
             try {
-                await commandMessageHandler(isModCommand, cmdString, message, context);
+                await commandMessageHandler(cmdString, message, context);
             } catch (err) {
                 log.error(err, "Error while handling message command");
                 sentry.captureException(err);
