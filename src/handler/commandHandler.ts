@@ -227,10 +227,10 @@ async function commandMessageHandler(
 
     const invoker = message.member;
 
-    const isModCommandAndAllowed = isModCommand && context.roleGuard.isMod(invoker);
+    const isModCommandAndAllowed = !isModCommand || context.roleGuard.isMod(invoker);
 
     if (
-        isModCommandAndAllowed ||
+        isModCommandAndAllowed &&
         hasPermissions(invoker, matchingCommand.requiredPermissions ?? [])
     ) {
         return await sentry.startSpan(
