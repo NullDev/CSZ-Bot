@@ -188,7 +188,7 @@ Optionen:
             channel,
             {
                 question,
-                preface: preset ? preset.preface : undefined,
+                preface: preset?.preface ?? undefined,
                 anonymous: !!finishTime,
                 author: message.author,
                 extendable,
