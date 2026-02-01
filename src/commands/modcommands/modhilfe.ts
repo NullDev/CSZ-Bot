@@ -8,7 +8,7 @@ import * as commandService from "#service/command.ts";
 
 export default class ModHilfeCommand implements MessageCommand {
     modCommand = true;
-    name = "hilfe";
+    name = "modhilfe";
     description = "Listet alle mod-commands auf";
 
     async handleMessage(message: ProcessableMessage, context: BotContext): Promise<void> {
