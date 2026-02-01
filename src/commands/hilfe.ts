@@ -18,10 +18,6 @@ export default class HilfeCommand implements MessageCommand {
         const lines = [];
         const newCommands = await commandService.readAvailableCommands(context, ["normal"]);
         for (const command of newCommands) {
-            if (command.modCommand) {
-                continue;
-            }
-
             // TODO: Hack to exclude faulenzerping and video download
             if (
                 "applicationCommand" in command &&
