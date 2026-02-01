@@ -207,7 +207,7 @@ async function commandMessageHandler(
         cmd => cmd.name.toLowerCase() === lowerCommand || cmd.aliases?.includes(lowerCommand),
     );
 
-    if (matchingCommand?.modCommand ?? false !== isModCommand) {
+    if ((matchingCommand?.modCommand ?? false) !== isModCommand) {
         throw new Error("Somehow we got `command.modCommand !== isModCommand`");
     }
 
