@@ -289,7 +289,6 @@ export const messageCommandHandler = async (
         return;
     }
 
-    // We need the prefix to differentiate between ~hilfe and .hilfe, which are different commands
     const plebPrefix = context.prefix.command;
     const modPrefix = context.prefix.modCommand;
 
@@ -297,9 +296,9 @@ export const messageCommandHandler = async (
     if (content.startsWith(plebPrefix) || content.startsWith(modPrefix)) {
         const splitContent = content.split(/\s+/);
 
-        const cmdString = content.startsWith(modPrefix)
-            ? splitContent[0].slice(modPrefix.length)
-            : splitContent[0].slice(plebPrefix.length);
+        const cmdString = content.startsWith(plebPrefix)
+            ? splitContent[0].slice(plebPrefix.length)
+            : splitContent[0].slice(modPrefix.length);
 
         if (cmdString) {
             try {
