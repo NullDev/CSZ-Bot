@@ -67,7 +67,7 @@ async function loadRawCommandModulesFromDirectory(
             continue;
         }
 
-        const filePath = path.join(context.path.commands, file);
+        const filePath = path.join(commandDir, file);
 
         const moduleUrl = new URL("file://");
         moduleUrl.pathname = filePath;
