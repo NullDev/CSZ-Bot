@@ -96,6 +96,8 @@ jobs:
       uses: docker/build-push-action@v6
       id: build
       with:
+        # context needed, so we use path context instead of git context, so .dockerignore is respected
+        context: "."
         push: ${{ !github.event.repository.fork }}
         pull: true
         tags: ${{ steps.meta.outputs.tags }}
