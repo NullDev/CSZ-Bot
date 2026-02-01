@@ -4,7 +4,8 @@ services:
     restart: unless-stopped
     image: ghcr.io/nulldev/csz-bot:latest
     environment:
-      - LOG_LEVEL=debug
+      LOG_LEVEL: debug
+      DATABASE_PATH: /app/data/storage.db
     volumes:
       - ../config.json:/app/config.json:ro
       - ../data:/app/data
