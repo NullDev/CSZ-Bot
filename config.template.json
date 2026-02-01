@@ -116,5 +116,11 @@
         "winnerRoleId": "1045422896740311070",
         "emotifiziererRoleId": "893179190709477410",
         "lootRoleAsseGuardRoleId": "1268706685753622529"
+    },
+
+    "emoji": {
+        "alarmEmojiId": "986292638204448838",
+        "sadHamsterEmojiId": "896110620108263424",
+        "trichterEmojiId": "986290070908731392"
     }
 }
