@@ -14,9 +14,10 @@ fi
 TEMP_DIR=$(mktemp -d)
 cd "$TEMP_DIR"
 
-cp -r "$BOT_HOME_PATH/banners" "$TEMP_DIR"
-cp -r "$BOT_HOME_PATH/sounds" "$TEMP_DIR"
-cp -r "$BOT_HOME_PATH/.infra" "$TEMP_DIR"
+mkdir -p "$TEMP_DIR/data"
+
+cp -r "$BOT_HOME_PATH/data" "$TEMP_DIR/data"
+cp -r "$BOT_HOME_PATH/.infra" "$TEMP_DIR/.infra"
 
 echo "$EPHEMERAL_BOT_CONFIG" > config.json
 echo "" >.env # Dummy env
