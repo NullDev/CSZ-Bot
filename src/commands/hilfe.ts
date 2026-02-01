@@ -16,7 +16,7 @@ export default class HilfeCommand implements MessageCommand {
         const prefix = context.prefix.command;
 
         const lines = [];
-        const newCommands = await commandService.readAvailableCommands(context);
+        const newCommands = await commandService.readAvailableCommands(context, ["normal"]);
         for (const command of newCommands) {
             if (command.modCommand) {
                 continue;

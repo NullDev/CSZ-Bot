@@ -47,7 +47,11 @@ const getSpecialCommands = () => allCommands.filter(c => "handleSpecialMessage" 
 const latestSpecialCommandInvocations: Record<string, number> = {};
 
 export const loadCommands = async (context: BotContext): Promise<void> => {
-    const availableCommands = await commandService.readAvailableCommands(context);
+    // TODO: This breaks hilfe command; we should distinguish between mod commands and normal commands
+    const availableCommands = await commandService.readAvailableCommands(context, [
+        "mod",
+        "normal",
+    ]);
     const loadedCommandNames = new Set(staticCommands.map(c => c.name));
 
     const dynamicCommands = [];

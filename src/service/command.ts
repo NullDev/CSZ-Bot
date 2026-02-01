@@ -12,11 +12,28 @@ import log from "#log";
 const commandExtensions = [".ts", ".js"];
 const ignoredExtensions = [".spec.ts", ".test.ts", ".d.ts", ".test.js", ".spec.js"];
 
-export async function readAvailableCommands(context: BotContext): Promise<Command[]> {
-    const modules = loadRawCommandModules(context, context.path.commands);
+export type CommandKind = "mod" | "normal";
+
+export async function readAvailableCommands(
+    context: BotContext,
+    kinds: readonly CommandKind[],
+): Promise<Command[]> {
+    const modules = [];
+
+    if (kinds.includes("mod")) {
+        const modCommands = await loadRawCommandModulesFromDirectory(
+            context,
+            context.path.modCommands,
+        );
+        modules.push(...modCommands);
+    }
+    if (kinds.includes("normal")) {
+        const commands = await loadRawCommandModulesFromDirectory(context, context.path.commands);
+        modules.push(...commands);
+    }
 
     const res = [];
-    for await (const { module } of modules) {
+    for (const { module } of modules) {
         if (!module.default) {
             continue;
         }
@@ -25,8 +42,22 @@ export async function readAvailableCommands(context: BotContext): Promise<Comman
     return res;
 }
 
-async function* loadRawCommandModules(context: BotContext, commandDir: string) {
-    const commandFiles = await fs.readdir(commandDir, { recursive: true });
+type CommandModuleFile = {
+    filePath: string;
+    module: {
+        default: {
+            new (): Command;
+        };
+    };
+};
+
+async function loadRawCommandModulesFromDirectory(
+    context: BotContext,
+    commandDir: string,
+): Promise<CommandModuleFile[]> {
+    const commandFiles = await fs.readdir(commandDir);
+
+    const res = [];
 
     for (const file of commandFiles) {
         if (!commandExtensions.some(extension => file.endsWith(extension))) {
@@ -51,11 +82,13 @@ async function* loadRawCommandModules(context: BotContext, commandDir: string) {
             continue;
         }
 
-        yield {
+        res.push({
             filePath,
             module,
-        };
+        });
     }
+
+    return res;
 }
 
 /**
