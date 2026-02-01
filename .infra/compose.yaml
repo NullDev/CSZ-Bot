@@ -11,6 +11,6 @@ services:
       - ../data/config.json:/app/config.json:ro
       - ../data/sounds:/app/data/sounds
       - ../data/storage.db:/app/storage.db
-      - ../logs:/app/logs
+      - ../data/logs:/app/data/logs
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
