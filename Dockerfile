@@ -22,7 +22,6 @@ FROM node:alpine
         apk add --no-cache \
         font-noto-emoji \
         fontconfig \
-        ffmpeg \
         font-liberation \
         python3 \
         py-pip \
