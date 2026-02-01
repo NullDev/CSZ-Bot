@@ -12,22 +12,11 @@ import log from "#log";
 const commandExtensions = [".ts", ".js"];
 const ignoredExtensions = [".spec.ts", ".test.ts", ".d.ts", ".test.js", ".spec.js"];
 
-export type CommandKind = "mod" | "normal";
-
-export async function readAvailableCommands(
-    context: BotContext,
-    kinds: readonly CommandKind[],
-): Promise<Command[]> {
-    const modules = [];
-
-    if (kinds.includes("mod")) {
-        const modCommands = await loadRawCommandModulesFromDirectory(context.path.modCommands);
-        modules.push(...modCommands);
-    }
-    if (kinds.includes("normal")) {
-        const commands = await loadRawCommandModulesFromDirectory(context.path.commands);
-        modules.push(...commands);
-    }
+export async function readAvailableCommands(context: BotContext): Promise<Command[]> {
+    const modules = [
+        ...(await loadRawCommandModulesFromDirectory(context.path.modCommands)),
+        ...(await loadRawCommandModulesFromDirectory(context.path.commands)),
+    ];
 
     const res = [];
     for (const { module } of modules) {

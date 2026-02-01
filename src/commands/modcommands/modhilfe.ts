@@ -15,8 +15,12 @@ export default class ModHilfeCommand implements MessageCommand {
         const prefix = context.prefix.modCommand;
 
         const lines = [];
-        const newCommands = await commandService.readAvailableCommands(context, ["mod"]);
+        const newCommands = await commandService.readAvailableCommands(context);
         for (const command of newCommands) {
+            if (!command.modCommand) {
+                continue;
+            }
+
             const commandStr = prefix + command.name;
             lines.push(
                 `${commandStr}: ${replacePrefixPlaceholders(command.description, context)}\n`,

@@ -50,21 +50,14 @@ const getMessageCommands = (modCommand: boolean) =>
 const latestSpecialCommandInvocations: Record<string, number> = {};
 
 export const loadCommands = async (context: BotContext): Promise<void> => {
-    const availableCommands = await commandService.readAvailableCommands(context, [
-        "mod",
-        "normal",
-    ]);
+    const availableCommands = await commandService.readAvailableCommands(context);
 
-    // We also respect the modCommand flag, so we can load .hilfe and ~hilfe
-    const loadedCommandNames = new Set(
-        staticCommands.map(c => `${c.name}-${c.modCommand ?? false}`),
-    );
+    const loadedCommandNames = new Set(staticCommands.map(c => c.name));
 
     const dynamicCommands = [];
     for (const instance of availableCommands) {
-        const loadedName = `${instance.name}-${instance.modCommand ?? false}`;
-        if (loadedCommandNames.has(loadedName)) {
-            log.debug(`Command "${loadedName}" is already loaded, skipping`);
+        if (loadedCommandNames.has(instance.name)) {
+            log.debug(`Command "${instance.name}" is already loaded, skipping`);
             continue;
         }
 
