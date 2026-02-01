@@ -197,8 +197,8 @@ const hasPermissions = (
  */
 
 async function commandMessageHandler(
-    commandString: string,
     isModCommand: boolean,
+    commandString: string,
     message: ProcessableMessage,
     context: BotContext,
 ): Promise<unknown> {
@@ -206,6 +206,10 @@ async function commandMessageHandler(
     const matchingCommand = getMessageCommands(isModCommand).find(
         cmd => cmd.name.toLowerCase() === lowerCommand || cmd.aliases?.includes(lowerCommand),
     );
+
+    if (matchingCommand?.modCommand ?? false !== isModCommand) {
+        throw new Error("Somehow we got `command.modCommand !== isModCommand`");
+    }
 
     if (
         context.roleGuard.hasBotDenyRole(message.member) &&
@@ -298,7 +302,7 @@ export const messageCommandHandler = async (
         return;
     }
 
-    // TODO: The Prefix is now completely irrelevant, since the commands itself define their permission.
+    // We need the prefix to differentiate between ~hilfe and .hilfe, which are different commands
     const plebPrefix = context.prefix.command;
     const modPrefix = context.prefix.modCommand;
 
@@ -314,7 +318,7 @@ export const messageCommandHandler = async (
 
         if (cmdString) {
             try {
-                await commandMessageHandler(cmdString, isModCommand, message, context);
+                await commandMessageHandler(isModCommand, cmdString, message, context);
             } catch (err) {
                 log.error(err, "Error while handling message command");
                 sentry.captureException(err);
