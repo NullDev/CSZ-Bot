@@ -7,7 +7,7 @@ services:
       - LOG_LEVEL=debug
     volumes:
       # cannot use docker secrets because the file will be updated by yt-dlp
-      - ../cookies-youtube.txt:/cookies-youtube.txt
+      - ../data/cookies-youtube.txt:/app/data/cookies-youtube.txt
       - ../data/config.json:/app/config.json:ro
       - ../data/sounds:/app/data/sounds
       - ../data/storage.db:/app/storage.db
