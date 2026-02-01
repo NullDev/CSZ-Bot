@@ -8,10 +8,10 @@ services:
     volumes:
       # cannot use docker secrets because the file will be updated by yt-dlp
       - ../cookies-youtube.txt:/cookies-youtube.txt
-      - ../config.json:/app/config.json:ro
-      - ../sounds:/app/sounds:ro
-      - ../banners:/app/banners:ro
-      - ../storage.db:/app/storage.db
+      - ../data/config.json:/app/config.json:ro
+      - ../data/sounds:/app/sounds:ro
+      - ../data/banners:/app/banners:ro
+      - ../data/storage.db:/app/storage.db
       - ../logs:/app/logs
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
