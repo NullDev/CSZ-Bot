@@ -26,6 +26,8 @@ export async function connectToDb(databasePath: string) {
         enableForeignKeyConstraints: true,
     });
 
+    nativeDb.exec("PRAGMA journal_mode = WAL");
+
     const db = new Kysely<Database>({
         plugins: [datePlugin, new SqliteBooleanPlugin()],
         dialect: new SqliteDialect({ database: nativeDb }),
