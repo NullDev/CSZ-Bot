@@ -11,7 +11,7 @@ import { defer } from "#utils/interactionUtils.ts";
 
 const pollOptionsPresets = {
     likert: {
-        questionPrefix: "Wie sehr stimmst du folgender Aussage zu?",
+        preface: "Wie sehr stimmst du folgender Aussage zu?",
         permitsExtension: false,
         options: [
             "Stimme überhaupt nicht zu",
@@ -103,7 +103,8 @@ Optionen:
             return "Bruder da ist keine Umfrage :c";
         }
 
-        let [question, ...pollOptions] = pollService.parsePollOptionString(positionals.join(" "));
+        const [question, ...pollOptions] = pollService.parsePollOptionString(positionals.join(" "));
+
         if (question.length > pollEmbedService.TEXT_LIMIT) {
             return "Bruder die Frage ist ja länger als mein Schwands :c";
         }
@@ -120,7 +121,10 @@ Optionen:
 
         if (preset) {
             pollOptions.push(...preset.options);
-            question = `${preset.questionPrefix}\n${question}`;
+            // Check with estimated length, does not need to be perfect. Otherwise discord will just error out later
+            if (preset.preface.length + question.length + 1 > pollEmbedService.TEXT_LIMIT) {
+                return "Bruder die vorgegebene Frage ist zu lang in Kombination mit dem preset :c";
+            }
         }
 
         let pollOptionsTextLength = 0;
@@ -184,6 +188,7 @@ Optionen:
             channel,
             {
                 question,
+                preface: preset ? preset.preface : undefined,
                 anonymous: !!finishTime,
                 author: message.author,
                 extendable,
