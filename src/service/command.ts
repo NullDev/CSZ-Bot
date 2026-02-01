@@ -21,14 +21,11 @@ export async function readAvailableCommands(
     const modules = [];
 
     if (kinds.includes("mod")) {
-        const modCommands = await loadRawCommandModulesFromDirectory(
-            context,
-            context.path.modCommands,
-        );
+        const modCommands = await loadRawCommandModulesFromDirectory(context.path.modCommands);
         modules.push(...modCommands);
     }
     if (kinds.includes("normal")) {
-        const commands = await loadRawCommandModulesFromDirectory(context, context.path.commands);
+        const commands = await loadRawCommandModulesFromDirectory(context.path.commands);
         modules.push(...commands);
     }
 
@@ -52,7 +49,6 @@ type CommandModuleFile = {
 };
 
 async function loadRawCommandModulesFromDirectory(
-    context: BotContext,
     commandDir: string,
 ): Promise<CommandModuleFile[]> {
     const commandFiles = await fs.readdir(commandDir);

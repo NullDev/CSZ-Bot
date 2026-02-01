@@ -41,13 +41,15 @@ const allCommands: Command[] = [];
 
 const getApplicationCommands = () => allCommands.filter(c => "handleInteraction" in c);
 const getAutocompleteCommands = () => allCommands.filter(c => "autocomplete" in c);
-const getMessageCommands = () => allCommands.filter(c => "handleMessage" in c);
 const getSpecialCommands = () => allCommands.filter(c => "handleSpecialMessage" in c);
+const getMessageCommands = (modCommand: boolean) =>
+    allCommands
+        .filter(c => modCommand === (c.modCommand ?? false))
+        .filter(c => "handleMessage" in c);
 
 const latestSpecialCommandInvocations: Record<string, number> = {};
 
 export const loadCommands = async (context: BotContext): Promise<void> => {
-    // TODO: This breaks hilfe command; we should distinguish between mod commands and normal commands
     const availableCommands = await commandService.readAvailableCommands(context, [
         "mod",
         "normal",
@@ -193,13 +195,15 @@ const hasPermissions = (
  * was found or an error if the command would be a mod command but the
  * invoking user is not a mod
  */
-const commandMessageHandler = async (
+
+async function commandMessageHandler(
     commandString: string,
+    isModCommand: boolean,
     message: ProcessableMessage,
     context: BotContext,
-): Promise<unknown> => {
+): Promise<unknown> {
     const lowerCommand = commandString.toLowerCase();
-    const matchingCommand = getMessageCommands().find(
+    const matchingCommand = getMessageCommands(isModCommand).find(
         cmd => cmd.name.toLowerCase() === lowerCommand || cmd.aliases?.includes(lowerCommand),
     );
 
@@ -233,7 +237,7 @@ const commandMessageHandler = async (
             content: `Tut mir leid, ${message.author}. Du hast nicht genügend Rechte um dieses Command zu verwenden, dafür gibt's erstmal mit dem Willkürhammer einen auf den Deckel.`,
         }),
     ]);
-};
+}
 
 const isCooledDown = (command: SpecialCommand) => {
     const now = Date.now();
@@ -302,13 +306,15 @@ export const messageCommandHandler = async (
     if (content.startsWith(plebPrefix) || content.startsWith(modPrefix)) {
         const splitContent = content.split(/\s+/);
 
-        const cmdString = content.startsWith(plebPrefix)
-            ? splitContent[0].slice(plebPrefix.length)
-            : splitContent[0].slice(modPrefix.length);
+        const isModCommand = content.startsWith(modPrefix);
+
+        const cmdString = isModCommand
+            ? splitContent[0].slice(modPrefix.length)
+            : splitContent[0].slice(plebPrefix.length);
 
         if (cmdString) {
             try {
-                await commandMessageHandler(cmdString, message, context);
+                await commandMessageHandler(cmdString, isModCommand, message, context);
             } catch (err) {
                 log.error(err, "Error while handling message command");
                 sentry.captureException(err);
