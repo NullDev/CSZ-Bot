@@ -7,11 +7,4 @@ services:
       - LOG_LEVEL=debug
     volumes:
       - ../config.json:/app/config.json:ro
-
-      # cannot use docker secrets because the file will be updated by yt-dlp
-      - ../data/cookies-youtube.txt:/app/data/cookies-youtube.txt
-      - ../data/sounds:/app/data/sounds
-      - ../data/storage.db:/app/storage.db
-      - ../data/logs:/app/data/logs
-      - /etc/timezone:/etc/timezone:ro
-      - /etc/localtime:/etc/localtime:ro
+      - ../data:/app/data
