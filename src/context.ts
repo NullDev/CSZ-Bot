@@ -235,10 +235,7 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
     const textChannel = config.textChannel;
     const voiceChannel = config.voiceChannel;
 
-    const bannersPath = path.resolve("data/banners");
     const soundsPath = path.resolve("data/sounds");
-
-    await fs.mkdir(bannersPath, { recursive: true });
     await fs.mkdir(soundsPath, { recursive: true });
 
     return {
@@ -356,7 +353,7 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
         path: {
             root: path.resolve(""),
             src: path.resolve("src"),
-            banners: bannersPath,
+            banners: path.resolve("assets/banners"),
             sounds: soundsPath,
             commands: path.resolve("src/commands"),
             modCommands: path.resolve("src/commands/modcommands"),
