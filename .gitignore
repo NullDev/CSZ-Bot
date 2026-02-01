@@ -8,12 +8,6 @@ config.json
 # Dependency directories
 node_modules/
 
-# TypeScript cache
-*.tsbuildinfo
-
-# Optional npm cache directory
-.npm
-
 # Output of 'npm pack'
 *.tgz
 
@@ -21,9 +15,9 @@ node_modules/
 .env.*
 !.env.*.example
 
-dist
 .cache/
 
 *.db
 .idea/
-built/
+
+data/

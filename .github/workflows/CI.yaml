@@ -26,21 +26,21 @@ jobs:
       pull-requests: write
 
     steps:
-    - uses: actions/checkout@v6
-      with:
-        show-progress: false
-        fetch-depth: 0
+      - uses: actions/checkout@v6
+        with:
+          show-progress: false
+          fetch-depth: 0
 
-    - uses: actions/setup-node@v6
-      with:
-        node-version: 24.x
-        cache: npm
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24.x
+          cache: npm
 
-    - run: npm ci
-      env:
-        YOUTUBE_DL_SKIP_DOWNLOAD: true
-    - run: npm run ci
-    - run: npm test
+      - run: npm ci
+        env:
+          YOUTUBE_DL_SKIP_DOWNLOAD: true
+      - run: npm run ci
+      - run: npm test
 
   build:
     name: Build
@@ -57,55 +57,57 @@ jobs:
       image-digest: ${{ steps.build.outputs.digest }}
 
     steps:
-    - uses: actions/checkout@v6
-      with:
-        show-progress: false
+      - uses: actions/checkout@v6
+        with:
+          show-progress: false
 
-    - uses: docker/setup-qemu-action@v3
-    - uses: docker/setup-buildx-action@v3
-    - uses: docker/login-action@v3
-      with:
-        registry: "ghcr.io"
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: "ghcr.io"
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Docker meta
-      id: meta
-      uses: docker/metadata-action@v5
-      with:
-        images: |
-          ghcr.io/nulldev/csz-bot
-        tags: |
-          type=raw,value=latest,enable=${{ github.ref == 'refs/heads/master' }}
-          type=ref,event=branch
-          type=ref,event=pr
-          type=semver,pattern={{version}}
-          type=semver,pattern={{major}}.{{minor}}
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: |
+            ghcr.io/nulldev/csz-bot
+          tags: |
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/master' }}
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
 
-    - name: Extract tag
-      id: tag
-      env:
-        INPUT_TAGS: ${{ steps.meta.outputs.tags }}
-      run: |
-        first=$(echo "$INPUT_TAGS" | head -n 1)
+      - name: Extract tag
+        id: tag
+        env:
+          INPUT_TAGS: ${{ steps.meta.outputs.tags }}
+        run: |
+          first=$(echo "$INPUT_TAGS" | head -n 1)
 
-        echo "first=$first" >> "$GITHUB_OUTPUT"
+          echo "first=$first" >> "$GITHUB_OUTPUT"
 
 
-    - name: Build and export
-      uses: docker/build-push-action@v6
-      id: build
-      with:
-        push: ${{ !github.event.repository.fork }}
-        pull: true
-        tags: ${{ steps.meta.outputs.tags }}
-        labels: ${{ steps.meta.outputs.labels }}
-        build-args: |
-          RELEASE_IDENTIFIER=${{ github.sha }}
-          BUILD_NUMBER=${{ github.run_number }}
-        load: true
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
+      - name: Build and export
+        uses: docker/build-push-action@v6
+        id: build
+        with:
+          # context needed, so we use path context instead of git context, so .dockerignore is respected
+          context: "."
+          push: ${{ !github.event.repository.fork }}
+          pull: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            RELEASE_IDENTIFIER=${{ github.sha }}
+            BUILD_NUMBER=${{ github.run_number }}
+          load: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
   deploy-e2e:
     name: Deploy e2e
@@ -120,56 +122,56 @@ jobs:
       name: e2e
 
     steps:
-    - uses: actions/checkout@v6
-      with:
-        show-progress: false
+      - uses: actions/checkout@v6
+        with:
+          show-progress: false
 
-    - name: Update configuration
-      env:
-        DISCORD_TOKEN: ${{ secrets.CI_BOT_TOKEN }}
-        DISCORD_CLIENT_ID: ${{ secrets.CI_CLIENT_ID }}
-        PR_ID: ${{ github.event.number }}
-      run: |
-        envsubst < .github/config.json > config.json
+      - name: Update configuration
+        env:
+          DISCORD_TOKEN: ${{ secrets.CI_BOT_TOKEN }}
+          DISCORD_CLIENT_ID: ${{ secrets.CI_CLIENT_ID }}
+          PR_ID: ${{ github.event.number }}
+        run: |
+          envsubst < .github/config.json > config.json
 
-    - name: Read config.json
-      id: config
-      uses: juliangruber/read-file-action@v1
-      with:
-        path: ./config.json
+      - name: Read config.json
+        id: config
+        uses: juliangruber/read-file-action@v1
+        with:
+          path: ./config.json
 
-    - name: Build args
-      id: args
-      env:
-        DRY_RUN: ${{ github.ref == 'refs/heads/master' }}
-      run: |
-        args=""
+      - name: Build args
+        id: args
+        env:
+          DRY_RUN: ${{ github.ref == 'refs/heads/master' }}
+        run: |
+          args=""
 
-        if [[ $DRY_RUN = true ]]; then
-          args="--dry-run"
-        fi
+          if [[ $DRY_RUN = true ]]; then
+            args="--dry-run"
+          fi
 
-        echo "args=$args" >> "$GITHUB_OUTPUT"
+          echo "args=$args" >> "$GITHUB_OUTPUT"
 
-    - name: Deploy CSZ Bot
-      uses: appleboy/ssh-action@0ff4204d59e8e51228ff73bce53f80d53301dee2
-      env:
-        BOT_HOME_PATH: /home/csc
-        EPHEMERAL_BOT_CONFIG: ${{ steps.config.outputs.content }}
-        BOT_ARGS: ${{ steps.args.outputs.args }}
-        BOT_IMAGE: ${{ needs.build.outputs.image-tag }}
-      with:
-        host: ${{ secrets.SSH_HOST }}
-        username: ${{ secrets.SSH_USERNAME }}
-        key: ${{ secrets.SSH_KEY }}
-        port: ${{ secrets.SSH_PORT }}
-        envs: BOT_HOME_PATH,EPHEMERAL_BOT_CONFIG,BOT_ARGS,BOT_IMAGE
-        script: ${{ env.BOT_HOME_PATH }}/.infra/deploy-ephemeral.sh
+      - name: Deploy CSZ Bot
+        uses: appleboy/ssh-action@0ff4204d59e8e51228ff73bce53f80d53301dee2
+        env:
+          BOT_HOME_PATH: /home/csc
+          EPHEMERAL_BOT_CONFIG: ${{ steps.config.outputs.content }}
+          BOT_ARGS: ${{ steps.args.outputs.args }}
+          BOT_IMAGE: ${{ needs.build.outputs.image-tag }}
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          envs: BOT_HOME_PATH,EPHEMERAL_BOT_CONFIG,BOT_ARGS,BOT_IMAGE
+          script: ${{ env.BOT_HOME_PATH }}/.infra/deploy-ephemeral.sh
 
-    - name: Comment PR
-      uses: thollander/actions-comment-pull-request@v3
-      if: ${{ github.event_name == 'pull_request' }}
-      with:
-        comment-tag: discord-invite
-        message: |
-          Hallo, hier kannst du jetzt deine tolle neue Funktion testen: https://discord.gg/pJjfF6n2ec
+      - name: Comment PR
+        uses: thollander/actions-comment-pull-request@v3
+        if: ${{ github.event_name == 'pull_request' }}
+        with:
+          comment-tag: discord-invite
+          message: |
+            Hallo, hier kannst du jetzt deine tolle neue Funktion testen: https://discord.gg/pJjfF6n2ec

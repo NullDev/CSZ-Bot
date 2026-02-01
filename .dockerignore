@@ -19,3 +19,6 @@ shell.nix
 config.json
 *.config.json
 .npmrc
+data/
+docs/
+lefthook.yml
