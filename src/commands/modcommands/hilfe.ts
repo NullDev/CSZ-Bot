@@ -14,7 +14,7 @@ export default class ModHilfeCommand implements MessageCommand {
     description = "Listet alle mod-commands auf";
 
     async handleMessage(message: ProcessableMessage, context: BotContext): Promise<void> {
-        const prefix = context.prefix.command;
+        const prefix = context.prefix.modCommand;
 
         const lines = [];
         const newCommands = await commandService.readAvailableCommands(context, ["mod"]);
