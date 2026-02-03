@@ -13,10 +13,13 @@ const commandExtensions = [".ts", ".js"];
 const ignoredExtensions = [".spec.ts", ".test.ts", ".d.ts", ".test.js", ".spec.js"];
 
 export async function readAvailableCommands(context: BotContext): Promise<Command[]> {
-    const modules = loadRawCommandModules(context, context.path.commands);
+    const modules = [
+        ...(await loadRawCommandModulesFromDirectory(context.path.modCommands)),
+        ...(await loadRawCommandModulesFromDirectory(context.path.commands)),
+    ];
 
     const res = [];
-    for await (const { module } of modules) {
+    for (const { module } of modules) {
         if (!module.default) {
             continue;
         }
@@ -25,8 +28,21 @@ export async function readAvailableCommands(context: BotContext): Promise<Comman
     return res;
 }
 
-async function* loadRawCommandModules(context: BotContext, commandDir: string) {
-    const commandFiles = await fs.readdir(commandDir, { recursive: true });
+type CommandModuleFile = {
+    filePath: string;
+    module: {
+        default: {
+            new (): Command;
+        };
+    };
+};
+
+async function loadRawCommandModulesFromDirectory(
+    commandDir: string,
+): Promise<CommandModuleFile[]> {
+    const commandFiles = await fs.readdir(commandDir);
+
+    const res = [];
 
     for (const file of commandFiles) {
         if (!commandExtensions.some(extension => file.endsWith(extension))) {
@@ -36,7 +52,7 @@ async function* loadRawCommandModules(context: BotContext, commandDir: string) {
             continue;
         }
 
-        const filePath = path.join(context.path.commands, file);
+        const filePath = path.join(commandDir, file);
 
         const moduleUrl = new URL("file://");
         moduleUrl.pathname = filePath;
@@ -51,11 +67,13 @@ async function* loadRawCommandModules(context: BotContext, commandDir: string) {
             continue;
         }
 
-        yield {
+        res.push({
             filePath,
             module,
-        };
+        });
     }
+
+    return res;
 }
 
 /**

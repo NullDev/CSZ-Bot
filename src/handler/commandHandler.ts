@@ -41,13 +41,14 @@ const allCommands: Command[] = [];
 
 const getApplicationCommands = () => allCommands.filter(c => "handleInteraction" in c);
 const getAutocompleteCommands = () => allCommands.filter(c => "autocomplete" in c);
-const getMessageCommands = () => allCommands.filter(c => "handleMessage" in c);
 const getSpecialCommands = () => allCommands.filter(c => "handleSpecialMessage" in c);
+const getMessageCommands = () => allCommands.filter(c => "handleMessage" in c);
 
 const latestSpecialCommandInvocations: Record<string, number> = {};
 
 export const loadCommands = async (context: BotContext): Promise<void> => {
     const availableCommands = await commandService.readAvailableCommands(context);
+
     const loadedCommandNames = new Set(staticCommands.map(c => c.name));
 
     const dynamicCommands = [];
@@ -184,15 +185,20 @@ const hasPermissions = (
  * was found or an error if the command would be a mod command but the
  * invoking user is not a mod
  */
-const commandMessageHandler = async (
+
+async function commandMessageHandler(
     commandString: string,
     message: ProcessableMessage,
     context: BotContext,
-): Promise<unknown> => {
+): Promise<unknown> {
     const lowerCommand = commandString.toLowerCase();
-    const matchingCommand = getMessageCommands().find(
+    const command = getMessageCommands().find(
         cmd => cmd.name.toLowerCase() === lowerCommand || cmd.aliases?.includes(lowerCommand),
     );
+
+    if (!command) {
+        return;
+    }
 
     if (
         context.roleGuard.hasBotDenyRole(message.member) &&
@@ -204,16 +210,14 @@ const commandMessageHandler = async (
         return;
     }
 
-    if (!matchingCommand) {
-        return;
-    }
-
     const invoker = message.member;
 
-    if (hasPermissions(invoker, matchingCommand.requiredPermissions ?? [])) {
+    const isNormalCommandOrUserIsMod = !command.modCommand || context.roleGuard.isMod(invoker);
+
+    if (isNormalCommandOrUserIsMod && hasPermissions(invoker, command.requiredPermissions ?? [])) {
         return await sentry.startSpan(
-            { name: matchingCommand.name, op: "command.message" },
-            async () => await matchingCommand.handleMessage(message, context),
+            { name: command.name, op: "command.message" },
+            async () => await command.handleMessage(message, context),
         );
     }
 
@@ -224,7 +228,7 @@ const commandMessageHandler = async (
             content: `Tut mir leid, ${message.author}. Du hast nicht genügend Rechte um dieses Command zu verwenden, dafür gibt's erstmal mit dem Willkürhammer einen auf den Deckel.`,
         }),
     ]);
-};
+}
 
 const isCooledDown = (command: SpecialCommand) => {
     const now = Date.now();
@@ -285,7 +289,6 @@ export const messageCommandHandler = async (
         return;
     }
 
-    // TODO: The Prefix is now completely irrelevant, since the commands itself define their permission.
     const plebPrefix = context.prefix.command;
     const modPrefix = context.prefix.modCommand;
 

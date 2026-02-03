@@ -69,6 +69,7 @@ export type AuthorSpec = { username: string; iconURL?: string };
 export type PollEmbedParameters = {
     author: AuthorSpec;
     question: string;
+    preface?: string;
     multipleChoices: boolean;
     anonymous: boolean;
     extendable: boolean;
@@ -89,7 +90,7 @@ export function buildPollEmbed(
     options: readonly PollEmbedOptionParameters[],
 ): APIEmbed {
     const embed = new EmbedBuilder({
-        description: `**${cleanContent(poll.question, targetChannel)}**`,
+        description: `${poll.preface ? cleanContent(poll.preface, targetChannel) + "\n" : ""}**${cleanContent(poll.question, targetChannel)}**`,
         fields: options.map(o =>
             createOptionField(
                 o.option,

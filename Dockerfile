@@ -22,9 +22,9 @@ FROM node:alpine
         apk add --no-cache \
         font-noto-emoji \
         fontconfig \
-        ffmpeg \
         font-liberation \
         python3 \
+        ffmpeg \
         py-pip \
         && fc-cache -f -v \
         && pip install "yt-dlp[default]" --break-system-packages

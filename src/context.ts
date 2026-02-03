@@ -1,4 +1,5 @@
 import * as path from "node:path";
+import * as fs from "node:fs/promises";
 
 import type {
     GuildMember,
@@ -234,6 +235,9 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
     const textChannel = config.textChannel;
     const voiceChannel = config.voiceChannel;
 
+    const soundsPath = path.resolve("data/sounds");
+    await fs.mkdir(soundsPath, { recursive: true });
+
     return {
         client,
         auth: {
@@ -349,8 +353,8 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
         path: {
             root: path.resolve(""),
             src: path.resolve("src"),
-            banners: path.resolve("banners"),
-            sounds: path.resolve("sounds"),
+            banners: path.resolve("assets/banners"),
+            sounds: soundsPath,
             commands: path.resolve("src/commands"),
             modCommands: path.resolve("src/commands/modcommands"),
         },

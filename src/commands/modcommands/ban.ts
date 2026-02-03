@@ -16,6 +16,7 @@ import * as banService from "#service/ban.ts";
 import { formatDuration } from "#utils/dateUtils.ts";
 
 export default class BanCommand implements ApplicationCommand, MessageCommand {
+    modCommand = true; // needed if invoked via text, not via slash
     name = "ban";
     description = "Joa, bannt halt einen ne?";
     requiredPermissions: readonly PermissionsString[] = ["BanMembers"];

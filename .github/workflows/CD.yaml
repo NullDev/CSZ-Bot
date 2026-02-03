@@ -23,30 +23,30 @@ jobs:
       BOT_HOME_DIR: /home/csc
 
     steps:
-    - uses: actions/checkout@v6
-      with:
-        show-progress: false
+      - uses: actions/checkout@v6
+        with:
+          show-progress: false
 
-    - name: Copy infra directory
-      uses: appleboy/scp-action@v1.0.0
-      with:
-        host: ${{ secrets.SSH_HOST }}
-        username: ${{ secrets.SSH_USERNAME }}
-        key: ${{ secrets.SSH_KEY }}
-        port: ${{ secrets.SSH_PORT }}
-        source: .infra
-        target: ${{ env.BOT_HOME_DIR }}
-        overwrite: true
+      - name: Copy infra directory
+        uses: appleboy/scp-action@v1.0.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          source: .infra
+          target: ${{ env.BOT_HOME_DIR }}
+          overwrite: true
 
 
-    - name: Deploy CSZ Bot
-      uses: appleboy/ssh-action@823bd89e131d8d508129f9443cad5855e9ba96f0
-      env:
-        BOT_HOME_DIR: ${{ env.BOT_HOME_DIR }}
-      with:
-        host: ${{ secrets.SSH_HOST }}
-        username: ${{ secrets.SSH_USERNAME }}
-        key: ${{ secrets.SSH_KEY }}
-        port: ${{ secrets.SSH_PORT }}
-        envs: BOT_HOME_DIR
-        script: ${{ env.BOT_HOME_DIR }}/.infra/deploy.sh
+      - name: Deploy CSZ Bot
+        uses: appleboy/ssh-action@0ff4204d59e8e51228ff73bce53f80d53301dee2
+        env:
+          BOT_HOME_DIR: ${{ env.BOT_HOME_DIR }}
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          envs: BOT_HOME_DIR
+          script: ${{ env.BOT_HOME_DIR }}/.infra/deploy.sh

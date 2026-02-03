@@ -12,6 +12,7 @@ import type { BotContext } from "#context.ts";
 import * as banService from "#service/ban.ts";
 
 export default class UnbanCommand implements ApplicationCommand, MessageCommand {
+    modCommand = true; // needed if invoked via text, not via slash
     name = "unban";
     description = "Joa, unbannt halt einen ne?";
     requiredPermissions: readonly PermissionsString[] = ["BanMembers"];
