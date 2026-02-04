@@ -32,9 +32,15 @@ export type LootUseCommandInteraction = ChatInputCommandInteraction & {
     channel: GuildTextBasedChannel;
 };
 
+export interface TimeBasedWeightConfig {
+    morning?: number;
+    evening?: number;
+}
+
 export interface LootTemplate {
     id: LootKindId;
     weight: number;
+    timeBasedWeight?: TimeBasedWeightConfig;
     displayName: string;
     titleText: string;
     dropDescription: string;

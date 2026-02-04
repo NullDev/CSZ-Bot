@@ -137,6 +137,9 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
     [LootKind.DOENER]: {
         id: LootKind.DOENER,
         weight: 5,
+        timeBasedWeight: {
+            morning: 10,
+        },
         displayName: "Döner",
         titleText: "Einen Döner",
         dropDescription: "Bewahre ihn gut als Geldanlage auf!",
@@ -156,6 +159,9 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
     [LootKind.KRANKSCHREIBUNG]: {
         id: LootKind.KRANKSCHREIBUNG,
         weight: 0.5,
+        timeBasedWeight: {
+            morning: 1,
+        },
         displayName: "Arbeitsunfähigkeitsbescheinigung",
         titleText: "Einen gelben Urlaubsschein",
         dropDescription: "Benutze ihn weise!",
@@ -222,6 +228,9 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
     [LootKind.AYRAN]: {
         id: LootKind.AYRAN,
         weight: 1,
+        timeBasedWeight: {
+            morning: 2,
+        },
         displayName: "Ayran",
         titleText: "Einen Ayran",
         dropDescription: "Der gute von Müller",
@@ -242,6 +251,9 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
     [LootKind.TRICHTER]: {
         id: LootKind.TRICHTER,
         weight: 1,
+        timeBasedWeight: {
+            morning: 2,
+        },
         displayName: "Trichter",
         titleText: "Einen Trichter",
         dropDescription: "Für die ganz großen Schlücke",
@@ -313,6 +325,9 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
     [LootKind.OETTINGER]: {
         id: LootKind.OETTINGER,
         weight: 1,
+        timeBasedWeight: {
+            morning: 2,
+        },
         displayName: "Oettinger",
         titleText: "Ein warmes Oettinger",
         dropDescription: "Ja dann Prost ne!",
@@ -370,6 +385,9 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
     [LootKind.SAHNE]: {
         id: LootKind.SAHNE,
         weight: 1,
+        timeBasedWeight: {
+            morning: 2,
+        },
         displayName: "Sprühsahne",
         titleText: "Sprühsahne",
         dropDescription: "Fürs Frühstück oder so",
@@ -414,6 +432,9 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
     [LootKind.GAULOISES_BLAU]: {
         id: LootKind.GAULOISES_BLAU,
         weight: 1,
+        timeBasedWeight: {
+            morning: 2,
+        },
         displayName: "Gauloises Blau",
         titleText: "Eine Schachtel Gauloises Blau",
         dropDescription:
@@ -496,6 +517,9 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
     [LootKind.KAFFEEMUEHLE]: {
         id: LootKind.KAFFEEMUEHLE,
         weight: 1,
+        timeBasedWeight: {
+            morning: 2,
+        },
         displayName: "Kaffeemühle",
         titleText: "Eine Kaffeemühle für 400€",
         dropDescription: "Kann Kaffee mühlen. Und das gut. Mit Gold.",

@@ -22,7 +22,7 @@ import * as sentry from "@sentry/node";
 
 import type { BotContext } from "#context.ts";
 import type { Loot, LootId } from "#storage/db/model.ts";
-import type { LootTemplate } from "#storage/loot.ts";
+import type { LootTemplate, TimeBasedWeightConfig } from "#storage/loot.ts";
 import { randomBoolean, randomEntry, randomEntryWeighted } from "#service/random.ts";
 import * as timeUtils from "#utils/time.ts";
 import { zonedNow } from "#utils/dateUtils.ts";
@@ -155,7 +155,12 @@ export async function postLootDrop(
         return;
     }
 
-    const defaultWeights = lootTemplates.map(t => t.weight);
+    const timeBasedWeightKey = getCurrentTimeBasedKey();
+
+    const defaultWeights = timeBasedWeightKey
+        ? lootTemplates.map(t => t.timeBasedWeight?.[timeBasedWeightKey] ?? t.weight)
+        : lootTemplates.map(t => t.weight);
+
     const { messages, weights } = await getDropWeightAdjustments(interaction.user, defaultWeights);
 
     const template = randomEntryWeighted(lootTemplates, weights);
@@ -359,37 +364,24 @@ export async function createDropTakenContent(
     };
 }
 
+function getCurrentTimeBasedKey(): keyof TimeBasedWeightConfig | undefined {
+    const hour = zonedNow().hour;
+
+    // :shibakek:
+    switch (true) {
+        case 6 <= hour && hour <= 12:
+            return "morning";
+        case 18 <= hour && hour <= 24:
+            return "evening";
+        default:
+            return undefined;
+    }
+}
+
 type AdjustmentResult = {
     messages: string[];
     weights: number[];
 };
-
-function getTimeOfDayMultipliers(weights: readonly number[]): number[] {
-    const hour = zonedNow().hour;
-
-    const multipliers = new Array(weights.length).fill(1);
-
-    // Morgens (6:00 - 12:00): Höhere Wahrscheinlichkeit für Frühstücks-Items
-    const isMorning = hour >= 6 && hour < 12;
-    // Abends (18:00 - 24:00): Höhere Wahrscheinlichkeit für Feierabend-Items
-    const isEvening = hour >= 18 && hour < 24;
-
-    if (isMorning) {
-        multipliers[LootKind.KAFFEEMUEHLE] = 2;
-        multipliers[LootKind.KRANKSCHREIBUNG] = 2;
-        multipliers[LootKind.OETTINGER] = 2;
-    }
-
-    if (isEvening) {
-        multipliers[LootKind.DOENER] = 2;
-        multipliers[LootKind.AYRAN] = 2;
-        multipliers[LootKind.SAHNE] = 2;
-        multipliers[LootKind.TRICHTER] = 2;
-        multipliers[LootKind.GAULOISES_BLAU] = 2;
-    }
-
-    return multipliers;
-}
 
 async function getDropWeightAdjustments(
     user: User,
@@ -414,28 +406,9 @@ async function getDropWeightAdjustments(
         messages.push("Da du privat versichert bist, hast du die doppelte Chance auf eine AU.");
     }
 
-    const timeMultipliers = getTimeOfDayMultipliers(weights);
-
     const newWeights = [...weights];
     newWeights[LootKind.NICHTS] = Math.ceil(weights[LootKind.NICHTS] * wasteFactor) | 0;
-    newWeights[LootKind.KRANKSCHREIBUNG] =
-        (weights[LootKind.KRANKSCHREIBUNG] *
-            pkvFactor *
-            timeMultipliers[LootKind.KRANKSCHREIBUNG]) |
-        0;
-
-    // Tageszeitabhängige Anpassungen
-    newWeights[LootKind.KAFFEEMUEHLE] =
-        (weights[LootKind.KAFFEEMUEHLE] * timeMultipliers[LootKind.KAFFEEMUEHLE]) | 0;
-    newWeights[LootKind.OETTINGER] =
-        (weights[LootKind.OETTINGER] * timeMultipliers[LootKind.OETTINGER]) | 0;
-    newWeights[LootKind.DOENER] = (weights[LootKind.DOENER] * timeMultipliers[LootKind.DOENER]) | 0;
-    newWeights[LootKind.AYRAN] = (weights[LootKind.AYRAN] * timeMultipliers[LootKind.AYRAN]) | 0;
-    newWeights[LootKind.SAHNE] = (weights[LootKind.SAHNE] * timeMultipliers[LootKind.SAHNE]) | 0;
-    newWeights[LootKind.TRICHTER] =
-        (weights[LootKind.TRICHTER] * timeMultipliers[LootKind.TRICHTER]) | 0;
-    newWeights[LootKind.GAULOISES_BLAU] =
-        (weights[LootKind.GAULOISES_BLAU] * timeMultipliers[LootKind.GAULOISES_BLAU]) | 0;
+    newWeights[LootKind.KRANKSCHREIBUNG] = (weights[LootKind.KRANKSCHREIBUNG] * pkvFactor) | 0;
 
     return {
         messages,
