@@ -138,7 +138,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         id: LootKind.DOENER,
         weight: 5,
         timeBasedWeight: {
-            morning: 10,
+            evening: 10,
         },
         displayName: "Döner",
         titleText: "Einen Döner",
@@ -229,7 +229,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         id: LootKind.AYRAN,
         weight: 1,
         timeBasedWeight: {
-            morning: 2,
+            evening: 2,
         },
         displayName: "Ayran",
         titleText: "Einen Ayran",
@@ -252,7 +252,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         id: LootKind.TRICHTER,
         weight: 1,
         timeBasedWeight: {
-            morning: 2,
+            evening: 2,
         },
         displayName: "Trichter",
         titleText: "Einen Trichter",
@@ -386,7 +386,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         id: LootKind.SAHNE,
         weight: 1,
         timeBasedWeight: {
-            morning: 2,
+            evening: 2,
         },
         displayName: "Sprühsahne",
         titleText: "Sprühsahne",
@@ -433,7 +433,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         id: LootKind.GAULOISES_BLAU,
         weight: 1,
         timeBasedWeight: {
-            morning: 2,
+            evening: 2,
         },
         displayName: "Gauloises Blau",
         titleText: "Eine Schachtel Gauloises Blau",
