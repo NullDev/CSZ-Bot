@@ -365,6 +365,8 @@ export async function createDropTakenContent(
 }
 
 function getCurrentTimeBasedKey(): keyof TimeBasedWeightConfig | undefined {
+    // Caution: using a ZonedDateTime and comparing the hour to the raw values breaks when daylight-saving-time happens (an hour can happen multiple times)
+    // We disregard these edge-cases, but keep it in mind
     const hour = zonedNow().hour;
 
     // :shibakek:
