@@ -22,9 +22,10 @@ import * as sentry from "@sentry/node";
 
 import type { BotContext } from "#context.ts";
 import type { Loot, LootId } from "#storage/db/model.ts";
-import type { LootTemplate } from "#storage/loot.ts";
+import type { LootTemplate, TimeBasedWeightConfig } from "#storage/loot.ts";
 import { randomBoolean, randomEntry, randomEntryWeighted } from "#service/random.ts";
 import * as timeUtils from "#utils/time.ts";
+import { zonedNow } from "#utils/dateUtils.ts";
 
 import * as lootService from "#service/loot.ts";
 import {
@@ -154,7 +155,12 @@ export async function postLootDrop(
         return;
     }
 
-    const defaultWeights = lootTemplates.map(t => t.weight);
+    const timeBasedWeightKey = getCurrentTimeBasedKey();
+
+    const defaultWeights = timeBasedWeightKey
+        ? lootTemplates.map(t => t.timeBasedWeight?.[timeBasedWeightKey] ?? t.weight)
+        : lootTemplates.map(t => t.weight);
+
     const { messages, weights } = await getDropWeightAdjustments(interaction.user, defaultWeights);
 
     const template = randomEntryWeighted(lootTemplates, weights);
@@ -356,6 +362,22 @@ export async function createDropTakenContent(
               ]
             : [],
     };
+}
+
+function getCurrentTimeBasedKey(): keyof TimeBasedWeightConfig | undefined {
+    // Caution: using a ZonedDateTime and comparing the hour to the raw values breaks when daylight-saving-time happens (an hour can happen multiple times)
+    // We disregard these edge-cases, but keep it in mind
+    const hour = zonedNow().hour;
+
+    // :shibakek:
+    switch (true) {
+        case 6 <= hour && hour <= 12:
+            return "morning";
+        case 18 <= hour && hour <= 24:
+            return "evening";
+        default:
+            return undefined;
+    }
 }
 
 type AdjustmentResult = {
