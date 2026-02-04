@@ -25,6 +25,7 @@ import type { Loot, LootId } from "#storage/db/model.ts";
 import type { LootTemplate } from "#storage/loot.ts";
 import { randomBoolean, randomEntry, randomEntryWeighted } from "#service/random.ts";
 import * as timeUtils from "#utils/time.ts";
+import { zonedNow } from "#utils/dateUtils.ts";
 
 import * as lootService from "#service/loot.ts";
 import {
@@ -364,10 +365,7 @@ type AdjustmentResult = {
 };
 
 function getTimeOfDayMultipliers(weights: readonly number[]): number[] {
-    const now = new Date();
-    const hour = Number(
-        now.toLocaleString("de-DE", { timeZone: "Europe/Berlin", hour: "numeric", hour12: false }),
-    );
+    const hour = zonedNow().hour;
 
     const multipliers = new Array(weights.length).fill(1);
 
@@ -421,7 +419,9 @@ async function getDropWeightAdjustments(
     const newWeights = [...weights];
     newWeights[LootKind.NICHTS] = Math.ceil(weights[LootKind.NICHTS] * wasteFactor) | 0;
     newWeights[LootKind.KRANKSCHREIBUNG] =
-        (weights[LootKind.KRANKSCHREIBUNG] * pkvFactor * timeMultipliers[LootKind.KRANKSCHREIBUNG]) |
+        (weights[LootKind.KRANKSCHREIBUNG] *
+            pkvFactor *
+            timeMultipliers[LootKind.KRANKSCHREIBUNG]) |
         0;
 
     // Tageszeitabhängige Anpassungen
