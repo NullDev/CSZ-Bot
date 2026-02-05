@@ -64,6 +64,7 @@ export const LootKind = Object.freeze({
     GIROKONTO: 51,
     STROMTARIF: 52,
     MAGERQUARK: 53,
+    NAS: 54,
 } as const);
 export type LootKindId = (typeof LootKind)[keyof typeof LootKind];
 
@@ -802,6 +803,15 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         emote: "🍶",
         asset: "assets/loot/53-magerquark.png",
         initialAttributes: [LootAttributeKind.NUTRI_SCORE_A],
+    },
+    [LootKind.NAS]: {
+        id: LootKind.NAS,
+        weight: 2,
+        displayName: "Funktionierendes Unraid-NAS",
+        titleText: "Ein funktionierendes Unraid-NAS",
+        dropDescription: "Viel Speicherplatz, wenig Stromverbrauch.",
+        emote: "🗄️",
+        asset: "assets/loot/54-nas.png",
     },
 } as const;
 
