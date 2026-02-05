@@ -809,7 +809,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         weight: 2,
         displayName: "Funktionierendes Unraid-NAS",
         titleText: "Ein funktionierendes Unraid-NAS",
-        dropDescription: "Viel Speicherplatz, wenig Stromverbrauch.",
+        dropDescription: "Viel Speicherplatz, wenig Stromverbrauch, manchmal funktionstüchtig.",
         emote: "🗄️",
         asset: "assets/loot/54-nas.png",
     },
