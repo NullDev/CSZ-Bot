@@ -258,18 +258,19 @@ export async function postLootDrop(
     }
 
     if (randomBoolean()) {
+        const missedGift = template.displayName;
         await channel.send(
             randomEntry([
-                `DOPPELT ODER NIX, ${winner}! Du bekommst dein Geschenk nicht nochmal und gehst stattdessen leer aus. Loser!`,
-                `Pech gehabt, ${winner}! Dein Geschenk ist futsch. Vielleicht klappt's beim nächsten Mal!`,
-                `Autsch, ${winner}... Das war wohl nix. Kein Geschenk für dich diesmal!`,
-                `Oh nein, ${winner}! Das Geschenk hat sich in Luft aufgelöst. Nix für dich!`,
-                `Tja, ${winner}, Risiko nicht belohnt. Du gehst leer aus!`,
-                `Schade, ${winner}! Doppelt oder nix hat dir heute kein Glück gebracht.`,
-                `Das war wohl ein Satz mit X, ${winner}. Geschenk weg!`,
-                `Manchmal verliert man eben, ${winner}. Heute leider kein Geschenk!`,
-                `Das Universum sagt nein, ${winner}. Geschenk verloren!`,
-                `DOPPELT ODER NIX, ${winner}! Diesmal leider nix. Kopf hoch!`,
+                `DOPPELT ODER NIX, ${winner}! Dein Geschenk war **${missedGift}**, aber jetzt ist es weg und du gehst stattdessen leer aus. Loser!`,
+                `Pech gehabt, ${winner}! Das **${missedGift}** ist futsch. Vielleicht klappt's beim nächsten Mal und du bekommst was anderes!`,
+                `Autsch, ${winner}... Das war wohl nix. Kein **${missedGift}** für dich diesmal!`,
+                `Oh nein, ${winner}! Das **${missedGift}** hat sich in Luft aufgelöst. Nix für dich!`,
+                `Tja, ${winner}, Risiko nicht belohnt. Das **${missedGift}** bleibt dir verwehrt!`,
+                `Schade, ${winner}! Doppelt oder nix hat dir heute kein Glück gebracht – das **${missedGift}** ist weg.`,
+                `Das war wohl ein Satz mit X, ${winner}. Das **${missedGift}** ist jetzt Geschichte!`,
+                `Manchmal verliert man eben, ${winner}. Heute leider kein **${missedGift}** für dich!`,
+                `Das Universum sagt nein, ${winner}. Das **${missedGift}** wandert ins Nirvana!`,
+                `DOPPELT ODER NIX, ${winner}! Diesmal leider kein **${missedGift}**. Kopf hoch!`,
             ]),
         );
 
