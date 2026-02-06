@@ -258,21 +258,20 @@ export async function postLootDrop(
     }
 
     if (randomBoolean()) {
-        // Verschiedene Verlierer-Texte für Abwechslung
-        const loserMessages = [
-            `DOPPELT ODER NIX, ${winner}! Du bekommst dein Geschenk nicht nochmal und gehst stattdessen leer aus. Loser!`,
-            `Pech gehabt, ${winner}! Dein Geschenk ist futsch. Vielleicht klappt's beim nächsten Mal!`,
-            `Autsch, ${winner}... Das war wohl nix. Kein Geschenk für dich diesmal!`,
-            `Oh nein, ${winner}! Das Geschenk hat sich in Luft aufgelöst. Nix für dich!`,
-            `Tja, ${winner}, Risiko nicht belohnt. Du gehst leer aus!`,
-            `Schade, ${winner}! Doppelt oder nix hat dir heute kein Glück gebracht.`,
-            `Das war wohl ein Satz mit X, ${winner}. Geschenk weg!`,
-            `Manchmal verliert man eben, ${winner}. Heute leider kein Geschenk!`,
-            `Das Universum sagt nein, ${winner}. Geschenk verloren!`,
-            `DOPPELT ODER NIX, ${winner}! Diesmal leider nix. Kopf hoch!`,
-        ];
-        const msg = loserMessages[Math.floor(Math.random() * loserMessages.length)];
-        await channel.send(msg);
+        await channel.send(
+            randomEntry([
+                `DOPPELT ODER NIX, ${winner}! Du bekommst dein Geschenk nicht nochmal und gehst stattdessen leer aus. Loser!`,
+                `Pech gehabt, ${winner}! Dein Geschenk ist futsch. Vielleicht klappt's beim nächsten Mal!`,
+                `Autsch, ${winner}... Das war wohl nix. Kein Geschenk für dich diesmal!`,
+                `Oh nein, ${winner}! Das Geschenk hat sich in Luft aufgelöst. Nix für dich!`,
+                `Tja, ${winner}, Risiko nicht belohnt. Du gehst leer aus!`,
+                `Schade, ${winner}! Doppelt oder nix hat dir heute kein Glück gebracht.`,
+                `Das war wohl ein Satz mit X, ${winner}. Geschenk weg!`,
+                `Manchmal verliert man eben, ${winner}. Heute leider kein Geschenk!`,
+                `Das Universum sagt nein, ${winner}. Geschenk verloren!`,
+                `DOPPELT ODER NIX, ${winner}! Diesmal leider nix. Kopf hoch!`,
+            ]),
+        );
 
         await Promise.all([
             lootService.deleteLoot(claimedLoot.id),
