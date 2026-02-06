@@ -155,11 +155,6 @@ async function assignBannedRoles(context: BotContext, user: GuildMember): Promis
     const currentRoles = [...user.roles.cache.map(r => r.id)];
     let newRoles = [...currentRoles, bannedRole.id].filter(r => r !== context.roles.default.id);
 
-    if (user.roles.cache.find(r => r.id === context.roles.gruendervaeter.id)) {
-        newRoles = newRoles.filter(r => r !== context.roles.gruendervaeter.id);
-        newRoles.push(context.roles.gruendervaeterBanned.id);
-    }
-
     if (user.roles.cache.find(r => r.id === context.roles.trusted.id)) {
         newRoles = newRoles.filter(r => r !== context.roles.trusted.id);
         newRoles.push(context.roles.trustedBanned.id);
@@ -179,11 +174,6 @@ async function restoreRoles(context: BotContext, user: GuildMember): Promise<boo
 
     const currentRoles = [...user.roles.cache.map(r => r.id)];
     let newRoles = [...currentRoles, defaultRole.id].filter(r => r !== context.roles.banned.id);
-
-    if (user.roles.cache.find(r => r.id === context.roles.gruendervaeterBanned.id)) {
-        newRoles = newRoles.filter(r => r !== context.roles.gruendervaeterBanned.id);
-        newRoles.push(context.roles.gruendervaeter.id);
-    }
 
     if (user.roles.cache.find(r => r.id === context.roles.trustedBanned.id)) {
         newRoles = newRoles.filter(r => r !== context.roles.trustedBanned.id);
