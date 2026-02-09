@@ -65,6 +65,7 @@ export const LootKind = Object.freeze({
     STROMTARIF: 52,
     MAGERQUARK: 53,
     NAS: 54,
+    USB_KABEL: 55,
 } as const);
 export type LootKindId = (typeof LootKind)[keyof typeof LootKind];
 
@@ -812,6 +813,15 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         dropDescription: "Viel Speicherplatz, wenig Stromverbrauch, manchmal funktionstüchtig.",
         emote: "🗄️",
         asset: "assets/loot/54-nas.png",
+    },
+    [LootKind.USB_KABEL]: {
+        id: LootKind.USB_KABEL,
+        weight: 2,
+        displayName: "USB-Kabel",
+        titleText: "Ein USB-Kabel von LTT",
+        dropDescription: "Jetzt auch in deinem Land verfügbar!",
+        emote: "🛜",
+        asset: "assets/loot/55-usb-kabel.png",
     },
 } as const;
 
