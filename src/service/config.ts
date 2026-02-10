@@ -168,8 +168,6 @@ export interface Config {
         birthdayRoleId: Snowflake;
         botDenyRoleId: Snowflake;
         defaultRoleId: Snowflake;
-        gruendervaeterRoleId: Snowflake;
-        gruendervaeterBannedRoleId: Snowflake;
         roleDenyRoleId: Snowflake;
         shameRoleId: Snowflake;
         trustedRoleId: Snowflake;
