@@ -10,8 +10,8 @@
     "test": "node --require ./src/polyfills.ts --test && tsgo",
     "ci": "biome ci ./",
     "format": "biome format --write ./",
-    "lint": "biome lint ./",
-    "lint:fix": "biome check --write ./",
+    "lint": "oxlint ./",
+    "lint:fix": "oxlint --fix ./",
     "watch": "node --require ./src/polyfills.ts --watch src/app.ts"
   },
   "repository": {
@@ -54,7 +54,8 @@
     "@types/node-cron": "^3.0.11",
     "@typescript/native-preview": "^7.0.0-dev.20260219.1",
     "expect": "^30.2.0",
-    "lefthook": "^2.1.1"
+    "lefthook": "^2.1.1",
+    "oxlint": "^1.48.0"
   },
   "imports": {
     "#log": "./src/utils/logger.ts",
