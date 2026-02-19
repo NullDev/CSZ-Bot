@@ -1,4 +1,5 @@
-# Docs: https://github.com/evilmartians/lefthook/blob/master/docs/configuration.md
+# docs: https://lefthook.dev/configuration/
+
 pre-push:
   commands:
     lint:
