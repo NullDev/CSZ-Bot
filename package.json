@@ -23,7 +23,7 @@
   "scripts": {
     "start": "node --require ./src/polyfills.ts src/app.ts",
     "test": "node --require ./src/polyfills.ts --test && tsgo",
-    "ci": "oxlint --deny-warnings -f github ./ && oxfmt --check -f github ./",
+    "ci": "oxlint --deny-warnings -f github ./ && oxfmt --check ./",
     "format": "oxfmt ./",
     "lint": "oxlint ./",
     "lint:fix": "oxlint --fix ./",
