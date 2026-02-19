@@ -16,8 +16,8 @@ import {
     time,
 } from "discord.js";
 
-import * as timeUtils from "#utils/time.ts";
-import type { ApplicationCommand } from "#commands/command.ts";
+import * as timeUtils from "#/utils/time.ts";
+import type { ApplicationCommand } from "#/commands/command.ts";
 
 export default class Vote2Command implements ApplicationCommand {
     name = "vote2";

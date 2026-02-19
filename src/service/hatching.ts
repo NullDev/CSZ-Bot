@@ -2,11 +2,11 @@ import * as fs from "node:fs/promises";
 
 import { userMention } from "discord.js";
 
-import type { BotContext } from "#context.ts";
-import type { Loot } from "#storage/db/model.ts";
+import type { BotContext } from "#/context.ts";
+import type { Loot } from "#/storage/db/model.ts";
 import log from "#log";
-import * as time from "#utils/time.ts";
-import * as lootService from "#service/loot.ts";
+import * as time from "#/utils/time.ts";
+import * as lootService from "#/service/loot.ts";
 import { LootKind, resolveLootTemplate } from "./lootData.ts";
 import * as randomService from "./random.ts";
 

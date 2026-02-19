@@ -1,10 +1,10 @@
 import { SlashCommandBuilder } from "discord.js";
 import type { CommandInteraction, CacheType } from "discord.js";
 
-import type { ApplicationCommand, MessageCommand } from "#commands/command.ts";
-import type { ProcessableMessage } from "#service/command.ts";
+import type { ApplicationCommand, MessageCommand } from "#/commands/command.ts";
+import type { ProcessableMessage } from "#/service/command.ts";
 
-import * as erleuchtungService from "#service/erleuchtung.ts";
+import * as erleuchtungService from "#/service/erleuchtung.ts";
 
 export default class ErleuchtungCommand implements MessageCommand, ApplicationCommand {
     name = "erleuchtung";

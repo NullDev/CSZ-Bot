@@ -4,7 +4,7 @@
 
 import * as sentry from "@sentry/node";
 
-import type { BotContext } from "#context.ts";
+import type { BotContext } from "#/context.ts";
 
 interface LinkEntry {
     quality: string;

@@ -8,8 +8,8 @@ import {
 } from "discord.js";
 import type * as discord from "discord.js";
 
-import type { BotContext } from "#context.ts";
-import type { ApplicationCommand } from "#commands/command.ts";
+import type { BotContext } from "#/context.ts";
+import type { ApplicationCommand } from "#/commands/command.ts";
 
 import log from "#log";
 

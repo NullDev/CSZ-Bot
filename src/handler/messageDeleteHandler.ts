@@ -1,12 +1,12 @@
 import type { ClientUser, Message } from "discord.js";
 
-import type { BotContext } from "#context.ts";
+import type { BotContext } from "#/context.ts";
 
-import * as pollService from "#service/poll.ts";
+import * as pollService from "#/service/poll.ts";
 
-import InstagramLink from "#commands/instagram.ts";
-import SpringerWarningCommand from "#commands/springerWarning.ts";
-import TikTokLink from "#commands/tiktok.ts";
+import InstagramLink from "#/commands/instagram.ts";
+import SpringerWarningCommand from "#/commands/springerWarning.ts";
+import TikTokLink from "#/commands/tiktok.ts";
 
 import log from "#log";
 

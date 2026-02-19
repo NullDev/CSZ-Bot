@@ -12,16 +12,16 @@ import {
 } from "discord.js";
 import { createCanvas, loadImage } from "@napi-rs/canvas";
 
-import type { BotContext } from "#context.ts";
-import type { ApplicationCommand } from "#commands/command.ts";
-import * as lootService from "#service/loot.ts";
-import { ensureChatInputCommand } from "#utils/interactionUtils.ts";
-import * as lootDataService from "#service/lootData.ts";
-import { LootAttributeKind } from "#service/lootData.ts";
+import type { BotContext } from "#/context.ts";
+import type { ApplicationCommand } from "#/commands/command.ts";
+import * as lootService from "#/service/loot.ts";
+import { ensureChatInputCommand } from "#/utils/interactionUtils.ts";
+import * as lootDataService from "#/service/lootData.ts";
+import { LootAttributeKind } from "#/service/lootData.ts";
 
 import log from "#log";
-import { extendContext } from "#utils/ExtendedCanvasContext.ts";
-import { Vec2 } from "#utils/math.ts";
+import { extendContext } from "#/utils/ExtendedCanvasContext.ts";
+import { Vec2 } from "#/utils/math.ts";
 
 export default class InventarCommand implements ApplicationCommand {
     name = "inventar";

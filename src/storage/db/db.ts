@@ -10,7 +10,7 @@ import { SqliteDialect } from "./dialect/sqlite-dialect.ts";
 import type { Database } from "./model.ts";
 import datePlugin from "./date-plugin.ts";
 import { SqliteBooleanPlugin } from "./boolean-plugin.ts";
-import assertNever from "#utils/assertNever.ts";
+import assertNever from "#/utils/assertNever.ts";
 import log from "#log";
 
 let kysely: Kysely<Database>;

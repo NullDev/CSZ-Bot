@@ -1,9 +1,9 @@
 import type { User } from "discord.js";
 
-import * as lootService from "#service/loot.ts";
+import * as lootService from "#/service/loot.ts";
 import { LootKind } from "./lootData.ts";
-import * as pet from "#storage/pet.ts";
-import * as lootData from "#service/lootData.ts";
+import * as pet from "#/storage/pet.ts";
+import * as lootData from "#/service/lootData.ts";
 
 const petCandidates = new Set([
     LootKind.KADSE,

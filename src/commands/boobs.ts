@@ -1,11 +1,11 @@
 import { time, TimestampStyles, type User } from "discord.js";
 
-import type { ProcessableMessage } from "#service/command.ts";
-import type { MessageCommand } from "#commands/command.ts";
-import type { Boob } from "#storage/db/model.ts";
-import * as boob from "#storage/boob.ts";
+import type { ProcessableMessage } from "#/service/command.ts";
+import type { MessageCommand } from "#/commands/command.ts";
+import type { Boob } from "#/storage/db/model.ts";
+import * as boob from "#/storage/boob.ts";
 import log from "#log";
-import { randomEntry } from "#service/random.ts";
+import { randomEntry } from "#/service/random.ts";
 
 interface Booba {
     description: string;

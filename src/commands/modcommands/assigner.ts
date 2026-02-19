@@ -1,6 +1,6 @@
-import type { MessageCommand } from "#commands/command.ts";
-import type { BotContext } from "#context.ts";
-import { parseLegacyMessageParts, type ProcessableMessage } from "#service/command.ts";
+import type { MessageCommand } from "#/commands/command.ts";
+import type { BotContext } from "#/context.ts";
+import { parseLegacyMessageParts, type ProcessableMessage } from "#/service/command.ts";
 import log from "#log";
 
 export default class AssignerCommand implements MessageCommand {

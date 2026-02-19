@@ -1,10 +1,10 @@
 import type { Message, Snowflake, User } from "discord.js";
 
-import type { BotContext } from "#context.ts";
+import type { BotContext } from "#/context.ts";
 import log from "#log";
-import * as additionalMessageData from "#storage/additionalMessageData.ts";
-import * as pollEmbedService from "#service/pollEmbed.ts";
-import { truncateToLength } from "#utils/stringUtils.ts";
+import * as additionalMessageData from "#/storage/additionalMessageData.ts";
+import * as pollEmbedService from "#/service/pollEmbed.ts";
+import { truncateToLength } from "#/utils/stringUtils.ts";
 
 interface DelayedPoll {
     pollId: string;

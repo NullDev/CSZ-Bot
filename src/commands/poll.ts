@@ -1,13 +1,13 @@
 import { parseArgs, type ParseArgsConfig } from "node:util";
 
-import type { BotContext } from "#context.ts";
-import type { MessageCommand } from "#commands/command.ts";
-import { parseLegacyMessageParts, type ProcessableMessage } from "#service/command.ts";
-import * as timeUtils from "#utils/time.ts";
-import * as pollService from "#service/poll.ts";
-import * as legacyDelayedPoll from "#service/delayedPollLegacy.ts";
-import * as pollEmbedService from "#service/pollEmbed.ts";
-import { defer } from "#utils/interactionUtils.ts";
+import type { BotContext } from "#/context.ts";
+import type { MessageCommand } from "#/commands/command.ts";
+import { parseLegacyMessageParts, type ProcessableMessage } from "#/service/command.ts";
+import * as timeUtils from "#/utils/time.ts";
+import * as pollService from "#/service/poll.ts";
+import * as legacyDelayedPoll from "#/service/delayedPollLegacy.ts";
+import * as pollEmbedService from "#/service/pollEmbed.ts";
+import { defer } from "#/utils/interactionUtils.ts";
 
 const pollOptionsPresets = {
     likert: {

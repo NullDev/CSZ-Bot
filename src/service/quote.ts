@@ -1,6 +1,6 @@
 import type { Message } from "discord.js";
 
-import * as quoteStorage from "#storage/quote.ts";
+import * as quoteStorage from "#/storage/quote.ts";
 
 export async function addQuoteIfNotPresent(message: Message<true>): Promise<boolean> {
     return await quoteStorage.addQuoteIfNotPresent({

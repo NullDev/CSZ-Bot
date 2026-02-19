@@ -10,7 +10,7 @@ import type {
 import { type ExpressionBuilder, sql } from "kysely";
 import type { Temporal } from "@js-temporal/polyfill";
 
-import type { BotContext } from "#context.ts";
+import type { BotContext } from "#/context.ts";
 import type {
     Database,
     Loot,
@@ -26,7 +26,7 @@ import {
     resolveLootAttributeTemplate,
     type LootAttributeKindId,
     type LootAttributeClassId,
-} from "#service/lootData.ts";
+} from "#/service/lootData.ts";
 
 export type LootUseCommandInteraction = ChatInputCommandInteraction & {
     channel: GuildTextBasedChannel;

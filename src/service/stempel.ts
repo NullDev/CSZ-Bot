@@ -1,6 +1,6 @@
 import type { GuildMember } from "discord.js";
 
-import * as stempel from "#storage/stempel.ts";
+import * as stempel from "#/storage/stempel.ts";
 
 export function getStempelByInviter(inviter: GuildMember) {
     return stempel.getStempelByInviter(inviter);

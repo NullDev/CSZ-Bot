@@ -1,7 +1,7 @@
 import type { Snowflake } from "discord.js";
 
 import db from "#db";
-import type { MapLocation } from "#storage/db/model.ts";
+import type { MapLocation } from "#/storage/db/model.ts";
 
 export async function getPositionForUser(
     userId: Snowflake,

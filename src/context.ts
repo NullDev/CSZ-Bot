@@ -17,8 +17,8 @@ import { ChannelType } from "discord.js";
 import { SpotifyApi } from "@spotify/web-api-ts-sdk";
 import { Temporal } from "@js-temporal/polyfill";
 
-import type { UserMapEntry } from "#commands/aoc.ts";
-import { readConfig } from "#service/config.ts";
+import type { UserMapEntry } from "#/commands/aoc.ts";
+import { readConfig } from "#/service/config.ts";
 
 /**
  * Object that's passed to every executed command to make it easier to access common channels without repeatedly retrieving stuff via IDs.

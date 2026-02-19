@@ -9,10 +9,10 @@ import {
     MessageFlags,
 } from "discord.js";
 
-import type { ApplicationCommand, MessageCommand } from "#commands/command.ts";
-import type { ProcessableMessage } from "#service/command.ts";
-import type { BotContext } from "#context.ts";
-import assertNever from "#utils/assertNever.ts";
+import type { ApplicationCommand, MessageCommand } from "#/commands/command.ts";
+import type { ProcessableMessage } from "#/service/command.ts";
+import type { BotContext } from "#/context.ts";
+import assertNever from "#/utils/assertNever.ts";
 
 interface GitHubContributor {
     login: string;

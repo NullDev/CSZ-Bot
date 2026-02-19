@@ -2,10 +2,10 @@ import { time, type GuildMember, type User, TimestampStyles } from "discord.js";
 import * as sentry from "@sentry/node";
 import { Temporal } from "@js-temporal/polyfill";
 
-import type { BotContext } from "#context.ts";
-import * as ban from "#storage/ban.ts";
-import { formatDuration } from "#utils/dateUtils.ts";
-import * as timeUtils from "#utils/time.ts";
+import type { BotContext } from "#/context.ts";
+import * as ban from "#/storage/ban.ts";
+import { formatDuration } from "#/utils/dateUtils.ts";
+import * as timeUtils from "#/utils/time.ts";
 
 import log from "#log";
 

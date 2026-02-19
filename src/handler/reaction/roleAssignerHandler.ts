@@ -1,6 +1,6 @@
 import type { MessageReaction, User } from "discord.js";
 
-import type { BotContext } from "#context.ts";
+import type { BotContext } from "#/context.ts";
 import type { ReactionHandler } from "../ReactionHandler.ts";
 
 import log from "#log";
