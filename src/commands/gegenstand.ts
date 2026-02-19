@@ -25,6 +25,7 @@ import * as imageService from "#/service/image.ts";
 import * as lootDataService from "#/service/lootData.ts";
 import { LootAttributeKind, LootKind } from "#/service/lootData.ts";
 
+import { equipItembyLoot, getFightInventoryUnsorted } from "#storage/fightInventory.ts";
 import log from "#log";
 
 export default class GegenstandCommand implements ApplicationCommand {
@@ -72,6 +73,18 @@ export default class GegenstandCommand implements ApplicationCommand {
                         .setRequired(true)
                         .setName("item")
                         .setDescription("Die Sau, die du benutzen möchtest")
+                        .setAutocomplete(true),
+                ),
+        )
+        .addSubcommand(
+            new SlashCommandSubcommandBuilder()
+                .setName("ausrüsten")
+                .setDescription("Rüste  einen gegenstand aus")
+                .addStringOption(
+                    new SlashCommandStringOption()
+                        .setRequired(true)
+                        .setName("item")
+                        .setDescription("Rüste dich für deinen nächsten Kampf")
                         .setAutocomplete(true),
                 ),
         )
@@ -133,6 +146,9 @@ export default class GegenstandCommand implements ApplicationCommand {
                 break;
             case "set-pet":
                 await this.#setPet(command, context);
+                break;
+            case "ausrüsten":
+                await this.#equipItem(interaction, context);
                 break;
             default:
                 throw new Error(`Unknown subcommand: "${subCommand}"`);
@@ -379,7 +395,12 @@ export default class GegenstandCommand implements ApplicationCommand {
             return;
         }
 
-        if (subCommand !== "info" && subCommand !== "use" && subCommand !== "set-pet") {
+        if (
+            subCommand !== "info" &&
+            subCommand !== "use" &&
+            subCommand !== "set-pet" &&
+            subCommand !== "ausrüsten"
+        ) {
             return;
         }
 
@@ -406,6 +427,9 @@ export default class GegenstandCommand implements ApplicationCommand {
             if (subCommand === "use" && template.onUse === undefined) {
                 continue;
             }
+            if (subCommand === "ausrüsten" && template.gameEquip === undefined) {
+                continue;
+            }
 
             const emote = lootDataService.getEmote(interaction.guild, item);
             completions.push({
@@ -419,6 +443,43 @@ export default class GegenstandCommand implements ApplicationCommand {
         }
 
         await interaction.respond(completions.slice(0, 20));
+    }
+
+    async #equipItem(interaction: CommandInteraction, _context: BotContext) {
+        if (!interaction.isChatInputCommand()) {
+            throw new Error("Interaction is not a chat input command");
+        }
+        if (!interaction.guild || !interaction.channel) {
+            return;
+        }
+
+        const info = await this.#fetchItem(interaction);
+        if (!info) {
+            return;
+        }
+        const { item, template } = info;
+        log.info(item);
+        if (template.gameEquip === undefined) {
+            await interaction.reply({
+                content: ` ${item.displayName}  kann nicht ausgerüstet werden.`,
+                ephemeral: true,
+            });
+            return;
+        }
+        const items = await getFightInventoryUnsorted(interaction.user.id);
+        if (items.filter(i => i.id === item.id).length !== 0) {
+            await interaction.reply({
+                content: `Du hast ${item.displayName} schon ausgerüstet`,
+                ephemeral: true,
+            });
+            return;
+        }
+        const result = await equipItembyLoot(interaction.user.id, item, template.gameEquip.type);
+        const message =
+            result.unequipped.length === 0
+                ? `Du hast ${result.equipped?.displayName} ausgerüstet`
+                : `Du hast ${result.unequipped.join(", ")} abgelegt und dafür ${result.equipped?.displayName} ausgerüstet`;
+        await interaction.reply(message);
     }
 
     async #setPet(interaction: ChatInputCommandInteraction, _context: BotContext) {
