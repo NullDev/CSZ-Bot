@@ -62,7 +62,8 @@ const config = await readConfig();
 // We cannot add it in the polyfills.ts because that file is also used as --require argument for ts-node
 // TODO: Remove this once temporal is available in Node.js, see: https://github.com/nodejs/node/issues/57127
 if (typeof Date.prototype.toTemporalInstant !== "function") {
-    Date.prototype.toTemporalInstant = function () {
+    // biome-ignore lint/suspicious/noExplicitAny: hack
+    (Date.prototype as any).toTemporalInstant = function () {
         return Temporal.Instant.fromEpochMilliseconds(this.getTime());
     };
 }
