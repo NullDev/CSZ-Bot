@@ -10,7 +10,7 @@ node_modules
 *.md
 compose.yaml
 logs
-biome.json
+.oxfmtrc.json
 LICENSE
 flake.*
 shell.nix
