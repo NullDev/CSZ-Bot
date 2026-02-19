@@ -6,13 +6,15 @@ import {
     SlashCommandStringOption,
 } from "discord.js";
 
-import type { ApplicationCommand } from "#commands/command.ts";
-import type { BotContext } from "#context.ts";
+import type { ApplicationCommand } from "#/commands/command.ts";
+import type { BotContext } from "#/context.ts";
 
 export default class GhostwriterCommand implements ApplicationCommand {
+    modCommand = true;
     name = "gw";
     description = "Goethe sein Vater";
     requiredPermissions: readonly PermissionsString[] = ["BanMembers"];
+
     lastBlame: Date | null = null;
     get applicationCommand() {
         return new SlashCommandBuilder()

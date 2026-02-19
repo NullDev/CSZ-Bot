@@ -1,8 +1,8 @@
-import type { MessageCommand } from "#commands/command.ts";
-import type { BotContext } from "#context.ts";
-import type { ProcessableMessage } from "#service/command.ts";
+import type { MessageCommand } from "#/commands/command.ts";
+import type { BotContext } from "#/context.ts";
+import type { ProcessableMessage } from "#/service/command.ts";
 
-import { parseLegacyMessageParts } from "#service/command.ts";
+import { parseLegacyMessageParts } from "#/service/command.ts";
 
 export default class MinCommand implements MessageCommand {
     name = "min";

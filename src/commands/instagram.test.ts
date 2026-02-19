@@ -16,6 +16,9 @@ describe("instagram pattern matching", () => {
             "https://www.instagram.com/reel/Ce_kSwnIlA8/": [
                 "https://www.instagram.com/reel/Ce_kSwnIlA8/",
             ],
+            "https://www.instagram.com/reels/Ce_kSwnIlA8/": [
+                "https://www.instagram.com/reels/Ce_kSwnIlA8/",
+            ],
 
             "https://www.instagram.com/tv/CfOBVIsFpyg/": [
                 "https://www.instagram.com/tv/CfOBVIsFpyg/",
@@ -53,6 +56,7 @@ describe("instagram pattern matching", () => {
             "https://www.instagram.com/p/C_OQe4FON7Q/": ["C_OQe4FON7Q"],
             "https://www.instagram.com/share/C_OQe4FON7Q/": ["C_OQe4FON7Q"],
             "https://www.instagram.com/reel/Ce_kSwnIlA8/": ["Ce_kSwnIlA8"],
+            "https://www.instagram.com/reels/Ce_kSwnIlA8/": ["Ce_kSwnIlA8"],
 
             "https://www.instagram.com/tv/CfOBVIsFpyg/": ["CfOBVIsFpyg"],
 

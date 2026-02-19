@@ -1,4 +1,5 @@
-import path from "node:path";
+import * as path from "node:path";
+import * as fs from "node:fs/promises";
 
 import type {
     GuildMember,
@@ -10,13 +11,14 @@ import type {
     VoiceChannel,
     APIInteractionGuildMember,
     Message,
+    GuildEmoji,
 } from "discord.js";
 import { ChannelType } from "discord.js";
+import { SpotifyApi } from "@spotify/web-api-ts-sdk";
 import { Temporal } from "@js-temporal/polyfill";
 
-import type { UserMapEntry } from "#commands/aoc.ts";
-import { readConfig } from "#service/config.ts";
-import { SpotifyApi } from "@spotify/web-api-ts-sdk";
+import type { UserMapEntry } from "#/commands/aoc.ts";
+import { readConfig } from "#/service/config.ts";
 
 /**
  * Object that's passed to every executed command to make it easier to access common channels without repeatedly retrieving stuff via IDs.
@@ -114,6 +116,7 @@ export interface BotContext {
         votes: TextChannel;
         botSpam: TextChannel;
         hauptwoisText: TextChannel;
+        roleAssigner: TextChannel;
     };
 
     voiceChannels: {
@@ -148,6 +151,12 @@ export interface BotContext {
 
     channelGuard: {
         isInBotSpam: (message: Message) => boolean;
+    };
+
+    emoji: {
+        alarm: GuildEmoji;
+        sadHamster: GuildEmoji;
+        trichter: GuildEmoji;
     };
 }
 
@@ -196,6 +205,22 @@ function ensureVoiceChannel(guild: Guild, channelId: Snowflake): VoiceChannel {
     return channel;
 }
 
+function ensureEmoji(guild: Guild, emojiId: Snowflake, fallbackName: string): GuildEmoji {
+    const emoji = guild.emojis.resolve(emojiId);
+    if (emoji) {
+        return emoji;
+    }
+
+    const fallback = guild.emojis.cache.find(e => e.name === fallbackName);
+    if (fallback) {
+        return fallback;
+    }
+
+    throw new Error(
+        `Emoji with ID "${emojiId}" not found in guild "${guild.id}". Also did not find a fallback with name "${fallbackName}"`,
+    );
+}
+
 // #endregion
 
 export async function createBotContext(client: Client<true>): Promise<BotContext> {
@@ -209,6 +234,9 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
     const role = config.role;
     const textChannel = config.textChannel;
     const voiceChannel = config.voiceChannel;
+
+    const soundsPath = path.resolve("data/sounds");
+    await fs.mkdir(soundsPath, { recursive: true });
 
     return {
         client,
@@ -315,6 +343,7 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
             votes: ensureTextChannel(guild, textChannel.votesChannelId),
             botSpam: ensureTextChannel(guild, textChannel.botSpamChannelId),
             hauptwoisText: ensureTextChannel(guild, textChannel.hauptwoisTextChannelId),
+            roleAssigner: ensureTextChannel(guild, textChannel.roleAssignerChannelId),
         },
 
         voiceChannels: {
@@ -324,8 +353,8 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
         path: {
             root: path.resolve(""),
             src: path.resolve("src"),
-            banners: path.resolve("banners"),
-            sounds: path.resolve("sounds"),
+            banners: path.resolve("assets/banners"),
+            sounds: soundsPath,
             commands: path.resolve("src/commands"),
             modCommands: path.resolve("src/commands/modcommands"),
         },
@@ -350,6 +379,12 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
 
         channelGuard: {
             isInBotSpam: message => message.channelId === config.textChannel.botSpamChannelId,
+        },
+
+        emoji: {
+            alarm: ensureEmoji(guild, config.emoji.alarmEmojiId, "alarm"),
+            sadHamster: ensureEmoji(guild, config.emoji.sadHamsterEmojiId, "sad_hamster"),
+            trichter: ensureEmoji(guild, config.emoji.trichterEmojiId, "trichter"),
         },
     };
 }

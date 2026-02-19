@@ -1,0 +1,26 @@
+# docs: https://lefthook.dev/configuration/
+
+pre-push:
+  commands:
+    lint:
+      run: node --run lint
+    test:
+      run: node --run test
+
+pre-commit:
+  commands:
+    format:
+      glob: "*.{js,ts,json}"
+      run: node --run format -- {staged_files}
+      stage_fixed: true
+    lint-fix:
+      glob: "*.{js,ts,json}"
+      run: node --run lint:fix -- {staged_files}
+      stage_fixed: true
+
+output:
+  - summary
+  - success
+  - failure
+  - execution_info
+  - skips

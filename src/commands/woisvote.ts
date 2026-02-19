@@ -16,11 +16,11 @@ import {
     MessageFlags,
 } from "discord.js";
 
-import type { ReactionHandler } from "#handler/ReactionHandler.ts";
-import type { ApplicationCommand } from "#commands/command.ts";
-import * as woisAction from "#storage/woisAction.ts";
-import type { BotContext } from "#context.ts";
-import { chunkArray } from "#utils/arrayUtils.ts";
+import type { ReactionHandler } from "#/handler/ReactionHandler.ts";
+import type { ApplicationCommand } from "#/commands/command.ts";
+import * as woisAction from "#/storage/woisAction.ts";
+import type { BotContext } from "#/context.ts";
+import { chunkArray } from "#/utils/arrayUtils.ts";
 import log from "#log";
 
 const defaultWoisTime = "20:00";
@@ -138,7 +138,7 @@ export default class WoisCommand implements ApplicationCommand {
         const result = await woisAction.insertWoisAction(
             woisMessage,
             reason,
-            new Date(timeForWois.toString()),
+            new Date(timeForWois.toString()).toTemporalInstant(), // TODO
             isWoisgangVote,
         );
         if (!result) {
@@ -206,7 +206,7 @@ export const woisVoteReactionHandler: ReactionHandler = {
 };
 
 export const woisVoteScheduler = async (context: BotContext): Promise<void> => {
-    const pendingAction = await woisAction.getPendingWoisAction(new Date());
+    const pendingAction = await woisAction.getPendingWoisAction(Temporal.Now.instant());
     if (pendingAction === undefined) {
         return;
     }

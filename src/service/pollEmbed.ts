@@ -8,6 +8,7 @@ import {
     TimestampStyles,
     type User,
 } from "discord.js";
+import { Temporal } from "@js-temporal/polyfill";
 
 export const LETTERS = [
     ":regional_indicator_a:",
@@ -68,6 +69,7 @@ export type AuthorSpec = { username: string; iconURL?: string };
 export type PollEmbedParameters = {
     author: AuthorSpec;
     question: string;
+    preface?: string;
     multipleChoices: boolean;
     anonymous: boolean;
     extendable: boolean;
@@ -88,7 +90,7 @@ export function buildPollEmbed(
     options: readonly PollEmbedOptionParameters[],
 ): APIEmbed {
     const embed = new EmbedBuilder({
-        description: `**${cleanContent(poll.question, targetChannel)}**`,
+        description: `${poll.preface ? cleanContent(poll.preface, targetChannel) + "\n" : ""}**${cleanContent(poll.question, targetChannel)}**`,
         fields: options.map(o =>
             createOptionField(
                 o.option,
@@ -97,7 +99,7 @@ export function buildPollEmbed(
                 o.author?.username !== poll.author.username,
             ),
         ),
-        timestamp: new Date().toISOString(),
+        timestamp: Temporal.Now.instant().toString(),
         author: {
             name: `${poll.multipleChoices ? "Umfrage" : "Strawpoll"} von ${poll.author.username}`,
             icon_url: poll.author.iconURL,
@@ -182,7 +184,7 @@ export function buildDelayedPollResultEmbed(
             value: option.chosenBy.map(user => user.toString()).join("\n") || "-",
             inline: false,
         })),
-        timestamp: new Date().toISOString(),
+        timestamp: Temporal.Now.instant().toString(),
         author: {
             name: author.name,
             icon_url: author.iconURL,

@@ -8,8 +8,9 @@ import type {
     User,
 } from "discord.js";
 import { type ExpressionBuilder, sql } from "kysely";
+import type { Temporal } from "@js-temporal/polyfill";
 
-import type { BotContext } from "#context.ts";
+import type { BotContext } from "#/context.ts";
 import type {
     Database,
     Loot,
@@ -21,21 +22,27 @@ import type {
 
 import db from "#db";
 
+import type { Equipable } from "#/service/fightData.ts";
 import {
     type LootKindId,
     resolveLootAttributeTemplate,
     type LootAttributeKindId,
     type LootAttributeClassId,
-} from "#service/lootData.ts";
-import type { Equipable } from "#service/fightData.ts";
+} from "#/service/lootData.ts";
 
 export type LootUseCommandInteraction = ChatInputCommandInteraction & {
     channel: GuildTextBasedChannel;
 };
 
+export interface TimeBasedWeightConfig {
+    morning?: number;
+    evening?: number;
+}
+
 export interface LootTemplate {
     id: LootKindId;
     weight: number;
+    timeBasedWeight?: TimeBasedWeightConfig;
     displayName: string;
     titleText: string;
     dropDescription: string;
@@ -116,7 +123,7 @@ export async function createLoot(
     template: LootTemplate,
     winner: User,
     message: Message<true> | null,
-    now: Date,
+    now: Temporal.Instant,
     origin: LootOrigin,
     predecessorLootId: LootId | null,
     rarityAttribute: LootAttributeTemplate | null,
@@ -129,7 +136,7 @@ export async function createLoot(
                 displayName: template.displayName,
                 lootKindId: template.id,
                 winnerId: winner.id,
-                claimedAt: now.toISOString(),
+                claimedAt: now.toString(),
                 guildId: message?.guildId ?? "",
                 channelId: message?.channelId ?? "",
                 messageId: message?.id ?? "",

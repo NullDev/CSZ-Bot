@@ -6,12 +6,13 @@ import {
 } from "discord.js";
 import type { Message, CommandInteraction, PermissionsString } from "discord.js";
 
-import type { ApplicationCommand, MessageCommand } from "#commands/command.ts";
-import type { BotContext } from "#context.ts";
+import type { ApplicationCommand, MessageCommand } from "#/commands/command.ts";
+import type { BotContext } from "#/context.ts";
 
-import * as banService from "#service/ban.ts";
+import * as banService from "#/service/ban.ts";
 
 export default class UnbanCommand implements ApplicationCommand, MessageCommand {
+    modCommand = true; // needed if invoked via text, not via slash
     name = "unban";
     description = "Joa, unbannt halt einen ne?";
     requiredPermissions: readonly PermissionsString[] = ["BanMembers"];

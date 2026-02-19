@@ -20,22 +20,24 @@ import {
 import { Temporal } from "@js-temporal/polyfill";
 import * as sentry from "@sentry/node";
 
-import type { BotContext } from "#context.ts";
-import type { Loot, LootId } from "#storage/db/model.ts";
-import type { LootTemplate } from "#storage/loot.ts";
-import { randomBoolean, randomEntry, randomEntryWeighted } from "#service/random.ts";
+import type { BotContext } from "#/context.ts";
+import type { Loot, LootId } from "#/storage/db/model.ts";
+import type { LootTemplate, TimeBasedWeightConfig } from "#/storage/loot.ts";
+import { randomBoolean, randomEntry, randomEntryWeighted } from "#/service/random.ts";
+import * as timeUtils from "#/utils/time.ts";
+import { zonedNow } from "#/utils/dateUtils.ts";
 
-import * as lootService from "#service/loot.ts";
+import * as lootService from "#/service/loot.ts";
 import {
     LootAttributeClass,
     lootAttributeTemplates,
     LootKind,
     lootTemplates,
-} from "#service/lootData.ts";
+} from "#/service/lootData.ts";
 
 import log from "#log";
 
-const lootTimeoutMs = 60 * 1000;
+const lootTimeoutMs = timeUtils.minutes(1);
 
 export async function runDropAttempt(context: BotContext) {
     const lootConfig = context.commandConfig.loot;
@@ -89,8 +91,6 @@ export async function postLootDrop(
     donor: User | undefined,
     predecessorLootId: LootId | undefined,
 ): Promise<Loot | undefined> {
-    const hamster = context.guild.emojis.cache.find(e => e.name === "sad_hamster") ?? ":(";
-
     const takeLootButton = new ButtonBuilder()
         .setCustomId("take-loot")
         .setLabel("Geschenk nehmen")
@@ -144,7 +144,7 @@ export async function postLootDrop(
                             donor
                                 ? // TODO: `Keiner wollte das Geschenk von ${donor} haben. ${donor} hat es wieder mitgenommen.`
                                   `Das Geschenk von ${donor} verpuffte im nichts :(`
-                                : `Oki aber nächstes mal bitti aufmachi, sonst muss ichs wieder mitnehmi ${hamster}`,
+                                : `Oki aber nächstes mal bitti aufmachi, sonst muss ichs wieder mitnehmi ${context.emoji.sadHamster}`,
                         ),
                     footer => footer.setContent("-# ❌ Niemand war schnell genug"),
                 ),
@@ -155,7 +155,12 @@ export async function postLootDrop(
         return;
     }
 
-    const defaultWeights = lootTemplates.map(t => t.weight);
+    const timeBasedWeightKey = getCurrentTimeBasedKey();
+
+    const defaultWeights = timeBasedWeightKey
+        ? lootTemplates.map(t => t.timeBasedWeight?.[timeBasedWeightKey] ?? t.weight)
+        : lootTemplates.map(t => t.weight);
+
     const { messages, weights } = await getDropWeightAdjustments(interaction.user, defaultWeights);
 
     const template = randomEntryWeighted(lootTemplates, weights);
@@ -179,7 +184,7 @@ export async function postLootDrop(
 
     if (!claimedLoot) {
         await reply.edit({
-            content: `Upsi, da ist was schief gelaufi oder jemand anderes war schnelli ${hamster}`,
+            content: `Upsi, da ist was schief gelaufi oder jemand anderes war schnelli ${context.emoji.sadHamster}`,
         });
         return;
     }
@@ -253,8 +258,20 @@ export async function postLootDrop(
     }
 
     if (randomBoolean()) {
+        const missedGift = template.displayName;
         await channel.send(
-            `DOPPELT ODER NIX, ${winner}! Du bekommst dein Geschenk nicht nochmal und gehst stattdessen leer aus. Loser!`,
+            randomEntry([
+                `DOPPELT ODER NIX, ${winner}! Dein Geschenk war **${missedGift}**, aber jetzt ist es weg und du gehst stattdessen leer aus. Loser!`,
+                `Pech gehabt, ${winner}! Das **${missedGift}** ist futsch. Vielleicht klappt's beim nächsten Mal und du bekommst was anderes!`,
+                `Autsch, ${winner}... Das war wohl nix. Kein **${missedGift}** für dich diesmal!`,
+                `Oh nein, ${winner}! Das **${missedGift}** hat sich in Luft aufgelöst. Nix für dich!`,
+                `Tja, ${winner}, Risiko nicht belohnt. Das **${missedGift}** bleibt dir verwehrt!`,
+                `Schade, ${winner}! Doppelt oder nix hat dir heute kein Glück gebracht – das **${missedGift}** ist weg.`,
+                `Das war wohl ein Satz mit X, ${winner}. Das **${missedGift}** ist jetzt Geschichte!`,
+                `Manchmal verliert man eben, ${winner}. Heute leider kein **${missedGift}** für dich!`,
+                `Das Universum sagt nein, ${winner}. Das **${missedGift}** wandert ins Nirvana!`,
+                `DOPPELT ODER NIX, ${winner}! Diesmal leider kein **${missedGift}**. Kopf hoch!`,
+            ]),
         );
 
         await Promise.all([
@@ -286,7 +303,7 @@ export async function postLootDrop(
         rarityAttribute,
     );
     if (!extraLoot) {
-        await channel.send(`${winner}, ups, da ist was schief gelaufi ${hamster}`);
+        await channel.send(`${winner}, ups, da ist was schief gelaufi ${context.emoji.sadHamster}`);
         return;
     }
 
@@ -357,6 +374,22 @@ export async function createDropTakenContent(
               ]
             : [],
     };
+}
+
+function getCurrentTimeBasedKey(): keyof TimeBasedWeightConfig | undefined {
+    // Caution: using a ZonedDateTime and comparing the hour to the raw values breaks when daylight-saving-time happens (an hour can happen multiple times)
+    // We disregard these edge-cases, but keep it in mind
+    const hour = zonedNow().hour;
+
+    // :shibakek:
+    switch (true) {
+        case 6 <= hour && hour <= 12:
+            return "morning";
+        case 18 <= hour && hour <= 24:
+            return "evening";
+        default:
+            return undefined;
+    }
 }
 
 type AdjustmentResult = {

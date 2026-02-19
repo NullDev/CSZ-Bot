@@ -15,12 +15,12 @@ import {
 } from "discord.js";
 import * as sentry from "@sentry/node";
 
-import type { BotContext } from "#context.ts";
-import type { ApplicationCommand, AutocompleteCommand } from "#commands/command.ts";
+import type { BotContext } from "#/context.ts";
+import type { ApplicationCommand, AutocompleteCommand } from "#/commands/command.ts";
 import log from "#log";
-import { ensureChatInputCommand } from "#utils/interactionUtils.ts";
-import * as nickName from "#storage/nickName.ts";
-import * as time from "#utils/time.ts";
+import { ensureChatInputCommand } from "#/utils/interactionUtils.ts";
+import * as nickName from "#/storage/nickName.ts";
+import * as time from "#/utils/time.ts";
 
 type Vote = "YES" | "NO";
 
@@ -278,6 +278,7 @@ export default class NicknameCommand implements ApplicationCommand, Autocomplete
         const collector = reply.createMessageComponentCollector({
             componentType: ComponentType.Button,
             time: time.minutes(5),
+            filter: i => i.customId === "nickname-vote-yes" || i.customId === "nickname-vote-no",
         });
 
         const votes: Record<Snowflake, UserVote> = {

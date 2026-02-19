@@ -1,4 +1,7 @@
-import type { BotContext } from "#context.ts";
+import type { Temporal } from "@js-temporal/polyfill";
+import type { Activity, User } from "discord.js";
+
+import type { BotContext } from "#/context.ts";
 import {
     getRecentPlaybacks,
     insertRegistration,
@@ -7,9 +10,8 @@ import {
     isActivatedForScrobbling,
     getTrackMetadata,
     mostRecentPlayback,
-} from "#storage/lauscher.ts";
-import type { Temporal } from "@js-temporal/polyfill";
-import type { Activity, User } from "discord.js";
+} from "#/storage/lauscher.ts";
+
 import log from "#log";
 
 export type SpotifyActivity = {

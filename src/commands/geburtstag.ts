@@ -1,9 +1,9 @@
 import { type CommandInteraction, type CacheType, SlashCommandBuilder } from "discord.js";
 import * as sentry from "@sentry/node";
 
-import type { ApplicationCommand } from "#commands/command.ts";
+import type { ApplicationCommand } from "#/commands/command.ts";
 import log from "#log";
-import * as birthday from "#storage/birthday.ts";
+import * as birthday from "#/storage/birthday.ts";
 
 export default class GeburtstagCommand implements ApplicationCommand {
     name = "geburtstag";
@@ -49,7 +49,7 @@ export default class GeburtstagCommand implements ApplicationCommand {
 
         try {
             await birthday.insertBirthday(command.user.id, day, month);
-            await command.reply("Danke mein G, ich hab dein Geburtstag eingetragen!");
+            await command.reply("Danke mein G, ich hab deinen Geburtstag eingetragen!");
         } catch (err) {
             log.error(err, "Geburtstag ist schief gelaufen");
             sentry.captureException(err);
@@ -62,5 +62,5 @@ export default class GeburtstagCommand implements ApplicationCommand {
 
 function isValidDate(mmDd: string): boolean {
     const isoDate = new Date(`2000-${mmDd}`);
-    return Number.isNaN(isoDate.getTime());
+    return !Number.isNaN(isoDate.getTime());
 }

@@ -156,6 +156,7 @@ export interface Config {
         votesChannelId: Snowflake;
         botSpamChannelId: Snowflake;
         hauptwoisTextChannelId: Snowflake;
+        roleAssignerChannelId: Snowflake;
     };
 
     voiceChannel: {
@@ -177,5 +178,11 @@ export interface Config {
         winnerRoleId: Snowflake;
         emotifiziererRoleId: Snowflake;
         lootRoleAsseGuardRoleId: Snowflake;
+    };
+
+    emoji: {
+        alarmEmojiId: Snowflake;
+        sadHamsterEmojiId: Snowflake;
+        trichterEmojiId: Snowflake;
     };
 }

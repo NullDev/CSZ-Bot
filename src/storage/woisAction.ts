@@ -1,4 +1,5 @@
 import type { Message, PartialMessage, Snowflake, User } from "discord.js";
+import type { Temporal } from "@js-temporal/polyfill";
 
 import type { WoisAction } from "./db/model.ts";
 import db from "#db";
@@ -6,7 +7,7 @@ import db from "#db";
 export async function insertWoisAction(
     message: Message,
     reason: string,
-    date: Date,
+    date: Temporal.Instant,
     isWoisgangAction = false,
     ctx = db(),
 ): Promise<boolean> {
@@ -15,7 +16,7 @@ export async function insertWoisAction(
         .values({
             messageId: message.id,
             reason,
-            date: date.toISOString(),
+            date: date.toString(),
             interestedUsers: JSON.stringify([]),
             isWoisgangAction,
         })
@@ -37,10 +38,13 @@ export function getWoisActionInRange(
         .executeTakeFirst();
 }
 
-export function getPendingWoisAction(before: Date, ctx = db()): Promise<WoisAction | undefined> {
+export function getPendingWoisAction(
+    before: Temporal.Instant,
+    ctx = db(),
+): Promise<WoisAction | undefined> {
     return ctx
         .selectFrom("woisActions")
-        .where("date", "<=", before.toISOString())
+        .where("date", "<=", before.toString())
         .selectAll()
         .executeTakeFirst();
 }

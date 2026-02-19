@@ -86,7 +86,8 @@
         "hauptchatChannelId": "893179191292477441",
         "votesChannelId": "893179191556706384",
         "botSpamChannelId": "893179191556706387",
-        "hauptwoisTextChannelId": "893179191825162371"
+        "hauptwoisTextChannelId": "893179191825162371",
+        "roleAssignerChannelId": "893179190881452115"
     },
 
     "voiceChannel": {
@@ -108,5 +109,11 @@
         "winnerRoleId": "1045422896740311070",
         "emotifiziererRoleId": "893179190709477410",
         "lootRoleAsseGuardRoleId": "1268706685753622529"
+    },
+
+    "emoji": {
+        "alarmEmojiId": "986292638204448838",
+        "sadHamsterEmojiId": "896110620108263424",
+        "trichterEmojiId": "986290070908731392"
     }
 }

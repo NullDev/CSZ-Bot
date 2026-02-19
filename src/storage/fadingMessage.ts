@@ -1,20 +1,24 @@
 import type { Message } from "discord.js";
+import { Temporal } from "@js-temporal/polyfill";
 
 import type { FadingMessage } from "./db/model.ts";
 import db from "#db";
 
 export function startFadingMessage(
     message: Message<true>,
-    deleteInMs: number,
+    deleteIn: Temporal.Duration,
     ctx = db(),
 ): Promise<FadingMessage> {
-    const now = new Date();
+    const now = Temporal.Now.instant();
+
+    // adding milliseconds to a date is a hassle in sqlite, so we're doing it in JS
+    const endTime = now.add(deleteIn);
+
     return ctx
         .insertInto("fadingMessages")
         .values({
-            beginTime: now.toISOString(),
-            // adding milliseconds to a date is a hassle in sqlite, so we're doing it in JS
-            endTime: new Date(now.getTime() + deleteInMs).toISOString(),
+            beginTime: now.toString(),
+            endTime: endTime.toString(),
             guildId: message.guild.id,
             channelId: message.channel.id,
             messageId: message.id,
@@ -23,10 +27,13 @@ export function startFadingMessage(
         .executeTakeFirstOrThrow();
 }
 
-export function findPendingForDeletion(now: Date, ctx = db()): Promise<FadingMessage[]> {
+export function findPendingForDeletion(
+    now: Temporal.Instant,
+    ctx = db(),
+): Promise<FadingMessage[]> {
     return ctx
         .selectFrom("fadingMessages")
-        .where("endTime", "<=", now.toISOString())
+        .where("endTime", "<=", now.toString())
         .selectAll()
         .execute();
 }

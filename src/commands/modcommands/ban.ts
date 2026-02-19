@@ -8,14 +8,15 @@ import {
     SlashCommandUserOption,
 } from "discord.js";
 
-import type { ApplicationCommand, MessageCommand } from "#commands/command.ts";
-import type { ProcessableMessage } from "#service/command.ts";
-import type { BotContext } from "#context.ts";
+import type { ApplicationCommand, MessageCommand } from "#/commands/command.ts";
+import type { ProcessableMessage } from "#/service/command.ts";
+import type { BotContext } from "#/context.ts";
 
-import * as banService from "#service/ban.ts";
-import { formatDuration } from "#utils/dateUtils.ts";
+import * as banService from "#/service/ban.ts";
+import { formatDuration } from "#/utils/dateUtils.ts";
 
 export default class BanCommand implements ApplicationCommand, MessageCommand {
+    modCommand = true; // needed if invoked via text, not via slash
     name = "ban";
     description = "Joa, bannt halt einen ne?";
     requiredPermissions: readonly PermissionsString[] = ["BanMembers"];

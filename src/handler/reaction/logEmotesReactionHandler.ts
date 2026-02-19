@@ -1,6 +1,6 @@
 import type { ReactionHandler } from "../ReactionHandler.ts";
 
-import * as emoteLoggingService from "#service/emoteLogging.ts";
+import * as emoteLoggingService from "#/service/emoteLogging.ts";
 
 export default {
     displayName: "Log Emotes Reaction Handler",

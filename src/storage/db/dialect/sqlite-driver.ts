@@ -13,6 +13,30 @@ import {
 
 import type { SqliteDialectConfig } from "./sqlite-dialect-config.ts";
 
+class ConnectionMutex {
+    #promise?: Promise<void>;
+    #resolve?: () => void;
+
+    async lock(): Promise<void> {
+        while (this.#promise) {
+            await this.#promise;
+        }
+
+        this.#promise = new Promise(resolve => {
+            this.#resolve = resolve;
+        });
+    }
+
+    unlock(): void {
+        const resolve = this.#resolve;
+
+        this.#promise = undefined;
+        this.#resolve = undefined;
+
+        resolve?.();
+    }
+}
+
 export class SqliteDriver implements Driver {
     readonly #config: SqliteDialectConfig;
     readonly #connectionMutex = new ConnectionMutex();
@@ -141,30 +165,6 @@ class SqliteConnection implements DatabaseConnection {
                 rows: [row],
             };
         }
-    }
-}
-
-class ConnectionMutex {
-    #promise?: Promise<void>;
-    #resolve?: () => void;
-
-    async lock(): Promise<void> {
-        while (this.#promise) {
-            await this.#promise;
-        }
-
-        this.#promise = new Promise(resolve => {
-            this.#resolve = resolve;
-        });
-    }
-
-    unlock(): void {
-        const resolve = this.#resolve;
-
-        this.#promise = undefined;
-        this.#resolve = undefined;
-
-        resolve?.();
     }
 }
 

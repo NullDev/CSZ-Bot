@@ -3,12 +3,12 @@ import * as fs from "node:fs/promises";
 import type { User } from "discord.js";
 import { createCanvas, loadImage } from "@napi-rs/canvas";
 
-import type { BotContext } from "#context.ts";
-import type { Loot } from "#storage/db/model.ts";
-import type { LootTemplate } from "#storage/loot.ts";
-import * as fontService from "#service/font.ts";
-import { Vec2 } from "#utils/math.ts";
-import { extendContext } from "#utils/ExtendedCanvasContext.ts";
+import type { BotContext } from "#/context.ts";
+import type { Loot } from "#/storage/db/model.ts";
+import type { LootTemplate } from "#/storage/loot.ts";
+import * as fontService from "#/service/font.ts";
+import { Vec2 } from "#/utils/math.ts";
+import { extendContext } from "#/utils/ExtendedCanvasContext.ts";
 
 const namePos = new Vec2(38, 567);
 const avatarPos = new Vec2(790, 230);
@@ -31,7 +31,7 @@ export async function drawBahncardImage(
 ): Promise<Buffer> {
     // biome-ignore lint/style/noNonNullAssertion: We check for assetPath below
     const assetPath = template.asset!;
-    console.assert(assetPath, "Bahncard template must have an asset");
+    console.assert(!!assetPath, "Bahncard template must have an asset");
 
     const backgroundImage = await loadImage(await fs.readFile(assetPath));
     const canvas = createCanvas(backgroundImage.width, backgroundImage.height);

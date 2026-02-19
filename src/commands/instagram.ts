@@ -1,11 +1,12 @@
 import type { Message } from "discord.js";
 
-import type { SpecialCommand } from "#commands/command.ts";
-import type { BotContext } from "#context.ts";
-import * as instagramService from "#service/instagram.ts";
+import type { SpecialCommand } from "#/commands/command.ts";
+import type { BotContext } from "#/context.ts";
+import * as instagramService from "#/service/instagram.ts";
 
 const instagramOptions = {
-    uriPattern: /https?:\/\/(?:www\.)?instagram\.com\/(?:reel|tv|p|share)\/([0-9a-zA-Z_-]+)\/?/gi,
+    uriPattern:
+        /https?:\/\/(?:www\.)?instagram\.com\/(?:reel|reels|tv|p|share)\/([0-9a-zA-Z_-]+)\/?/gi,
     headers: {
         "User-Agent":
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.5005.124 Safari/537.36 Edg/102.0.1245.44",
@@ -78,6 +79,9 @@ export default class InstagramLink implements SpecialCommand {
             await message.reply({
                 content: "Dein Dreckspost du Hund:",
                 files,
+                allowedMentions: {
+                    repliedUser: false,
+                },
             });
         }
         await message.suppressEmbeds(true);

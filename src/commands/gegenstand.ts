@@ -12,18 +12,18 @@ import {
 } from "discord.js";
 import * as sentry from "@sentry/node";
 
-import type { BotContext } from "#context.ts";
-import type { ApplicationCommand } from "#commands/command.ts";
-import type { LootUseCommandInteraction } from "#storage/loot.ts";
-import * as lootService from "#service/loot.ts";
-import * as petService from "#service/pet.ts";
-import * as lootRoleService from "#service/lootRoles.ts";
-import { randomEntry } from "#service/random.ts";
-import { ensureChatInputCommand } from "#utils/interactionUtils.ts";
-import * as imageService from "#service/image.ts";
+import type { BotContext } from "#/context.ts";
+import type { ApplicationCommand } from "#/commands/command.ts";
+import type { LootUseCommandInteraction } from "#/storage/loot.ts";
+import * as lootService from "#/service/loot.ts";
+import * as petService from "#/service/pet.ts";
+import * as lootRoleService from "#/service/lootRoles.ts";
+import { randomEntry } from "#/service/random.ts";
+import { ensureChatInputCommand } from "#/utils/interactionUtils.ts";
+import * as imageService from "#/service/image.ts";
 
-import * as lootDataService from "#service/lootData.ts";
-import { LootAttributeKind, LootKind } from "#service/lootData.ts";
+import * as lootDataService from "#/service/lootData.ts";
+import { LootAttributeKind, LootKind } from "#/service/lootData.ts";
 
 import { equipItembyLoot, getFightInventoryUnsorted } from "#storage/fightInventory.ts";
 import log from "#log";

@@ -6,6 +6,7 @@ import type {
     RootOperationNode,
     UnknownRow,
 } from "kysely";
+import { Temporal } from "@js-temporal/polyfill";
 
 import log from "#log";
 
@@ -38,14 +39,14 @@ function transformRow(row: UnknownRow): UnknownRow {
         }
 
         if (sqlitePattern.test(v)) {
-            log.trace(`Would do: "${v}" -> ${new Date(`${v}Z`)}`);
-            // res[k] = new Date(v);
+            log.trace(`Would do: "${v}" -> ${Temporal.Instant.from(`${v}Z`)}`);
+            // res[k] = Temporal.Instant.from(`${v}Z`);
             continue;
         }
 
         if (iso8601Pattern.test(v)) {
-            log.trace(`Would do: "${v}" -> ${new Date(v)}`);
-            // res[k] = new Date(v);
+            log.trace(`Would do: "${v}" -> ${Temporal.Instant.from(v)}`);
+            // res[k] = Temporal.Instant.from(v);
         }
     }
 

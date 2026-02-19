@@ -1,13 +1,27 @@
 import { parseArgs, type ParseArgsConfig } from "node:util";
 
-import type { BotContext } from "#context.ts";
-import type { MessageCommand } from "#commands/command.ts";
-import { parseLegacyMessageParts, type ProcessableMessage } from "#service/command.ts";
-import * as timeUtils from "#utils/time.ts";
-import * as pollService from "#service/poll.ts";
-import * as legacyDelayedPoll from "#service/delayedPollLegacy.ts";
-import * as pollEmbedService from "#service/pollEmbed.ts";
-import { defer } from "#utils/interactionUtils.ts";
+import type { BotContext } from "#/context.ts";
+import type { MessageCommand } from "#/commands/command.ts";
+import { parseLegacyMessageParts, type ProcessableMessage } from "#/service/command.ts";
+import * as timeUtils from "#/utils/time.ts";
+import * as pollService from "#/service/poll.ts";
+import * as legacyDelayedPoll from "#/service/delayedPollLegacy.ts";
+import * as pollEmbedService from "#/service/pollEmbed.ts";
+import { defer } from "#/utils/interactionUtils.ts";
+
+const pollOptionsPresets = {
+    likert: {
+        preface: "Wie sehr stimmst du folgender Aussage zu?",
+        permitsExtension: false,
+        options: [
+            "Stimme überhaupt nicht zu",
+            "Stimme eher nicht zu",
+            "Weder noch",
+            "Stimme eher zu",
+            "Stimme voll und ganz zu",
+        ],
+    },
+} as const;
 
 const argsConfig = {
     options: {
@@ -15,6 +29,11 @@ const argsConfig = {
             type: "boolean",
             short: "c",
             default: false,
+            multiple: false,
+        },
+        preset: {
+            type: "string",
+            short: "p",
             multiple: false,
         },
         extendable: {
@@ -45,6 +64,9 @@ Usage: $COMMAND_PREFIX$poll [Optionen?] [Hier die Frage] ; [Antwort 1] ; [Antwor
 Optionen:
 \t-c, --channel
 \t\t\tSendet die Umfrage in den Umfragenchannel, um den Slowmode zu umgehen
+\t-p <preset>, --preset <preset>
+\t\t\tVerwendet ein vorgefertigtes Set an Antwortmöglichkeiten. Aktuelle Presets:
+\t\t\t- likert: Eine 5-Punkte Skala von "Stimme überhaupt nicht zu" bis "Stimme voll und ganz zu"
 \t-e, --extendable
 \t\t\tErlaubt die Erweiterung der Antwortmöglichkeiten durch jeden User mit .extend als Reply
 \t-s, --straw
@@ -82,8 +104,27 @@ Optionen:
         }
 
         const [question, ...pollOptions] = pollService.parsePollOptionString(positionals.join(" "));
+
         if (question.length > pollEmbedService.TEXT_LIMIT) {
             return "Bruder die Frage ist ja länger als mein Schwands :c";
+        }
+
+        const preset = options.preset
+            ? pollOptionsPresets[options.preset as keyof typeof pollOptionsPresets]
+            : null;
+        if (options.preset && !preset) {
+            return `Bruder das preset ${options.preset} gibt's nicht 🙄`;
+        }
+        if (preset && pollOptions.length > 0) {
+            return "Bruder entweder preset oder eigene Antwortmöglichkeiten, aber nicht beides 🙄";
+        }
+
+        if (preset) {
+            pollOptions.push(...preset.options);
+            // Check with estimated length, does not need to be perfect. Otherwise discord will just error out later
+            if (preset.preface.length + question.length + 1 > pollEmbedService.TEXT_LIMIT) {
+                return "Bruder die vorgegebene Frage ist zu lang in Kombination mit dem preset :c";
+            }
         }
 
         let pollOptionsTextLength = 0;
@@ -115,11 +156,14 @@ Optionen:
         if (extendable && options.delayed) {
             return "Bruder du kannst -e nicht mit -d kombinieren. 🙄";
         }
+        if (extendable && preset && !preset.permitsExtension) {
+            return `Bruder du kannst -e nicht mit dem preset ${options.preset} kombinieren. 🙄`;
+        }
 
         let finishTime: Date | undefined;
         if (options.delayed) {
             const delayTime = Number(options.delayed);
-            finishTime = new Date(Date.now() + delayTime * 60 * 1000);
+            finishTime = new Date(Date.now() + timeUtils.minutes(delayTime));
 
             if (Number.isNaN(delayTime) || delayTime <= 0) {
                 return "Bruder keine ungültigen Zeiten angeben 🙄";
@@ -144,6 +188,7 @@ Optionen:
             channel,
             {
                 question,
+                preface: preset?.preface ?? undefined,
                 anonymous: !!finishTime,
                 author: message.author,
                 extendable,
@@ -174,7 +219,7 @@ Optionen:
             question,
             !options.straw,
             false,
-            !options.straw && extendable,
+            extendable,
             finishTime?.toTemporalInstant() ?? null,
             pollOptions,
         );

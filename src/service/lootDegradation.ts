@@ -1,11 +1,11 @@
-import { type BaseMessageOptions, type Snowflake, userMention } from "discord.js";
-import type { BotContext } from "#context.ts";
+import { ContainerBuilder, MessageFlags, type Snowflake, userMention } from "discord.js";
 
-import * as time from "#utils/time.ts";
-import * as lootService from "#service/loot.ts";
-import { LootAttributeKind, LootKind, resolveLootTemplate } from "#service/lootData.ts";
+import type { BotContext } from "#/context.ts";
+import * as time from "#/utils/time.ts";
+import * as lootService from "#/service/loot.ts";
+import { LootAttributeKind, LootKind, resolveLootTemplate } from "#/service/lootData.ts";
 import log from "#log";
-import { randomEntry } from "#service/random.ts";
+import { randomEntry } from "#/service/random.ts";
 
 export async function degradeItems(_context: BotContext) {
     log.info("Degrading loot items");
@@ -70,14 +70,16 @@ export async function exposeWithRadiation(context: BotContext) {
     }
 
     await context.textChannels.hauptchat.send({
-        embeds: [
-            {
-                description: `:radioactive: ${targetLoot.displayName} von ${userMention(targetLoot.winnerId)} wurde verstrahlt. :radioactive:`,
-                footer: {
-                    text: "Du solltest deinen Müll besser entsorgen",
-                },
-            },
+        components: [
+            new ContainerBuilder().addTextDisplayComponents(
+                t =>
+                    t.setContent(
+                        `:radioactive: ${targetLoot.displayName} von ${userMention(targetLoot.winnerId)} wurde verstrahlt. :radioactive:`,
+                    ),
+                t => t.setContent("-# Du solltest deinen Müll besser entsorgen"),
+            ),
         ],
+        flags: MessageFlags.IsComponentsV2,
     });
 }
 
@@ -133,17 +135,20 @@ export async function runHalfLife(context: BotContext) {
 
     logger.info({ replacedStats }, "replacedStats");
 
-    type Embed = NonNullable<BaseMessageOptions["embeds"]>[number];
-
-    const embeds: Embed[] = [];
+    const components: ContainerBuilder[] = [];
     for (const [user, count] of replacedStats.entries()) {
-        embeds.push({
-            description: `:radioactive: ${count}x Müll von ${userMention(user)} ist zu einem Stück Blei zerfallen. :radioactive:`,
-        });
+        components.push(
+            new ContainerBuilder().addTextDisplayComponents(t =>
+                t.setContent(
+                    `:radioactive: ${count}x Müll von ${userMention(user)} ist zu einem Stück Blei zerfallen. :radioactive:`,
+                ),
+            ),
+        );
     }
 
     await context.textChannels.hauptchat.send({
-        embeds,
+        flags: MessageFlags.IsComponentsV2,
+        components: components,
         allowedMentions: {
             users: replacedStats.keys().toArray(),
         },

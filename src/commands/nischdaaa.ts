@@ -1,5 +1,5 @@
-import type { ProcessableMessage } from "#service/command.ts";
-import type { SpecialCommand } from "#commands/command.ts";
+import type { ProcessableMessage } from "#/service/command.ts";
+import type { SpecialCommand } from "#/commands/command.ts";
 
 export default class NischdaaaCommand implements SpecialCommand {
     name = "Nischdaaa";

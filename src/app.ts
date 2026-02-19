@@ -1,37 +1,38 @@
 import { GatewayIntentBits, Partials, Client } from "discord.js";
 import * as sentry from "@sentry/node";
 
-import { readConfig, databasePath, args } from "#service/config.ts";
+import { readConfig, databasePath, args } from "#/service/config.ts";
 import log from "#log";
 
 import { Temporal } from "@js-temporal/polyfill";
-import "#polyfills.ts";
+import "#/polyfills.ts";
 
-import * as kysely from "#storage/db/db.ts";
+import * as kysely from "#/storage/db/db.ts";
 
-import type { ReactionHandler } from "#handler/ReactionHandler.ts";
-import messageDeleteHandler from "#handler/messageDeleteHandler.ts";
-import { woisVoteReactionHandler } from "#commands/woisvote.ts";
-import * as voiceStateService from "#service/voiceState.ts";
+import type { ReactionHandler } from "#/handler/ReactionHandler.ts";
+import messageDeleteHandler from "#/handler/messageDeleteHandler.ts";
+import { woisVoteReactionHandler } from "#/commands/woisvote.ts";
+import * as voiceStateService from "#/service/voiceState.ts";
 
-import roleAssignerHandler from "#handler/reaction/roleAssignerHandler.ts";
-import pollReactionHandler from "#handler/reaction/pollReactionHandler.ts";
-import logEmotesReactionHandler from "#handler/reaction/logEmotesReactionHandler.ts";
-import quoteReactionHandler from "#handler/reaction/quoteHandler.ts";
+import roleAssignerHandler from "#/handler/reaction/roleAssignerHandler.ts";
+import pollReactionHandler from "#/handler/reaction/pollReactionHandler.ts";
+import logEmotesReactionHandler from "#/handler/reaction/logEmotesReactionHandler.ts";
+import quoteReactionHandler from "#/handler/reaction/quoteHandler.ts";
 
 import {
     handleInteractionEvent,
     loadCommands,
     messageCommandHandler,
     registerAllApplicationCommandsAsGuildCommands,
-} from "#handler/commandHandler.ts";
-import * as guildMemberHandler from "#handler/guildMemberHandler.ts";
-import deleteThreadMessagesHandler from "#handler/messageCreate/deleteThreadMessagesHandler.ts";
-import { createBotContext, type BotContext } from "#context.ts";
-import { ehreReactionHandler } from "#commands/ehre.ts";
-import * as terminal from "#utils/terminal.ts";
-import * as cronService from "#service/cron.ts";
-import { handlePresenceUpdate } from "./handler/presenceHandler.ts";
+} from "#/handler/commandHandler.ts";
+import * as guildMemberHandler from "#/handler/guildMemberHandler.ts";
+import deleteThreadMessagesHandler from "#/handler/messageCreate/deleteThreadMessagesHandler.ts";
+import { handlePresenceUpdate } from "#/handler/presenceHandler.ts";
+import { createBotContext, type BotContext } from "#/context.ts";
+import { ehreReactionHandler } from "#/commands/ehre.ts";
+import * as terminal from "#/utils/terminal.ts";
+import * as dateUtils from "#/utils/dateUtils.ts";
+import * as cronService from "#/service/cron.ts";
 
 const env = process.env;
 
@@ -44,7 +45,7 @@ const release =
     const prodMode = env.NODE_ENV === "production" ? terminal.highlightWarn(" prod mode ") : "";
 
     const cszBot = terminal.highlight(" CSZ Bot ");
-    const year = new Date().getFullYear();
+    const year = dateUtils.zonedNow().year;
 
     console.log();
     console.log(" ┌───────────┐");
@@ -61,7 +62,8 @@ const config = await readConfig();
 // We cannot add it in the polyfills.ts because that file is also used as --require argument for ts-node
 // TODO: Remove this once temporal is available in Node.js, see: https://github.com/nodejs/node/issues/57127
 if (typeof Date.prototype.toTemporalInstant !== "function") {
-    Date.prototype.toTemporalInstant = function () {
+    // biome-ignore lint/suspicious/noExplicitAny: hack
+    (Date.prototype as any).toTemporalInstant = function () {
         return Temporal.Instant.fromEpochMilliseconds(this.getTime());
     };
 }
@@ -160,6 +162,27 @@ login().then(
             process.exit(1);
         }
 
+        log.info("Registering main event handlers...");
+
+        client.on("messageCreate", m => messageCommandHandler(m, botContext));
+        client.on("messageCreate", m => deleteThreadMessagesHandler(m, botContext));
+        client.on("guildMemberAdd", m => guildMemberHandler.added(botContext, m));
+        client.on("guildMemberRemove", m => guildMemberHandler.removed(botContext, m));
+        client.on("interactionCreate", i => handleInteractionEvent(i, botContext));
+        client.on("voiceStateUpdate", (old, next) =>
+            voiceStateService.checkVoiceUpdate(old, next, botContext),
+        );
+        client.on("messageDelete", async message => {
+            if (!message.inGuild()) {
+                return;
+            }
+
+            await messageDeleteHandler(message, botContext).catch(err => {
+                log.error(err, `[messageDelete] Error for ${message.id}`);
+                sentry.captureException(err);
+            });
+        });
+
         log.info("Bot successfully started");
 
         if (args.values["dry-run"]) {
@@ -181,30 +204,11 @@ login().then(
     },
 );
 
-client.on("interactionCreate", interaction => handleInteractionEvent(interaction, botContext));
-
 client.on("guildCreate", guild =>
     log.info(`New guild joined: ${guild.name} (id: ${guild.id}) with ${guild.memberCount} members`),
 );
 
 client.on("guildDelete", guild => log.info(`Deleted from guild: ${guild.name} (id: ${guild.id}).`));
-
-client.on("guildMemberAdd", async m => await guildMemberHandler.added(botContext, m));
-client.on("guildMemberRemove", async m => await guildMemberHandler.removed(botContext, m));
-
-client.on("messageCreate", m => messageCommandHandler(m, botContext));
-client.on("messageCreate", m => deleteThreadMessagesHandler(m, botContext));
-
-client.on("messageDelete", async message => {
-    if (!message.inGuild()) {
-        return;
-    }
-
-    await messageDeleteHandler(message, botContext).catch(err => {
-        log.error(err, `[messageDelete] Error for ${message.id}`);
-        sentry.captureException(err);
-    });
-});
 
 client.on("error", e => log.error(e, "Discord Client Error"));
 client.on("warn", w => log.warn(`Discord Client Warning: "${w}"`));
@@ -234,10 +238,6 @@ client.on("messageReactionRemove", async (event, user) => {
         });
     }
 });
-
-client.on("voiceStateUpdate", (old, next) =>
-    voiceStateService.checkVoiceUpdate(old, next, botContext),
-);
 
 client.on("presenceUpdate", async (oldPresence, newPresence) => {
     try {

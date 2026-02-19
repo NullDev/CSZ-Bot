@@ -1,6 +1,6 @@
 import type { MessageReaction, User } from "discord.js";
 
-import type { BotContext } from "#context.ts";
+import type { BotContext } from "#/context.ts";
 import type { ReactionHandler } from "../ReactionHandler.ts";
 
 import log from "#log";
@@ -13,15 +13,18 @@ export default {
         context: BotContext,
         reactionWasRemoved: boolean,
     ) {
-        const channel = reactionEvent.message.channel;
+        const message = await reactionEvent.message.fetch();
+        if (message.guild === null) {
+            throw new Error("Message guild is null");
+        }
+
+        const channel = message.channel;
         if (!channel.isTextBased()) {
             throw new Error("Channel is not text based");
         }
 
-        const message = await reactionEvent.message.fetch();
-        const { guild } = message;
-        if (guild === null) {
-            throw new Error("Guild is null");
+        if (channel.id !== context.textChannels.roleAssigner.id) {
+            return;
         }
 
         const botUser = context.client.user;
@@ -29,23 +32,23 @@ export default {
             return;
         }
 
-        const member = await guild.members.fetch(invoker.id);
         if (reactionEvent.emoji.name !== "✅") {
             return;
         }
 
+        const member = await message.guild.members.fetch(invoker.id);
         if (!member.id || member.id === botUser.id) {
             return;
         }
 
         // Some roles, especially "C" are prefixed with a invisible whitespace to ensure they are not mentioned
         // by accident.
-        const role = guild.roles.cache.find(
+        const role = message.guild.roles.cache.find(
             r => r.name.replace(/[\u200B-\u200D\uFEFF]/g, "") === message.content,
         );
 
         if (role === undefined) {
-            throw new Error(`Could not find role ${role} for "${message.content}"`);
+            throw new Error(`Could not find role for "${message.content}"`);
         }
 
         if (reactionWasRemoved) {

@@ -1,12 +1,12 @@
-import type { LootAttributeTemplate, LootTemplate } from "#storage/loot.ts";
+import type { LootAttributeTemplate, LootTemplate } from "#/storage/loot.ts";
 
-import * as lootDropService from "#service/lootDrop.ts";
-import * as lootService from "#service/loot.ts";
-import * as emoteService from "#service/emote.ts";
-import * as bahnCardService from "#service/bahncard.ts";
+import * as lootDropService from "#/service/lootDrop.ts";
+import * as lootService from "#/service/loot.ts";
+import * as emoteService from "#/service/emote.ts";
+import * as bahnCardService from "#/service/bahncard.ts";
 import { GuildMember, type Guild } from "discord.js";
-import type { Loot, LootAttribute } from "#storage/db/model.ts";
-import { fightTemplates } from "#service/fightData.ts";
+import type { Loot, LootAttribute } from "#/storage/db/model.ts";
+import { fightTemplates } from "#/service/fightData.ts";
 
 const ACHTUNG_NICHT_DROPBAR_WEIGHT_KG = 0;
 
@@ -62,6 +62,11 @@ export const LootKind = Object.freeze({
     BABYBEL_GOUDA: 48,
     BABYBEL_VEGAN: 49,
     BABYBEL_EXODIA: 50,
+    GIROKONTO: 51,
+    STROMTARIF: 52,
+    MAGERQUARK: 53,
+    NAS: 54,
+    USB_KABEL: 55,
 } as const);
 export type LootKindId = (typeof LootKind)[keyof typeof LootKind];
 
@@ -136,6 +141,9 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
     [LootKind.DOENER]: {
         id: LootKind.DOENER,
         weight: 5,
+        timeBasedWeight: {
+            evening: 10,
+        },
         displayName: "Döner",
         titleText: "Einen Döner",
         dropDescription: "Bewahre ihn gut als Geldanlage auf!",
@@ -155,6 +163,9 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
     [LootKind.KRANKSCHREIBUNG]: {
         id: LootKind.KRANKSCHREIBUNG,
         weight: 0.5,
+        timeBasedWeight: {
+            morning: 1,
+        },
         displayName: "Arbeitsunfähigkeitsbescheinigung",
         titleText: "Einen gelben Urlaubsschein",
         dropDescription: "Benutze ihn weise!",
@@ -163,7 +174,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         emote: "🩺",
         asset: "assets/loot/06-krankschreibung.jpg",
         onUse: async (interaction, context, _loot) => {
-            const lootRoles = await import("./lootRoles.js");
+            const lootRoles = await import("./lootRoles.ts");
             const member = interaction.member;
             if (!member || !(member instanceof GuildMember)) {
                 return false;
@@ -196,7 +207,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         excludeFromInventory: true,
         excludeFromDoubleDrops: true,
         onDrop: async (_content, winner, channel, _loot) => {
-            const rollService = await import("./roll.js");
+            const rollService = await import("./roll.ts");
             await rollService.rollInChannel(winner.user, channel, 1, 6);
         },
     },
@@ -221,6 +232,9 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
     [LootKind.AYRAN]: {
         id: LootKind.AYRAN,
         weight: 1,
+        timeBasedWeight: {
+            evening: 2,
+        },
         displayName: "Ayran",
         titleText: "Einen Ayran",
         dropDescription: "Der gute von Müller",
@@ -242,6 +256,9 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
     [LootKind.TRICHTER]: {
         id: LootKind.TRICHTER,
         weight: 1,
+        timeBasedWeight: {
+            evening: 2,
+        },
         displayName: "Trichter",
         titleText: "Einen Trichter",
         dropDescription: "Für die ganz großen Schlücke",
@@ -277,7 +294,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         asset: null,
         excludeFromInventory: true,
         onDrop: async (_context, winner, channel, _loot) => {
-            const erleuchtungService = await import("./erleuchtung.js");
+            const erleuchtungService = await import("./erleuchtung.ts");
             const { setTimeout } = await import("node:timers/promises");
 
             await setTimeout(3000);
@@ -299,7 +316,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         excludeFromInventory: true,
         excludeFromDoubleDrops: true,
         onDrop: async (context, winner, _channel, _loot) => {
-            const banService = await import("./ban.js");
+            const banService = await import("./ban.ts");
             await banService.banUser(
                 context,
                 winner,
@@ -313,6 +330,9 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
     [LootKind.OETTINGER]: {
         id: LootKind.OETTINGER,
         weight: 1,
+        timeBasedWeight: {
+            morning: 2,
+        },
         displayName: "Oettinger",
         titleText: "Ein warmes Oettinger",
         dropDescription: "Ja dann Prost ne!",
@@ -359,7 +379,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
     },
     [LootKind.RADIOACTIVE_WASTE]: {
         id: LootKind.RADIOACTIVE_WASTE,
-        weight: 1,
+        weight: 5,
         displayName: "Radioaktiver Müll",
         titleText: "Radioaktiver Müll",
         dropDescription:
@@ -371,6 +391,9 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
     [LootKind.SAHNE]: {
         id: LootKind.SAHNE,
         weight: 1,
+        timeBasedWeight: {
+            evening: 2,
+        },
         displayName: "Sprühsahne",
         titleText: "Sprühsahne",
         dropDescription: "Fürs Frühstück oder so",
@@ -415,6 +438,9 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
     [LootKind.GAULOISES_BLAU]: {
         id: LootKind.GAULOISES_BLAU,
         weight: 1,
+        timeBasedWeight: {
+            evening: 2,
+        },
         displayName: "Gauloises Blau",
         titleText: "Eine Schachtel Gauloises Blau",
         dropDescription:
@@ -442,7 +468,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         excludeFromInventory: true,
         excludeFromDoubleDrops: true,
         onDrop: async (context, winner, channel, _loot) => {
-            const lootRoles = await import("./lootRoles.js");
+            const lootRoles = await import("./lootRoles.ts");
             await lootRoles.startAsseGuardShift(context, winner, channel);
         },
     },
@@ -498,6 +524,9 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
     [LootKind.KAFFEEMUEHLE]: {
         id: LootKind.KAFFEEMUEHLE,
         weight: 1,
+        timeBasedWeight: {
+            morning: 2,
+        },
         displayName: "Kaffeemühle",
         titleText: "Eine Kaffeemühle für 400€",
         dropDescription: "Kann Kaffee mühlen. Und das gut. Mit Gold.",
@@ -752,6 +781,52 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         emote: "🧀",
         asset: "assets/loot/50-bb-exodia.png",
         initialAttributes: [LootAttributeKind.NUTRI_SCORE_E],
+    },
+    [LootKind.GIROKONTO]: {
+        id: LootKind.GIROKONTO,
+        weight: 1,
+        displayName: "Girokonto mit Metallkarte",
+        titleText: "Ein Girokonto mit Metallkarte",
+        dropDescription: "Werbe andere User und erhalte eine Prämie von 75€!",
+        emote: "💳",
+        asset: "assets/loot/51-girokonto.jpg",
+    },
+    [LootKind.STROMTARIF]: {
+        id: LootKind.STROMTARIF,
+        weight: 1,
+        displayName: "Dynamischer Stromtarif",
+        titleText: "Ein dynamischer Stromtarif",
+        dropDescription: "So bezahlst du immer den günstigsten Strompreis.",
+        emote: "🔌",
+        asset: "assets/loot/52-stromtarif.jpg",
+    },
+    [LootKind.MAGERQUARK]: {
+        id: LootKind.MAGERQUARK,
+        weight: 2,
+        displayName: "Magerquark",
+        titleText: "Einen Becher Magerquark",
+        dropDescription: "Viel Protein, wenig Fett.",
+        emote: "🍶",
+        asset: "assets/loot/53-magerquark.png",
+        initialAttributes: [LootAttributeKind.NUTRI_SCORE_A],
+    },
+    [LootKind.NAS]: {
+        id: LootKind.NAS,
+        weight: 2,
+        displayName: "Funktionierendes Unraid-NAS",
+        titleText: "Ein funktionierendes Unraid-NAS",
+        dropDescription: "Viel Speicherplatz, wenig Stromverbrauch, manchmal funktionstüchtig.",
+        emote: "🗄️",
+        asset: "assets/loot/54-nas.png",
+    },
+    [LootKind.USB_KABEL]: {
+        id: LootKind.USB_KABEL,
+        weight: 2,
+        displayName: "USB-Kabel",
+        titleText: "Ein USB-Kabel von LTT",
+        dropDescription: "Jetzt auch in deinem Land verfügbar!",
+        emote: "🛜",
+        asset: "assets/loot/55-usb-kabel.png",
     },
 } as const;
 

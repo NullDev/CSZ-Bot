@@ -1,10 +1,10 @@
 import { type APIEmbedField, EmbedBuilder, type Message } from "discord.js";
 
-import type { MessageCommand } from "#commands/command.ts";
-import type { BotContext } from "#context.ts";
-import type { ProcessableMessage } from "#service/command.ts";
+import type { MessageCommand } from "#/commands/command.ts";
+import type { BotContext } from "#/context.ts";
+import type { ProcessableMessage } from "#/service/command.ts";
 
-import * as pollEmbedService from "#service/pollEmbed.ts";
+import * as pollEmbedService from "#/service/pollEmbed.ts";
 
 export default class ToggleCommand implements MessageCommand {
     name = "toggle";
@@ -71,11 +71,9 @@ const togglePoll = async (message: Message) => {
     const embed = EmbedBuilder.from(message.embeds[0]);
     embed.setColor(colorToUse);
 
-    await Promise.all([
-        message.edit({
-            embeds: [embed],
-        }),
-    ]);
+    await message.edit({
+        embeds: [embed],
+    });
 };
 
 const toggleSdm = async (message: Message) => {
@@ -87,10 +85,8 @@ const toggleSdm = async (message: Message) => {
     const file = isYes ? "no.png" : "yes.png";
     toggledEmbed.setThumbnail(`attachment://${file}`);
 
-    await Promise.all([
-        message.edit({
-            embeds: [toggledEmbed],
-            files: [`./assets/${file}`],
-        }),
-    ]);
+    await message.edit({
+        embeds: [toggledEmbed],
+        files: [`./assets/${file}`],
+    });
 };

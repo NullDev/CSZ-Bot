@@ -26,18 +26,29 @@ if (typeof Math.sumPrecise !== "function") {
 
 // https://github.com/tc39/proposal-upsert
 if (typeof Map.prototype.getOrInsert === "undefined") {
-    Map.prototype.getOrInsert = function (key, defaultValue) {
-        if (!this.has(key)) {
-            this.set(key, defaultValue);
+    Map.prototype.getOrInsert = function <K, V>(this: Map<K, V>, key: K, defaultValue: V): V {
+        const v = this.get(key);
+        if (v !== undefined) {
+            return v;
         }
-        return this.get(key);
+
+        this.set(key, defaultValue);
+        return defaultValue;
     };
 }
 if (typeof Map.prototype.getOrInsertComputed === "undefined") {
-    Map.prototype.getOrInsertComputed = function (key, callbackFunction) {
-        if (!this.has(key)) {
-            this.set(key, callbackFunction(key));
+    Map.prototype.getOrInsertComputed = function <K, V>(
+        this: Map<K, V>,
+        key: K,
+        callbackFunction: (key: K) => V,
+    ): V {
+        const v = this.get(key);
+        if (v !== undefined) {
+            return v;
         }
-        return this.get(key);
+
+        const defaultValue = callbackFunction(key);
+        this.set(key, defaultValue);
+        return defaultValue;
     };
 }

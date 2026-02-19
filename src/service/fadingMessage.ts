@@ -1,13 +1,14 @@
 import type { TextChannel } from "discord.js";
 import * as sentry from "@sentry/node";
+import { Temporal } from "@js-temporal/polyfill";
 
-import type { BotContext } from "#context.ts";
+import type { BotContext } from "#/context.ts";
 
 import log from "#log";
-import * as fadingMessage from "#storage/fadingMessage.ts";
+import * as fadingMessage from "#/storage/fadingMessage.ts";
 
 export async function handleFadingMessages(context: BotContext) {
-    const now = new Date();
+    const now = Temporal.Now.instant();
     const fadingMessages = await fadingMessage.findPendingForDeletion(now);
     const toRemove = [];
 

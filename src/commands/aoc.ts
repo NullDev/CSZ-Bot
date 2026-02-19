@@ -1,14 +1,15 @@
 import {
     type CacheType,
     type CommandInteraction,
+    type EmbedField,
     MessageFlags,
     SlashCommandBuilder,
     SlashCommandStringOption,
 } from "discord.js";
 import type * as discord from "discord.js";
 
-import type { BotContext } from "#context.ts";
-import type { ApplicationCommand } from "#commands/command.ts";
+import type { BotContext } from "#/context.ts";
+import type { ApplicationCommand } from "#/commands/command.ts";
 
 import log from "#log";
 
@@ -68,9 +69,11 @@ const createEmbedFromLeaderBoard = (
 ) => {
     log.info("[AoC] Creating Embed from leaderboard...");
 
-    const members = Object.values(lb.members).filter(m => m.stars > 0);
-    members.sort((a, b) => b[order] - a[order]);
-    const top: discord.EmbedField[] = members.slice(0, 6).map((m, i) => ({
+    const members = Object.values(lb.members)
+        .filter(m => m.stars > 0)
+        .toSorted((a, b) => b[order] - a[order]);
+
+    const top: EmbedField[] = members.slice(0, 6).map((m, i) => ({
         name: `${medals[i]} ${i + 1}. ${getNameString(m, userMap, false)}`,
         value: `⭐ ${m.stars}\n🏆 ${m.local_score}\n🌐 ${getLanguage(m, userMap)}`,
         inline: true,
@@ -78,7 +81,7 @@ const createEmbedFromLeaderBoard = (
 
     log.info(`[AoC] Created Fields for the first ${top.length} Members`);
 
-    const noobs: discord.EmbedField = {
+    const noobs: EmbedField = {
         name: "Sonstige Platzierungen",
         value: members
             .slice(top.length)
@@ -97,7 +100,7 @@ const createEmbedFromLeaderBoard = (
     log.info(`[AoC] Created Fields for the bottom ${members.length - top.length} Members`);
 
     return {
-        title: "AoC Leaderboard",
+        title: `AoC Leaderboard ${lb.event}`,
         description: "Aktuelle Platzierungen in der CSZ",
         author: {
             name: "AoC-Shitpost-Bot",

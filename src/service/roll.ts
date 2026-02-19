@@ -1,4 +1,5 @@
 import { cleanContent, type APIEmbed, type TextChannel, type User } from "discord.js";
+import { Temporal } from "@js-temporal/polyfill";
 
 export async function rollInChannel(
     author: User,
@@ -9,7 +10,7 @@ export async function rollInChannel(
     const diceName = `${throwCount}d${diceSides}`;
     const embed = {
         title: cleanContent(`${diceName}:`, targetChannel),
-        timestamp: new Date().toISOString(),
+        timestamp: Temporal.Now.instant().toString(),
         author: {
             name: `Würfelergebnis für ${author.username}`,
             icon_url: author.displayAvatarURL(),

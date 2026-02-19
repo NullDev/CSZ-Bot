@@ -1,11 +1,13 @@
 import type { VoiceState } from "discord.js";
-import type { BotContext } from "#context.ts";
+import { Temporal } from "@js-temporal/polyfill";
+
+import type { BotContext } from "#/context.ts";
 import log from "#log";
 
 export interface VoiceUpdateEvent {
     oldState: VoiceState;
     newState: VoiceState;
-    createdAt: Date;
+    createdAt: Temporal.Instant;
 }
 
 let latestEvents: VoiceUpdateEvent[] = [];
@@ -29,7 +31,7 @@ export async function checkVoiceUpdate(
             latestEvents.push({
                 oldState,
                 newState,
-                createdAt: new Date(),
+                createdAt: Temporal.Now.instant(),
             });
         }
     }
@@ -41,14 +43,23 @@ export async function checkVoiceUpdate(
             latestEvents.push({
                 oldState,
                 newState,
-                createdAt: new Date(),
+                createdAt: Temporal.Now.instant(),
             });
         }
     }
 }
 
+export const maxEventAge = Temporal.Duration.from({ minutes: 2 });
+
 export function clearWoisLogTask() {
-    latestEvents = latestEvents.filter(
-        event => event.createdAt.getTime() > Date.now() - 2 * 60 * 1000,
-    );
+    latestEvents = getCurrentLog();
+}
+
+export function getCurrentLog() {
+    const now = Temporal.Now.instant();
+
+    return latestEvents.filter(event => {
+        const eventAge = event.createdAt.until(now);
+        return Temporal.Duration.compare(eventAge, maxEventAge) < 0;
+    });
 }

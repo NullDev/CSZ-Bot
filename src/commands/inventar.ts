@@ -1,23 +1,31 @@
+import * as fs from "node:fs/promises";
 import {
-    type APIEmbed,
+    ActionRowBuilder,
+    ButtonBuilder,
     ButtonStyle,
     type CommandInteraction,
     ComponentType,
     type InteractionReplyOptions,
+    ContainerBuilder,
+    MessageFlags,
     SlashCommandBuilder,
     SlashCommandStringOption,
     type User,
+    APIEmbed,
 } from "discord.js";
+import { createCanvas, loadImage } from "@napi-rs/canvas";
 
-import type { BotContext } from "#context.ts";
-import type { ApplicationCommand } from "#commands/command.ts";
-import * as lootService from "#service/loot.ts";
-import { ensureChatInputCommand } from "#utils/interactionUtils.ts";
-import * as lootDataService from "#service/lootData.ts";
-import { LootAttributeKind } from "#service/lootData.ts";
+import type { BotContext } from "#/context.ts";
+import type { ApplicationCommand } from "#/commands/command.ts";
+import * as lootService from "#/service/loot.ts";
+import { ensureChatInputCommand } from "#/utils/interactionUtils.ts";
+import * as lootDataService from "#/service/lootData.ts";
+import { LootAttributeKind } from "#/service/lootData.ts";
 
 import log from "#log";
-import { getFightInventoryEnriched } from "#storage/fightInventory.ts";
+import { getFightInventoryEnriched } from "#/storage/fightInventory.ts";
+import { extendContext } from "#/utils/ExtendedCanvasContext.ts";
+import { Vec2 } from "#/utils/math.ts";
 
 export default class InventarCommand implements ApplicationCommand {
     name = "inventar";
@@ -67,6 +75,8 @@ export default class InventarCommand implements ApplicationCommand {
             b.createdAt.localeCompare(a.createdAt),
         );
 
+        const circle = await drawBbCircle(new Set(contents.map(i => i.lootKindId)));
+
         let lastPageIndex = Math.floor(contents.length / pageSize);
         lastPageIndex -= contents.length % pageSize === 0 ? 1 : 0;
 
@@ -74,52 +84,45 @@ export default class InventarCommand implements ApplicationCommand {
             const firstItemIndex = pageIndex * pageSize;
             const pageContents = contents.slice(firstItemIndex, firstItemIndex + pageSize);
 
-            const embed = {
-                title: `Inventar von ${user.displayName}`,
-                fields: pageContents.map(item => {
-                    const rarityAttribute = lootDataService.extractRarityAttribute(item.attributes);
-                    const rarity =
-                        rarityAttribute &&
-                        rarityAttribute.attributeKindId !== LootAttributeKind.RARITY_NORMAL
-                            ? ` (${rarityAttribute.displayName})`
-                            : "";
+            const list = pageContents.map(item => {
+                const rarityAttribute = lootDataService.extractRarityAttribute(item.attributes);
+                const rarity =
+                    rarityAttribute &&
+                    rarityAttribute.attributeKindId !== LootAttributeKind.RARITY_NORMAL
+                        ? ` (${rarityAttribute.displayName})`
+                        : "";
 
-                    const shortAttributeList = item.attributes.map(a => a.shortDisplay).join("");
+                const shortAttributeList = item.attributes.map(a => a.shortDisplay).join("");
 
-                    return {
-                        name: `${lootDataService.getEmote(context.guild, item)} ${item.displayName}${rarity} ${shortAttributeList}`.trim(),
-                        value: "",
-                        inline: false,
-                    };
-                }),
-                footer: {
-                    text: `Seite ${pageIndex + 1} von ${lastPageIndex + 1}`,
-                },
-            } satisfies APIEmbed;
+                return `${lootDataService.getEmote(context.guild, item)} ${item.displayName}${rarity} ${shortAttributeList}`.trim();
+            });
+
+            const listItems = list.length > 0 ? list : ["_leer_"];
 
             return {
                 components: [
-                    {
-                        type: ComponentType.ActionRow,
-                        components: [
-                            {
-                                type: ComponentType.Button,
-                                label: "<<",
-                                customId: "page-prev",
-                                disabled: pageIndex <= 0,
-                                style: ButtonStyle.Secondary,
-                            },
-                            {
-                                type: ComponentType.Button,
-                                label: ">>",
-                                customId: "page-next",
-                                disabled: pageIndex >= lastPageIndex,
-                                style: ButtonStyle.Secondary,
-                            },
-                        ],
-                    },
+                    new ContainerBuilder().addSectionComponents(section =>
+                        section
+                            .setThumbnailAccessory(t => t.setURL("attachment://circle.png"))
+                            .addTextDisplayComponents(t => t.setContent(`### Inventar von ${user}`))
+                            .addTextDisplayComponents(t => t.setContent(listItems.join("\n")))
+                            .addTextDisplayComponents(t =>
+                                t.setContent(`-# Seite ${pageIndex + 1} von ${lastPageIndex + 1}`),
+                            ),
+                    ),
+                    new ActionRowBuilder<ButtonBuilder>().addComponents(
+                        new ButtonBuilder()
+                            .setCustomId("page-prev")
+                            .setLabel("<<")
+                            .setStyle(ButtonStyle.Secondary)
+                            .setDisabled(pageIndex <= 0),
+                        new ButtonBuilder()
+                            .setCustomId("page-next")
+                            .setLabel(">>")
+                            .setStyle(ButtonStyle.Secondary)
+                            .setDisabled(pageIndex >= lastPageIndex),
+                    ),
                 ],
-                embeds: [embed],
             } as const;
         }
 
@@ -127,8 +130,15 @@ export default class InventarCommand implements ApplicationCommand {
 
         const callbackResponse = await interaction.reply({
             ...buildMessageData(pageIndex),
+            flags: MessageFlags.IsComponentsV2,
             withResponse: true,
             tts: false,
+            files: [
+                {
+                    attachment: circle,
+                    name: "circle.png",
+                },
+            ],
         });
 
         const message = callbackResponse.resource?.message;
@@ -202,4 +212,73 @@ export default class InventarCommand implements ApplicationCommand {
 
         await interaction.reply(embed);
     }
+}
+
+const size = new Vec2(80, 80);
+
+type CircleItem = { path: string; target: Vec2; size: Vec2 };
+const lookup: Partial<Record<lootDataService.LootKindId, CircleItem>> = {
+    [lootDataService.LootKind.BABYBEL_CHEDDAR]: {
+        path: "assets/inventory/bb-cheddar.png",
+        target: new Vec2(200, 42),
+        size,
+    },
+    [lootDataService.LootKind.BABYBEL_EMMENTALER]: {
+        path: "assets/inventory/bb-emmentaler.png",
+        target: new Vec2(61, 120),
+        size,
+    },
+    [lootDataService.LootKind.BABYBEL_GOUDA]: {
+        path: "assets/inventory/bb-gouda.png",
+        target: new Vec2(337, 120),
+        size,
+    },
+    [lootDataService.LootKind.BABYBEL_LIGHT]: {
+        path: "assets/inventory/bb-light.png",
+        target: new Vec2(337, 276),
+        size,
+    },
+    [lootDataService.LootKind.BABYBEL_ORIGINAL]: {
+        path: "assets/inventory/bb-original.png",
+        target: new Vec2(200, 200),
+        size,
+    },
+    [lootDataService.LootKind.BABYBEL_PROTEIN]: {
+        path: "assets/inventory/bb-protein.png",
+        target: new Vec2(61, 276),
+        size,
+    },
+    [lootDataService.LootKind.BABYBEL_VEGAN]: {
+        path: "assets/inventory/bb-vegan.png",
+        target: new Vec2(200, 353),
+        size,
+    },
+};
+
+async function drawBbCircle(contents: Set<lootDataService.LootKindId>) {
+    const circle = await fs.readFile("assets/inventory/bb-circle.png");
+    const circleImage = await loadImage(circle);
+
+    const canvas = createCanvas(circleImage.width, circleImage.height);
+    const ctx = extendContext(canvas.getContext("2d"));
+
+    ctx.drawImage(circleImage, 0, 0);
+
+    for (const id of contents) {
+        const entry = lookup[id];
+        if (!entry) {
+            continue;
+        }
+
+        try {
+            const buf = await fs.readFile(entry.path);
+            const img = await loadImage(buf);
+
+            ctx.drawImageEx(entry.target.minus(entry.size.scale(0.5)), entry.size, img);
+        } catch (err) {
+            log.warn(`Failed to draw inventory item '${id}': ${err}`);
+        }
+    }
+
+    return await canvas.encode("png");
 }

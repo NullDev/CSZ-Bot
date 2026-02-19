@@ -1,16 +1,11 @@
 import { ContainerBuilder, MessageFlags } from "discord.js";
-import type { BotContext } from "#context.ts";
+import type { BotContext } from "#/context.ts";
 
-export async function sendTrichterUnser(ctx: BotContext) {
-    const trichterEmote = ctx.guild.emojis.cache.find(value => value.name === "trichter");
-    if (!trichterEmote) {
-        return;
-    }
-
-    await ctx.textChannels.hauptchat.send({
+export async function sendTrichterUnser(context: BotContext) {
+    await context.textChannels.hauptchat.send({
         components: [
             new ContainerBuilder().addTextDisplayComponents(
-                t => t.setContent(`# Das ${trichterEmote}-Unser`),
+                t => t.setContent(`# Das ${context.emoji.trichter}-Unser`),
                 t =>
                     t.setContent(`
 Unser Bier, das im Kühlschrank steht,
