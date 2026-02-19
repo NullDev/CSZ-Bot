@@ -8,7 +8,7 @@
   "scripts": {
     "start": "node --require ./src/polyfills.ts src/app.ts",
     "test": "node --require ./src/polyfills.ts --test && tsgo",
-    "ci": "biome ci ./",
+    "ci": "oxlint --deny-warnings -f github ./",
     "format": "biome format --write ./",
     "lint": "oxlint ./",
     "lint:fix": "oxlint --fix ./",
