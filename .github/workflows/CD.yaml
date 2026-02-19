@@ -3,8 +3,8 @@ name: CD
 on:
   workflow_dispatch:
   workflow_run:
-    workflows: [ "CI" ]
-    branches: [ master ]
+    workflows: ["CI"]
+    branches: [master]
     types:
       - completed
 
@@ -37,7 +37,6 @@ jobs:
           source: .infra
           target: ${{ env.BOT_HOME_DIR }}
           overwrite: true
-
 
       - name: Deploy CSZ Bot
         uses: appleboy/ssh-action@0ff4204d59e8e51228ff73bce53f80d53301dee2
