@@ -46,7 +46,7 @@ export async function leetTask(context: BotContext) {
         );
     }
 
-    await Promise.all([...membersToKick.map(member => member.kick())]);
+    await Promise.all(membersToKick.map(member => member.kick()));
 
     await hauptchat.send(`Hab grad ${membersToKick.size} Jocklerinos gekickt ${dabEmote}`);
 

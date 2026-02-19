@@ -71,11 +71,9 @@ const togglePoll = async (message: Message) => {
     const embed = EmbedBuilder.from(message.embeds[0]);
     embed.setColor(colorToUse);
 
-    await Promise.all([
-        message.edit({
-            embeds: [embed],
-        }),
-    ]);
+    await message.edit({
+        embeds: [embed],
+    });
 };
 
 const toggleSdm = async (message: Message) => {
@@ -87,10 +85,8 @@ const toggleSdm = async (message: Message) => {
     const file = isYes ? "no.png" : "yes.png";
     toggledEmbed.setThumbnail(`attachment://${file}`);
 
-    await Promise.all([
-        message.edit({
-            embeds: [toggledEmbed],
-            files: [`./assets/${file}`],
-        }),
-    ]);
+    await message.edit({
+        embeds: [toggledEmbed],
+        files: [`./assets/${file}`],
+    });
 };

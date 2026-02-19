@@ -27,11 +27,13 @@ if (typeof Math.sumPrecise !== "function") {
 // https://github.com/tc39/proposal-upsert
 if (typeof Map.prototype.getOrInsert === "undefined") {
     Map.prototype.getOrInsert = function <K, V>(this: Map<K, V>, key: K, defaultValue: V): V {
-        if (!this.has(key)) {
-            this.set(key, defaultValue);
+        const v = this.get(key);
+        if (v !== undefined) {
+            return v;
         }
-        // biome-ignore lint/style/noNonNullAssertion: inserted bevore
-        return this.get(key)!;
+
+        this.set(key, defaultValue);
+        return defaultValue;
     };
 }
 if (typeof Map.prototype.getOrInsertComputed === "undefined") {
@@ -40,10 +42,13 @@ if (typeof Map.prototype.getOrInsertComputed === "undefined") {
         key: K,
         callbackFunction: (key: K) => V,
     ): V {
-        if (!this.has(key)) {
-            this.set(key, callbackFunction(key));
+        const v = this.get(key);
+        if (v !== undefined) {
+            return v;
         }
-        // biome-ignore lint/style/noNonNullAssertion: inserted before
-        return this.get(key)!;
+
+        const defaultValue = callbackFunction(key);
+        this.set(key, defaultValue);
+        return defaultValue;
     };
 }
