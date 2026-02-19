@@ -6,7 +6,7 @@
         "flake.nix": "flake.lock",
         "*.ts": "$(capture).test.ts,$(capture).d.ts"
     },
-    "files.eol": "\n",
+    "oxc.typeAware": true,
     "typescript.experimental.useTsgo": false,
     "cSpell.language": "de,en",
     "editor.formatOnSaveMode": "modificationsIfAvailable",
@@ -14,10 +14,10 @@
         "config*.json": "jsonc"
     },
     "[javascript]": {
-        "editor.defaultFormatter": "biomejs.biome"
+        "editor.defaultFormatter": "oxc.oxc-vscode"
     },
     "[typescript]": {
-        "editor.defaultFormatter": "biomejs.biome"
+        "editor.defaultFormatter": "oxc.oxc-vscode"
     },
     "cSpell.words": [
         "aehre",

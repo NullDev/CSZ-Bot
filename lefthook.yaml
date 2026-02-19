@@ -1,4 +1,5 @@
-# Docs: https://github.com/evilmartians/lefthook/blob/master/docs/configuration.md
+# docs: https://lefthook.dev/configuration/
+
 pre-push:
   commands:
     lint:
@@ -10,11 +11,11 @@ pre-commit:
   commands:
     format:
       glob: "*.{js,ts,json}"
-      run: node --run format -- --staged
+      run: node --run format -- {staged_files}
       stage_fixed: true
     lint-fix:
       glob: "*.{js,ts,json}"
-      run: node --run lint:fix -- --staged
+      run: node --run lint:fix -- {staged_files}
       stage_fixed: true
 
 output:
