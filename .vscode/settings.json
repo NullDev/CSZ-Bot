@@ -6,7 +6,7 @@
         "flake.nix": "flake.lock",
         "*.ts": "$(capture).test.ts,$(capture).d.ts"
     },
-    "files.eol": "\n",
+    "oxc.typeAware": true,
     "typescript.experimental.useTsgo": false,
     "cSpell.language": "de,en",
     "editor.formatOnSaveMode": "modificationsIfAvailable",
