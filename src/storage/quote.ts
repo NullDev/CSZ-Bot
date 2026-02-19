@@ -1,7 +1,7 @@
 import type { Snowflake } from "discord.js";
 import { sql, type Insertable } from "kysely";
 
-import type { QuotedMessagesTable } from "#storage/db/model.ts";
+import type { QuotedMessagesTable } from "#/storage/db/model.ts";
 
 import db from "#db";
 

@@ -20,14 +20,14 @@ import {
     type User,
 } from "discord.js";
 
-import type { ApplicationCommand } from "#commands/command.ts";
-import * as locationService from "#service/location.ts";
-import type { BotContext } from "#context.ts";
-import { Vec2 } from "#utils/math.ts";
-import * as fontService from "#service/font.ts";
-import { extendContext, type ExtendedCanvasContext } from "#utils/ExtendedCanvasContext.ts";
-import assertNever from "#utils/assertNever.ts";
-import * as petService from "#service/pet.ts";
+import type { ApplicationCommand } from "#/commands/command.ts";
+import * as locationService from "#/service/location.ts";
+import type { BotContext } from "#/context.ts";
+import { Vec2 } from "#/utils/math.ts";
+import * as fontService from "#/service/font.ts";
+import { extendContext, type ExtendedCanvasContext } from "#/utils/ExtendedCanvasContext.ts";
+import assertNever from "#/utils/assertNever.ts";
+import * as petService from "#/service/pet.ts";
 
 const allDirections = [
     ["NW", "N", "NE"],

@@ -1,6 +1,6 @@
 import type { Message } from "discord.js";
 
-import type { SpecialCommand } from "#commands/command.ts";
+import type { SpecialCommand } from "#/commands/command.ts";
 
 export default class WatCommand implements SpecialCommand {
     name = "wat";

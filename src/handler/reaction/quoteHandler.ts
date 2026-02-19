@@ -11,11 +11,11 @@ import {
 } from "discord.js";
 import { Temporal } from "@js-temporal/polyfill";
 
-import type { BotContext, QuoteConfig } from "#context.ts";
+import type { BotContext, QuoteConfig } from "#/context.ts";
 import type { ReactionHandler } from "../ReactionHandler.ts";
 import log from "#log";
 
-import * as quoteService from "#service/quote.ts";
+import * as quoteService from "#/service/quote.ts";
 
 const quoteMessage = "Ihr quoted echt jeden Scheiß, oder?";
 

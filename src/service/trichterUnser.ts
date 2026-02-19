@@ -1,5 +1,5 @@
 import { ContainerBuilder, MessageFlags } from "discord.js";
-import type { BotContext } from "#context.ts";
+import type { BotContext } from "#/context.ts";
 
 export async function sendTrichterUnser(context: BotContext) {
     await context.textChannels.hauptchat.send({

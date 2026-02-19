@@ -1,6 +1,6 @@
 import type { Snowflake, User } from "discord.js";
 
-import type { Penis } from "#storage/db/model.ts";
+import type { Penis } from "#/storage/db/model.ts";
 
 import db from "#db";
 import log from "#log";

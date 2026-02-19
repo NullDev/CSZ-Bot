@@ -1,8 +1,8 @@
 import type { Message } from "discord.js";
 
-import type { SpecialCommand } from "#commands/command.ts";
-import type { BotContext } from "#context.ts";
-import * as instagramService from "#service/instagram.ts";
+import type { SpecialCommand } from "#/commands/command.ts";
+import type { BotContext } from "#/context.ts";
+import * as instagramService from "#/service/instagram.ts";
 
 const instagramOptions = {
     uriPattern:

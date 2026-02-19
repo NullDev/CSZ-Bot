@@ -1,7 +1,7 @@
 import { Temporal } from "@js-temporal/polyfill"; // TODO: Remove once Node.js ships temporal
 import type { User } from "discord.js";
 
-import type { LauscherRegistration, LauscherSpotifyLogEntry } from "#storage/db/model.ts";
+import type { LauscherRegistration, LauscherSpotifyLogEntry } from "#/storage/db/model.ts";
 
 import db from "#db";
 import log from "#log";

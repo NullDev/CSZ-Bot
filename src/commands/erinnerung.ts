@@ -12,15 +12,15 @@ import {
 import * as chrono from "chrono-node";
 import * as sentry from "@sentry/node";
 
-import type { MessageCommand, ApplicationCommand } from "#commands/command.ts";
-import type { BotContext } from "#context.ts";
-import type { Reminder } from "#storage/db/model.ts";
-import type { ProcessableMessage } from "#service/command.ts";
+import type { MessageCommand, ApplicationCommand } from "#/commands/command.ts";
+import type { BotContext } from "#/context.ts";
+import type { Reminder } from "#/storage/db/model.ts";
+import type { ProcessableMessage } from "#/service/command.ts";
 import log from "#log";
-import * as reminderService from "#storage/reminders.ts";
-import * as dateUtils from "#utils/dateUtils.ts";
+import * as reminderService from "#/storage/reminders.ts";
+import * as dateUtils from "#/utils/dateUtils.ts";
 
-import { ensureChatInputCommand } from "#utils/interactionUtils.ts";
+import { ensureChatInputCommand } from "#/utils/interactionUtils.ts";
 
 const validateDate = (date: Date): true | string => {
     if (!dateUtils.isValidDate(date)) {

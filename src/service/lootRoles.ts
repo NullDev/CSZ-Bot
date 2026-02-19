@@ -1,9 +1,9 @@
 import type { GuildChannel, GuildMember, TextChannel } from "discord.js";
 
-import type { BotContext } from "#context.ts";
+import type { BotContext } from "#/context.ts";
 
-import { LootKind } from "#service/lootData.ts";
-import * as lootService from "#service/loot.ts";
+import { LootKind } from "#/service/lootData.ts";
+import * as lootService from "#/service/loot.ts";
 
 import log from "#log";
 

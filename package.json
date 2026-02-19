@@ -59,13 +59,13 @@
   "imports": {
     "#log": "./src/utils/logger.ts",
     "#db": "./src/storage/db/db.ts",
-    "#*": "./src/*"
+    "#/*": "./src/*"
   },
   "trustedDependencies": [
     "@biomejs/biome",
     "lefthook"
   ],
   "engines": {
-    "node": ">=25.6.0"
+    "node": ">=25.6.1"
   }
 }

@@ -6,7 +6,7 @@
 import { sql } from "kysely";
 import type { Snowflake } from "discord.js";
 
-import type { Database } from "#storage/db/model.ts";
+import type { Database } from "#/storage/db/model.ts";
 import type { Kysely } from "kysely";
 import db from "#db";
 

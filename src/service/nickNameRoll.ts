@@ -1,9 +1,9 @@
 import * as sentry from "@sentry/node";
 
-import * as nickName from "#storage/nickName.ts";
-import { randomEntry } from "#service/random.ts";
+import * as nickName from "#/storage/nickName.ts";
+import { randomEntry } from "#/service/random.ts";
 import log from "#log";
-import type { BotContext } from "#context.ts";
+import type { BotContext } from "#/context.ts";
 
 export async function rerollNicknames(context: BotContext) {
     log.debug("Entered `rerollNicknames`");
