@@ -23,7 +23,7 @@
         "paths": {
             "#log": ["./src/utils/logger.ts"],
             "#db": ["./src/storage/db/db.ts"],
-            "#*": ["./src/*"]
+            "#/*": ["./src/*"]
         }
     },
     "include": ["src"]
