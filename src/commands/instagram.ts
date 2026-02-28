@@ -77,7 +77,6 @@ export default class InstagramLink implements SpecialCommand {
 
             // We need to reply, since we cannot edit a message created by a different user (only remove embeds)
             await message.reply({
-                content: "Dein Dreckspost du Hund:",
                 files,
                 allowedMentions: {
                     repliedUser: false,
