@@ -34,7 +34,7 @@
     "@js-temporal/polyfill": "^0.5.1",
     "@napi-rs/canvas": "0.1.95",
     "@resvg/resvg-js": "^2.6.2",
-    "@sentry/node": "^10.39.0",
+    "@sentry/node": "^10.40.0",
     "@snazzah/davey": "^0.1.9",
     "@spotify/web-api-ts-sdk": "^1.2.0",
     "chrono-node": "^2.9.0",
