@@ -23,9 +23,9 @@
   "scripts": {
     "start": "node --require ./src/polyfills.ts src/app.ts",
     "test": "node --require ./src/polyfills.ts --test && tsgo",
-    "ci": "oxlint --deny-warnings -f github",
+    "ci": "oxlint --deny-warnings --type-aware -f github",
     "format": "oxfmt",
-    "lint": "oxlint",
+    "lint": "oxlint --type-aware",
     "lint:fix": "oxlint --fix",
     "watch": "node --require ./src/polyfills.ts --watch src/app.ts"
   },
@@ -60,7 +60,8 @@
     "expect": "^30.2.0",
     "lefthook": "^2.1.2",
     "oxfmt": "^0.36.0",
-    "oxlint": "^1.51.0"
+    "oxlint": "^1.51.0",
+    "oxlint-tsgolint": "^0.16.0"
   },
   "engines": {
     "node": ">=25.6.1"
