@@ -1,9 +1,8 @@
+import * as fs from "node:fs/promises";
+
 import type { MessageCommand } from "#/commands/command.ts";
 import type { ProcessableMessage } from "#/service/command.ts";
 import { randomEntry } from "#/service/random.ts";
-
-const FICKTABELLE_URL =
-    "https://cdn.discordapp.com/attachments/620721921767505942/636149543154614272/20160901-164533-Kovrtep-id1487186.png";
 
 const titles = [
     "informiert sich übers Fuggern",
@@ -28,10 +27,11 @@ export default class FicktabelleCommand implements MessageCommand {
 
     async handleMessage(message: ProcessableMessage) {
         const title = randomEntry(titles);
+
         await message.channel.send({
             embeds: [
                 {
-                    image: { url: FICKTABELLE_URL },
+                    image: { url: "attachment://ficktabelle.png" },
                     author: {
                         name: `${message.author.username} ${title}`,
                         icon_url: message.author.displayAvatarURL(),
@@ -39,6 +39,12 @@ export default class FicktabelleCommand implements MessageCommand {
                     footer: {
                         text: randomEntry(warnings),
                     },
+                },
+            ],
+            files: [
+                {
+                    name: "ficktabelle.png",
+                    attachment: await fs.readFile("assets/ficktabelle.png"),
                 },
             ],
         });
