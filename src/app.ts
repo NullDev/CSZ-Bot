@@ -250,6 +250,6 @@ client.on("presenceUpdate", async (oldPresence, newPresence) => {
 function login() {
     return new Promise<Client<true>>(resolve => {
         client.once("clientReady", resolve);
-        client.login(config.auth.token);
+        return client.login(config.auth.token);
     });
 }
