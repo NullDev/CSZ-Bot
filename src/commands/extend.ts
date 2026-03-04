@@ -163,8 +163,8 @@ export default class ExtendCommand implements MessageCommand {
             attachments: [],
         });
 
-        for (const i in additionalPollOptions) {
-            await msg.react(pollEmbedService.EMOJI[dbPoll.options.length + Number(i)]);
+        for (let i = 0; i < additionalPollOptions.length; i++) {
+            await msg.react(pollEmbedService.EMOJI[dbPoll.options.length + i]);
         }
         await message.delete();
     }
