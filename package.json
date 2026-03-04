@@ -34,11 +34,11 @@
     "@js-temporal/polyfill": "^0.5.1",
     "@napi-rs/canvas": "0.1.95",
     "@resvg/resvg-js": "^2.6.2",
-    "@sentry/node": "^10.40.0",
-    "@snazzah/davey": "^0.1.9",
+    "@sentry/node": "^10.42.0",
+    "@snazzah/davey": "^0.1.10",
     "@spotify/web-api-ts-sdk": "^1.2.0",
     "chrono-node": "^2.9.0",
-    "comment-json": "^4.5.1",
+    "comment-json": "^4.6.2",
     "croner": "^10.0.1",
     "discord.js": "^14.25.1",
     "get-audio-duration": "^4.0.1",
@@ -56,11 +56,11 @@
     "@types/jsdom": "^28.0.0",
     "@types/node": "^25.3.3",
     "@types/node-cron": "^3.0.11",
-    "@typescript/native-preview": "^7.0.0-dev.20260228.1",
+    "@typescript/native-preview": "^7.0.0-dev.20260304.1",
     "expect": "^30.2.0",
-    "lefthook": "^2.1.1",
-    "oxfmt": "^0.35.0",
-    "oxlint": "^1.50.0"
+    "lefthook": "^2.1.2",
+    "oxfmt": "^0.36.0",
+    "oxlint": "^1.51.0"
   },
   "engines": {
     "node": ">=25.6.1"
