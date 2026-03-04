@@ -130,7 +130,8 @@ export default class InventarCommand implements ApplicationCommand {
         });
 
         collector.on("collect", async i => {
-            i.deferUpdate();
+            void i.deferUpdate().catch(() => {});
+
             switch (i.customId) {
                 case "page-prev":
                     pageIndex = Math.max(0, pageIndex - 1);
@@ -217,7 +218,7 @@ async function drawBbCircle(contents: Set<lootDataService.LootKindId>) {
             const img = await loadImage(buf);
 
             ctx.drawImageEx(entry.target.minus(entry.size.scale(0.5)), entry.size, img);
-        } catch (err) {
+        } catch (err: any) {
             log.warn(`Failed to draw inventory item '${id}': ${err}`);
         }
     }

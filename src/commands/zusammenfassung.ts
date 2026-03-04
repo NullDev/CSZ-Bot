@@ -26,7 +26,7 @@ export default class ZusammenfassungCommand implements MessageCommand {
             );
         }
 
-        message.channel.send(
+        await message.channel.send(
             `Habe ${messages.size} Nachrichten abrufen können:\n${authors.join("\n")}`,
         );
     }

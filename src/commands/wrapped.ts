@@ -195,7 +195,8 @@ export default class WrappedCommand implements ApplicationCommand {
         });
 
         collector.on("collect", async i => {
-            i.deferUpdate();
+            void i.deferUpdate().catch(() => {});
+
             switch (i.customId) {
                 case "wrapped-prev":
                     pageIndex = Math.max(0, pageIndex - 1);
