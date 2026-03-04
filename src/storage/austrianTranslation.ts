@@ -39,17 +39,20 @@ export function findTranslation(
 ): Promise<AustrianTranslation | undefined> {
     const normalized = austrian.trim().toLowerCase();
     const withoutWhitespace = normalized.replace(/[^\w\s]/gu, "");
-    return ctx
-        .selectFrom("austrianTranslations")
-        .where(({ eb, or }) =>
-            or([
-                // we want like to be case-insensitive, we don't need a placeholder
-                // We might have translations with punctuations in it, so we simply try to match the whole string against it
-                eb("austrian", "like", normalized),
-                // If we couldn't find a translation with the punctuations in it, we remove the special chars
-                eb("austrian", "like", withoutWhitespace),
-            ]),
-        )
-        .selectAll()
-        .executeTakeFirst();
+    return (
+        ctx
+            .selectFrom("austrianTranslations")
+            // oxlint-disable-next-line typescript/unbound-method
+            .where(({ eb, or }) =>
+                or([
+                    // we want like to be case-insensitive, we don't need a placeholder
+                    // We might have translations with punctuations in it, so we simply try to match the whole string against it
+                    eb("austrian", "like", normalized),
+                    // If we couldn't find a translation with the punctuations in it, we remove the special chars
+                    eb("austrian", "like", withoutWhitespace),
+                ]),
+            )
+            .selectAll()
+            .executeTakeFirst()
+    );
 }

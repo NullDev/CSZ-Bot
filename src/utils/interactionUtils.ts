@@ -9,7 +9,7 @@ export function ensureChatInputCommand<Cached extends CacheType = CacheType>(
     return interaction;
 }
 
-export function defer(action: () => unknown | Promise<unknown>): AsyncDisposable {
+export function defer(action: () => unknown): AsyncDisposable {
     return {
         async [Symbol.asyncDispose]() {
             await action();

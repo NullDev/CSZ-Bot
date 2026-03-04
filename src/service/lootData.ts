@@ -583,6 +583,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
                 template,
                 loot,
                 false,
+                // oxlint-disable-next-line typescript/no-misused-spread
                 [...owner.id].map(n => (Number(n) * 7) % 10).join(""),
             ),
         onDuplicateDrop: async (context, winner, loot, dropMessage) => {
@@ -634,6 +635,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
                 template,
                 loot,
                 false,
+                // oxlint-disable-next-line typescript/no-misused-spread
                 [...owner.id].map(n => (Number(n) * 13) % 10).join(""),
             ),
         onDuplicateDrop: async (context, winner, loot, dropMessage) => {
