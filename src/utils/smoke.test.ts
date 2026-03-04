@@ -7,14 +7,14 @@ import { defer } from "#/utils/interactionUtils.ts";
 
 import db from "#db";
 
-describe("smoke", () => {
-    test("does math still hold?", () => {
+void describe("smoke", () => {
+    void test("does math still hold?", () => {
         expect(1 + 1).toBe(2);
     });
 });
 
-describe("database smoke", () => {
-    test("does database work?", async () => {
+void describe("database smoke", () => {
+    void test("does database work?", async () => {
         // TODO: Check if there is a builtin way of handling DB lifecycle
         await createDatabase();
         await using _ = defer(closeDatabase);
@@ -39,7 +39,7 @@ describe("database smoke", () => {
         expect(res).toStrictEqual(res2);
     });
 
-    test("booleans supported?", async () => {
+    void test("booleans supported?", async () => {
         // TODO: Check if there is a builtin way of handling DB lifecycle
         await createDatabase();
         await using _ = defer(closeDatabase);
