@@ -8,6 +8,8 @@
     },
     "oxc.typeAware": true,
     "js/ts.experimental.useTsgo": false,
+    "js/ts.tsdk.path": "node_modules/typescript/lib",
+
     "cSpell.language": "de,en",
     "editor.formatOnSaveMode": "modificationsIfAvailable",
     "files.associations": {
