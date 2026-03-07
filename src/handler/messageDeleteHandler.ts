@@ -13,7 +13,8 @@ import log from "#log";
 const deleteInlineRepliesFromBot = (messageRef: Message<true>, botUser: ClientUser) =>
     Promise.allSettled(
         messageRef.channel.messages.cache
-            .filter(m => m.author.id === botUser.id && m.reference?.messageId === messageRef.id)
+            // the author?. is needed because the message might not be cached, and thus author is null (which is not reflected in the type system)
+            .filter(m => m.author?.id === botUser.id && m.reference?.messageId === messageRef.id)
             .map(m => m.delete()),
     );
 
