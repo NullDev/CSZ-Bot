@@ -13,18 +13,13 @@ declare global {
         getOrInsert(key: K, defaultValue: V): V;
         getOrInsertComputed<TK extends K>(key: TK, callbackFunction: (key: TK) => V): V;
     }
-
-    interface Date {
-        toTemporalInstant(): Temporal.Instant;
-    }
 }
 
 globalThis.Temporal = PolyfillTemporal as typeof Temporal;
 
 // TODO: Remove this once temporal is available in Node.js, see: https://github.com/nodejs/node/issues/57127
 if (typeof Date.prototype.toTemporalInstant !== "function") {
-    // biome-ignore lint/suspicious/noExplicitAny: hack
-    (Date.prototype as any).toTemporalInstant = function () {
+    Date.prototype.toTemporalInstant = function () {
         return Temporal.Instant.fromEpochMilliseconds(this.getTime());
     };
 }
