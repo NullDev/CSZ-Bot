@@ -9,7 +9,6 @@ import {
     type GuildTextBasedChannel,
     hyperlink,
 } from "discord.js";
-import { Temporal } from "@js-temporal/polyfill";
 
 import type { BotContext, QuoteConfig } from "#/context.ts";
 import type { ReactionHandler } from "../ReactionHandler.ts";

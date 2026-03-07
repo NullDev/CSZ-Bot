@@ -1,4 +1,3 @@
-import type { Temporal } from "@js-temporal/polyfill";
 import type { Activity, User } from "discord.js";
 
 import type { BotContext } from "#/context.ts";

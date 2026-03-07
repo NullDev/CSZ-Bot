@@ -1,5 +1,3 @@
-import { Temporal } from "@js-temporal/polyfill"; // TODO: Remove once Node.js ships temporal
-
 import {
     type CommandInteraction,
     type Message,
