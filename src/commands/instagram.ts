@@ -53,9 +53,14 @@ export default class InstagramLink implements SpecialCommand {
             return;
         }
 
+        const urisToProcess = uris.filter(uri => !content.includes("<" + uri + ">"));
+        if (urisToProcess.length === 0) {
+            return;
+        }
+
         await message.channel.sendTyping();
 
-        for (const postUri of uris) {
+        for (const postUri of urisToProcess) {
             const result = await instagramService.downloadInstagramContent(context, postUri);
             if (!result.success) {
                 const failureReaction = message.guild?.emojis.cache.find(e => e.name === "sadge");
