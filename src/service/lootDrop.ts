@@ -17,7 +17,6 @@ import {
     type MessageComponentInteraction,
     type BaseMessageOptions,
 } from "discord.js";
-import { Temporal } from "@js-temporal/polyfill";
 import * as sentry from "@sentry/node";
 
 import type { BotContext } from "#/context.ts";

@@ -8,7 +8,6 @@ import {
     TimestampStyles,
     type User,
 } from "discord.js";
-import { Temporal } from "@js-temporal/polyfill";
 
 export const LETTERS = [
     ":regional_indicator_a:",

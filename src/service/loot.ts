@@ -1,5 +1,4 @@
 import type { User, Snowflake, Message } from "discord.js";
-import { Temporal } from "@js-temporal/polyfill";
 
 import type { LootId, LootInsertable, LootOrigin } from "#/storage/db/model.ts";
 import type { LootAttributeKindId, LootKindId } from "./lootData.ts";

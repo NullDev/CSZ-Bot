@@ -1,5 +1,4 @@
 import { sql } from "kysely";
-import { Temporal } from "@js-temporal/polyfill";
 import type { Message, Snowflake } from "discord.js";
 
 import type { Emote } from "./db/model.ts";

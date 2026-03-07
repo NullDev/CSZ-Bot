@@ -15,7 +15,6 @@ import type {
 } from "discord.js";
 import { ChannelType } from "discord.js";
 import { SpotifyApi } from "@spotify/web-api-ts-sdk";
-import { Temporal } from "@js-temporal/polyfill";
 
 import type { UserMapEntry } from "#/commands/aoc.ts";
 import { readConfig } from "#/service/config.ts";
