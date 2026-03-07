@@ -24,7 +24,9 @@
             "#log": ["./src/utils/logger.ts"],
             "#db": ["./src/storage/db/db.ts"],
             "#/*": ["./src/*"]
-        }
+        },
+
+        "types": ["node", "jsdom", "node-cron"]
     },
     "include": ["src"]
 }
