@@ -19,7 +19,7 @@ declare global {
     }
 }
 
-(globalThis as any).Temporal = PolyfillTemporal as typeof Temporal;
+globalThis.Temporal = PolyfillTemporal as typeof Temporal;
 
 // TODO: Remove this once temporal is available in Node.js, see: https://github.com/nodejs/node/issues/57127
 if (typeof Date.prototype.toTemporalInstant !== "function") {
