@@ -124,7 +124,7 @@ export default class DoenerCommand implements MessageCommand {
                           mealStr,
                           ghettoradeStr,
                           kaffeemuehleStr,
-                          supersonicDyson Str,
+                          supersonicDysonStr,
                       ]
                           .filter(s => !!s)
                           .join("\n")
