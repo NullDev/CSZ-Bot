@@ -11,6 +11,7 @@ const prices = {
     meal: 40,
     ghettorade: 1.2955,
     kaffeemuehle: 400,
+    supersonicDyson: 300,
 };
 
 export default class DoenerCommand implements MessageCommand {
@@ -109,6 +110,7 @@ export default class DoenerCommand implements MessageCommand {
             Math.random() > 0.7
                 ? `Oder ${(amount / prices.kaffeemuehle).toFixed(0)} absolut kranke Kaffeemühlen kaufen.`
                 : "";
+        const supersonicDysonStr = Math.random() > 0.7 ? `Oder dir ${(amount / prices.kaffeemuehle).toFixed(0)} Überschallföhns gönnen.`
 
         await targetMessage.reply({
             content:
@@ -122,6 +124,7 @@ export default class DoenerCommand implements MessageCommand {
                           mealStr,
                           ghettoradeStr,
                           kaffeemuehleStr,
+                          supersonicDyson Str,
                       ]
                           .filter(s => !!s)
                           .join("\n")
