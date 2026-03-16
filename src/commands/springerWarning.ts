@@ -342,7 +342,8 @@ export default class SpringerWarningCommand implements SpecialCommand {
         }
 
         const alarm = context.emoji.alarm;
-        await message.suppressEmbeds(true);
+        // Some users complained, no supression for now
+        // await message.suppressEmbeds(true);
         await message.reply(`${alarm} Achtung, Link geht zu ${warning} ${alarm}`);
     }
 
