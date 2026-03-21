@@ -44,7 +44,7 @@
     "get-audio-duration": "^4.0.1",
     "graphviz-wasm": "^3.0.2",
     "jsdom": "^29.0.0",
-    "kysely": "^0.28.12",
+    "kysely": "^0.28.14",
     "libsodium-wrappers": "^0.8.2",
     "pino": "^10.3.1",
     "pino-pretty": "^13.1.3",
