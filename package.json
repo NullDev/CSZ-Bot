@@ -45,6 +45,7 @@
     "graphviz-wasm": "^3.0.2",
     "jsdom": "^29.0.2",
     "kysely": "^0.28.15",
+    "kysely-sqlite": "^0.2.0",
     "libsodium-wrappers": "^0.8.3",
     "pino": "^10.3.1",
     "pino-pretty": "^13.1.3",

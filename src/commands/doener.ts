@@ -110,7 +110,10 @@ export default class DoenerCommand implements MessageCommand {
             Math.random() > 0.7
                 ? `Oder ${(amount / prices.kaffeemuehle).toFixed(0)} absolut kranke Kaffeemühlen kaufen.`
                 : "";
-        const supersonicDysonStr = Math.random() > 0.7 ? `Oder dir ${(amount / prices.kaffeemuehle).toFixed(0)} Überschallföhns gönnen.` : "";
+        const supersonicDysonStr =
+            Math.random() > 0.7
+                ? `Oder dir ${(amount / prices.kaffeemuehle).toFixed(0)} Überschallföhns gönnen.`
+                : "";
 
         await targetMessage.reply({
             content:
