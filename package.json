@@ -32,9 +32,9 @@
   "dependencies": {
     "@discordjs/voice": "^0.19.2",
     "@js-temporal/polyfill": "^0.5.1",
-    "@napi-rs/canvas": "0.1.98",
+    "@napi-rs/canvas": "0.1.99",
     "@resvg/resvg-js": "^2.6.2",
-    "@sentry/node": "^10.48.0",
+    "@sentry/node": "^10.49.0",
     "@snazzah/davey": "^0.1.11",
     "@spotify/web-api-ts-sdk": "^1.2.0",
     "chrono-node": "^2.9.0",
@@ -57,12 +57,12 @@
     "@types/jsdom": "^28.0.1",
     "@types/node": "^25.6.0",
     "@types/node-cron": "^3.0.11",
-    "@typescript/native-preview": "^7.0.0-dev.20260415.1",
+    "@typescript/native-preview": "^7.0.0-dev.20260418.1",
     "expect": "^30.3.0",
-    "lefthook": "^2.1.5",
+    "lefthook": "^2.1.6",
     "oxfmt": "^0.45.0",
     "oxlint": "^1.60.0",
-    "oxlint-tsgolint": "^0.21.0"
+    "oxlint-tsgolint": "^0.21.1"
   },
   "engines": {
     "node": ">=25.6.1"
