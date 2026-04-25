@@ -21,7 +21,7 @@ import {
     type EquipableItem,
     type EquipableWeapon,
     type FightScene,
-} from "#service/fightData.ts";
+} from "#/service/fightData.ts";
 import { getFightInventoryEnriched, removeItemsAfterFight } from "#/storage/fightInventory.ts";
 import { getLastFight, insertResult } from "#/storage/fightHistory.ts";
 

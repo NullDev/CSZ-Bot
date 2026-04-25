@@ -5,13 +5,12 @@ import {
     ButtonStyle,
     type CommandInteraction,
     ComponentType,
-    type InteractionReplyOptions,
     ContainerBuilder,
     MessageFlags,
     SlashCommandBuilder,
     SlashCommandStringOption,
     type User,
-    APIEmbed,
+    type APIEmbed,
 } from "discord.js";
 import { createCanvas, loadImage } from "@napi-rs/canvas";
 
@@ -24,6 +23,13 @@ import { LootAttributeKind } from "#/service/lootData.ts";
 
 import log from "#log";
 import { getFightInventoryEnriched } from "#/storage/fightInventory.ts";
+import {
+    type EquipableArmor,
+    type EquipableItem,
+    type EquipableWeapon,
+    baseStats,
+} from "#/service/fightData.ts";
+import type { Range } from "#/service/random.ts";
 import { extendContext } from "#/utils/ExtendedCanvasContext.ts";
 import { Vec2 } from "#/utils/math.ts";
 
@@ -56,7 +62,6 @@ export default class InventarCommand implements ApplicationCommand {
             });
             return;
         }
-
         switch (type) {
             case "fightInventory":
                 return await this.#createFightEmbed(context, interaction, interaction.user);
@@ -69,7 +74,6 @@ export default class InventarCommand implements ApplicationCommand {
 
     async #createLongEmbed(context: BotContext, interaction: CommandInteraction, user: User) {
         const pageSize = 10;
-
         const contentsUnsorted = await lootService.getInventoryContents(user);
         const contents = contentsUnsorted.toSorted((a, b) =>
             b.createdAt.localeCompare(a.createdAt),
@@ -93,7 +97,6 @@ export default class InventarCommand implements ApplicationCommand {
                         : "";
 
                 const shortAttributeList = item.attributes.map(a => a.shortDisplay).join("");
-
                 return `${lootDataService.getEmote(context.guild, item)} ${item.displayName}${rarity} ${shortAttributeList}`.trim();
             });
 
@@ -181,37 +184,65 @@ export default class InventarCommand implements ApplicationCommand {
     async #createFightEmbed(_context: BotContext, interaction: CommandInteraction, user: User) {
         const fightInventory = await getFightInventoryEnriched(user.id);
         const avatarURL = user.avatarURL();
+
+        const armorHP =
+            (fightInventory.armor?.gameTemplate as EquipableArmor | undefined)?.health ?? 0;
+        const totalHP = baseStats.health + armorHP;
+
+        const weaponEntry = fightInventory.weapon;
+        const weaponValue = weaponEntry?.itemInfo
+            ? `**${weaponEntry.itemInfo.displayName}**\n⚔️ Angriff: \`${formatRange((weaponEntry.gameTemplate as EquipableWeapon).attack)}\``
+            : "_nicht ausgerüstet_";
+
+        const armorEntry = fightInventory.armor;
+        const armorValue = (() => {
+            if (!armorEntry?.itemInfo) return "_nicht ausgerüstet_";
+            const armor = armorEntry.gameTemplate as EquipableArmor;
+            return `**${armorEntry.itemInfo.displayName}**\n🛡️ Verteidigung: \`${formatRange(armor.defense)}\`\n❤️ +${armor.health} HP`;
+        })();
+
+        const itemFields = fightInventory.items.map(entry => {
+            const equip = entry.gameTemplate as EquipableItem | undefined;
+            const lines: string[] = [];
+            if (equip?.attackModifier)
+                lines.push(`⚔️ +${formatRange(equip.attackModifier)} Angriff`);
+            if (equip?.defenseModifier)
+                lines.push(`🛡️ ${formatRange(equip.defenseModifier)} Verteidigung`);
+            return {
+                name: entry.itemInfo?.displayName ?? "Unbekannt",
+                value: lines.length > 0 ? lines.join("\n") : "_kein Effekt_",
+                inline: true,
+            };
+        });
+
         const display = {
-            title: `Kampfausrüstung von ${user.displayName}`,
-            description:
-                "Du kannst maximal eine Rüstung, eine Waffe und drei Items tragen. Wenn du kämpfst, setzt du die Items ein und verlierst diese, egal ob du gewinnst oder verlierst.",
+            title: `⚔️ Kampfausrüstung von ${user.displayName}`,
+            description: [
+                `❤️ **${totalHP} HP**${armorHP > 0 ? ` *(Basis ${baseStats.health} + ${armorHP} durch Rüstung)*` : ""}`,
+                `🗡️ Basis-Schaden: **${baseStats.baseDamage}**`,
+                `-# Items werden nach dem Kampf verbraucht`,
+            ].join("\n"),
             thumbnail: avatarURL ? { url: avatarURL } : undefined,
+            color: 0xc0392b,
             fields: [
-                { name: "Waffe", value: fightInventory.weapon?.itemInfo?.displayName ?? "Nix" },
-                { name: "Rüstung", value: fightInventory.armor?.itemInfo?.displayName ?? "Nackt" },
-                ...fightInventory.items.map(item => {
-                    return {
-                        name: item.itemInfo?.displayName ?? "",
-                        value: "Hier sollten die buffs stehen",
-                        inline: true,
-                    };
-                }),
-                { name: "Buffs", value: "Nix" },
+                { name: "⚔️ Waffe", value: weaponValue, inline: true },
+                { name: "🛡️ Rüstung", value: armorValue, inline: true },
+                ...(itemFields.length > 0
+                    ? [{ name: "​", value: "​", inline: false }, ...itemFields]
+                    : []),
             ],
-            footer: {
-                text: "Lol ist noch nicht fertig",
-            },
         } satisfies APIEmbed;
 
-        const embed = {
-            components: [],
+        await interaction.reply({
             embeds: [display],
-            fetchReply: true,
             tts: false,
-        } as const satisfies InteractionReplyOptions;
-
-        await interaction.reply(embed);
+        });
     }
+}
+
+function formatRange(range: Range): string {
+    const max = "maxInclusive" in range ? range.maxInclusive : range.maxExclusive - 1;
+    return range.min === max ? String(range.min) : `${range.min}–${max}`;
 }
 
 const size = new Vec2(80, 80);
