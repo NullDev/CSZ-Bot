@@ -43,7 +43,7 @@
     "discord.js": "^14.26.3",
     "get-audio-duration": "^4.0.1",
     "graphviz-wasm": "^3.0.2",
-    "jsdom": "^29.1.0",
+    "jsdom": "^29.1.1",
     "kysely": "^0.28.16",
     "kysely-sqlite": "^0.2.0",
     "libsodium-wrappers": "^0.8.4",
