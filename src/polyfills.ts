@@ -5,44 +5,9 @@ declare global {
     interface Math {
         sumPrecise: (values: number[]) => number;
     }
-
-    // https://github.com/tc39/proposal-upsert
-    interface Map<K, V> {
-        getOrInsert(key: K, defaultValue: V): V;
-        getOrInsertComputed<TK extends K>(key: TK, callbackFunction: (key: TK) => V): V;
-    }
 }
 
 if (typeof Math.sumPrecise !== "function") {
     // intentionally very cheap implementation. But does the thing.
     Math.sumPrecise = (values: number[]) => values.reduce((a, b) => a + b, 0);
-}
-
-// https://github.com/tc39/proposal-upsert
-if (typeof Map.prototype.getOrInsert === "undefined") {
-    Map.prototype.getOrInsert = function <K, V>(this: Map<K, V>, key: K, defaultValue: V): V {
-        const v = this.get(key);
-        if (v !== undefined) {
-            return v;
-        }
-
-        this.set(key, defaultValue);
-        return defaultValue;
-    };
-}
-if (typeof Map.prototype.getOrInsertComputed === "undefined") {
-    Map.prototype.getOrInsertComputed = function <K, V>(
-        this: Map<K, V>,
-        key: K,
-        callbackFunction: (key: K) => V,
-    ): V {
-        const v = this.get(key);
-        if (v !== undefined) {
-            return v;
-        }
-
-        const defaultValue = callbackFunction(key);
-        this.set(key, defaultValue);
-        return defaultValue;
-    };
 }
