@@ -31,7 +31,6 @@
   },
   "dependencies": {
     "@discordjs/voice": "^0.19.2",
-    "@js-temporal/polyfill": "^0.5.1",
     "@napi-rs/canvas": "1.0.0",
     "@resvg/resvg-js": "^2.6.2",
     "@sentry/node": "^10.51.0",
