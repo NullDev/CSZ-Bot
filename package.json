@@ -33,10 +33,10 @@
     "@discordjs/voice": "^0.19.2",
     "@napi-rs/canvas": "1.0.0",
     "@resvg/resvg-js": "^2.6.2",
-    "@sentry/node": "^10.51.0",
+    "@sentry/node": "^10.52.0",
     "@snazzah/davey": "^0.1.11",
     "@spotify/web-api-ts-sdk": "^1.2.0",
-    "chrono-node": "^2.9.0",
+    "chrono-node": "^2.9.1",
     "comment-json": "^5.0.0",
     "croner": "^10.0.1",
     "discord.js": "^14.26.4",
@@ -54,17 +54,17 @@
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.13",
     "@types/jsdom": "^28.0.1",
-    "@types/node": "^25.6.0",
+    "@types/node": "^25.6.1",
     "@types/node-cron": "^3.0.11",
-    "@typescript/native-preview": "^7.0.0-dev.20260504.1",
-    "expect": "^30.3.0",
+    "@typescript/native-preview": "^7.0.0-dev.20260507.1",
+    "expect": "^30.4.0",
     "lefthook": "^2.1.6",
-    "oxfmt": "^0.47.0",
-    "oxlint": "^1.62.0",
+    "oxfmt": "^0.48.0",
+    "oxlint": "^1.63.0",
     "oxlint-tsgolint": "^0.22.1"
   },
   "engines": {
-    "node": ">=26"
+    "node": ">=26.1"
   },
   "trustedDependencies": [
     "lefthook"
