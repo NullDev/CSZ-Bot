@@ -1,5 +1,3 @@
-import { Temporal as PolyfillTemporal } from "@js-temporal/polyfill";
-
 declare global {
     // type polyfill for Math.sumPrecise (currently in stage 2):
     // https://github.com/tc39/proposal-math-sum
@@ -7,53 +5,9 @@ declare global {
     interface Math {
         sumPrecise: (values: number[]) => number;
     }
-
-    // https://github.com/tc39/proposal-upsert
-    interface Map<K, V> {
-        getOrInsert(key: K, defaultValue: V): V;
-        getOrInsertComputed<TK extends K>(key: TK, callbackFunction: (key: TK) => V): V;
-    }
-}
-
-globalThis.Temporal = PolyfillTemporal as typeof Temporal;
-
-// TODO: Remove this once temporal is available in Node.js, see: https://github.com/nodejs/node/issues/57127
-if (typeof Date.prototype.toTemporalInstant !== "function") {
-    Date.prototype.toTemporalInstant = function () {
-        return Temporal.Instant.fromEpochMilliseconds(this.getTime());
-    };
 }
 
 if (typeof Math.sumPrecise !== "function") {
     // intentionally very cheap implementation. But does the thing.
     Math.sumPrecise = (values: number[]) => values.reduce((a, b) => a + b, 0);
-}
-
-// https://github.com/tc39/proposal-upsert
-if (typeof Map.prototype.getOrInsert === "undefined") {
-    Map.prototype.getOrInsert = function <K, V>(this: Map<K, V>, key: K, defaultValue: V): V {
-        const v = this.get(key);
-        if (v !== undefined) {
-            return v;
-        }
-
-        this.set(key, defaultValue);
-        return defaultValue;
-    };
-}
-if (typeof Map.prototype.getOrInsertComputed === "undefined") {
-    Map.prototype.getOrInsertComputed = function <K, V>(
-        this: Map<K, V>,
-        key: K,
-        callbackFunction: (key: K) => V,
-    ): V {
-        const v = this.get(key);
-        if (v !== undefined) {
-            return v;
-        }
-
-        const defaultValue = callbackFunction(key);
-        this.set(key, defaultValue);
-        return defaultValue;
-    };
 }
