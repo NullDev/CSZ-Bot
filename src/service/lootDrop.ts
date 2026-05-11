@@ -94,7 +94,7 @@ export async function postLootDrop(
     channel: GuildBasedChannel & TextBasedChannel,
     donor: User | undefined,
     predecessorLootId: LootId | undefined,
-    predefinedLootDropOptions: PredefinedLootDropOptions | undefined = undefined,
+    predefinedLootDropOptions?: PredefinedLootDropOptions | undefined,
 ): Promise<Loot | undefined> {
     const takeLootButton = new ButtonBuilder()
         .setCustomId("take-loot")
