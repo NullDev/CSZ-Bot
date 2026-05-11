@@ -175,9 +175,8 @@ export async function postLootDrop(
     const rarityWeights = rarities.map(a => a.initialDropWeight ?? 0);
 
     const rarityAttribute =
-        (predefinedLootDropOptions?.rarity ?? template.id === LootKind.NICHTS)
-            ? null
-            : randomEntryWeighted(rarities, rarityWeights);
+        predefinedLootDropOptions?.rarity ??
+        (template.id === LootKind.NICHTS ? null : randomEntryWeighted(rarities, rarityWeights));
 
     const claimedLoot = await lootService.createLoot(
         template,
