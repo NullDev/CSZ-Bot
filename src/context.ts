@@ -132,6 +132,7 @@ export interface BotContext {
         sounds: string;
         commands: string;
         modCommands: string;
+        devCommands: string;
     };
 
     roleGuard: {
@@ -356,6 +357,7 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
             sounds: soundsPath,
             commands: path.resolve("src/commands"),
             modCommands: path.resolve("src/commands/modcommands"),
+            devCommands: path.resolve("src/commands/devcommands"),
         },
 
         roleGuard: {

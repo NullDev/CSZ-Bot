@@ -16,6 +16,9 @@ export async function readAvailableCommands(context: BotContext): Promise<Comman
     const modules = [
         ...(await loadRawCommandModulesFromDirectory(context.path.modCommands)),
         ...(await loadRawCommandModulesFromDirectory(context.path.commands)),
+        ...(process.env.NODE_ENV === "development"
+            ? await loadRawCommandModulesFromDirectory(context.path.devCommands)
+            : []),
     ];
 
     const res = [];
