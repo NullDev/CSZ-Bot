@@ -21,7 +21,7 @@ import * as sentry from "@sentry/node";
 
 import type { BotContext } from "#/context.ts";
 import type { Loot, LootId } from "#/storage/db/model.ts";
-import type { LootTemplate, TimeBasedWeightConfig } from "#/storage/loot.ts";
+import type { LootAttributeTemplate, LootTemplate, TimeBasedWeightConfig } from "#/storage/loot.ts";
 import { randomBoolean, randomEntry, randomEntryWeighted } from "#/service/random.ts";
 import * as timeUtils from "#/utils/time.ts";
 import { zonedNow } from "#/utils/dateUtils.ts";
@@ -84,11 +84,17 @@ export async function runDropAttempt(context: BotContext) {
     await postLootDrop(context, targetChannel, undefined, undefined);
 }
 
+type PredefinedLootDropOptions = {
+    template: LootTemplate;
+    rarity: LootAttributeTemplate | undefined;
+};
+
 export async function postLootDrop(
     context: BotContext,
     channel: GuildBasedChannel & TextBasedChannel,
     donor: User | undefined,
     predecessorLootId: LootId | undefined,
+    predefinedLootDropOptions: PredefinedLootDropOptions | undefined = undefined,
 ): Promise<Loot | undefined> {
     const takeLootButton = new ButtonBuilder()
         .setCustomId("take-loot")
@@ -162,13 +168,16 @@ export async function postLootDrop(
 
     const { messages, weights } = await getDropWeightAdjustments(interaction.user, defaultWeights);
 
-    const template = randomEntryWeighted(lootTemplates, weights);
+    const template =
+        predefinedLootDropOptions?.template ?? randomEntryWeighted(lootTemplates, weights);
 
     const rarities = lootAttributeTemplates.filter(a => a.classId === LootAttributeClass.RARITY);
     const rarityWeights = rarities.map(a => a.initialDropWeight ?? 0);
 
     const rarityAttribute =
-        template.id === LootKind.NICHTS ? null : randomEntryWeighted(rarities, rarityWeights);
+        (predefinedLootDropOptions?.rarity ?? template.id === LootKind.NICHTS)
+            ? null
+            : randomEntryWeighted(rarities, rarityWeights);
 
     const claimedLoot = await lootService.createLoot(
         template,
