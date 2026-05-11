@@ -84,6 +84,59 @@ export async function runDropAttempt(context: BotContext) {
     await postLootDrop(context, targetChannel, undefined, undefined);
 }
 
+type LootDrop = {
+    template: LootTemplate;
+    rarity: LootAttributeTemplate | undefined;
+    donor: User | undefined;
+    predecessorLootId: LootId | undefined;
+    messages: string[];
+};
+
+async function randomizedLootDrop(
+    user: User,
+    donor?: User,
+    predecessorLootId?: LootId,
+): Promise<LootDrop> {
+    const timeBasedWeightKey = getCurrentTimeBasedKey();
+
+    const defaultWeights = timeBasedWeightKey
+        ? lootTemplates.map(t => t.timeBasedWeight?.[timeBasedWeightKey] ?? t.weight)
+        : lootTemplates.map(t => t.weight);
+
+    const { messages, weights } = await getDropWeightAdjustments(user, defaultWeights);
+
+    const template = randomEntryWeighted(lootTemplates, weights);
+
+    const rarities = lootAttributeTemplates.filter(a => a.classId === LootAttributeClass.RARITY);
+    const rarityWeights = rarities.map(a => a.initialDropWeight ?? 0);
+
+    const rarityAttribute =
+        template.id === LootKind.NICHTS ? null : randomEntryWeighted(rarities, rarityWeights);
+
+    return {
+        template,
+        rarity: rarityAttribute ?? undefined,
+        donor,
+        predecessorLootId,
+        messages,
+    };
+}
+
+async function fixedLootDrop(
+    template: LootTemplate,
+    rarity?: LootAttributeTemplate,
+    donor?: User,
+    predecessorLootId?: LootId,
+): Promise<LootDrop> {
+    return {
+        template,
+        rarity,
+        donor,
+        predecessorLootId,
+        messages: [],
+    };
+}
+
 type PredefinedLootDropOptions = {
     template: LootTemplate;
     rarity: LootAttributeTemplate | undefined;
@@ -160,23 +213,15 @@ export async function postLootDrop(
         return;
     }
 
-    const timeBasedWeightKey = getCurrentTimeBasedKey();
-
-    const defaultWeights = timeBasedWeightKey
-        ? lootTemplates.map(t => t.timeBasedWeight?.[timeBasedWeightKey] ?? t.weight)
-        : lootTemplates.map(t => t.weight);
-
-    const { messages, weights } = await getDropWeightAdjustments(interaction.user, defaultWeights);
-
-    const template =
-        predefinedLootDropOptions?.template ?? randomEntryWeighted(lootTemplates, weights);
-
-    const rarities = lootAttributeTemplates.filter(a => a.classId === LootAttributeClass.RARITY);
-    const rarityWeights = rarities.map(a => a.initialDropWeight ?? 0);
-
-    const rarityAttribute =
-        predefinedLootDropOptions?.rarity ??
-        (template.id === LootKind.NICHTS ? null : randomEntryWeighted(rarities, rarityWeights));
+    const lootDrop = await (predefinedLootDropOptions
+        ? fixedLootDrop(
+              predefinedLootDropOptions.template,
+              predefinedLootDropOptions.rarity,
+              donor,
+              predecessorLootId,
+          )
+        : randomizedLootDrop(interaction.user, donor, predecessorLootId));
+    const { template, rarity: rarityAttribute, messages } = lootDrop;
 
     const claimedLoot = await lootService.createLoot(
         template,
@@ -184,7 +229,7 @@ export async function postLootDrop(
         message,
         "drop",
         predecessorLootId ?? null,
-        rarityAttribute,
+        rarityAttribute ?? null,
     );
 
     const reply = await interaction.deferReply({ flags: MessageFlags.Ephemeral });
@@ -307,7 +352,7 @@ export async function postLootDrop(
         message,
         "double-or-nothing",
         claimedLoot.id,
-        rarityAttribute,
+        rarityAttribute ?? null,
     );
     if (!extraLoot) {
         await channel.send(`${winner}, ups, da ist was schief gelaufi ${context.emoji.sadHamster}`);
