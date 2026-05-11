@@ -66,6 +66,7 @@ export const LootKind = Object.freeze({
     MAGERQUARK: 53,
     NAS: 54,
     USB_KABEL: 55,
+    GESCHENKPAPIER: 56,
 } as const);
 export type LootKindId = (typeof LootKind)[keyof typeof LootKind];
 
@@ -824,6 +825,16 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         dropDescription: "Jetzt auch in deinem Land verfügbar!",
         emote: "🛜",
         asset: "assets/loot/55-usb-kabel.png",
+    },
+    [LootKind.GESCHENKPAPIER]: {
+        id: LootKind.GESCHENKPAPIER,
+        weight: 12,
+        displayName: "Geschenkpapier",
+        titleText: "Wie cringe sieht das denn aus",
+        dropDescription:
+            "Mit diesem Geschenkpapier sollte man Geschenke einpacken können, aber irgendwie sieht es auch nicht so aus, als wäre das jemals jemandem gelungen.",
+        emote: "🎁",
+        asset: "assets/loot/56-geschenkpapier.png",
     },
 } as const;
 
