@@ -1,11 +1,16 @@
+import { createHash } from "node:crypto";
+
 import { ContainerBuilder, MessageFlags, type Snowflake, userMention } from "discord.js";
 
 import type { BotContext } from "#/context.ts";
+import type { Loot, LootId } from "#/storage/db/model.ts";
 import * as time from "#/utils/time.ts";
 import * as lootService from "#/service/loot.ts";
 import { LootAttributeKind, LootKind, resolveLootTemplate } from "#/service/lootData.ts";
 import log from "#log";
 import { randomEntry } from "#/service/random.ts";
+
+export const RADIOACTIVE_WASTE_HALF_LIFE_MS = time.days(14);
 
 export async function degradeItems(_context: BotContext) {
     log.info("Degrading loot items");
@@ -94,17 +99,10 @@ export async function runHalfLife(context: BotContext) {
     logger.info("Running half life");
 
     const allWaste = await lootService.getLootsByKindId(LootKind.RADIOACTIVE_WASTE);
-
-    // See: https://github.com/NullDev/CSZ-Bot/issues/470
-    const targetWasteCount = Math.ceil(allWaste.length / 2);
-    logger.info({ targetWasteCount }, "targetWasteCount");
-
-    if (targetWasteCount >= allWaste.length) {
-        logger.info("targetWasteCount >= allWaste.length, nothing to do");
-        return;
-    }
-
-    const wasteToRemove = allWaste.sort(() => Math.random()).slice(targetWasteCount);
+    const now = Temporal.Now.instant();
+    const wasteToRemove = allWaste.filter(l =>
+        hasRadioactiveWasteDecayed(l, now, RADIOACTIVE_WASTE_HALF_LIFE_MS),
+    );
     if (wasteToRemove.length === 0) {
         logger.info("No waste to remove, nothing to do");
         return;
@@ -158,6 +156,39 @@ export async function runHalfLife(context: BotContext) {
             users: replacedStats.keys().toArray(),
         },
     });
+}
+
+export function hasRadioactiveWasteDecayed(
+    loot: Pick<Loot, "id" | "claimedAt">,
+    now: Temporal.Instant,
+    halfLifeMs = RADIOACTIVE_WASTE_HALF_LIFE_MS,
+) {
+    const claimedAt = parseClaimedAt(loot.claimedAt);
+    if (!claimedAt) {
+        return false;
+    }
+
+    const itemAge = now.since(claimedAt).total("milliseconds");
+    return itemAge >= getRadioactiveWasteDecayAgeMs(loot.id, halfLifeMs);
+}
+
+export function getRadioactiveWasteDecayAgeMs(
+    lootId: LootId,
+    halfLifeMs = RADIOACTIVE_WASTE_HALF_LIFE_MS,
+) {
+    if (halfLifeMs <= 0) {
+        throw new Error("Half life must be positive");
+    }
+
+    const randomValue = deterministicRandom(lootId);
+    return (-Math.log1p(-randomValue) * halfLifeMs) / Math.LN2;
+}
+
+function deterministicRandom(lootId: LootId) {
+    const hash = createHash("sha256").update(`radioactive-waste-decay-v1:${lootId}`).digest();
+    const sample = hash.readUIntBE(0, 6) / 0x1000000000000;
+
+    return Math.min(Math.max(sample, Number.EPSILON), 1 - Number.EPSILON);
 }
 
 function parseClaimedAt(claimedAt: string) {
