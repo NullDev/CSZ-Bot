@@ -915,18 +915,21 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
                 return false;
             }
 
-            await lootDropService.postLootDrop(
+            const claimed = await lootDropService.postLootDrop(
                 context,
                 interaction.channel,
                 interaction.user,
                 undefined,
                 {
-                    kind: "predefined",
+                    kind: "transfer",
                     rarity: rarityAttributeTemplate,
                     template: lootTemplate,
+                    sourceLootId: randomItem.id,
                 },
             );
-            await lootService.deleteLoot(randomItem.id);
+            if (!claimed) {
+                await lootService.deleteLoot(randomItem.id);
+            }
             await lootService.deleteLoot(loot.id);
             return false;
         },

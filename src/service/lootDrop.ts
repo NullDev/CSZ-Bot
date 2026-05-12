@@ -143,7 +143,16 @@ type PredefinedLootDropStrategy = {
     template: LootTemplate;
     rarity: LootAttributeTemplate | undefined;
 };
-export type LootDropStrategy = RandomizedLootDropStrategy | PredefinedLootDropStrategy;
+type TransferLootDropStrategy = {
+    kind: "transfer";
+    template: LootTemplate;
+    rarity: LootAttributeTemplate | undefined;
+    sourceLootId: LootId;
+};
+export type LootDropStrategy =
+    | RandomizedLootDropStrategy
+    | PredefinedLootDropStrategy
+    | TransferLootDropStrategy;
 
 export async function postLootDrop(
     context: BotContext,
@@ -216,19 +225,23 @@ export async function postLootDrop(
         return;
     }
 
-    const lootDrop = await (strategy.kind === "predefined"
-        ? fixedLootDrop(strategy.template, strategy.rarity, donor, predecessorLootId)
-        : randomizedLootDrop(interaction.user, donor, predecessorLootId));
+    const lootDrop =
+        strategy.kind === "randomized"
+            ? await randomizedLootDrop(interaction.user, donor, predecessorLootId)
+            : fixedLootDrop(strategy.template, strategy.rarity, donor, predecessorLootId);
     const { template, rarity: rarityAttribute, messages } = lootDrop;
 
-    const claimedLoot = await lootService.createLoot(
-        template,
-        interaction.user,
-        message,
-        "drop",
-        predecessorLootId ?? null,
-        rarityAttribute ?? null,
-    );
+    const claimedLoot =
+        strategy.kind === "transfer"
+            ? await lootService.transferLootToUser(strategy.sourceLootId, interaction.user, true)
+            : await lootService.createLoot(
+                  template,
+                  interaction.user,
+                  message,
+                  "drop",
+                  predecessorLootId ?? null,
+                  rarityAttribute ?? null,
+              );
 
     const reply = await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
