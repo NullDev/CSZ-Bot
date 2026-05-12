@@ -26,7 +26,7 @@
     "ci": "oxlint --deny-warnings --type-aware -f github",
     "format": "oxfmt",
     "lint": "oxlint --type-aware",
-    "lint:fix": "oxlint --fix",
+    "lint:fix": "oxlint --type-aware --fix",
     "watch": "node --require ./src/polyfills.ts --watch src/app.ts"
   },
   "dependencies": {
