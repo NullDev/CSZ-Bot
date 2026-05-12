@@ -10,12 +10,17 @@ import { randomEntry } from "#/service/random.ts";
 export async function degradeItems(_context: BotContext) {
     log.info("Degrading loot items");
 
-    const now = Date.now();
+    const now = Temporal.Now.instant();
     const maxKebabAge = time.days(3);
     const kebabs = await lootService.getLootsByKindId(LootKind.DOENER);
 
     for (const k of kebabs) {
-        const itemAge = now - new Date(k.claimedAt).getTime();
+        const claimedAt = parseClaimedAt(k.claimedAt);
+        if (!claimedAt) {
+            continue;
+        }
+
+        const itemAge = now.since(claimedAt).total("milliseconds");
         if (itemAge <= maxKebabAge) {
             continue;
         }
@@ -153,4 +158,13 @@ export async function runHalfLife(context: BotContext) {
             users: replacedStats.keys().toArray(),
         },
     });
+}
+
+function parseClaimedAt(claimedAt: string) {
+    try {
+        return Temporal.Instant.from(claimedAt);
+    } catch {
+        log.warn({ claimedAt }, "Failed to parse claimedAt, trying with fallback parsing");
+        return Temporal.Instant.from(`${claimedAt}Z`);
+    }
 }
