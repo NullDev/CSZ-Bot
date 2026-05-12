@@ -390,7 +390,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
     },
     [LootKind.RADIOACTIVE_WASTE]: {
         id: LootKind.RADIOACTIVE_WASTE,
-        weight: 5,
+        weight: 25,
         displayName: "Radioaktiver Müll",
         titleText: "Radioaktiver Müll",
         dropDescription:
