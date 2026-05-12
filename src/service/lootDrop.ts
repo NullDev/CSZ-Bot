@@ -113,14 +113,14 @@ export function randomizedLootClaim(predecessorLootId: LootId | null = null): Lo
     };
 }
 
-export async function randomizedLootDrop(user: User): Promise<Omit<ClaimedLootDrop, "loot">> {
+export async function randomizedLootDrop(winner: User): Promise<Omit<ClaimedLootDrop, "loot">> {
     const timeBasedWeightKey = getCurrentTimeBasedKey();
 
     const defaultWeights = timeBasedWeightKey
         ? lootTemplates.map(t => t.timeBasedWeight?.[timeBasedWeightKey] ?? t.weight)
         : lootTemplates.map(t => t.weight);
 
-    const { messages, weights } = await getDropWeightAdjustments(user, defaultWeights);
+    const { messages, weights } = await getDropWeightAdjustments(winner, defaultWeights);
 
     const template = randomEntryWeighted(lootTemplates, weights);
 

@@ -884,7 +884,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
             "Mit diesem Geschenkpapier sollte man Geschenke einpacken können, aber irgendwie sieht es auch nicht so aus, als wäre das jemals jemandem gelungen.",
         emote: "🎁",
         asset: "assets/loot/56-geschenkpapier.png",
-        onUse: async (interaction, context, loot) => {
+        onUse: async (interaction, context, _wrappingPaper) => {
             const inventory = await lootService.getInventoryContents(interaction.user);
             const wrapables = inventory.filter(
                 l => resolveLootTemplate(l.lootKindId)?.wrapable ?? false,
@@ -937,7 +937,6 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
             if (!claimed) {
                 await lootService.deleteLoot(randomItem.id);
             }
-            await lootService.deleteLoot(loot.id);
             return false;
         },
     },
