@@ -1,4 +1,5 @@
 import {
+    ChannelType,
     type CommandInteraction,
     type GuildBasedChannel,
     SlashCommandBuilder,
@@ -33,12 +34,7 @@ export default class LootDropCommand implements ApplicationCommand {
         if (command.guild === null) {
             throw new Error("Interaction not in guild");
         }
-
-        const channel = command.channel as GuildBasedChannel;
-        if (channel === null) {
-            throw new Error("Interaction not in channel");
-        }
-        if (channel.isTextBased() === false) {
+        if (command.channel?.type !== ChannelType.GuildText) {
             throw new Error("Interaction not in text channel");
         }
 
@@ -58,7 +54,7 @@ export default class LootDropCommand implements ApplicationCommand {
             });
             return;
         }
-        await postLootDrop(context, channel, command.user, undefined, {
+        await postLootDrop(context, command.channel, command.user, undefined, {
             kind: "predefined",
             rarity: undefined,
             template: lootTemplate,
