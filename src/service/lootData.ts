@@ -231,7 +231,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
                 context,
                 interaction.channel,
                 interaction.user,
-                loot.id,
+                lootDropService.randomizedLootClaim(loot.id),
             );
             return false;
         },
@@ -915,17 +915,24 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
                 return false;
             }
 
+            const transferWrappedItemLoot: lootDropService.LootClaimCallback = async winner => {
+                const claimedLoot = await lootService.transferLootToUser(
+                    randomItem.id,
+                    winner,
+                    true,
+                );
+                return {
+                    loot: claimedLoot,
+                    template: lootTemplate,
+                    rarity: rarityAttributeTemplate,
+                    messages: [],
+                };
+            };
             const claimed = await lootDropService.postLootDrop(
                 context,
                 interaction.channel,
                 interaction.user,
-                undefined,
-                {
-                    kind: "transfer",
-                    rarity: rarityAttributeTemplate,
-                    template: lootTemplate,
-                    sourceLootId: randomItem.id,
-                },
+                transferWrappedItemLoot,
             );
             if (!claimed) {
                 await lootService.deleteLoot(randomItem.id);

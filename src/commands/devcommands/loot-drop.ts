@@ -1,7 +1,6 @@
 import {
     ChannelType,
     type CommandInteraction,
-    type GuildBasedChannel,
     SlashCommandBuilder,
     SlashCommandNumberOption,
 } from "discord.js";
@@ -11,8 +10,9 @@ import type { ApplicationCommand } from "#/commands/command.ts";
 import { ensureChatInputCommand } from "#/utils/interactionUtils.ts";
 
 import * as lootDataService from "#/service/lootData.ts";
+import * as lootService from "#/service/loot.ts";
 
-import { postLootDrop } from "#/service/lootDrop.ts";
+import { postLootDrop, type LootClaimCallback } from "#/service/lootDrop.ts";
 
 export default class LootDropCommand implements ApplicationCommand {
     name = "loot-drop";
@@ -54,11 +54,19 @@ export default class LootDropCommand implements ApplicationCommand {
             });
             return;
         }
-        await postLootDrop(context, command.channel, command.user, undefined, {
-            kind: "predefined",
-            rarity: undefined,
-            template: lootTemplate,
-        });
+        const predefinedLootClaim: LootClaimCallback = async (winner, message) => {
+            const loot = await lootService.createLoot(
+                lootTemplate,
+                winner,
+                message,
+                "drop",
+                null,
+                null,
+            );
+            if (!loot) return undefined;
+            return { loot, template: lootTemplate, rarity: undefined, messages: [] };
+        };
+        await postLootDrop(context, command.channel, command.user, predefinedLootClaim);
         await command.reply({
             content: `Es wurde ${lootTemplate.id} gedroppt!`,
             ephemeral: true,
