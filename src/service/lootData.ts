@@ -6,6 +6,8 @@ import * as emoteService from "#/service/emote.ts";
 import * as bahnCardService from "#/service/bahncard.ts";
 import { GuildMember, type Guild } from "discord.js";
 import type { Loot, LootAttribute } from "#/storage/db/model.ts";
+import { randomEntry } from "./random.ts";
+import log from "#log";
 
 const ACHTUNG_NICHT_DROPBAR_WEIGHT_KG = 0;
 
@@ -66,6 +68,7 @@ export const LootKind = Object.freeze({
     MAGERQUARK: 53,
     NAS: 54,
     USB_KABEL: 55,
+    GESCHENKPAPIER: 56,
 } as const);
 export type LootKindId = (typeof LootKind)[keyof typeof LootKind];
 
@@ -228,7 +231,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
                 context,
                 interaction.channel,
                 interaction.user,
-                loot.id,
+                lootDropService.randomizedLootClaim(loot.id),
             );
             return false;
         },
@@ -871,6 +874,71 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         emote: "🛜",
         asset: "assets/loot/55-usb-kabel.png",
         wrapable: true,
+    },
+    [LootKind.GESCHENKPAPIER]: {
+        id: LootKind.GESCHENKPAPIER,
+        weight: 12,
+        displayName: "Geschenkpapier",
+        titleText: "Das sieht ja super cringe aus, wer würde sich denn darüber freuen wollen?",
+        dropDescription:
+            "Mit diesem Geschenkpapier sollte man Geschenke einpacken können, aber irgendwie sieht es auch nicht so aus, als wäre das jemals jemandem gelungen.",
+        emote: "🎁",
+        asset: "assets/loot/56-geschenkpapier.png",
+        onUse: async (interaction, context, _wrappingPaper) => {
+            const inventory = await lootService.getInventoryContents(interaction.user);
+            const wrapables = inventory.filter(
+                l => resolveLootTemplate(l.lootKindId)?.wrapable ?? false,
+            );
+
+            if (wrapables.length === 0) {
+                await interaction.reply({
+                    content: "Du hast nichts, was du einpacken könntest! 😢",
+                });
+                return false;
+            }
+
+            const randomItem = randomEntry(wrapables);
+            const rarity =
+                randomItem.attributes.find(a => a.attributeClassId === LootAttributeClass.RARITY) ??
+                undefined;
+            const rarityAttributeTemplate = rarity
+                ? resolveLootAttributeTemplate(rarity.attributeKindId)
+                : undefined;
+            const lootTemplate = resolveLootTemplate(randomItem.lootKindId);
+            if (!lootTemplate) {
+                log.error(
+                    "Failed to resolve loot template for wrapped item: " + randomItem.lootKindId,
+                );
+                await interaction.reply({
+                    content: "Ein Fehler ist aufgetreten, versuch es später nochmal! 😢",
+                });
+                return false;
+            }
+
+            const transferWrappedItemLoot: lootDropService.LootClaimCallback = async winner => {
+                const claimedLoot = await lootService.transferLootToUser(
+                    randomItem.id,
+                    winner,
+                    true,
+                );
+                return {
+                    loot: claimedLoot,
+                    template: lootTemplate,
+                    rarity: rarityAttributeTemplate,
+                    messages: [],
+                };
+            };
+            const claimed = await lootDropService.postLootDrop(
+                context,
+                interaction.channel,
+                interaction.user,
+                transferWrappedItemLoot,
+            );
+            if (!claimed) {
+                await lootService.deleteLoot(randomItem.id);
+            }
+            return false;
+        },
     },
 } as const;
 
