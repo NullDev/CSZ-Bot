@@ -32,6 +32,10 @@ export interface BotContext {
         token: string;
     };
 
+    development: {
+        enableCommands?: boolean;
+    };
+
     prefix: {
         command: string;
         modCommand: string;
@@ -243,6 +247,9 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
         auth: {
             clientId: config.auth.clientId,
             token: config.auth.token,
+        },
+        development: {
+            enableCommands: config.development?.enableCommands,
         },
         guild,
         prefix: {
