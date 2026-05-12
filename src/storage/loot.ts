@@ -49,6 +49,7 @@ export interface LootTemplate {
     effects?: string[];
     initialAttributes?: LootAttributeKindId[];
     excludeFromDoubleDrops?: boolean;
+    wrapable?: boolean;
 
     onDrop?: (
         context: BotContext,
