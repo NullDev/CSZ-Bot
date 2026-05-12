@@ -4,6 +4,9 @@
         "clientId": "${DISCORD_CLIENT_ID}",
         "token": "${DISCORD_TOKEN}"
     },
+    "development": {
+        "enableCommands": true
+    },
     "sentry": {
         "dsn": null,
         "tracesSampleRate": null

@@ -32,6 +32,10 @@ export interface BotContext {
         token: string;
     };
 
+    development: {
+        enableCommands?: boolean;
+    };
+
     prefix: {
         command: string;
         modCommand: string;
@@ -132,6 +136,7 @@ export interface BotContext {
         sounds: string;
         commands: string;
         modCommands: string;
+        devCommands: string;
     };
 
     roleGuard: {
@@ -242,6 +247,9 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
         auth: {
             clientId: config.auth.clientId,
             token: config.auth.token,
+        },
+        development: {
+            enableCommands: config.development?.enableCommands,
         },
         guild,
         prefix: {
@@ -356,6 +364,7 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
             sounds: soundsPath,
             commands: path.resolve("src/commands"),
             modCommands: path.resolve("src/commands/modcommands"),
+            devCommands: path.resolve("src/commands/devcommands"),
         },
 
         roleGuard: {
