@@ -921,6 +921,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
                 interaction.user,
                 undefined,
                 {
+                    kind: "predefined",
                     rarity: rarityAttributeTemplate,
                     template: lootTemplate,
                 },

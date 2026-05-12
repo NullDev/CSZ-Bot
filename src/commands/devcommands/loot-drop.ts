@@ -59,6 +59,7 @@ export default class LootDropCommand implements ApplicationCommand {
             return;
         }
         await postLootDrop(context, channel, command.user, undefined, {
+            kind: "predefined",
             rarity: undefined,
             template: lootTemplate,
         });

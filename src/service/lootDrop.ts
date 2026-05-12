@@ -122,12 +122,12 @@ async function randomizedLootDrop(
     };
 }
 
-async function fixedLootDrop(
+function fixedLootDrop(
     template: LootTemplate,
     rarity?: LootAttributeTemplate,
     donor?: User,
     predecessorLootId?: LootId,
-): Promise<LootDrop> {
+): LootDrop {
     return {
         template,
         rarity,
@@ -137,17 +137,20 @@ async function fixedLootDrop(
     };
 }
 
-type PredefinedLootDropOptions = {
+type RandomizedLootDropStrategy = { kind: "randomized" };
+type PredefinedLootDropStrategy = {
+    kind: "predefined";
     template: LootTemplate;
     rarity: LootAttributeTemplate | undefined;
 };
+export type LootDropStrategy = RandomizedLootDropStrategy | PredefinedLootDropStrategy;
 
 export async function postLootDrop(
     context: BotContext,
     channel: GuildBasedChannel & TextBasedChannel,
     donor: User | undefined,
     predecessorLootId: LootId | undefined,
-    predefinedLootDropOptions?: PredefinedLootDropOptions,
+    strategy: LootDropStrategy = { kind: "randomized" },
 ): Promise<Loot | undefined> {
     const takeLootButton = new ButtonBuilder()
         .setCustomId("take-loot")
@@ -213,13 +216,8 @@ export async function postLootDrop(
         return;
     }
 
-    const lootDrop = await (predefinedLootDropOptions
-        ? fixedLootDrop(
-              predefinedLootDropOptions.template,
-              predefinedLootDropOptions.rarity,
-              donor,
-              predecessorLootId,
-          )
+    const lootDrop = await (strategy.kind === "predefined"
+        ? fixedLootDrop(strategy.template, strategy.rarity, donor, predecessorLootId)
         : randomizedLootDrop(interaction.user, donor, predecessorLootId));
     const { template, rarity: rarityAttribute, messages } = lootDrop;
 
