@@ -413,7 +413,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         dropDescription: "Fürs Frühstück oder so",
         emote: ":sahne:",
         asset: "assets/loot/22-sahne.png",
-        initialAttributes: [LootAttributeKind.NUTRI_SCORE_D], // Ref: https://de.openfoodfacts.org/produkt/4311501745663/spr%C3%BChsahne-gut-g%C3%BCnstig
+        initialAttributes: [LootAttributeKind.NUTRI_SCORE_D, LootAttributeKind.SWEET], // Ref: https://de.openfoodfacts.org/produkt/4311501745663/spr%C3%BChsahne-gut-g%C3%BCnstig
         wrapable: true,
     },
     [LootKind.AEHRE]: {
