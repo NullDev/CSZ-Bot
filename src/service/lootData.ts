@@ -894,7 +894,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
                 await interaction.reply({
                     content: "Du hast nichts, was du einpacken könntest! 😢",
                 });
-                return false;
+                return true;
             }
 
             const randomItem = randomEntry(wrapables);
@@ -912,7 +912,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
                 await interaction.reply({
                     content: "Ein Fehler ist aufgetreten, versuch es später nochmal! 😢",
                 });
-                return false;
+                return true;
             }
 
             const transferWrappedItemLoot: lootDropService.LootClaimCallback = async winner => {
