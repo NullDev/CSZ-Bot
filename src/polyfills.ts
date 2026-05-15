@@ -1,3 +1,5 @@
+export {};
+
 declare global {
     // type polyfill for Math.sumPrecise (currently in stage 2):
     // https://github.com/tc39/proposal-math-sum
