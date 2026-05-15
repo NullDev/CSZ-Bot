@@ -55,7 +55,7 @@ export async function banUser(
     reason: string,
     isSelfBan: boolean,
     durationInHours: number | null,
-) {
+): Promise<string | void> {
     log.debug(
         `Banning ${member.id} by ${banInvoker.id} because of ${reason} for ${durationInHours}.`,
     );

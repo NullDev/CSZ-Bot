@@ -65,7 +65,11 @@ export default class ExtendCommand implements MessageCommand {
         }
     }
 
-    async legacyHandler(message: ProcessableMessage, context: BotContext, args: string[]) {
+    async legacyHandler(
+        message: ProcessableMessage,
+        context: BotContext,
+        args: string[],
+    ): Promise<string | void> {
         if (!args.length) {
             return "Bruder da sind keine Antwortmöglichkeiten :c";
         }

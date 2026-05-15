@@ -57,11 +57,13 @@ export default class ToggleCommand implements MessageCommand {
 const isPollField = (field: APIEmbedField): boolean =>
     !field.inline && pollEmbedService.LETTERS.some(l => field.name.startsWith(l));
 
-const togglePoll = async (message: Message) => {
+async function togglePoll(message: Message): Promise<string | void> {
     const pollEmbed = message.embeds[0];
     const pollOptions = pollEmbed.fields.filter(field => isPollField(field));
     const isFull = pollOptions.length === pollEmbedService.OPTION_LIMIT;
-    if (isFull) return "Bruder die ist eh schon voll :<";
+    if (isFull) {
+        return "Bruder die ist eh schon voll :<";
+    }
 
     const extendColor = 3066993;
     const isExtensible = pollEmbed.color !== extendColor;
@@ -74,7 +76,7 @@ const togglePoll = async (message: Message) => {
     await message.edit({
         embeds: [embed],
     });
-};
+}
 
 const toggleSdm = async (message: Message) => {
     const embed = message.embeds[0];

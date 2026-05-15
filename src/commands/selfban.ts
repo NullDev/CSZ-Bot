@@ -25,7 +25,7 @@ export default class MinCommand implements MessageCommand {
         message: ProcessableMessage,
         context: BotContext,
         args: string[],
-    ): Promise<string | undefined> {
+    ): Promise<string | void> {
         let input = args?.[0]?.trim() ?? "8";
         const tilt = input === "tilt";
 

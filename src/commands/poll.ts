@@ -89,7 +89,11 @@ Optionen:
         return straw ? "assets/poll/straw.png" : "assets/poll/multi.png";
     }
 
-    async legacyHandler(message: ProcessableMessage, context: BotContext, args: string[]) {
+    async legacyHandler(
+        message: ProcessableMessage,
+        context: BotContext,
+        args: string[],
+    ): Promise<string | void> {
         let params: ReturnType<typeof parseArgs>;
         try {
             params = parseArgs({ ...argsConfig, args });

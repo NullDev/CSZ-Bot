@@ -140,7 +140,7 @@ export async function postLootDrop(
     channel: GuildBasedChannel & TextBasedChannel,
     donor: User | undefined,
     onClaim: LootClaimCallback,
-): Promise<Loot | undefined> {
+): Promise<Loot | void> {
     const takeLootButton = new ButtonBuilder()
         .setCustomId("take-loot")
         .setLabel("Geschenk nehmen")
