@@ -1,5 +1,4 @@
 import { cleanContent, type APIEmbed, type TextChannel, type User } from "discord.js";
-import { Temporal } from "@js-temporal/polyfill";
 
 export async function rollInChannel(
     author: User,

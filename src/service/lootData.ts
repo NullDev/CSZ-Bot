@@ -7,6 +7,8 @@ import * as bahnCardService from "#/service/bahncard.ts";
 import { GuildMember, type Guild } from "discord.js";
 import type { Loot, LootAttribute } from "#/storage/db/model.ts";
 import { fightTemplates } from "#/service/fightData.ts";
+import { randomEntry } from "./random.ts";
+import log from "#log";
 
 const ACHTUNG_NICHT_DROPBAR_WEIGHT_KG = 0;
 
@@ -67,6 +69,7 @@ export const LootKind = Object.freeze({
     MAGERQUARK: 53,
     NAS: 54,
     USB_KABEL: 55,
+    GESCHENKPAPIER: 56,
 } as const);
 export type LootKindId = (typeof LootKind)[keyof typeof LootKind];
 
@@ -116,6 +119,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         attributeAsset: {
             [LootAttributeKind.RADIOACTIVE]: "assets/loot/attributes/01-kadse-verstrahlt.jpg",
         },
+        wrapable: true,
     },
     [LootKind.MESSERBLOCK]: {
         id: LootKind.MESSERBLOCK,
@@ -126,6 +130,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         emote: "🔪",
         asset: "assets/loot/02-messerblock.jpg",
         gameEquip: fightTemplates.messerblock,
+        wrapable: true,
     },
     [LootKind.KUEHLSCHRANK]: {
         id: LootKind.KUEHLSCHRANK,
@@ -137,6 +142,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         emote: "🧊",
         asset: "assets/loot/03-kuehlschrank.jpg",
         effects: ["Lässt Essen nicht schimmeln"],
+        wrapable: true,
     },
     [LootKind.DOENER]: {
         id: LootKind.DOENER,
@@ -150,6 +156,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         emote: "🥙",
         asset: "assets/loot/04-doener.jpg",
         initialAttributes: [LootAttributeKind.NUTRI_SCORE_C],
+        wrapable: true,
     },
     [LootKind.KINN]: {
         id: LootKind.KINN,
@@ -159,6 +166,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         dropDescription: "Pass gut drauf auf, sonst flieht es!",
         emote: "👶",
         asset: "assets/loot/05-kinn.jpg",
+        wrapable: true,
     },
     [LootKind.KRANKSCHREIBUNG]: {
         id: LootKind.KRANKSCHREIBUNG,
@@ -195,6 +203,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
 
             return false;
         },
+        wrapable: true,
     },
     [LootKind.WUERFELWURF]: {
         id: LootKind.WUERFELWURF,
@@ -224,7 +233,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
                 context,
                 interaction.channel,
                 interaction.user,
-                loot.id,
+                lootDropService.randomizedLootClaim(loot.id),
             );
             return false;
         },
@@ -242,6 +251,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         asset: "assets/loot/09-ayran.png",
         initialAttributes: [LootAttributeKind.NUTRI_SCORE_D], // Ref: https://de.openfoodfacts.org/produkt/4388860730685/ayran-ja
         gameEquip: fightTemplates.ayran,
+        wrapable: true,
     },
     [LootKind.PKV]: {
         id: LootKind.PKV,
@@ -252,6 +262,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         emote: "💉",
         asset: "assets/loot/10-pkv.jpg",
         effects: ["` +100% ` Chance auf AU 🟢"],
+        wrapable: true,
     },
     [LootKind.TRICHTER]: {
         id: LootKind.TRICHTER,
@@ -264,6 +275,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         dropDescription: "Für die ganz großen Schlücke",
         emote: ":trichter:",
         asset: "assets/loot/11-trichter.png",
+        wrapable: true,
     },
     [LootKind.GRAFIKKARTE]: {
         id: LootKind.GRAFIKKARTE,
@@ -273,6 +285,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         dropDescription: "Leider ohne Treiber, die gibt es erst in 3 Monaten",
         emote: "🖥️",
         asset: "assets/loot/12-grafikkarte.png",
+        wrapable: true,
     },
     [LootKind.HAENDEDRUCK]: {
         id: LootKind.HAENDEDRUCK,
@@ -340,6 +353,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         asset: "assets/loot/16-oettinger.png",
         initialAttributes: [LootAttributeKind.NUTRI_SCORE_B], // Ref: https://archive.is/aonnZ
         gameEquip: fightTemplates.oettinger,
+        wrapable: true,
     },
     [LootKind.ACHIEVEMENT]: {
         id: LootKind.ACHIEVEMENT,
@@ -349,6 +363,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         dropDescription: "Das erreichen echt nicht viele",
         emote: "🏆",
         asset: "assets/loot/17-achievement.png",
+        wrapable: true,
     },
     [LootKind.GME_AKTIE]: {
         id: LootKind.GME_AKTIE,
@@ -358,6 +373,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         dropDescription: "Der squeeze kommt bald!",
         emote: "📉",
         asset: "assets/loot/18-gme.jpg",
+        wrapable: true,
     },
     [LootKind.FERRIS]: {
         id: LootKind.FERRIS,
@@ -367,6 +383,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         dropDescription: "Damit kann man ja endlich den Bot in Rust neuschreiben",
         emote: "🦀",
         asset: "assets/loot/19-ferris.png",
+        wrapable: true,
     },
     [LootKind.HOMEPOD]: {
         id: LootKind.HOMEPOD,
@@ -376,10 +393,11 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         dropDescription: 'Damit dein "Smart Home" nicht mehr ganz so smart ist',
         emote: "🍎",
         asset: "assets/loot/20-homepod.jpg",
+        wrapable: true,
     },
     [LootKind.RADIOACTIVE_WASTE]: {
         id: LootKind.RADIOACTIVE_WASTE,
-        weight: 5,
+        weight: 25,
         displayName: "Radioaktiver Müll",
         titleText: "Radioaktiver Müll",
         dropDescription:
@@ -399,7 +417,8 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         dropDescription: "Fürs Frühstück oder so",
         emote: ":sahne:",
         asset: "assets/loot/22-sahne.png",
-        initialAttributes: [LootAttributeKind.NUTRI_SCORE_D], // Ref: https://de.openfoodfacts.org/produkt/4311501745663/spr%C3%BChsahne-gut-g%C3%BCnstig
+        initialAttributes: [LootAttributeKind.NUTRI_SCORE_D, LootAttributeKind.SWEET], // Ref: https://de.openfoodfacts.org/produkt/4311501745663/spr%C3%BChsahne-gut-g%C3%BCnstig
+        wrapable: true,
     },
     [LootKind.AEHRE]: {
         id: LootKind.AEHRE,
@@ -424,6 +443,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         dropDescription: "Bitti nicht rebooti und Bitlocki nutzi",
         emote: "🦅",
         asset: "assets/loot/24-crowdstrike.jpg",
+        wrapable: true,
     },
     [LootKind.POWERADE_BLAU]: {
         id: LootKind.POWERADE_BLAU,
@@ -434,6 +454,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         asset: "assets/loot/25-powerade-blau.jpg",
         emote: ":powerade:",
         initialAttributes: [LootAttributeKind.NUTRI_SCORE_D], // Ref: https://de.openfoodfacts.org/produkt/90357350/powerrade-mountain-blast-blue-coca-cola
+        wrapable: true,
     },
     [LootKind.GAULOISES_BLAU]: {
         id: LootKind.GAULOISES_BLAU,
@@ -447,6 +468,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
             "Rauchig, kräftig, französisch. Wie du in deinen Träumen.\n\nVerursacht Herzanfälle, genau wie dieser Server",
         emote: "🚬",
         asset: "assets/loot/26-gauloises-blau.png",
+        wrapable: true,
     },
     [LootKind.MAXWELL]: {
         id: LootKind.MAXWELL,
@@ -456,6 +478,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         dropDescription: "Der ist doch tot, oder?",
         emote: "😸",
         asset: "assets/loot/27-maxwell.gif",
+        wrapable: true,
     },
     [LootKind.SCHICHTBEGINN_ASSE_2]: {
         id: LootKind.SCHICHTBEGINN_ASSE_2,
@@ -480,6 +503,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         dropDescription: "Ich hab ein Glas voll Dreck",
         emote: "🫙",
         asset: "assets/loot/29-dreck.jpg",
+        wrapable: true,
     },
     [LootKind.EI]: {
         id: LootKind.EI,
@@ -490,6 +514,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
             "Jetzt wär geklärt, was zu erst da war, Ei oder ... (Ja was schlüpft daraus eigentlich?)",
         emote: "🥚",
         asset: "assets/loot/30-ei.png",
+        wrapable: true,
     },
     [LootKind.BRAVO]: {
         id: LootKind.BRAVO,
@@ -499,6 +524,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         dropDescription: "Die Seiten kleben noch ein bisschen",
         emote: "🗞️",
         asset: "assets/loot/31-bravo.jpg",
+        wrapable: true,
     },
     [LootKind.VERSCHIMMELTER_DOENER]: {
         id: LootKind.VERSCHIMMELTER_DOENER,
@@ -509,6 +535,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         emote: "🥙",
         asset: null,
         initialAttributes: [LootAttributeKind.NUTRI_SCORE_E],
+        wrapable: true,
     },
     [LootKind.THUNFISCHSHAKE]: {
         id: LootKind.THUNFISCHSHAKE,
@@ -520,6 +547,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         asset: "assets/loot/33-thunfischshake.jpg",
         initialAttributes: [LootAttributeKind.NUTRI_SCORE_A],
         gameEquip: fightTemplates.thunfischshake,
+        wrapable: true,
     },
     [LootKind.KAFFEEMUEHLE]: {
         id: LootKind.KAFFEEMUEHLE,
@@ -532,6 +560,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         dropDescription: "Kann Kaffee mühlen. Und das gut. Mit Gold.",
         emote: "☕",
         asset: "assets/loot/34-kaffeemuehle.png",
+        wrapable: true,
     },
     [LootKind.AWS_RECHNUNG]: {
         id: LootKind.AWS_RECHNUNG,
@@ -541,6 +570,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         dropDescription: "Hast du schon versucht, in die Cloud zu gehen?",
         emote: "📦",
         asset: "assets/loot/35-aws-rechnung.png",
+        wrapable: true,
     },
     [LootKind.BIBER]: {
         id: LootKind.BIBER,
@@ -551,6 +581,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         emote: "🦫",
         asset: "assets/loot/36-biber.jpg",
         initialAttributes: [LootAttributeKind.SWEET],
+        wrapable: true,
     },
     [LootKind.BLEI]: {
         id: LootKind.BLEI,
@@ -561,6 +592,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         emote: "🪨",
         asset: "assets/loot/37-blei.png",
         initialAttributes: [],
+        wrapable: true,
     },
     [LootKind.USV]: {
         id: LootKind.USV,
@@ -571,6 +603,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         emote: "🔋",
         asset: "assets/loot/38-usv.png",
         initialAttributes: [],
+        wrapable: true,
     },
     [LootKind.BAHNCARD_25]: {
         id: LootKind.BAHNCARD_25,
@@ -581,6 +614,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         emote: "🚆",
         asset: "assets/loot/39-bahncard-25.png",
         initialAttributes: [],
+        wrapable: true,
         drawCustomAsset: (context, owner, template, loot) =>
             bahnCardService.drawBahncardImage(
                 context,
@@ -588,6 +622,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
                 template,
                 loot,
                 false,
+                // oxlint-disable-next-line typescript/no-misused-spread
                 [...owner.id].map(n => (Number(n) * 7) % 10).join(""),
             ),
         onDuplicateDrop: async (context, winner, loot, dropMessage) => {
@@ -632,6 +667,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         emote: "🚆",
         asset: "assets/loot/40-bahncard-50.png",
         initialAttributes: [],
+        wrapable: true,
         drawCustomAsset: (context, owner, template, loot) =>
             bahnCardService.drawBahncardImage(
                 context,
@@ -639,6 +675,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
                 template,
                 loot,
                 false,
+                // oxlint-disable-next-line typescript/no-misused-spread
                 [...owner.id].map(n => (Number(n) * 13) % 10).join(""),
             ),
         onDuplicateDrop: async (context, winner, loot, dropMessage) => {
@@ -684,6 +721,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         emote: "🚆",
         asset: "assets/loot/41-bahncard-100.png",
         initialAttributes: [],
+        wrapable: true,
         drawCustomAsset: (context, owner, template, loot) =>
             bahnCardService.drawBahncardImage(context, owner, template, loot, true, owner.id),
     },
@@ -695,6 +733,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         dropDescription: "Das Labubu, dein ~~Freund und Helfer in der Not~~ Plastikmüll",
         emote: "🦦",
         asset: "assets/loot/42-labubu.jpg",
+        wrapable: true,
     },
     [LootKind.BABYBEL_ORIGINAL]: {
         id: LootKind.BABYBEL_ORIGINAL,
@@ -706,6 +745,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         emote: "🧀",
         asset: "assets/loot/43-bb-original.png",
         initialAttributes: [LootAttributeKind.NUTRI_SCORE_C],
+        wrapable: true,
     },
     [LootKind.BABYBEL_LIGHT]: {
         id: LootKind.BABYBEL_LIGHT,
@@ -716,6 +756,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         emote: "🧀",
         asset: "assets/loot/44-bb-light.png",
         initialAttributes: [LootAttributeKind.NUTRI_SCORE_C],
+        wrapable: true,
     },
     [LootKind.BABYBEL_CHEDDAR]: {
         id: LootKind.BABYBEL_CHEDDAR,
@@ -727,6 +768,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         emote: "🧀",
         asset: "assets/loot/45-bb-cheddar.png",
         initialAttributes: [LootAttributeKind.NUTRI_SCORE_D],
+        wrapable: true,
     },
     [LootKind.BABYBEL_EMMENTALER]: {
         id: LootKind.BABYBEL_EMMENTALER,
@@ -738,6 +780,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         emote: "🧀",
         asset: "assets/loot/46-bb-emmentaler.png",
         initialAttributes: [LootAttributeKind.NUTRI_SCORE_D],
+        wrapable: true,
     },
     [LootKind.BABYBEL_PROTEIN]: {
         id: LootKind.BABYBEL_PROTEIN,
@@ -749,6 +792,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         emote: "🧀",
         asset: "assets/loot/47-bb-protein.png",
         initialAttributes: [LootAttributeKind.NUTRI_SCORE_C],
+        wrapable: true,
     },
     [LootKind.BABYBEL_GOUDA]: {
         id: LootKind.BABYBEL_GOUDA,
@@ -760,6 +804,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         emote: "🧀",
         asset: "assets/loot/48-bb-gouda.png",
         initialAttributes: [LootAttributeKind.NUTRI_SCORE_D],
+        wrapable: true,
     },
     [LootKind.BABYBEL_VEGAN]: {
         id: LootKind.BABYBEL_VEGAN,
@@ -771,6 +816,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         emote: "🧀",
         asset: "assets/loot/49-bb-vegan.png",
         initialAttributes: [LootAttributeKind.NUTRI_SCORE_E],
+        wrapable: true,
     },
     [LootKind.BABYBEL_EXODIA]: {
         id: LootKind.BABYBEL_EXODIA,
@@ -781,6 +827,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         emote: "🧀",
         asset: "assets/loot/50-bb-exodia.png",
         initialAttributes: [LootAttributeKind.NUTRI_SCORE_E],
+        wrapable: true,
     },
     [LootKind.GIROKONTO]: {
         id: LootKind.GIROKONTO,
@@ -790,6 +837,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         dropDescription: "Werbe andere User und erhalte eine Prämie von 75€!",
         emote: "💳",
         asset: "assets/loot/51-girokonto.jpg",
+        wrapable: true,
     },
     [LootKind.STROMTARIF]: {
         id: LootKind.STROMTARIF,
@@ -799,6 +847,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         dropDescription: "So bezahlst du immer den günstigsten Strompreis.",
         emote: "🔌",
         asset: "assets/loot/52-stromtarif.jpg",
+        wrapable: true,
     },
     [LootKind.MAGERQUARK]: {
         id: LootKind.MAGERQUARK,
@@ -809,6 +858,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         emote: "🍶",
         asset: "assets/loot/53-magerquark.png",
         initialAttributes: [LootAttributeKind.NUTRI_SCORE_A],
+        wrapable: true,
     },
     [LootKind.NAS]: {
         id: LootKind.NAS,
@@ -818,6 +868,7 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         dropDescription: "Viel Speicherplatz, wenig Stromverbrauch, manchmal funktionstüchtig.",
         emote: "🗄️",
         asset: "assets/loot/54-nas.png",
+        wrapable: true,
     },
     [LootKind.USB_KABEL]: {
         id: LootKind.USB_KABEL,
@@ -827,6 +878,72 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         dropDescription: "Jetzt auch in deinem Land verfügbar!",
         emote: "🛜",
         asset: "assets/loot/55-usb-kabel.png",
+        wrapable: true,
+    },
+    [LootKind.GESCHENKPAPIER]: {
+        id: LootKind.GESCHENKPAPIER,
+        weight: 12,
+        displayName: "Geschenkpapier",
+        titleText: "Das sieht ja super cringe aus, wer würde sich denn darüber freuen wollen?",
+        dropDescription:
+            "Mit diesem Geschenkpapier sollte man Geschenke einpacken können, aber irgendwie sieht es auch nicht so aus, als wäre das jemals jemandem gelungen.",
+        emote: "🎁",
+        asset: "assets/loot/56-geschenkpapier.png",
+        onUse: async (interaction, context, _wrappingPaper) => {
+            const inventory = await lootService.getInventoryContents(interaction.user);
+            const wrapables = inventory.filter(
+                l => resolveLootTemplate(l.lootKindId)?.wrapable ?? false,
+            );
+
+            if (wrapables.length === 0) {
+                await interaction.reply({
+                    content: "Du hast nichts, was du einpacken könntest! 😢",
+                });
+                return true;
+            }
+
+            const randomItem = randomEntry(wrapables);
+            const rarity =
+                randomItem.attributes.find(a => a.attributeClassId === LootAttributeClass.RARITY) ??
+                undefined;
+            const rarityAttributeTemplate = rarity
+                ? resolveLootAttributeTemplate(rarity.attributeKindId)
+                : undefined;
+            const lootTemplate = resolveLootTemplate(randomItem.lootKindId);
+            if (!lootTemplate) {
+                log.error(
+                    "Failed to resolve loot template for wrapped item: " + randomItem.lootKindId,
+                );
+                await interaction.reply({
+                    content: "Ein Fehler ist aufgetreten, versuch es später nochmal! 😢",
+                });
+                return true;
+            }
+
+            const transferWrappedItemLoot: lootDropService.LootClaimCallback = async winner => {
+                const claimedLoot = await lootService.transferLootToUser(
+                    randomItem.id,
+                    winner,
+                    true,
+                );
+                return {
+                    loot: claimedLoot,
+                    template: lootTemplate,
+                    rarity: rarityAttributeTemplate,
+                    messages: [],
+                };
+            };
+            const claimed = await lootDropService.postLootDrop(
+                context,
+                interaction.channel,
+                interaction.user,
+                transferWrappedItemLoot,
+            );
+            if (!claimed) {
+                await lootService.deleteLoot(randomItem.id);
+            }
+            return false;
+        },
     },
 } as const;
 

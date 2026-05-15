@@ -5,6 +5,7 @@ import {
     ButtonStyle,
     ChannelType,
     ComponentType,
+    type Message,
     type TextChannel,
     type User,
     type Interaction,
@@ -17,12 +18,11 @@ import {
     type MessageComponentInteraction,
     type BaseMessageOptions,
 } from "discord.js";
-import { Temporal } from "@js-temporal/polyfill";
 import * as sentry from "@sentry/node";
 
 import type { BotContext } from "#/context.ts";
 import type { Loot, LootId } from "#/storage/db/model.ts";
-import type { LootTemplate, TimeBasedWeightConfig } from "#/storage/loot.ts";
+import type { LootAttributeTemplate, LootTemplate, TimeBasedWeightConfig } from "#/storage/loot.ts";
 import { randomBoolean, randomEntry, randomEntryWeighted } from "#/service/random.ts";
 import * as timeUtils from "#/utils/time.ts";
 import { zonedNow } from "#/utils/dateUtils.ts";
@@ -82,15 +82,65 @@ export async function runDropAttempt(context: BotContext) {
     log.info(
         `Randomization hit threshold (${lootConfig.dropChance}). Dropping loot to ${targetChannel.name}!`,
     );
-    await postLootDrop(context, targetChannel, undefined, undefined);
+    await postLootDrop(context, targetChannel, undefined, randomizedLootClaim());
+}
+
+export type ClaimedLootDrop = {
+    loot: Loot;
+    template: LootTemplate;
+    rarity: LootAttributeTemplate | undefined;
+    messages: readonly string[];
+};
+
+export type LootClaimCallback = (
+    winner: User,
+    message: Message<true>,
+) => Promise<ClaimedLootDrop | undefined>;
+
+export function randomizedLootClaim(predecessorLootId: LootId | null = null): LootClaimCallback {
+    return async (winner, message) => {
+        const drop = await randomizedLootDrop(winner);
+        const loot = await lootService.createLoot(
+            drop.template,
+            winner,
+            message,
+            "drop",
+            predecessorLootId,
+            drop.rarity ?? null,
+        );
+        if (!loot) return undefined;
+        return { loot, ...drop };
+    };
+}
+
+export async function randomizedLootDrop(winner: User): Promise<Omit<ClaimedLootDrop, "loot">> {
+    const timeBasedWeightKey = getCurrentTimeBasedKey();
+
+    const defaultWeights = timeBasedWeightKey
+        ? lootTemplates.map(t => t.timeBasedWeight?.[timeBasedWeightKey] ?? t.weight)
+        : lootTemplates.map(t => t.weight);
+
+    const { messages, weights } = await getDropWeightAdjustments(winner, defaultWeights);
+
+    const template = randomEntryWeighted(lootTemplates, weights);
+
+    const rarities = lootAttributeTemplates.filter(a => a.classId === LootAttributeClass.RARITY);
+    const rarityWeights = rarities.map(a => a.initialDropWeight ?? 0);
+
+    const rarity =
+        template.id === LootKind.NICHTS
+            ? undefined
+            : (randomEntryWeighted(rarities, rarityWeights) ?? undefined);
+
+    return { template, rarity, messages };
 }
 
 export async function postLootDrop(
     context: BotContext,
     channel: GuildBasedChannel & TextBasedChannel,
     donor: User | undefined,
-    predecessorLootId: LootId | undefined,
-): Promise<Loot | undefined> {
+    onClaim: LootClaimCallback,
+): Promise<Loot | void> {
     const takeLootButton = new ButtonBuilder()
         .setCustomId("take-loot")
         .setLabel("Geschenk nehmen")
@@ -155,34 +205,11 @@ export async function postLootDrop(
         return;
     }
 
-    const timeBasedWeightKey = getCurrentTimeBasedKey();
-
-    const defaultWeights = timeBasedWeightKey
-        ? lootTemplates.map(t => t.timeBasedWeight?.[timeBasedWeightKey] ?? t.weight)
-        : lootTemplates.map(t => t.weight);
-
-    const { messages, weights } = await getDropWeightAdjustments(interaction.user, defaultWeights);
-
-    const template = randomEntryWeighted(lootTemplates, weights);
-
-    const rarities = lootAttributeTemplates.filter(a => a.classId === LootAttributeClass.RARITY);
-    const rarityWeights = rarities.map(a => a.initialDropWeight ?? 0);
-
-    const rarityAttribute =
-        template.id === LootKind.NICHTS ? null : randomEntryWeighted(rarities, rarityWeights);
-
-    const claimedLoot = await lootService.createLoot(
-        template,
-        interaction.user,
-        message,
-        "drop",
-        predecessorLootId ?? null,
-        rarityAttribute,
-    );
+    const claimed = await onClaim(interaction.user, message);
 
     const reply = await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
-    if (!claimedLoot) {
+    if (!claimed) {
         await reply.edit({
             content: `Upsi, da ist was schief gelaufi oder jemand anderes war schnelli ${context.emoji.sadHamster}`,
         });
@@ -190,6 +217,8 @@ export async function postLootDrop(
     }
 
     await reply.delete();
+
+    const { loot: claimedLoot, template, rarity: rarityAttribute, messages } = claimed;
 
     log.info(
         `User ${interaction.user.username} claimed loot ${claimedLoot.id} (template: ${template.id})`,
@@ -300,7 +329,7 @@ export async function postLootDrop(
         message,
         "double-or-nothing",
         claimedLoot.id,
-        rarityAttribute,
+        rarityAttribute ?? null,
     );
     if (!extraLoot) {
         await channel.send(`${winner}, ups, da ist was schief gelaufi ${context.emoji.sadHamster}`);

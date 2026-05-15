@@ -7,7 +7,8 @@
         "*.ts": "$(capture).test.ts,$(capture).d.ts"
     },
     "oxc.typeAware": true,
-    "typescript.experimental.useTsgo": false,
+    "js/ts.experimental.useTsgo": true,
+
     "cSpell.language": "de,en",
     "editor.formatOnSaveMode": "modificationsIfAvailable",
     "files.associations": {

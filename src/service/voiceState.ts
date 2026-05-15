@@ -1,5 +1,4 @@
 import type { VoiceState } from "discord.js";
-import { Temporal } from "@js-temporal/polyfill";
 
 import type { BotContext } from "#/context.ts";
 import log from "#log";

@@ -1,4 +1,3 @@
-import type { Temporal } from "@js-temporal/polyfill";
 import type { Activity, User } from "discord.js";
 
 import type { BotContext } from "#/context.ts";
@@ -108,7 +107,7 @@ async function fetchTrackMetadata(context: BotContext, trackId: string) {
         return null;
     }
 
-    const track = await context.spotifyClient?.tracks.get(trackId);
+    const track = await client.tracks.get(trackId);
     if (!track) {
         return null;
     }
@@ -121,9 +120,7 @@ async function fetchTrackMetadata(context: BotContext, trackId: string) {
 
     // Fetch artists only if track is not already in the database
     const artists = (
-        await Promise.all(
-            track.artists.map(artist => context.spotifyClient?.artists.get(artist.id)),
-        )
+        await Promise.all(track.artists.map(artist => client.artists.get(artist.id)))
     ).filter(a => a !== undefined);
 
     return insertTrackMetadata(track, artists);

@@ -1,5 +1,4 @@
 import type { Snowflake, User } from "discord.js";
-import { Temporal } from "@js-temporal/polyfill";
 
 import type { Reminder } from "./db/model.ts";
 

@@ -1,5 +1,4 @@
 import type { GuildMember, Message, MessageReaction, TextBasedChannel, User } from "discord.js";
-import { Temporal } from "@js-temporal/polyfill";
 
 import * as legacyDelayedPoll from "#/service/delayedPollLegacy.ts";
 import type { Poll, PollId } from "#/storage/db/model.ts";

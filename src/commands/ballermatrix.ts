@@ -5,25 +5,26 @@ import type { ProcessableMessage } from "#/service/command.ts";
 import { randomEntry } from "#/service/random.ts";
 
 const titles = [
-    "informiert sich übers Fuggern",
-    "bereitet seinen Willie vor",
+    "informiert sich über die Preise",
+    "bereitet die Bong vor",
     "wird eine Straftat begehen 👮",
-    "sollte nicht vergessen, den Lümmel zu waschen!",
-    "will den Lachs buttern",
-    "hat Bock den Lörres reinzuhämmern",
-    "will die Fleischpeitsche einsauen",
+    "sollte nicht vergessen, jemanden zu fragen der Ahnung hat!",
+    "will sich die Birne wegballern",
+    "hat Bock heftig drauf zu sein",
+    "will ordentlich reinhauen",
+    "wird gleich abheben",
 ];
 
 const warnings = [
     "Vergiss nicht, BKA is watching you! 👮",
-    "Rot ist Tabu 🚫",
-    "Minimum n Gummi drum 🚫👶",
-    "Tu nichts, was Assi Toni nicht auch tun würde",
+    "Finger weg von harten Drogen 🚫",
+    "Immer auf die Dosis achten 🚫💀",
+    "Tu nichts, was du morgen bereust",
 ];
 
-export default class FicktabelleCommand implements MessageCommand {
-    name = "ficktabelle";
-    description = "Sendet die Ficktabelle.";
+export default class BallermatrixCommand implements MessageCommand {
+    name = "ballermatrix";
+    description = "Sendet die Ballermatrix.";
 
     async handleMessage(message: ProcessableMessage) {
         const title = randomEntry(titles);
@@ -31,7 +32,7 @@ export default class FicktabelleCommand implements MessageCommand {
         await message.channel.send({
             embeds: [
                 {
-                    image: { url: "attachment://ficktabelle.png" },
+                    image: { url: "attachment://ballermatrix.png" },
                     author: {
                         name: `${message.author.username} ${title}`,
                         icon_url: message.author.displayAvatarURL(),
@@ -43,8 +44,8 @@ export default class FicktabelleCommand implements MessageCommand {
             ],
             files: [
                 {
-                    name: "ficktabelle.png",
-                    attachment: await fs.readFile("assets/ficktabelle.png"),
+                    name: "ballermatrix.png",
+                    attachment: await fs.readFile("assets/ballermatrix.png"),
                 },
             ],
         });

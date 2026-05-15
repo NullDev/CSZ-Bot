@@ -1,5 +1,4 @@
 import type { GuildMember, Snowflake, User } from "discord.js";
-import type { Temporal } from "@js-temporal/polyfill";
 
 import type { Ban } from "./db/model.ts";
 import db from "#db";

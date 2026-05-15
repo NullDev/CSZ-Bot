@@ -4,8 +4,8 @@ import { expect } from "expect";
 
 import InstagramLink from "./instagram.ts";
 
-describe("instagram pattern matching", () => {
-    test("base cases", () => {
+void describe("instagram pattern matching", () => {
+    void test("base cases", () => {
         const tests = {
             "https://www.instagram.com/p/C_OQe4FON7Q/": [
                 "https://www.instagram.com/p/C_OQe4FON7Q/",
@@ -51,7 +51,7 @@ describe("instagram pattern matching", () => {
             expect(InstagramLink.extractLinks(message)).toStrictEqual(result);
         }
     });
-    test("base cases short codes", () => {
+    void test("base cases short codes", () => {
         const tests = {
             "https://www.instagram.com/p/C_OQe4FON7Q/": ["C_OQe4FON7Q"],
             "https://www.instagram.com/share/C_OQe4FON7Q/": ["C_OQe4FON7Q"],

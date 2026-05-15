@@ -13,14 +13,14 @@ export default class MinCommand implements MessageCommand {
         const { args } = parseLegacyMessageParts(context, message);
 
         if (args.length === 0) {
-            message.channel.send("Wie wärs wenn du auch ein Alter angibst?");
+            await message.channel.send("Wie wärs wenn du auch ein Alter angibst?");
             return;
         }
 
         const parsedAge = Number(args[0]);
 
         if (!Number.isSafeInteger(parsedAge)) {
-            message.channel.send("Das is keine Zahl bruder.");
+            await message.channel.send("Das is keine Zahl bruder.");
             return;
         }
 

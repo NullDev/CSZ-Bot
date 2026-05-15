@@ -3,10 +3,11 @@ import * as fs from "node:fs/promises";
 import * as path from "node:path";
 import { DatabaseSync } from "node:sqlite";
 
-import { FileMigrationProvider, Kysely, Migrator } from "kysely";
+import { Kysely } from "kysely";
+import { FileMigrationProvider, Migrator } from "kysely/migration";
+import { SqliteDialect } from "kysely-sqlite";
 import { captureException } from "@sentry/node";
 
-import { SqliteDialect } from "./dialect/sqlite-dialect.ts";
 import type { Database } from "./model.ts";
 import datePlugin from "./date-plugin.ts";
 import { SqliteBooleanPlugin } from "./boolean-plugin.ts";

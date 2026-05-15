@@ -10,7 +10,7 @@ export async function leetTask(context: BotContext) {
 
     // Auto-kick members
     const sadPinguEmote = csz.emojis.cache.find(e => e.name === "sadpingu");
-    const dabEmote = csz.emojis.cache.find(e => e.name === "Dab");
+    const dabEmote = csz.emojis.cache.find(e => e.name === "GIGACHAD");
 
     const membersToKick = (await csz.members.fetch())
         .filter(m => m.joinedTimestamp !== null && Date.now() - m.joinedTimestamp >= 48 * 3_600_000)

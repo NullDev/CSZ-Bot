@@ -6,7 +6,6 @@ import type {
     RootOperationNode,
     UnknownRow,
 } from "kysely";
-import { Temporal } from "@js-temporal/polyfill";
 
 import log from "#log";
 

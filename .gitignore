@@ -18,6 +18,8 @@ node_modules/
 .cache/
 
 *.db
+*-shm
+*-wal
 .idea/
 
 data/

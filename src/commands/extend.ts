@@ -65,7 +65,11 @@ export default class ExtendCommand implements MessageCommand {
         }
     }
 
-    async legacyHandler(message: ProcessableMessage, context: BotContext, args: string[]) {
+    async legacyHandler(
+        message: ProcessableMessage,
+        context: BotContext,
+        args: string[],
+    ): Promise<string | void> {
         if (!args.length) {
             return "Bruder da sind keine Antwortmöglichkeiten :c";
         }
@@ -163,8 +167,8 @@ export default class ExtendCommand implements MessageCommand {
             attachments: [],
         });
 
-        for (const i in additionalPollOptions) {
-            await msg.react(pollEmbedService.EMOJI[dbPoll.options.length + Number(i)]);
+        for (let i = 0; i < additionalPollOptions.length; i++) {
+            await msg.react(pollEmbedService.EMOJI[dbPoll.options.length + i]);
         }
         await message.delete();
     }

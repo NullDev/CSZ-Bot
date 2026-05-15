@@ -15,7 +15,6 @@ import type {
 } from "discord.js";
 import { ChannelType } from "discord.js";
 import { SpotifyApi } from "@spotify/web-api-ts-sdk";
-import { Temporal } from "@js-temporal/polyfill";
 
 import type { UserMapEntry } from "#/commands/aoc.ts";
 import { readConfig } from "#/service/config.ts";
@@ -31,6 +30,10 @@ export interface BotContext {
     auth: {
         clientId: string;
         token: string;
+    };
+
+    development: {
+        enableCommands?: boolean;
     };
 
     prefix: {
@@ -133,6 +136,7 @@ export interface BotContext {
         sounds: string;
         commands: string;
         modCommands: string;
+        devCommands: string;
     };
 
     roleGuard: {
@@ -243,6 +247,9 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
         auth: {
             clientId: config.auth.clientId,
             token: config.auth.token,
+        },
+        development: {
+            enableCommands: config.development?.enableCommands,
         },
         guild,
         prefix: {
@@ -357,6 +364,7 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
             sounds: soundsPath,
             commands: path.resolve("src/commands"),
             modCommands: path.resolve("src/commands/modcommands"),
+            devCommands: path.resolve("src/commands/devcommands"),
         },
 
         roleGuard: {

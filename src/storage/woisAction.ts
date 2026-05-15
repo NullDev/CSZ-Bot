@@ -1,5 +1,4 @@
 import type { Message, PartialMessage, Snowflake, User } from "discord.js";
-import type { Temporal } from "@js-temporal/polyfill";
 
 import type { WoisAction } from "./db/model.ts";
 import db from "#db";

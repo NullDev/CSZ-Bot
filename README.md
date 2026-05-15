@@ -30,7 +30,7 @@ Du hast 2 Optionen: [Lokale installation](#lokale-installation) und [GitHub Code
 
 ### Lokale Installation
 
-<sub>node Version: >=25</sub>
+<sub>node Version: >=26</sub>
 
 1. Terminal aufmachen und dorthin navigieren, wo man es downloaden möchte
 2. Sichergehen, dass [Node.js](https://nodejs.org) installiert ist. Teste mit: `node --version`. Wenn es eine Versionsnummer zurückgibt, ist Node.js installiert.

@@ -8,7 +8,6 @@ import type {
     User,
 } from "discord.js";
 import { type ExpressionBuilder, sql } from "kysely";
-import type { Temporal } from "@js-temporal/polyfill";
 
 import type { BotContext } from "#/context.ts";
 import type {
@@ -53,6 +52,7 @@ export interface LootTemplate {
     gameEquip?: Equipable;
     initialAttributes?: LootAttributeKindId[];
     excludeFromDoubleDrops?: boolean;
+    wrapable?: boolean;
 
     onDrop?: (
         context: BotContext,

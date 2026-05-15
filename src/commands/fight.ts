@@ -1,7 +1,5 @@
 import { setTimeout } from "node:timers/promises";
 import type { JSONEncodable } from "@discordjs/util";
-
-import type { ApplicationCommand } from "#commands/command.ts";
 import {
     type APIEmbed,
     type BooleanCache,
@@ -11,7 +9,9 @@ import {
     SlashCommandBuilder,
     type User,
 } from "discord.js";
-import type { BotContext } from "#context.ts";
+
+import type { ApplicationCommand } from "#/commands/command.ts";
+import type { BotContext } from "#/context.ts";
 import {
     type BaseEntity,
     baseStats,
@@ -106,9 +106,9 @@ export default class FightCommand implements ApplicationCommand {
     }
 }
 
-type result = "PLAYER" | "ENEMY" | undefined;
+type Result = "PLAYER" | "ENEMY" | void;
 
-function checkWin(fightscene: FightScene): result {
+function checkWin(fightscene: FightScene): Result {
     if (fightscene.player.stats.health < 0) {
         return "ENEMY";
     }

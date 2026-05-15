@@ -55,6 +55,10 @@ export interface Config {
         token: string;
     };
 
+    development?: {
+        enableCommands?: boolean;
+    };
+
     sentry?: {
         dsn?: string | null;
         tracesSampleRate?: number;

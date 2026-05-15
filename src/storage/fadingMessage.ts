@@ -1,5 +1,4 @@
 import type { Message } from "discord.js";
-import { Temporal } from "@js-temporal/polyfill";
 
 import type { FadingMessage } from "./db/model.ts";
 import db from "#db";

@@ -1,7 +1,6 @@
 import { parseArgs, type ParseArgsConfig } from "node:util";
 
 import { cleanContent } from "discord.js";
-import { Temporal } from "@js-temporal/polyfill";
 
 import type { MessageCommand } from "#/commands/command.ts";
 import type { BotContext } from "#/context.ts";
