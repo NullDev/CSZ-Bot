@@ -319,6 +319,7 @@ const hosts = {
         "x.com/niusde_",
         "twitter.com/niusde_",
     ],
+    "Google Share": ["share.google"],
 };
 
 export default class SpringerWarningCommand implements SpecialCommand {
