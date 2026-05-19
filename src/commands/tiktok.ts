@@ -28,6 +28,11 @@ export default class TikTokLink implements SpecialCommand {
             content: `https://kktiktok.com/${match[1]}`,
             allowedMentions: { repliedUser: false },
         });
-        await Promise.all([message.suppressEmbeds(true), reply.suppressEmbeds(true)]);
+
+        if (reply.embeds.length > 0) {
+            await message.suppressEmbeds(true);
+        } else {
+            await reply.delete();
+        }
     }
 }
