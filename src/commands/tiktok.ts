@@ -1,6 +1,7 @@
 import type { Message } from "discord.js";
 
 import type { SpecialCommand } from "#/commands/command.ts";
+import { replyWithFallbackEmbed } from "#/utils/embedUtils.ts";
 
 const tiktokUrlPattern = /https?:\/\/(?:(?:www|m|vm)\.)?tiktok\.com\/([^?&\s/]+)/i;
 
@@ -24,15 +25,6 @@ export default class TikTokLink implements SpecialCommand {
             return;
         }
 
-        const reply = await message.reply({
-            content: `https://kktiktok.com/${match[1]}`,
-            allowedMentions: { repliedUser: false },
-        });
-
-        if (reply.embeds.length > 0) {
-            await message.suppressEmbeds(true);
-        } else {
-            await reply.delete();
-        }
+        await replyWithFallbackEmbed(message, `https://kktiktok.com/${match[1]}`);
     }
 }

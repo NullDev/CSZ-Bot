@@ -3,6 +3,7 @@ import type { Message } from "discord.js";
 import type { SpecialCommand } from "#/commands/command.ts";
 import type { BotContext } from "#/context.ts";
 import * as instagramService from "#/service/instagram.ts";
+import { replyWithFallbackEmbed } from "#/utils/embedUtils.ts";
 
 const instagramOptions = {
     uriPattern:
@@ -13,24 +14,6 @@ const instagramOptions = {
         Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
     },
 } as const;
-
-const FALLBACK_EMBED_WAIT_MS = 5000;
-
-async function replyWithFallback(message: Message<true>, fallbackUrl: string) {
-    const reply = await message.reply({
-        content: fallbackUrl,
-        allowedMentions: { repliedUser: false },
-    });
-
-    await new Promise(resolve => setTimeout(resolve, FALLBACK_EMBED_WAIT_MS));
-    const fetched = await reply.fetch();
-
-    if (fetched.embeds.length > 0) {
-        await message.suppressEmbeds(true);
-    } else {
-        await fetched.delete();
-    }
-}
 
 export default class InstagramLink implements SpecialCommand {
     name = "Instagram";
@@ -87,7 +70,7 @@ export default class InstagramLink implements SpecialCommand {
             try {
                 const result = await instagramService.downloadInstagramContent(context, postUri);
                 if (!result.success) {
-                    await replyWithFallback(message, fallbackUrl);
+                    await replyWithFallbackEmbed(message, fallbackUrl);
                     return;
                 }
 
@@ -106,7 +89,7 @@ export default class InstagramLink implements SpecialCommand {
                     allowedMentions: { repliedUser: false },
                 });
             } catch {
-                await replyWithFallback(message, fallbackUrl);
+                await replyWithFallbackEmbed(message, fallbackUrl);
             }
         }
         await message.suppressEmbeds(true);
