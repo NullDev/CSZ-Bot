@@ -1,3 +1,4 @@
+import { setTimeout } from "node:timers/promises";
 import type { Message } from "discord.js";
 
 const EMBED_WAIT_MS = 5000;
@@ -12,7 +13,7 @@ export async function replyWithFallbackEmbed(message: Message<true>, fallbackUrl
         allowedMentions: { repliedUser: false },
     });
 
-    await new Promise(resolve => setTimeout(resolve, EMBED_WAIT_MS));
+    await setTimeout(EMBED_WAIT_MS);
     const fetched = await reply.fetch();
 
     if (fetched.embeds.length > 0) {
