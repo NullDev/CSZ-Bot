@@ -14,6 +14,24 @@ const instagramOptions = {
     },
 } as const;
 
+const FALLBACK_EMBED_WAIT_MS = 5000;
+
+async function replyWithFallback(message: Message<true>, fallbackUrl: string) {
+    const reply = await message.reply({
+        content: fallbackUrl,
+        allowedMentions: { repliedUser: false },
+    });
+
+    await new Promise(resolve => setTimeout(resolve, FALLBACK_EMBED_WAIT_MS));
+    const fetched = await reply.fetch();
+
+    if (fetched.embeds.length > 0) {
+        await message.suppressEmbeds(true);
+    } else {
+        await fetched.delete();
+    }
+}
+
 export default class InstagramLink implements SpecialCommand {
     name = "Instagram";
     description = "Embedded Instagram Links";
@@ -61,32 +79,35 @@ export default class InstagramLink implements SpecialCommand {
         await message.channel.sendTyping();
 
         for (const postUri of urisToProcess) {
-            const result = await instagramService.downloadInstagramContent(context, postUri);
-            if (!result.success) {
-                const failureReaction = message.guild?.emojis.cache.find(e => e.name === "sadge");
-                if (failureReaction) {
-                    await message.react(failureReaction);
+            const fallbackUrl = postUri.replace(
+                /^https?:\/\/(?:www\.)?instagram\.com/,
+                "https://kkinstagram.com",
+            );
+
+            try {
+                const result = await instagramService.downloadInstagramContent(context, postUri);
+                if (!result.success) {
+                    await replyWithFallback(message, fallbackUrl);
+                    return;
                 }
-                return;
+
+                const videoFiles = result.videoUrls.map((url, idx) => ({
+                    attachment: url,
+                    name: `Drecksvideo_${idx}.mp4`,
+                }));
+                const imageFiles = result.imageUrls.map((url, idx) => ({
+                    attachment: url,
+                    name: `Drecksbild_${idx}.jpg`,
+                }));
+
+                // We need to reply, since we cannot edit a message created by a different user (only remove embeds)
+                await message.reply({
+                    files: [...imageFiles, ...videoFiles],
+                    allowedMentions: { repliedUser: false },
+                });
+            } catch {
+                await replyWithFallback(message, fallbackUrl);
             }
-
-            const videoFiles = result.videoUrls.map((url, idx) => ({
-                attachment: url,
-                name: `Drecksvideo_${idx}.mp4`,
-            }));
-            const imageFiles = result.imageUrls.map((url, idx) => ({
-                attachment: url,
-                name: `Drecksbild_${idx}.jpg`,
-            }));
-            const files = [...imageFiles, ...videoFiles];
-
-            // We need to reply, since we cannot edit a message created by a different user (only remove embeds)
-            await message.reply({
-                files,
-                allowedMentions: {
-                    repliedUser: false,
-                },
-            });
         }
         await message.suppressEmbeds(true);
     }
