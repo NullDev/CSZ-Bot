@@ -33,7 +33,16 @@ class YoutubeDownloader {
     ): Promise<DownloadResult> {
         const fullOutFile = path.join(targetDir, "video.mp4");
 
-        const videoInfo = await this.#fetchVideoInfo(url);
+        let videoInfo;
+        try {
+            videoInfo = await this.#fetchVideoInfo(url);
+        } catch {
+            return {
+                result: "error",
+                message: "Failed to fetch video info.",
+            };
+        }
+
         const options = {
             ...this.#commonOptions,
             maxFilesize: String(100 * 1024 * 1024), // 100 MB
@@ -43,13 +52,19 @@ class YoutubeDownloader {
             abortOnError: true,
         } satisfies Flags;
 
-        await ytdl(url, options, {
-            signal,
-        });
-
-        if (signal.aborted) {
+        try {
+            await ytdl(url, options, {
+                signal,
+            });
+        } catch (error) {
+            if (signal.aborted) {
+                return {
+                    result: "aborted",
+                };
+            }
             return {
-                result: "aborted",
+                result: "error",
+                message: `Failed to download video. ${error instanceof Error ? error.message : String(error)}`,
             };
         }
 
