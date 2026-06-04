@@ -14,7 +14,6 @@ export async function up(db: Kysely<any>) {
         .addColumn("updatedAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
         .execute();
 
-    // TODO: Check if we need this
     await db.schema
         .createIndex("locationHistory_userId_successor")
         .on("locationHistory")

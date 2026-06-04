@@ -10,7 +10,6 @@ export async function up(db: Kysely<any>) {
         .addColumn("displayName", "text", c => c.notNull())
         .addColumn("shortDisplay", "text", c => c.notNull())
         .addColumn("color", "integer")
-
         .addColumn("createdAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
         .addColumn("updatedAt", "timestamp", c => c.notNull().defaultTo(sql`current_timestamp`))
         .addColumn("deletedAt", "timestamp")
