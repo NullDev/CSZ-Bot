@@ -145,6 +145,15 @@ export interface Config {
                 }
             >;
         };
+        autoban?: {
+            enabled: boolean;
+            deleteThreshold: number;
+            banThreshold: number;
+            banDurationHours: number;
+            timeWindowMinutes: number;
+            /** Channel ID for the mod-only spam audit log. Leave empty to disable. */
+            spamLogChannelId?: Snowflake;
+        };
     };
 
     deleteThreadMessagesInChannelIds: readonly Snowflake[];
