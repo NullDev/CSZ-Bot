@@ -140,6 +140,12 @@ export function evaluateMessage(
         m => Temporal.Instant.compare(m.recordedAt, windowStart) > 0,
     );
 
+    if (history.length === 0) {
+        recentMessages.delete(member.id);
+    } else {
+        recentMessages.set(member.id, history);
+    }
+
     const results = signals.map(({ label, evaluate }) => ({
         label,
         points: evaluate(message, member, context, history),
