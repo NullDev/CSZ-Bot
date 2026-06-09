@@ -26,7 +26,7 @@ const SCORES = {
     accountAgeUnder30Days: 15,
     guildJoinUnder10Minutes: 40,
     guildJoinUnder1Hour: 25,
-    guildJoinUnder24Hours: 10,
+    guildJoinUnder48Hours: 20,
     containsUrl: 20,
     containsDiscordInvite: 25,
     massUserMentions: 20,
@@ -57,8 +57,8 @@ function scoreGuildJoin(_msg: Message<true>, member: GuildMember): number {
     if (Temporal.Instant.compare(joined, now.subtract({ hours: 1 })) > 0) {
         return SCORES.guildJoinUnder1Hour;
     }
-    if (Temporal.Instant.compare(joined, now.subtract({ hours: 24 })) > 0) {
-        return SCORES.guildJoinUnder24Hours;
+    if (Temporal.Instant.compare(joined, now.subtract({ hours: 48 })) > 0) {
+        return SCORES.guildJoinUnder48Hours;
     }
     return 0;
 }
