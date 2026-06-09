@@ -20,7 +20,6 @@ const recentMessages = new Map<Snowflake, RecentMessage[]>();
 
 const URL_PATTERN = /https?:\/\//i;
 const DISCORD_INVITE_PATTERN = /discord\.gg\//i;
-const TRAILING_DIGITS_PATTERN = /\d{2,}$/;
 
 const SCORES = {
     accountAgeUnder7Days: 30,
@@ -28,7 +27,6 @@ const SCORES = {
     guildJoinUnder10Minutes: 40,
     guildJoinUnder1Hour: 25,
     guildJoinUnder24Hours: 10,
-    trailingDigitsInUsername: 10,
     containsUrl: 20,
     containsDiscordInvite: 25,
     massUserMentions: 20,
@@ -63,10 +61,6 @@ function scoreGuildJoin(_msg: Message<true>, member: GuildMember): number {
         return SCORES.guildJoinUnder24Hours;
     }
     return 0;
-}
-
-function scoreTrailingDigits(_msg: Message<true>, member: GuildMember): number {
-    return TRAILING_DIGITS_PATTERN.test(member.user.username) ? SCORES.trailingDigitsInUsername : 0;
 }
 
 function scoreUrl(msg: Message<true>): number {
@@ -105,7 +99,6 @@ function scoreCrossChannelDuplicate(
 const signals: readonly Signal[] = [
     scoreAccountAge,
     scoreGuildJoin,
-    scoreTrailingDigits,
     scoreUrl,
     scoreDiscordInvite,
     scoreMassUserMentions,
