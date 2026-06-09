@@ -32,10 +32,10 @@ export default async function spamDetectionHandler(
     }
 
     const { autoban } = context.commandConfig;
-    const score = spamDetection.evaluateMessage(message, member, context);
+    const { score, triggeredLabels } = spamDetection.evaluateMessage(message, member, context);
 
     if (score >= autoban.banThreshold) {
-        log.info({ userId: member.id, score }, "Auto-ban: spam threshold crossed");
+        log.info({ userId: member.id, score, triggeredLabels }, "Auto-ban: spam threshold crossed");
 
         // Delete previously tracked messages from this user across channels
         const tracked = spamDetection.getTrackedMessages(member.id);
@@ -54,11 +54,16 @@ export default async function spamDetectionHandler(
 
         await message.delete().catch(() => undefined);
 
+        const reason = [
+            "Automatischer Bann: Spam-Erkennung",
+            ...triggeredLabels.map(l => `• ${l}`),
+        ].join("\n");
+
         const err = await banService.banUser(
             context,
             member,
             context.client.user,
-            `Automatischer Bann: Spam erkannt (Score: ${score})`,
+            reason,
             false,
             autoban.banDurationHours,
         );

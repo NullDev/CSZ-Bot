@@ -9,12 +9,22 @@ type RecentMessage = {
     recordedAt: Temporal.Instant;
 };
 
-type Signal = (
+type SignalEvaluate = (
     message: Message<true>,
     member: GuildMember,
     context: BotContext, // available if a future signal needs it
     history: readonly RecentMessage[],
 ) => number;
+
+type SignalDef = {
+    label: string;
+    evaluate: SignalEvaluate;
+};
+
+export type EvaluationResult = {
+    score: number;
+    triggeredLabels: readonly string[];
+};
 
 const recentMessages = new Map<Snowflake, RecentMessage[]>();
 
@@ -35,91 +45,110 @@ const SCORES = {
     onlyDefaultRole: 10,
 } as const;
 
-function scoreAccountAge(_msg: Message<true>, member: GuildMember): number {
-    const now = Temporal.Now.instant();
-    const created = Temporal.Instant.fromEpochMilliseconds(member.user.createdTimestamp);
-    if (Temporal.Instant.compare(created, now.subtract({ hours: 7 * 24 })) > 0) {
-        return SCORES.accountAgeUnder7Days;
-    }
-    if (Temporal.Instant.compare(created, now.subtract({ hours: 30 * 24 })) > 0) {
-        return SCORES.accountAgeUnder30Days;
-    }
-    return 0;
+/** Returns true if `instant` occurred more recently than `duration` ago. */
+function isWithin(instant: Temporal.Instant, duration: Temporal.DurationLike): boolean {
+    return Temporal.Instant.compare(instant, Temporal.Now.instant().subtract(duration)) > 0;
 }
 
-function scoreGuildJoin(_msg: Message<true>, member: GuildMember): number {
-    if (member.joinedTimestamp === null) return 0;
-    const now = Temporal.Now.instant();
-    const joined = Temporal.Instant.fromEpochMilliseconds(member.joinedTimestamp);
-    if (Temporal.Instant.compare(joined, now.subtract({ minutes: 10 })) > 0) {
-        return SCORES.guildJoinUnder10Minutes;
-    }
-    if (Temporal.Instant.compare(joined, now.subtract({ hours: 1 })) > 0) {
-        return SCORES.guildJoinUnder1Hour;
-    }
-    if (Temporal.Instant.compare(joined, now.subtract({ hours: 48 })) > 0) {
-        return SCORES.guildJoinUnder48Hours;
-    }
-    return 0;
-}
-
-function scoreUrl(msg: Message<true>): number {
-    return URL_PATTERN.test(msg.content) ? SCORES.containsUrl : 0;
-}
-
-function scoreDiscordInvite(msg: Message<true>): number {
-    return DISCORD_INVITE_PATTERN.test(msg.content) ? SCORES.containsDiscordInvite : 0;
-}
-
-function scoreMassUserMentions(msg: Message<true>): number {
-    return msg.mentions.users.size >= 2 ? SCORES.massUserMentions : 0;
-}
-
-function scoreRoleMentions(msg: Message<true>): number {
-    return msg.mentions.roles.size > 0 ? SCORES.roleMentions : 0;
-}
-
-function scoreOnlyDefaultRole(_msg: Message<true>, member: GuildMember): number {
-    // ≤ 2 means only @everyone + the default role, i.e. no self-assigned roles
-    return member.roles.cache.size <= 2 ? SCORES.onlyDefaultRole : 0;
-}
-
-function scoreCrossChannelDuplicate(
-    msg: Message<true>,
-    _member: GuildMember,
-    _context: BotContext,
-    history: readonly RecentMessage[],
-): number {
-    const normalized = msg.content.trim().toLowerCase();
-    return history.some(m => m.content === normalized && m.channelId !== msg.channelId)
-        ? SCORES.crossChannelDuplicate
-        : 0;
-}
-
-const signals: readonly Signal[] = [
-    scoreAccountAge,
-    scoreGuildJoin,
-    scoreUrl,
-    scoreDiscordInvite,
-    scoreMassUserMentions,
-    scoreRoleMentions,
-    scoreOnlyDefaultRole,
-    scoreCrossChannelDuplicate,
+const signals: readonly SignalDef[] = [
+    {
+        label: "Neues Discord-Konto (< 7 Tage alt)",
+        evaluate: (_msg, member) => {
+            const created = Temporal.Instant.fromEpochMilliseconds(member.user.createdTimestamp);
+            return isWithin(created, { hours: 7 * 24 }) ? SCORES.accountAgeUnder7Days : 0;
+        },
+    },
+    {
+        label: "Relativ neues Discord-Konto (7-30 Tage alt)",
+        evaluate: (_msg, member) => {
+            const created = Temporal.Instant.fromEpochMilliseconds(member.user.createdTimestamp);
+            return !isWithin(created, { hours: 7 * 24 }) && isWithin(created, { hours: 30 * 24 })
+                ? SCORES.accountAgeUnder30Days
+                : 0;
+        },
+    },
+    {
+        label: "Dem Server in den letzten 10 Minuten beigetreten",
+        evaluate: (_msg, member) => {
+            if (member.joinedTimestamp === null) return 0;
+            const joined = Temporal.Instant.fromEpochMilliseconds(member.joinedTimestamp);
+            return isWithin(joined, { minutes: 10 }) ? SCORES.guildJoinUnder10Minutes : 0;
+        },
+    },
+    {
+        label: "Dem Server in der letzten Stunde beigetreten",
+        evaluate: (_msg, member) => {
+            if (member.joinedTimestamp === null) return 0;
+            const joined = Temporal.Instant.fromEpochMilliseconds(member.joinedTimestamp);
+            return !isWithin(joined, { minutes: 10 }) && isWithin(joined, { hours: 1 })
+                ? SCORES.guildJoinUnder1Hour
+                : 0;
+        },
+    },
+    {
+        label: "Dem Server in den letzten 48 Stunden beigetreten",
+        evaluate: (_msg, member) => {
+            if (member.joinedTimestamp === null) return 0;
+            const joined = Temporal.Instant.fromEpochMilliseconds(member.joinedTimestamp);
+            return !isWithin(joined, { hours: 1 }) && isWithin(joined, { hours: 48 })
+                ? SCORES.guildJoinUnder48Hours
+                : 0;
+        },
+    },
+    {
+        label: "Nachricht enthält einen Link",
+        evaluate: msg => (URL_PATTERN.test(msg.content) ? SCORES.containsUrl : 0),
+    },
+    {
+        label: "Nachricht enthält einen Discord-Einladungslink",
+        evaluate: msg =>
+            DISCORD_INVITE_PATTERN.test(msg.content) ? SCORES.containsDiscordInvite : 0,
+    },
+    {
+        label: "Nachricht erwähnt mehrere Nutzer",
+        evaluate: msg => (msg.mentions.users.size >= 2 ? SCORES.massUserMentions : 0),
+    },
+    {
+        label: "Nachricht erwähnt eine oder mehrere Rollen",
+        evaluate: msg => (msg.mentions.roles.size > 0 ? SCORES.roleMentions : 0),
+    },
+    {
+        label: "Keine selbst zugewiesenen Rollen",
+        evaluate: (_msg, member) =>
+            // ≤ 2 means only @everyone + the default role, i.e. no self-assigned roles
+            member.roles.cache.size <= 2 ? SCORES.onlyDefaultRole : 0,
+    },
+    {
+        label: "Gleiche Nachricht in mehreren Kanälen gesendet",
+        evaluate: (msg, _member, _context, history) => {
+            const normalized = msg.content.trim().toLowerCase();
+            return history.some(m => m.content === normalized && m.channelId !== msg.channelId)
+                ? SCORES.crossChannelDuplicate
+                : 0;
+        },
+    },
 ];
 
 export function evaluateMessage(
     message: Message<true>,
     member: GuildMember,
     context: BotContext,
-): number {
+): EvaluationResult {
     const { timeWindowMinutes } = context.commandConfig.autoban;
-    const now = Temporal.Now.instant();
-    const windowStart = now.subtract({ minutes: timeWindowMinutes });
+    const windowStart = Temporal.Now.instant().subtract({ minutes: timeWindowMinutes });
     const history = (recentMessages.get(member.id) ?? []).filter(
         m => Temporal.Instant.compare(m.recordedAt, windowStart) > 0,
     );
 
-    return signals.reduce((total, signal) => total + signal(message, member, context, history), 0);
+    const results = signals.map(({ label, evaluate }) => ({
+        label,
+        points: evaluate(message, member, context, history),
+    }));
+
+    return {
+        score: results.reduce((sum, r) => sum + r.points, 0),
+        triggeredLabels: results.filter(r => r.points > 0).map(r => r.label),
+    };
 }
 
 export function trackMessage(
