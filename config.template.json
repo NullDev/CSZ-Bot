@@ -78,6 +78,18 @@
             "sessionToken": "",
             "leaderBoardJsonUrl": "",
             "userMap": {}
+        },
+        "autoban": {
+            // Set to true to enable automatic spam detection and banning
+            "enabled": false,
+            // Score at which a suspicious message is silently deleted (no ban)
+            "deleteThreshold": 40,
+            // Score at which the user is deleted + banned for banDurationHours
+            "banThreshold": 60,
+            // Duration of the automatic ban in hours
+            "banDurationHours": 24,
+            // Time window in minutes used to detect the same message across multiple channels
+            "timeWindowMinutes": 5
         }
     },
 

@@ -84,6 +84,13 @@ export interface BotContext {
             leaderBoardJsonUrl: string;
             userMap: Record<Snowflake, UserMapEntry>;
         };
+        autoban: {
+            enabled: boolean;
+            deleteThreshold: number;
+            banThreshold: number;
+            banDurationHours: number;
+            timeWindowMinutes: number;
+        };
     };
 
     roles: {
@@ -318,6 +325,13 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
                 sessionToken: config.command.aoc.sessionToken,
                 leaderBoardJsonUrl: config.command.aoc.leaderBoardJsonUrl,
                 userMap: config.command.aoc.userMap,
+            },
+            autoban: {
+                enabled: config.command.autoban?.enabled ?? false,
+                deleteThreshold: config.command.autoban?.deleteThreshold ?? 40,
+                banThreshold: config.command.autoban?.banThreshold ?? 60,
+                banDurationHours: config.command.autoban?.banDurationHours ?? 24,
+                timeWindowMinutes: config.command.autoban?.timeWindowMinutes ?? 5,
             },
         },
 

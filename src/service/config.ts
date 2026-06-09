@@ -145,6 +145,13 @@ export interface Config {
                 }
             >;
         };
+        autoban?: {
+            enabled: boolean;
+            deleteThreshold: number;
+            banThreshold: number;
+            banDurationHours: number;
+            timeWindowMinutes: number;
+        };
     };
 
     deleteThreadMessagesInChannelIds: readonly Snowflake[];
