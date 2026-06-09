@@ -26,7 +26,7 @@ function buildSpamLogEmbed(
             { name: "Score", value: `${score} / ${threshold}`, inline: true },
             {
                 name: "Erkannte Merkmale",
-                value: triggeredLabels.map(l => `• ${l}`).join("\n") || "—",
+                value: triggeredLabels.map(l => `- ${l}`).join("\n") || "—",
                 inline: false,
             },
             {
@@ -105,7 +105,7 @@ export default async function spamDetectionHandler(
 
         const reason = [
             "Automatischer Bann: Spam-Erkennung",
-            ...triggeredLabels.map(l => `• ${l}`),
+            ...triggeredLabels.map(l => `- ${l}`),
         ].join("\n");
 
         const err = await banService.banUser(
