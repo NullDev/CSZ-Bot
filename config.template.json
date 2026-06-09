@@ -89,7 +89,9 @@
             // Duration of the automatic ban in hours
             "banDurationHours": 24,
             // Time window in minutes used to detect the same message across multiple channels
-            "timeWindowMinutes": 5
+            "timeWindowMinutes": 5,
+            // Channel ID of a mod-only channel for spam audit logs. Leave empty to disable.
+            "spamLogChannelId": ""
         }
     },
 

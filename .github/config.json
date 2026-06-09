@@ -74,6 +74,14 @@
             "sessionToken": "",
             "leaderBoardJsonUrl": "",
             "userMap": {}
+        },
+        "autoban": {
+            "enabled": true,
+            "deleteThreshold": 40,
+            "banThreshold": 60,
+            "banDurationHours": 24,
+            "timeWindowMinutes": 5,
+            "spamLogChannelId": "1513948506266538275"
         }
     },
 

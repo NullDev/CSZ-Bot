@@ -90,6 +90,7 @@ export interface BotContext {
             banThreshold: number;
             banDurationHours: number;
             timeWindowMinutes: number;
+            spamLog: TextChannel | null;
         };
     };
 
@@ -332,6 +333,9 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
                 banThreshold: config.command.autoban?.banThreshold ?? 60,
                 banDurationHours: config.command.autoban?.banDurationHours ?? 24,
                 timeWindowMinutes: config.command.autoban?.timeWindowMinutes ?? 5,
+                spamLog: config.command.autoban?.spamLogChannelId
+                    ? ensureTextChannel(guild, config.command.autoban.spamLogChannelId)
+                    : null,
             },
         },
 

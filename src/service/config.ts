@@ -151,6 +151,8 @@ export interface Config {
             banThreshold: number;
             banDurationHours: number;
             timeWindowMinutes: number;
+            /** Channel ID for the mod-only spam audit log. Leave empty to disable. */
+            spamLogChannelId?: Snowflake;
         };
     };
 
