@@ -23,7 +23,7 @@ jobs:
       BOT_HOME_DIR: /home/csc
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           show-progress: false
 
