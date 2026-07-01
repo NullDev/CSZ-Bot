@@ -31,10 +31,10 @@
   },
   "dependencies": {
     "@discordjs/voice": "^0.19.2",
-    "@napi-rs/canvas": "1.0.0",
+    "@napi-rs/canvas": "1.0.2",
     "@resvg/resvg-js": "^2.6.2",
     "@sentry/node": "^10.59.0",
-    "@snazzah/davey": "^0.1.11",
+    "@snazzah/davey": "^0.1.12",
     "@spotify/web-api-ts-sdk": "^1.2.0",
     "chrono-node": "^2.9.1",
     "comment-json": "^5.0.0",
@@ -54,7 +54,7 @@
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.13",
     "@types/jsdom": "^28.0.3",
-    "@types/node": "^26.0.0",
+    "@types/node": "^26.0.1",
     "@types/node-cron": "^3.0.11",
     "@typescript/native-preview": "^7.0.0-dev.20260620.1",
     "expect": "^30.4.1",
