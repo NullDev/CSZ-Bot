@@ -33,7 +33,7 @@
     "@discordjs/voice": "^0.19.2",
     "@napi-rs/canvas": "1.0.2",
     "@resvg/resvg-js": "^2.6.2",
-    "@sentry/node": "^10.59.0",
+    "@sentry/node": "^10.62.0",
     "@snazzah/davey": "^0.1.12",
     "@spotify/web-api-ts-sdk": "^1.2.0",
     "chrono-node": "^2.9.1",
