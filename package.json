@@ -61,7 +61,7 @@
     "lefthook": "^2.1.9",
     "oxfmt": "^0.57.0",
     "oxlint": "^1.70.0",
-    "oxlint-tsgolint": "^0.23.0"
+    "oxlint-tsgolint": "^0.24.0"
   },
   "engines": {
     "node": ">=26.1"
