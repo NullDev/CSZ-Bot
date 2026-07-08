@@ -69,6 +69,11 @@ const groupId = z.string().brand("GroupId");
 const emojiId = z.string().brand("EmojiId");
 const guildId = z.string().brand("GuildId");
 
+const apiKey = z
+    .string()
+    .brand("ApiKey")
+    .transform(k => k.trim());
+
 export type ChannelId = z.infer<typeof channelId>;
 export type CategoryId = z.infer<typeof categoryId>;
 export type UserId = z.infer<typeof userId>;
@@ -153,9 +158,10 @@ export const configSchema = z.object({
         }),
         nickName: z
             .object({
-                skippedUserIds: userIdSet,
+                skippedUserIds: userIdSet.optional().default(new Set()),
             })
-            .optional(),
+            .optional()
+            .default({ skippedUserIds: new Set() }),
         woisPing: z.object({
             limit: z.number(),
             threshold: z.number(),
@@ -165,9 +171,10 @@ export const configSchema = z.object({
         }),
         instagram: z
             .object({
-                rapidApiInstagramApiKey: z.string().nullish(),
+                rapidApiInstagramApiKey: apiKey.nullish().default(null),
             })
-            .optional(),
+            .optional()
+            .default({ rapidApiInstagramApiKey: null }),
         loot: z.object({
             enabled: z.boolean().optional().default(false),
             scheduleCron: z.string().optional().default("*/15 * * * *"),

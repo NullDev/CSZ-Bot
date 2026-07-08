@@ -244,18 +244,12 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
 
     return {
         client,
-        auth: {
-            clientId: config.auth.clientId,
-            token: config.auth.token,
-        },
+        auth: config.auth,
         development: {
             enableCommands: config.development?.enableCommands,
         },
         guild,
-        prefix: {
-            command: config.prefix.command,
-            modCommand: config.prefix.modCommand,
-        },
+        prefix: config.prefix,
         sendWelcomeMessage: config.sendWelcomeMessage,
         spotifyClient:
             config.spotify?.clientId && config.spotify?.clientSecret
@@ -265,32 +259,13 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
                       [],
                   )
                 : null,
-        youtube: {
-            cookieFilePath: config.youtube?.cookieFilePath,
-        },
+        youtube: config.youtube,
         moderatorRoles: Array.from(config.moderatorRoleIds, id => ensureRole(guild, id)),
         commandConfig: {
-            faulenzerPing: {
-                allowedRoleIds: config.command.faulenzerPing.allowedRoleIds,
-                maxNumberOfPings: config.command.faulenzerPing.maxNumberOfPings,
-                minRequiredReactions: config.command.faulenzerPing.minRequiredReactions,
-            },
-            ehre: {
-                emojiNames: config.command.ehre.emojiNames,
-            },
-            quote: {
-                emojiName: config.command.quotes.emojiName,
-                allowedGroupIds: config.command.quotes.allowedGroupIds,
-                anonymousCategoryIds: config.command.quotes.anonymousCategoryIds,
-                anonymousChannelIds: config.command.quotes.anonymousChannelIds,
-                blacklistedChannelIds: config.command.quotes.blacklistedChannelIds,
-                voteThreshold: config.command.quotes.voteThreshold,
-                defaultTargetChannelId: config.command.quotes.defaultTargetChannelId,
-                targetChannelOverrides: config.command.quotes.targetChannelOverrides,
-            },
-            nickName: {
-                skippedUserIds: config.command.nickName?.skippedUserIds ?? new Set(),
-            },
+            faulenzerPing: config.command.faulenzerPing,
+            ehre: config.command.ehre,
+            quote: config.command.quotes,
+            nickName: config.command.nickName,
             loot: {
                 enabled: config.command.loot?.enabled,
                 scheduleCron: config.command.loot?.scheduleCron,
@@ -304,15 +279,9 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
             },
             instagram: {
                 rapidApiInstagramApiKey:
-                    config.command.instagram?.rapidApiInstagramApiKey?.trim() ?? undefined,
+                    config.command.instagram?.rapidApiInstagramApiKey ?? undefined,
             },
-            aoc: {
-                enabled: config.command.aoc.enabled,
-                targetChannelId: config.command.aoc.targetChannelId,
-                sessionToken: config.command.aoc.sessionToken,
-                leaderBoardJsonUrl: config.command.aoc.leaderBoardJsonUrl,
-                userMap: config.command.aoc.userMap,
-            },
+            aoc: config.command.aoc,
         },
 
         deleteThreadMessagesInChannelIds: new Set(config.deleteThreadMessagesInChannelIds),
