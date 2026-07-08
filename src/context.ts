@@ -268,30 +268,30 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
         youtube: {
             cookieFilePath: config.youtube?.cookieFilePath ?? null,
         },
-        moderatorRoles: config.moderatorRoleIds.map(id => ensureRole(guild, id)),
+        moderatorRoles: Array.from(config.moderatorRoleIds, id => ensureRole(guild, id)),
         commandConfig: {
             faulenzerPing: {
-                allowedRoleIds: new Set(config.command.faulenzerPing.allowedRoleIds),
+                allowedRoleIds: config.command.faulenzerPing.allowedRoleIds,
                 maxNumberOfPings: Number(config.command.faulenzerPing.maxNumberOfPings ?? "15"),
                 minRequiredReactions: Number(
                     config.command.faulenzerPing.minRequiredReactions ?? "5",
                 ),
             },
             ehre: {
-                emojiNames: new Set(config.command.ehre.emojiNames ?? ["aehre"]),
+                emojiNames: config.command.ehre.emojiNames ?? new Set(["aehre"]),
             },
             quote: {
                 emojiName: config.command.quotes.emojiName,
-                allowedGroupIds: new Set(config.command.quotes.allowedGroupIds),
-                anonymousCategoryIds: new Set(config.command.quotes.anonymousCategoryIds),
-                anonymousChannelIds: new Set(config.command.quotes.anonymousChannelIds),
-                blacklistedChannelIds: new Set(config.command.quotes.blacklistedChannelIds),
+                allowedGroupIds: config.command.quotes.allowedGroupIds,
+                anonymousCategoryIds: config.command.quotes.anonymousCategoryIds,
+                anonymousChannelIds: config.command.quotes.anonymousChannelIds,
+                blacklistedChannelIds: config.command.quotes.blacklistedChannelIds,
                 voteThreshold: config.command.quotes.voteThreshold ?? 2,
                 defaultTargetChannelId: config.command.quotes.defaultTargetChannelId,
                 targetChannelOverrides: config.command.quotes.targetChannelOverrides,
             },
             nickName: {
-                skippedUserIds: new Set(config.command.nickName?.skippedUserIds ?? []),
+                skippedUserIds: config.command.nickName?.skippedUserIds ?? new Set(),
             },
             loot: {
                 enabled: config.command.loot?.enabled ?? false,
@@ -397,8 +397,13 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
     };
 }
 
-function hasAnyRoleById(member: GuildMember, roleIds: readonly Snowflake[]) {
-    return roleIds.some(role => hasRoleById(member, role));
+function hasAnyRoleById(member: GuildMember, roleIds: Iterable<Snowflake>) {
+    for (const id of roleIds) {
+        if (hasRoleById(member, id)) {
+            return true;
+        }
+    }
+    return false;
 }
 
 function hasRoleById(member: GuildMember | APIInteractionGuildMember, id: Snowflake): boolean {

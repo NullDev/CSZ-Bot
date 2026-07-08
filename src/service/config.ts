@@ -58,8 +58,33 @@ export const args = parseArgs({
     },
 });
 
-const snowflake = z.string();
 const activityType = z.number() as unknown as z.ZodType<ActivityType>;
+
+// Branded snowflakes so a channel id can't be passed where a user/role id is expected.
+const channelId = z.string().brand("ChannelId");
+const categoryId = z.string().brand("CategoryId");
+const userId = z.string().brand("UserId");
+const roleId = z.string().brand("RoleId");
+const groupId = z.string().brand("GroupId");
+const emojiId = z.string().brand("EmojiId");
+const guildId = z.string().brand("GuildId");
+
+export type ChannelId = z.infer<typeof channelId>;
+export type CategoryId = z.infer<typeof categoryId>;
+export type UserId = z.infer<typeof userId>;
+export type RoleId = z.infer<typeof roleId>;
+export type GroupId = z.infer<typeof groupId>;
+export type EmojiId = z.infer<typeof emojiId>;
+export type GuildId = z.infer<typeof guildId>;
+
+// Arrays of ids parsed into Sets for O(1) membership checks.
+const channelIdSet = z.array(channelId).transform(ids => new Set(ids));
+const categoryIdSet = z.array(categoryId).transform(ids => new Set(ids));
+const userIdSet = z.array(userId).transform(ids => new Set(ids));
+const roleIdSet = z.array(roleId).transform(ids => new Set(ids));
+const groupIdSet = z.array(groupId).transform(ids => new Set(ids));
+
+const stringSet = z.array(z.string()).transform(ids => new Set(ids));
 
 /** ISO8601 duration string (e.g. "P1DT2H30M") parsed into a Temporal.Duration. */
 const iso8601Duration = z.string().transform((s, ctx) => {
@@ -117,17 +142,17 @@ export const configSchema = z.object({
 
     sendWelcomeMessage: z.boolean().optional(),
 
-    moderatorRoleIds: z.array(snowflake),
+    moderatorRoleIds: roleIdSet,
 
     command: z.object({
         faulenzerPing: z.object({
-            allowedRoleIds: z.array(snowflake),
+            allowedRoleIds: roleIdSet,
             maxNumberOfPings: z.number(),
             minRequiredReactions: z.number(),
         }),
         nickName: z
             .object({
-                skippedUserIds: z.array(snowflake),
+                skippedUserIds: userIdSet,
             })
             .optional(),
         woisPing: z.object({
@@ -135,7 +160,7 @@ export const configSchema = z.object({
             threshold: z.number(),
         }),
         ehre: z.object({
-            emojiNames: z.array(z.string()),
+            emojiNames: stringSet,
         }),
         instagram: z
             .object({
@@ -146,7 +171,7 @@ export const configSchema = z.object({
             enabled: z.boolean(),
             scheduleCron: z.string(),
             dropChance: z.number(),
-            allowedChannelIds: z.array(snowflake).nullish(),
+            allowedChannelIds: channelIdSet.nullish(),
             maxTimePassedSinceLastMessage: iso8601Duration,
 
             roles: z.object({
@@ -155,22 +180,22 @@ export const configSchema = z.object({
         }),
         quotes: z.object({
             emojiName: z.string(),
-            allowedGroupIds: z.array(snowflake),
-            anonymousChannelIds: z.array(snowflake),
-            anonymousCategoryIds: z.array(snowflake),
+            allowedGroupIds: groupIdSet,
+            anonymousChannelIds: channelIdSet,
+            anonymousCategoryIds: categoryIdSet,
             voteThreshold: z.number(),
-            blacklistedChannelIds: z.array(snowflake),
-            targetChannelOverrides: z.record(z.string(), z.string()),
-            defaultTargetChannelId: snowflake,
+            blacklistedChannelIds: channelIdSet,
+            targetChannelOverrides: z.record(channelId, channelId),
+            defaultTargetChannelId: channelId,
         }),
         aoc: z.object({
             enabled: z.boolean(),
 
-            targetChannelId: snowflake,
+            targetChannelId: channelId,
             sessionToken: z.string(),
             leaderBoardJsonUrl: z.string(),
             userMap: z.record(
-                snowflake,
+                userId,
                 z.object({
                     displayName: z.string(),
                     language: z.string(),
@@ -179,47 +204,47 @@ export const configSchema = z.object({
         }),
     }),
 
-    deleteThreadMessagesInChannelIds: z.array(snowflake),
+    deleteThreadMessagesInChannelIds: channelIdSet,
     flameTrustedUserOnBotPing: z.boolean(),
 
-    guildGuildId: snowflake,
+    guildGuildId: guildId,
 
     textChannel: z.object({
-        banReasonChannelId: snowflake,
-        bannedChannelId: snowflake,
-        botLogChannelId: snowflake,
-        hauptchatChannelId: snowflake,
-        votesChannelId: snowflake,
-        botSpamChannelId: snowflake,
-        hauptwoisTextChannelId: snowflake,
-        roleAssignerChannelId: snowflake,
+        banReasonChannelId: channelId,
+        bannedChannelId: channelId,
+        botLogChannelId: channelId,
+        hauptchatChannelId: channelId,
+        votesChannelId: channelId,
+        botSpamChannelId: channelId,
+        hauptwoisTextChannelId: channelId,
+        roleAssignerChannelId: channelId,
     }),
 
     voiceChannel: z.object({
-        hauptWoischatChannelId: snowflake,
+        hauptWoischatChannelId: channelId,
     }),
 
     role: z.object({
-        bannedRoleId: snowflake,
-        birthdayRoleId: snowflake,
-        botDenyRoleId: snowflake,
-        defaultRoleId: snowflake,
-        gruendervaeterRoleId: snowflake,
-        gruendervaeterBannedRoleId: snowflake,
-        roleDenyRoleId: snowflake,
-        shameRoleId: snowflake,
-        trustedRoleId: snowflake,
-        trustedBannedRoleId: snowflake,
-        woisgangRoleId: snowflake,
-        winnerRoleId: snowflake,
-        emotifiziererRoleId: snowflake,
-        lootRoleAsseGuardRoleId: snowflake,
+        bannedRoleId: roleId,
+        birthdayRoleId: roleId,
+        botDenyRoleId: roleId,
+        defaultRoleId: roleId,
+        gruendervaeterRoleId: roleId,
+        gruendervaeterBannedRoleId: roleId,
+        roleDenyRoleId: roleId,
+        shameRoleId: roleId,
+        trustedRoleId: roleId,
+        trustedBannedRoleId: roleId,
+        woisgangRoleId: roleId,
+        winnerRoleId: roleId,
+        emotifiziererRoleId: roleId,
+        lootRoleAsseGuardRoleId: roleId,
     }),
 
     emoji: z.object({
-        alarmEmojiId: snowflake,
-        sadHamsterEmojiId: snowflake,
-        trichterEmojiId: snowflake,
+        alarmEmojiId: emojiId,
+        sadHamsterEmojiId: emojiId,
+        trichterEmojiId: emojiId,
     }),
 });
 
