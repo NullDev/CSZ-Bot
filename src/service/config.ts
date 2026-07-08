@@ -147,6 +147,8 @@ export interface Config {
         };
         autoban?: {
             enabled: boolean;
+            /** When true, spam is detected and logged but no message is deleted and no user is banned. */
+            dryRun?: boolean;
             deleteThreshold: number;
             banThreshold: number;
             banDurationHours: number;

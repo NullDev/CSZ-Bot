@@ -15,11 +15,16 @@ function buildSpamLogEmbed(
     score: number,
     threshold: number,
     triggeredLabels: readonly string[],
+    dryRun: boolean,
 ): APIEmbed {
     const isBan = action === "ban";
+    const dryRunPrefix = dryRun ? "🧪 [Testmodus] " : "";
+    const title = isBan
+        ? `${dryRunPrefix}🚫 Autoban: ${dryRun ? "Würde gebannt werden" : "Gebannt"}`
+        : `${dryRunPrefix}⚠️ Autoban: ${dryRun ? "Nachricht würde gelöscht werden" : "Nachricht gelöscht"}`;
     return {
         color: isBan ? 0xe74c3c : 0xe67e22,
-        title: isBan ? "🚫 Autoban: Gebannt" : "⚠️ Autoban: Nachricht gelöscht",
+        title,
         fields: [
             { name: "Nutzer", value: `${member} (${member.id})`, inline: true },
             { name: "Kanal", value: `${message.channel}`, inline: true },
@@ -68,25 +73,36 @@ export default async function spamDetectionHandler(
     const { autoban } = context.commandConfig;
     const { score, triggeredLabels } = spamDetection.evaluateMessage(message, member, context);
 
+    const { dryRun } = autoban;
+
     if (score >= autoban.banThreshold) {
-        log.info({ userId: member.id, score, triggeredLabels }, "Auto-ban: spam threshold crossed");
+        log.info(
+            { userId: member.id, score, triggeredLabels },
+            dryRun
+                ? "Auto-ban (dry run): spam threshold crossed"
+                : "Auto-ban: spam threshold crossed",
+        );
 
         // Delete previously tracked messages from this user across channels
         const tracked = spamDetection.getTrackedMessages(member.id);
         spamDetection.flushUser(member.id);
 
-        for (const { messageId, channelId } of tracked) {
-            const channel = context.guild.channels.cache.get(channelId);
-            if (!channel?.isTextBased()) {
-                continue;
+        if (!dryRun) {
+            for (const { messageId, channelId } of tracked) {
+                const channel = context.guild.channels.cache.get(channelId);
+                if (!channel?.isTextBased()) {
+                    continue;
+                }
+                const msg = await channel.messages.fetch(messageId).catch(() => null);
+                if (msg) {
+                    await msg.delete().catch(() => undefined);
+                }
             }
-            const msg = await channel.messages.fetch(messageId).catch(() => null);
-            if (msg) {
-                await msg.delete().catch(() => undefined);
-            }
-        }
 
-        await message.delete().catch(() => undefined);
+            await message.delete().catch(() => undefined);
+        } else {
+            spamDetection.trackMessage(member.id, message.id, message.channelId, message.content);
+        }
 
         autoban.spamLog
             ?.send({
@@ -98,10 +114,15 @@ export default async function spamDetectionHandler(
                         score,
                         autoban.banThreshold,
                         triggeredLabels,
+                        dryRun,
                     ),
                 ],
             })
             .catch(err => log.warn(err, "Failed to post spam log embed"));
+
+        if (dryRun) {
+            return;
+        }
 
         const reason = [
             "Automatischer Bann: Spam-Erkennung",
@@ -126,8 +147,18 @@ export default async function spamDetectionHandler(
     }
 
     if (score >= autoban.deleteThreshold) {
-        log.info({ userId: member.id, score }, "Auto-delete: suspicious message removed");
-        await message.delete().catch(() => undefined);
+        log.info(
+            { userId: member.id, score },
+            dryRun
+                ? "Auto-delete (dry run): suspicious message detected"
+                : "Auto-delete: suspicious message removed",
+        );
+
+        if (!dryRun) {
+            await message.delete().catch(() => undefined);
+        } else {
+            spamDetection.trackMessage(member.id, message.id, message.channelId, message.content);
+        }
 
         autoban.spamLog
             ?.send({
@@ -139,6 +170,7 @@ export default async function spamDetectionHandler(
                         score,
                         autoban.deleteThreshold,
                         triggeredLabels,
+                        dryRun,
                     ),
                 ],
             })

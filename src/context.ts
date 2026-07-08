@@ -86,6 +86,7 @@ export interface BotContext {
         };
         autoban: {
             enabled: boolean;
+            dryRun: boolean;
             deleteThreshold: number;
             banThreshold: number;
             banDurationHours: number;
@@ -329,6 +330,7 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
             },
             autoban: {
                 enabled: config.command.autoban?.enabled ?? false,
+                dryRun: config.command.autoban?.dryRun ?? true,
                 deleteThreshold: config.command.autoban?.deleteThreshold ?? 40,
                 banThreshold: config.command.autoban?.banThreshold ?? 60,
                 banDurationHours: config.command.autoban?.banDurationHours ?? 24,
