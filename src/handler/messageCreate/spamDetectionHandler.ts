@@ -67,6 +67,7 @@ export default async function spamDetectionHandler(
         context.roleGuard.isTrusted(member) ||
         context.roleGuard.isGruendervater(member)
     ) {
+        log.debug({ userId: member.id }, "spamDetectionHandler: skipping guarded member");
         return;
     }
 
@@ -74,6 +75,17 @@ export default async function spamDetectionHandler(
     const { score, triggeredLabels } = spamDetection.evaluateMessage(message, member, context);
 
     const { dryRun } = autoban;
+
+    log.debug(
+        {
+            userId: member.id,
+            score,
+            deleteThreshold: autoban.deleteThreshold,
+            banThreshold: autoban.banThreshold,
+            dryRun,
+        },
+        "spamDetectionHandler: message evaluated",
+    );
 
     if (score >= autoban.banThreshold) {
         log.info(
@@ -88,14 +100,28 @@ export default async function spamDetectionHandler(
         spamDetection.flushUser(member.id);
 
         if (!dryRun) {
+            log.debug(
+                { userId: member.id, trackedCount: tracked.length },
+                "spamDetectionHandler: deleting tracked cross-channel messages",
+            );
+
             for (const { messageId, channelId } of tracked) {
                 const channel = context.guild.channels.cache.get(channelId);
                 if (!channel?.isTextBased()) {
+                    log.debug(
+                        { userId: member.id, messageId, channelId },
+                        "spamDetectionHandler: channel not found or not text-based, skipping",
+                    );
                     continue;
                 }
                 const msg = await channel.messages.fetch(messageId).catch(() => null);
                 if (msg) {
                     await msg.delete().catch(() => undefined);
+                } else {
+                    log.debug(
+                        { userId: member.id, messageId, channelId },
+                        "spamDetectionHandler: tracked message not found, skipping",
+                    );
                 }
             }
 
@@ -179,5 +205,9 @@ export default async function spamDetectionHandler(
         return;
     }
 
+    log.debug(
+        { userId: member.id, score },
+        "spamDetectionHandler: message below thresholds, tracking",
+    );
     spamDetection.trackMessage(member.id, message.id, message.channelId, message.content);
 }

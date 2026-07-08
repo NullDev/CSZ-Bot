@@ -1,6 +1,7 @@
 import type { GuildMember, Message, Snowflake } from "discord.js";
 
 import type { BotContext } from "#/context.ts";
+import log from "#log";
 
 type RecentMessage = {
     messageId: Snowflake;
@@ -172,6 +173,11 @@ export function evaluateMessage(
         recentMessages.set(member.id, history);
     }
 
+    log.debug(
+        { userId: member.id, historySize: history.length },
+        "spamDetection: evaluating message",
+    );
+
     const results = signals.map(({ label, category, evaluate }) => ({
         label,
         category,
@@ -184,9 +190,22 @@ export function evaluateMessage(
     const contentScore = results
         .filter(r => r.category === "content")
         .reduce((sum, r) => sum + r.points, 0);
+    const cappedIdentityScore = Math.min(identityScore, IDENTITY_SCORE_CAP);
+
+    log.debug(
+        {
+            userId: member.id,
+            identityScore,
+            cappedIdentityScore,
+            contentScore,
+            score: cappedIdentityScore + contentScore,
+            triggered: results.filter(r => r.points > 0).map(r => `${r.label} (+${r.points})`),
+        },
+        "spamDetection: evaluation result",
+    );
 
     return {
-        score: Math.min(identityScore, IDENTITY_SCORE_CAP) + contentScore,
+        score: cappedIdentityScore + contentScore,
         triggeredLabels: results.filter(r => r.points > 0).map(r => r.label),
     };
 }
@@ -205,6 +224,11 @@ export function trackMessage(
         recordedAt: Temporal.Now.instant(),
     });
     recentMessages.set(userId, existing);
+
+    log.debug(
+        { userId, messageId, channelId, trackedCount: existing.length },
+        "spamDetection: tracked message",
+    );
 }
 
 export function getTrackedMessages(userId: Snowflake): readonly RecentMessage[] {
@@ -212,5 +236,8 @@ export function getTrackedMessages(userId: Snowflake): readonly RecentMessage[] 
 }
 
 export function flushUser(userId: Snowflake): void {
-    recentMessages.delete(userId);
+    const hadHistory = recentMessages.delete(userId);
+    if (hadHistory) {
+        log.debug({ userId }, "spamDetection: flushed tracked history for user");
+    }
 }
