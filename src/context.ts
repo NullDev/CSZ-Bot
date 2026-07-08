@@ -18,6 +18,7 @@ import { SpotifyApi } from "@spotify/web-api-ts-sdk";
 
 import type { UserMapEntry } from "#/commands/aoc.ts";
 import { readConfig } from "#/service/config.ts";
+import log from "#log";
 
 /**
  * Object that's passed to every executed command to make it easier to access common channels without repeatedly retrieving stuff via IDs.
@@ -237,8 +238,10 @@ function ensureEmoji(guild: Guild, emojiId: Snowflake, fallbackName: string): Gu
 // #endregion
 
 export async function createBotContext(client: Client<true>): Promise<BotContext> {
+    log.debug("createBotContext: reading config...");
     const config = await readConfig();
 
+    log.debug("createBotContext: config read, resolving guild...");
     const guild = client.guilds.cache.get(config.guildGuildId);
     if (!guild) {
         throw new Error(`Cannot find configured guild "${config.guildGuildId}"`);
@@ -249,7 +252,9 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
     const voiceChannel = config.voiceChannel;
 
     const soundsPath = path.resolve("data/sounds");
+    log.debug({ soundsPath }, "createBotContext: creating sounds directory...");
     await fs.mkdir(soundsPath, { recursive: true });
+    log.debug("createBotContext: sounds directory ready, building context object...");
 
     return {
         client,
