@@ -22,6 +22,8 @@ cp -r "$BOT_HOME_PATH/.infra" "$TEMP_DIR/.infra"
 echo "$EPHEMERAL_BOT_CONFIG" > "$TEMP_DIR/config.json"
 echo "" > "$TEMP_DIR/.env" # Dummy env
 
+chmod -R 777 "$TEMP_DIR/data"
+
 docker stop csz-bot-ephemeral || true
 docker rm csz-bot-ephemeral || true
 docker compose -p e2e -f "$TEMP_DIR/.infra/compose.ephemeral.yaml" pull bot
