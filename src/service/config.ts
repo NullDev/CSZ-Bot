@@ -124,9 +124,10 @@ export const configSchema = z.object({
 
     youtube: z
         .object({
-            cookieFilePath: z.string().nullish(),
+            cookieFilePath: z.string().nullish().default(null),
         })
-        .optional(),
+        .optional()
+        .default({ cookieFilePath: null }),
 
     activity: z.object({
         type: activityType,
@@ -140,15 +141,15 @@ export const configSchema = z.object({
         modCommand: z.string(),
     }),
 
-    sendWelcomeMessage: z.boolean().optional(),
+    sendWelcomeMessage: z.boolean().optional().default(false),
 
     moderatorRoleIds: roleIdSet,
 
     command: z.object({
         faulenzerPing: z.object({
             allowedRoleIds: roleIdSet,
-            maxNumberOfPings: z.number(),
-            minRequiredReactions: z.number(),
+            maxNumberOfPings: z.number().optional().default(15),
+            minRequiredReactions: z.number().optional().default(5),
         }),
         nickName: z
             .object({
@@ -160,7 +161,7 @@ export const configSchema = z.object({
             threshold: z.number(),
         }),
         ehre: z.object({
-            emojiNames: stringSet,
+            emojiNames: stringSet.optional().default(new Set(["aehre"])),
         }),
         instagram: z
             .object({
@@ -168,14 +169,18 @@ export const configSchema = z.object({
             })
             .optional(),
         loot: z.object({
-            enabled: z.boolean(),
-            scheduleCron: z.string(),
-            dropChance: z.number(),
+            enabled: z.boolean().optional().default(false),
+            scheduleCron: z.string().optional().default("*/15 * * * *"),
+            dropChance: z.number().optional().default(0.05),
             allowedChannelIds: channelIdSet.nullish(),
-            maxTimePassedSinceLastMessage: iso8601Duration,
+            maxTimePassedSinceLastMessage: iso8601Duration
+                .optional()
+                .default(Temporal.Duration.from("PT30M")),
 
             roles: z.object({
-                asseGuardShiftDuration: iso8601Duration,
+                asseGuardShiftDuration: iso8601Duration
+                    .optional()
+                    .default(Temporal.Duration.from("PT8H")),
             }),
         }),
         quotes: z.object({
@@ -183,7 +188,7 @@ export const configSchema = z.object({
             allowedGroupIds: groupIdSet,
             anonymousChannelIds: channelIdSet,
             anonymousCategoryIds: categoryIdSet,
-            voteThreshold: z.number(),
+            voteThreshold: z.number().positive().optional().default(2),
             blacklistedChannelIds: channelIdSet,
             targetChannelOverrides: z.record(channelId, channelId),
             defaultTargetChannelId: channelId,

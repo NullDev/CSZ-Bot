@@ -46,7 +46,7 @@ export interface BotContext {
     spotifyClient: SpotifyApi | null;
 
     youtube: {
-        cookieFilePath?: string | null;
+        cookieFilePath: string | null;
     };
 
     commandConfig: {
@@ -256,7 +256,7 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
             command: config.prefix.command,
             modCommand: config.prefix.modCommand,
         },
-        sendWelcomeMessage: config.sendWelcomeMessage ?? false,
+        sendWelcomeMessage: config.sendWelcomeMessage,
         spotifyClient:
             config.spotify?.clientId && config.spotify?.clientSecret
                 ? SpotifyApi.withClientCredentials(
@@ -266,19 +266,17 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
                   )
                 : null,
         youtube: {
-            cookieFilePath: config.youtube?.cookieFilePath ?? null,
+            cookieFilePath: config.youtube?.cookieFilePath,
         },
         moderatorRoles: Array.from(config.moderatorRoleIds, id => ensureRole(guild, id)),
         commandConfig: {
             faulenzerPing: {
                 allowedRoleIds: config.command.faulenzerPing.allowedRoleIds,
-                maxNumberOfPings: Number(config.command.faulenzerPing.maxNumberOfPings ?? "15"),
-                minRequiredReactions: Number(
-                    config.command.faulenzerPing.minRequiredReactions ?? "5",
-                ),
+                maxNumberOfPings: config.command.faulenzerPing.maxNumberOfPings,
+                minRequiredReactions: config.command.faulenzerPing.minRequiredReactions,
             },
             ehre: {
-                emojiNames: config.command.ehre.emojiNames ?? new Set(["aehre"]),
+                emojiNames: config.command.ehre.emojiNames,
             },
             quote: {
                 emojiName: config.command.quotes.emojiName,
@@ -286,7 +284,7 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
                 anonymousCategoryIds: config.command.quotes.anonymousCategoryIds,
                 anonymousChannelIds: config.command.quotes.anonymousChannelIds,
                 blacklistedChannelIds: config.command.quotes.blacklistedChannelIds,
-                voteThreshold: config.command.quotes.voteThreshold ?? 2,
+                voteThreshold: config.command.quotes.voteThreshold,
                 defaultTargetChannelId: config.command.quotes.defaultTargetChannelId,
                 targetChannelOverrides: config.command.quotes.targetChannelOverrides,
             },
@@ -294,18 +292,14 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
                 skippedUserIds: config.command.nickName?.skippedUserIds ?? new Set(),
             },
             loot: {
-                enabled: config.command.loot?.enabled ?? false,
-                scheduleCron: config.command.loot?.scheduleCron ?? "*/15 * * * *",
-                dropChance: config.command.loot?.dropChance ?? 0.05,
+                enabled: config.command.loot?.enabled,
+                scheduleCron: config.command.loot?.scheduleCron,
+                dropChance: config.command.loot?.dropChance,
                 allowedChannelIds: config.command.loot?.allowedChannelIds ?? undefined,
-                maxTimePassedSinceLastMessage:
-                    config.command.loot?.maxTimePassedSinceLastMessage ??
-                    Temporal.Duration.from("PT30M"),
+                maxTimePassedSinceLastMessage: config.command.loot?.maxTimePassedSinceLastMessage,
 
                 roles: {
-                    asseGuardShiftDuration:
-                        config.command.loot?.roles?.asseGuardShiftDuration ??
-                        Temporal.Duration.from("PT8H"),
+                    asseGuardShiftDuration: config.command.loot?.roles?.asseGuardShiftDuration,
                 },
             },
             instagram: {
