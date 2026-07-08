@@ -31,4 +31,4 @@ docker compose -p e2e -f "$TEMP_DIR/.infra/compose.ephemeral.yaml" up \
     -d \
     --remove-orphans
 
-rm -rvf -- "$TEMP_DIR"
+# rm -rvf -- "$TEMP_DIR"
