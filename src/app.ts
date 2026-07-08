@@ -136,17 +136,21 @@ login().then(
         client.user.setActivity(config.activity);
 
         try {
+            log.debug("Creating bot context...");
             botContext = await createBotContext(client);
 
+            log.debug("Bot context created, loading commands...");
             await loadCommands(botContext);
 
+            log.debug("Commands loaded, scheduling cron jobs...");
             await cronService.schedule(botContext);
 
             // When the application is ready, slash commands should be registered
+            log.debug("Registering application commands as guild commands...");
             await registerAllApplicationCommandsAsGuildCommands(botContext);
         } catch (err) {
-            sentry.captureException(err);
             log.error(err, "Error in `ready` handler");
+            sentry.captureException(err);
             process.exit(1);
         }
 
