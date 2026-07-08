@@ -66,7 +66,7 @@ export interface BotContext {
             enabled: boolean;
             scheduleCron: string;
             dropChance: number;
-            allowedChannelIds?: readonly Snowflake[];
+            allowedChannelIds?: Set<Snowflake>;
             maxTimePassedSinceLastMessage: Temporal.Duration;
 
             roles: {

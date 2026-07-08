@@ -31,6 +31,9 @@ export function randomBoolean(trueProbability = 0.5): boolean {
 export function randomEntry<T>(array: readonly T[]): T {
     return array[(array.length * Math.random()) | 0];
 }
+export function randomSetEntry<T>(set: ReadonlySet<T>): T {
+    return randomEntry(Array.from(set));
+}
 
 export function randomEntryWeighted<T>(
     array: readonly T[],

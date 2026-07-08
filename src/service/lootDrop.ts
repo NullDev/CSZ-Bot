@@ -23,7 +23,12 @@ import * as sentry from "@sentry/node";
 import type { BotContext } from "#/context.ts";
 import type { Loot, LootId } from "#/storage/db/model.ts";
 import type { LootAttributeTemplate, LootTemplate, TimeBasedWeightConfig } from "#/storage/loot.ts";
-import { randomBoolean, randomEntry, randomEntryWeighted } from "#/service/random.ts";
+import {
+    randomBoolean,
+    randomEntry,
+    randomEntryWeighted,
+    randomSetEntry,
+} from "#/service/random.ts";
 import * as timeUtils from "#/utils/time.ts";
 import { zonedNow } from "#/utils/dateUtils.ts";
 
@@ -48,7 +53,7 @@ export async function runDropAttempt(context: BotContext) {
 
     const fallbackChannel = context.textChannels.hauptchat;
     const targetChannelId = lootConfig.allowedChannelIds
-        ? randomEntry(lootConfig.allowedChannelIds)
+        ? randomSetEntry(lootConfig.allowedChannelIds)
         : fallbackChannel.id;
 
     const targetChannel = (await context.client.channels.fetch(targetChannelId)) ?? fallbackChannel;
