@@ -298,14 +298,14 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
                 scheduleCron: config.command.loot?.scheduleCron ?? "*/15 * * * *",
                 dropChance: config.command.loot?.dropChance ?? 0.05,
                 allowedChannelIds: config.command.loot?.allowedChannelIds ?? undefined,
-                maxTimePassedSinceLastMessage: Temporal.Duration.from(
-                    config.command.loot?.maxTimePassedSinceLastMessage ?? "PT30M",
-                ),
+                maxTimePassedSinceLastMessage:
+                    config.command.loot?.maxTimePassedSinceLastMessage ??
+                    Temporal.Duration.from("PT30M"),
 
                 roles: {
-                    asseGuardShiftDuration: Temporal.Duration.from(
-                        config.command.loot?.roles?.asseGuardShiftDuration ?? "PT8H",
-                    ),
+                    asseGuardShiftDuration:
+                        config.command.loot?.roles?.asseGuardShiftDuration ??
+                        Temporal.Duration.from("PT8H"),
                 },
             },
             instagram: {
