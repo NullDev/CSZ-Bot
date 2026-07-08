@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 
-import { ContainerBuilder, MessageFlags, type Snowflake, userMention } from "discord.js";
+import { ContainerBuilder, MessageFlags, userMention } from "discord.js";
 
 import type { BotContext } from "#/context.ts";
 import type { Loot, LootId } from "#/storage/db/model.ts";
@@ -108,52 +108,45 @@ export async function runHalfLife(context: BotContext) {
         return;
     }
 
+    // Only process one item per run to spread out decay announcements over time
+    const targetWaste = randomEntry(wasteToRemove);
+    if (!targetWaste) {
+        return;
+    }
+
     const leadTemplate = resolveLootTemplate(LootKind.BLEI);
     if (!leadTemplate) {
         logger.error("Could not resolve loot template for lead.");
         return;
     }
 
-    const replacedStats = new Map<Snowflake, number>();
-
-    for (const l of wasteToRemove) {
-        logger.info({ lootId: l.id, winnerId: l.winnerId }, "Replacing loot");
-        const replaced = await lootService.replaceLoot(
-            l.id,
-            {
-                displayName: leadTemplate.displayName,
-                lootKindId: leadTemplate.id,
-                winnerId: l.winnerId,
-                claimedAt: l.claimedAt,
-                guildId: l.guildId,
-                channelId: l.channelId,
-                messageId: l.messageId,
-                origin: "replacement",
-            },
-            true,
-        );
-
-        replacedStats.set(replaced.winnerId, replacedStats.getOrInsert(replaced.winnerId, 0) + 1);
-    }
-
-    logger.info({ replacedStats }, "replacedStats");
-
-    const components: ContainerBuilder[] = [];
-    for (const [user, count] of replacedStats.entries()) {
-        components.push(
-            new ContainerBuilder().addTextDisplayComponents(t =>
-                t.setContent(
-                    `:radioactive: ${count}x Müll von ${userMention(user)} ist zu einem Stück Blei zerfallen. :radioactive:`,
-                ),
-            ),
-        );
-    }
+    logger.info({ lootId: targetWaste.id, winnerId: targetWaste.winnerId }, "Replacing loot");
+    const replaced = await lootService.replaceLoot(
+        targetWaste.id,
+        {
+            displayName: leadTemplate.displayName,
+            lootKindId: leadTemplate.id,
+            winnerId: targetWaste.winnerId,
+            claimedAt: targetWaste.claimedAt,
+            guildId: targetWaste.guildId,
+            channelId: targetWaste.channelId,
+            messageId: targetWaste.messageId,
+            origin: "replacement",
+        },
+        true,
+    );
 
     await context.textChannels.hauptchat.send({
         flags: MessageFlags.IsComponentsV2,
-        components: components,
+        components: [
+            new ContainerBuilder().addTextDisplayComponents(t =>
+                t.setContent(
+                    `:radioactive: 1x Müll von ${userMention(replaced.winnerId)} ist zu einem Stück Blei zerfallen. :radioactive:`,
+                ),
+            ),
+        ],
         allowedMentions: {
-            users: replacedStats.keys().toArray(),
+            users: [replaced.winnerId],
         },
     });
 }
