@@ -90,8 +90,7 @@ export interface BotContext {
             deleteThreshold: number;
             banThreshold: number;
             banDurationHours: number;
-            timeWindowMinutes: number;
-            spamLog: TextChannel | null;
+            timeWindowDuration: Temporal.Duration;
         };
     };
 
@@ -129,6 +128,7 @@ export interface BotContext {
         botSpam: TextChannel;
         hauptwoisText: TextChannel;
         roleAssigner: TextChannel;
+        spamLog: TextChannel | null;
     };
 
     voiceChannels: {
@@ -334,10 +334,9 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
                 deleteThreshold: config.command.autoban?.deleteThreshold ?? 40,
                 banThreshold: config.command.autoban?.banThreshold ?? 60,
                 banDurationHours: config.command.autoban?.banDurationHours ?? 24,
-                timeWindowMinutes: config.command.autoban?.timeWindowMinutes ?? 5,
-                spamLog: config.command.autoban?.spamLogChannelId
-                    ? ensureTextChannel(guild, config.command.autoban.spamLogChannelId)
-                    : null,
+                timeWindowDuration: Temporal.Duration.from(
+                    config.command.autoban?.timeWindowDuration ?? "PT5M",
+                ),
             },
         },
 
@@ -371,6 +370,9 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
             botSpam: ensureTextChannel(guild, textChannel.botSpamChannelId),
             hauptwoisText: ensureTextChannel(guild, textChannel.hauptwoisTextChannelId),
             roleAssigner: ensureTextChannel(guild, textChannel.roleAssignerChannelId),
+            spamLog: textChannel.spamLogChannelId
+                ? ensureTextChannel(guild, textChannel.spamLogChannelId)
+                : null,
         },
 
         voiceChannels: {

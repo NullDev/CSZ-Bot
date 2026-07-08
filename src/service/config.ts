@@ -152,9 +152,8 @@ export interface Config {
             deleteThreshold: number;
             banThreshold: number;
             banDurationHours: number;
-            timeWindowMinutes: number;
-            /** Channel ID for the mod-only spam audit log. Leave empty to disable. */
-            spamLogChannelId?: Snowflake;
+            /** ISO8601 duration string, e.g. "PT5M" for 5 minutes. */
+            timeWindowDuration: string;
         };
     };
 
@@ -172,6 +171,8 @@ export interface Config {
         botSpamChannelId: Snowflake;
         hauptwoisTextChannelId: Snowflake;
         roleAssignerChannelId: Snowflake;
+        /** Channel ID for the mod-only spam audit log. Leave empty to disable. */
+        spamLogChannelId?: Snowflake;
     };
 
     voiceChannel: {

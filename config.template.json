@@ -90,10 +90,8 @@
             "banThreshold": 60,
             // Duration of the automatic ban in hours
             "banDurationHours": 24,
-            // Time window in minutes used to detect the same message across multiple channels
-            "timeWindowMinutes": 5,
-            // Channel ID of a mod-only channel for spam audit logs. Leave empty to disable.
-            "spamLogChannelId": ""
+            // ISO8601 duration used as the time window to detect the same message across multiple channels
+            "timeWindowDuration": "PT5M"
         }
     },
 
@@ -110,7 +108,9 @@
         "votesChannelId": "893179191556706384",
         "botSpamChannelId": "893179191556706387",
         "hauptwoisTextChannelId": "893179191825162371",
-        "roleAssignerChannelId": "893179190881452115"
+        "roleAssignerChannelId": "893179190881452115",
+        // Channel ID of a mod-only channel for spam audit logs. Leave empty to disable.
+        "spamLogChannelId": ""
     },
 
     "voiceChannel": {

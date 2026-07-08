@@ -104,7 +104,7 @@ export default async function spamDetectionHandler(
             spamDetection.trackMessage(member.id, message.id, message.channelId, message.content);
         }
 
-        autoban.spamLog
+        context.textChannels.spamLog
             ?.send({
                 embeds: [
                     buildSpamLogEmbed(
@@ -160,7 +160,7 @@ export default async function spamDetectionHandler(
             spamDetection.trackMessage(member.id, message.id, message.channelId, message.content);
         }
 
-        autoban.spamLog
+        context.textChannels.spamLog
             ?.send({
                 embeds: [
                     buildSpamLogEmbed(
