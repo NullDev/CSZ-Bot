@@ -4,7 +4,6 @@ import type { BotContext } from "#/context.ts";
 import { rerollNicknames } from "#/service/nickNameRoll.ts";
 import { connectAndPlaySaufen } from "#/handler/voiceHandler.ts";
 import { reminderHandler } from "#/commands/erinnerung.ts";
-import { endAprilFools, startAprilFools } from "#/service/aprilFools.ts";
 import { woisVoteScheduler } from "#/commands/woisvote.ts";
 import { publishAocLeaderBoard } from "#/commands/aoc.ts";
 import { rotate } from "#/service/banner.ts";
@@ -56,8 +55,8 @@ export async function schedule(context: BotContext) {
         cron(loot.scheduleCron, () => runDropAttempt(context));
     }
 
-    cron("2025-04-01T00:00:00", () => startAprilFools(context));
-    cron("2025-04-02T00:00:00", () => endAprilFools(context));
+    // cron("2025-04-01T00:00:00", () => startAprilFools(context));
+    // cron("2025-04-02T00:00:00", () => endAprilFools(context));
 
     await pollLegacy.importPolls();
     cron("* * * * *", () => pollLegacy.processPolls(context));
