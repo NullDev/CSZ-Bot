@@ -145,6 +145,16 @@ export interface Config {
                 }
             >;
         };
+        autoban?: {
+            enabled: boolean;
+            /** When true, spam is detected and logged but no message is deleted and no user is banned. */
+            dryRun?: boolean;
+            deleteThreshold: number;
+            banThreshold: number;
+            banDurationHours: number;
+            /** ISO8601 duration string, e.g. "PT5M" for 5 minutes. */
+            timeWindowDuration: string;
+        };
     };
 
     deleteThreadMessagesInChannelIds: readonly Snowflake[];
@@ -161,6 +171,8 @@ export interface Config {
         botSpamChannelId: Snowflake;
         hauptwoisTextChannelId: Snowflake;
         roleAssignerChannelId: Snowflake;
+        /** Channel ID for the mod-only spam audit log. Leave empty to disable. */
+        spamLogChannelId?: Snowflake;
     };
 
     voiceChannel: {

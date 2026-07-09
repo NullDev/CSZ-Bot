@@ -74,6 +74,14 @@
             "sessionToken": "",
             "leaderBoardJsonUrl": "",
             "userMap": {}
+        },
+        "autoban": {
+            "enabled": true,
+            "dryRun": true,
+            "deleteThreshold": 40,
+            "banThreshold": 60,
+            "banDurationHours": 24,
+            "timeWindowDuration": "PT5M"
         }
     },
 
@@ -90,7 +98,8 @@
         "votesChannelId": "893179191556706384",
         "botSpamChannelId": "893179191556706387",
         "hauptwoisTextChannelId": "893179191825162371",
-        "roleAssignerChannelId": "893179190881452115"
+        "roleAssignerChannelId": "893179190881452115",
+        "spamLogChannelId": "1513948506266538275"
     },
 
     "voiceChannel": {

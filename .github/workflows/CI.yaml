@@ -126,13 +126,13 @@ jobs:
           DISCORD_CLIENT_ID: ${{ secrets.CI_CLIENT_ID }}
           PR_ID: ${{ github.event.number }}
         run: |
-          envsubst < .github/config.json > config.json
+          envsubst < .github/config.json > config-ephemeral.json
 
       - name: Read config.json
         id: config
         uses: juliangruber/read-file-action@v1
         with:
-          path: ./config.json
+          path: ./config-ephemeral.json
 
       - name: Build args
         id: args
