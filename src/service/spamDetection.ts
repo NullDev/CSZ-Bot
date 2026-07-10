@@ -50,7 +50,7 @@ const SCORES = {
     containsDiscordInvite: 45,
     massUserMentions: 20,
     roleMentions: 25,
-    crossChannelDuplicate: 30,
+    crossChannelDuplicate: 20,
     onlyDefaultRole: 10,
 } as const;
 
