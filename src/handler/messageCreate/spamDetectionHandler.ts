@@ -72,7 +72,8 @@ export default async function spamDetectionHandler(
     }
 
     const { autoban } = context.commandConfig;
-    const { score, triggeredLabels } = spamDetection.evaluateMessage(message, member, context);
+    const { score, triggeredSignals } = spamDetection.evaluateMessage(message, member, context);
+    const triggeredLabels = triggeredSignals.map(s => s.label);
 
     const { dryRun } = autoban;
 
@@ -86,6 +87,18 @@ export default async function spamDetectionHandler(
         },
         "spamDetectionHandler: message evaluated",
     );
+
+    // Require both an identity and a content signal before acting on a message.
+    const hasIdentitySignal = triggeredSignals.some(s => s.category === "identity");
+    const hasContentSignal = triggeredSignals.some(s => s.category === "content");
+    if (!hasIdentitySignal || !hasContentSignal) {
+        log.debug(
+            { userId: member.id, score, hasIdentitySignal, hasContentSignal },
+            "spamDetectionHandler: missing identity or content signal, skipping action",
+        );
+        spamDetection.trackMessage(member.id, message.id, message.channelId, message.content);
+        return;
+    }
 
     if (score >= autoban.banThreshold) {
         log.info(

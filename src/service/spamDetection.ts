@@ -22,7 +22,7 @@ type SignalEvaluate = (
  * and are capped below the ban threshold on their own - see IDENTITY_SCORE_CAP. "content" signals
  * are derived from the message itself and are what actually pushes a score over the ban threshold.
  */
-type SignalCategory = "identity" | "content";
+export type SignalCategory = "identity" | "content";
 
 type SignalDef = {
     label: string;
@@ -30,9 +30,14 @@ type SignalDef = {
     evaluate: SignalEvaluate;
 };
 
+export type TriggeredSignal = {
+    label: string;
+    category: SignalCategory;
+};
+
 export type EvaluationResult = {
     score: number;
-    triggeredLabels: readonly string[];
+    triggeredSignals: readonly TriggeredSignal[];
 };
 
 const recentMessages = new Map<Snowflake, RecentMessage[]>();
@@ -54,11 +59,7 @@ const SCORES = {
     onlyDefaultRole: 10,
 } as const;
 
-/**
- * Ceiling for the combined score of "identity" signals alone, kept below the default banThreshold
- * so a fresh account joining and saying hello can't be auto-banned on profile data alone -
- * at least one "content" signal (spammy message content/behavior) must also be triggered.
- */
+/** Ceiling for how much "identity" signals alone can contribute to the score. */
 const IDENTITY_SCORE_CAP = 50;
 
 /** Returns true if `instant` occurred more recently than `duration` ago. */
@@ -206,7 +207,9 @@ export function evaluateMessage(
 
     return {
         score: cappedIdentityScore + contentScore,
-        triggeredLabels: results.filter(r => r.points > 0).map(r => r.label),
+        triggeredSignals: results
+            .filter(r => r.points > 0)
+            .map(r => ({ label: r.label, category: r.category })),
     };
 }
 
