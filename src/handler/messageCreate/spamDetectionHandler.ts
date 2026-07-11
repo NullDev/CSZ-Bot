@@ -8,6 +8,15 @@ import log from "#log";
 
 type SpamAction = "ban" | "delete";
 
+function isTrustedMember(member: GuildMember, context: BotContext): boolean {
+    return (
+        context.roleGuard.isMod(member) ||
+        context.roleGuard.isTrusted(member) ||
+        context.roleGuard.isGruendervater(member) ||
+        member.voice.channelId !== null
+    );
+}
+
 function buildSpamLogEmbed(
     action: SpamAction,
     message: Message<true>,
@@ -66,12 +75,7 @@ export default async function spamDetectionHandler(
 
     // In dry run, skip the trust filter so we get full evaluation coverage for tuning.
     // Real actions (ban/delete) stay gated on `dryRun` further below regardless.
-    if (
-        !autoban.dryRun &&
-        (context.roleGuard.isMod(member) ||
-            context.roleGuard.isTrusted(member) ||
-            context.roleGuard.isGruendervater(member))
-    ) {
+    if (!autoban.dryRun && isTrustedMember(member, context)) {
         log.debug({ userId: member.id }, "spamDetectionHandler: skipping guarded member");
         return;
     }
