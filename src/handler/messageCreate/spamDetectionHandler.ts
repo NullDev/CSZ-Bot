@@ -107,11 +107,8 @@ export default async function spamDetectionHandler(
         );
         return;
     }
-    const { score: rawScore, triggeredSignals } = spamDetection.evaluateMessage(
-        message,
-        member,
-        context,
-    );
+    const { verdict, score, triggeredSignals, postValidationAdjustments } =
+        spamDetection.decideAction(message, member, context);
     const triggeredLabels = triggeredSignals.map(s => s.label);
 
     const { dryRun } = autoban;
@@ -119,7 +116,8 @@ export default async function spamDetectionHandler(
     log.debug(
         {
             userId: member.id,
-            score: rawScore,
+            verdict,
+            score,
             deleteThreshold: autoban.deleteThreshold,
             banThreshold: autoban.banThreshold,
             dryRun,
@@ -127,29 +125,13 @@ export default async function spamDetectionHandler(
         "spamDetectionHandler: message evaluated",
     );
 
-    // Require both an identity and a content signal before acting on a message.
-    const hasIdentitySignal = triggeredSignals.some(s => s.category === "identity");
-    const hasContentSignal = triggeredSignals.some(s => s.category === "content");
-    if (!hasIdentitySignal || !hasContentSignal) {
-        log.debug(
-            { userId: member.id, score: rawScore, hasIdentitySignal, hasContentSignal },
-            "spamDetectionHandler: missing identity or content signal, skipping action",
-        );
+    if (verdict === "none") {
+        log.debug({ userId: member.id, score }, "spamDetectionHandler: no action, tracking");
         spamDetection.trackMessage(member.id, message.id, message.channelId, message.content);
         return;
     }
 
-    // Post-validation runs additional, costlier checks that can reduce the score - only once
-    // a message would actually trigger an action, not on every evaluated message.
-    let score = rawScore;
-    let postValidationAdjustments: readonly PostValidationAdjustment[] = [];
-    if (rawScore >= autoban.deleteThreshold) {
-        const postValidation = spamDetection.applyPostValidations(member, context, rawScore);
-        score = postValidation.score;
-        postValidationAdjustments = postValidation.adjustments;
-    }
-
-    if (score >= autoban.banThreshold) {
+    if (verdict === "ban") {
         log.info(
             { userId: member.id, score, triggeredLabels },
             dryRun
@@ -236,44 +218,35 @@ export default async function spamDetectionHandler(
         return;
     }
 
-    if (score >= autoban.deleteThreshold) {
-        log.info(
-            { userId: member.id, score },
-            dryRun
-                ? "Auto-delete (dry run): suspicious message detected"
-                : "Auto-delete: suspicious message removed",
-        );
+    // verdict === "delete"
+    log.info(
+        { userId: member.id, score },
+        dryRun
+            ? "Auto-delete (dry run): suspicious message detected"
+            : "Auto-delete: suspicious message removed",
+    );
 
-        if (!dryRun) {
-            await message.delete().catch(() => undefined);
-        } else {
-            spamDetection.trackMessage(member.id, message.id, message.channelId, message.content);
-        }
-
-        context.textChannels.spamLog
-            ?.send({
-                embeds: [
-                    buildSpamLogEmbed(
-                        "delete",
-                        message,
-                        member,
-                        score,
-                        autoban.deleteThreshold,
-                        triggeredLabels,
-                        dryRun,
-                        trustFactors,
-                        postValidationAdjustments,
-                    ),
-                ],
-            })
-            .catch(err => log.warn(err, "Failed to post spam log embed"));
-
-        return;
+    if (!dryRun) {
+        await message.delete().catch(() => undefined);
+    } else {
+        spamDetection.trackMessage(member.id, message.id, message.channelId, message.content);
     }
 
-    log.debug(
-        { userId: member.id, score },
-        "spamDetectionHandler: message below thresholds, tracking",
-    );
-    spamDetection.trackMessage(member.id, message.id, message.channelId, message.content);
+    context.textChannels.spamLog
+        ?.send({
+            embeds: [
+                buildSpamLogEmbed(
+                    "delete",
+                    message,
+                    member,
+                    score,
+                    autoban.deleteThreshold,
+                    triggeredLabels,
+                    dryRun,
+                    trustFactors,
+                    postValidationAdjustments,
+                ),
+            ],
+        })
+        .catch(err => log.warn(err, "Failed to post spam log embed"));
 }

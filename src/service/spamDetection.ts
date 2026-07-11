@@ -188,6 +188,15 @@ const signals: readonly SignalDef[] = [
     },
 ];
 
+export type SpamVerdict = "none" | "delete" | "ban";
+
+export type DecisionResult = {
+    verdict: SpamVerdict;
+    score: number;
+    triggeredSignals: readonly TriggeredSignal[];
+    postValidationAdjustments: readonly PostValidationAdjustment[];
+};
+
 export function evaluateMessage(
     message: Message<true>,
     member: GuildMember,
@@ -289,6 +298,48 @@ export function applyPostValidations(
     );
 
     return { score: adjustedScore, adjustments };
+}
+
+/**
+ * Decides what should happen to a message based purely on the scoring engine - no Discord
+ * side effects (deleting, banning, logging). Requires both an identity and a content signal
+ * before recommending any action, then compares the (possibly post-validated) score against
+ * the configured thresholds.
+ */
+export function decideAction(
+    message: Message<true>,
+    member: GuildMember,
+    context: BotContext,
+): DecisionResult {
+    const { autoban } = context.commandConfig;
+    const { score: rawScore, triggeredSignals } = evaluateMessage(message, member, context);
+
+    const hasIdentitySignal = triggeredSignals.some(s => s.category === "identity");
+    const hasContentSignal = triggeredSignals.some(s => s.category === "content");
+    if (!hasIdentitySignal || !hasContentSignal) {
+        return {
+            verdict: "none",
+            score: rawScore,
+            triggeredSignals,
+            postValidationAdjustments: [],
+        };
+    }
+
+    let score = rawScore;
+    let postValidationAdjustments: readonly PostValidationAdjustment[] = [];
+    if (rawScore >= autoban.deleteThreshold) {
+        const postValidation = applyPostValidations(member, context, rawScore);
+        score = postValidation.score;
+        postValidationAdjustments = postValidation.adjustments;
+    }
+
+    if (score >= autoban.banThreshold) {
+        return { verdict: "ban", score, triggeredSignals, postValidationAdjustments };
+    }
+    if (score >= autoban.deleteThreshold) {
+        return { verdict: "delete", score, triggeredSignals, postValidationAdjustments };
+    }
+    return { verdict: "none", score, triggeredSignals, postValidationAdjustments };
 }
 
 export function trackMessage(
