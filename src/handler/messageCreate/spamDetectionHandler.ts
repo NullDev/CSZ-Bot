@@ -62,16 +62,19 @@ export default async function spamDetectionHandler(
         return;
     }
 
+    const { autoban } = context.commandConfig;
+
+    // In dry run, skip the trust filter so we get full evaluation coverage for tuning.
+    // Real actions (ban/delete) stay gated on `dryRun` further below regardless.
     if (
-        context.roleGuard.isMod(member) ||
-        context.roleGuard.isTrusted(member) ||
-        context.roleGuard.isGruendervater(member)
+        !autoban.dryRun &&
+        (context.roleGuard.isMod(member) ||
+            context.roleGuard.isTrusted(member) ||
+            context.roleGuard.isGruendervater(member))
     ) {
         log.debug({ userId: member.id }, "spamDetectionHandler: skipping guarded member");
         return;
     }
-
-    const { autoban } = context.commandConfig;
     const { score, triggeredSignals } = spamDetection.evaluateMessage(message, member, context);
     const triggeredLabels = triggeredSignals.map(s => s.label);
 
