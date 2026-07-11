@@ -4,6 +4,7 @@ import * as sentry from "@sentry/node";
 import type { BotContext } from "#/context.ts";
 import * as banService from "#/service/ban.ts";
 import * as spamDetection from "#/service/spamDetection.ts";
+import type { PostValidationAdjustment } from "#/service/spamDetection.ts";
 import log from "#log";
 
 type SpamAction = "ban" | "delete";
@@ -34,6 +35,7 @@ function buildSpamLogEmbed(
     triggeredLabels: readonly string[],
     dryRun: boolean,
     trustFactors: readonly string[],
+    postValidationAdjustments: readonly PostValidationAdjustment[],
 ): APIEmbed {
     const isBan = action === "ban";
     const dryRunPrefix = dryRun ? "🧪 [Testmodus] " : "";
@@ -55,6 +57,14 @@ function buildSpamLogEmbed(
             {
                 name: "Trust-Faktoren",
                 value: trustFactors.length > 0 ? trustFactors.join(", ") : "—",
+                inline: false,
+            },
+            {
+                name: "Post-Validierung",
+                value:
+                    postValidationAdjustments.length > 0
+                        ? postValidationAdjustments.map(a => `- ${a.label} (${a.delta})`).join("\n")
+                        : "—",
                 inline: false,
             },
             {
@@ -97,7 +107,11 @@ export default async function spamDetectionHandler(
         );
         return;
     }
-    const { score, triggeredSignals } = spamDetection.evaluateMessage(message, member, context);
+    const { score: rawScore, triggeredSignals } = spamDetection.evaluateMessage(
+        message,
+        member,
+        context,
+    );
     const triggeredLabels = triggeredSignals.map(s => s.label);
 
     const { dryRun } = autoban;
@@ -105,7 +119,7 @@ export default async function spamDetectionHandler(
     log.debug(
         {
             userId: member.id,
-            score,
+            score: rawScore,
             deleteThreshold: autoban.deleteThreshold,
             banThreshold: autoban.banThreshold,
             dryRun,
@@ -118,11 +132,21 @@ export default async function spamDetectionHandler(
     const hasContentSignal = triggeredSignals.some(s => s.category === "content");
     if (!hasIdentitySignal || !hasContentSignal) {
         log.debug(
-            { userId: member.id, score, hasIdentitySignal, hasContentSignal },
+            { userId: member.id, score: rawScore, hasIdentitySignal, hasContentSignal },
             "spamDetectionHandler: missing identity or content signal, skipping action",
         );
         spamDetection.trackMessage(member.id, message.id, message.channelId, message.content);
         return;
+    }
+
+    // Post-validation runs additional, costlier checks that can reduce the score - only once
+    // a message would actually trigger an action, not on every evaluated message.
+    let score = rawScore;
+    let postValidationAdjustments: readonly PostValidationAdjustment[] = [];
+    if (rawScore >= autoban.deleteThreshold) {
+        const postValidation = spamDetection.applyPostValidations(member, context, rawScore);
+        score = postValidation.score;
+        postValidationAdjustments = postValidation.adjustments;
     }
 
     if (score >= autoban.banThreshold) {
@@ -180,6 +204,7 @@ export default async function spamDetectionHandler(
                         triggeredLabels,
                         dryRun,
                         trustFactors,
+                        postValidationAdjustments,
                     ),
                 ],
             })
@@ -237,6 +262,7 @@ export default async function spamDetectionHandler(
                         triggeredLabels,
                         dryRun,
                         trustFactors,
+                        postValidationAdjustments,
                     ),
                 ],
             })

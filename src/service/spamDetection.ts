@@ -40,10 +40,35 @@ export type EvaluationResult = {
     triggeredSignals: readonly TriggeredSignal[];
 };
 
+export type PostValidationAdjustment = {
+    label: string;
+    delta: number;
+};
+
+export type PostValidationResult = {
+    score: number;
+    adjustments: readonly PostValidationAdjustment[];
+};
+
+type PostValidationEvaluate = (
+    member: GuildMember,
+    context: BotContext, // available if a future rule needs it
+    history: readonly RecentMessage[],
+) => number;
+
+type PostValidationRule = {
+    label: string;
+    evaluate: PostValidationEvaluate;
+};
+
 const recentMessages = new Map<Snowflake, RecentMessage[]>();
 
 const URL_PATTERN = /https?:\/\//i;
 const DISCORD_INVITE_PATTERN = /discord\.gg\//i;
+
+function containsLink(content: string): boolean {
+    return URL_PATTERN.test(content) || DISCORD_INVITE_PATTERN.test(content);
+}
 
 const SCORES = {
     accountAgeUnder7Days: 30,
@@ -61,6 +86,12 @@ const SCORES = {
 
 /** Ceiling for how much "identity" signals alone can contribute to the score. */
 const IDENTITY_SCORE_CAP = 50;
+
+const POST_VALIDATION = {
+    minHistoryForNormalBehaviorCheck: 3,
+    normalBehaviorMaxLinkRatio: 0.5,
+    normalBehaviorScoreReduction: 30,
+} as const;
 
 /** Returns true if `instant` occurred more recently than `duration` ago. */
 function isWithin(instant: Temporal.Instant, duration: Temporal.DurationLike): boolean {
@@ -211,6 +242,53 @@ export function evaluateMessage(
             .filter(r => r.points > 0)
             .map(r => ({ label: r.label, category: r.category })),
     };
+}
+
+const postValidationRules: readonly PostValidationRule[] = [
+    {
+        label: "Unauffälliges Verhalten (überwiegend Text ohne Links)",
+        evaluate: (_member, _context, history) => {
+            if (history.length < POST_VALIDATION.minHistoryForNormalBehaviorCheck) {
+                return 0;
+            }
+            const linkCount = history.filter(m => containsLink(m.content)).length;
+            const linkRatio = linkCount / history.length;
+            return linkRatio <= POST_VALIDATION.normalBehaviorMaxLinkRatio
+                ? -POST_VALIDATION.normalBehaviorScoreReduction
+                : 0;
+        },
+    },
+];
+
+/**
+ * Runs additional, more expensive checks to catch false positives before actually acting
+ * on a message. Only call this once a message has already crossed an action threshold -
+ * not on every evaluated message, since these checks are costlier than the initial signals.
+ */
+export function applyPostValidations(
+    member: GuildMember,
+    context: BotContext,
+    score: number,
+): PostValidationResult {
+    const { timeWindowDuration } = context.commandConfig.autoban;
+    const windowStart = Temporal.Now.instant().subtract(timeWindowDuration);
+    const history = getTrackedMessages(member.id).filter(
+        m => Temporal.Instant.compare(m.recordedAt, windowStart) > 0,
+    );
+
+    const results = postValidationRules.map(({ label, evaluate }) => ({
+        label,
+        delta: evaluate(member, context, history),
+    }));
+    const adjustments = results.filter(r => r.delta !== 0);
+    const adjustedScore = Math.max(0, score + adjustments.reduce((sum, r) => sum + r.delta, 0));
+
+    log.debug(
+        { userId: member.id, score, adjustedScore, adjustments },
+        "spamDetection: post-validation applied",
+    );
+
+    return { score: adjustedScore, adjustments };
 }
 
 export function trackMessage(
