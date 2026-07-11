@@ -64,10 +64,17 @@ type PostValidationRule = {
 const recentMessages = new Map<Snowflake, RecentMessage[]>();
 
 const URL_PATTERN = /https?:\/\//i;
+const URL_MATCH_PATTERN = /https?:\/\/\S+/gi;
 const DISCORD_INVITE_PATTERN = /discord\.gg\//i;
 
 function containsLink(content: string): boolean {
     return URL_PATTERN.test(content) || DISCORD_INVITE_PATTERN.test(content);
+}
+
+/** True if the message contains a link that is not itself a Discord invite. */
+function hasNonInviteLink(content: string): boolean {
+    const urls = content.match(URL_MATCH_PATTERN) ?? [];
+    return urls.some(url => !DISCORD_INVITE_PATTERN.test(url));
 }
 
 const SCORES = {
@@ -151,7 +158,8 @@ const signals: readonly SignalDef[] = [
     {
         label: "Nachricht enthält einen Link",
         category: "content",
-        evaluate: msg => (URL_PATTERN.test(msg.content) ? SCORES.containsUrl : 0),
+        // A link that's only a Discord invite is scored solely by the invite signal below.
+        evaluate: msg => (hasNonInviteLink(msg.content) ? SCORES.containsUrl : 0),
     },
     {
         label: "Nachricht enthält einen Discord-Einladungslink",
