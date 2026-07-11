@@ -8,13 +8,21 @@ import log from "#log";
 
 type SpamAction = "ban" | "delete";
 
-function isTrustedMember(member: GuildMember, context: BotContext): boolean {
-    return (
-        context.roleGuard.isMod(member) ||
-        context.roleGuard.isTrusted(member) ||
-        context.roleGuard.isGruendervater(member) ||
-        member.voice.channelId !== null
-    );
+function getTrustFactors(member: GuildMember, context: BotContext): string[] {
+    const factors: string[] = [];
+    if (context.roleGuard.isMod(member)) {
+        factors.push("Mod");
+    }
+    if (context.roleGuard.isTrusted(member)) {
+        factors.push("Trusted");
+    }
+    if (context.roleGuard.isGruendervater(member)) {
+        factors.push("Gründervater");
+    }
+    if (member.voice.channelId !== null) {
+        factors.push("In Voice-Channel");
+    }
+    return factors;
 }
 
 function buildSpamLogEmbed(
@@ -25,6 +33,7 @@ function buildSpamLogEmbed(
     threshold: number,
     triggeredLabels: readonly string[],
     dryRun: boolean,
+    trustFactors: readonly string[],
 ): APIEmbed {
     const isBan = action === "ban";
     const dryRunPrefix = dryRun ? "🧪 [Testmodus] " : "";
@@ -41,6 +50,11 @@ function buildSpamLogEmbed(
             {
                 name: "Erkannte Merkmale",
                 value: triggeredLabels.map(l => `- ${l}`).join("\n") || "—",
+                inline: false,
+            },
+            {
+                name: "Trust-Faktoren",
+                value: trustFactors.length > 0 ? trustFactors.join(", ") : "—",
                 inline: false,
             },
             {
@@ -72,11 +86,15 @@ export default async function spamDetectionHandler(
     }
 
     const { autoban } = context.commandConfig;
+    const trustFactors = getTrustFactors(member, context);
 
     // In dry run, skip the trust filter so we get full evaluation coverage for tuning.
     // Real actions (ban/delete) stay gated on `dryRun` further below regardless.
-    if (!autoban.dryRun && isTrustedMember(member, context)) {
-        log.debug({ userId: member.id }, "spamDetectionHandler: skipping guarded member");
+    if (!autoban.dryRun && trustFactors.length > 0) {
+        log.debug(
+            { userId: member.id, trustFactors },
+            "spamDetectionHandler: skipping guarded member",
+        );
         return;
     }
     const { score, triggeredSignals } = spamDetection.evaluateMessage(message, member, context);
@@ -161,6 +179,7 @@ export default async function spamDetectionHandler(
                         autoban.banThreshold,
                         triggeredLabels,
                         dryRun,
+                        trustFactors,
                     ),
                 ],
             })
@@ -217,6 +236,7 @@ export default async function spamDetectionHandler(
                         autoban.deleteThreshold,
                         triggeredLabels,
                         dryRun,
+                        trustFactors,
                     ),
                 ],
             })
