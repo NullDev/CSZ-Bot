@@ -22,7 +22,7 @@
   },
   "scripts": {
     "start": "node --require ./src/polyfills.ts src/app.ts",
-    "test": "node --require ./src/polyfills.ts --test && tsc",
+    "test": "node --experimental-test-module-mocks --require ./src/polyfills.ts --test && tsc",
     "ci": "oxlint --deny-warnings --type-aware -f github",
     "format": "oxfmt",
     "lint": "oxlint --type-aware",

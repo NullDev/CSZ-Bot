@@ -5,21 +5,29 @@ import type { GuildMember, Message } from "discord.js";
 
 import type { BotContext } from "#/context.ts";
 import * as spamDetection from "#/service/spamDetection.ts";
+import {
+    makeContext as makeBaseContext,
+    makeMember as makeBaseMember,
+    makeMessage as makeBaseMessage,
+    type MemberOptions,
+} from "#/service/spamDetectionTestFixtures.ts";
 
 // ---- Test bed ---------------------------------------------------------
 //
 // spamDetectionHandler.ts is the Discord-facing wrapper around the pure
-// spamDetection scoring engine (see spamDetection.test.ts for that). Here
-// we exercise the wrapper itself - in particular that `dryRun` really does
-// prevent every destructive Discord call (delete/ban) while still logging
-// and tracking, and that it's the only thing gating those calls.
+// spamDetection scoring engine (see spamDetection.test.ts, which shares its
+// member/message/context builders with this file via spamDetectionTestFixtures.ts).
+// Here we exercise the wrapper itself - in particular that `dryRun` really
+// does prevent every destructive Discord call (delete/ban) while still
+// logging and tracking, and that it's the only thing gating those calls.
+// The builders below layer the extra Discord-handler-specific surface
+// (mock spies, dry-run/role-guard config) on top of the shared base shapes.
 //
 // banService.banUser is the one dependency we can't fake by just building
 // a plain object (it's a static import, not something reached through our
 // fake `context`), so it's replaced via node's experimental module mocking
 // (see package.json's `test` script for the required
-// --experimental-test-module-mocks flag). Everything else - message,
-// member, context - is a plain object cast through `unknown`.
+// --experimental-test-module-mocks flag).
 
 const banUserMock = mock.fn(
     async (
@@ -37,41 +45,14 @@ mock.module("#/service/ban.ts", {
 
 const { default: spamDetectionHandler } = await import("./spamDetectionHandler.ts");
 
-let nextId = 0;
-function uniqueId(): string {
-    nextId += 1;
-    return `handler-test-id-${nextId}`;
-}
-
-type MemberOptions = {
-    accountAgeDays?: number;
-    joinedMinutesAgo?: number | null;
-    selfAssignedRoleCount?: number;
-    inVoiceChannel?: boolean;
-};
-
 /** Defaults to a profile that scores as an obvious spam-ban candidate. */
 function makeMember(options: MemberOptions = {}): GuildMember {
-    const {
-        accountAgeDays = 1,
-        joinedMinutesAgo = 1,
-        selfAssignedRoleCount = 0,
-        inVoiceChannel = false,
-    } = options;
-
-    const id = uniqueId();
-    const createdAt = new Date(Date.now() - accountAgeDays * 24 * 60 * 60 * 1000);
-    const joinedAt =
-        joinedMinutesAgo === null ? null : new Date(Date.now() - joinedMinutesAgo * 60 * 1000);
-
-    return {
-        id,
-        user: { createdAt },
-        joinedAt,
-        roles: { cache: { size: selfAssignedRoleCount + 2 } },
-        voice: { channelId: inVoiceChannel ? "voice-channel-1" : null },
-        toString: () => `<@${id}>`,
-    } as unknown as GuildMember;
+    return makeBaseMember({
+        accountAgeDays: 1,
+        joinedMinutesAgo: 1,
+        selfAssignedRoleCount: 0,
+        ...options,
+    });
 }
 
 type MessageOptions = {
@@ -97,18 +78,16 @@ function makeMessage(options: MessageOptions) {
     } = options;
 
     const deleteMock = mock.fn(async () => undefined);
+    const base = makeBaseMessage({ content, channelId, mentionedUserCount, mentionedRoleCount });
 
     const message = {
-        id: uniqueId(),
-        content,
-        channelId,
+        id: base.id,
+        content: base.content,
+        channelId: base.channelId,
+        mentions: base.mentions,
         author: { bot: authorBot },
         member,
         channel: { toString: () => `<#${channelId}>` },
-        mentions: {
-            users: { size: mentionedUserCount },
-            roles: { size: mentionedRoleCount },
-        },
         inGuild: () => inGuild,
         delete: deleteMock,
     } as unknown as Message;
@@ -141,16 +120,16 @@ function makeContext(options: ContextOptions = {}) {
 
     const spamLogSendMock = mock.fn(async () => undefined);
     const channelsGetMock = mock.fn(() => undefined);
+    const base = makeBaseContext({ deleteThreshold, banThreshold });
 
     const context = {
+        ...base,
         commandConfig: {
             autoban: {
+                ...base.commandConfig.autoban,
                 enabled,
                 dryRun,
-                deleteThreshold,
-                banThreshold,
                 banDurationHours,
-                timeWindowDuration: Temporal.Duration.from("PT5M"),
             },
         },
         roleGuard: {
