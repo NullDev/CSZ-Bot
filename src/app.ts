@@ -24,6 +24,7 @@ import {
 } from "#/handler/commandHandler.ts";
 import * as guildMemberHandler from "#/handler/guildMemberHandler.ts";
 import deleteThreadMessagesHandler from "#/handler/messageCreate/deleteThreadMessagesHandler.ts";
+import spamDetectionHandler from "#/handler/messageCreate/spamDetectionHandler.ts";
 import { handlePresenceUpdate } from "#/handler/presenceHandler.ts";
 import { createBotContext, type BotContext } from "#/context.ts";
 import { ehreReactionHandler } from "#/commands/ehre.ts";
@@ -135,22 +136,27 @@ login().then(
         client.user.setActivity(config.activity);
 
         try {
+            log.debug("Creating bot context...");
             botContext = await createBotContext(client);
 
+            log.debug("Bot context created, loading commands...");
             await loadCommands(botContext);
 
+            log.debug("Commands loaded, scheduling cron jobs...");
             await cronService.schedule(botContext);
 
             // When the application is ready, slash commands should be registered
+            log.debug("Registering application commands as guild commands...");
             await registerAllApplicationCommandsAsGuildCommands(botContext);
         } catch (err) {
-            sentry.captureException(err);
             log.error(err, "Error in `ready` handler");
+            sentry.captureException(err);
             process.exit(1);
         }
 
         log.info("Registering main event handlers...");
 
+        client.on("messageCreate", m => spamDetectionHandler(m, botContext));
         client.on("messageCreate", m => messageCommandHandler(m, botContext));
         client.on("messageCreate", m => deleteThreadMessagesHandler(m, botContext));
         client.on("guildMemberAdd", m => guildMemberHandler.added(botContext, m));

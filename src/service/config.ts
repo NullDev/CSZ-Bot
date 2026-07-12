@@ -214,6 +214,18 @@ export const configSchema = z.object({
                 }),
             ),
         }),
+        autoban: z
+            .object({
+                enabled: z.boolean().optional(),
+                /** When true, spam is detected and logged but no message is deleted and no user is banned. */
+                dryRun: z.boolean().optional(),
+                deleteThreshold: z.number().optional(),
+                banThreshold: z.number().optional(),
+                banDurationHours: z.number().optional(),
+                /** ISO8601 duration string, e.g. "PT5M" for 5 minutes. */
+                timeWindowDuration: z.string().optional(),
+            })
+            .optional(),
     }),
 
     deleteThreadMessagesInChannelIds: channelIdSet,
@@ -230,6 +242,8 @@ export const configSchema = z.object({
         botSpamChannelId: channelId,
         hauptwoisTextChannelId: channelId,
         roleAssignerChannelId: channelId,
+        /** Channel ID for the mod-only spam audit log. Leave empty to disable. */
+        spamLogChannelId: channelId.optional(),
     }),
 
     voiceChannel: z.object({

@@ -18,6 +18,7 @@ import { SpotifyApi } from "@spotify/web-api-ts-sdk";
 
 import type { UserMapEntry } from "#/commands/aoc.ts";
 import { readConfig } from "#/service/config.ts";
+import log from "#log";
 
 /**
  * Object that's passed to every executed command to make it easier to access common channels without repeatedly retrieving stuff via IDs.
@@ -84,6 +85,14 @@ export interface BotContext {
             leaderBoardJsonUrl: string;
             userMap: Record<Snowflake, UserMapEntry>;
         };
+        autoban: {
+            enabled: boolean;
+            dryRun: boolean;
+            deleteThreshold: number;
+            banThreshold: number;
+            banDurationHours: number;
+            timeWindowDuration: Temporal.Duration;
+        };
     };
 
     roles: {
@@ -120,6 +129,7 @@ export interface BotContext {
         botSpam: TextChannel;
         hauptwoisText: TextChannel;
         roleAssigner: TextChannel;
+        spamLog: TextChannel | null;
     };
 
     voiceChannels: {
@@ -228,8 +238,10 @@ function ensureEmoji(guild: Guild, emojiId: Snowflake, fallbackName: string): Gu
 // #endregion
 
 export async function createBotContext(client: Client<true>): Promise<BotContext> {
+    log.debug("createBotContext: reading config...");
     const config = await readConfig();
 
+    log.debug("createBotContext: config read, resolving guild...");
     const guild = client.guilds.cache.get(config.guildGuildId);
     if (!guild) {
         throw new Error(`Cannot find configured guild "${config.guildGuildId}"`);
@@ -240,7 +252,9 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
     const voiceChannel = config.voiceChannel;
 
     const soundsPath = path.resolve("data/sounds");
+    log.debug({ soundsPath }, "createBotContext: creating sounds directory...");
     await fs.mkdir(soundsPath, { recursive: true });
+    log.debug("createBotContext: sounds directory ready, building context object...");
 
     return {
         client,
@@ -282,6 +296,16 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
                     config.command.instagram?.rapidApiInstagramApiKey ?? undefined,
             },
             aoc: config.command.aoc,
+            autoban: {
+                enabled: config.command.autoban?.enabled ?? false,
+                dryRun: config.command.autoban?.dryRun ?? true,
+                deleteThreshold: config.command.autoban?.deleteThreshold ?? 40,
+                banThreshold: config.command.autoban?.banThreshold ?? 60,
+                banDurationHours: config.command.autoban?.banDurationHours ?? 24,
+                timeWindowDuration: Temporal.Duration.from(
+                    config.command.autoban?.timeWindowDuration ?? "PT5M",
+                ),
+            },
         },
 
         deleteThreadMessagesInChannelIds: new Set(config.deleteThreadMessagesInChannelIds),
@@ -314,6 +338,9 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
             botSpam: ensureTextChannel(guild, textChannel.botSpamChannelId),
             hauptwoisText: ensureTextChannel(guild, textChannel.hauptwoisTextChannelId),
             roleAssigner: ensureTextChannel(guild, textChannel.roleAssignerChannelId),
+            spamLog: textChannel.spamLogChannelId
+                ? ensureTextChannel(guild, textChannel.spamLogChannelId)
+                : null,
         },
 
         voiceChannels: {
