@@ -13,11 +13,10 @@ import type {
     Message,
     GuildEmoji,
 } from "discord.js";
-import { ChannelType } from "discord.js";
 import { SpotifyApi } from "@spotify/web-api-ts-sdk";
 
 import type { UserMapEntry } from "#/commands/aoc.ts";
-import { readConfig } from "#/service/config.ts";
+import { readConfig, type GuildId } from "#/service/config.ts";
 import log from "#log";
 
 /**
@@ -185,71 +184,23 @@ export interface QuoteConfig {
     emojiName: string;
 }
 
-// #region Ensure Stuff
-
-function ensureRole(guild: Guild, id: Snowflake): Role {
-    const role = guild.roles.cache.get(id);
-    if (!role) {
-        throw new Error(`Role with ID "${id}" not found in guild "${guild.id}"`);
-    }
-    return role;
-}
-
-function ensureTextChannel(guild: Guild, channelId: Snowflake): TextChannel {
-    const channel = guild.channels.cache.get(channelId);
-    if (!channel)
-        throw new Error(
-            `Could not find main channel with id "${channelId}" on guild "${guild.id}"`,
-        );
-    if (channel.type !== ChannelType.GuildText)
-        throw new Error(`Main channel is not a text channel. "${channel.id}" is "${channel.type}"`);
-    return channel;
-}
-
-function ensureVoiceChannel(guild: Guild, channelId: Snowflake): VoiceChannel {
-    const channel = guild.channels.cache.get(channelId);
-    if (!channel)
-        throw new Error(
-            `Could not find main channel with id "${channelId}" on guild "${guild.id}"`,
-        );
-    if (channel.type !== ChannelType.GuildVoice)
-        throw new Error(
-            `Main channel is not a voice channel. "${channel.id}" is "${channel.type}"`,
-        );
-    return channel;
-}
-
-function ensureEmoji(guild: Guild, emojiId: Snowflake, fallbackName: string): GuildEmoji {
-    const emoji = guild.emojis.resolve(emojiId);
-    if (emoji) {
-        return emoji;
-    }
-
-    const fallback = guild.emojis.cache.find(e => e.name === fallbackName);
-    if (fallback) {
-        return fallback;
-    }
-
-    throw new Error(
-        `Emoji with ID "${emojiId}" not found in guild "${guild.id}". Also did not find a fallback with name "${fallbackName}"`,
-    );
-}
-
-// #endregion
-
-export async function createBotContext(client: Client<true>): Promise<BotContext> {
-    log.debug("createBotContext: reading config...");
-    const config = await readConfig();
-
-    log.debug("createBotContext: config read, resolving guild...");
-    const guild = client.guilds.cache.get(config.guildGuildId);
+export async function createBotContext(
+    client: Client<true>,
+    guildId: GuildId,
+): Promise<BotContext> {
+    log.debug("createBotContext: resolving guild...");
+    const guild = client.guilds.cache.get(guildId);
     if (!guild) {
-        throw new Error(`Cannot find configured guild "${config.guildGuildId}"`);
+        throw new Error(`Cannot find configured guild "${guildId}"`);
     }
+
+    log.debug("createBotContext: guild resolved, reading config...");
+    const config = await readConfig(guild);
 
     const role = config.role;
     const textChannel = config.textChannel;
     const voiceChannel = config.voiceChannel;
+    const moderatorRoleIds = new Set(config.moderatorRoleIds.map(r => r.id));
 
     const soundsPath = path.resolve("data/sounds");
     log.debug({ soundsPath }, "createBotContext: creating sounds directory...");
@@ -273,7 +224,7 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
               )
             : null,
         youtube: config.youtube,
-        moderatorRoles: Array.from(config.moderatorRoleIds, id => ensureRole(guild, id)),
+        moderatorRoles: config.moderatorRoleIds,
         commandConfig: {
             faulenzerPing: config.command.faulenzerPing,
             ehre: config.command.ehre,
@@ -311,39 +262,36 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
         flameTrustedUserOnBotPing: config.flameTrustedUserOnBotPing,
 
         roles: {
-            // TODO: Make this prettier (splitting up the IDs by type in the config would make this much easier)
-            banned: ensureRole(guild, role.bannedRoleId),
-            birthday: ensureRole(guild, role.birthdayRoleId),
-            botDeny: ensureRole(guild, role.botDenyRoleId),
-            default: ensureRole(guild, role.defaultRoleId),
-            gruendervaeter: ensureRole(guild, role.gruendervaeterRoleId),
-            gruendervaeterBanned: ensureRole(guild, role.gruendervaeterBannedRoleId),
-            roleDeny: ensureRole(guild, role.roleDenyRoleId),
-            shame: ensureRole(guild, role.shameRoleId),
-            trusted: ensureRole(guild, role.trustedRoleId),
-            trustedBanned: ensureRole(guild, role.trustedBannedRoleId),
-            woisgang: ensureRole(guild, role.woisgangRoleId),
-            winner: ensureRole(guild, role.winnerRoleId),
-            emotifizierer: ensureRole(guild, role.emotifiziererRoleId),
-            lootRoleAsseGuard: ensureRole(guild, role.lootRoleAsseGuardRoleId),
+            banned: role.bannedRoleId,
+            birthday: role.birthdayRoleId,
+            botDeny: role.botDenyRoleId,
+            default: role.defaultRoleId,
+            gruendervaeter: role.gruendervaeterRoleId,
+            gruendervaeterBanned: role.gruendervaeterBannedRoleId,
+            roleDeny: role.roleDenyRoleId,
+            shame: role.shameRoleId,
+            trusted: role.trustedRoleId,
+            trustedBanned: role.trustedBannedRoleId,
+            woisgang: role.woisgangRoleId,
+            winner: role.winnerRoleId,
+            emotifizierer: role.emotifiziererRoleId,
+            lootRoleAsseGuard: role.lootRoleAsseGuardRoleId,
         },
 
         textChannels: {
-            banReason: ensureTextChannel(guild, textChannel.banReasonChannelId),
-            banned: ensureTextChannel(guild, textChannel.bannedChannelId),
-            botLog: ensureTextChannel(guild, textChannel.botLogChannelId),
-            hauptchat: ensureTextChannel(guild, textChannel.hauptchatChannelId),
-            votes: ensureTextChannel(guild, textChannel.votesChannelId),
-            botSpam: ensureTextChannel(guild, textChannel.botSpamChannelId),
-            hauptwoisText: ensureTextChannel(guild, textChannel.hauptwoisTextChannelId),
-            roleAssigner: ensureTextChannel(guild, textChannel.roleAssignerChannelId),
-            spamLog: textChannel.spamLogChannelId
-                ? ensureTextChannel(guild, textChannel.spamLogChannelId)
-                : null,
+            banReason: textChannel.banReasonChannelId,
+            banned: textChannel.bannedChannelId,
+            botLog: textChannel.botLogChannelId,
+            hauptchat: textChannel.hauptchatChannelId,
+            votes: textChannel.votesChannelId,
+            botSpam: textChannel.botSpamChannelId,
+            hauptwoisText: textChannel.hauptwoisTextChannelId,
+            roleAssigner: textChannel.roleAssignerChannelId,
+            spamLog: textChannel.spamLogChannelId ?? null,
         },
 
         voiceChannels: {
-            hauptWoischat: ensureVoiceChannel(guild, voiceChannel.hauptWoischatChannelId),
+            hauptWoischat: voiceChannel.hauptWoischatChannelId,
         },
 
         path: {
@@ -357,31 +305,31 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
         },
 
         roleGuard: {
-            isMod: member => hasAnyRoleById(member, config.moderatorRoleIds),
-            isNerd: member => hasRoleById(member, config.role.defaultRoleId),
+            isMod: member => hasAnyRoleById(member, moderatorRoleIds),
+            isNerd: member => hasRoleById(member, role.defaultRoleId.id),
             isTrusted: member =>
-                hasRoleById(member, config.role.trustedRoleId) ||
-                hasRoleById(member, config.role.trustedBannedRoleId),
+                hasRoleById(member, role.trustedRoleId.id) ||
+                hasRoleById(member, role.trustedBannedRoleId.id),
             isGruendervater: member =>
-                hasRoleById(member, config.role.gruendervaeterRoleId) ||
-                hasRoleById(member, config.role.gruendervaeterBannedRoleId),
-            isWoisGang: member => hasRoleById(member, config.role.woisgangRoleId),
-            isEmotifizierer: member => hasRoleById(member, config.role.emotifiziererRoleId),
-            hasBotDenyRole: member => hasRoleById(member, config.role.botDenyRoleId),
-            hasRoleDenyRole: member => hasRoleById(member, config.role.roleDenyRoleId),
-            isRejoiner: member => hasRoleById(member, config.role.shameRoleId),
+                hasRoleById(member, role.gruendervaeterRoleId.id) ||
+                hasRoleById(member, role.gruendervaeterBannedRoleId.id),
+            isWoisGang: member => hasRoleById(member, role.woisgangRoleId.id),
+            isEmotifizierer: member => hasRoleById(member, role.emotifiziererRoleId.id),
+            hasBotDenyRole: member => hasRoleById(member, role.botDenyRoleId.id),
+            hasRoleDenyRole: member => hasRoleById(member, role.roleDenyRoleId.id),
+            isRejoiner: member => hasRoleById(member, role.shameRoleId.id),
 
-            isLootRoleAsseGuard: member => hasRoleById(member, config.role.lootRoleAsseGuardRoleId),
+            isLootRoleAsseGuard: member => hasRoleById(member, role.lootRoleAsseGuardRoleId.id),
         },
 
         channelGuard: {
-            isInBotSpam: message => message.channelId === config.textChannel.botSpamChannelId,
+            isInBotSpam: message => message.channelId === textChannel.botSpamChannelId.id,
         },
 
         emoji: {
-            alarm: ensureEmoji(guild, config.emoji.alarmEmojiId, "alarm"),
-            sadHamster: ensureEmoji(guild, config.emoji.sadHamsterEmojiId, "sad_hamster"),
-            trichter: ensureEmoji(guild, config.emoji.trichterEmojiId, "trichter"),
+            alarm: config.emoji.alarmEmojiId,
+            sadHamster: config.emoji.sadHamsterEmojiId,
+            trichter: config.emoji.trichterEmojiId,
         },
     };
 }

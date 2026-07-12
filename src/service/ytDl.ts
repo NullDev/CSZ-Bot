@@ -112,7 +112,7 @@ export async function downloadVideo(
 ): Promise<DownloadResult> {
     const signal = AbortSignal.timeout(60_000);
 
-    const downloader = new YoutubeDownloader(context.youtube.cookieFilePath ?? null);
+    const downloader = new YoutubeDownloader(context.youtube?.cookieFilePath ?? null);
 
     const result = await downloader.downloadVideo(url, targetDir, signal);
     if (signal.aborted) {

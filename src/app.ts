@@ -1,7 +1,7 @@
 import { GatewayIntentBits, Partials, Client } from "discord.js";
 import * as sentry from "@sentry/node";
 
-import { readConfig, databasePath, args } from "#/service/config.ts";
+import { readBootstrapConfig, databasePath, args } from "#/service/config.ts";
 import log from "#log";
 
 import * as kysely from "#/storage/db/db.ts";
@@ -54,7 +54,7 @@ const release =
 
 log.info(`Bot starting up...${release ? ` (release: ${release})` : ""}`);
 
-const config = await readConfig();
+const config = await readBootstrapConfig();
 
 if (config.sentry?.dsn) {
     sentry.init({
@@ -137,7 +137,7 @@ login().then(
 
         try {
             log.debug("Creating bot context...");
-            botContext = await createBotContext(client);
+            botContext = await createBotContext(client, config.guildGuildId);
 
             log.debug("Bot context created, loading commands...");
             await loadCommands(botContext);
