@@ -46,8 +46,8 @@ export interface BotContext {
 
     spotifyClient: SpotifyApi | null;
 
-    youtube: {
-        cookieFilePath: string | null;
+    youtube?: {
+        cookieFilePath: string;
     };
 
     commandConfig: {
@@ -265,14 +265,13 @@ export async function createBotContext(client: Client<true>): Promise<BotContext
         guild,
         prefix: config.prefix,
         sendWelcomeMessage: config.sendWelcomeMessage,
-        spotifyClient:
-            config.spotify?.clientId && config.spotify?.clientSecret
-                ? SpotifyApi.withClientCredentials(
-                      config.spotify.clientId,
-                      config.spotify.clientSecret,
-                      [],
-                  )
-                : null,
+        spotifyClient: config.spotify
+            ? SpotifyApi.withClientCredentials(
+                  config.spotify.clientId,
+                  config.spotify.clientSecret,
+                  [],
+              )
+            : null,
         youtube: config.youtube,
         moderatorRoles: Array.from(config.moderatorRoleIds, id => ensureRole(guild, id)),
         commandConfig: {

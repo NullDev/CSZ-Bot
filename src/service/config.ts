@@ -122,17 +122,16 @@ export const configSchema = z.object({
 
     spotify: z
         .object({
-            clientId: z.string().optional(),
-            clientSecret: z.string().optional(),
+            clientId: z.string(),
+            clientSecret: z.string(),
         })
         .optional(),
 
     youtube: z
         .object({
-            cookieFilePath: z.string().nullish().default(null),
+            cookieFilePath: z.string(),
         })
-        .optional()
-        .default({ cookieFilePath: null }),
+        .optional(),
 
     activity: z.object({
         type: activityType,
