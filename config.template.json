@@ -70,7 +70,7 @@
             "anonymousCategoryIds": [],
             "blacklistedChannelIds": [],
             "defaultTargetChannelId": "893179191556706386",
-            "targetChannelOverrides": []
+            "targetChannelOverrides": {}
         },
         "aoc": {
             "enabled": false,
