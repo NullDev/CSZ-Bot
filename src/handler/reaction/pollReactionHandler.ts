@@ -1,4 +1,4 @@
-import type { MessageReaction, User } from "discord.js";
+import type { Message, MessageReaction, User } from "discord.js";
 
 import type { BotContext } from "#/context.ts";
 import type { ReactionHandler } from "../ReactionHandler.ts";
@@ -6,12 +6,20 @@ import type { ReactionHandler } from "../ReactionHandler.ts";
 import * as pollService from "#/service/poll.ts";
 import { POLL_EMOJIS, VOTE_EMOJIS } from "#/service/poll.ts";
 
+export function isVoteMessage(message: Message<true>, context: BotContext): boolean {
+    return (
+        message.author.id === context.client.user.id &&
+        message.embeds.length > 0 &&
+        VOTE_EMOJIS.every(e => message.reactions.cache.get(e)?.me === true)
+    );
+}
+
 export default {
     displayName: "Poll Reaction Handler",
     async execute(
         reactionEvent: MessageReaction,
         invoker: User,
-        _context: BotContext,
+        context: BotContext,
         reactionWasRemoved: boolean,
     ) {
         if (reactionWasRemoved) {
@@ -37,13 +45,13 @@ export default {
             return;
         }
 
-        const dbPoll = await pollService.findPollForEmbedMessage(message);
-        if (!dbPoll) {
-            return;
-        }
-
         if (VOTE_EMOJIS.includes(reactionName)) {
-            // this is a .vote poll -> remove other vote reactions from the user
+            // .vote polls are not persisted, they only live in the message state
+            if (!isVoteMessage(message, context)) {
+                return;
+            }
+
+            // remove the other vote reaction from the user
             const messageReactions = message.reactions.cache;
             for (const [emojiName, reaction] of messageReactions) {
                 if (VOTE_EMOJIS.includes(emojiName) && emojiName !== reactionName) {
@@ -53,7 +61,8 @@ export default {
             return;
         }
 
-        if (!POLL_EMOJIS.includes(reactionName)) {
+        const dbPoll = await pollService.findPollForEmbedMessage(message);
+        if (!dbPoll) {
             return;
         }
 
