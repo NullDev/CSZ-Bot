@@ -69,6 +69,8 @@ export const LootKind = Object.freeze({
     NAS: 54,
     USB_KABEL: 55,
     GESCHENKPAPIER: 56,
+    DUERUEM: 57,
+    TAXI_TELLER: 58,
 } as const);
 export type LootKindId = (typeof LootKind)[keyof typeof LootKind];
 
@@ -939,6 +941,35 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
             }
             return false;
         },
+    },
+    [LootKind.DUERUEM]: {
+        id: LootKind.DUERUEM,
+        weight: 5,
+        timeBasedWeight: {
+            evening: 10,
+        },
+        displayName: "Dürüm",
+        titleText: "Einen Dürüm",
+        dropDescription: "Bewahre ihn gut auf, er ist sehr lecker.",
+        emote: "🌯",
+        asset: "assets/loot/57-dueruem.jpg",
+        initialAttributes: [LootAttributeKind.NUTRI_SCORE_C],
+        wrapable: true,
+    },
+    [LootKind.TAXI_TELLER]: {
+        id: LootKind.TAXI_TELLER,
+        weight: 5,
+        timeBasedWeight: {
+            evening: 10,
+        },
+        displayName: "Taxi Teller",
+        titleText: "Einen Taxi Teller",
+        dropDescription:
+            "Dat is ja mal richtig lecker, dat is ja mal richtig fettig, dat is ja mal richtig geil oderwatt.",
+        emote: "🍽️",
+        asset: "assets/loot/58-taxi_teller.jpg",
+        initialAttributes: [LootAttributeKind.NUTRI_SCORE_E],
+        wrapable: true,
     },
 } as const;
 
