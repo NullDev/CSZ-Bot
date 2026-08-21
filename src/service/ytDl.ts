@@ -17,6 +17,9 @@ class YoutubeDownloader {
             noCheckCertificates: true,
             noWarnings: true,
             addHeader: ["referer:youtube.com", "user-agent:googlebot"],
+            // yt-dlp needs an external JS runtime to solve YouTube's challenges
+            // and defaults to deno
+            jsRuntimes: "node",
         };
     }
 
