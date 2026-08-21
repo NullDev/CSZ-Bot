@@ -26,7 +26,10 @@ FROM node:alpine
         python3 \
         ffmpeg \
         py-pip \
-        && fc-cache -f -v \
+        && fc-cache -f -v
+
+    ARG YTDLP_CACHE_BUST=unset
+    RUN echo "cache-bust: ${YTDLP_CACHE_BUST}" \
         && pip install "yt-dlp[default]" --break-system-packages
 
     ENV NODE_ENV=production

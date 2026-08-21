@@ -99,6 +99,7 @@ jobs:
           build-args: |
             RELEASE_IDENTIFIER=${{ github.sha }}
             BUILD_NUMBER=${{ github.run_number }}
+            YTDLP_CACHE_BUST=${{ github.sha }}
           load: true
           cache-from: type=gha
           cache-to: type=gha,mode=max
