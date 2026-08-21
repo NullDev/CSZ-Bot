@@ -3,6 +3,7 @@ import * as fs from "node:fs/promises";
 
 import { create as createYoutubeDl, type Flags, type Payload } from "youtube-dl-exec";
 
+import log from "#log";
 import type { BotContext } from "#/context.ts";
 
 const ytdl = createYoutubeDl("yt-dlp");
@@ -36,7 +37,8 @@ class YoutubeDownloader {
         let videoInfo;
         try {
             videoInfo = await this.#fetchVideoInfo(url);
-        } catch {
+        } catch (error) {
+            log.error(error, `Failed to fetch video info for ${url}`);
             return {
                 result: "error",
                 message: "Failed to fetch video info.",
@@ -62,6 +64,7 @@ class YoutubeDownloader {
                     result: "aborted",
                 };
             }
+            log.error(error, `Failed to download video from ${url}`);
             return {
                 result: "error",
                 message: `Failed to download video. ${error instanceof Error ? error.message : String(error)}`,
@@ -76,7 +79,8 @@ class YoutubeDownloader {
                     message: "Downloaded file is empty.",
                 };
             }
-        } catch {
+        } catch (error) {
+            log.error(error, `Downloaded file not found on disk at ${fullOutFile}`);
             return {
                 result: "error",
                 message: "Could not find downloaded file on disk. No file was downloaded.",
