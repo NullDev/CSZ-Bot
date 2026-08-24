@@ -962,8 +962,8 @@ export const lootTemplateMap: Record<LootKindId, LootTemplate> = {
         timeBasedWeight: {
             evening: 10,
         },
-        displayName: "Taxi Teller",
-        titleText: "Einen Taxi Teller",
+        displayName: "Taxiteller",
+        titleText: "Einen Taxiteller",
         dropDescription:
             "Dat is ja mal richtig lecker, dat is ja mal richtig fettig, dat is ja mal richtig geil oderwatt.",
         emote: "🍽️",
