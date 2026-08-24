@@ -53,13 +53,13 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@types/jsdom": "^28.0.3",
-    "@types/node": "^26.1.2",
+    "@types/jsdom": "^30.0.0",
+    "@types/node": "^26.2.0",
     "@types/node-cron": "^3.0.11",
     "expect": "^30.4.1",
     "lefthook": "^2.1.10",
-    "oxfmt": "^0.61.0",
-    "oxlint": "^1.76.0",
+    "oxfmt": "^0.65.0",
+    "oxlint": "^1.80.0",
     "oxlint-tsgolint": "^7.0.2001",
     "typescript": "^7.0.2"
   },
