@@ -64,7 +64,7 @@
     "typescript": "^7.0.2"
   },
   "engines": {
-    "node": ">=26.1"
+    "node": ">=26.7"
   },
   "trustedDependencies": [
     "lefthook"
