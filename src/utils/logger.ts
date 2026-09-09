@@ -38,7 +38,10 @@ const loggingConfigs = {
         transport: {
             targets: [
                 {
+                    // Multiple transport targets don't inherit the global log level.
+                    // Define levels explicitly
                     target: "pino-pretty",
+                    level: logLevel,
                     options: {
                         colorize: true,
                         ignore: "pid,hostname",
@@ -46,6 +49,7 @@ const loggingConfigs = {
                 },
                 {
                     target: "pino/file",
+                    level: "info",
                     options: {
                         destination: `${logDir}/error.log`,
                     },
