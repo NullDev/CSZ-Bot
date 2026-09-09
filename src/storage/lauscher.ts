@@ -33,9 +33,11 @@ export async function isActivatedForScrobbling(user: User, ctx = db()): Promise<
         .executeTakeFirst();
 
     if (!userRegistration) {
+        log.debug(`No Lauscher registration for user ${user.id}`);
         return false;
     }
 
+    log.debug(`Lauscher registration for user ${user.id}: activated=${userRegistration.activated}`);
     return userRegistration.activated;
 }
 
@@ -45,7 +47,7 @@ export async function insertSpotifyLog(
     startedActivity: Temporal.Instant,
     ctx = db(),
 ) {
-    await ctx
+    const inserted = await ctx
         .insertInto("lauscherSpotifyLog")
         .values({
             userId: user.id,
@@ -55,6 +57,16 @@ export async function insertSpotifyLog(
         .returningAll()
         .onConflict(oc => oc.columns(["userId", "startedActivity"]).doNothing())
         .execute();
+
+    if (inserted.length === 0) {
+        log.debug(
+            `Spotify log for user ${user.id} / track ${spotifyId} at ${startedActivity.toString()} already existed (conflict), nothing inserted`,
+        );
+    } else {
+        log.debug(
+            `Inserted Spotify log for user ${user.id} / track ${spotifyId} at ${startedActivity.toString()}`,
+        );
+    }
 }
 
 export async function insertTrackMetadata(track: Track, artists: Artist[], ctx = db()) {
@@ -103,7 +115,7 @@ export async function insertTrackMetadata(track: Track, artists: Artist[], ctx =
 }
 
 export async function getTrackMetadata(track: Track, ctx = db()) {
-    return ctx
+    const match = await ctx
         .selectFrom("spotifyTracks")
         .where("trackId", "=", track.id)
         .where("durationInMs", "=", track.duration_ms)
@@ -111,10 +123,28 @@ export async function getTrackMetadata(track: Track, ctx = db()) {
         .limit(1)
         .selectAll()
         .executeTakeFirst();
+
+    if (!match) {
+        const byId = await ctx
+            .selectFrom("spotifyTracks")
+            .where("trackId", "=", track.id)
+            .limit(1)
+            .selectAll()
+            .executeTakeFirst();
+        if (byId) {
+            log.debug(
+                `Track ${track.id} exists but does not match on duration/imageUrl (stored: ${byId.durationInMs}ms / ${byId.imageUrl}; incoming: ${track.duration_ms}ms / ${track.album.images[0]?.url ?? null}), will re-upsert metadata`,
+            );
+        } else {
+            log.debug(`Track ${track.id} not yet in database, will fetch artists and insert`);
+        }
+    }
+
+    return match;
 }
 
 export async function mostRecentPlayback(user: User, ctx = db()) {
-    const log = await ctx
+    const mostRecent = await ctx
         .selectFrom("lauscherSpotifyLog")
         .where("userId", "=", user.id)
         .orderBy("startedActivity", "desc")
@@ -122,14 +152,14 @@ export async function mostRecentPlayback(user: User, ctx = db()) {
         .selectAll()
         .executeTakeFirst();
 
-    if (!log) {
+    if (!mostRecent) {
         return null;
     }
 
     return {
         userId: user.id,
-        startedActivity: log.startedActivity,
-        trackId: log.spotifyId,
+        startedActivity: mostRecent.startedActivity,
+        trackId: mostRecent.spotifyId,
     };
 }
 
@@ -169,24 +199,29 @@ export async function getRecentPlaybacks(
 
     const results: LauscherSpotifyLogEntry[] = [];
 
-    for (const log of logs) {
-        const trackMetadata = trackMap.get(log.spotifyId);
+    let skippedNoTrack = 0;
+    let skippedNoArtists = 0;
+
+    for (const logEntry of logs) {
+        const trackMetadata = trackMap.get(logEntry.spotifyId);
         if (!trackMetadata) {
+            skippedNoTrack++;
             continue;
         }
         const trackArtists = artists
-            .filter(artist => artist.trackId === log.spotifyId)
+            .filter(artist => artist.trackId === logEntry.spotifyId)
             .map(artist => artist.artistId);
         const artistsMetadata = trackArtists
             .map(artistId => artistMap.get(artistId))
             .filter(artist => artist !== undefined);
         if (artistsMetadata.length === 0) {
+            skippedNoArtists++;
             continue;
         }
 
         results.push({
             userId: user.id,
-            startedActivity: log.startedActivity,
+            startedActivity: logEntry.startedActivity,
             track: {
                 trackId: trackMetadata.trackId,
                 name: trackMetadata.name,
@@ -199,6 +234,10 @@ export async function getRecentPlaybacks(
             })),
         });
     }
+
+    log.debug(
+        `getRecentPlaybacks for user ${user.id} over ${duration.toString()}: ${logs.length} log entries, ${results.length} usable, ${skippedNoTrack} skipped (no track metadata), ${skippedNoArtists} skipped (no artist metadata)`,
+    );
 
     return results;
 }

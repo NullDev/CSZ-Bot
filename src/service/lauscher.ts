@@ -64,15 +64,24 @@ export async function handleSpotifyActivityUpdate(
 ) {
     const active = await isActivatedForScrobbling(user);
     if (!active) {
+        log.debug(
+            `User ${user.username} (${user.id}) is not activated for scrobbling, ignoring Spotify activity`,
+        );
         return;
     }
 
     const existingTask = userUpdateTasks.get(user.id);
     if (existingTask) {
+        log.debug(
+            `Debouncing Spotify activity for user ${user.username} (${user.id}), clearing previous pending task`,
+        );
         clearTimeout(existingTask);
     }
 
     const newTask = setTimeout(() => {
+        log.debug(
+            `Debounce elapsed for user ${user.username} (${user.id}), handling Spotify activity`,
+        );
         handleSpotifyActivity(context, user, newSpotifyActivity).catch(e =>
             log.error(e, "Error handling Spotify activity update"),
         );
@@ -81,6 +90,9 @@ export async function handleSpotifyActivityUpdate(
     newTask.unref(); // unref timer, so it doesn't keep the event loop waiting if Node.js wants to shut down
 
     userUpdateTasks.set(user.id, newTask);
+    log.debug(
+        `Scheduled Spotify activity handling for user ${user.username} (${user.id}) in 15s (track: ${newSpotifyActivity.details} / ${newSpotifyActivity.syncId})`,
+    );
 }
 
 async function handleSpotifyActivity(context: BotContext, user: User, activity: SpotifyActivity) {
@@ -89,26 +101,39 @@ async function handleSpotifyActivity(context: BotContext, user: User, activity: 
     );
     const metadata = await fetchTrackMetadata(context, activity.syncId);
     if (!metadata) {
+        log.debug(
+            `No track metadata for ${activity.syncId} (user ${user.username} / ${user.id}), not scrobbling`,
+        );
         return;
     }
 
     const recent = await mostRecentPlayback(user);
     // Prevent Double Scrobbling
     if (recent && recent.trackId === metadata.trackId) {
+        log.debug(
+            `Track ${metadata.trackId} is the same as the most recent playback for user ${user.username} (${user.id}), skipping to prevent double scrobbling`,
+        );
         return;
     }
 
     await insertSpotifyLog(user, activity.syncId, activity.createdAt.toTemporalInstant());
+    log.debug(
+        `Scrobbled track ${metadata.trackId} (${activity.details}) for user ${user.username} (${user.id})`,
+    );
 }
 
 async function fetchTrackMetadata(context: BotContext, trackId: string) {
     const client = context.spotifyClient;
     if (!client) {
+        log.warn(
+            `No Spotify client configured (config.spotify missing), cannot fetch metadata for track ${trackId}`,
+        );
         return null;
     }
 
     const track = await client.tracks.get(trackId);
     if (!track) {
+        log.debug(`Spotify API returned no track for id ${trackId}`);
         return null;
     }
 
