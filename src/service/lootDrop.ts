@@ -492,13 +492,6 @@ async function runMerkurleiter(
                   ? `${nextRarity.shortDisplay} ${nextRarity.displayName}`.trim()
                   : null;
 
-        if (nextReward === null) {
-            await channel.send(
-                `🎉 ${winner} hat die **Merkurleiter** ganz erklommen! Das Duplikat ist jetzt 🌟 Sehr Selten. Du gehörst nicht dazu und bist ein Gewinnertyp!`,
-            );
-            return;
-        }
-
         const content = await createDropTakenContent(
             context,
             template,
@@ -506,6 +499,19 @@ async function runMerkurleiter(
             winner.user,
             [],
         );
+
+        if (nextReward === null) {
+            await message.edit({
+                flags: MessageFlags.IsComponentsV2,
+                components: content.components,
+                embeds: [],
+                files: content.files,
+            });
+            await channel.send(
+                `🎉 ${winner} hat die **Merkurleiter** ganz erklommen! Das Duplikat ist jetzt 🌟 Sehr Selten. Du gehörst nicht dazu und bist ein Gewinnertyp!`,
+            );
+            return;
+        }
 
         const currentRarity =
             ladderLoot === null
@@ -565,6 +571,13 @@ async function runMerkurleiter(
         await step.deferUpdate();
 
         if (step.customId === "ladder-collect") {
+            content.components[0].spliceComponents(content.components[0].components.length - 1, 1);
+            await message.edit({
+                flags: MessageFlags.IsComponentsV2,
+                components: content.components,
+                embeds: [],
+                files: content.files,
+            });
             await channel.send(
                 `${winner} steigt von der Merkurleiter und nimmt alles mit. Vernünftig!`,
             );
