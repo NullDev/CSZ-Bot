@@ -21,6 +21,7 @@ import type {
 
 import db from "#db";
 import {
+    LootAttributeClass,
     type LootKindId,
     resolveLootAttributeTemplate,
     type LootAttributeKindId,
@@ -400,6 +401,24 @@ export async function addLootAttributeIfNotPresent(
         })
         .execute();
     return r.length > 0;
+}
+
+export async function updateLootRarityAttribute(
+    lootId: LootId,
+    attributeTemplate: LootAttributeTemplate,
+    ctx = db(),
+) {
+    await ctx.transaction().execute(async ctx => {
+        await ctx
+            .updateTable("lootAttribute")
+            .set({ deletedAt: sql`current_timestamp` })
+            .where("lootId", "=", lootId)
+            .where("attributeClassId", "=", LootAttributeClass.RARITY)
+            .where(notDeleted)
+            .execute();
+
+        await addLootAttributeIfNotPresent(lootId, attributeTemplate, ctx);
+    });
 }
 
 export function deleteLootByPredecessor(lootId: LootId) {

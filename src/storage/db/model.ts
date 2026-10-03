@@ -241,7 +241,8 @@ export type LootOrigin =
     | "owner-transfer"
     | "replacement"
     | "birthday"
-    | "double-or-nothing";
+    | "double-or-nothing"
+    | "merkurleiter";
 
 export type Loot = Selectable<LootTable>;
 export type LootInsertable = Insertable<LootTable>;

@@ -6,7 +6,7 @@
     },
     "sentry": {
         "dsn": null,
-        "tracesSampleRate": null
+        "tracesSampleRate": 1
     },
     "spotify": {
         "clientId": "<SPOTIFY_CLIENT_ID>",
