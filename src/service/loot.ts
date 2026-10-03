@@ -63,6 +63,10 @@ export function deleteLoot(lootId: LootId) {
     return loot.deleteLoot(lootId);
 }
 
+export function updateLootRarityAttribute(lootId: LootId, attribute: loot.LootAttributeTemplate) {
+    return loot.updateLootRarityAttribute(lootId, attribute);
+}
+
 export function deleteLootByPredecessor(lootId: LootId) {
     return loot.deleteLootByPredecessor(lootId);
 }
