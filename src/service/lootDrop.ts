@@ -8,6 +8,7 @@ import {
     type Message,
     type TextChannel,
     type User,
+    type GuildMember,
     type Interaction,
     type GuildBasedChannel,
     type TextBasedChannel,
@@ -35,6 +36,8 @@ import { zonedNow } from "#/utils/dateUtils.ts";
 import * as lootService from "#/service/loot.ts";
 import {
     LootAttributeClass,
+    LootAttributeKind,
+    type LootAttributeKindId,
     lootAttributeTemplates,
     LootKind,
     lootTemplates,
@@ -236,6 +239,10 @@ export async function postLootDrop(
         .setCustomId("double-or-nothing")
         .setLabel("Doppelt oder Nix")
         .setStyle(ButtonStyle.Primary);
+    const merkurleiterButton = new ButtonBuilder()
+        .setCustomId("merkurleiter")
+        .setLabel("Merkurleiter")
+        .setStyle(ButtonStyle.Primary);
 
     const content = await createDropTakenContent(
         context,
@@ -246,7 +253,9 @@ export async function postLootDrop(
     );
 
     if (canBeDoubled) {
-        content.components[0].addActionRowComponents(a => a.addComponents(doubleOrNothingButton));
+        content.components[0].addActionRowComponents(a =>
+            a.addComponents(doubleOrNothingButton, merkurleiterButton),
+        );
     }
 
     const dropMessage: MessageEditOptions = {
@@ -272,23 +281,38 @@ export async function postLootDrop(
         return;
     }
 
-    let doubleOrNothingInteraction: MessageComponentInteraction | undefined;
+    let gambleInteraction: MessageComponentInteraction | undefined;
 
     try {
-        doubleOrNothingInteraction = await message.awaitMessageComponent({
-            filter: i => i.customId === "double-or-nothing" && i.user.id === winner.id,
+        gambleInteraction = await message.awaitMessageComponent({
+            filter: i =>
+                (i.customId === "double-or-nothing" || i.customId === "merkurleiter") &&
+                i.user.id === winner.id,
             componentType: ComponentType.Button,
             time: 5000,
         });
     } catch {
         return;
     } finally {
-        // Remove the last action row with the button. Only works because there is only one action row.
+        // Remove the last action row with the buttons. Only works because there is only one action row.
         content.components[0].spliceComponents(content.components[0].components.length - 1, 1);
         await message.edit(dropMessage);
-        if (doubleOrNothingInteraction) {
-            await doubleOrNothingInteraction.deferUpdate();
+        if (gambleInteraction) {
+            await gambleInteraction.deferUpdate();
         }
+    }
+
+    if (gambleInteraction.customId === "merkurleiter") {
+        await runMerkurleiter(
+            context,
+            channel as TextChannel,
+            message,
+            winner,
+            template,
+            claimedLoot,
+            rarityAttribute ?? null,
+        );
+        return;
     }
 
     if (randomBoolean()) {
@@ -430,6 +454,169 @@ type AdjustmentResult = {
     messages: string[];
     weights: number[];
 };
+
+const merkurleiterStepTimeoutMs = 15_000;
+
+function nextRarityTemplate(current: LootAttributeTemplate | null): LootAttributeTemplate | null {
+    const rarityLadder: LootAttributeKindId[] = [
+        LootAttributeKind.RARITY_NORMAL,
+        LootAttributeKind.RARITY_RARE,
+        LootAttributeKind.RARITY_VERY_RARE,
+    ];
+    const currentId = current?.id ?? LootAttributeKind.RARITY_NORMAL;
+    const index = rarityLadder.indexOf(currentId);
+    if (index === -1 || index === rarityLadder.length - 1) {
+        return null;
+    }
+    return lootAttributeTemplates.find(t => t.id === rarityLadder[index + 1]) ?? null;
+}
+
+async function runMerkurleiter(
+    context: BotContext,
+    channel: TextChannel,
+    message: Message<true>,
+    winner: GuildMember,
+    template: LootTemplate,
+    claimedLoot: Loot,
+    rarityAttribute: LootAttributeTemplate | null,
+) {
+    let ladderLoot: Loot | null = null;
+    let rarity = rarityAttribute;
+
+    for (;;) {
+        const nextRarity = ladderLoot === null ? null : nextRarityTemplate(rarity);
+        const nextReward =
+            ladderLoot === null
+                ? "ein Duplikat deines Geschenks"
+                : nextRarity
+                  ? `${nextRarity.shortDisplay} ${nextRarity.displayName}`.trim()
+                  : null;
+
+        const content = await createDropTakenContent(
+            context,
+            template,
+            ladderLoot ?? claimedLoot,
+            winner.user,
+            [],
+        );
+
+        if (nextReward === null) {
+            await message.edit({
+                flags: MessageFlags.IsComponentsV2,
+                components: content.components,
+                embeds: [],
+                files: content.files,
+            });
+            await channel.send(
+                `🎉 ${winner} hat die **Merkurleiter** ganz erklommen! Das Duplikat ist jetzt 🌟 Sehr Selten. Du gehörst nicht dazu und bist ein Gewinnertyp!`,
+            );
+            return;
+        }
+
+        const currentRarity =
+            ladderLoot === null
+                ? null
+                : rarity && rarity.id !== LootAttributeKind.RARITY_NORMAL
+                  ? ` (${rarity.shortDisplay} ${rarity.displayName})`
+                  : "";
+        const status =
+            ladderLoot === null
+                ? "Du stehst am Fuße der Leiter."
+                : `Auf der Leiter gesichert: dein Duplikat${currentRarity}`;
+
+        content.components[0].addTextDisplayComponents(t =>
+            t.setContent(
+                `🪜 **Merkurleiter**\n${status}\nNächste Sprosse: **${nextReward}** – wer ausrutscht, verliert alles!`,
+            ),
+        );
+        content.components[0].addActionRowComponents(a =>
+            a.addComponents(
+                new ButtonBuilder()
+                    .setCustomId("ladder-climb")
+                    .setLabel("Höher steigen")
+                    .setStyle(ButtonStyle.Primary),
+                new ButtonBuilder()
+                    .setCustomId("ladder-collect")
+                    .setLabel("Einsammeln")
+                    .setStyle(ButtonStyle.Success),
+            ),
+        );
+
+        await message.edit({
+            flags: MessageFlags.IsComponentsV2,
+            components: content.components,
+            embeds: [],
+            files: content.files,
+        });
+
+        let step: MessageComponentInteraction;
+        try {
+            step = await message.awaitMessageComponent({
+                filter: i =>
+                    (i.customId === "ladder-climb" || i.customId === "ladder-collect") &&
+                    i.user.id === winner.id,
+                componentType: ComponentType.Button,
+                time: merkurleiterStepTimeoutMs,
+            });
+        } catch {
+            content.components[0].spliceComponents(content.components[0].components.length - 1, 1);
+            await message.edit({
+                flags: MessageFlags.IsComponentsV2,
+                components: content.components,
+                embeds: [],
+                files: content.files,
+            });
+            return;
+        }
+        await step.deferUpdate();
+
+        if (step.customId === "ladder-collect") {
+            content.components[0].spliceComponents(content.components[0].components.length - 1, 1);
+            await message.edit({
+                flags: MessageFlags.IsComponentsV2,
+                components: content.components,
+                embeds: [],
+                files: content.files,
+            });
+            await channel.send(
+                `${winner} steigt von der Merkurleiter und nimmt alles mit. Vernünftig!`,
+            );
+            return;
+        }
+
+        if (!randomBoolean()) {
+            await Promise.all([
+                lootService.deleteLoot(claimedLoot.id),
+                lootService.deleteLootByPredecessor(claimedLoot.id),
+                message.delete(),
+            ]);
+            await channel.send(
+                `Autsch, ${winner}! Du bist von der **Merkurleiter** gerutscht – alles ist weg.`,
+            );
+            return;
+        }
+
+        if (ladderLoot === null) {
+            ladderLoot = await lootService.createLoot(
+                template,
+                winner.user,
+                message,
+                "merkurleiter",
+                claimedLoot.id,
+                rarity ?? null,
+            );
+            if (!ladderLoot) {
+                await channel.send(
+                    `${winner}, ups, da ist was schief gelaufi ${context.emoji.sadHamster}`,
+                );
+                return;
+            }
+        } else {
+            rarity = nextRarity;
+            await lootService.updateLootRarityAttribute(ladderLoot.id, nextRarity!);
+        }
+    }
+}
 
 async function getDropWeightAdjustments(
     user: User,
