@@ -6,6 +6,8 @@ import log from "#log";
 type RecentMessage = {
     messageId: Snowflake;
     content: string;
+    /** Fingerprints of the attachments, see `getAttachmentKeys`. */
+    attachmentKeys: readonly string[];
     channelId: Snowflake;
     recordedAt: Temporal.Instant;
 };
@@ -77,6 +79,60 @@ function hasNonInviteLink(content: string): boolean {
     return urls.some(url => !DISCORD_INVITE_PATTERN.test(url));
 }
 
+/**
+ * Fingerprints of a message's attachments. Re-uploads of the same file get a new URL,
+ * but keep name and size, so that's what we use to recognize the same file posted again.
+ */
+export function getAttachmentKeys(message: Message): string[] {
+    return message.attachments.map(a => `${a.name}:${a.size}`).toSorted();
+}
+
+/**
+ * File types that run code when opened and are a classic malware vector. Scripts that developers
+ * commonly share (.js, .py, .sh, .ps1, ...) are deliberately left out, since this is a coding server.
+ */
+const DANGEROUS_FILE_EXTENSIONS: ReadonlySet<string> = new Set([
+    "apk",
+    "bat",
+    "cmd",
+    "com",
+    "cpl",
+    "dll",
+    "exe",
+    "hta",
+    "jar",
+    "lnk",
+    "msi",
+    "pif",
+    "reg",
+    "scr",
+    "vbe",
+    "vbs",
+    "wsf",
+]);
+
+function hasDangerousAttachment(message: Message): boolean {
+    return message.attachments.some(a => {
+        const dot = a.name.lastIndexOf(".");
+        return dot !== -1 && DANGEROUS_FILE_EXTENSIONS.has(a.name.slice(dot + 1).toLowerCase());
+    });
+}
+
+/**
+ * Two messages count as the same if they have the same text or share an attachment, so spammers
+ * can't dodge the check by varying the text around the same file. Empty text never matches
+ * (e.g. sticker-only or attachment-only messages).
+ */
+function isDuplicate(
+    a: Pick<RecentMessage, "content" | "attachmentKeys">,
+    b: Pick<RecentMessage, "content" | "attachmentKeys">,
+): boolean {
+    if (a.content.length > 0 && a.content === b.content) {
+        return true;
+    }
+    return a.attachmentKeys.some(key => b.attachmentKeys.includes(key));
+}
+
 const SCORES = {
     accountAgeUnder7Days: 30,
     accountAgeUnder30Days: 15,
@@ -85,6 +141,7 @@ const SCORES = {
     guildJoinUnder48Hours: 20,
     containsUrl: 20,
     containsDiscordInvite: 45,
+    containsDangerousFile: 45,
     massUserMentions: 20,
     roleMentions: 25,
     crossChannelDuplicate: 20,
@@ -168,6 +225,11 @@ const signals: readonly SignalDef[] = [
             DISCORD_INVITE_PATTERN.test(msg.content) ? SCORES.containsDiscordInvite : 0,
     },
     {
+        label: "Nachricht enthält eine ausführbare Datei",
+        category: "content",
+        evaluate: msg => (hasDangerousAttachment(msg) ? SCORES.containsDangerousFile : 0),
+    },
+    {
         label: "Nachricht erwähnt mehrere Nutzer",
         category: "content",
         evaluate: msg => (msg.mentions.users.size >= 2 ? SCORES.massUserMentions : 0),
@@ -188,8 +250,11 @@ const signals: readonly SignalDef[] = [
         label: "Gleiche Nachricht in mehreren Kanälen gesendet",
         category: "content",
         evaluate: (msg, _member, _context, history) => {
-            const normalized = msg.content.trim().toLowerCase();
-            return history.some(m => m.content === normalized && m.channelId !== msg.channelId)
+            const current = {
+                content: msg.content.trim().toLowerCase(),
+                attachmentKeys: getAttachmentKeys(msg),
+            };
+            return history.some(m => m.channelId !== msg.channelId && isDuplicate(current, m))
                 ? SCORES.crossChannelDuplicate
                 : 0;
         },
@@ -355,11 +420,13 @@ export function trackMessage(
     messageId: Snowflake,
     channelId: Snowflake,
     content: string,
+    attachmentKeys: readonly string[] = [],
 ): void {
     const existing = recentMessages.get(userId) ?? [];
     existing.push({
         messageId,
         content: content.trim().toLowerCase(),
+        attachmentKeys,
         channelId,
         recordedAt: Temporal.Now.instant(),
     });

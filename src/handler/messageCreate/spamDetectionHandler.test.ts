@@ -85,6 +85,7 @@ function makeMessage(options: MessageOptions) {
         content: base.content,
         channelId: base.channelId,
         mentions: base.mentions,
+        attachments: base.attachments,
         author: { bot: authorBot },
         member,
         channel: { toString: () => `<#${channelId}>` },

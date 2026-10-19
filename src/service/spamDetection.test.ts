@@ -187,6 +187,30 @@ void describe("evaluateMessage: mention signals", () => {
     });
 });
 
+void describe("evaluateMessage: dangerous file signal", () => {
+    void test("an .exe attachment triggers the signal", () => {
+        const message = makeMessage({
+            attachments: [{ name: "Free-Nitro.EXE", contentType: "application/x-msdownload" }],
+        });
+        const result = spamDetection.evaluateMessage(message, makeMember(), makeContext());
+
+        expect(labelsOf(result)).toContain("Nachricht enthält eine ausführbare Datei");
+    });
+
+    void test("harmless attachments do not trigger the signal", () => {
+        const message = makeMessage({
+            attachments: [
+                { name: "screenshot.png" },
+                { name: "index.js", contentType: "text/javascript" },
+                { name: "exe", contentType: null },
+            ],
+        });
+        const result = spamDetection.evaluateMessage(message, makeMember(), makeContext());
+
+        expect(labelsOf(result)).not.toContain("Nachricht enthält eine ausführbare Datei");
+    });
+});
+
 void test("identical message posted in a second channel triggers the cross-channel-duplicate signal", () => {
     const member = makeMember();
     spamDetection.trackMessage(member.id, "msg-1", "channel-a", "Kauft jetzt billige Follower!");
@@ -208,6 +232,125 @@ void test("identical message posted again in the same channel does not trigger t
         content: "Kauft jetzt billige Follower!",
         channelId: "channel-a",
     });
+    const result = spamDetection.evaluateMessage(message, member, makeContext());
+
+    expect(labelsOf(result)).not.toContain("Gleiche Nachricht in mehreren Kanälen gesendet");
+});
+
+void test("same image without text posted in a second channel triggers the duplicate signal", () => {
+    const member = makeMember();
+    const first = makeMessage({
+        content: "",
+        attachments: [{ name: "free-nitro.png", size: 4242 }],
+    });
+    spamDetection.trackMessage(
+        member.id,
+        first.id,
+        "channel-a",
+        first.content,
+        spamDetection.getAttachmentKeys(first),
+    );
+
+    const message = makeMessage({
+        content: "",
+        channelId: "channel-b",
+        attachments: [{ name: "free-nitro.png", size: 4242 }],
+    });
+    const result = spamDetection.evaluateMessage(message, member, makeContext());
+
+    expect(labelsOf(result)).toContain("Gleiche Nachricht in mehreren Kanälen gesendet");
+});
+
+void test("different images without text in two channels do not trigger the duplicate signal", () => {
+    const member = makeMember();
+    const first = makeMessage({ content: "", attachments: [{ name: "meme.png", size: 1 }] });
+    spamDetection.trackMessage(
+        member.id,
+        first.id,
+        "channel-a",
+        first.content,
+        spamDetection.getAttachmentKeys(first),
+    );
+
+    const message = makeMessage({
+        content: "",
+        channelId: "channel-b",
+        attachments: [{ name: "other-meme.png", size: 2 }],
+    });
+    const result = spamDetection.evaluateMessage(message, member, makeContext());
+
+    expect(labelsOf(result)).not.toContain("Gleiche Nachricht in mehreren Kanälen gesendet");
+});
+
+void test("same non-image file posted in a second channel triggers the duplicate signal", () => {
+    const member = makeMember();
+    const attachment = { name: "free-nitro.exe", size: 1337, contentType: null };
+    const first = makeMessage({ content: "", attachments: [attachment] });
+    spamDetection.trackMessage(
+        member.id,
+        first.id,
+        "channel-a",
+        first.content,
+        spamDetection.getAttachmentKeys(first),
+    );
+
+    const message = makeMessage({ content: "", channelId: "channel-b", attachments: [attachment] });
+    const result = spamDetection.evaluateMessage(message, member, makeContext());
+
+    expect(labelsOf(result)).toContain("Gleiche Nachricht in mehreren Kanälen gesendet");
+});
+
+void test("same attachment with different text in a second channel triggers the duplicate signal", () => {
+    const member = makeMember();
+    const attachment = { name: "free-nitro.png", size: 4242 };
+    const first = makeMessage({ content: "gratis nitro!!", attachments: [attachment] });
+    spamDetection.trackMessage(
+        member.id,
+        first.id,
+        "channel-a",
+        first.content,
+        spamDetection.getAttachmentKeys(first),
+    );
+
+    const message = makeMessage({
+        content: "schaut mal was ich gefunden habe",
+        channelId: "channel-b",
+        attachments: [attachment, { name: "extra.png", size: 1 }],
+    });
+    const result = spamDetection.evaluateMessage(message, member, makeContext());
+
+    expect(labelsOf(result)).toContain("Gleiche Nachricht in mehreren Kanälen gesendet");
+});
+
+void test("same text with different attachments in a second channel triggers the duplicate signal", () => {
+    const member = makeMember();
+    const first = makeMessage({
+        content: "Kauft jetzt billige Follower!",
+        attachments: [{ name: "a.png", size: 1 }],
+    });
+    spamDetection.trackMessage(
+        member.id,
+        first.id,
+        "channel-a",
+        first.content,
+        spamDetection.getAttachmentKeys(first),
+    );
+
+    const message = makeMessage({
+        content: "Kauft jetzt billige Follower!",
+        channelId: "channel-b",
+        attachments: [{ name: "b.png", size: 2 }],
+    });
+    const result = spamDetection.evaluateMessage(message, member, makeContext());
+
+    expect(labelsOf(result)).toContain("Gleiche Nachricht in mehreren Kanälen gesendet");
+});
+
+void test("empty messages without attachments in two channels do not count as duplicates", () => {
+    const member = makeMember();
+    spamDetection.trackMessage(member.id, "msg-1", "channel-a", "");
+
+    const message = makeMessage({ content: "", channelId: "channel-b" });
     const result = spamDetection.evaluateMessage(message, member, makeContext());
 
     expect(labelsOf(result)).not.toContain("Gleiche Nachricht in mehreren Kanälen gesendet");
@@ -366,6 +509,22 @@ void describe("decideAction: should be banned", () => {
 
         expect(result.verdict).toBe("ban");
         expect(labelsOf(result)).toContain("Nachricht enthält einen Discord-Einladungslink");
+    });
+
+    void test("brand-new member posting an executable is banned", () => {
+        const member = makeMember({
+            accountAgeDays: 1,
+            joinedMinutesAgo: 2,
+            selfAssignedRoleCount: 0,
+        });
+        const message = makeMessage({
+            content: "probier mal mein neues game",
+            attachments: [{ name: "game-setup.exe", contentType: "application/x-msdownload" }],
+        });
+
+        const result = spamDetection.decideAction(message, member, makeContext());
+
+        expect(result.verdict).toBe("ban");
     });
 
     void test("brand-new member mass-mentioning users and roles is banned", () => {

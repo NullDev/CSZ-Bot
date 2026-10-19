@@ -38,6 +38,7 @@ function buildSpamLogEmbed(
     postValidationAdjustments: readonly PostValidationAdjustment[],
 ): APIEmbed {
     const isBan = action === "ban";
+    const attachmentCount = spamDetection.getAttachmentKeys(message).length;
     const dryRunPrefix = dryRun ? "🧪 [Testmodus] " : "";
     const title = isBan
         ? `${dryRunPrefix}🚫 Autoban: ${dryRun ? "Würde gebannt werden" : "Gebannt"}`
@@ -72,6 +73,9 @@ function buildSpamLogEmbed(
                 value: message.content.slice(0, 1024) || "*(leer)*",
                 inline: false,
             },
+            ...(attachmentCount > 0
+                ? [{ name: "Anhänge", value: `${attachmentCount}`, inline: true }]
+                : []),
         ],
         timestamp: new Date().toISOString(),
         footer: { text: `User-ID: ${member.id}` },
@@ -127,7 +131,13 @@ export default async function spamDetectionHandler(
 
     if (verdict === "none") {
         log.debug({ userId: member.id, score }, "spamDetectionHandler: no action, tracking");
-        spamDetection.trackMessage(member.id, message.id, message.channelId, message.content);
+        spamDetection.trackMessage(
+            member.id,
+            message.id,
+            message.channelId,
+            message.content,
+            spamDetection.getAttachmentKeys(message),
+        );
         return;
     }
 
@@ -171,7 +181,13 @@ export default async function spamDetectionHandler(
 
             await message.delete().catch(() => undefined);
         } else {
-            spamDetection.trackMessage(member.id, message.id, message.channelId, message.content);
+            spamDetection.trackMessage(
+                member.id,
+                message.id,
+                message.channelId,
+                message.content,
+                spamDetection.getAttachmentKeys(message),
+            );
         }
 
         context.textChannels.spamLog
@@ -229,7 +245,13 @@ export default async function spamDetectionHandler(
     if (!dryRun) {
         await message.delete().catch(() => undefined);
     } else {
-        spamDetection.trackMessage(member.id, message.id, message.channelId, message.content);
+        spamDetection.trackMessage(
+            member.id,
+            message.id,
+            message.channelId,
+            message.content,
+            spamDetection.getAttachmentKeys(message),
+        );
     }
 
     context.textChannels.spamLog

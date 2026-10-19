@@ -1,4 +1,4 @@
-import type { GuildMember, Message } from "discord.js";
+import { type Attachment, Collection, type GuildMember, type Message } from "discord.js";
 
 import type { BotContext } from "#/context.ts";
 
@@ -59,7 +59,25 @@ export type MessageOptions = {
     channelId?: string;
     mentionedUserCount?: number;
     mentionedRoleCount?: number;
+    attachments?: readonly AttachmentOptions[];
 };
+
+export type AttachmentOptions = {
+    name?: string;
+    size?: number;
+    contentType?: string | null;
+};
+
+export function makeAttachments(
+    attachments: readonly AttachmentOptions[] = [],
+): Collection<string, Attachment> {
+    return new Collection(
+        attachments.map(({ name = "image.png", size = 1234, contentType = "image/png" }) => {
+            const id = uniqueId("attachment");
+            return [id, { id, name, size, contentType } as unknown as Attachment];
+        }),
+    );
+}
 
 /** Defaults to an unremarkable message with no links or mentions. */
 export function makeMessage(options: MessageOptions = {}): Message<true> {
@@ -69,12 +87,14 @@ export function makeMessage(options: MessageOptions = {}): Message<true> {
         channelId = "channel-general",
         mentionedUserCount = 0,
         mentionedRoleCount = 0,
+        attachments = [],
     } = options;
 
     return {
         id,
         content,
         channelId,
+        attachments: makeAttachments(attachments),
         mentions: {
             users: { size: mentionedUserCount },
             roles: { size: mentionedRoleCount },
