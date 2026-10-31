@@ -294,12 +294,13 @@ export async function postLootDrop(
     } catch {
         return;
     } finally {
-        // Remove the last action row with the buttons. Only works because there is only one action row.
-        content.components[0].spliceComponents(content.components[0].components.length - 1, 1);
-        await message.edit(dropMessage);
+        // Acknowledge first: the edit below re-uploads the asset and may exceed Discord's 3s interaction deadline
         if (gambleInteraction) {
             await gambleInteraction.deferUpdate();
         }
+        // Remove the last action row with the buttons. Only works because there is only one action row.
+        content.components[0].spliceComponents(content.components[0].components.length - 1, 1);
+        await message.edit(dropMessage);
     }
 
     if (gambleInteraction.customId === "merkurleiter") {
