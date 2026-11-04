@@ -20,6 +20,8 @@ import type {
 } from "./db/model.ts";
 
 import db from "#db";
+
+import type { Equipable } from "#/service/fightData.ts";
 import {
     LootAttributeClass,
     type LootKindId,
@@ -48,6 +50,7 @@ export interface LootTemplate {
     emote: string;
     excludeFromInventory?: boolean;
     effects?: string[];
+    gameEquip?: Equipable;
     initialAttributes?: LootAttributeKindId[];
     excludeFromDoubleDrops?: boolean;
     wrapable?: boolean;
@@ -182,6 +185,7 @@ export async function findById(id: LootId, ctx = db()) {
 }
 
 export type LootWithAttributes = Loot & { attributes: Readonly<LootAttribute>[] };
+
 export async function findOfUserWithAttributes(
     user: User,
     ctx = db(),
