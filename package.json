@@ -39,6 +39,7 @@
     "chrono-node": "^2.10.3",
     "comment-json": "^5.0.0",
     "croner": "^11.0.0",
+    "debug": "^4.4.3",
     "discord.js": "^14.28.1",
     "get-audio-duration": "^4.0.1",
     "graphviz-wasm": "^3.0.2",
