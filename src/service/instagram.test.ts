@@ -4,6 +4,7 @@ import { expect } from "expect";
 
 import type { BotContext } from "#/context.ts";
 import { downloadInstagramContent } from "#/service/instagram.ts";
+import log from "#log";
 
 const context = {
     commandConfig: { instagram: { rapidApiInstagramApiKey: "test-key" } },
@@ -112,5 +113,37 @@ void describe("downloadInstagramContent", () => {
             message: "Got no links :(",
             raw: body,
         });
+    });
+
+    void test("logs status and body if response has no media", async () => {
+        const warn = mock.method(log, "warn", () => undefined);
+        const body = { message: "Endpoint does not exist" };
+        mock.method(globalThis, "fetch", async () => Response.json(body, { status: 404 }));
+
+        await downloadInstagramContent(context, "code");
+
+        expect(warn.mock.calls[0].arguments[0]).toMatchObject({ status: 404, body });
+    });
+
+    void test("logs status and body on error in successful HTTP response", async () => {
+        const warn = mock.method(log, "warn", () => undefined);
+        const body = { error: { message: "age-restricted" } };
+        mockApiResponse(body);
+
+        await downloadInstagramContent(context, "code");
+
+        expect(warn.mock.calls[0].arguments[0]).toMatchObject({ status: 200, body });
+    });
+
+    void test("logs failed requests", async () => {
+        const error = mock.method(log, "error", () => undefined);
+        const cause = new Error("connection reset");
+        mock.method(globalThis, "fetch", async () => {
+            throw cause;
+        });
+
+        await downloadInstagramContent(context, "code");
+
+        expect(error.mock.calls[0].arguments[0]).toBe(cause);
     });
 });

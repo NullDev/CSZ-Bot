@@ -5,6 +5,7 @@
 import * as sentry from "@sentry/node";
 
 import type { BotContext } from "#/context.ts";
+import log from "#log";
 
 interface MediaEntry {
     url?: string;
@@ -68,6 +69,7 @@ export async function downloadInstagramContent(
         });
         const result = (await response.json()) as ApiResponse;
         if (result.error) {
+            log.warn({ status: response.status, body: result }, "Instagram API returned an error");
             return {
                 success: false,
                 message: result.error.message ?? "API returned an error",
@@ -78,6 +80,7 @@ export async function downloadInstagramContent(
         const { videoUrls, imageUrls } = extractMediaUrls(result);
 
         if (videoUrls.length === 0 && imageUrls.length === 0) {
+            log.warn({ status: response.status, body: result }, "Instagram API returned no media");
             return {
                 success: false,
                 message: "Got no links :(",
@@ -91,6 +94,7 @@ export async function downloadInstagramContent(
             imageUrls,
         };
     } catch (error) {
+        log.error(error, "Instagram API request failed");
         sentry.captureException(error);
         return {
             success: false,

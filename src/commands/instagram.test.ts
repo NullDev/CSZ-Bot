@@ -1,7 +1,10 @@
-import { describe, test } from "node:test";
+import { afterEach, describe, mock, test } from "node:test";
 
+import type { Message } from "discord.js";
 import { expect } from "expect";
 
+import type { BotContext } from "#/context.ts";
+import log from "#log";
 import InstagramLink from "./instagram.ts";
 
 void describe("instagram pattern matching", () => {
@@ -85,5 +88,34 @@ void describe("instagram pattern matching", () => {
         for (const [message, result] of Object.entries(tests)) {
             expect(InstagramLink.extractShortCodes(message)).toStrictEqual(result);
         }
+    });
+});
+
+void describe("instagram media reply", () => {
+    afterEach(() => mock.restoreAll());
+
+    void test("logs errors when sending media fails", async () => {
+        const error = mock.method(log, "error", () => undefined);
+        mock.method(globalThis, "fetch", async () =>
+            Response.json({ contents: [{ videos: [{ url: "https://cdn/a.mp4" }] }] }),
+        );
+        const uploadError = new Error("Request entity too large");
+        const message = {
+            content: "https://www.instagram.com/p/C_OQe4FON7Q/",
+            channel: { sendTyping: async () => undefined },
+            reply: async () => {
+                throw uploadError;
+            },
+        } as unknown as Message<true>;
+        const context = {
+            commandConfig: { instagram: { rapidApiInstagramApiKey: "test-key" } },
+        } as unknown as BotContext;
+
+        // The fallback reply fails too, which ends the handler without waiting for embeds
+        await expect(new InstagramLink().handleSpecialMessage(message, context)).rejects.toBe(
+            uploadError,
+        );
+
+        expect(error.mock.calls[0].arguments[0]).toBe(uploadError);
     });
 });

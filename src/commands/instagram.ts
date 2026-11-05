@@ -4,6 +4,7 @@ import type { SpecialCommand } from "#/commands/command.ts";
 import type { BotContext } from "#/context.ts";
 import * as instagramService from "#/service/instagram.ts";
 import { replyWithFallbackEmbed } from "#/utils/embedUtils.ts";
+import log from "#log";
 
 const instagramOptions = {
     uriPattern:
@@ -95,7 +96,8 @@ export default class InstagramLink implements SpecialCommand {
                     files: [...imageFiles, ...videoFiles],
                     allowedMentions: { repliedUser: false },
                 });
-            } catch {
+            } catch (err) {
+                log.error(err, "Could not send Instagram media");
                 await replyWithFallbackEmbed(message, fallbackUrl);
             }
         }
