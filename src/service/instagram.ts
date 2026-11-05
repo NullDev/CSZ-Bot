@@ -1,26 +1,26 @@
 // Uses some random API:
-// https://rapidapi.com/ugoBoy/api/social-media-video-downloader
+// https://rapidapi.com/emmanueldavidyou/api/social-media-video-downloader
 // We're using the free tier, which has 150 videos per month
 
 import * as sentry from "@sentry/node";
 
 import type { BotContext } from "#/context.ts";
 
-interface LinkEntry {
-    quality: string;
-    link: string;
+interface MediaEntry {
+    url?: string;
+    metadata?: {
+        has_audio?: boolean;
+    };
 }
 
 interface ApiResponse {
-    success: boolean;
-    message: string;
-    src_url: string;
-    title: string;
-    picture: string;
-    links?: LinkEntry[];
-    images: string[];
-    timeTaken: string;
-    r_id: string;
+    error?: {
+        message?: string;
+    };
+    contents?: {
+        videos?: MediaEntry[];
+        images?: MediaEntry[];
+    }[];
 }
 
 export type InstagramResponse = SuccessInstagramResponse | ErrorInstagramResponse;
@@ -43,7 +43,7 @@ export function isAvailable(context: BotContext): boolean {
 
 export async function downloadInstagramContent(
     context: BotContext,
-    link: string,
+    shortCode: string,
 ): Promise<InstagramResponse> {
     const { rapidApiInstagramApiKey } = context.commandConfig.instagram;
     if (!rapidApiInstagramApiKey) {
@@ -53,8 +53,10 @@ export async function downloadInstagramContent(
         };
     }
 
-    const url = new URL("https://social-media-video-downloader.p.rapidapi.com/smvd/get/all");
-    url.searchParams.set("url", link);
+    const url = new URL(
+        "https://social-media-video-downloader.p.rapidapi.com/instagram/v3/media/post/details",
+    );
+    url.searchParams.set("shortcode", shortCode);
 
     try {
         const response = await fetch(url, {
@@ -65,18 +67,17 @@ export async function downloadInstagramContent(
             },
         });
         const result = (await response.json()) as ApiResponse;
-        if (!result.success) {
+        if (result.error) {
             return {
                 success: false,
-                message: result.message,
+                message: result.error.message ?? "API returned an error",
                 raw: result,
             };
         }
 
-        const videoUrls = extractVideoUrls(result);
-        const imageUrls = extractImageUrls(result);
+        const { videoUrls, imageUrls } = extractMediaUrls(result);
 
-        if (imageUrls === null && videoUrls === null) {
+        if (videoUrls.length === 0 && imageUrls.length === 0) {
             return {
                 success: false,
                 message: "Got no links :(",
@@ -86,8 +87,8 @@ export async function downloadInstagramContent(
 
         return {
             success: true,
-            videoUrls: videoUrls ?? [],
-            imageUrls: imageUrls ?? [],
+            videoUrls,
+            imageUrls,
         };
     } catch (error) {
         sentry.captureException(error);
@@ -99,74 +100,21 @@ export async function downloadInstagramContent(
     }
 }
 
-function extractImageUrls(response: ApiResponse) {
-    if (
-        !response.images ||
-        !Array.isArray(response.images) ||
-        response.images.length === 0 ||
-        typeof response.images[0] !== "string"
-    ) {
-        return null;
-    }
+function extractMediaUrls(response: ApiResponse) {
+    const videoUrls: string[] = [];
+    const imageUrls: string[] = [];
 
-    return response.images;
-}
+    for (const { videos, images } of response.contents ?? []) {
+        // Some video entries are silent tracks. Single-file videos may not report `has_audio` at all.
+        const videoUrl = (videos?.find(v => v.metadata?.has_audio) ?? videos?.[0])?.url;
+        const imageUrl = images?.[0]?.url;
 
-function extractVideoUrls(response: ApiResponse) {
-    if (
-        !response.links ||
-        !Array.isArray(response.links) ||
-        response.links.length === 0 ||
-        typeof response.links[0].link !== "string"
-    ) {
-        return null;
-    }
-
-    // I'm too stupid to do this in a reduce function.
-    const linksPerPage: LinkEntry[][] = [];
-    const linkCandidates = response.links.filter(l => l.quality.startsWith("video_"));
-    for (const link of linkCandidates) {
-        const lastIndexOfUnderscore = link.quality.lastIndexOf("_");
-        const idx = Number(link.quality.substring(lastIndexOfUnderscore + 1));
-        if (linksPerPage[idx] === undefined) {
-            linksPerPage[idx] = [];
+        if (videoUrl) {
+            videoUrls.push(videoUrl);
+        } else if (imageUrl) {
+            imageUrls.push(imageUrl);
         }
-        linksPerPage[idx].push(link);
     }
 
-    return (
-        linksPerPage
-            // biome-ignore lint/style/noNonNullAssertion: It exists
-            .map(links => sortLinksByVideoQuality(links).at(-1)!.link)
-    );
-}
-
-// Example links from docs
-// https://rapidapi.com/ugoBoy/api/social-media-video-downloader
-/*
-{"quality": "video_sd_0", "link": "(link unavailable)"},
-{"quality": "video_hd_0", "link": "(link unavailable)"},
-{"quality": "video_render_360p_0", "link": "(link unavailable)"},
-{"quality": "video_render_540p_0", "link": "(link unavailable)"},
-{"quality": "video_render_720p_0", "link": "(link unavailable)"},
-{"quality": "video_render_1080p_0", "link": "(link unavailable)"},
-{"quality": "audio_0", "link": "(link unavailable)"}
-*/
-const priorityMap: Record<string, number> = {
-    video_sd: 0,
-    video_render_360p: 1,
-    video_render_540p: 2,
-    video_render_720p: 3,
-    video_hd: 4,
-    video_render_1080p: 5,
-};
-function sortLinksByVideoQuality<T extends LinkEntry>(links: readonly T[]): T[] {
-    const findMatchingPriority = (link: T) => {
-        const matchingKey = Object.keys(priorityMap).find(v => v.startsWith(link.quality));
-        if (matchingKey === undefined) {
-            return -1;
-        }
-        return priorityMap[matchingKey];
-    };
-    return links.toSorted((a, b) => findMatchingPriority(a) - findMatchingPriority(b));
+    return { videoUrls, imageUrls };
 }

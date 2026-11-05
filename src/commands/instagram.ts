@@ -7,7 +7,7 @@ import { replyWithFallbackEmbed } from "#/utils/embedUtils.ts";
 
 const instagramOptions = {
     uriPattern:
-        /https?:\/\/(?:www\.)?instagram\.com\/(?:reel|reels|tv|p|share)\/([0-9a-zA-Z_-]+)\/?/gi,
+        /https?:\/\/(?:www\.)?instagram\.com\/(?:reel|reels|tv|p|share(?:\/(?:reel|reels|tv|p))?)\/([0-9a-zA-Z_-]+)\/?/gi,
     headers: {
         "User-Agent":
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.5005.124 Safari/537.36 Edg/102.0.1245.44",
@@ -67,8 +67,15 @@ export default class InstagramLink implements SpecialCommand {
                 "https://kkinstagram.com",
             );
 
+            // Share links contain an opaque token that only redirects to the actual post
+            if (postUri.includes("/share/")) {
+                await replyWithFallbackEmbed(message, fallbackUrl);
+                return;
+            }
+
             try {
-                const result = await instagramService.downloadInstagramContent(context, postUri);
+                const [shortCode] = InstagramLink.extractShortCodes(postUri);
+                const result = await instagramService.downloadInstagramContent(context, shortCode);
                 if (!result.success) {
                     await replyWithFallbackEmbed(message, fallbackUrl);
                     return;

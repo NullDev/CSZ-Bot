@@ -13,6 +13,12 @@ void describe("instagram pattern matching", () => {
             "https://www.instagram.com/share/C_OQe4FON7Q/": [
                 "https://www.instagram.com/share/C_OQe4FON7Q/",
             ],
+            "https://www.instagram.com/share/reel/C_OQe4FON7Q/": [
+                "https://www.instagram.com/share/reel/C_OQe4FON7Q/",
+            ],
+            "https://www.instagram.com/share/p/C_OQe4FON7Q/": [
+                "https://www.instagram.com/share/p/C_OQe4FON7Q/",
+            ],
             "https://www.instagram.com/reel/Ce_kSwnIlA8/": [
                 "https://www.instagram.com/reel/Ce_kSwnIlA8/",
             ],
@@ -55,6 +61,8 @@ void describe("instagram pattern matching", () => {
         const tests = {
             "https://www.instagram.com/p/C_OQe4FON7Q/": ["C_OQe4FON7Q"],
             "https://www.instagram.com/share/C_OQe4FON7Q/": ["C_OQe4FON7Q"],
+            "https://www.instagram.com/share/reel/C_OQe4FON7Q/": ["C_OQe4FON7Q"],
+            "https://www.instagram.com/share/p/C_OQe4FON7Q/": ["C_OQe4FON7Q"],
             "https://www.instagram.com/reel/Ce_kSwnIlA8/": ["Ce_kSwnIlA8"],
             "https://www.instagram.com/reels/Ce_kSwnIlA8/": ["Ce_kSwnIlA8"],
 
