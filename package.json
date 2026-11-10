@@ -59,8 +59,8 @@
     "@types/node-cron": "^3.0.11",
     "expect": "^30.5.2",
     "lefthook": "^2.2.2",
-    "oxfmt": "^0.76.0",
-    "oxlint": "^1.91.0",
+    "oxfmt": "^0.78.0",
+    "oxlint": "^1.93.0",
     "oxlint-tsgolint": "^7.0.2006",
     "typescript": "^7.0.2"
   },
