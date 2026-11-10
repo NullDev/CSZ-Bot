@@ -16,7 +16,7 @@ export default class NischdaaaCommand implements SpecialCommand {
         const nbsp = "\u00A0";
 
         const prompt = await message.channel.send({
-            content: `How is Dönerjesus doing in this session? (optional)\n${nbsp}${nbsp}1: Bad${nbsp}${nbsp}2: Fine${nbsp}${nbsp}3: Good${nbsp}${nbsp}0: Dismiss`,
+            content: `How is Dönerjesus doing in this session? (optional)\n${nbsp}${nbsp}\`1\`: Bad${nbsp}${nbsp}\`2\`: Fine${nbsp}${nbsp}\`3\`: Good${nbsp}${nbsp}\`0\`: Dismiss`,
         });
 
         const numbers = ["1️⃣", "2️⃣", "3️⃣", "0️⃣"];
