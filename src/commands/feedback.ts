@@ -44,7 +44,7 @@ export default class NischdaaaCommand implements SpecialCommand {
             }
         });
 
-        collector.on("end", collected => {
+        collector.on("end", async collected => {
             log.info(
                 `Collector ended with ${collected.size} reactions: ${[...collected.keys()].join(", ")}`,
             );
