@@ -48,6 +48,7 @@ export default class NischdaaaCommand implements SpecialCommand {
             log.info(
                 `Collector ended with ${collected.size} reactions: ${[...collected.keys()].join(", ")}`,
             );
+            await prompt.delete();
         });
     }
 }
