@@ -3,7 +3,7 @@ import type { SpecialCommand } from "#/commands/command.ts";
 
 export default class NischdaaaCommand implements SpecialCommand {
     name = "Nischdaaa";
-    description = "Crackes Erinnerung ";
+    description = "Crackes Erinnerung";
     randomness = 0.005;
 
     matches(message: ProcessableMessage): boolean {
