@@ -125,6 +125,7 @@ export default class NicknameCommand implements ApplicationCommand, Autocomplete
                         return;
                     }
 
+                    const member = guild.members.cache.get(user.id);
                     if (!member) {
                         await cmd.reply("Hurensohn. Der Brudi ist nicht auf dem Server.");
                         return;
