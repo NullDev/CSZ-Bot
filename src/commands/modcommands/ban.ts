@@ -60,7 +60,10 @@ export default class BanCommand implements ApplicationCommand, MessageCommand {
         const reason = command.options.getString("reason", true);
         const durationHours = command.options.getInteger("hours", false);
         const durationMinutes = command.options.getInteger("minutes", false);
-        const duration = (durationHours ?? 0) + (durationMinutes ? durationMinutes / 60 : 0);
+        const duration =
+            durationHours === null && durationMinutes === null
+                ? null // infinite ban
+                : (durationHours ?? 0) + (durationMinutes ? durationMinutes / 60 : 0);
 
         const userAsGuildMember = command.guild?.members.resolve(user);
         if (!userAsGuildMember) {
@@ -77,7 +80,7 @@ export default class BanCommand implements ApplicationCommand, MessageCommand {
             invokingUser,
             reason,
             false,
-            duration ?? null,
+            duration,
         );
 
         if (err) {
@@ -90,7 +93,7 @@ export default class BanCommand implements ApplicationCommand, MessageCommand {
 
         await command.reply({
             content: `Ok Bruder, ich hab ${user} wegen ${reason} ${
-                duration > 0 ? `für ${formatDuration(duration / 60 / 60)}` : ""
+                duration !== null && duration > 0 ? `für ${formatDuration(duration / 60 / 60)}` : ""
             } gebannt`,
         });
         return;
