@@ -43,7 +43,11 @@ export async function upsertForMessage(
         .execute();
 }
 
-export async function destroyForMessage(message: Message, usage: DataUsage, ctx = db()) {
+export async function destroyForMessage(
+    message: Pick<Message, "id">,
+    usage: DataUsage,
+    ctx = db(),
+) {
     await ctx
         .deleteFrom("additionalMessageData")
         .where("messageId", "=", message.id)

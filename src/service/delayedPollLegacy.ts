@@ -1,4 +1,11 @@
-import type { Message, Snowflake, User } from "discord.js";
+import {
+    DiscordAPIError,
+    type Message,
+    RESTJSONErrorCodes,
+    type Snowflake,
+    type User,
+} from "discord.js";
+import * as sentry from "@sentry/node";
 
 import type { BotContext } from "#/context.ts";
 import log from "#log";
@@ -56,7 +63,25 @@ export const processPolls = async (context: BotContext) => {
 
     for (const element of pollsToFinish) {
         const delayedPoll = element;
-        const message = await channel.messages.fetch(delayedPoll.pollId);
+        let message: Message<true>;
+        try {
+            message = await channel.messages.fetch(delayedPoll.pollId);
+        } catch (err) {
+            if (err instanceof DiscordAPIError && err.code === RESTJSONErrorCodes.UnknownMessage) {
+                log.warn(
+                    `Message of delayed poll ${delayedPoll.pollId} was deleted, dropping poll`,
+                );
+                delayedPolls.splice(delayedPolls.indexOf(delayedPoll), 1);
+                await additionalMessageData.destroyForMessage(
+                    { id: delayedPoll.pollId },
+                    "DELAYED_POLL",
+                );
+                continue;
+            }
+            log.error(err, `Could not fetch message of delayed poll ${delayedPoll.pollId}`);
+            sentry.captureException(err);
+            continue;
+        }
 
         const users: Record<Snowflake, User> = {};
         await Promise.all(
