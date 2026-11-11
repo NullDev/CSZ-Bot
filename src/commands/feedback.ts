@@ -40,7 +40,6 @@ export default class NischdaaaCommand implements SpecialCommand {
             log.info(`Collected reaction: ${reaction.emoji.name}: ${reaction.count}`);
             if (reaction.emoji.name === "0️⃣") {
                 collector.stop();
-                await prompt.delete();
             }
         });
 
