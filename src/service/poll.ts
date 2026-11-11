@@ -105,6 +105,13 @@ export async function countDelayedVote(
         invoker.id,
         !poll.multipleChoices,
     );
+    legacyDelayedPoll.recordVote(
+        delayedPoll,
+        optionIndex,
+        invoker.id,
+        addedOrRemoved === "added",
+        !poll.multipleChoices,
+    );
 
     const msg = await message.channel.send(
         addedOrRemoved === "removed"

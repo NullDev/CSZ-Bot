@@ -37,6 +37,22 @@ export function findPoll(message: Message<true>) {
     return delayedPolls.find(x => x.pollId === message.id);
 }
 
+/** Mirrors a vote stored in the DB into `reactions`, which is used to build the result. */
+export function recordVote(
+    poll: DelayedPoll,
+    optionIndex: number,
+    userId: Snowflake,
+    added: boolean,
+    singleChoice: boolean,
+) {
+    poll.reactions = poll.reactions.map((voters, index) =>
+        index === optionIndex || singleChoice ? voters.filter(id => id !== userId) : voters,
+    );
+    if (added) {
+        poll.reactions[optionIndex]?.push(userId);
+    }
+}
+
 export const importPolls = async () => {
     const additionalDatas = await additionalMessageData.findAll("DELAYED_POLL");
     let count = 0;
