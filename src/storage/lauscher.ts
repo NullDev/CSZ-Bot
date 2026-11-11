@@ -70,7 +70,7 @@ export async function insertSpotifyLog(
 }
 
 export async function insertTrackMetadata(track: Track, artists: Artist[], ctx = db()) {
-    await ctx.transaction().execute(async ctx => {
+    return await ctx.transaction().execute(async ctx => {
         await ctx
             .insertInto("spotifyTracks")
             .values({
