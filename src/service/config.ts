@@ -351,7 +351,10 @@ export const configSchema = (guild: Guild) => {
             hauptwoisTextChannelId: guildTextChannel,
             roleAssignerChannelId: guildTextChannel,
             /** Channel ID for the mod-only spam audit log. Leave empty to disable. */
-            spamLogChannelId: guildTextChannel.optional(),
+            spamLogChannelId: z.preprocess(
+                id => (id === "" ? undefined : id),
+                guildTextChannel.optional(),
+            ),
         }),
 
         voiceChannel: z.object({

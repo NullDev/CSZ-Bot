@@ -51,6 +51,23 @@ void describe("configSchema guild resolution", () => {
         ]);
     });
 
+    void test("treats an empty spam log channel id as disabled", () => {
+        const result = schema.shape.textChannel.safeParse({
+            banReasonChannelId: "100",
+            bannedChannelId: "100",
+            botLogChannelId: "100",
+            hauptchatChannelId: "100",
+            votesChannelId: "100",
+            botSpamChannelId: "100",
+            hauptwoisTextChannelId: "100",
+            roleAssignerChannelId: "100",
+            spamLogChannelId: "",
+        });
+
+        expect(result.success).toBe(true);
+        expect(result.data?.spamLogChannelId).toBeUndefined();
+    });
+
     void test("resolves channel objects on success", () => {
         const result = schema.shape.voiceChannel.safeParse({
             hauptWoischatChannelId: "200",
