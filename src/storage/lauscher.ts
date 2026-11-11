@@ -115,11 +115,14 @@ export async function insertTrackMetadata(track: Track, artists: Artist[], ctx =
 }
 
 export async function getTrackMetadata(track: Track, ctx = db()) {
+    const imageUrl = track.album.images[0]?.url ?? null;
     const match = await ctx
         .selectFrom("spotifyTracks")
         .where("trackId", "=", track.id)
         .where("durationInMs", "=", track.duration_ms)
-        .where("imageUrl", "=", track.album.images[0]?.url ?? null)
+        .where(eb =>
+            imageUrl === null ? eb("imageUrl", "is", null) : eb("imageUrl", "=", imageUrl),
+        )
         .limit(1)
         .selectAll()
         .executeTakeFirst();
