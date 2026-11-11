@@ -173,7 +173,7 @@ Optionen:
                 return "Bruder keine ungültigen Zeiten angeben 🙄";
             }
 
-            if (delayTime > timeUtils.days(7)) {
+            if (timeUtils.minutes(delayTime) > timeUtils.days(7)) {
                 return "Bruder du kannst maximal 7 Tage auf ein Ergebnis warten 🙄";
             }
         }
