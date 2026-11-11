@@ -3,7 +3,7 @@ import type { SpecialCommand } from "#/commands/command.ts";
 import log from "#log";
 import * as time from "#/utils/time.ts";
 
-export default class NischdaaaCommand implements SpecialCommand {
+export default class FeedbackCommand implements SpecialCommand {
     name = "Feedback";
     description = "Fragt nach Feedback";
     randomness = 0.005;
