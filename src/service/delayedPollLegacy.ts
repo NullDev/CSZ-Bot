@@ -38,7 +38,11 @@ export const importPolls = async () => {
         if (!delayedPollData) {
             continue;
         }
-        delayedPolls.push(delayedPollData);
+        delayedPolls.push({
+            ...delayedPollData,
+            createdAt: new Date(delayedPollData.createdAt),
+            finishesAt: new Date(delayedPollData.finishesAt),
+        });
         count++;
     }
     log.info(`Loaded ${count} polls from database`);
