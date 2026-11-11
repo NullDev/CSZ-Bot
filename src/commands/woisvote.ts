@@ -114,9 +114,11 @@ export default class WoisCommand implements ApplicationCommand {
             new Date(timeForWois.toString()),
         );
         if (existingWoisVote !== undefined) {
-            const nextDate = Temporal.PlainDateTime.from(existingWoisVote.date);
+            const nextDate = Temporal.Instant.from(existingWoisVote.date).toZonedDateTimeISO(
+                Temporal.Now.timeZoneId(),
+            );
             await command.reply(
-                `Es gibt bereits einen Woisvote für ${nextDate.toPlainTime().toString()} Uhr. Geh doch da hin: ${
+                `Es gibt bereits einen Woisvote für ${nextDate.toPlainTime().toString({ smallestUnit: "minute" })} Uhr. Geh doch da hin: ${
                     existingWoisVote.messageId
                 }`,
             );
