@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "@discordjs/voice": "^0.19.2",
-    "@napi-rs/canvas": "1.1.0",
+    "@napi-rs/canvas": "1.1.1",
     "@resvg/resvg-js": "^2.6.2",
     "@sentry/node": "^11.12.0",
     "@snazzah/davey": "^0.2.0",
@@ -43,8 +43,8 @@
     "discord.js": "^14.28.1",
     "get-audio-duration": "^4.0.1",
     "graphviz-wasm": "^3.0.2",
-    "jsdom": "^31.0.0",
-    "kysely": "^0.29.8",
+    "jsdom": "^31.0.1",
+    "kysely": "^0.29.9",
     "kysely-sqlite": "^0.2.0",
     "libsodium-wrappers": "^0.8.4",
     "pino": "^10.4.0",
@@ -61,7 +61,7 @@
     "lefthook": "^2.2.2",
     "oxfmt": "^0.78.0",
     "oxlint": "^1.93.0",
-    "oxlint-tsgolint": "^7.0.2006",
+    "oxlint-tsgolint": "^7.0.2007",
     "typescript": "^7.0.2"
   },
   "engines": {
