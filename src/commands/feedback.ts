@@ -6,7 +6,7 @@ import * as time from "#/utils/time.ts";
 export default class FeedbackCommand implements SpecialCommand {
     name = "Feedback";
     description = "Fragt nach Feedback";
-    randomness = 0.008;
+    randomness = 0.01;
 
     matches(message: ProcessableMessage): boolean {
         return message.content.endsWith("?") && message.content.split(" ").length > 3;
