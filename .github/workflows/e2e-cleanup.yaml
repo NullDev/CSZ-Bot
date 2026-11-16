@@ -1,0 +1,28 @@
+name: e2e cleanup
+
+on:
+  pull_request:
+    branches: [master]
+    types: [closed]
+
+jobs:
+  cleanup-e2e:
+    name: Cleanup e2e
+    runs-on: ubuntu-latest
+
+    # Forks and Dependabot don't get the SSH secrets, so there is no deployment to clean up
+    if: ${{ !github.event.repository.fork && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.user.login != 'dependabot[bot]' }}
+
+    environment:
+      name: e2e
+
+    steps:
+      - name: Stop ephemeral CSZ Bot
+        uses: appleboy/ssh-action@0ff4204d59e8e51228ff73bce53f80d53301dee2
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          # Project name must match EPHEMERAL_PROJECT in CI.yaml
+          script: docker compose -p csz-bot-pr-${{ github.event.number }} down

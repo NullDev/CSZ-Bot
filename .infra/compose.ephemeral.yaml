@@ -1,12 +1,17 @@
 services:
   bot:
     image: ${BOT_IMAGE}
-    extends:
-      file: ./compose.yaml
-      service: bot
-    container_name: csz-bot-ephemeral
-    restart: none
+    restart: "no"
     command: "${BOT_ARGS}"
     environment:
       NODE_ENV: development
+      LOG_LEVEL: debug
       DATABASE_PATH: ":memory:"
+    configs:
+      - source: bot-config
+        target: /app/config.json
+
+configs:
+  # Injected into the container on creation, so nothing has to be written to the host
+  bot-config:
+    environment: EPHEMERAL_BOT_CONFIG

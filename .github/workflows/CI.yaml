@@ -155,12 +155,14 @@ jobs:
           EPHEMERAL_BOT_CONFIG: ${{ steps.config.outputs.content }}
           BOT_ARGS: ${{ steps.args.outputs.args }}
           BOT_IMAGE: ${{ needs.build.outputs.image-tag }}
+          # Must match the project name in e2e-cleanup.yaml
+          EPHEMERAL_PROJECT: ${{ github.event_name == 'pull_request' && format('csz-bot-pr-{0}', github.event.number) || 'csz-bot-master' }}
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
-          envs: BOT_HOME_PATH,EPHEMERAL_BOT_CONFIG,BOT_ARGS,BOT_IMAGE
+          envs: BOT_HOME_PATH,EPHEMERAL_BOT_CONFIG,BOT_ARGS,BOT_IMAGE,EPHEMERAL_PROJECT
           script: ${{ env.BOT_HOME_PATH }}/.infra/deploy-ephemeral.sh
 
       - name: Comment PR

@@ -11,24 +11,19 @@ if [[ -z "${EPHEMERAL_BOT_CONFIG}" ]]; then
     exit 1
 fi
 
-TEMP_DIR=$(mktemp -d)
-cd "$TEMP_DIR"
+if [[ -z "${EPHEMERAL_PROJECT}" ]]; then
+    echo "EPHEMERAL_PROJECT needs to be set"
+    exit 1
+fi
 
-mkdir -p "$TEMP_DIR/data"
+# All ephemeral bots share the same Discord token, so only one PR bot may run at a time
+for project in $(docker compose ls --all --quiet --filter "name=^csz-bot-pr-"); do
+    if [[ "$project" != "$EPHEMERAL_PROJECT" ]]; then
+        docker compose -p "$project" down
+    fi
+done
 
-cp -r "$BOT_HOME_PATH/data" "$TEMP_DIR/data"
-cp -r "$BOT_HOME_PATH/.infra" "$TEMP_DIR/.infra"
-
-echo "$EPHEMERAL_BOT_CONFIG" > "$TEMP_DIR/config.json"
-echo "" > "$TEMP_DIR/.env" # Dummy env
-
-chmod -R 777 "$TEMP_DIR/data"
-
-docker stop csz-bot-ephemeral || true
-docker rm csz-bot-ephemeral || true
-docker compose -p e2e -f "$TEMP_DIR/.infra/compose.ephemeral.yaml" pull bot
-docker compose -p e2e -f "$TEMP_DIR/.infra/compose.ephemeral.yaml" up \
+docker compose -p "$EPHEMERAL_PROJECT" -f "$BOT_HOME_PATH/.infra/compose.ephemeral.yaml" pull bot
+docker compose -p "$EPHEMERAL_PROJECT" -f "$BOT_HOME_PATH/.infra/compose.ephemeral.yaml" up \
     -d \
     --remove-orphans
-
-# rm -rvf -- "$TEMP_DIR"
