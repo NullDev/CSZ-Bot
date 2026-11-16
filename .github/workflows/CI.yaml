@@ -130,12 +130,6 @@ jobs:
         run: |
           envsubst < .github/config.json > config-ephemeral.json
 
-      - name: Read config.json
-        id: config
-        uses: juliangruber/read-file-action@v1
-        with:
-          path: ./config-ephemeral.json
-
       - name: Build args
         id: args
         env:
@@ -149,22 +143,51 @@ jobs:
 
           echo "args=$args" >> "$GITHUB_OUTPUT"
 
-      - name: Deploy CSZ Bot
-        uses: appleboy/ssh-action@0ff4204d59e8e51228ff73bce53f80d53301dee2
+      - name: Set up SSH
         env:
-          BOT_HOME_PATH: /home/csc
-          EPHEMERAL_BOT_CONFIG: ${{ steps.config.outputs.content }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_PORT: ${{ secrets.SSH_PORT }}
+          SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
+          SSH_KEY: ${{ secrets.SSH_KEY }}
+        run: |
+          install -m 700 -d ~/.ssh
+          install -m 600 /dev/null ~/.ssh/deploy_key
+          echo "$SSH_KEY" > ~/.ssh/deploy_key
+          ssh-keyscan -p "$SSH_PORT" "$SSH_HOST" >> ~/.ssh/known_hosts
+
+          # docker opens a new SSH connection for every API call, so reuse a single one
+          cat >> ~/.ssh/config <<EOF
+          Host deploy-target
+            HostName $SSH_HOST
+            Port $SSH_PORT
+            User $SSH_USERNAME
+            IdentityFile ~/.ssh/deploy_key
+            ControlMaster auto
+            ControlPath ~/.ssh/cm-%C
+            ControlPersist 60s
+          EOF
+
+      - name: Deploy CSZ Bot
+        env:
+          DOCKER_HOST: ssh://deploy-target
+          COMPOSE_FILE: .infra/compose.ephemeral.yaml
+          # Must match the project name in e2e-cleanup.yaml
+          COMPOSE_PROJECT_NAME: ${{ github.event_name == 'pull_request' && format('csz-bot-pr-{0}', github.event.number) || 'csz-bot-master' }}
           BOT_ARGS: ${{ steps.args.outputs.args }}
           BOT_IMAGE: ${{ needs.build.outputs.image-tag }}
-          # Must match the project name in e2e-cleanup.yaml
-          EPHEMERAL_PROJECT: ${{ github.event_name == 'pull_request' && format('csz-bot-pr-{0}', github.event.number) || 'csz-bot-master' }}
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_KEY }}
-          port: ${{ secrets.SSH_PORT }}
-          envs: BOT_HOME_PATH,EPHEMERAL_BOT_CONFIG,BOT_ARGS,BOT_IMAGE,EPHEMERAL_PROJECT
-          script: ${{ env.BOT_HOME_PATH }}/.infra/deploy-ephemeral.sh
+        run: |
+          EPHEMERAL_BOT_CONFIG=$(< config-ephemeral.json)
+          export EPHEMERAL_BOT_CONFIG
+
+          # All ephemeral bots share the same Discord token, so only one PR bot may run at a time
+          for project in $(docker compose ls --all --quiet --filter "name=^csz-bot-pr-"); do
+            if [[ "$project" != "$COMPOSE_PROJECT_NAME" ]]; then
+              docker compose -p "$project" down
+            fi
+          done
+
+          docker compose pull bot
+          docker compose up -d --remove-orphans
 
       - name: Comment PR
         uses: thollander/actions-comment-pull-request@v3
