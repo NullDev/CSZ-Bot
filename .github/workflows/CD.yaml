@@ -17,7 +17,8 @@ jobs:
     environment:
       name: Production
 
-    if: ${{ !github.event.repository.fork }}
+    # workflow_run fires for every completed CI run, regardless of its result
+    if: ${{ !github.event.repository.fork && (github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success') }}
 
     env:
       BOT_HOME_DIR: /home/csc
