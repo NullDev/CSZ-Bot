@@ -17,6 +17,8 @@ export interface Database {
     nickNames: NickNameTable;
     penis: PenisTable;
     boobs: BoobTable;
+    vagina: VaginaTable;
+    bauch: BauchTable;
     austrianTranslations: AustrianTranslationTable;
     ehreVotes: EhreVotesTable;
     ehrePoints: EhrePointsTable;
@@ -130,6 +132,26 @@ export interface PenisTable extends AuditedTable {
 export type Boob = Selectable<BoobTable>;
 
 export interface BoobTable extends AuditedTable {
+    id: GeneratedAlways<number>;
+
+    userId: Snowflake;
+    size: number;
+    measuredAt: Generated<string>; // TODO: Date is not supported by the DB driver
+}
+
+export type Vagina = Selectable<VaginaTable>;
+
+export interface VaginaTable extends AuditedTable {
+    id: GeneratedAlways<number>;
+
+    userId: Snowflake;
+    size: number;
+    measuredAt: Generated<string>; // TODO: Date is not supported by the DB driver
+}
+
+export type Bauch = Selectable<BauchTable>;
+
+export interface BauchTable extends AuditedTable {
     id: GeneratedAlways<number>;
 
     userId: Snowflake;
